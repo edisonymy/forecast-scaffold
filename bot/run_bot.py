@@ -36,6 +36,7 @@ from metaculus import MetaculusClient
 from forecast_scaffold.core import (
     ForecastRecord,
     Journal,
+    _utc_now,
     clamp,
     load_config,
     percentiles_to_cdf,
@@ -200,11 +201,17 @@ def forecast_question(
         return False
 
     qtype = question.get("type", "binary")
+    title = question.get("title", post.get("title", "untitled"))
+    criterion = str(question.get("resolution_criteria", "")).strip()[:2000]
+    if not criterion:
+        # Metaculus sometimes returns empty criteria; the title is the resolvable contract.
+        criterion = f"(no criteria published) Resolves per the question as stated: {title}"
     record = ForecastRecord(
-        question=question.get("title", post.get("title", "untitled")),
+        question=title,
         question_type="multiple_choice" if qtype == "multiple_choice"
         else ("binary" if qtype == "binary" else "numeric"),
-        resolution_criterion=str(question.get("resolution_criteria", ""))[:2000],
+        resolution_criterion=criterion,
+        forecast_at=_utc_now(),
         resolve_by=str(question.get("scheduled_resolve_time", ""))[:10] or None,
         source={
             "platform": "metaculus",
@@ -226,7 +233,8 @@ def forecast_question(
         raw_draws=[float(d) for d in payload.get("raw_draws", [])] or None,
         effort=f"{tier} (auto)" if args.effort == "auto" else tier,
         model=args.agent_cmd,
-        crowd={"value": crowd, "source": "metaculus community", "at": ""} if crowd else None,
+        crowd={"value": crowd, "source": "metaculus community", "at": _utc_now()}
+        if crowd else None,
         reasoning=str(payload.get("reasoning", ""))[:4000],
         what_would_change_my_mind=[str(x) for x in payload.get("what_would_change_my_mind", [])],
     )
