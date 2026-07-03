@@ -417,12 +417,15 @@ def calibration_report(records: list[ForecastRecord]) -> CalibrationReport:
             f"{conf_right:.0%} (claimed ~{conf_mean:.0%})"
         )
 
+    # Tolerance keeps the exact-boundary case deterministic across Python versions
+    # (3.12's sum() is more accurate than 3.11's, which flips 1e-16-level noise).
     gap = mean_conf - right_rate
+    threshold = 0.1 + 1e-9
     if n < MIN_CALIBRATION_N:
         direction = "insufficient data"
-    elif gap > 0.1:
+    elif gap > threshold:
         direction = "over-confident"
-    elif gap < -0.1:
+    elif gap < -threshold:
         direction = "under-confident"
     else:
         direction = "well-calibrated"
