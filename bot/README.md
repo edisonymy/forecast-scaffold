@@ -10,10 +10,12 @@ tamper-evident track record).
 
 1. **Metaculus**: create a bot account and get a token at metaculus.com/futureeval (participate
    page). Set `METACULUS_TOKEN`.
-2. **Agent**: any headless agent CLI works via `--agent-cmd`; the default is `claude -p`
-   (Claude Code CLI with an `ANTHROPIC_API_KEY`, or a subscription login locally).
-   Metaculus sponsors LLM/search credits for tournament participants each season — check the
-   current season's announcement.
+2. **Agent**: any headless agent CLI works via `--agent-cmd`; the default is `claude -p`.
+   Auth options, pick one: a local subscription login (nothing to configure), a
+   `CLAUDE_CODE_OAUTH_TOKEN` from `claude setup-token` (subscription Agent SDK credit — the
+   right choice for CI), or an `ANTHROPIC_API_KEY` (pay-per-token). Metaculus also sponsors
+   LLM/search credits for tournament participants each season — check the current season's
+   announcement and its request form.
 3. Install the package once: `pip install -e .` from the repo root (the bot imports
    `forecast_scaffold.core` for the journal, validators, and CDF construction).
 

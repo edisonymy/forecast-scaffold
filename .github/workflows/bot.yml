@@ -33,8 +33,11 @@ jobs:
           npm install -g @anthropic-ai/claude-code
 
       - name: Run bot
+        # Auth: set ONE of the two secrets — CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`,
+        # draws on a Claude subscription's Agent SDK credit) or ANTHROPIC_API_KEY (pay-per-token).
         env:
           METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           python bot/run_bot.py --tournament "${{ vars.TOURNAMENT_ID }}" \
