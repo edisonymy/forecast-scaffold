@@ -1,0 +1,44 @@
+# forecast-scaffold configuration template.
+#
+# Everything that churns — model preferences, draw counts, clamps, blend weights — lives
+# here, never in the skills' markdown. Copy this file next to your journal (or point
+# $FORECAST_CONFIG at it) and edit freely; missing keys fall back to built-in defaults.
+# This template mirrors core.DEFAULTS exactly (a test asserts it).
+
+[clamp]
+# Final probabilities outside this band trigger a warning and are clamped by `aggregate`.
+# 38% of tournament-winning bots clamp to roughly this band. Override deliberately when
+# evidence is genuinely overwhelming and documented.
+min = 0.02
+max = 0.98
+
+[tiers.low]
+draws = 1
+searches = 1
+
+[tiers.medium]
+draws = 5
+searches = 5
+
+[tiers.high]
+draws = 12
+searches = 12
+
+[blend]
+# Weight on the crowd/market number when one exists. A simple 50/50 average beat both the
+# system and the crowd alone in the published evidence.
+crowd_weight = 0.5
+
+[aggregation]
+# "trimmed_mean" for correlated draws from one forecaster (the default);
+# "geo_mean_odds" for genuinely independent forecasters/agents; "median" as a robust fallback.
+method = "trimmed_mean"
+
+[journal]
+path = "forecasts.jsonl"
+
+[models]
+# Hints for the host agent — the scaffold never calls models itself. Model choice dominates
+# scaffolding, so revisit these regularly; leave triage empty to let the host agent decide.
+triage = ""
+notes = "model choice dominates scaffolding; keep this fresh"

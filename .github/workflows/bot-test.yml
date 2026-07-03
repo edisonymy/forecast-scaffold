@@ -1,0 +1,47 @@
+name: Bot dry run / testing area
+
+on:
+  workflow_dispatch:
+    inputs:
+      tournament:
+        description: "Tournament id or slug (use the bot-testing-area sandbox first)"
+        required: true
+      dry_run:
+        description: "Dry run (record only, never submit)"
+        type: boolean
+        default: true
+      limit:
+        description: "Max questions this run"
+        default: "3"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install
+        run: |
+          pip install -e .
+          npm install -g @anthropic-ai/claude-code
+
+      - name: Run
+        env:
+          METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python bot/run_bot.py --tournament "${{ inputs.tournament }}" \
+            --limit "${{ inputs.limit }}" \
+            ${{ inputs.dry_run && '--dry-run' || '' }} \
+            --agent-cmd "claude -p --dangerously-skip-permissions"
+
+      - name: Show journal
+        run: cat bot/journal/forecasts.jsonl || true

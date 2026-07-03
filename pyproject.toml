@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "forecast-scaffold"
+version = "0.1.0"
+description = "Zero-dependency journal, scoring, aggregation, and validation core for the forecast-scaffold plugin."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Edison Yi" }]
+requires-python = ">=3.11"
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/edisonymy/forecast-scaffold"
+Repository = "https://github.com/edisonymy/forecast-scaffold"
+
+[project.scripts]
+forecast-scaffold = "forecast_scaffold.core:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.4", "mypy>=1.10"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+strict = true
+python_version = "3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

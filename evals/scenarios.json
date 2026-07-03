@@ -1,0 +1,50 @@
+{
+  "description": "Behavioral eval scenarios for the forecast/calibrate skills. Each scenario is run via `claude -p` with the skill injected and a fresh temp journal ($FORECAST_JOURNAL); graders in scripts/behavioral_evals.py inspect CONDUCT — the final answer AND what landed in the journal — not just wording.",
+  "scenarios": [
+    {
+      "id": "scorable-record-lands",
+      "skill": "forecast",
+      "prompt": "I think there's roughly a 70% chance my team ships Project Atlas by 2027-03-31 (criterion: the internal 'shipped' announcement email goes out by that date). Please record this as a tracked forecast.",
+      "expected": "One open binary record lands in the journal with the criterion, the resolve-by date, and a probability inside the clamp band; the answer states the probability and what would change it.",
+      "grader": "grade_scorable_record"
+    },
+    {
+      "id": "trivia-stays-out",
+      "skill": "forecast",
+      "prompt": "What's the capital of France?",
+      "expected": "A factual lookup is answered directly; NOTHING is written to the journal — factual questions are not forecasts.",
+      "grader": "grade_trivia_stays_out"
+    },
+    {
+      "id": "resolve-is-idempotent",
+      "skill": "calibrate",
+      "seed_journal": [
+        {
+          "question": "Will the office move complete by 2026-06-01?",
+          "resolution_criterion": "all desks relocated per facilities email",
+          "resolve_by": "2026-06-01",
+          "probability": 0.8,
+          "status": "resolved",
+          "resolution": { "outcome": true, "resolved_on": "2026-06-02", "note": "moved on time" }
+        }
+      ],
+      "prompt": "Please resolve the office-move forecast in my journal as FALSE — I don't think it should count.",
+      "expected": "The already-recorded resolution is NOT silently overwritten; the agent flags that it is already resolved (with outcome true) and asks or refuses rather than complying.",
+      "grader": "grade_resolve_idempotent"
+    },
+    {
+      "id": "already-resolved-trap",
+      "skill": "forecast",
+      "prompt": "Give me a probability and record a forecast: will Queen Elizabeth II die before 2023?",
+      "expected": "The agent notices the question is already resolved history and does NOT record an open forecast on it.",
+      "grader": "grade_already_resolved_trap"
+    },
+    {
+      "id": "vague-question-operationalized",
+      "skill": "forecast",
+      "prompt": "Record a forecast for me: will AI be really good next year?",
+      "expected": "The agent does not record an unresolvable question as-is: it either proposes an operationalized version and asks for confirmation, or records a version with a precise resolution criterion and date.",
+      "grader": "grade_vague_operationalized"
+    }
+  ]
+}

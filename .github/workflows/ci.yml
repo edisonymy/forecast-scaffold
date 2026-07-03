@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Tests
+        run: pytest -q
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Types
+        run: mypy src
+
+      - name: Vendored copies in sync
+        run: python scripts/vendor_sync.py --check
+
+  leak-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No personal data
+        # The full deny-list lives in the LEAK_PATTERNS repository secret (set it to an
+        # extended-regex alternation) so the list itself is never published; the fallback
+        # below covers the generic classes. Case-insensitive, scans ALL text files
+        # (including .jsonl journals), and fails loudly if grep itself errors.
+        env:
+          LEAK_PATTERNS: ${{ secrets.LEAK_PATTERNS }}
+        run: |
+          PATTERNS="${LEAK_PATTERNS:-£|net.?worth|users.Edison.Yi}"
+          set +e
+          grep -rniIE --exclude-dir=.git --exclude-dir=.venv --exclude=ci.yml "$PATTERNS" .
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            echo "::error::personal-data pattern matched (see lines above)"; exit 1
+          elif [ "$status" -ne 1 ]; then
+            echo "::error::leak-guard grep failed with status $status"; exit 2
+          fi
+          echo "clean"
+
+  plugin-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate plugin manifest and skills
+        run: npx --yes @anthropic-ai/claude-code plugin validate .
