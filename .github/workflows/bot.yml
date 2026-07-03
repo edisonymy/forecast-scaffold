@@ -1,9 +1,12 @@
 name: Tournament bot
 
 on:
-  schedule:
-    - cron: "7 */6 * * *" # every 6h (sandbox cadence). For a live tournament with rolling
-    # question drops, tighten this (e.g. "7,27,47 * * * *") to forecast early for peer score.
+  # No cron while testing on the sandbox: the bot runs ONLY when triggered by hand
+  # (the "Run workflow" button, or `gh workflow run bot.yml`). This spends no SDK credit
+  # until you ask it to. When you enter a REAL tournament, uncomment the schedule below to
+  # forecast at most once a day (tighten only if early forecasts materially help peer score):
+  # schedule:
+  #   - cron: "7 6 * * *" # 06:07 UTC daily
   workflow_dispatch:
 
 concurrency:
