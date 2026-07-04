@@ -47,6 +47,7 @@ Only `question` is required. Serialization drops `null` fields; absent = null.
 | `aggregation` | str? | e.g. `"trimmed_mean(n=5)"`, incl. any crowd blend and clamp |
 | `effort` | str? | `low`/`medium`/`high`, with `(auto)` when auto-triaged |
 | `model` | str | free string naming the model(s) used |
+| `provider` | str? | billing/routing path that produced it, e.g. `subscription` / `openrouter` |
 | `crowd` | obj? | `{value, source, at}` — the crowd/market number **at forecast time** |
 | `reasoning` | str | 3–6 line summary: base rate → key update → main counterargument |
 | `what_would_change_my_mind` | list[str] | observations that would move the number |

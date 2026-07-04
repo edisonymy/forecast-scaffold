@@ -47,6 +47,20 @@ For context on the bar: Metaculus Pro human forecasters beat every bot team in e
 through mid-2026, and the residual human edge is *discrimination* (justified extremity), not
 calibration. Crowd-level is already a high bar.
 
+## Tier distillation (the internal benchmark)
+
+The cheap tiers exist to approximate the expensive one. `bench/` operationalizes that as
+distillation: teachers = the `high` tier and the crowd (ForecastBench market freeze values +
+live Manifold/Polymarket prices — no Metaculus access needed); students = `low`, `medium`,
+`auto`. Every tier runs blind on the identical open-question set, and the report scores
+mean |Δp|, RMS Δp, KL(teacher‖student), and |Δlogit| — per dollar. The tuning loop is:
+run the benchmark → move whatever the gap implicates (triage rubric, draw counts, research
+passes — all in config/skill text) → bump `scaffold_version` → rerun the same set. Crowd
+distance is the fast proxy; the slow honest check stays resolution-based (the same
+ForecastBench IDs resolve in their published resolution sets, and the journal resolves via
+`calibrate`). Caveat kept in view: distilling toward the crowd can never *beat* the crowd —
+once tiers converge, the target shifts to resolution Brier (milestone 3+).
+
 ## Pre-registration / tamper evidence
 
 - Forecasts submitted to a platform are timestamped by the platform — the strongest form.

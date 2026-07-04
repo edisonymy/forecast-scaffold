@@ -89,6 +89,7 @@ fetch(RAW + "?t=" + Date.now()).then(r => {
         <span class="tag">${esc(r.question_type)}</span>
         ${r.effort ? `<span class="tag">${esc(r.effort)}</span>` : ""}
         ${r.model ? `<span class="tag">${esc(r.model)}</span>` : ""}
+        ${r.provider && r.provider !== "subscription" ? `<span class="tag">${esc(r.provider)}</span>` : ""}
         ${r.cost_usd != null ? `<span class="tag">$${Number(r.cost_usd).toFixed(2)}</span>` : ""}
         ${crowdVal ? `<span>crowd ${crowdVal}</span>` : ""}
         ${r.crowd && r.crowd.shown_to_agent === false ? `<span class="tag">blind</span>` : ""}

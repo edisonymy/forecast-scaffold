@@ -160,6 +160,7 @@ class ForecastRecord:
     aggregation: str | None = None  # e.g. "trimmed_mean(n=5)"
     effort: str | None = None  # "low" | "medium" | "high", "(auto)" suffix if auto-triaged
     model: str = ""  # free string; never hardcoded in skills
+    provider: str | None = None  # billing/routing path, e.g. "subscription" | "openrouter"
     crowd: dict[str, Any] | None = None  # {"value", "source", "at"} captured at forecast time
     cost_usd: float | None = None  # what producing this forecast cost (all agent calls)
     reasoning: str = ""

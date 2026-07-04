@@ -6,6 +6,27 @@ and mirror `.claude-plugin/plugin.json`.
 
 ## [Unreleased]
 
+### Added
+- **OpenRouter provider** (`--provider openrouter` in `bot/run_bot.py` and `bench/run_bench.py`):
+  routes the same `claude` CLI through OpenRouter's Anthropic-compatible endpoint (billed to
+  OpenRouter credits), with automatic `anthropic/<id>` model-slug rewriting; `bot.yml` uses it
+  as an automatic fallback when the subscription step fails. New optional `provider` field on
+  `ForecastRecord` (additive, no schema bump).
+- **Internal tier-distillation benchmark** (`bench/`): frozen question sets built from
+  ForecastBench's public market questions (crowd probability included; Manifold/Polymarket
+  refreshed live), paired blind runs of `low`/`medium`/`high`/`auto`, and a report scoring each
+  tier's distance to the crowd and to the `high` tier (|Δp|, RMS, KL, |Δlogit|) per dollar.
+- **`bot/crowd.py`**: reads the human community prediction with a personal-account token
+  (`METACULUS_CP_TOKEN`) for offline measurement — Metaculus firewalls bot accounts from the
+  human crowd on public questions, and this stays deliberately outside the forecasting loop.
+
+### Fixed
+- The subscription provider path now drops inherited `ANTHROPIC_BASE_URL`/`ANTHROPIC_AUTH_TOKEN`
+  endpoint overrides and empty `ANTHROPIC_API_KEY` artifacts, so ambient shell config cannot
+  silently redirect or break the agent; agent failures now surface the stdout error envelope,
+  not just (often-empty) stderr. `run_bot` exits nonzero when any question fails, enabling
+  workflow-level fallback.
+
 ## [0.1.0] - 2026-07-03
 
 ### Added

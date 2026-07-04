@@ -16,7 +16,18 @@ tamper-evident track record).
    right choice for CI), or an `ANTHROPIC_API_KEY` (pay-per-token). Metaculus also sponsors
    LLM/search credits for tournament participants each season — check the current season's
    announcement and its request form.
-3. Install the package once: `pip install -e .` from the repo root (the bot imports
+3. **Provider** (`--provider`, default `subscription`): `openrouter` routes the same
+   `claude` CLI through OpenRouter's Anthropic-compatible endpoint, billed to OpenRouter
+   credits (e.g. Metaculus's sponsored $100) instead of the subscription. Needs
+   `OPENROUTER_API_KEY`; a bare `--model claude-sonnet-5` is rewritten to the
+   `anthropic/claude-sonnet-5` slug automatically. In `bot.yml` the OpenRouter step also
+   runs as an automatic **fallback** when the subscription step fails (rate limit, auth
+   outage): the rerun skips already-forecasted questions, so nothing double-submits.
+   Caveats: `cost_usd` in the journal is the CLI's own estimate, which may not exactly
+   match OpenRouter's billing (check openrouter.ai/activity), and Claude Code's built-in
+   WebSearch tool is Anthropic-served — verify it works on this path before relying on it
+   (WebFetch is client-side and unaffected).
+4. Install the package once: `pip install -e .` from the repo root (the bot imports
    `forecast_scaffold.core` for the journal, validators, and CDF construction).
 
 ## The ladder (do not skip steps)
@@ -42,10 +53,23 @@ submit (binary probability / renormalized MC / percentiles built into a platform
 ## Workflows
 
 - `.github/workflows/bot-test.yml` — manual dispatch, defaults to a dry run; use for the
-  testing-area phase (set `dry_run: false` and the sandbox tournament id).
-- `.github/workflows/bot.yml` — the tournament cron (every 20 minutes, offset; concurrency-guarded,
-  never cancels an in-flight run). Commits the journal after each run. Requires repo secrets
-  `METACULUS_TOKEN` and `ANTHROPIC_API_KEY`, and the `TOURNAMENT_ID` repository variable.
+  testing-area phase (set `dry_run: false` and the sandbox tournament id). Never commits.
+- `.github/workflows/bot.yml` — the tournament workflow (manual dispatch now; a daily cron is
+  commented out until a real tournament is entered; concurrency-guarded, never cancels an
+  in-flight run). Commits the journal after each run behind the leak-guard. Requires repo
+  secrets `METACULUS_TOKEN`, `CLAUDE_CODE_OAUTH_TOKEN`, `LEAK_PATTERNS` (and optionally
+  `OPENROUTER_API_KEY` for the fallback), plus the `TOURNAMENT_ID` repository variable.
+
+## Reading the human crowd (public questions)
+
+Metaculus deliberately hides the human community prediction from **bot accounts** on all
+public (non-tournament) questions — the API returns null aggregates to the bot token, and
+the anonymous API / legacy api2 / download-data endpoints are all closed. Only bot
+tournaments expose a (bot-)crowd to bots. If you want the human number for offline
+analysis, `bot/crowd.py` reads it with a **personal-account** token in
+`METACULUS_CP_TOKEN` — measurement only, by design never imported by `run_bot` and never
+visible to the agent. For crowd-labeled benchmark questions that need no Metaculus access
+at all, see `bench/` (ForecastBench freeze values + live Manifold/Polymarket prices).
 
 ## Honesty rules
 
