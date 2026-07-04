@@ -99,6 +99,14 @@ exists → capture it and pass `--crowd` (and if your aggregate is far from the 
 out what they know that you don't — or what you know that they don't — before proceeding). Never
 extremize your own draws.
 
+**Independence caveat.** Draws produced inside one context window are *correlated* — each sees
+the ones before it — so they mostly re-read the same evidence rather than sample it afresh. If
+your surface can run genuinely independent draws (parallel subagents, or a harness invoking the
+config's `runs` as separate processes), prefer that and pool with `geo_mean_odds`. If it cannot
+(a plain chat), run the in-context draws under strongly varied framings, pool with
+`trimmed_mean`, and **tell the user**: "draws were in-context (correlated) — treat this tier's
+error bars as wider than usual." Degraded honestly beats differentiated in name only.
+
 ## Step 5 — Record
 
 ```

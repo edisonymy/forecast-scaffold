@@ -49,9 +49,13 @@ MIN_CALIBRATION_N = 5
 DEFAULTS: dict[str, Any] = {
     "clamp": {"min": 0.02, "max": 0.98},
     "tiers": {
-        "low": {"draws": 1, "searches": 1},
-        "medium": {"draws": 5, "searches": 5},
-        "high": {"draws": 12, "searches": 12},
+        # draws = in-context estimates within ONE run (portable to any surface).
+        # runs  = genuinely independent runs a harness launches and pools with
+        #         geo_mean_odds (subagents/processes; the reliable differentiation lever —
+        #         in-context draw instructions are demonstrably under-executed headlessly).
+        "low": {"draws": 1, "searches": 1, "runs": 1},
+        "medium": {"draws": 5, "searches": 5, "runs": 3},
+        "high": {"draws": 12, "searches": 12, "runs": 5},
     },
     "blend": {"crowd_weight": 0.5},
     "aggregation": {"method": "trimmed_mean"},

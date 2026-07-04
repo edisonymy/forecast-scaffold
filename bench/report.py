@@ -85,16 +85,44 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     rows = [json.loads(line) for line in results_path.read_text(encoding="utf-8").splitlines()
             if line.strip()]
-    # Latest row wins per (qid, tier): reruns supersede earlier attempts.
-    latest: dict[tuple[str, str], dict] = {}
+    # Latest row wins per (qid, tier, run): reruns supersede earlier attempts.
+    latest: dict[tuple[str, str, int], dict] = {}
     for row in rows:
-        latest[(row["qid"], row["tier"])] = row
+        latest[(row["qid"], row["tier"], int(row.get("run") or 0))] = row
+
+    # Pool independent runs per (question, tier): geometric mean of odds, dropping the
+    # most extreme run on each end when n >= 4 (Samotsvety's rule for independent
+    # forecasters). Cost is the SUM of runs — that's what the tier actually costs.
+    def pool_runs(ps: list[float]) -> float:
+        if len(ps) == 1:
+            return ps[0]
+        ps = sorted(_clamp(p) for p in ps)
+        if len(ps) >= 4:
+            ps = ps[1:-1]
+        mean_lo = sum(logit(p) for p in ps) / len(ps)
+        return 1.0 / (1.0 + math.exp(-mean_lo))
+
+    grouped: dict[tuple[str, str], list[dict]] = defaultdict(list)
+    for r in latest.values():
+        grouped[(r["qid"], r["tier"])].append(r)
     by_tier: dict[str, list[dict]] = defaultdict(list)
-    for row in latest.values():
-        by_tier[row["tier"]].append(row)
-    prob_of = {(r["qid"], r["tier"]): r["probability"] for r in latest.values()
-               if r.get("probability") is not None}
-    cost_of = {(r["qid"], r["tier"]): r.get("cost_usd") or 0.0 for r in latest.values()}
+    spread_by_tier: dict[str, list[float]] = defaultdict(list)
+    for (_qid, tier), runs in grouped.items():
+        forecasts = [r for r in runs if r.get("probability") is not None]
+        base = dict(runs[0])
+        base["cost_usd"] = sum(r.get("cost_usd") or 0.0 for r in runs)
+        if forecasts:
+            ps = [float(r["probability"]) for r in forecasts]
+            base["probability"] = pool_runs(ps)
+            base["router_only"] = False
+            base["n_runs"] = len(ps)
+            if len(ps) > 1:
+                spread_by_tier[tier].append(max(ps) - min(ps))
+        by_tier[tier].append(base)
+    prob_of = {(r["qid"], r["tier"]): r["probability"] for rs in by_tier.values()
+               for r in rs if r.get("probability") is not None}
+    cost_of = {(r["qid"], r["tier"]): r.get("cost_usd") or 0.0 for rs in by_tier.values()
+               for r in rs}
     high_by_qid = {r["qid"]: r["probability"] for r in by_tier.get("high", [])
                    if r.get("probability") is not None}
 
@@ -165,14 +193,24 @@ def main(argv: list[str] | None = None) -> int:
                   "This is the run-to-run noise floor: tier differences smaller than this "
                   "are not distinguishable from re-running the same tier.", ""]
 
+    if spread_by_tier:
+        lines += ["## within-tier run spread (independent runs on the same question)", ""]
+        for tier in ("low", "medium", "high"):
+            sp = spread_by_tier.get(tier)
+            if sp:
+                lines.append(f"- {tier}: mean range {st.mean(sp):.3f} · max {max(sp):.2f} "
+                             f"(n={len(sp)} questions)")
+        lines += ["", "Pooling clips this: the reported tier numbers use the pooled value.", ""]
+
     src_gaps: dict[str, list[float]] = defaultdict(list)
     stale: dict[str, int] = defaultdict(int)
-    for r in latest.values():
-        if r.get("probability") is None or not r.get("crowd"):
-            continue
-        src_gaps[r["source"]].append(abs(r["probability"] - r["crowd"]["value"]))
-        if "freeze" in str(r["crowd"].get("source", "")):
-            stale[r["source"]] += 1
+    for rs in by_tier.values():
+        for r in rs:
+            if r.get("probability") is None or not r.get("crowd"):
+                continue
+            src_gaps[r["source"]].append(abs(r["probability"] - r["crowd"]["value"]))
+            if "freeze" in str(r["crowd"].get("source", "")):
+                stale[r["source"]] += 1
     if src_gaps:
         lines += ["## by source (all tiers pooled)", "",
                   "| source | n | mean \\|Δp\\| | median \\|Δp\\| | crowd freshness |",

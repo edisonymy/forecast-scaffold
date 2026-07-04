@@ -12,17 +12,25 @@
 min = 0.02
 max = 0.98
 
+# draws    = in-context estimates within one run (works on every surface, but they are
+#            CORRELATED — they see each other — and headless agents under-execute them).
+# runs     = independent runs a harness (bot/bench/subagents) launches and pools with
+#            geo_mean_odds. The deterministic effort lever; unavailable in a plain chat,
+#            where the skill falls back to in-context draws and says so.
 [tiers.low]
 draws = 1
 searches = 1
+runs = 1
 
 [tiers.medium]
 draws = 5
 searches = 5
+runs = 3
 
 [tiers.high]
 draws = 12
 searches = 12
+runs = 5
 
 [blend]
 # Weight on the crowd/market number when one exists. A simple 50/50 average beat both the

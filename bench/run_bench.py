@@ -39,7 +39,7 @@ from run_bot import (
     triage,
 )
 
-from forecast_scaffold.core import SCAFFOLD_VERSION
+from forecast_scaffold.core import SCAFFOLD_VERSION, load_config
 
 RESULTS_DIR = ROOT / "bench" / "results"
 # The set includes RAND/INFER questions; block that aggregator too.
@@ -63,7 +63,7 @@ def build_bench_brief(spec: dict) -> str:
     ])
 
 
-def forecast_one(spec: dict, tier: str, args: argparse.Namespace) -> dict | None:
+def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int = 0) -> dict | None:
     brief = build_bench_brief(spec)
     base_cmd = (
         openrouter_model_cmd(args.agent_cmd)
@@ -82,7 +82,7 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace) -> dict | None
             return {
                 "qid": spec["id"], "source": spec["source"],
                 "question": spec["question"][:200],
-                "tier": tier, "effort": effort, "router_only": True,
+                "tier": tier, "effort": effort, "router_only": True, "run": run_idx,
                 "probability": None, "crowd": spec.get("crowd"),
                 "cost_usd": round(cost, 4), "model": "", "provider": args.provider,
                 "scaffold_version": SCAFFOLD_VERSION,
@@ -127,6 +127,7 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace) -> dict | None
         "question": spec["question"][:200],
         "tier": tier,
         "effort": effort,
+        "run": run_idx,
         "probability": probability,
         "crowd": spec.get("crowd"),
         "cost_usd": round(cost, 4),
@@ -172,26 +173,35 @@ def main(argv: list[str] | None = None) -> int:
     if args.limit:
         specs = specs[: args.limit]
 
+    # Independent runs per tier from config — the deterministic effort lever. Each run is
+    # its own agent process; report.py pools them per (question, tier) with geo_mean_odds.
+    config = load_config(str(ROOT / "config" / "forecast.toml"))
+    def runs_for(tier: str) -> int:
+        if tier == "auto" and args.auto_mode == "router":
+            return 1  # the router decision itself; the forecast is imputed
+        return max(1, int(((config.get("tiers") or {}).get(tier) or {}).get("runs", 1)))
+
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     results_path = RESULTS_DIR / f"{set_path.stem}.results.jsonl"
-    done: set[tuple[str, str]] = set()
+    done: set[tuple[str, str, int]] = set()
     if results_path.exists():
         for line in results_path.read_text(encoding="utf-8").splitlines():
             if line.strip():
                 row = json.loads(line)
-                done.add((row["qid"], row["tier"]))
+                done.add((row["qid"], row["tier"], int(row.get("run") or 0)))
 
-    total = len(specs) * len(tiers)
-    jobs = [(spec, tier) for spec in specs for tier in tiers
-            if (spec["id"], tier) not in done]
-    print(f"{len(specs)} questions x {len(tiers)} tiers = {total} runs "
-          f"({len(done)} already done, {len(jobs)} to run) "
+    jobs = [(spec, tier, run) for spec in specs for tier in tiers
+            for run in range(runs_for(tier))
+            if (spec["id"], tier, run) not in done]
+    total = sum(len(specs) * runs_for(t) for t in tiers)
+    print(f"{len(specs)} questions x {'+'.join(f'{t}:{runs_for(t)}' for t in tiers)} runs "
+          f"= {total} agent calls ({len(done)} already done, {len(jobs)} to run) "
           f"at concurrency {args.concurrency} -> {results_path}")
 
-    def work(job: tuple[dict, str]) -> tuple[dict, str, dict | None, str | None]:
-        spec, tier = job
+    def work(job: tuple[dict, str, int]) -> tuple[dict, str, dict | None, str | None]:
+        spec, tier, run = job
         try:
-            return spec, tier, forecast_one(spec, tier, args), None
+            return spec, tier, forecast_one(spec, tier, args, run), None
         except Exception as exc:  # noqa: BLE001 - one crashed job must not kill the pool
             return spec, tier, None, str(exc)[:200]
 
