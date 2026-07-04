@@ -76,10 +76,12 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("set_file")
+    parser.add_argument("--tag", default="", help="read the matching tagged results file")
     args = parser.parse_args(argv)
 
     set_path = Path(args.set_file)
-    results_path = RESULTS_DIR / f"{set_path.stem}.results.jsonl"
+    suffix = f".{args.tag}" if args.tag else ""
+    results_path = RESULTS_DIR / f"{set_path.stem}{suffix}.results.jsonl"
     if not results_path.exists():
         print(f"no results at {results_path}; run bench/run_bench.py first")
         return 1
@@ -157,7 +159,7 @@ def main(argv: list[str] | None = None) -> int:
 
     lines += ["## vs crowd (teacher = market/community probability in the set)", "",
               HEADER, RULE]
-    tier_rowsets = [(t, by_tier.get(t, [])) for t in ("low", "medium", "high")]
+    tier_rowsets = [(t, by_tier.get(t, [])) for t in ("zero", "low", "medium", "high")]
     tier_rowsets.append(("auto", auto_effective))
     for tier, tier_rows in tier_rowsets:
         pairs = crowd_pairs(tier_rows)
@@ -169,7 +171,7 @@ def main(argv: list[str] | None = None) -> int:
     if high_by_qid:
         lines += ["## vs high tier (teacher = this scaffold's own best effort)", "",
                   HEADER, RULE]
-        for tier, tier_rows in [(t, by_tier.get(t, [])) for t in ("low", "medium")] + [
+        for tier, tier_rows in [(t, by_tier.get(t, [])) for t in ("zero", "low", "medium")] + [
                 ("auto", auto_effective)]:
             pairs = [(high_by_qid[r["qid"]], float(r["probability"])) for r in tier_rows
                      if r["qid"] in high_by_qid and r.get("probability") is not None]
@@ -225,7 +227,7 @@ def main(argv: list[str] | None = None) -> int:
                   ""]
 
     report = "\n".join(lines)
-    out = RESULTS_DIR / f"{set_path.stem}.report.md"
+    out = RESULTS_DIR / f"{set_path.stem}{suffix}.report.md"
     out.write_text(report, encoding="utf-8")
     print(report)
     print(f"\nwritten -> {out}")
