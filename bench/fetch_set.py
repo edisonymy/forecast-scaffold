@@ -46,11 +46,21 @@ def _now_iso() -> str:
     return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+MIN_POLYMARKET_VOLUME = 10_000  # USD; below this a "price" is an order-book artifact
+MIN_MANIFOLD_BETTORS = 20
+
+
 def live_crowd(source: str, market_id: str) -> float | None:
-    """Today's price from the public Manifold/Polymarket APIs; None when unavailable."""
+    """Today's price from the public Manifold/Polymarket APIs.
+
+    None when unavailable OR when the book is too thin to be a crowd — a $131-volume
+    market sitting at 50/50 is an initialization value, not an aggregated belief.
+    """
     try:
         if source == "manifold":
             data = json.loads(_get(f"https://api.manifold.markets/v0/market/{market_id}"))
+            if (data.get("uniqueBettorCount") or 0) < MIN_MANIFOLD_BETTORS:
+                return None
             p = data.get("probability")
             return float(p) if p is not None else None
         if source == "polymarket":
@@ -59,9 +69,12 @@ def live_crowd(source: str, market_id: str) -> float | None:
             )
             markets = json.loads(_get(url))
             if markets:
-                prices = json.loads(markets[0].get("outcomePrices") or "[]")
+                m = markets[0]
+                if float(m.get("volumeNum") or m.get("volume") or 0) < MIN_POLYMARKET_VOLUME:
+                    return None
+                prices = json.loads(m.get("outcomePrices") or "[]")
                 return float(prices[0]) if prices else None
-    except Exception:  # noqa: BLE001 - refresh is best-effort; freeze value remains
+    except Exception:  # noqa: BLE001 - refresh is best-effort; the caller drops the row
         return None
     return None
 
@@ -165,7 +178,7 @@ def forecastbench_specs(args: argparse.Namespace) -> list[dict]:
             "url": q.get("url", ""),  # for humans reviewing results; never shown to the agent
         })
     if dropped_stale or dropped_extreme:
-        print(f"  dropped: {dropped_stale} unconfirmable-live, "
+        print(f"  dropped: {dropped_stale} unconfirmable-or-thin, "
               f"{dropped_extreme} at-extreme (effectively resolved)")
     stale = sum(1 for s in specs if "freeze" in s["crowd"]["source"])
     if stale:
