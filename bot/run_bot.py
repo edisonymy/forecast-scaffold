@@ -188,8 +188,11 @@ def forecast_question(
     config: dict[str, Any],
     journal: Journal,
 ) -> bool:
+    # Blind mode: the crowd value is still captured for the journal (it is the benchmark
+    # the track record is judged against) but withheld from the agent, so the bot's skill
+    # can be measured against the community rather than its ability to anchor on it.
     crowd = client.community_prediction(question)
-    brief = build_brief(post, question, crowd)
+    brief = build_brief(post, question, None if args.blind else crowd)
     run_cost = 0.0
     if args.effort != "auto":
         tier = args.effort
@@ -201,6 +204,14 @@ def forecast_question(
         f"You have this skill (references in {SKILL / 'references'}, scripts in "
         f"{SKILL / 'scripts'}):\n\n{skill_text}\n\nRun it at effort tier: {tier}.\n{CONTRACT}"
     )
+    if args.blind:
+        system += (
+            "\n## Blind mode (mandatory)\n"
+            "This run measures your skill AGAINST the community. Do NOT look up, cite, or "
+            "anchor on the Metaculus community prediction or any aggregator of forecasts for "
+            "this question (Metaculus, Manifold, prediction markets on this exact question). "
+            "Skip the skill's crowd-blend step. Primary sources and base rates only."
+        )
 
     payload: dict[str, Any] | None = None
     errors: list[str] = []
@@ -261,7 +272,12 @@ def forecast_question(
         raw_draws=[float(d) for d in payload.get("raw_draws", [])] or None,
         effort=f"{tier} (auto)" if args.effort == "auto" else tier,
         model=args.agent_cmd,
-        crowd={"value": crowd, "source": "metaculus community", "at": _utc_now()}
+        crowd={
+            "value": crowd,
+            "source": "metaculus community",
+            "at": _utc_now(),
+            "shown_to_agent": not args.blind,
+        }
         if crowd else None,
         reasoning=str(payload.get("reasoning", ""))[:4000],
         what_would_change_my_mind=[str(x) for x in payload.get("what_would_change_my_mind", [])],
@@ -315,6 +331,9 @@ def main(argv: list[str] | None = None) -> int:
         "--journal", default=os.environ.get("FORECAST_JOURNAL", str(DEFAULT_JOURNAL))
     )
     parser.add_argument("--comment", action="store_true", help="post reasoning as private comment")
+    parser.add_argument("--blind", action="store_true",
+                        help="hide the community prediction from the agent (still journaled) "
+                             "to measure skill against the crowd rather than anchoring on it")
     parser.add_argument("--include-forecasted", action="store_true",
                         help="re-forecast questions this account already forecast")
     args = parser.parse_args(argv)

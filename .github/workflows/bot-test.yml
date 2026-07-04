@@ -13,6 +13,10 @@ on:
       limit:
         description: "Max questions this run"
         default: "3"
+      blind:
+        description: "Blind mode (hide the community prediction from the agent)"
+        type: boolean
+        default: false
 
 jobs:
   test:
@@ -42,6 +46,7 @@ jobs:
           python bot/run_bot.py --tournament "${{ inputs.tournament }}" \
             --limit "${{ inputs.limit }}" \
             ${{ inputs.dry_run && '--dry-run' || '' }} \
+            ${{ inputs.blind && '--blind' || '' }} \
             --agent-cmd "claude -p --model claude-sonnet-5 --output-format json --dangerously-skip-permissions"
 
       - name: Show journal

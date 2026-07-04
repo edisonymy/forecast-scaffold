@@ -82,7 +82,9 @@ fetch(RAW + "?t=" + Date.now()).then(r => {
         <span class="tag">${r.question_type}</span>
         ${r.effort ? `<span class="tag">${r.effort}</span>` : ""}
         ${r.cost_usd != null ? `<span class="tag">$${r.cost_usd.toFixed(2)}</span>` : ""}
-        ${crowd ? `<span>${crowd}</span>` : ""} ${res}
+        ${crowd ? `<span>${crowd}</span>` : ""}
+        ${r.crowd && r.crowd.shown_to_agent === false ? `<span class="tag">blind</span>` : ""}
+        ${res}
       </div>
       ${r.reasoning ? `<details><summary>reasoning</summary><div class="reason">${r.reasoning.replace(/</g,"&lt;")}</div></details>` : ""}
     </div>`;
