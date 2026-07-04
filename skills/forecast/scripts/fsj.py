@@ -31,6 +31,11 @@ from typing import Any
 from uuid import uuid4
 
 SCHEMA_VERSION = 1
+# The scaffold (plugin) release that produced a record. Distinct from SCHEMA_VERSION:
+# schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
+# (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
+# every record must carry the version that made it. A test asserts this matches plugin.json.
+SCAFFOLD_VERSION = "0.1.0"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -125,6 +130,7 @@ class ForecastRecord:
     question: str
     id: str = ""
     schema_version: int = SCHEMA_VERSION
+    scaffold_version: str = SCAFFOLD_VERSION  # methodology version that produced this record
     created: str = field(default_factory=_utc_now)
     forecast_at: str | None = None  # when the probability was committed (pre-registration)
     status: str = "open"  # "draft" | "open" | "resolved" | "annulled"
@@ -136,6 +142,10 @@ class ForecastRecord:
     source: dict[str, Any] | None = None  # {"platform", "question_id", "url"}
     reference_class: str = ""  # the outside-view anchor
     base_rate: float | None = None  # its numeric base rate, when one exists
+    # Optional audit trail for the base rate: the enumerated cases, one string per instance,
+    # ending "-> yes" / "-> no" when countable. When present, the base rate can be *computed*
+    # (smoothed count) instead of estimated, and readers of the public journal can check it.
+    reference_class_instances: list[str] | None = None
     why_it_matters: str = ""  # VOI: which decision this forecast moves
     parent_id: str | None = None  # decomposition parent (fast-proxy linkage)
     fast_proxy: bool = False
