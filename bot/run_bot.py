@@ -48,6 +48,9 @@ from forecast_scaffold.core import (
 SKILL = ROOT / "skills" / "forecast"
 DEFAULT_JOURNAL = ROOT / "bot" / "journal" / "forecasts.jsonl"
 FENCED_JSON = re.compile(r"```json\s*(\{.*?\})\s*```", re.DOTALL)
+# Continuous question types: elicited as percentiles, submitted as a CDF. Metaculus `date`
+# questions are timestamp-scaled continuous questions and flow through the same path.
+CONTINUOUS = ("numeric", "discrete", "date")
 
 TRIAGE_PROMPT = (
     "You are triaging a forecasting question for effort allocation, using the forecast skill's "
@@ -96,9 +99,9 @@ def build_brief(post: dict[str, Any], question: dict[str, Any], crowd: float | N
         str(question.get("description", ""))[:4000],
     ]
     if question.get("type") == "multiple_choice":
-        parts.append(f"\n## Options\n{json.dumps(question.get('options', []))}")
-    if question.get("type") in ("numeric", "discrete"):
-        scaling = question.get("scaling", {})
+        parts.append(f"\n## Options\n{json.dumps(question.get('options') or [])}")
+    if question.get("type") in CONTINUOUS:
+        scaling = question.get("scaling") or {}
         parts.append(
             "\n## Bounds\n"
             f"range_min={scaling.get('range_min')} range_max={scaling.get('range_max')} "
@@ -149,12 +152,12 @@ def validate_payload(payload: dict[str, Any], question: dict[str, Any]) -> list[
         probs = payload.get("probabilities")
         if not isinstance(probs, dict):
             return ["multiple_choice needs a probabilities object"]
-        options = [str(o) for o in question.get("options", [])]
+        options = [str(o) for o in question.get("options") or []]
         missing = [o for o in options if o not in probs]
         if missing:
             return [f"missing options: {missing}"]
         return validate_mc(list(probs.keys()), [float(v) for v in probs.values()])
-    if qtype in ("numeric", "discrete"):
+    if qtype in CONTINUOUS:
         pct = payload.get("percentiles")
         if not isinstance(pct, dict):
             return [f"{qtype} needs a percentiles object"]
@@ -221,14 +224,14 @@ def forecast_question(
         reference_class=str(payload.get("reference_class", "")),
         base_rate=payload.get("base_rate"),
         probability=float(payload["probability"]) if qtype == "binary" else None,
-        options=[str(o) for o in question.get("options", [])] or None,
+        options=[str(o) for o in question.get("options") or []] or None,
         probabilities=(
-            [float(payload["probabilities"][str(o)]) for o in question.get("options", [])]
+            [float(payload["probabilities"][str(o)]) for o in question.get("options") or []]
             if qtype == "multiple_choice" else None
         ),
         percentiles=(
             {str(k): float(v) for k, v in payload["percentiles"].items()}
-            if qtype in ("numeric", "discrete") else None
+            if qtype in CONTINUOUS else None
         ),
         raw_draws=[float(d) for d in payload.get("raw_draws", [])] or None,
         effort=f"{tier} (auto)" if args.effort == "auto" else tier,
@@ -255,7 +258,9 @@ def forecast_question(
         total = sum(probs.values())
         client.submit_multiple_choice(question_id, {k: v / total for k, v in probs.items()})
     else:
-        scaling = question.get("scaling", {})
+        scaling = question.get("scaling") or {}
+        if scaling.get("range_min") is None or scaling.get("range_max") is None:
+            raise ValueError(f"continuous question {question_id} has no numeric bounds")
         outcome_count = question.get("inbound_outcome_count")  # set on discrete questions
         cdf = percentiles_to_cdf(
             {str(k): float(v) for k, v in payload["percentiles"].items()},

@@ -93,11 +93,12 @@ class MetaculusClient:
     def community_prediction(question: dict[str, Any]) -> float | None:
         """The recency-weighted community center for a binary question, if visible."""
         try:
-            latest = question["aggregations"]["recency_weighted"]["latest"]
+            # "latest" is null when a question has no forecasts yet.
+            latest = question["aggregations"]["recency_weighted"]["latest"] or {}
             centers = latest.get("centers") or latest.get("forecast_values")
             value = centers[0] if centers else None
             return float(value) if value is not None else None
-        except (KeyError, TypeError, IndexError, ValueError):
+        except (KeyError, TypeError, IndexError, ValueError, AttributeError):
             return None
 
     @staticmethod
