@@ -146,15 +146,18 @@ def run_agent(
     both what each forecast cost and which model actually produced it. Plain-text agents
     report cost 0.0 and fall back to the --model flag (or "") for the label.
     """
-    cmd = [*shlex.split(agent_cmd), prompt]
+    cmd = [*shlex.split(agent_cmd)]
     if system:
         cmd += ["--append-system-prompt", system]
+    # Pass the prompt on STDIN, not as a trailing positional: a variadic flag such as
+    # --allowed-tools would otherwise swallow it ("Input must be provided...").
     # The agent forecasts on untrusted third-party question text (see build_brief), so keep
     # secrets it does not need out of its environment. Submission is pure Python and happens
     # after the agent returns — the agent never needs METACULUS_TOKEN or the leak-guard list.
     agent_env = {k: v for k, v in os.environ.items() if k not in _SECRETS_TO_HIDE}
     result = subprocess.run(
-        cmd, capture_output=True, text=True, timeout=timeout, cwd=ROOT, env=agent_env
+        cmd, input=prompt, capture_output=True, text=True,
+        timeout=timeout, cwd=ROOT, env=agent_env,
     )
     if result.returncode != 0:
         raise RuntimeError(f"agent failed ({result.returncode}): {result.stderr[:500]}")
