@@ -156,8 +156,8 @@ def run_agent(
     # after the agent returns — the agent never needs METACULUS_TOKEN or the leak-guard list.
     agent_env = {k: v for k, v in os.environ.items() if k not in _SECRETS_TO_HIDE}
     result = subprocess.run(
-        cmd, input=prompt, capture_output=True, text=True,
-        timeout=timeout, cwd=ROOT, env=agent_env,
+        cmd, input=prompt, capture_output=True, text=True, encoding="utf-8",
+        errors="replace", timeout=timeout, cwd=ROOT, env=agent_env,
     )
     if result.returncode != 0:
         raise RuntimeError(f"agent failed ({result.returncode}): {result.stderr[:500]}")
@@ -191,6 +191,29 @@ def triage(agent_cmd: str, brief: str, timeout: int) -> tuple[str, float]:
         return "medium", 0.0
 
 
+def mc_within_api_bounds(probs: dict[str, float]) -> dict[str, float]:
+    """Normalize option probabilities and clamp into Metaculus's accepted band.
+
+    The API rejects any option outside [0.001, 0.999], and agents legitimately emit ~0
+    for no-hope options (e.g. 30-team markets). Floor those at 0.001 and rescale the rest
+    so the total stays 1; with >=2 options the implied ceiling is always < 0.999.
+    """
+    floor = 0.001
+    values = {k: max(float(v), 0.0) for k, v in probs.items()}
+    total = sum(values.values())
+    if total <= 0:  # degenerate all-zero payload: uniform is the only honest reading
+        return {k: 1.0 / len(values) for k in values}
+    values = {k: v / total for k, v in values.items()}
+    for _ in range(10):  # rescaling can push new values under the floor; converges fast
+        low = {k for k, v in values.items() if v < floor}
+        if not low:
+            break
+        rest = sum(v for k, v in values.items() if k not in low) or 1.0
+        scale = (1.0 - floor * len(low)) / rest
+        values = {k: (floor if k in low else v * scale) for k, v in values.items()}
+    return values
+
+
 def validate_payload(payload: dict[str, Any], question: dict[str, Any]) -> list[str]:
     qtype = question.get("type", "binary")
     if qtype == "binary":
@@ -211,7 +234,21 @@ def validate_payload(payload: dict[str, Any], question: dict[str, Any]) -> list[
         pct = payload.get("percentiles")
         if not isinstance(pct, dict):
             return [f"{qtype} needs a percentiles object"]
-        return validate_percentiles({str(k): float(v) for k, v in pct.items()})
+        values = {str(k): float(v) for k, v in pct.items()}
+        errors = validate_percentiles(values)
+        # Bounds are enforced here (not only at CDF build) so the repair retry can quote
+        # them back to the agent instead of failing after the record is already written.
+        scaling = question.get("scaling") or {}
+        rmin, rmax = scaling.get("range_min"), scaling.get("range_max")
+        if not errors and rmin is not None and rmax is not None:
+            bad = [f"p{k}={v}" for k, v in values.items()
+                   if not float(rmin) < v < float(rmax)]
+            if bad:
+                errors.append(
+                    f"percentile values must lie strictly inside the stated bounds "
+                    f"({rmin}, {rmax}); violating: {', '.join(bad)}"
+                )
+        return errors
     return [f"unsupported question type {qtype!r}"]
 
 
@@ -341,8 +378,7 @@ def forecast_question(
         client.submit_binary(question_id, clamp(float(payload["probability"]), 0.01, 0.99))
     elif qtype == "multiple_choice":
         probs = {str(k): float(v) for k, v in payload["probabilities"].items()}
-        total = sum(probs.values())
-        client.submit_multiple_choice(question_id, {k: v / total for k, v in probs.items()})
+        client.submit_multiple_choice(question_id, mc_within_api_bounds(probs))
     else:
         scaling = question.get("scaling") or {}
         if scaling.get("range_min") is None or scaling.get("range_max") is None:
