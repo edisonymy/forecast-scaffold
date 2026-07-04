@@ -60,8 +60,10 @@ jobs:
           # Leak-guard the machine-generated journal BEFORE publishing it. The bot ingests
           # untrusted question text; a personal-data match must block the push, not just fail
           # a later CI run after the content is already public.
-          PATTERNS="${LEAK_PATTERNS:-£|net.?worth|users.Edison.Yi}"
-          set +e; grep -rniIE "$PATTERNS" bot/journal/; status=$?; set -e
+          # Require the deny-list (fail-closed): never publish an unscanned journal, and keep
+          # the literal pattern out of this file so the ci.yml guard does not match it.
+          : "${LEAK_PATTERNS:?set the LEAK_PATTERNS secret before the bot can publish}"
+          set +e; grep -rniIE "$LEAK_PATTERNS" bot/journal/; status=$?; set -e
           if [ "$status" -eq 0 ]; then echo "::error::personal-data in journal — not publishing"; exit 1; fi
           if [ "$status" -ne 1 ]; then echo "::error::leak-guard grep failed ($status)"; exit 2; fi
           git config user.name "forecast-scaffold-bot"
