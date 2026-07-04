@@ -1,4 +1,4 @@
-name: Bot dry run / testing area
+﻿name: Bot dry run / testing area
 
 on:
   workflow_dispatch:
@@ -42,7 +42,7 @@ jobs:
           python bot/run_bot.py --tournament "${{ inputs.tournament }}" \
             --limit "${{ inputs.limit }}" \
             ${{ inputs.dry_run && '--dry-run' || '' }} \
-            --agent-cmd "claude -p --dangerously-skip-permissions"
+            --agent-cmd "claude -p --model claude-sonnet-5 --output-format json --dangerously-skip-permissions"
 
       - name: Show journal
         run: cat bot/journal/forecasts.jsonl || true

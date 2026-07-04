@@ -46,7 +46,7 @@ jobs:
         run: |
           python bot/run_bot.py --tournament "${{ vars.TOURNAMENT_ID }}" \
             --limit 10 \
-            --agent-cmd "claude -p --dangerously-skip-permissions" --comment
+            --agent-cmd "claude -p --model claude-sonnet-5 --output-format json --dangerously-skip-permissions" --comment
 
       - name: Commit journal (pre-registration)
         # always(): submitted forecasts must be committed even when a later question errored

@@ -79,9 +79,12 @@ For multiple_choice (probabilities over the EXACT option labels given, summing t
 ```json
 {"probabilities": {"<option A>": 0.5, "<option B>": 0.5}, "reasoning": "..."}
 ```
-For numeric/discrete (strictly increasing, strictly inside the stated bounds):
+For numeric/discrete/date (strictly increasing, strictly inside the stated bounds; for date
+questions the values are unix timestamps in seconds, matching the bounds given). Optionally
+include "expected_value" (your mean/EV point estimate, same units):
 ```json
-{"percentiles": {"10": 1.0, "25": 2.0, "50": 3.0, "75": 4.0, "90": 5.0}, "reasoning": "..."}
+{"percentiles": {"10": 1.0, "25": 2.0, "50": 3.0, "75": 4.0, "90": 5.0},
+ "expected_value": 3.2, "reasoning": "..."}
 ```
 """
 
@@ -114,14 +117,26 @@ def build_brief(post: dict[str, Any], question: dict[str, Any], crowd: float | N
     return "\n".join(parts)
 
 
-def run_agent(agent_cmd: str, prompt: str, system: str | None, timeout: int) -> str:
+def run_agent(agent_cmd: str, prompt: str, system: str | None, timeout: int) -> tuple[str, float]:
+    """Run the headless agent; returns (text, cost_usd).
+
+    When the agent is ``claude -p --output-format json`` the stdout is a result envelope
+    carrying ``total_cost_usd`` — unwrap it so the journal can record what each forecast
+    cost. Plain-text agents just cost 0.0 (unknown).
+    """
     cmd = [*shlex.split(agent_cmd), prompt]
     if system:
         cmd += ["--append-system-prompt", system]
     result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, cwd=ROOT)
     if result.returncode != 0:
         raise RuntimeError(f"agent failed ({result.returncode}): {result.stderr[:500]}")
-    return result.stdout
+    try:
+        envelope = json.loads(result.stdout)
+        if isinstance(envelope, dict) and "result" in envelope:
+            return str(envelope["result"]), float(envelope.get("total_cost_usd") or 0.0)
+    except (json.JSONDecodeError, TypeError, ValueError):
+        pass
+    return result.stdout, 0.0
 
 
 def extract_json(text: str) -> dict[str, Any]:
@@ -132,13 +147,13 @@ def extract_json(text: str) -> dict[str, Any]:
     return parsed
 
 
-def triage(agent_cmd: str, brief: str, timeout: int) -> str:
+def triage(agent_cmd: str, brief: str, timeout: int) -> tuple[str, float]:
     try:
-        output = run_agent(agent_cmd, TRIAGE_PROMPT + brief[:2000], None, timeout)
+        output, cost = run_agent(agent_cmd, TRIAGE_PROMPT + brief[:2000], None, timeout)
         tier = extract_json(output).get("tier", "medium")
-        return tier if tier in ("low", "medium", "high") else "medium"
+        return (tier if tier in ("low", "medium", "high") else "medium"), cost
     except (RuntimeError, ValueError, subprocess.TimeoutExpired):
-        return "medium"
+        return "medium", 0.0
 
 
 def validate_payload(payload: dict[str, Any], question: dict[str, Any]) -> list[str]:
@@ -175,7 +190,12 @@ def forecast_question(
 ) -> bool:
     crowd = client.community_prediction(question)
     brief = build_brief(post, question, crowd)
-    tier = args.effort if args.effort != "auto" else triage(args.agent_cmd, brief, args.timeout)
+    run_cost = 0.0
+    if args.effort != "auto":
+        tier = args.effort
+    else:
+        tier, triage_cost = triage(args.agent_cmd, brief, args.timeout)
+        run_cost += triage_cost
     skill_text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
     system = (
         f"You have this skill (references in {SKILL / 'references'}, scripts in "
@@ -190,7 +210,8 @@ def forecast_question(
             + "; ".join(errors) + "\nEmit a corrected fenced json block."
         )
         try:
-            output = run_agent(args.agent_cmd, prompt, system, args.timeout)
+            output, attempt_cost = run_agent(args.agent_cmd, prompt, system, args.timeout)
+            run_cost += attempt_cost
             candidate = extract_json(output)
         except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
             errors = [str(exc)]
@@ -211,8 +232,7 @@ def forecast_question(
         criterion = f"(no criteria published) Resolves per the question as stated: {title}"
     record = ForecastRecord(
         question=title,
-        question_type="multiple_choice" if qtype == "multiple_choice"
-        else ("binary" if qtype == "binary" else "numeric"),
+        question_type=qtype if qtype in ("binary", "multiple_choice", "date") else "numeric",
         resolution_criterion=criterion,
         forecast_at=_utc_now(),
         resolve_by=str(question.get("scheduled_resolve_time", ""))[:10] or None,
@@ -233,6 +253,11 @@ def forecast_question(
             {str(k): float(v) for k, v in payload["percentiles"].items()}
             if qtype in CONTINUOUS else None
         ),
+        expected_value=(
+            float(payload["expected_value"])
+            if payload.get("expected_value") is not None else None
+        ),
+        cost_usd=round(run_cost, 4) if run_cost else None,
         raw_draws=[float(d) for d in payload.get("raw_draws", [])] or None,
         effort=f"{tier} (auto)" if args.effort == "auto" else tier,
         model=args.agent_cmd,

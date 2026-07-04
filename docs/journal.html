@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>forecast-scaffold — public journal</title>
+<style>
+  :root { --bg:#0f1115; --card:#181b22; --ink:#e6e6e6; --dim:#9aa3af; --accent:#7aa2f7; --edge:#2a2f3a; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 ui-sans-serif,system-ui,sans-serif; }
+  .wrap { max-width:960px; margin:0 auto; padding:2rem 1rem 4rem; }
+  h1 { font-size:1.4rem; margin:0 0 .25rem; }
+  .sub { color:var(--dim); margin-bottom:1.5rem; font-size:.9rem; }
+  .stats { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+  .stat { background:var(--card); border:1px solid var(--edge); border-radius:10px; padding:.6rem 1rem; }
+  .stat b { display:block; font-size:1.2rem; }
+  .stat span { color:var(--dim); font-size:.78rem; }
+  .card { background:var(--card); border:1px solid var(--edge); border-radius:12px; padding:1rem 1.2rem; margin-bottom:.8rem; }
+  .qrow { display:flex; justify-content:space-between; gap:1rem; align-items:baseline; }
+  .q { font-weight:600; }
+  .val { font-size:1.3rem; font-weight:700; color:var(--accent); white-space:nowrap; }
+  .meta { color:var(--dim); font-size:.8rem; margin-top:.35rem; display:flex; gap:.9rem; flex-wrap:wrap; }
+  .tag { border:1px solid var(--edge); border-radius:999px; padding:0 .55rem; }
+  details { margin-top:.5rem; }
+  summary { cursor:pointer; color:var(--dim); font-size:.85rem; }
+  .reason { white-space:pre-wrap; color:var(--ink); font-size:.88rem; margin-top:.4rem; }
+  .resolved-yes { color:#9ece6a; } .resolved-no { color:#f7768e; }
+  .err { color:#f7768e; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>forecast-scaffold — public journal</h1>
+  <div class="sub">Pre-registered forecasts, pulled live from
+    <a style="color:var(--accent)" href="https://github.com/edisonymy/forecast-scaffold/blob/main/bot/journal/forecasts.jsonl">bot/journal/forecasts.jsonl</a>.
+    Newest first.</div>
+  <div class="stats" id="stats"></div>
+  <div id="list">Loading…</div>
+</div>
+<script>
+const RAW = "https://raw.githubusercontent.com/edisonymy/forecast-scaffold/main/bot/journal/forecasts.jsonl";
+const pct = p => (100*p).toFixed(0) + "%";
+const fmtDateTs = ts => new Date(ts*1000).toISOString().slice(0,10);
+
+function headline(r) {
+  if (r.probability != null) return pct(r.probability);
+  if (r.probabilities && r.options) {
+    let i = r.probabilities.indexOf(Math.max(...r.probabilities));
+    return `${r.options[i]} ${pct(r.probabilities[i])}`;
+  }
+  if (r.percentiles) {
+    const med = r.percentiles["50"];
+    const isDate = r.question_type === "date";
+    const show = v => isDate ? fmtDateTs(v) : Number(v).toLocaleString(undefined,{maximumFractionDigits:2});
+    let s = "median " + show(med);
+    if (r.expected_value != null) s += ` · EV ${show(r.expected_value)}`;
+    return s;
+  }
+  return "—";
+}
+
+fetch(RAW + "?t=" + Date.now()).then(r => {
+  if (!r.ok) throw new Error("HTTP " + r.status + " — journal not published yet?");
+  return r.text();
+}).then(text => {
+  const rows = text.trim().split("\n").filter(Boolean).map(l => JSON.parse(l)).reverse();
+  const cost = rows.reduce((s,r) => s + (r.cost_usd || 0), 0);
+  const resolved = rows.filter(r => r.status === "resolved");
+  document.getElementById("stats").innerHTML = [
+    [rows.length, "forecasts"],
+    [resolved.length, "resolved"],
+    ["$" + cost.toFixed(2), "total run cost"],
+  ].map(([b,s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("");
+  document.getElementById("list").innerHTML = rows.map(r => {
+    const res = r.resolution ? `<span class="tag ${r.resolution.outcome ? "resolved-yes":"resolved-no"}">resolved: ${r.resolution.outcome}</span>` : "";
+    const crowd = r.crowd && r.crowd.value != null ? `crowd ${typeof r.crowd.value === "number" && r.crowd.value <= 1 ? pct(r.crowd.value) : r.crowd.value}` : "";
+    return `<div class="card">
+      <div class="qrow"><div class="q">${r.source && r.source.url ? `<a style="color:inherit" href="${r.source.url}">${r.question}</a>` : r.question}</div>
+      <div class="val">${headline(r)}</div></div>
+      <div class="meta">
+        <span>${(r.forecast_at || r.created || "").slice(0,16).replace("T"," ")}</span>
+        <span class="tag">${r.question_type}</span>
+        ${r.effort ? `<span class="tag">${r.effort}</span>` : ""}
+        ${r.cost_usd != null ? `<span class="tag">$${r.cost_usd.toFixed(2)}</span>` : ""}
+        ${crowd ? `<span>${crowd}</span>` : ""} ${res}
+      </div>
+      ${r.reasoning ? `<details><summary>reasoning</summary><div class="reason">${r.reasoning.replace(/</g,"&lt;")}</div></details>` : ""}
+    </div>`;
+  }).join("");
+}).catch(e => document.getElementById("list").innerHTML = `<div class="err">${e.message}</div>`);
+</script>
+</body>
+</html>

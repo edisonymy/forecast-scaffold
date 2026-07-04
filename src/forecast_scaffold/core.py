@@ -32,7 +32,7 @@ from uuid import uuid4
 
 SCHEMA_VERSION = 1
 
-QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete")
+QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
 EFFORT_TIERS = ("low", "medium", "high")
 
@@ -144,12 +144,14 @@ class ForecastRecord:
     probability: float | None = None  # binary
     options: list[str] | None = None  # multiple_choice
     probabilities: list[float] | None = None  # multiple_choice, parallel to options
-    percentiles: dict[str, float] | None = None  # numeric: {"10": v, "25": v, ...} monotone
+    percentiles: dict[str, float] | None = None  # numeric/date: {"10": v, ...} monotone
+    expected_value: float | None = None  # optional point estimate / EV alongside percentiles
     raw_draws: list[float] | None = None  # individual ensemble draws (audit trail)
     aggregation: str | None = None  # e.g. "trimmed_mean(n=5)"
     effort: str | None = None  # "low" | "medium" | "high", "(auto)" suffix if auto-triaged
     model: str = ""  # free string; never hardcoded in skills
     crowd: dict[str, Any] | None = None  # {"value", "source", "at"} captured at forecast time
+    cost_usd: float | None = None  # what producing this forecast cost (all agent calls)
     reasoning: str = ""
     what_would_change_my_mind: list[str] = field(default_factory=list)
     research: dict[str, Any] | None = None  # {"n_searches", "sources": [...]}
@@ -624,7 +626,7 @@ def validate_record(
             errors.append("multiple_choice needs parallel options and probabilities lists")
         else:
             errors.extend(validate_mc(record.options, record.probabilities))
-    elif record.question_type in ("numeric", "discrete"):
+    elif record.question_type in ("numeric", "discrete", "date"):
         if record.percentiles is None:
             errors.append(f"{record.question_type} needs percentiles {{10,25,50,75,90}}")
         else:
