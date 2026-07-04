@@ -43,16 +43,27 @@ jobs:
           METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # via env, never interpolated into the shell line (script-injection safe)
+          TOURNAMENT_ID: ${{ vars.TOURNAMENT_ID }}
         run: |
-          python bot/run_bot.py --tournament "${{ vars.TOURNAMENT_ID }}" \
+          python bot/run_bot.py --tournament "$TOURNAMENT_ID" \
             --limit 10 \
-            --agent-cmd "claude -p --model claude-sonnet-5 --output-format json --dangerously-skip-permissions" --comment
+            --agent-cmd "claude -p --model claude-sonnet-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch" --comment
 
       - name: Commit journal (pre-registration)
         # always(): submitted forecasts must be committed even when a later question errored
         # or the run timed out — the journal commits even when forecasts look bad.
         if: always()
+        env:
+          LEAK_PATTERNS: ${{ secrets.LEAK_PATTERNS }}
         run: |
+          # Leak-guard the machine-generated journal BEFORE publishing it. The bot ingests
+          # untrusted question text; a personal-data match must block the push, not just fail
+          # a later CI run after the content is already public.
+          PATTERNS="${LEAK_PATTERNS:-£|net.?worth|users.Edison.Yi}"
+          set +e; grep -rniIE "$PATTERNS" bot/journal/; status=$?; set -e
+          if [ "$status" -eq 0 ]; then echo "::error::personal-data in journal — not publishing"; exit 1; fi
+          if [ "$status" -ne 1 ]; then echo "::error::leak-guard grep failed ($status)"; exit 2; fi
           git config user.name "forecast-scaffold-bot"
           git config user.email "bot@users.noreply.github.com"
           git add bot/journal/

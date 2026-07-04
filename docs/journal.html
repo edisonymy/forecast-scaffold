@@ -41,6 +41,10 @@
 const RAW = "https://raw.githubusercontent.com/edisonymy/forecast-scaffold/main/bot/journal/forecasts.jsonl";
 const pct = p => (100*p).toFixed(0) + "%";
 const fmtDateTs = ts => new Date(ts*1000).toISOString().slice(0,10);
+// Journal content is downstream of untrusted Metaculus question text — escape every value
+// before it touches innerHTML, and only allow http(s) links (no javascript:/data: hrefs).
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl = u => (typeof u === "string" && /^https?:\/\//i.test(u)) ? u : "";
 
 function headline(r) {
   if (r.probability != null) return pct(r.probability);
@@ -72,25 +76,28 @@ fetch(RAW + "?t=" + Date.now()).then(r => {
     ["$" + cost.toFixed(2), "total run cost"],
   ].map(([b,s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("");
   document.getElementById("list").innerHTML = rows.map(r => {
-    const res = r.resolution ? `<span class="tag ${r.resolution.outcome ? "resolved-yes":"resolved-no"}">resolved: ${r.resolution.outcome}</span>` : "";
-    const crowd = r.crowd && r.crowd.value != null ? `crowd ${typeof r.crowd.value === "number" && r.crowd.value <= 1 ? pct(r.crowd.value) : r.crowd.value}` : "";
+    const res = r.resolution ? `<span class="tag ${r.resolution.outcome ? "resolved-yes":"resolved-no"}">resolved: ${esc(r.resolution.outcome)}</span>` : "";
+    const crowdVal = r.crowd && r.crowd.value != null
+      ? (typeof r.crowd.value === "number" && r.crowd.value <= 1 ? pct(r.crowd.value) : esc(r.crowd.value)) : "";
+    const q = esc(r.question);
+    const url = safeUrl(r.source && r.source.url);
     return `<div class="card">
-      <div class="qrow"><div class="q">${r.source && r.source.url ? `<a style="color:inherit" href="${r.source.url}">${r.question}</a>` : r.question}</div>
-      <div class="val">${headline(r)}</div></div>
+      <div class="qrow"><div class="q">${url ? `<a style="color:inherit" href="${esc(url)}">${q}</a>` : q}</div>
+      <div class="val">${esc(headline(r))}</div></div>
       <div class="meta">
-        <span>${(r.forecast_at || r.created || "").slice(0,16).replace("T"," ")}</span>
-        <span class="tag">${r.question_type}</span>
-        ${r.effort ? `<span class="tag">${r.effort}</span>` : ""}
-        ${r.model ? `<span class="tag">${r.model}</span>` : ""}
-        ${r.cost_usd != null ? `<span class="tag">$${r.cost_usd.toFixed(2)}</span>` : ""}
-        ${crowd ? `<span>${crowd}</span>` : ""}
+        <span>${esc((r.forecast_at || r.created || "").slice(0,16).replace("T"," "))}</span>
+        <span class="tag">${esc(r.question_type)}</span>
+        ${r.effort ? `<span class="tag">${esc(r.effort)}</span>` : ""}
+        ${r.model ? `<span class="tag">${esc(r.model)}</span>` : ""}
+        ${r.cost_usd != null ? `<span class="tag">$${Number(r.cost_usd).toFixed(2)}</span>` : ""}
+        ${crowdVal ? `<span>crowd ${crowdVal}</span>` : ""}
         ${r.crowd && r.crowd.shown_to_agent === false ? `<span class="tag">blind</span>` : ""}
         ${res}
       </div>
-      ${r.reasoning ? `<details><summary>reasoning</summary><div class="reason">${r.reasoning.replace(/</g,"&lt;")}</div></details>` : ""}
+      ${r.reasoning ? `<details><summary>reasoning</summary><div class="reason">${esc(r.reasoning)}</div></details>` : ""}
     </div>`;
   }).join("");
-}).catch(e => document.getElementById("list").innerHTML = `<div class="err">${e.message}</div>`);
+}).catch(e => document.getElementById("list").innerHTML = `<div class="err">${esc(e.message)}</div>`);
 </script>
 </body>
 </html>
