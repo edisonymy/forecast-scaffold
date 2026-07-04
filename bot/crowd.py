@@ -1,19 +1,26 @@
-"""Read the HUMAN community prediction with a personal (non-bot) account token.
+"""Read the community prediction on the questions where Metaculus's API exposes it.
 
-Metaculus deliberately hides the human community prediction from bot accounts on all
-public (non-tournament) questions — the bot token gets ``latest: null`` even after
-forecasting, and the anonymous API, the legacy api2, and the download-data endpoint
-are all closed (403). The only self-serve programmatic path is a token from a normal
-human account, which sees whatever the website shows.
+Metaculus's API omits aggregation data (the Community Prediction) on almost every
+question. Per the docs, CP ships on only ``~50`` curated questions; separately, bot
+tournaments (Bot Testing Area etc.) expose CP on their own questions. Everywhere else a
+bot token gets ``latest: null`` even after forecasting, and the anonymous API, the legacy
+api2, and the download-data endpoint are all closed (403). An empirical sweep of ~1000
+open public questions with a bot token found CP on 0 of them outside bot tournaments.
 
-Set ``METACULUS_CP_TOKEN`` to such a token (Metaculus -> account settings -> API token,
-on your PERSONAL account, not the bot's). Two rules, by design:
+So there is **no reliable API path to the human crowd on arbitrary public questions.**
+This helper still has two uses:
 
-* OFFLINE MEASUREMENT ONLY — benchmarks and reviewing the bot's track record. This
-  module is intentionally never imported by ``run_bot``: the human crowd value must
-  not reach the forecasting agent, and a bot competing in a tournament must not use
-  the human crowd at all (that is exactly what Metaculus's firewall enforces).
-* The token is withheld from the agent subprocess (see ``_SECRETS_TO_HIDE``).
+* With the bot token, it reads CP inside a bot tournament (post-hoc track-record review).
+* With ``METACULUS_CP_TOKEN`` set to a PERSONAL-account token, it *may* reach more than a
+  bot token does (the website clearly renders CP the API withholds) — but this is
+  UNVERIFIED and is not guaranteed to widen API access beyond the ~50 curated questions.
+  For a dependable crowd-labelled benchmark on public questions, use ``bench/`` instead
+  (ForecastBench freeze values + live Manifold/Polymarket prices — no Metaculus needed).
+
+By design, OFFLINE MEASUREMENT ONLY. This module is intentionally never imported by
+``run_bot`` (the crowd value must not reach the forecasting agent, and a tournament bot
+must not consult the human crowd — exactly what Metaculus's firewall enforces), and the
+token is withheld from the agent subprocess (see ``_SECRETS_TO_HIDE``).
 
 CLI:
     python bot/crowd.py 44239 43597 ...

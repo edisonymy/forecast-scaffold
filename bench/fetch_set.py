@@ -81,18 +81,8 @@ def latest_set_name() -> str:
     return dated[-1]
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--date", default="latest",
-                        help='question-set date like 2026-06-21, or "latest"')
-    parser.add_argument("--n", type=int, default=40, help="total questions to sample")
-    parser.add_argument("--seed", type=int, default=7, help="deterministic sampling seed")
-    parser.add_argument("--sources", default=",".join(MARKET_SOURCES))
-    parser.add_argument("--out", required=True)
-    parser.add_argument("--refresh-crowd", action="store_true",
-                        help="update Manifold/Polymarket crowd values from their live APIs")
-    args = parser.parse_args(argv)
-
+def forecastbench_specs(args: argparse.Namespace) -> list[dict]:
+    """Sample market questions from a ForecastBench question set (multi-source, curated)."""
     name = latest_set_name() if args.date == "latest" else f"{args.date}-llm.json"
     payload = json.loads(_get(f"{RAW_BASE}/datasets/question_sets/{name}").decode("utf-8"))
     questions = payload["questions"]
@@ -125,34 +115,114 @@ def main(argv: list[str] | None = None) -> int:
         picked.extend(rng.sample(pool, take))
         print(f"  {source}: {len(pool)} eligible, taking {take}")
 
+    specs: list[dict] = []
+    for q in picked:
+        crowd_value = float(q["freeze_datetime_value"])
+        crowd_at = str(q.get("freeze_datetime") or "")
+        crowd_src = f"forecastbench {q['source']} freeze"
+        if args.refresh_crowd and q["source"] in ("manifold", "polymarket"):
+            live = live_crowd(q["source"], str(q["id"]))
+            time.sleep(1)
+            if live is not None:
+                crowd_value, crowd_at = live, _now_iso()
+                crowd_src = f"{q['source']} live"
+        criteria = FOUND_AT.sub("", str(q.get("resolution_criteria") or "")).strip()
+        market_criteria = str(q.get("market_info_resolution_criteria") or "")
+        criteria = (criteria + "\n" + market_criteria).strip()
+        specs.append({
+            "id": f"{q['source']}:{q['id']}",
+            "source": q["source"],
+            "question": q.get("question", ""),
+            "background": str(q.get("background") or "")[:4000],
+            "criteria": criteria[:4000],
+            "resolve_by": str(q.get("market_info_close_datetime") or "")[:10] or None,
+            "crowd": {"value": crowd_value, "at": crowd_at, "source": crowd_src},
+            "url": q.get("url", ""),  # for humans reviewing results; never shown to the agent
+        })
+    return specs
+
+
+def manifold_specs(args: argparse.Namespace) -> list[dict]:
+    """Sample liquid, still-open binary markets directly from Manifold's public API.
+
+    Fresh questions on demand between the biweekly ForecastBench drops; the crowd target
+    is the live market probability. Filtered to ``--min-traders`` unique bettors so the
+    price reflects a real crowd, and to open markets so the outcome is not researchable.
+    (Manifold is play-money and creator-resolved — noisier ground truth than ForecastBench's
+    curated multi-source set, but far larger and free to pull. Prefer ForecastBench as the
+    headline benchmark; use this for cheap, frequent iteration.)
+    """
+    now_ms = int(datetime.now(UTC).timestamp() * 1000)
+    listing = json.loads(_get(
+        "https://api.manifold.markets/v0/search-markets?" + urllib.parse.urlencode({
+            "term": "", "sort": "liquidity", "filter": "open",
+            "contractType": "BINARY", "limit": max(200, args.n * 6),
+        })
+    ).decode("utf-8"))
+    eligible = [
+        m for m in listing
+        if not m.get("isResolved")
+        and (m.get("closeTime") or now_ms + 1) > now_ms
+        and (m.get("uniqueBettorCount") or 0) >= args.min_traders
+        and 0.02 <= float(m.get("probability", -1)) <= 0.98
+    ]
+    rng = random.Random(args.seed)
+    pool = sorted(eligible, key=lambda m: str(m["id"]))
+    picked = rng.sample(pool, min(args.n, len(pool)))
+    print(f"manifold: {len(listing)} listed, {len(eligible)} eligible "
+          f"(>= {args.min_traders} bettors, open, non-extreme), taking {len(picked)}")
+
+    specs: list[dict] = []
+    for m in picked:
+        full = json.loads(_get(f"https://api.manifold.markets/v0/market/{m['id']}").decode("utf-8"))
+        time.sleep(0.5)
+        close_ms = full.get("closeTime")
+        resolve_by = (
+            datetime.fromtimestamp(close_ms / 1000, tz=UTC).date().isoformat()
+            if close_ms else None
+        )
+        criteria = ("Resolves per the market creator's stated conditions on Manifold. "
+                    "Description:\n" + str(full.get("textDescription") or "")).strip()
+        specs.append({
+            "id": f"manifold:{m['id']}",
+            "source": "manifold",
+            "question": full.get("question", m.get("question", "")),
+            "background": "",
+            "criteria": criteria[:4000],
+            "resolve_by": resolve_by,
+            "crowd": {"value": float(full.get("probability", m["probability"])),
+                      "at": _now_iso(), "source": "manifold live"},
+            "url": m.get("url", ""),  # for humans reviewing results; never shown to the agent
+        })
+    return specs
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--from", dest="source_of", default="forecastbench",
+                        choices=("forecastbench", "manifold"),
+                        help="where questions come from (default forecastbench)")
+    parser.add_argument("--date", default="latest",
+                        help='forecastbench set date like 2026-06-21, or "latest"')
+    parser.add_argument("--n", type=int, default=40, help="total questions to sample")
+    parser.add_argument("--seed", type=int, default=7, help="deterministic sampling seed")
+    parser.add_argument("--sources", default=",".join(MARKET_SOURCES),
+                        help="forecastbench sub-sources (comma-separated)")
+    parser.add_argument("--min-traders", type=int, default=30,
+                        help="manifold: minimum unique bettors for a market to qualify")
+    parser.add_argument("--out", required=True)
+    parser.add_argument("--refresh-crowd", action="store_true",
+                        help="forecastbench: update Manifold/Polymarket crowd values live")
+    args = parser.parse_args(argv)
+
+    specs = manifold_specs(args) if args.source_of == "manifold" else forecastbench_specs(args)
+
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("w", encoding="utf-8") as fh:
-        for q in picked:
-            crowd_value = float(q["freeze_datetime_value"])
-            crowd_at = str(q.get("freeze_datetime") or "")
-            crowd_src = f"forecastbench {q['source']} freeze"
-            if args.refresh_crowd and q["source"] in ("manifold", "polymarket"):
-                live = live_crowd(q["source"], str(q["id"]))
-                time.sleep(1)
-                if live is not None:
-                    crowd_value, crowd_at = live, _now_iso()
-                    crowd_src = f"{q['source']} live"
-            criteria = FOUND_AT.sub("", str(q.get("resolution_criteria") or "")).strip()
-            market_criteria = str(q.get("market_info_resolution_criteria") or "")
-            criteria = (criteria + "\n" + market_criteria).strip()
-            spec = {
-                "id": f"{q['source']}:{q['id']}",
-                "source": q["source"],
-                "question": q.get("question", ""),
-                "background": str(q.get("background") or "")[:4000],
-                "criteria": criteria[:4000],
-                "resolve_by": str(q.get("market_info_close_datetime") or "")[:10] or None,
-                "crowd": {"value": crowd_value, "at": crowd_at, "source": crowd_src},
-                "url": q.get("url", ""),  # for humans reviewing results; never shown to the agent
-            }
+        for spec in specs:
             fh.write(json.dumps(spec, ensure_ascii=False) + "\n")
-    print(f"wrote {len(picked)} questions -> {out}")
+    print(f"wrote {len(specs)} questions -> {out}")
     return 0
 
 

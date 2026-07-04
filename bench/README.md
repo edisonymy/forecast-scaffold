@@ -12,13 +12,22 @@ this harness only measures.
 Two targets, complementary:
 
 * **Crowd** — the strongest available proxy for the true probability *today*, before
-  resolution. Sourced from [ForecastBench](https://github.com/forecastingresearch/forecastbench-datasets)
-  question sets (CC-BY-SA 4.0, fetched at runtime, never committed here): each
-  market-sourced question (Metaculus, Manifold, Polymarket, RAND Forecasting Initiative)
-  carries the crowd probability at freeze time. Manifold/Polymarket values can be
-  refreshed live at set-build time from their public APIs (`--refresh-crowd`). This route
-  needs no Metaculus token at all — Metaculus firewalls bot accounts from its human crowd,
-  but ForecastBench republishes the freeze values and the other markets are public.
+  resolution. Two sources, both needing **no Metaculus token** (Metaculus firewalls bot
+  accounts from its human crowd — an empirical sweep of ~1000 open public questions found
+  its CP visible on 0 of them outside bot tournaments):
+  * **ForecastBench** (default; `--from forecastbench`) —
+    [question sets](https://github.com/forecastingresearch/forecastbench-datasets)
+    (CC-BY-SA 4.0, fetched at runtime, never committed): each market-sourced question
+    (Metaculus, Manifold, Polymarket, RAND Forecasting Initiative) carries the crowd
+    probability at freeze time; Manifold/Polymarket can be refreshed live with
+    `--refresh-crowd`. Curated, multi-source, leak-controlled, and the external
+    leaderboard we'd submit to — **the headline benchmark.**
+  * **Manifold direct** (`--from manifold --min-traders 30`) — pulls fresh, liquid,
+    still-open binary markets straight from Manifold's public API, crowd = live market
+    price. Play-money and creator-resolved, so noisier ground truth, but unlimited and
+    free — **use it for cheap, frequent iteration between the biweekly ForecastBench
+    drops.** Both sources emit the identical set format, so `run_bench`/`report` don't care
+    which you used.
 * **The `high` tier** — the scaffold's own best effort. Distance-to-high tells you what
   the extra spend buys; distance-to-crowd tells you whether it buys *truth*.
 
@@ -57,8 +66,11 @@ rubric buy high-tier closeness at low-tier prices?
 ## Usage
 
 ```bash
-# 1. Build a frozen set (~40 open market questions, crowd values attached)
+# 1. Build a frozen set (~40 open market questions, crowd values attached).
+#    ForecastBench (curated, multi-source) — the headline benchmark:
 python bench/fetch_set.py --n 40 --out bench/sets/2026-07-04.jsonl --refresh-crowd
+#    ...or pull fresh liquid markets straight from Manifold for quick iteration:
+python bench/fetch_set.py --from manifold --min-traders 30 --n 40 --out bench/sets/manifold-2026-07-04.jsonl
 
 # 2. Run tiers over it, paired + blind (resumable; (question, tier) pairs are skipped
 #    once done). Use --provider openrouter to bill benchmark runs to OpenRouter credits.
