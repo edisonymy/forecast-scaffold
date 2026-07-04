@@ -117,12 +117,24 @@ def build_brief(post: dict[str, Any], question: dict[str, Any], crowd: float | N
     return "\n".join(parts)
 
 
-def run_agent(agent_cmd: str, prompt: str, system: str | None, timeout: int) -> tuple[str, float]:
-    """Run the headless agent; returns (text, cost_usd).
+def _model_from_cmd(agent_cmd: str) -> str:
+    """The value of a --model flag in the agent command, if any (a fallback label)."""
+    tokens = shlex.split(agent_cmd)
+    for i, tok in enumerate(tokens):
+        if tok == "--model" and i + 1 < len(tokens):
+            return tokens[i + 1]
+    return ""
+
+
+def run_agent(
+    agent_cmd: str, prompt: str, system: str | None, timeout: int
+) -> tuple[str, float, str]:
+    """Run the headless agent; returns (text, cost_usd, model).
 
     When the agent is ``claude -p --output-format json`` the stdout is a result envelope
-    carrying ``total_cost_usd`` — unwrap it so the journal can record what each forecast
-    cost. Plain-text agents just cost 0.0 (unknown).
+    carrying ``total_cost_usd`` and ``modelUsage`` — unwrap it so the journal can record
+    both what each forecast cost and which model actually produced it. Plain-text agents
+    report cost 0.0 and fall back to the --model flag (or "") for the label.
     """
     cmd = [*shlex.split(agent_cmd), prompt]
     if system:
@@ -133,10 +145,14 @@ def run_agent(agent_cmd: str, prompt: str, system: str | None, timeout: int) -> 
     try:
         envelope = json.loads(result.stdout)
         if isinstance(envelope, dict) and "result" in envelope:
-            return str(envelope["result"]), float(envelope.get("total_cost_usd") or 0.0)
+            usage = envelope.get("modelUsage")
+            model = ", ".join(usage) if isinstance(usage, dict) and usage else ""
+            model = model or _model_from_cmd(agent_cmd)
+            cost = float(envelope.get("total_cost_usd") or 0.0)
+            return str(envelope["result"]), cost, model
     except (json.JSONDecodeError, TypeError, ValueError):
         pass
-    return result.stdout, 0.0
+    return result.stdout, 0.0, _model_from_cmd(agent_cmd)
 
 
 def extract_json(text: str) -> dict[str, Any]:
@@ -149,7 +165,7 @@ def extract_json(text: str) -> dict[str, Any]:
 
 def triage(agent_cmd: str, brief: str, timeout: int) -> tuple[str, float]:
     try:
-        output, cost = run_agent(agent_cmd, TRIAGE_PROMPT + brief[:2000], None, timeout)
+        output, cost, _ = run_agent(agent_cmd, TRIAGE_PROMPT + brief[:2000], None, timeout)
         tier = extract_json(output).get("tier", "medium")
         return (tier if tier in ("low", "medium", "high") else "medium"), cost
     except (RuntimeError, ValueError, subprocess.TimeoutExpired):
@@ -214,6 +230,7 @@ def forecast_question(
         )
 
     payload: dict[str, Any] | None = None
+    model_used = ""
     errors: list[str] = []
     for attempt in range(2):
         prompt = brief if attempt == 0 else (
@@ -221,7 +238,9 @@ def forecast_question(
             + "; ".join(errors) + "\nEmit a corrected fenced json block."
         )
         try:
-            output, attempt_cost = run_agent(args.agent_cmd, prompt, system, args.timeout)
+            output, attempt_cost, model_used = run_agent(
+                args.agent_cmd, prompt, system, args.timeout
+            )
             run_cost += attempt_cost
             candidate = extract_json(output)
         except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
@@ -271,7 +290,7 @@ def forecast_question(
         cost_usd=round(run_cost, 4) if run_cost else None,
         raw_draws=[float(d) for d in payload.get("raw_draws", [])] or None,
         effort=f"{tier} (auto)" if args.effort == "auto" else tier,
-        model=args.agent_cmd,
+        model=model_used or _model_from_cmd(args.agent_cmd) or args.agent_cmd,
         crowd={
             "value": crowd,
             "source": "metaculus community",
