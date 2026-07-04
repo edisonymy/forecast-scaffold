@@ -43,8 +43,9 @@ jobs:
       - name: Run
         env:
           METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
+          # OAuth only (subscription). Do NOT add ANTHROPIC_API_KEY: it takes precedence and
+          # silently switches to per-token API billing.
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           # via env, never interpolated into the shell line (script-injection safe)
           INPUT_TOURNAMENT: ${{ inputs.tournament }}
           INPUT_LIMIT: ${{ inputs.limit }}
