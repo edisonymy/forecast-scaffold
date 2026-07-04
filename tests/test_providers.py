@@ -108,28 +108,20 @@ class TestBenchScoring:
         assert stats["rms_dp"] == pytest.approx(math.sqrt((0.01 + 0.04) / 2))
 
 
-def test_fetch_set_strips_market_url_from_criteria() -> None:
-    text = ("Resolves to the outcome of the question found at "
-            "https://manifold.markets/user/some-slug. Extra detail stays.")
-    assert fetch_set.FOUND_AT.sub("", text).strip() == "Extra detail stays."
+class TestContractFidelity:
+    def test_infer_excluded_by_default(self) -> None:
+        # RAND/INFER contracts sit behind a login: unverifiable -> not scored by default.
+        assert "infer" not in fetch_set.DEFAULT_SOURCES
+        assert set(fetch_set.DEFAULT_SOURCES) == {"metaculus", "manifold", "polymarket"}
 
+    def test_unknown_source_contract_is_none(self) -> None:
+        assert fetch_set.source_contract("infer", "123") is None
 
-class TestBuildCriteria:
-    def test_real_market_criteria_kept(self) -> None:
-        q = {"resolution_criteria": "Resolves to the outcome of the question found at "
-                                    "https://www.metaculus.com/questions/1.",
-             "market_info_resolution_criteria": "Resolves Yes if X happens by date D."}
-        assert fetch_set.build_criteria(q) == "Resolves Yes if X happens by date D."
-
-    def test_na_criteria_points_at_background(self) -> None:
-        # Polymarket/INFER put the contract in `background` and criteria says "N/A";
-        # the baseline showed agents forecasting the headline when handed "N/A".
-        q = {"resolution_criteria": "Resolves to the outcome of the question found at "
-                                    "https://polymarket.com/market/x.",
-             "market_info_resolution_criteria": "N/A"}
-        out = fetch_set.build_criteria(q)
-        assert "N/A" not in out
-        assert "Background" in out
+    def test_metaculus_contract_requires_token(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        # Without the token the criteria + fine print can't be verified at the source,
+        # so the question must be excluded rather than scored against a paraphrase.
+        monkeypatch.delenv("METACULUS_TOKEN", raising=False)
+        assert fetch_set.source_contract("metaculus", "11045") is None
 
 
 class TestReportAutoImputation:

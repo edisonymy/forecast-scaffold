@@ -45,8 +45,10 @@ jobs:
           pip install -e .
           npm install -g @anthropic-ai/claude-code
 
-      - name: Build question set (live-crowd hygiene)
+      - name: Build question set (live-crowd + verbatim-contract hygiene)
         env:
+          # Read-only: used to pull Metaculus questions' criteria + fine print verbatim.
+          METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
           INPUT_DATE: ${{ inputs.date }}
           INPUT_N: ${{ inputs.n }}
         run: |

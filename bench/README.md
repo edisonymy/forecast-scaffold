@@ -118,10 +118,19 @@ The benchmark is a dev signal, not the objective. Rules, in force from scaffold 
    been gamed — reground on resolutions. This check runs on every version once it has
    ~20+ resolved questions, and it is the score that can't be overfit prospectively.
 7. **Freshness hygiene.** Live-refreshed crowd only, where a live source exists; drop
-   questions whose live price sits at an extreme (≤0.03 / ≥0.97 — effectively resolved)
-   or whose refresh fails. The 2026-07-04 baseline's largest "miss" was a question the
-   Supreme Court had already decided: the bot was right and the 3-week-old freeze value
-   was wrong. Freeze-only sources (Metaculus, INFER) stay flagged in the report.
+   questions whose live price sits at an extreme (≤0.03 / ≥0.97 — effectively resolved),
+   whose refresh fails, or whose book is too thin to be a crowd (Polymarket volume
+   < $10k, Manifold < 20 bettors). The 2026-07-04 baseline's largest "miss" was a
+   question the Supreme Court had already decided: the bot was right and the 3-week-old
+   freeze value was wrong. Freeze-only sources stay flagged in the report.
+8. **Verbatim contracts or exclusion.** The crowd prices the fine print, so the brief
+   must carry the SAME contract, fetched from the source platform (Gamma description,
+   Manifold creator description, Metaculus criteria + fine print via API) — never a
+   paraphrase or an "N/A" placeholder. A question whose contract can't be read at the
+   source (e.g. INFER, login-walled) is excluded, not scored. Case study: a $386k
+   Polymarket book "wrongly" at 0.50 was correctly pricing a Nasdaq-Private-Market
+   secondary-print clause our brief omitted — bot and FutureSearch both landed at 0.12
+   on the paraphrased question. Contract mismatch masquerades as crowd error.
 
 ## External yardsticks
 

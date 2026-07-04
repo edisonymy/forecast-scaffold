@@ -91,7 +91,7 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
             }
     else:
         resolved, effort = tier, tier
-    system = build_system(resolved, blind=True)
+    system = build_system(resolved, blind=True, config=getattr(args, "tier_config", None))
     agent_cmd = f"{base_cmd} --disallowed-tools {BENCH_DISALLOWED}"
 
     probability: float | None = None
@@ -176,6 +176,7 @@ def main(argv: list[str] | None = None) -> int:
     # Independent runs per tier from config — the deterministic effort lever. Each run is
     # its own agent process; report.py pools them per (question, tier) with geo_mean_odds.
     config = load_config(str(ROOT / "config" / "forecast.toml"))
+    args.tier_config = config  # forecast_one inlines the tier's params into the system prompt
     def runs_for(tier: str) -> int:
         if tier == "auto" and args.auto_mode == "router":
             return 1  # the router decision itself; the forecast is imputed

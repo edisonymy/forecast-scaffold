@@ -20,6 +20,19 @@ and mirror `.claude-plugin/plugin.json`.
   (`METACULUS_CP_TOKEN`) for offline measurement — Metaculus firewalls bot accounts from the
   human crowd on public questions, and this stays deliberately outside the forecasting loop.
 
+### Changed
+- **Effort tiers are now harness-enforced**: `[tiers.*]` config gains `runs` (independent
+  agent runs pooled with geo-mean-of-odds by bench/report; low 1 / medium 3 / high 5) and
+  the tier's `draws`/`searches` are inlined into the bot-mode system prompt. The baseline
+  showed in-context draw instructions are under-executed headlessly (all tiers ≈3
+  correlated draws; tier gaps = rerun noise). Surfaces without independent runs degrade
+  to in-context draws and the skill now says so out loud.
+- **Benchmark contracts are verbatim-or-excluded**: set briefs carry the exact resolution
+  terms fetched from the source platform (Polymarket Gamma description, Manifold creator
+  description, Metaculus criteria + fine print via API); INFER is excluded by default
+  (login-walled terms). Live crowd values gain liquidity floors (Polymarket ≥ $10k volume,
+  Manifold ≥ 20 bettors).
+
 ### Fixed
 - The subscription provider path now drops inherited `ANTHROPIC_BASE_URL`/`ANTHROPIC_AUTH_TOKEN`
   endpoint overrides and empty `ANTHROPIC_API_KEY` artifacts, so ambient shell config cannot
