@@ -54,6 +54,13 @@ CONTINUOUS = ("numeric", "discrete", "date")
 # Secrets withheld from the forecasting agent's subprocess env — it runs on untrusted
 # question text and needs none of these (submission + leak-guard are pure Python).
 _SECRETS_TO_HIDE = frozenset({"METACULUS_TOKEN", "LEAK_PATTERNS", "GITHUB_TOKEN"})
+# Blind mode: enforce no-crowd-peeking at the tool level too (the prompt instruction alone
+# is not verifiable). Search snippets can still leak in principle; this closes direct fetches.
+BLIND_DISALLOWED = (
+    "WebFetch(domain:metaculus.com),WebFetch(domain:manifold.markets),"
+    "WebFetch(domain:polymarket.com),WebFetch(domain:kalshi.com),"
+    "WebFetch(domain:goodjudgment.io),WebFetch(domain:metaforecast.org)"
+)
 
 TRIAGE_PROMPT = (
     "You are triaging a forecasting question for effort allocation, using the forecast skill's "
@@ -244,6 +251,7 @@ def forecast_question(
             "Skip the skill's crowd-blend step. Primary sources and base rates only."
         )
 
+    agent_cmd = args.agent_cmd + (f" --disallowed-tools {BLIND_DISALLOWED}" if args.blind else "")
     payload: dict[str, Any] | None = None
     model_used = ""
     errors: list[str] = []
@@ -254,7 +262,7 @@ def forecast_question(
         )
         try:
             output, attempt_cost, model_used = run_agent(
-                args.agent_cmd, prompt, system, args.timeout
+                agent_cmd, prompt, system, args.timeout
             )
             run_cost += attempt_cost
             candidate = extract_json(output)
