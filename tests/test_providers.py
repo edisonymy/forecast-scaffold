@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import math
 import shlex
 import sys
@@ -111,3 +112,51 @@ def test_fetch_set_strips_market_url_from_criteria() -> None:
     text = ("Resolves to the outcome of the question found at "
             "https://manifold.markets/user/some-slug. Extra detail stays.")
     assert fetch_set.FOUND_AT.sub("", text).strip() == "Extra detail stays."
+
+
+class TestBuildCriteria:
+    def test_real_market_criteria_kept(self) -> None:
+        q = {"resolution_criteria": "Resolves to the outcome of the question found at "
+                                    "https://www.metaculus.com/questions/1.",
+             "market_info_resolution_criteria": "Resolves Yes if X happens by date D."}
+        assert fetch_set.build_criteria(q) == "Resolves Yes if X happens by date D."
+
+    def test_na_criteria_points_at_background(self) -> None:
+        # Polymarket/INFER put the contract in `background` and criteria says "N/A";
+        # the baseline showed agents forecasting the headline when handed "N/A".
+        q = {"resolution_criteria": "Resolves to the outcome of the question found at "
+                                    "https://polymarket.com/market/x.",
+             "market_info_resolution_criteria": "N/A"}
+        out = fetch_set.build_criteria(q)
+        assert "N/A" not in out
+        assert "Background" in out
+
+
+class TestReportAutoImputation:
+    def test_gap_stats_bias_sign(self) -> None:
+        stats = report.gap_stats([(0.5, 0.7), (0.5, 0.7)])
+        assert stats["bias"] == pytest.approx(0.2)  # student above teacher -> positive
+
+    def test_router_only_rows_impute_from_routed_tier(self, tmp_path, monkeypatch) -> None:
+        set_file = tmp_path / "s.jsonl"
+        set_file.write_text("{}", encoding="utf-8")
+        results_dir = tmp_path / "results"
+        results_dir.mkdir()
+        monkeypatch.setattr(report, "RESULTS_DIR", results_dir)
+        crowd = {"value": 0.5, "source": "manifold live", "at": "t"}
+        rows = [
+            {"qid": "q1", "source": "manifold", "question": "?", "tier": "medium",
+             "effort": "medium", "probability": 0.30, "crowd": crowd, "cost_usd": 0.40,
+             "model": "m", "provider": "subscription", "scaffold_version": "0.1.0"},
+            {"qid": "q1", "source": "manifold", "question": "?", "tier": "auto",
+             "effort": "medium (auto)", "router_only": True, "probability": None,
+             "crowd": crowd, "cost_usd": 0.05, "model": "", "provider": "subscription",
+             "scaffold_version": "0.1.0"},
+        ]
+        (results_dir / "s.results.jsonl").write_text(
+            "\n".join(json.dumps(r) for r in rows), encoding="utf-8")
+        assert report.main([str(set_file)]) == 0
+        text = (results_dir / "s.report.md").read_text(encoding="utf-8")
+        # auto row appears in the crowd table with medium's p (gap 0.2) and summed cost
+        auto_line = next(line for line in text.splitlines() if line.startswith("| auto"))
+        assert "0.200" in auto_line and "$0.45" in auto_line

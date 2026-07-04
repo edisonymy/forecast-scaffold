@@ -66,6 +66,26 @@ def live_crowd(source: str, market_id: str) -> float | None:
     return None
 
 
+def build_criteria(q: dict) -> str:
+    """The resolution contract for the brief.
+
+    ForecastBench market questions vary: Metaculus/Manifold carry real text in
+    ``market_info_resolution_criteria``, but Polymarket/INFER set it to the literal
+    string "N/A" and put the binding terms inside ``background``. Handing the agent
+    "Resolution criteria: N/A" makes it forecast the headline instead of the contract
+    (observed in the 2026-07-04 baseline), so point at the background explicitly.
+    """
+    stripped = FOUND_AT.sub("", str(q.get("resolution_criteria") or "")).strip()
+    market = str(q.get("market_info_resolution_criteria") or "").strip()
+    if market.upper() in ("", "N/A", "NONE"):
+        market = ""
+    combined = (stripped + "\n" + market).strip()
+    if not combined:
+        return ("(The binding resolution terms are stated inside the Background section "
+                "below — read them adversarially as the contract.)")
+    return combined[:4000]
+
+
 def latest_set_name() -> str:
     """The newest dated question-set file, per the GitHub contents API."""
     listing = json.loads(_get(
@@ -116,6 +136,7 @@ def forecastbench_specs(args: argparse.Namespace) -> list[dict]:
         print(f"  {source}: {len(pool)} eligible, taking {take}")
 
     specs: list[dict] = []
+    dropped_extreme = dropped_stale = 0
     for q in picked:
         crowd_value = float(q["freeze_datetime_value"])
         crowd_at = str(q.get("freeze_datetime") or "")
@@ -123,22 +144,33 @@ def forecastbench_specs(args: argparse.Namespace) -> list[dict]:
         if args.refresh_crowd and q["source"] in ("manifold", "polymarket"):
             live = live_crowd(q["source"], str(q["id"]))
             time.sleep(1)
-            if live is not None:
-                crowd_value, crowd_at = live, _now_iso()
-                crowd_src = f"{q['source']} live"
-        criteria = FOUND_AT.sub("", str(q.get("resolution_criteria") or "")).strip()
-        market_criteria = str(q.get("market_info_resolution_criteria") or "")
-        criteria = (criteria + "\n" + market_criteria).strip()
+            if live is None:
+                # A market we can't confirm live carries stale-freeze risk: the 2026-07-04
+                # baseline's worst "miss" was a question SCOTUS had already decided — the
+                # bot was right and the 3-week-old freeze was wrong. Drop, don't guess.
+                dropped_stale += 1
+                continue
+            if not 0.03 <= live <= 0.97:
+                dropped_extreme += 1  # trading at an extreme = effectively resolved
+                continue
+            crowd_value, crowd_at, crowd_src = live, _now_iso(), f"{q['source']} live"
         specs.append({
             "id": f"{q['source']}:{q['id']}",
             "source": q["source"],
             "question": q.get("question", ""),
-            "background": str(q.get("background") or "")[:4000],
-            "criteria": criteria[:4000],
+            "background": str(q.get("background") or "")[:8000],
+            "criteria": build_criteria(q),
             "resolve_by": str(q.get("market_info_close_datetime") or "")[:10] or None,
             "crowd": {"value": crowd_value, "at": crowd_at, "source": crowd_src},
             "url": q.get("url", ""),  # for humans reviewing results; never shown to the agent
         })
+    if dropped_stale or dropped_extreme:
+        print(f"  dropped: {dropped_stale} unconfirmable-live, "
+              f"{dropped_extreme} at-extreme (effectively resolved)")
+    stale = sum(1 for s in specs if "freeze" in s["crowd"]["source"])
+    if stale:
+        print(f"  note: {stale} question(s) keep freeze-time crowd values (no live source "
+              f"for metaculus/infer) — treat their per-question gaps with suspicion")
     return specs
 
 

@@ -26,6 +26,20 @@ and mirror `.claude-plugin/plugin.json`.
   silently redirect or break the agent; agent failures now surface the stdout error envelope,
   not just (often-empty) stderr. `run_bot` exits nonzero when any question fails, enabling
   workflow-level fallback.
+- OpenRouter provider on a machine with a cached `claude` login: the CLI ignores env auth
+  when a cached OAuth account exists (requests reached OpenRouter with no auth header).
+  The openrouter path now runs the agent under a dedicated empty `CLAUDE_CONFIG_DIR`.
+- Benchmark lessons from the 2026-07-04 baseline run, all in `bench/`:
+  Polymarket/INFER questions carried the literal criteria string "N/A" (their contract
+  lives in `background`) — `build_criteria` now says so explicitly and background is no
+  longer truncated at 4k; stale freeze-time crowd values indicted a correct forecast (the
+  market had since been decided by SCOTUS), so `--refresh-crowd` now drops questions that
+  can't be confirmed live or that trade at extremes; the auto tier defaults to
+  router-only (+report-side imputation from the routed tier); rows now record
+  `raw_draws`/`n_draws`, `reasoning`, and `duration_s` so tier compliance is auditable;
+  the report adds median/bias columns, a per-source table with crowd freshness, and a
+  run-to-run repeatability section; `bench/README.md` gains a preregistration/dev-holdout
+  iteration protocol.
 
 ## [0.1.0] - 2026-07-03
 

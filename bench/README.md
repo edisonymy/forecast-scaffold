@@ -74,8 +74,12 @@ python bench/fetch_set.py --from manifold --min-traders 30 --n 40 --out bench/se
 
 # 2. Run tiers over it, paired + blind (resumable; (question, tier) pairs are skipped
 #    once done). Use --provider openrouter to bill benchmark runs to OpenRouter credits.
+#    The auto tier runs ONLY its router call by default (--auto-mode router): its
+#    forecast is imputed from the routed tier's paired row, which is cheaper AND less
+#    noisy than re-running the forecast. --auto-mode full re-runs it anyway; the
+#    duplicate doubles as a run-to-run repeatability probe.
 python bench/run_bench.py bench/sets/2026-07-04.jsonl --tiers low,medium,high,auto \
-  --provider openrouter \
+  --provider openrouter --concurrency 6 \
   --agent-cmd "claude -p --model claude-sonnet-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch"
 
 # 3. Score
@@ -85,6 +89,39 @@ python bench/report.py bench/sets/2026-07-04.jsonl
 `bench/sets/` and `bench/results/` are gitignored: sets embed CC-BY-SA ForecastBench
 content, and results are experiment data, not code. Publish conclusions (and the
 report table) in the journal/docs instead.
+
+## Iteration protocol (how to tune without overfitting the benchmark)
+
+The benchmark is a dev signal, not the objective. Rules, in force from scaffold v0.1.0:
+
+1. **Noise floor first.** The repeatability section of the report (same tier, same
+   question, run twice) sets the floor: with per-question run-to-run noise σ, the paired
+   standard error on a mean-|Δp| difference over N questions is ≈ σ·√2/√N. A change is
+   accepted only if the improvement clears ~2× that SE on the dev set — otherwise it's
+   indistinguishable from re-rolling the dice.
+2. **Preregister each change.** Before running, write down (issue or journal entry): the
+   hypothesis, the single change made, and which metric should move which way. One change
+   per `scaffold_version` bump. No post-hoc metric shopping — the multi-metric table
+   exists so a change that improves mean |Δp| while degrading RMS or cost is caught, not
+   cherry-picked around.
+3. **Dev / confirm split.** Tune on one question set; confirm on a *fresh* set the tuned
+   version has never seen (next ForecastBench drop, or a `--from manifold` pull). A win
+   that appears on dev and disappears on confirm was overfit — revert.
+4. **Retire mined sets.** After ~3 tuning cycles against the same set, retire it from
+   decision-making (keep it as a regression suite). ForecastBench ships a fresh 500
+   biweekly; there is no reason to keep mining one batch.
+5. **Stratify by source.** A change that helps only one source (e.g. Polymarket phrasing)
+   is a niche adaptation, not scaffold skill — the per-source table is the check.
+6. **Resolution is the outer loop.** Crowd distance is trusted only as long as resolution
+   Brier (ForecastBench resolution sets + the journal via `calibrate`) keeps agreeing
+   with it. If versions improve on crowd distance but not on resolutions, the proxy has
+   been gamed — reground on resolutions. This check runs on every version once it has
+   ~20+ resolved questions, and it is the score that can't be overfit prospectively.
+7. **Freshness hygiene.** Live-refreshed crowd only, where a live source exists; drop
+   questions whose live price sits at an extreme (≤0.03 / ≥0.97 — effectively resolved)
+   or whose refresh fails. The 2026-07-04 baseline's largest "miss" was a question the
+   Supreme Court had already decided: the bot was right and the 3-week-old freeze value
+   was wrong. Freeze-only sources (Metaculus, INFER) stay flagged in the report.
 
 ## External yardsticks
 

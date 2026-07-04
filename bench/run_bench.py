@@ -19,6 +19,8 @@ import argparse
 import json
 import subprocess
 import sys
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -67,17 +69,33 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace) -> dict | None
         openrouter_model_cmd(args.agent_cmd)
         if args.provider == "openrouter" else args.agent_cmd
     )
+    started = datetime.now(UTC)
     cost = 0.0
     if tier == "auto":
         resolved, triage_cost = triage(base_cmd, brief, args.timeout, args.provider)
         cost += triage_cost
         effort = f"{resolved} (auto)"
+        if args.auto_mode == "router":
+            # The router IS the thing under test; its forecast at the routed tier would
+            # be a noisier duplicate of the standalone tier run the set already pays for.
+            # report.py imputes auto's probability from the routed tier's paired row.
+            return {
+                "qid": spec["id"], "source": spec["source"],
+                "question": spec["question"][:200],
+                "tier": tier, "effort": effort, "router_only": True,
+                "probability": None, "crowd": spec.get("crowd"),
+                "cost_usd": round(cost, 4), "model": "", "provider": args.provider,
+                "scaffold_version": SCAFFOLD_VERSION,
+                "duration_s": round((datetime.now(UTC) - started).total_seconds(), 1),
+                "at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            }
     else:
         resolved, effort = tier, tier
     system = build_system(resolved, blind=True)
     agent_cmd = f"{base_cmd} --disallowed-tools {BENCH_DISALLOWED}"
 
     probability: float | None = None
+    payload: dict = {}
     model = ""
     errors: list[str] = []
     for attempt in range(2):
@@ -90,7 +108,8 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace) -> dict | None
                 agent_cmd, prompt, system, args.timeout, args.provider
             )
             cost += attempt_cost
-            candidate = extract_json(output).get("probability")
+            payload = extract_json(output)
+            candidate = payload.get("probability")
         except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
             errors = [str(exc)[:300]]
             continue
@@ -101,6 +120,7 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace) -> dict | None
     if probability is None:
         print(f"    FAILED after retry: {errors}")
         return None
+    raw_draws = [float(d) for d in payload.get("raw_draws") or [] if isinstance(d, int | float)]
     return {
         "qid": spec["id"],
         "source": spec["source"],
@@ -113,6 +133,11 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace) -> dict | None
         "model": model,
         "provider": args.provider,
         "scaffold_version": SCAFFOLD_VERSION,
+        # audit trail: did the tier actually do its mechanics, and why this number?
+        "n_draws": len(raw_draws) or None,
+        "raw_draws": raw_draws or None,
+        "reasoning": str(payload.get("reasoning", ""))[:2000] or None,
+        "duration_s": round((datetime.now(UTC) - started).total_seconds(), 1),
         "at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
 
@@ -125,6 +150,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--provider", default="subscription", choices=PROVIDERS)
     parser.add_argument("--agent-cmd", default="claude -p", help="headless agent command")
     parser.add_argument("--timeout", type=int, default=1200)
+    parser.add_argument("--concurrency", type=int, default=1,
+                        help="how many forecasts to run at once (independent agent "
+                             "subprocesses; raise for speed, lower if the provider "
+                             "rate-limits)")
+    parser.add_argument("--auto-mode", default="router", choices=("router", "full"),
+                        help="router (default): the auto tier runs ONLY the triage call; "
+                             "its forecast is imputed from the routed tier's paired row. "
+                             "full: auto also runs the forecast (2x cost; the duplicate "
+                             "doubles as a run-to-run repeatability probe)")
     args = parser.parse_args(argv)
 
     tiers = [t.strip() for t in args.tiers.split(",") if t.strip()]
@@ -148,26 +182,47 @@ def main(argv: list[str] | None = None) -> int:
                 done.add((row["qid"], row["tier"]))
 
     total = len(specs) * len(tiers)
+    jobs = [(spec, tier) for spec in specs for tier in tiers
+            if (spec["id"], tier) not in done]
     print(f"{len(specs)} questions x {len(tiers)} tiers = {total} runs "
-          f"({len(done)} already done) -> {results_path}")
+          f"({len(done)} already done, {len(jobs)} to run) "
+          f"at concurrency {args.concurrency} -> {results_path}")
+
+    def work(job: tuple[dict, str]) -> tuple[dict, str, dict | None, str | None]:
+        spec, tier = job
+        try:
+            return spec, tier, forecast_one(spec, tier, args), None
+        except Exception as exc:  # noqa: BLE001 - one crashed job must not kill the pool
+            return spec, tier, None, str(exc)[:200]
+
+    # Threads (not processes): each job blocks on a claude subprocess, so the GIL is
+    # released during the wait and N jobs genuinely run in parallel. One lock guards the
+    # shared journal handle, the running totals, and stdout so lines don't interleave.
+    lock = threading.Lock()
     spent = 0.0
     failures = 0
-    with results_path.open("a", encoding="utf-8") as fh:
-        for i, spec in enumerate(specs, 1):
-            for tier in tiers:
-                if (spec["id"], tier) in done:
-                    continue
-                title = spec["question"][:70].encode("ascii", "replace").decode()
-                print(f"[{i}/{len(specs)}] {tier:<7} {title}")
-                row = forecast_one(spec, tier, args)
+    completed = 0
+    with results_path.open("a", encoding="utf-8") as fh, \
+            ThreadPoolExecutor(max_workers=max(1, args.concurrency)) as pool:
+        for spec, tier, row, err in (
+            fut.result() for fut in as_completed(pool.submit(work, j) for j in jobs)
+        ):
+            with lock:
+                completed += 1
+                title = spec["question"][:56].encode("ascii", "replace").decode()
                 if row is None:
                     failures += 1
+                    print(f"[{completed}/{len(jobs)}] {tier:<7} FAILED  {title}"
+                          f"{' :: ' + err if err else ''}")
                     continue
                 fh.write(json.dumps(row, ensure_ascii=False) + "\n")
                 fh.flush()
                 spent += row["cost_usd"]
-                print(f"    p={row['probability']:.2f} crowd={spec['crowd']['value']:.2f} "
-                      f"${row['cost_usd']:.2f} (run total ${spent:.2f})")
+                shown = (f"-> {row['effort']}" if row.get("router_only")
+                         else f"p={row['probability']:.2f}")
+                print(f"[{completed}/{len(jobs)}] {tier:<7} {shown} "
+                      f"crowd={spec['crowd']['value']:.2f} ${row['cost_usd']:.2f} "
+                      f"(total ${spent:.2f}) {title}")
     print(f"done; {failures} failure(s), ${spent:.2f} spent this invocation")
     return 1 if failures else 0
 

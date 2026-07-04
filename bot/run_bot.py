@@ -24,6 +24,7 @@ import re
 import shlex
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -176,6 +177,15 @@ def agent_environment(provider: str = "subscription") -> dict[str, str]:
         env["ANTHROPIC_AUTH_TOKEN"] = key
         env["ANTHROPIC_API_KEY"] = ""
         env.pop("CLAUDE_CODE_OAUTH_TOKEN", None)
+        # A machine with a cached `claude` login ignores env auth entirely (the CLI
+        # rightly refuses to send its OAuth bearer to a third-party host, so requests
+        # arrive with NO auth header -> 401 "Missing Authentication header"). A fresh,
+        # dedicated config dir has no cached account, so ANTHROPIC_AUTH_TOKEN applies.
+        # Harmless in CI (runners have no cached login); respects an explicit override.
+        if "CLAUDE_CONFIG_DIR" not in env:
+            config_dir = Path(tempfile.gettempdir()) / "forecast-scaffold-openrouter-config"
+            config_dir.mkdir(parents=True, exist_ok=True)
+            env["CLAUDE_CONFIG_DIR"] = str(config_dir)
     else:
         # The provider flag owns routing: drop inherited endpoint overrides so a shell
         # configured for some other gateway can't silently redirect the subscription path.
