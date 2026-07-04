@@ -5,6 +5,11 @@ on:
     branches: [main]
   pull_request:
 
+# Least privilege: every job here only checks out and reads. The bot's commit job
+# (bot.yml) scopes contents: write for itself.
+permissions:
+  contents: read
+
 jobs:
   checks:
     runs-on: ubuntu-latest
