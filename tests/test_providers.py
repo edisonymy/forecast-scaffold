@@ -83,6 +83,32 @@ class TestOpenrouterModelCmd:
         assert run_bot.openrouter_model_cmd("claude -p") == "claude -p"
 
 
+class TestPrimaryModel:
+    """The model tag must be a single clean id so `score --by model` groups cleanly —
+    not the CLI's helper models joined together (the ablation's polluted tag bug)."""
+
+    CMD = "claude -p --model claude-fable-5 --output-format json"
+
+    def test_requested_model_wins_over_helper(self) -> None:
+        usage = {"claude-fable-5": {"outputTokens": 900},
+                 "claude-haiku-4-5-20251001": {"outputTokens": 40}}
+        assert run_bot._primary_model(usage, self.CMD) == "claude-fable-5"
+
+    def test_dated_key_matches_by_prefix(self) -> None:
+        usage = {"claude-fable-5-20260115": {"outputTokens": 900},
+                 "claude-haiku-4-5-20251001": {"outputTokens": 40}}
+        assert run_bot._primary_model(usage, self.CMD) == "claude-fable-5"
+
+    def test_falls_back_to_max_tokens_when_flag_absent(self) -> None:
+        usage = {"claude-sonnet-5": {"inputTokens": 5000, "outputTokens": 800},
+                 "claude-haiku-4-5-20251001": {"inputTokens": 100, "outputTokens": 20}}
+        assert run_bot._primary_model(usage, "claude -p") == "claude-sonnet-5"
+
+    def test_no_usage_falls_back_to_flag(self) -> None:
+        assert run_bot._primary_model(None, self.CMD) == "claude-fable-5"
+        assert run_bot._primary_model({}, self.CMD) == "claude-fable-5"
+
+
 def test_record_carries_provider() -> None:
     record = ForecastRecord(question="Will X?", probability=0.4, provider="openrouter")
     assert record.provider == "openrouter"

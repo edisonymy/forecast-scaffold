@@ -146,6 +146,31 @@ def _model_from_cmd(agent_cmd: str) -> str:
     return ""
 
 
+def _primary_model(usage: object, agent_cmd: str) -> str:
+    """The forecaster model, as a single clean id for `score --by model`.
+
+    `claude -p --output-format json` reports ``modelUsage`` keyed by EVERY model that
+    ran — including small helpers the CLI invokes for its own bookkeeping (e.g. a haiku
+    alongside the model we asked for). Joining the keys pollutes the model tag, so pick
+    one: the model named on the command if it actually forecasted, else the model that
+    did the most token work (the forecaster dwarfs any helper). Falls back to the --model
+    flag when there is no usage dict (plain-text agents)."""
+    requested = _model_from_cmd(agent_cmd)
+    if not isinstance(usage, dict) or not usage:
+        return requested
+    if requested:
+        for key in usage:
+            if isinstance(key, str) and (key == requested or key.startswith(requested)):
+                return requested
+
+    def _tokens(stats: object) -> float:
+        if not isinstance(stats, dict):
+            return 0.0
+        return float(stats.get("inputTokens") or 0) + float(stats.get("outputTokens") or 0)
+
+    return max(usage, key=lambda k: _tokens(usage[k]))
+
+
 def openrouter_model_cmd(agent_cmd: str) -> str:
     """Rewrite a bare Anthropic --model id to OpenRouter's slug form (anthropic/<id>).
 
@@ -231,9 +256,7 @@ def run_agent(
     try:
         envelope = json.loads(result.stdout)
         if isinstance(envelope, dict) and "result" in envelope:
-            usage = envelope.get("modelUsage")
-            model = ", ".join(usage) if isinstance(usage, dict) and usage else ""
-            model = model or _model_from_cmd(agent_cmd)
+            model = _primary_model(envelope.get("modelUsage"), agent_cmd)
             cost = float(envelope.get("total_cost_usd") or 0.0)
             return str(envelope["result"]), cost, model
     except (json.JSONDecodeError, TypeError, ValueError):
@@ -352,9 +375,11 @@ def build_system(tier: str, blind: bool, config: dict[str, Any] | None = None) -
             "\n## Blind mode (mandatory)\n"
             "This run measures your skill AGAINST the community. Do NOT look up, cite, or "
             "anchor on the community prediction, market price, or any aggregator of "
-            "forecasts for this question (Metaculus, Manifold, Polymarket, prediction "
-            "markets on this exact question). Skip the skill's crowd-blend step. Primary "
-            "sources and base rates only."
+            "forecasts for this question (Metaculus, Manifold, Polymarket, Kalshi, "
+            "bookmaker odds on this exact question). Skip the skill's crowd-blend step. "
+            "Everything else is fair game and expected: polls, expert analysis and ratings "
+            "(e.g. election race ratings), official statistics, domain literature. Blind "
+            "means not peeking at the answer sheet — it does not mean under-researching."
         )
     return system
 
