@@ -458,6 +458,88 @@ def calibration_report(records: list[ForecastRecord]) -> CalibrationReport:
     )
 
 
+#: Keys ``score_by`` accepts, and the order ``--by`` groups render in when multiple are given.
+GROUP_KEYS = ("scaffold_version", "blind", "model", "effort", "provider", "question_type")
+
+#: Anchor rule (owner's instruction): Brier scores are only comparable within a methodology
+#: version and a blind/sighted condition, so this is the default even when nobody passes
+#: ``--by`` — silently pooling across versions or blind/sighted makes the numbers meaningless.
+DEFAULT_GROUP_KEYS = ("scaffold_version", "blind")
+
+_UNKNOWN = "?"  # missing field on an otherwise-groupable record
+
+
+def _group_key_value(record: ForecastRecord, key: str) -> str:
+    """The label a record sorts under for one ``--by`` key. Missing fields group as ``"?"``,
+    except ``blind`` with no crowd captured at all, which is genuinely a third state
+    (neither confirmed blind nor confirmed sighted) and is labelled ``"unknown"``."""
+    if key == "blind":
+        if record.crowd is None:
+            return "unknown"
+        shown = record.crowd.get("shown_to_agent")
+        if shown is None:
+            return "unknown"
+        return "blind" if shown is False else "sighted"
+    value = getattr(record, key, None)
+    if value is None or value == "":
+        return _UNKNOWN
+    return str(value)
+
+
+@dataclass
+class GroupedCalibrationReport:
+    """``calibration_report`` stratified by one or more of :data:`GROUP_KEYS`, plus a
+    pooled-across-everything line kept for context (never for iteration decisions)."""
+
+    keys: tuple[str, ...]
+    groups: list[tuple[dict[str, str], CalibrationReport]]
+    pooled: CalibrationReport
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "keys": list(self.keys),
+            "groups": [{"group": g, "report": r.to_dict()} for g, r in self.groups],
+            "pooled": self.pooled.to_dict(),
+        }
+
+    def summary(self) -> str:
+        lines = [f"Grouped by: {', '.join(self.keys)}"]
+        for group, report in self.groups:
+            label = ", ".join(f"{k}={v}" for k, v in group.items())
+            lines.append(f"\n-- {label} --")
+            lines.append(report.summary())
+        lines.append("\n-- pooled (all groups) --")
+        lines.append(self.pooled.summary())
+        return "\n".join(lines)
+
+
+def score_by(records: list[ForecastRecord], keys: tuple[str, ...]) -> GroupedCalibrationReport:
+    """Stratify :func:`calibration_report` by ``keys`` (each one of :data:`GROUP_KEYS`).
+
+    Groups are sorted by their label tuple for deterministic output. Each group gets its own
+    honest small-N treatment (same threshold and wording as the pooled report) — stratifying
+    only shrinks N per group, so the noise warning matters *more* here, not less. The pooled
+    line is always included, clearly labelled, so pooled and stratified numbers are never
+    mistaken for each other.
+    """
+    unknown = [k for k in keys if k not in GROUP_KEYS]
+    if unknown:
+        raise ValueError(f"unknown --by key(s) {unknown}; choose from {list(GROUP_KEYS)}")
+    if not keys:
+        raise ValueError(f"--by needs at least one key from {list(GROUP_KEYS)}")
+
+    buckets: dict[tuple[str, ...], list[ForecastRecord]] = {}
+    for r in records:
+        label = tuple(_group_key_value(r, k) for k in keys)
+        buckets.setdefault(label, []).append(r)
+
+    groups = [
+        (dict(zip(keys, label, strict=True)), calibration_report(bucket))
+        for label, bucket in sorted(buckets.items())
+    ]
+    return GroupedCalibrationReport(keys=keys, groups=groups, pooled=calibration_report(records))
+
+
 # --------------------------------------------------------------------------- aggregation
 
 
@@ -1023,8 +1105,13 @@ def _cmd_score(args: argparse.Namespace) -> int:
     if config is None:
         return 2
     journal = _journal_from(args, config)
-    report = calibration_report(journal.all())
-    print(json.dumps(report.to_dict(), ensure_ascii=False) if args.json else report.summary())
+    keys = tuple(k.strip() for k in args.by.split(",") if k.strip())
+    try:
+        grouped = score_by(journal.all(), keys)
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps(grouped.to_dict(), ensure_ascii=False) if args.json else grouped.summary())
     return 0
 
 
@@ -1169,7 +1256,16 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--journal")
     p.set_defaults(func=_cmd_due)
 
-    p = sub.add_parser("score", help="Brier + calibration report over the journal")
+    p = sub.add_parser("score", help="Brier + calibration report over the journal, stratified")
+    p.add_argument(
+        "--by", default=",".join(DEFAULT_GROUP_KEYS),
+        help=(
+            "comma-separated group-by keys from "
+            f"{{{','.join(GROUP_KEYS)}}} (default: %(default)s) — "
+            "Brier scores are only comparable within matching methodology, so this anchors "
+            "scoring to scaffold_version and blind/sighted even if you don't pass it"
+        ),
+    )
     p.add_argument("--json", action="store_true")
     p.add_argument("--journal")
     p.set_defaults(func=_cmd_score)

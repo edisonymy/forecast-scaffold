@@ -19,6 +19,7 @@ from forecast_scaffold.core import (
     geo_mean_odds,
     load_config,
     median,
+    score_by,
     trimmed_mean,
     validate_mc,
     validate_percentiles,
@@ -155,6 +156,77 @@ def test_calibration_small_n_is_flagged() -> None:
 
 def test_calibration_empty() -> None:
     assert calibration_report([]).n == 0
+
+
+# ------------------------------------------------------------------ score_by
+
+
+def test_score_by_default_keys_separate_scaffold_version_and_blind() -> None:
+    records = [
+        make_record(scaffold_version="0.1.0", crowd={"value": 0.5, "shown_to_agent": False}
+                    ).resolve(True),
+        make_record(scaffold_version="0.1.0", crowd={"value": 0.5, "shown_to_agent": True}
+                    ).resolve(True),
+        make_record(scaffold_version="0.2.0").resolve(False),
+    ]
+    grouped = score_by(records, ("scaffold_version", "blind"))
+    labels = [g for g, _ in grouped.groups]
+    assert {"scaffold_version": "0.1.0", "blind": "blind"} in labels
+    assert {"scaffold_version": "0.1.0", "blind": "sighted"} in labels
+    assert {"scaffold_version": "0.2.0", "blind": "unknown"} in labels
+    assert all(report.n == 1 for _, report in grouped.groups)
+    assert grouped.pooled.n == 3
+
+
+def test_score_by_model_and_effort() -> None:
+    records = [
+        make_record(model="opus", effort="high").resolve(True),
+        make_record(model="sonnet", effort="low").resolve(False),
+        make_record(model="sonnet", effort="low").resolve(False),
+    ]
+    grouped = score_by(records, ("model", "effort"))
+    by_label = {tuple(g.items()): report for g, report in grouped.groups}
+    assert by_label[(("model", "opus"), ("effort", "high"))].n == 1
+    assert by_label[(("model", "sonnet"), ("effort", "low"))].n == 2
+
+
+def test_score_by_missing_field_groups_as_question_mark() -> None:
+    records = [make_record().resolve(True)]  # no model set -> ""
+    grouped = score_by(records, ("model",))
+    assert grouped.groups[0][0] == {"model": "?"}
+
+
+def test_score_by_rejects_unknown_key() -> None:
+    with pytest.raises(ValueError, match="unknown --by key"):
+        score_by([], ("not_a_key",))
+
+
+def test_score_by_rejects_empty_keys() -> None:
+    with pytest.raises(ValueError):
+        score_by([], ())
+
+
+def test_score_by_small_n_wording_is_per_group() -> None:
+    records = [
+        make_record(model="opus").resolve(True),
+        make_record(model="sonnet").resolve(False),
+    ]
+    grouped = score_by(records, ("model",))
+    assert len(grouped.groups) == 2
+    for _, report in grouped.groups:
+        assert report.direction == "insufficient data"
+        assert "noise" in report.summary()
+    # The pooled line is separate and clearly labelled, never mistaken for a group.
+    assert "pooled (all groups)" in grouped.summary()
+
+
+def test_score_by_pooled_line_matches_plain_calibration_report() -> None:
+    records = [
+        make_record(scaffold_version="0.1.0").resolve(True),
+        make_record(scaffold_version="0.2.0").resolve(False),
+    ]
+    grouped = score_by(records, ("scaffold_version",))
+    assert grouped.pooled.to_dict() == calibration_report(records).to_dict()
 
 
 # ------------------------------------------------------------------ aggregation

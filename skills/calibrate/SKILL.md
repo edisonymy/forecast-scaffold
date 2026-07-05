@@ -42,12 +42,13 @@ python fsj.py resolve --id <id> --outcome true|false --note "<what happened, wit
 ## Step 3 — Score
 
 ```
-python fsj.py score [--json]
+python fsj.py score [--by scaffold_version,blind] [--json]
 ```
 
-Report the Brier score (0 is perfect; 0.25 = always saying 50%), N, and the **direction** — the
-actionable part. Honor the small-N flag: below the threshold the report itself carries, direction
-is noise; report it, don't act on it.
+Defaults to grouping by `scaffold_version,blind` — never pool Brier scores across a methodology
+change or blind vs. sighted runs; add `model`, `effort`, `provider`, `question_type` when those
+vary too. Report each group's Brier (0 perfect; 0.25 = always 50%), N, and **direction**; the
+pooled line is context only. Small-N wording applies per group — below threshold, report it, don't act on it.
 
 ## Step 4 — Post-mortem the misses (and spot-check the hits)
 
