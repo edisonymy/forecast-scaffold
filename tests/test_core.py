@@ -263,7 +263,8 @@ def test_aggregate_binary_clamps_and_describes() -> None:
     assert "clamped" in desc and "trimmed_mean(n=4)" in desc
 
     p, desc = aggregate_binary([0.5, 0.6, 0.7], crowd=0.4)
-    assert p == pytest.approx(0.5)  # trimmed mean 0.6, blended 50/50 with 0.4
+    # trimmed mean 0.6, blended at the Halawi-validated crowd-heavy default (0.8)
+    assert p == pytest.approx(0.44)
     assert "crowd" in desc
 
 

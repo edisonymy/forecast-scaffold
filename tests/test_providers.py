@@ -117,29 +117,8 @@ def test_record_carries_provider() -> None:
 class TestPooledRunHelpers:
     """Shared-dossier pooling: research once, reason k times in separate contexts.
 
-    The reasoning-only runs must be *unable* to research (enforced at the CLI flag level,
-    not requested in prose) and must be able to cycle models for cross-model diversity."""
-
-    def test_reasoning_only_cmd_strips_web_tools(self) -> None:
-        cmd = run_bot.reasoning_only_cmd(
-            "claude -p --model claude-sonnet-5 --output-format json "
-            "--allowed-tools Read,Glob,Grep,WebSearch,WebFetch"
-        )
-        tokens = shlex.split(cmd)
-        allowed = tokens[tokens.index("--allowed-tools") + 1]
-        assert "WebSearch" not in allowed and "WebFetch" not in allowed
-        assert "Read" in allowed
-        disallowed = tokens[tokens.index("--disallowed-tools") + 1]
-        assert disallowed == "WebSearch,WebFetch"
-
-    def test_reasoning_only_cmd_without_allowed_tools_still_disallows(self) -> None:
-        cmd = run_bot.reasoning_only_cmd("claude -p --model claude-sonnet-5")
-        assert "--disallowed-tools WebSearch,WebFetch" in cmd
-
-    def test_reasoning_only_cmd_all_web_allowed_list_degrades_to_read(self) -> None:
-        cmd = run_bot.reasoning_only_cmd("claude -p --allowed-tools WebSearch,WebFetch")
-        tokens = shlex.split(cmd)
-        assert tokens[tokens.index("--allowed-tools") + 1] == "Read"
+    Reasoning runs keep web access for bounded gap-filling (v0.3.0 — dossier-first,
+    ≤2 targeted searches by instruction) and cycle models for cross-model diversity."""
 
     def test_with_model_replaces_existing_flag(self) -> None:
         cmd = run_bot.with_model(

@@ -116,7 +116,7 @@ python fsj.py record \
   --reference-class "<the class>" --base-rate 0.35 \
   --why "<which decision/belief this moves>" \
   --draws 0.52,0.58,0.56,0.61,0.66 \
-  --aggregation "geo_mean_odds(n=5) blended with crowd=0.6 (weight 0.5)" \
+  --aggregation "geo_mean_odds(n=5) blended with crowd=0.6 (weight 0.8)" \
   --effort "medium (auto)" --model "<model(s) used>" \
   --crowd-value 0.60 --crowd-source "metaculus" \
   --reasoning "<3-6 line summary: base rate, key update, main counterargument>" \

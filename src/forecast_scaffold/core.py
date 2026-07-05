@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.2.3"
+SCAFFOLD_VERSION = "0.3.0"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -63,7 +63,10 @@ DEFAULTS: dict[str, Any] = {
         "medium": {"draws": 5, "searches": 5, "runs": 4, "run_models": []},
         "high": {"draws": 12, "searches": 12, "runs": 6, "run_models": []},
     },
-    "blend": {"crowd_weight": 0.5},
+    # 0.8 = Halawi et al.'s validated optimum ("4x weight for the crowd", NeurIPS 2024) —
+    # the previously-shipped 0.5 misquoted that same source. Weight belongs on the crowd
+    # more the better the crowd is; revisit if forecasting where no liquid crowd exists.
+    "blend": {"crowd_weight": 0.8},
     "aggregation": {"method": "trimmed_mean"},
     "journal": {"path": "forecasts.jsonl"},
     # Informational: which models the host agent should prefer. The scaffold never calls

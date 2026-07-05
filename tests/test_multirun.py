@@ -75,10 +75,14 @@ class StubClient:
 
 def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
         config: dict[str, Any] | None = None, effort: str = "medium",
-        question: dict[str, Any] | None = None,
-        budget: float = 0.0) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
+        question: dict[str, Any] | None = None, budget: float = 0.0,
+        with_verify: bool = False,
+        arbiter_spread: float = 10.0) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
     agent = ScriptedAgent(outputs)
     monkeypatch.setattr(run_bot, "run_agent", agent)
+    if not with_verify:  # most tests script only the forecast runs
+        monkeypatch.setattr(run_bot, "verify_dossier", lambda *a, **k: ("", 0.0))
+    monkeypatch.setattr(run_bot, "ARBITER_SPREAD", arbiter_spread)
     args = argparse.Namespace(
         blind=False, effort=effort, provider="subscription", timeout=60,
         dry_run=True, comment=False, budget=budget,
@@ -127,10 +131,10 @@ class TestHappyPath:
         ])
         assert "Dossier (multi-run mode" in (agent.calls[0]["system"] or "")
         for call in agent.calls[1:]:
-            assert "Reasoning-only run" in (call["system"] or "")
+            assert "Reasoning run (shared dossier)" in (call["system"] or "")
             assert "Dossier (multi-run mode" not in (call["system"] or "")
 
-    def test_reasoning_runs_are_webless_and_lens_ordered(
+    def test_reasoning_runs_get_dossier_and_ordered_lenses(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
         agent, _, _ = run(monkeypatch, tmp_path, [
@@ -139,11 +143,9 @@ class TestHappyPath:
             fenced({"probability": 0.40, "reasoning": "x", "sources": []}),
         ])
         for call in agent.calls[1:]:
-            assert "--disallowed-tools WebSearch,WebFetch" in call["cmd"]
-            assert "WebSearch" not in call["cmd"].split("--disallowed-tools")[0].split(
-                "--allowed-tools"
-            )[1].split()[0]
             assert RESEARCH["dossier"] in call["prompt"]
+            # v0.3.0: web stays available for bounded gap-filling (instruction-scoped)
+            assert "Reasoning run (shared dossier)" in (call["system"] or "")
         assert run_bot.LENSES[0].split(":")[0] in agent.calls[1]["prompt"]
         assert run_bot.LENSES[1].split(":")[0] in agent.calls[2]["prompt"]
 
@@ -264,6 +266,81 @@ class TestShapes:
         assert ok and record is not None
         assert len(agent.calls) == 1
         assert "Dossier (multi-run mode" not in (agent.calls[0]["system"] or "")
+
+    def test_verification_verdicts_reach_reasoning_prompts(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # O1: the CoVe premise check runs once after the dossier and its verdicts are
+        # appended so every reasoning run sees them.
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced({"verification": [
+                {"premise": "seat math", "verdict": "confirmed",
+                 "note": "matches official count", "source": "https://example.com/v"},
+            ]}),
+            fenced({"probability": 0.20, "reasoning": "x", "sources": []}),
+            fenced({"probability": 0.40, "reasoning": "x", "sources": []}),
+        ], with_verify=True)
+        assert ok and record is not None
+        assert "Verify each with ONE targeted web search" in agent.calls[1]["prompt"]
+        for call in agent.calls[2:]:
+            assert "Verification (independent premise check" in call["prompt"]
+            assert "CONFIRMED" in call["prompt"]
+
+    def test_arbiter_fires_on_wide_spread_and_overrides_pool(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # O2: spread 0.30 > 0.15 -> one crux run sees the draws and overrides the pool.
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced({"probability": 0.20, "reasoning": "low view", "sources": []}),
+            fenced({"probability": 0.50, "reasoning": "high view", "sources": []}),
+            fenced({"probability": 0.42, "reasoning": "crux resolved", "crux":
+                    "the filing deadline already passed", "sources": ["https://x.y"]}),
+        ], arbiter_spread=0.15)
+        assert ok and record is not None
+        assert record["probability"] == pytest.approx(0.42)
+        assert "crux_arbiter" in record["aggregation"]
+        assert "filing deadline" in record["reasoning"]
+        # the arbiter is the aggregator: it may see the runs' numbers
+        assert "0.20: low view" in agent.calls[3]["prompt"]
+        assert record["raw_draws"] == [0.30, 0.20, 0.50]  # draws stay auditable
+
+    def test_arbiter_skipped_on_tight_spread(self, monkeypatch: pytest.MonkeyPatch,
+                                             tmp_path: Path) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced({"probability": 0.28, "reasoning": "x", "sources": []}),
+            fenced({"probability": 0.33, "reasoning": "x", "sources": []}),
+        ], arbiter_spread=0.15)
+        assert ok and record is not None
+        assert len(agent.calls) == 3  # no arbiter call
+        assert record["aggregation"] == "geo_mean_odds(runs=3)"
+
+    def test_fast_proxies_recorded_for_slow_questions(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        slow_q = {**QUESTION, "scheduled_resolve_time": "2027-09-01T00:00:00Z"}
+        research = {**RESEARCH, "fast_proxies": [
+            {"question": "Will the interim report be published by August 15?",
+             "criterion": "per agency site", "resolve_by": "2026-08-20",
+             "probability": 0.7},
+        ]}
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(research),
+            fenced({"probability": 0.20, "reasoning": "x", "sources": []}),
+            fenced({"probability": 0.40, "reasoning": "x", "sources": []}),
+        ], question=slow_q)
+        assert ok and record is not None
+        assert "Fast proxies (slow question)" in (agent.calls[0]["system"] or "")
+        journal_lines = [json.loads(line) for line in
+                         (tmp_path / "j.jsonl").read_text(encoding="utf-8").splitlines()]
+        assert len(journal_lines) == 2
+        proxy = journal_lines[-1]
+        # the parent record is first; the proxy links back to it
+        assert proxy["fast_proxy"] is True
+        assert proxy["parent_id"] == journal_lines[0]["id"]
+        assert proxy["probability"] == 0.7
 
     def test_run_models_cycle_across_reasoning_runs(self, monkeypatch: pytest.MonkeyPatch,
                                                     tmp_path: Path) -> None:

@@ -120,7 +120,8 @@ def test_aggregate_command(capsys: pytest.CaptureFixture[str]) -> None:
     assert result["probability"] == pytest.approx(0.6)
 
     assert main(["aggregate", "--draws", "0.5,0.6,0.7", "--crowd", "0.4", "--json"]) == 0
-    assert json.loads(capsys.readouterr().out)["probability"] == pytest.approx(0.5)
+    # trimmed mean 0.6 blended at the crowd-heavy default (0.8): 0.8*0.4 + 0.2*0.6
+    assert json.loads(capsys.readouterr().out)["probability"] == pytest.approx(0.44)
 
 
 def test_validate_command(capsys: pytest.CaptureFixture[str]) -> None:

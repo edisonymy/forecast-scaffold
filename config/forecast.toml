@@ -36,6 +36,10 @@ searches = 5
 runs = 4
 run_models = []
 
+# Candidate future high-tier upgrade (NOT implemented): disjoint-retrieval runs — each run
+# researches its own sources instead of sharing one dossier. Half-validated externally
+# (source-split agents beat shared-source agents) and it is the regime where extremizing
+# becomes legitimate; gated on the issue #9 evidence-elasticity result before any build.
 [tiers.high]
 draws = 12
 searches = 12
@@ -43,9 +47,11 @@ runs = 6
 run_models = []
 
 [blend]
-# Weight on the crowd/market number when one exists. A simple 50/50 average beat both the
-# system and the crowd alone in the published evidence.
-crowd_weight = 0.5
+# Weight on the crowd/market number when one exists. Halawi et al.'s validated optimum is
+# 4:1 in the CROWD's favor ("4x weight for the crowd... optimal on the validation set",
+# Brier .149 -> .146) — the 0.5 this file used to ship misquoted that source. The optimum
+# shrinks as your own skill (and correlation with the crowd) rises; it is horizon-dependent.
+crowd_weight = 0.8
 
 [aggregation]
 # "trimmed_mean" for correlated draws from one forecaster (the default);

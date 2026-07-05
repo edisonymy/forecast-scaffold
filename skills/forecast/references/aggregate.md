@@ -84,12 +84,21 @@ wider than usual."
 ## The crowd
 
 If a community prediction or market price exists, capture it with its timestamp and pass
-`--crowd`. A simple 50/50 blend of a good system with the crowd has beaten both alone — the crowd
-is an anchor, not an opponent. Two rules:
+`--crowd`. Blending with the crowd has beaten both the system and the crowd alone — and the
+validated optimum puts most of the weight on the CROWD (Halawi et al.: "4x weight for the crowd
+... optimal on the validation set"; config default 0.8). The crowd is an anchor, not an opponent;
+your edge case is the exception, not the rule. Three rules:
 
 - **Disagreement is a stop sign, not a triumph.** If your aggregate is far from a liquid crowd
   number, either they know something (find it) or you do (name it, and be able to defend it). Only
-  then proceed.
+  then proceed. Large model-vs-crowd disagreement is itself informative — in hybrid studies the
+  model-side view won most direction-conflicts — but only when the disagreement was researched,
+  not asserted.
+- **Check staleness before trusting the anchor.** A crowd number is evidence as of its timestamp:
+  if a decisive event postdates it (a ruling, a resolution-relevant announcement), the anchor may
+  be dead — our worst measured "miss" was a correct forecast indicted by a three-week-old frozen
+  market value. Metaculus's community prediction is recency-managed by the platform; frozen
+  benchmark values and thin markets are not.
 - The pre-blend aggregate, the crowd value, and the blended result all belong in the record
   (`--draws`, `--crowd-value`, final `--probability`) so the track record can later show whether
   your edge over the crowd was real.

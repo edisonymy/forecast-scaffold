@@ -4,6 +4,41 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.3.0] - 2026-07-05
+
+The architecture-review release (see the loop-architecture review artifact + issues #7-#9):
+reallocates effort from reasoning multiplicity toward evidence quality, contract discipline,
+and the scoring loop. The tournament cron remains disabled pending the issue #9 experiment.
+
+### Changed
+- **`crowd_weight` 0.5 → 0.8.** The 0.5 default misquoted its own source: Halawi et al.'s
+  validated optimum is "4x weight for the crowd" (Brier .149 → .146). Known-value tests and
+  docs updated; staleness rule added to the crowd section (a crowd number is evidence as of
+  its timestamp).
+- **Reasoning runs may now fill evidence gaps** (owner decision): up to 2 targeted searches,
+  dossier-first, blind domain blocks still apply — instead of the v0.2.x hard web strip.
+  Matches production practice of interleaving acquisition with reasoning.
+
+### Added
+- **Premise verification (CoVe-shaped)**: after the dossier is written, its 1-3 load-bearing
+  premises are re-checked as isolated questions (blind to any draft, one search each, ≤4
+  items — the measured optimum) and the verdicts are appended so every reasoning run sees
+  them. Non-fatal, budget-guarded. External receipts: CoVe 23-28% relative error reduction;
+  FEVER: retrieval-coupled checks beat introspection ~4:1.
+- **Disagreement-triggered crux arbitration**: when the pooled draws spread more than 0.15,
+  one arbiter run sees the draws + rationales (it is the aggregator — that is its job),
+  identifies the crux, resolves it with ≤3 searches, and overrides the pool; the journal
+  records both (`aggregation: "crux_arbiter(spread=…) over geo_mean_odds(runs=…)"`) and
+  keeps raw_draws. The shape FutureSearch's supervisor and No-Stream's conditional stacking
+  converged on: extra research only where the ensemble located genuine uncertainty.
+- **Fast proxies for slow questions**: binary questions resolving >180 days out ask the
+  research run for up to 2 journal-only sub-questions that resolve within ~8 weeks
+  (`parent_id`/`fast_proxy` linkage) — calibration bandwidth for the scoring loop.
+- **`bench/evidence_ablation.py`** (issue #9's experiment, ready to run): inverted BTF-2 —
+  same questions, same zero-shot reasoning, dossier served at four quality levels
+  (full/half/stub/none) on a cheap parametrically-clean model. Decides whether evidence
+  quality is a cliff, a slope, or flat on this corpus.
+
 ## [0.2.3] - 2026-07-05
 
 Hardening release from a four-perspective adversarial review (code correctness, methodology,
