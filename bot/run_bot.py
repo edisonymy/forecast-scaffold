@@ -39,6 +39,7 @@ from forecast_scaffold.core import (
     Journal,
     _utc_now,
     clamp,
+    geo_mean_odds,
     load_config,
     percentiles_to_cdf,
     validate_mc,
@@ -425,34 +426,60 @@ def forecast_question(
     system = build_system(tier, args.blind, config)
 
     agent_cmd = base_cmd + (f" --disallowed-tools {BLIND_DISALLOWED}" if args.blind else "")
+
+    def one_run() -> tuple[dict[str, Any] | None, str, list[str]]:
+        nonlocal run_cost
+        errors: list[str] = []
+        for attempt in range(2):
+            prompt = brief if attempt == 0 else (
+                brief + "\n\nYour previous output was invalid: "
+                + "; ".join(errors) + "\nEmit a corrected fenced json block."
+            )
+            try:
+                output, attempt_cost, model = run_agent(
+                    agent_cmd, prompt, system, args.timeout, args.provider
+                )
+                run_cost += attempt_cost
+                candidate = extract_json(output)
+            except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
+                errors = [str(exc)]
+                continue
+            errors = validate_payload(candidate, question)
+            if not errors:
+                return candidate, model, []
+        return None, "", errors
+
+    # Independent runs = separate agent processes with no shared context — the only draw
+    # mechanism audits show actually decorrelates (in-context draws cluster within ~5 points
+    # while separate runs on the same brief swing 2-3x wider). Binary only: pooled with
+    # geo_mean_odds (Samotsvety extreme-drop); MC/continuous stay single-run until a pooling
+    # rule for those shapes is preregistered.
+    qtype = question.get("type", "binary")
+    n_runs = max(1, int(((config.get("tiers") or {}).get(tier) or {}).get("runs", 1)))
+    if qtype != "binary":
+        n_runs = 1
     payload: dict[str, Any] | None = None
     model_used = ""
     errors: list[str] = []
-    for attempt in range(2):
-        prompt = brief if attempt == 0 else (
-            brief + "\n\nYour previous output was invalid: "
-            + "; ".join(errors) + "\nEmit a corrected fenced json block."
-        )
-        try:
-            output, attempt_cost, model_used = run_agent(
-                agent_cmd, prompt, system, args.timeout, args.provider
-            )
-            run_cost += attempt_cost
-            candidate = extract_json(output)
-        except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
-            errors = [str(exc)]
+    run_probs: list[float] = []
+    for _ in range(n_runs):
+        candidate, model, errors = one_run()
+        if candidate is None:
             continue
-        errors = validate_payload(candidate, question)
-        if not errors:
-            payload = candidate
-            break
+        payload, model_used = candidate, model
+        if qtype == "binary":
+            run_probs.append(float(candidate["probability"]))
     if spent is not None:  # budget accounting counts failed attempts too — they cost money
         spent["usd"] += run_cost
     if payload is None:
         print(f"  SKIP (invalid after retry): {errors}")
         return False
-
-    qtype = question.get("type", "binary")
+    if len(run_probs) > 1:
+        pooled = geo_mean_odds(run_probs)
+        print(f"  pooled {len(run_probs)} independent runs "
+              f"{[round(p, 2) for p in run_probs]} -> {pooled:.3f}")
+        payload["probability"] = pooled
+        payload["raw_draws"] = run_probs  # the genuinely independent draws, not in-context ones
     title = question.get("title", post.get("title", "untitled"))
     criterion = str(question.get("resolution_criteria", "")).strip()[:2000]
     if not criterion:
@@ -488,6 +515,7 @@ def forecast_question(
         cost_usd=round(run_cost, 4) if run_cost else None,
         raw_draws=[float(d) for d in payload.get("raw_draws", [])] or None,
         effort=f"{tier} (auto)" if args.effort == "auto" else tier,
+        aggregation=f"geo_mean_odds(runs={len(run_probs)})" if len(run_probs) > 1 else None,
         model=model_used or _model_from_cmd(base_cmd) or base_cmd,
         provider=args.provider,
         crowd={
