@@ -157,6 +157,46 @@ def main(argv: list[str] | None = None) -> int:
               f"scaffold_version {', '.join(versions)} · model {', '.join(models)} "
               f"· provider {', '.join(providers)}", ""]
 
+    # Resolution scoring — only possible when the set carries known outcomes (pastcasting
+    # sets like btf2). Brier against reality outranks every distance-to-teacher proxy.
+    specs = [json.loads(line) for line in set_path.read_text(encoding="utf-8").splitlines()
+             if line.strip()]
+    outcome_of = {s["id"]: int(s["resolution"]) for s in specs
+                  if s.get("resolution") is not None}
+    if outcome_of:
+        lines += ["## resolution scoring (real outcomes — the honest metric)", "",
+                  "| tier | n | Brier | teacher Brier | Δ(tier−teacher) ±1.96se "
+                  "| base-rate Brier |",
+                  "|---|---|---|---|---|---|"]
+        for tier, tier_rows in [(t, by_tier.get(t, [])) for t in
+                                ("zero", "low", "medium", "high")] + [("auto", auto_effective)]:
+            scored = [r for r in tier_rows if r.get("probability") is not None
+                      and r["qid"] in outcome_of]
+            if not scored:
+                continue
+            briers = [(float(r["probability"]) - outcome_of[r["qid"]]) ** 2 for r in scored]
+            ys = [outcome_of[r["qid"]] for r in scored]
+            base = sum(ys) / len(ys)
+            base_brier = sum((base - y) ** 2 for y in ys) / len(ys)
+            paired = [((float(r["probability"]) - outcome_of[r["qid"]]) ** 2)
+                      - ((float(r["crowd"]["value"]) - outcome_of[r["qid"]]) ** 2)
+                      for r in scored
+                      if r.get("crowd") and r["crowd"].get("value") is not None]
+            if paired:
+                mean_d = st.mean(paired)
+                ci = 1.96 * st.stdev(paired) / math.sqrt(len(paired)) if len(paired) > 1 else 0.0
+                teacher = st.mean([(float(r["crowd"]["value"]) - outcome_of[r["qid"]]) ** 2
+                                   for r in scored
+                                   if r.get("crowd") and r["crowd"].get("value") is not None])
+                delta = f"{mean_d:+.4f} ±{ci:.4f}"
+                teacher_s = f"{teacher:.4f}"
+            else:
+                delta, teacher_s = "—", "—"
+            lines.append(f"| {tier} | {len(scored)} | {st.mean(briers):.4f} | {teacher_s} "
+                         f"| {delta} | {base_brier:.4f} |")
+        lines += ["", "Negative Δ = this tier beats the teacher (for btf2 sets the teacher "
+                  "is FutureSearch's SOTA forecast on identical frozen research).", ""]
+
     lines += ["## vs crowd (teacher = market/community probability in the set)", "",
               HEADER, RULE]
     tier_rowsets = [(t, by_tier.get(t, [])) for t in ("zero", "low", "medium", "high")]
