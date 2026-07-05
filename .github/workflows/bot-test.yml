@@ -17,6 +17,15 @@ on:
         description: "Blind mode (hide the community prediction from the agent)"
         type: boolean
         default: false
+      effort:
+        description: "Effort tier (force medium/high to exercise the multi-run dossier path)"
+        type: choice
+        options: [auto, low, medium, high]
+        default: auto
+      include_forecasted:
+        description: "Re-forecast questions this account already forecast (testing only)"
+        type: boolean
+        default: false
       provider:
         description: "LLM billing path"
         type: choice
@@ -57,12 +66,15 @@ jobs:
           INPUT_TOURNAMENT: ${{ inputs.tournament }}
           INPUT_LIMIT: ${{ inputs.limit }}
           INPUT_PROVIDER: ${{ inputs.provider }}
+          INPUT_EFFORT: ${{ inputs.effort }}
         run: |
           python bot/run_bot.py --tournament "$INPUT_TOURNAMENT" \
             --limit "$INPUT_LIMIT" \
             --provider "${INPUT_PROVIDER:-subscription}" \
+            --effort "${INPUT_EFFORT:-auto}" \
             ${{ inputs.dry_run && '--dry-run' || '' }} \
             ${{ inputs.blind && '--blind' || '' }} \
+            ${{ inputs.include_forecasted && '--include-forecasted' || '' }} \
             --agent-cmd "claude -p --model claude-sonnet-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch"
 
       - name: Show journal

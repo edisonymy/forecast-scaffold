@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -50,12 +51,30 @@ class MetaculusClient:
         )
         if self.token:
             request.add_header("Authorization", f"Token {self.token}")
-        try:
-            with urllib.request.urlopen(request, timeout=60) as response:
-                payload = response.read().decode("utf-8")
-        except urllib.error.HTTPError as exc:
-            detail = exc.read().decode("utf-8", errors="replace")[:500]
-            raise MetaculusError(f"{method} {path} -> HTTP {exc.code}: {detail}") from exc
+        # Transient-fault retry: GETs are idempotent and forecast submission is
+        # latest-wins per question, so both retry on 429/5xx/network blips — an hourly
+        # unattended cron cannot afford one blip failing a question (which would also
+        # trigger the workflow's paid-fallback rerun). Comment creation is NOT retried:
+        # duplicating a public comment is worse than dropping a private one.
+        retriable = method == "GET" or path == "/questions/forecast/"
+        attempts = 3 if retriable else 1
+        payload = ""
+        for attempt in range(attempts):
+            try:
+                with urllib.request.urlopen(request, timeout=60) as response:
+                    payload = response.read().decode("utf-8")
+                break
+            except urllib.error.HTTPError as exc:
+                detail = exc.read().decode("utf-8", errors="replace")[:500]
+                if attempt + 1 < attempts and exc.code in (429, 500, 502, 503, 504):
+                    time.sleep(2 * (attempt + 1))
+                    continue
+                raise MetaculusError(f"{method} {path} -> HTTP {exc.code}: {detail}") from exc
+            except urllib.error.URLError as exc:
+                if attempt + 1 < attempts:
+                    time.sleep(2 * (attempt + 1))
+                    continue
+                raise MetaculusError(f"{method} {path} -> {exc.reason}") from exc
         return json.loads(payload) if payload else None
 
     # -- reads -------------------------------------------------------------

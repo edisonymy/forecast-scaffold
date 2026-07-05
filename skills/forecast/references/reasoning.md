@@ -4,7 +4,9 @@ How to get from evidence to a probability. This encodes what measurably improves
 reference classes first, status-quo anchoring, structured disagreement with yourself, 1%
 granularity — and deliberately omits what measurably doesn't (clever prompt rituals, explicit
 odds-ratio arithmetic). Run the full spine per draw at medium+ tier; the short form (steps 1, 2, 3,
-6) at low tier.
+6) at low tier. When the Step 4 fan-out is active, "per draw" means once per subagent/run — a
+fan-out member runs the spine exactly once for its assigned lens and must NOT produce its own
+in-context draw ensemble on top.
 
 ## The spine (per draw)
 

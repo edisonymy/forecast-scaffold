@@ -4,6 +4,49 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.2.3] - 2026-07-05
+
+Hardening release from a four-perspective adversarial review (code correctness, methodology,
+operations, spec coherence) before any live tournament use. The FutureEval cron stays disabled
+until a resolved-Brier lens battery (issue #8) passes.
+
+### Fixed
+- **Lens/model assignment no longer repeats after a failed reasoning run**: the index came
+  from the success count, so any transient failure handed the same lens (and model) to the
+  next slot, silently collapsing ensemble diversity. Now a per-attempt slot counter.
+- **Pooled records no longer narrate the wrong number**: when pooling changes the submitted
+  probability, the journal/comment reasoning gains an explicit pooling note (previously the
+  text argued for the research run's own draw, not what was submitted).
+- **`missing_evidence` from reasoning runs reaches the journal** (was requested from agents
+  and silently dropped); dossiers are capped at 8,000 chars before re-embedding.
+- **Comment-posting failures no longer fail the question** (they used to exit nonzero and
+  re-run the whole remaining batch on the paid fallback provider); Metaculus reads and
+  forecast submission retry on 429/5xx/network blips (comments deliberately don't).
+- **Reasoning-only system prompts no longer contain contradictory draw instructions**: the
+  tier line asked for an in-context draw ensemble the harness discards; in multi-run mode it
+  now asks for one probability.
+- Journal is preserved as a private CI artifact when the leak-guard blocks a push (a blocked
+  push used to discard it — a hole in the public preregistration trail).
+
+### Changed
+- **Wall-clock deadline** (`--deadline-minutes`, set to 85 in the hourly workflow): the
+  dollar budget is blind to hung calls (a timeout costs $0), so time itself is now capped
+  between questions and between run slots; triage and reasoning-only runs get short
+  timeouts (300s/600s) instead of the research run's full leash. The per-invocation budget
+  is also now checked between run slots, not only between questions.
+- **Tier run counts: medium 3→4, high 5→6**, so pooled n ≥ 4 wherever pooling happens —
+  `geo_mean_odds` only drops extremes at n ≥ 4 (it was silently untrimmed at the old
+  medium default) — and every tier's lens prefix now contains a counter-biasing pair.
+- **Lenses re-worded neutrally and re-ordered** (reference-class check, opposite-down,
+  opposite-up, decomposition, premortem): each names both failure directions and pre-judges
+  nothing about the dossier. **Correction to 0.2.2's framing**: that change was a lens
+  *selection* change, not a reorder (pool order is commutative; at the old medium tier only
+  the first two lenses ever ran), its evidence was one question with arguably leading
+  diagnostic wordings, and "landing nearer other LLMs" is not validation (it measures shared
+  prior). Whether method lenses beat attitude lenses is preregistered as an open question
+  (issue #8) to be decided on resolved Brier only.
+- Reasoning runs' system prompt names the dossier as untrusted third-party-derived data.
+
 ## [0.2.2] - 2026-07-05
 
 ### Changed

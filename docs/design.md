@@ -5,7 +5,9 @@ rankings, cost figures), the design responds by putting the perishable part in c
 
 ## The pipeline skeleton
 
-Operationalize → research → outside-view-first reasoning → independent draws → pool → blend with
+Operationalize → research → outside-view-first reasoning (the spine anchors on a reference
+class before case specifics — a property of every draw, not a lens assignment) → independent
+draws → pool → blend with
 crowd → validate/clamp → record → resolve → score. This shape is stable across every serious
 system from the first near-human LLM forecaster (Halawi, Zhang, Yueh-Han & Steinhardt,
 *Approaching Human-Level Forecasting with Language Models*, [arXiv:2402.18563](https://arxiv.org/abs/2402.18563))

@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.2.2"
+SCAFFOLD_VERSION = "0.2.3"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -56,9 +56,12 @@ DEFAULTS: dict[str, Any] = {
         # run_models = optional model ids the harness cycles through for runs after the first
         #              (cross-model diversity is the strongest documented ensemble lever:
         #              tournament winners average ~1.8 model families). Empty = one model.
+        # runs sized so pooled n >= 4 wherever pooling happens at all: geo_mean_odds only
+        # drops extremes at n >= 4, and every tier's reasoning runs then include a full
+        # counter-biasing lens pair (medium reaches lenses 1-3, high reaches all 5).
         "low": {"draws": 1, "searches": 1, "runs": 1, "run_models": []},
-        "medium": {"draws": 5, "searches": 5, "runs": 3, "run_models": []},
-        "high": {"draws": 12, "searches": 12, "runs": 5, "run_models": []},
+        "medium": {"draws": 5, "searches": 5, "runs": 4, "run_models": []},
+        "high": {"draws": 12, "searches": 12, "runs": 6, "run_models": []},
     },
     "blend": {"crowd_weight": 0.5},
     "aggregation": {"method": "trimmed_mean"},
