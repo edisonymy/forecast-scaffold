@@ -4,12 +4,15 @@ Builds a fresh v2 set from the newest ForecastBench drop, then runs the cells in
 sleeping and resuming whenever the subscription usage window caps out (run_bench exits
 nonzero on failures and skips finished (question, tier, run) jobs on retry).
 
-Cells (all blind, all paired on the same set; SUBSCRIPTION ONLY — never a metered key):
-  A  iter1        sonnet-5 + skill   low(1) + high(runs from config) + auto(router)
-  B  sonnet-zero  sonnet-5, no skill (zero tier, 1 run)
-  C  fable-high1  fable-5 + skill    high, single run (--max-runs 1)
-  D  fable-zero   fable-5, no skill  (zero tier, 1 run)
-Cell A's high run #0 doubles as "sonnet + skill, single run" for the 2x2 ablation.
+Cells (all blind, all paired on the same set; SUBSCRIPTION ONLY — never a metered key).
+Budget-lean: every tier is capped at a single run (multi-run pooling can be added later —
+resume keys on (question, tier, run), so extra runs are pure top-up, never re-spend).
+The 2x2 core runs first so a weekly-usage cap costs the cheap tail, not the fable cells:
+  A1 sonnet-skill  sonnet-5 + skill   high, single run
+  B  sonnet-zero   sonnet-5, no skill (zero tier, 1 run)
+  C  fable-skill   fable-5 + skill    high, single run
+  D  fable-zero    fable-5, no skill  (zero tier, 1 run)
+  A2 sonnet tail   sonnet-5 + skill   low (1 run) + auto (router-only) — iter1 dev extras
 
 Usage:
     python bench/overnight_ablation.py            # full overnight run
@@ -78,8 +81,9 @@ def main(argv: list[str] | None = None) -> int:
     bench = [PY, "bench/run_bench.py", set_file, "--provider", "subscription",
              "--concurrency", "6"]
     cells = [
-        ("A iter1 (sonnet + skill, preregistered #3)",
-         bench + ["--tiers", "low,high,auto", "--agent-cmd", SONNET, "--tag", "sonnet"]),
+        ("A1 sonnet + skill high, single run",
+         bench + ["--tiers", "high", "--max-runs", "1", "--agent-cmd", SONNET,
+                  "--tag", "sonnet"]),
         ("B sonnet zero-shot",
          bench + ["--tiers", "zero", "--agent-cmd", SONNET, "--tag", "sonnet"]),
         ("C fable + skill high, single run",
@@ -88,6 +92,9 @@ def main(argv: list[str] | None = None) -> int:
         ("D fable zero-shot",
          bench + ["--tiers", "zero", "--timeout", "1800",
                   "--agent-cmd", FABLE, "--tag", "fable"]),
+        ("A2 sonnet + skill low + auto router (iter1 tail)",
+         bench + ["--tiers", "low,auto", "--max-runs", "1", "--agent-cmd", SONNET,
+                  "--tag", "sonnet"]),
     ]
     results = {label: run_until_done(cmd, label) for label, cmd in cells}
 
