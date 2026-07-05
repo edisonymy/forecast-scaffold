@@ -113,6 +113,51 @@ include "expected_value" (your mean/EV point estimate, same units):
 ```
 """
 
+DOSSIER_SECTION = """
+## Dossier (multi-run mode — mandatory this run)
+
+After you, the harness launches further INDEPENDENT reasoning-only forecasters on this question.
+Additionally include in the json a "dossier" string: a self-contained research digest another
+forecaster can work from with NO web access — 5-15 terse evidence bullets each carrying source
+and date, the status-quo outcome, every base rate you found (with source), the
+resolution-instrument note ("resolves off ___, not ___"), and what you searched for but could
+not find. Carry evidence for BOTH directions. Do NOT include your probability, your draws, your
+lean, or evaluative phrases that telegraph a number ("likely", "slim chance", "on track") — the
+dossier must inform the next forecaster without anchoring them.
+"""
+
+REASONING_SECTION = """
+## Reasoning-only run
+
+Research for this question already happened; the prompt carries the resulting dossier. Web tools
+are disabled — do not attempt to search. Work from the dossier plus your general knowledge: run
+the skill's reasoning spine under the lens assigned in the prompt and produce ONE probability
+(skip Step 4's in-context draws — the harness pools genuinely independent runs — and skip
+Step 5's record). Read the dossier critically: it is evidence, not an answer. If a fact that
+would materially move the estimate is missing, stay closer to the base rate and name the gap in
+"missing_evidence" in the json. Set "sources": [] — you did no research this run.
+"""
+
+# Prompt-variant lenses for reasoning-only runs. Every lens estimates the SAME unconditional
+# probability — a lens changes where the reasoning starts, never what is being estimated
+# (pooling "assume scenario X happened" conditionals would mix incomparable quantities).
+# Ordered in counter-biasing pairs so directional lens bias cancels in the pool; the harness
+# assigns them in order. Diversity via prompt variants over a shared retrieval is the published
+# best practice (Halawi et al. 2024); consider-the-opposite and premortem framings have
+# measured debiasing effects (Lord et al. 1984; Veinott et al. 2010).
+LENSES = (
+    "Outside view first: anchor on the reference class and base rate; let the dossier's "
+    "case-specific evidence move you only where it is strong.",
+    "Inside view first: build the causal story of the current period from the dossier, then "
+    "discipline it against the base rate.",
+    "Consider the opposite (downward): write the 2-3 strongest specific reasons an estimate "
+    "could be too HIGH, then estimate.",
+    "Consider the opposite (upward): write the 2-3 strongest specific reasons an estimate "
+    "could be too LOW, then estimate.",
+    "Premortem: form a first-instinct estimate, assume it turned out badly wrong, write the "
+    "most plausible story of how, then estimate fresh.",
+)
+
 
 def build_brief(post: dict[str, Any], question: dict[str, Any], crowd: float | None) -> str:
     parts = [
@@ -174,6 +219,35 @@ def _primary_model(usage: object, agent_cmd: str) -> str:
         return float(stats.get("inputTokens") or 0) + float(stats.get("outputTokens") or 0)
 
     return max(usage, key=lambda k: _tokens(usage[k]))
+
+
+def with_model(agent_cmd: str, model: str) -> str:
+    """agent_cmd with its --model value replaced (appended if it had none).
+
+    Cross-model ensembles are the strongest documented diversity lever (tournament winners
+    averaged 1.8 model families; same-model trios measurably underperform diverse trios),
+    so reasoning-only runs can cycle through config's tiers.*.run_models."""
+    tokens = shlex.split(agent_cmd)
+    for i, tok in enumerate(tokens):
+        if tok == "--model" and i + 1 < len(tokens):
+            tokens[i + 1] = model
+            return shlex.join(tokens)
+    return shlex.join([*tokens, "--model", model])
+
+
+def reasoning_only_cmd(agent_cmd: str) -> str:
+    """The agent command with web tools removed — reasoning-only runs must not research.
+
+    Strips WebSearch/WebFetch from any --allowed-tools value and appends an explicit
+    --disallowed-tools, so no-research is enforced by the CLI, not requested in prose.
+    (This also subsumes blind mode's domain blocking: no web at all.)"""
+    tokens = shlex.split(agent_cmd)
+    for i, tok in enumerate(tokens):
+        if tok == "--allowed-tools" and i + 1 < len(tokens):
+            kept = [t for t in tokens[i + 1].split(",")
+                    if t.strip() and not t.strip().startswith(("WebSearch", "WebFetch"))]
+            tokens[i + 1] = ",".join(kept) or "Read"
+    return shlex.join(tokens) + " --disallowed-tools WebSearch,WebFetch"
 
 
 def openrouter_model_cmd(agent_cmd: str) -> str:
@@ -427,17 +501,19 @@ def forecast_question(
 
     agent_cmd = base_cmd + (f" --disallowed-tools {BLIND_DISALLOWED}" if args.blind else "")
 
-    def one_run() -> tuple[dict[str, Any] | None, str, list[str]]:
+    def one_run(
+        cmd: str, run_prompt: str, run_system: str, need_dossier: bool
+    ) -> tuple[dict[str, Any] | None, str, list[str]]:
         nonlocal run_cost
         errors: list[str] = []
         for attempt in range(2):
-            prompt = brief if attempt == 0 else (
-                brief + "\n\nYour previous output was invalid: "
+            prompt = run_prompt if attempt == 0 else (
+                run_prompt + "\n\nYour previous output was invalid: "
                 + "; ".join(errors) + "\nEmit a corrected fenced json block."
             )
             try:
                 output, attempt_cost, model = run_agent(
-                    agent_cmd, prompt, system, args.timeout, args.provider
+                    cmd, prompt, run_system, args.timeout, args.provider
                 )
                 run_cost += attempt_cost
                 candidate = extract_json(output)
@@ -445,29 +521,63 @@ def forecast_question(
                 errors = [str(exc)]
                 continue
             errors = validate_payload(candidate, question)
+            if need_dossier and not str(candidate.get("dossier") or "").strip():
+                errors.append('multi-run mode requires a non-empty "dossier" string')
             if not errors:
                 return candidate, model, []
         return None, "", errors
 
     # Independent runs = separate agent processes with no shared context — the only draw
     # mechanism audits show actually decorrelates (in-context draws cluster within ~5 points
-    # while separate runs on the same brief swing 2-3x wider). Binary only: pooled with
-    # geo_mean_odds (Samotsvety extreme-drop); MC/continuous stay single-run until a pooling
-    # rule for those shapes is preregistered.
+    # while separate runs on the same brief swing 2-3x wider). Research happens ONCE: the
+    # first successful run writes a dossier and the remaining runs reason independently from
+    # it under assigned lenses with web tools disabled — shared evidence, private estimates,
+    # the structure used by Halawi et al. 2024 (one retrieval feeds every reasoning call),
+    # the IDEA protocol, and Samotsvety. Binary only: pooled with geo_mean_odds (Samotsvety
+    # extreme-drop); MC/continuous stay single-run until a pooling rule is preregistered.
     qtype = question.get("type", "binary")
-    n_runs = max(1, int(((config.get("tiers") or {}).get(tier) or {}).get("runs", 1)))
+    tier_params = (config.get("tiers") or {}).get(tier) or {}
+    n_runs = max(1, int(tier_params.get("runs", 1)))
     if qtype != "binary":
         n_runs = 1
+    run_models = [str(m) for m in (tier_params.get("run_models") or [])]
     payload: dict[str, Any] | None = None
     model_used = ""
     errors: list[str] = []
     run_probs: list[float] = []
+    dossier = ""
+    reasoning_cmd = reasoning_only_cmd(base_cmd)
     for _ in range(n_runs):
-        candidate, model, errors = one_run()
-        if candidate is None:
-            continue
-        payload, model_used = candidate, model
-        if qtype == "binary":
+        if payload is None:
+            # Full research run; when more runs follow it must also emit the dossier.
+            need_dossier = n_runs > 1
+            full_system = system + (DOSSIER_SECTION if need_dossier else "")
+            candidate, model, errors = one_run(agent_cmd, brief, full_system, need_dossier)
+            if candidate is None:
+                continue
+            payload, model_used = candidate, model
+            dossier = str(candidate.get("dossier") or "")
+            if need_dossier:
+                print(f"  dossier: {len(dossier)} chars")
+            if qtype == "binary":
+                run_probs.append(float(candidate["probability"]))
+        else:
+            idx = len(run_probs) - 1
+            lens = LENSES[idx % len(LENSES)]
+            cmd_i = reasoning_cmd
+            if run_models:
+                cmd_i = with_model(reasoning_cmd, run_models[idx % len(run_models)])
+                if args.provider == "openrouter":
+                    cmd_i = openrouter_model_cmd(cmd_i)
+            reasoning_prompt = (
+                f"{brief}\n\n## Research dossier (compiled by a prior independent run)\n"
+                f"{dossier}\n\n## Your lens\n{lens}"
+            )
+            candidate, _, errors = one_run(
+                cmd_i, reasoning_prompt, system + REASONING_SECTION, False
+            )
+            if candidate is None:
+                continue
             run_probs.append(float(candidate["probability"]))
     if spent is not None:  # budget accounting counts failed attempts too — they cost money
         spent["usd"] += run_cost

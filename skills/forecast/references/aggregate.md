@@ -8,23 +8,52 @@ worth pooling and choosing the right pool.
 ## Producing draws
 
 A draw = one full pass of the reasoning spine ending in one probability. Draw count per tier comes
-from config. The value of an ensemble is the **diversity of its errors**, so vary the framing
-between draws — emphasize a different reference class, reverse the order you argue (NO-case first
-vs YES-case first), shuffle option order on multiple choice, start one draw from the trend anchor
-and another from the status quo. Copying your first number N times is not an ensemble.
+from config. The value of an ensemble is the **diversity of its errors** — and the evidence is
+specific about where diversity actually comes from: different *models* first, different
+*analytical lenses* second, temperature/rewording resamples a distant third (cosmetic persona
+prompts: measured effect nil). Copying your first number N times is not an ensemble.
 
-**Each draw must condition on a different named scenario, not resample the same judgment.**
-Audited runs show varied-framing draws collapse into one estimate ± noise (spreads of 2–5 points
-around a single view). So assign scenarios before drawing: at least one draw assumes your
-premortem story actually happens, one assumes the status quo holds to the deadline, one takes the
-strongest YES-case at face value, one the strongest NO-case. If your draws still span less than
-~5 points, report fewer draws honestly instead of padding — a tight cluster is one draw wearing
-twelve hats, and pooling it adds false precision, not information.
+**Every draw estimates the same unconditional probability.** Assign each draw a different **lens**
+— where the reasoning *starts*, never what is being estimated: outside-view-first (anchor on the
+reference class, let case evidence move it only where strong), inside-view-first (build the
+current period's causal story, then discipline it with the base rate), consider-the-opposite in
+each direction (strongest specific reasons the estimate is too high / too low, then estimate),
+premortem (assume your first instinct proved badly wrong, write how, estimate fresh). Keep lenses
+in counter-biasing pairs so directional bias cancels in the pool. Do **not** condition draws on a
+scenario ("assume the premortem happened") — that produces P(X | scenario), and pooling
+conditionals as if they were estimates of P(X) is a category error.
 
-If the host agent supports subagents, high tier should run draws as **independent subagents that
-do not share context** (each gets the question, criterion, and research digest — not each other's
-numbers). Independent contexts across different models are the closest available thing to
-independent forecasters.
+**The fan-out protocol (any surface with subagents — Claude Code, Cowork, harnesses).** This is
+the primary mechanism, not a fallback; in-context draws are the degraded mode. Audited runs show
+in-context draws collapse to one estimate ± noise (2–5 point spreads) while separate contexts on
+the same evidence swing 2–3× wider. Research is done ONCE — the best published pipelines share
+one retrieval across all reasoning calls; duplicated research buys correlated facts, not
+independent judgment. The steps:
+
+1. **Write the dossier** from your Step 2 research: 5–15 terse evidence bullets each with source
+   and date, the status-quo outcome, every base rate found (with source), the
+   resolution-instrument line, and what you searched for but couldn't find — evidence for both
+   directions. **No probability, no lean, no telegraphing adjectives** ("likely", "slim"). The
+   evidence says sharing *facts* is nearly free but seeing another forecaster's *estimate* is the
+   correlation that kills an ensemble — the dossier's no-numbers rule is load-bearing. If you
+   already formed a number while researching, keep it out.
+2. **Fan out k parallel subagents** (k = config's `runs` for the tier), each given: question +
+   verbatim criterion + resolve-by + the dossier + ONE assigned lens + this instruction: do not
+   research further; reason from the dossier and your general knowledge; if a fact that would
+   materially move the estimate is missing, stay closer to the base rate and report the gap; reply
+   with a probability at 1% granularity and a 3-line rationale. Subagents never see each other's
+   output or yours. Use different models per subagent when the surface allows it.
+3. **Pool** with `fsj.py aggregate --method geo_mean_odds` (drop-extremes is built in). Never
+   extremize: with a shared dossier the information overlap is ~1, and the theory says the
+   optimal extremizing factor at overlap 1 is none.
+4. **Read the spread before trusting the pool.** A wide spread (>15 points) means the lenses found
+   a genuine crux — name it, and consider one targeted research pass on it before recording. A
+   2–3 point spread from genuinely separate contexts is fine (agreement is informative when it
+   wasn't enforced); a 2–3 point spread from in-context draws is one draw wearing k hats.
+
+**No subagents available** (a plain chat): run the lens set as in-context draws, pool with
+`trimmed_mean`, and tell the user: "draws were in-context (correlated) — treat the error bars as
+wider than usual."
 
 ## Choosing the pool
 

@@ -39,6 +39,14 @@ Read the criterion the way a motivated opponent would:
   differs from the intuitive event; audited misses reasoned about the intuitive proxy while the
   contract paid on the technicality. If instrument and intuition coincide, say so — the line is
   mandatory either way.
+- **Undefined subjective predicates are resolver risk, not event risk.** If the criterion hangs on
+  a category no source defines ("a suit", "an invasion", "a major incident"), the bet is partly on
+  the resolver's judgment call: a $240M market resolved NO on an outfit major outlets called a
+  suit; a capture-the-president raid resolved NO on "invade" because the text said "establish
+  control over territory". When you spot one, forecast the *text* under the resolver's likely
+  reading — think P(event) × P(resolves faithfully | event) — and widen toward 50% in proportion
+  to the interpretive gap; the near-miss scenarios you enumerate (raid, strike, blockade vs
+  "invasion") are where these questions are actually decided.
 
 ## Known anti-patterns (priced-in base rates)
 

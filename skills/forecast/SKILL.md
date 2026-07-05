@@ -45,7 +45,7 @@ Tier parameters (number of draws, searches) come from config; the stages each ti
 | Operationalize (Step 1) | inline checklist | + `references/question-hygiene.md` | same, + adversarial re-read |
 | Research (Step 2) | 1 search (the already-resolved check), reference class from knowledge | `references/research.md` | same, + historical/current two-pass |
 | Reason (Step 3) | short scratchpad | full `references/reasoning.md` spine | same, + premortem + second private estimate |
-| Draws & aggregate (Step 4) | 1 draw, clamp | config draws, trimmed mean, crowd blend | config draws (independent subagents if available), + consistency checks |
+| Draws & aggregate (Step 4) | 1 draw, clamp | subagent fan-out on a shared dossier (`runs`), crowd blend | same with more runs (cross-model if available), + consistency checks |
 | Record (Step 5) | always | always | always |
 
 ## Step 1 — Operationalize the question
@@ -84,28 +84,28 @@ explicit update).
 
 ## Step 4 — Draws and aggregation
 
-Produce the tier's number of **independent draws** by re-running Step 3 under genuinely varied
-framings (different reference class emphasized, different argument order, options shuffled) — not
-by copying the first number. Then pool with the tool, which applies the configured clamp:
+**If your surface has subagents (Claude Code, Cowork, any Task-capable host), fan-out is the
+default at medium+ tier, not an upgrade**: write an estimate-free research dossier from Step 2,
+spawn the tier's `runs` as parallel subagents — each gets the dossier plus one assigned lens,
+never each other's numbers — and pool. Research happens once; reasoning happens independently k
+times. The full protocol, the lens list, and the no-numbers-in-the-dossier rule (it is
+load-bearing) are in `references/aggregate.md`. Then pool with the tool, which applies the
+configured clamp:
 
 ```
-python fsj.py aggregate --draws 0.52,0.58,0.56,0.61,0.66 --crowd 0.60
-# -> 0.5917  (trimmed_mean(n=5) blended with crowd=0.6 (weight 0.5))
+python fsj.py aggregate --draws 0.52,0.58,0.56,0.61,0.66 --method geo_mean_odds --crowd 0.60
 ```
 
-Method rules (details and rationale in `references/aggregate.md`): your own draws → `trimmed_mean`;
-draws from genuinely independent agents/models → `--method geo_mean_odds`; a crowd or market number
-exists → capture it and pass `--crowd` (and if your aggregate is far from the crowd, stop and find
-out what they know that you don't — or what you know that they don't — before proceeding). Never
-extremize your own draws.
+Method rules (details and rationale in `references/aggregate.md`): separate contexts (subagents,
+harness runs) → `--method geo_mean_odds`; in-context draws → `trimmed_mean`; a crowd or market
+number exists → capture it and pass `--crowd` (and if your aggregate is far from the crowd, stop
+and find out what they know that you don't — or what you know that they don't — before
+proceeding). Never extremize.
 
-**Independence caveat.** Draws produced inside one context window are *correlated* — each sees
-the ones before it — so they mostly re-read the same evidence rather than sample it afresh. If
-your surface can run genuinely independent draws (parallel subagents, or a harness invoking the
-config's `runs` as separate processes), prefer that and pool with `geo_mean_odds`. If it cannot
-(a plain chat), run the in-context draws under strongly varied framings, pool with
-`trimmed_mean`, and **tell the user**: "draws were in-context (correlated) — treat this tier's
-error bars as wider than usual." Degraded honestly beats differentiated in name only.
+**No subagents** (a plain chat): run the lens set as in-context draws — each draw still estimates
+the same unconditional probability from a different starting frame — pool with `trimmed_mean`,
+and **tell the user**: "draws were in-context (correlated) — treat this tier's error bars as
+wider than usual." Degraded honestly beats differentiated in name only.
 
 ## Step 5 — Record
 

@@ -4,7 +4,46 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
-## [Unreleased]
+## [0.2.1] - 2026-07-05
+
+Ensemble mechanics rebuilt around the shared-dossier / independent-reasoning structure used by
+the best published pipelines (Halawi et al. 2024 share one retrieval across all reasoning calls;
+IDEA protocol and Samotsvety share evidence, then estimate privately; Davis-Stober et al. 2014:
+the harmful correlation is seeing each other's *estimates*, not sharing *evidence*).
+
+### Changed
+- **Bot pooled runs no longer duplicate research.** The first run researches and emits an
+  estimate-free `dossier` (no probability, no lean — anchoring guard, enforced by a repair
+  retry); the remaining runs are reasoning-only on that dossier in separate contexts with web
+  tools stripped at the CLI level (`reasoning_only_cmd`), each under one of five assigned
+  analytical lenses (outside-view / inside-view / consider-the-opposite ×2 / premortem, in
+  counter-biasing pairs). Pooled with unextremized `geo_mean_odds` (Satopää: information
+  overlap ≈ 1 ⇒ extremizing factor ≈ none). Cuts multi-run cost roughly in half.
+- **Draws are lens-diverse, not scenario-conditioned** (`aggregate.md`, SKILL.md Step 4): every
+  draw estimates the same unconditional P(X) from a different starting frame. The v0.2.0
+  wording ("assume your premortem story actually happens") produced P(X|scenario) draws, and
+  pooling conditionals as estimates of P(X) is a category error — fixed. Subagent fan-out on a
+  shared dossier is now the *default* Step 4 mechanism on Task-capable surfaces (Claude Code,
+  Cowork), with in-context draws demoted to the degraded mode.
+- **Extremes gate is a reason gate, not a floor** (`reasoning.md`): sub-5%/above-95% still must
+  name the blocking mechanism, but the ~10/90 floor language for political questions is gone —
+  Q4 AIB data shows bots lost more to timid tails (7% where Pros said 2%) than reckless ones,
+  and rounding skilled forecasters' tails measurably hurts (Friedman et al., 888k forecasts).
+- **Resolver risk is first-class in question hygiene**: undefined subjective predicates
+  ("a suit", "an invasion") are resolver risk, not event risk — forecast the text under the
+  resolver's likely reading, think P(event) × P(faithful resolution | event).
+
+### Added
+- `tiers.*.run_models` (config): optional model ids the harness cycles through for runs after
+  the first — cross-model diversity is the strongest documented ensemble lever (tournament
+  winners average ~1.8 model families). Default empty.
+
+## [0.2.0] - 2026-07-04
+
+Also in this release (missed at the 0.2.0 cut): the BTF-2 pastcasting bench
+(`bench/fetch_btf2.py`), `--budget` caps on bench/bot, resolution scoring in the bench report,
+`score --by` grouped Brier anchoring, six audit-driven skill changes (issue #6), harness-side
+pooled independent runs, and the hourly FutureEval tournament cron.
 
 ### Added
 - **OpenRouter provider** (`--provider openrouter` in `bot/run_bot.py` and `bench/run_bench.py`):

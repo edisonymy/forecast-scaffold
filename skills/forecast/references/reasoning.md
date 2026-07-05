@@ -57,12 +57,17 @@ denominator of the base rate is small"). Two named defaults are banned without j
 inference). Extreme values are allowed when evidence is genuinely decisive — strong evidence is
 common, and tails that are too *thin* are a real documented failure — but an extreme number must
 cite the evidence that earns it and survive the clamp-band warning consciously.
-**Mechanical vs political near-certainty:** below ~5% or above ~95% is earned by *mechanical*
-impossibility — arithmetic on a published index, a fixed deadline already passed, a filing that
-does not exist. When the outcome runs through a live political, diplomatic, or institutional
-choice (a vote, a signing, a negotiation with active sponsors), hold to ≥ ~10% / ≤ ~90% unless you
-can name the structural barrier that removes the actors' discretion. Audited misses put 3% on a
-multi-track diplomatic process with named backers — that is a choice, not a mechanism.
+**Mechanical vs political near-certainty — a reason gate, not a floor.** Going below ~5% or above
+~95% must be *earned* by naming the blocking mechanism: arithmetic on a published index, a fixed
+deadline already passed, a filing that does not exist, every enumerable pathway to the other
+outcome individually closed. When the outcome runs through a live political, diplomatic, or
+institutional choice (a vote, a signing, a negotiation with active sponsors), that mechanism
+rarely exists — audited misses put 3% on a multi-track diplomatic process with named backers,
+which is a choice, not a mechanism; and tournament data cannot validate anyone's calibration much
+below ~5% on such questions. But this is a gate, not a clamp: when the mechanical case is
+genuinely there, take the extreme and log the mechanism — measured tournament bots lost more to
+*timid* tails (7% where better forecasters said 2%) than to reckless ones, and reflexive
+"it's-probably-nothing" hedging is its own documented failure mode.
 
 **7. Self-tests before committing** (all tiers where time permits; mandatory at high tier):
 - **Conservation of expected evidence:** what near-term observation would move this number *down*,

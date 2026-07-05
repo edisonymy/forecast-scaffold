@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.2.0"
+SCAFFOLD_VERSION = "0.2.1"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -49,13 +49,16 @@ MIN_CALIBRATION_N = 5
 DEFAULTS: dict[str, Any] = {
     "clamp": {"min": 0.02, "max": 0.98},
     "tiers": {
-        # draws = in-context estimates within ONE run (portable to any surface).
-        # runs  = genuinely independent runs a harness launches and pools with
-        #         geo_mean_odds (subagents/processes; the reliable differentiation lever —
-        #         in-context draw instructions are demonstrably under-executed headlessly).
-        "low": {"draws": 1, "searches": 1, "runs": 1},
-        "medium": {"draws": 5, "searches": 5, "runs": 3},
-        "high": {"draws": 12, "searches": 12, "runs": 5},
+        # draws      = in-context estimates within ONE run (portable to any surface).
+        # runs       = genuinely independent runs a harness launches and pools with
+        #              geo_mean_odds (subagents/processes; the reliable differentiation lever —
+        #              in-context draw instructions are demonstrably under-executed headlessly).
+        # run_models = optional model ids the harness cycles through for runs after the first
+        #              (cross-model diversity is the strongest documented ensemble lever:
+        #              tournament winners average ~1.8 model families). Empty = one model.
+        "low": {"draws": 1, "searches": 1, "runs": 1, "run_models": []},
+        "medium": {"draws": 5, "searches": 5, "runs": 3, "run_models": []},
+        "high": {"draws": 12, "searches": 12, "runs": 5, "run_models": []},
     },
     "blend": {"crowd_weight": 0.5},
     "aggregation": {"method": "trimmed_mean"},
