@@ -14,14 +14,18 @@ specific about where diversity actually comes from: different *models* first, di
 prompts: measured effect nil). Copying your first number N times is not an ensemble.
 
 **Every draw estimates the same unconditional probability.** Assign each draw a different **lens**
-— where the reasoning *starts*, never what is being estimated: outside-view-first (anchor on the
-reference class, let case evidence move it only where strong), inside-view-first (build the
-current period's causal story, then discipline it with the base rate), consider-the-opposite in
+— where the reasoning *starts*, never what is being estimated. **Method lenses first, attitude
+lenses second**: a live paired test showed attitude lenses (outside-view-first, inside-view-first,
+steelman-each-way) all inherit whatever base rate the shared dossier displays most prominently and
+cluster around it, while lenses that force a different *method* moved 2–3× further on the same
+evidence. The lens set, in assignment order: **reference-class check** (is the dossier's base rate
+computed over the right class? name 2+ candidate classes — including conditional ones when a
+conditioning variable is already known — pick, then estimate), **decomposition** (components with
+their correlation, recompose, cross-check holistically, then estimate), consider-the-opposite in
 each direction (strongest specific reasons the estimate is too high / too low, then estimate),
-premortem (assume your first instinct proved badly wrong, write how, estimate fresh). Keep lenses
-in counter-biasing pairs so directional bias cancels in the pool. Do **not** condition draws on a
-scenario ("assume the premortem happened") — that produces P(X | scenario), and pooling
-conditionals as if they were estimates of P(X) is a category error.
+premortem (assume your first instinct proved badly wrong, write how, estimate fresh). Do **not**
+condition draws on a scenario ("assume the premortem happened") — that produces P(X | scenario),
+and pooling conditionals as if they were estimates of P(X) is a category error.
 
 **The fan-out protocol (any surface with subagents — Claude Code, Cowork, harnesses).** This is
 the primary mechanism, not a fallback; in-context draws are the degraded mode. Audited runs show
@@ -31,12 +35,16 @@ one retrieval across all reasoning calls; duplicated research buys correlated fa
 independent judgment. The steps:
 
 1. **Write the dossier** from your Step 2 research: 5–15 terse evidence bullets each with source
-   and date, the status-quo outcome, every base rate found (with source), the
-   resolution-instrument line, and what you searched for but couldn't find — evidence for both
-   directions. **No probability, no lean, no telegraphing adjectives** ("likely", "slim"). The
-   evidence says sharing *facts* is nearly free but seeing another forecaster's *estimate* is the
-   correlation that kills an ensemble — the dossier's no-numbers rule is load-bearing. If you
-   already formed a number while researching, keep it out.
+   and date, the status-quo outcome, base rates found (with source **and the class each is
+   computed over** — when a conditioning variable is already known, carry the conditional or
+   component rates too, never a single broad unconditional rate: one prominently-placed rate is
+   an anchor, and an anchor shared by every subagent collapses the ensemble the same way a
+   shared estimate would), the resolution-instrument line, and what you searched for but
+   couldn't find — evidence for both directions. **No probability, no lean, no telegraphing
+   adjectives** ("likely", "slim"). Sharing *facts* is nearly free but seeing another
+   forecaster's *estimate* is the correlation that kills an ensemble — and a lone base rate is
+   an estimate wearing a source citation. If you already formed a number while researching,
+   keep it out.
 2. **Fan out k parallel subagents** (k = config's `runs` for the tier), each given: question +
    verbatim criterion + resolve-by + the dossier + ONE assigned lens + this instruction: do not
    research further; reason from the dossier and your general knowledge; if a fact that would

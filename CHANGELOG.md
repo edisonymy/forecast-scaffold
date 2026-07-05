@@ -4,6 +4,20 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.2.2] - 2026-07-05
+
+### Changed
+- **Method lenses replace attitude lenses at the head of the ensemble** (`LENSES`,
+  `aggregate.md`): a live paired test on one question (issue #7 comment) found the v0.2.1
+  attitude lenses (outside-view / inside-view / steelman) all inherited the shared dossier's
+  prominently-placed unconditional base rate and clustered within 5 points of it, while a
+  reference-class-check lens and a decomposition lens moved 2-3x further (0.19/0.27 vs
+  0.06-0.11) on the same dossier. Anchors propagate through evidence, not just estimates.
+- **Dossiers must class their base rates** (`DOSSIER_SECTION`, `aggregate.md`): every base
+  rate carries the class it is computed over; when a conditioning variable is already known,
+  the conditional or component rates are mandatory — a single broad unconditional rate is an
+  anchor wearing a source citation.
+
 ## [0.2.1] - 2026-07-05
 
 Ensemble mechanics rebuilt around the shared-dossier / independent-reasoning structure used by
