@@ -93,8 +93,12 @@ your context. END your reply with exactly one fenced json block, no text after i
 For binary:
 ```json
 {"probability": 0.63, "raw_draws": [0.6, 0.65, 0.62], "reasoning": "<3-6 lines>",
- "reference_class": "...", "base_rate": 0.35, "what_would_change_my_mind": ["..."]}
+ "reference_class": "...", "base_rate": 0.35, "what_would_change_my_mind": ["..."],
+ "sources": ["<url or dataset you actually consulted>", "..."]}
 ```
+Every payload (all question types) must include "sources": the URLs or named datasets you
+ACTUALLY consulted this run — not background knowledge. An empty list is an honest answer;
+listing sources you did not open is not.
 For multiple_choice (probabilities over the EXACT option labels given, summing to 1):
 ```json
 {"probabilities": {"<option A>": 0.5, "<option B>": 0.5}, "reasoning": "..."}
@@ -384,6 +388,16 @@ def build_system(tier: str, blind: bool, config: dict[str, Any] | None = None) -
     return system
 
 
+def close_time_key(pair: tuple[dict[str, Any], dict[str, Any]]) -> str:
+    """Sort key: the question's close time (ISO strings compare chronologically).
+
+    Falls back to the post's close time, then to a far-future sentinel so undated
+    questions sort last — they are the ones that can safely wait for a later batch."""
+    post, question = pair
+    return str(question.get("scheduled_close_time") or post.get("scheduled_close_time")
+               or "9999-12-31")
+
+
 def forecast_question(
     client: MetaculusClient,
     post: dict[str, Any],
@@ -391,6 +405,7 @@ def forecast_question(
     args: argparse.Namespace,
     config: dict[str, Any],
     journal: Journal,
+    spent: dict[str, float] | None = None,
 ) -> bool:
     # Blind mode: the crowd value is still captured for the journal (it is the benchmark
     # the track record is judged against) but withheld from the agent, so the bot's skill
@@ -431,6 +446,8 @@ def forecast_question(
         if not errors:
             payload = candidate
             break
+    if spent is not None:  # budget accounting counts failed attempts too — they cost money
+        spent["usd"] += run_cost
     if payload is None:
         print(f"  SKIP (invalid after retry): {errors}")
         return False
@@ -482,6 +499,11 @@ def forecast_question(
         if crowd else None,
         reasoning=str(payload.get("reasoning", ""))[:4000],
         what_would_change_my_mind=[str(x) for x in payload.get("what_would_change_my_mind", [])],
+        research=(
+            {"n_searches": len(sources), "sources": sources}
+            if (sources := [str(s)[:300] for s in payload.get("sources") or [] if str(s).strip()])
+            else None
+        ),
     )
     for warning in validate_probability(record.probability, config) if record.probability else []:
         print(f"  warning: {warning}")
@@ -541,6 +563,11 @@ def main(argv: list[str] | None = None) -> int:
                              "to measure skill against the crowd rather than anchoring on it")
     parser.add_argument("--include-forecasted", action="store_true",
                         help="re-forecast questions this account already forecast")
+    parser.add_argument("--budget", type=float, default=0.0,
+                        help="stop before the next question once notional agent spend "
+                             "(envelope cost_usd) reaches this; forecasted questions are "
+                             "skipped on rerun, so batched sessions just rerun the same "
+                             "command (0 = no cap)")
     args = parser.parse_args(argv)
 
     config = load_config()
@@ -550,20 +577,27 @@ def main(argv: list[str] | None = None) -> int:
 
     posts = client.open_posts(args.tournament, limit=args.limit)
     print(f"{len(posts)} open post(s) in {args.tournament}")
+    pending = [(post, question) for post in posts for question in client.questions_of(post)
+               if args.include_forecasted or not client.already_forecasted(question)]
+    # Soonest-closing first: those forecasts lock in scoring coverage a batch cannot
+    # recover later, while far-out questions can wait for the next budget window.
+    pending.sort(key=close_time_key)
     done = failed = 0
-    for post in posts:
-        for question in client.questions_of(post):
-            if not args.include_forecasted and client.already_forecasted(question):
-                continue
-            print(f"- {question.get('title', post.get('title'))!r}")
-            try:
-                ok = forecast_question(client, post, question, args, config, journal)
-                done += ok
-                failed += not ok
-            except Exception as exc:  # noqa: BLE001 - one bad question must not kill the run
-                failed += 1
-                print(f"  ERROR: {exc}")
-    print(f"forecast {done} question(s), {failed} failed")
+    spent = {"usd": 0.0}
+    for post, question in pending:
+        if args.budget > 0 and spent["usd"] >= args.budget:
+            print(f"budget cap ${args.budget:.2f} reached (${spent['usd']:.2f} spent); "
+                  f"{len(pending) - done - failed} question(s) left for the next session")
+            break
+        print(f"- {question.get('title', post.get('title'))!r}")
+        try:
+            ok = forecast_question(client, post, question, args, config, journal, spent)
+            done += ok
+            failed += not ok
+        except Exception as exc:  # noqa: BLE001 - one bad question must not kill the run
+            failed += 1
+            print(f"  ERROR: {exc}")
+    print(f"forecast {done} question(s), {failed} failed, ${spent['usd']:.2f} notional spend")
     # Nonzero on any failure so a workflow can rerun with a fallback provider; already-
     # forecasted questions are skipped on rerun, so the retry only mops up the failures.
     return 1 if failed else 0

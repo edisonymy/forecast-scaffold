@@ -33,6 +33,12 @@ Read the criterion the way a motivated opponent would:
 - On platform questions (Metaculus, prediction markets): the platform's **resolution text is the
   contract** — carry it verbatim, and mine the comments; they contain the technicality arguments
   and base rates others already found.
+- **Name the resolution instrument in one line before forecasting:** "Resolves off ___, which is
+  NOT the same as ___ because ___." Markets often price a technical trigger (a secondary-market
+  print, a stated expiration date, 'in effect' vs 'enacted', a 50-50 split counting as NO) that
+  differs from the intuitive event; audited misses reasoned about the intuitive proxy while the
+  contract paid on the technicality. If instrument and intuition coincide, say so — the line is
+  mandatory either way.
 
 ## Known anti-patterns (priced-in base rates)
 

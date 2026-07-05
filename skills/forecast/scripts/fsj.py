@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.1.0"
+SCAFFOLD_VERSION = "0.2.0"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")

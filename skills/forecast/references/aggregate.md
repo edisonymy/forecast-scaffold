@@ -13,6 +13,14 @@ between draws — emphasize a different reference class, reverse the order you a
 vs YES-case first), shuffle option order on multiple choice, start one draw from the trend anchor
 and another from the status quo. Copying your first number N times is not an ensemble.
 
+**Each draw must condition on a different named scenario, not resample the same judgment.**
+Audited runs show varied-framing draws collapse into one estimate ± noise (spreads of 2–5 points
+around a single view). So assign scenarios before drawing: at least one draw assumes your
+premortem story actually happens, one assumes the status quo holds to the deadline, one takes the
+strongest YES-case at face value, one the strongest NO-case. If your draws still span less than
+~5 points, report fewer draws honestly instead of padding — a tight cluster is one draw wearing
+twelve hats, and pooling it adds false precision, not information.
+
 If the host agent supports subagents, high tier should run draws as **independent subagents that
 do not share context** (each gets the question, criterion, and research digest — not each other's
 numbers). Independent contexts across different models are the closest available thing to
