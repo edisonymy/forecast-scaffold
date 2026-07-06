@@ -632,6 +632,9 @@ class ListClient:
     def open_posts(self, tournament: str, *, limit: int = 100) -> list[dict[str, Any]]:
         return self._posts
 
+    def post_detail(self, post_id: int) -> dict[str, Any]:
+        return next(p for p in self._posts if p.get("id") == post_id)
+
     questions_of = staticmethod(run_bot.MetaculusClient.questions_of)
     already_forecasted = staticmethod(run_bot.MetaculusClient.already_forecasted)
 
@@ -674,6 +677,31 @@ class TestMainPrefilters:
         code, forecasted = run_main(monkeypatch, tmp_path, posts)
         assert code == 0
         assert forecasted == [11]
+
+    def test_post_backtests_a_closed_question_in_dry_run(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # --post targets one post via post_detail and bypasses the open-status /
+        # already-forecasted filters, so a CLOSED question (the q44378 backtest case) is
+        # forecast; it must force dry-run so the closed target is never submitted to.
+        posts = [{"id": 99, "question": {"id": 44378, "type": "binary",
+                                         "title": "closed backtest target",
+                                         "status": "closed"}}]
+        forecasted: list[Any] = []
+        seen_args: dict[str, Any] = {}
+        monkeypatch.setattr(run_bot, "MetaculusClient", lambda: ListClient(posts))
+
+        def fake_forecast(client, post, question, args, config, journal,
+                          spent=None, deadline=None):
+            forecasted.append(question.get("id"))
+            seen_args["dry_run"] = args.dry_run
+            return True
+
+        monkeypatch.setattr(run_bot, "forecast_question", fake_forecast)
+        code = run_bot.main(["--post", "99", "--journal", str(tmp_path / "j.jsonl")])
+        assert code == 0
+        assert forecasted == [44378]      # closed question forecast anyway
+        assert seen_args["dry_run"] is True  # never submits
 
     def test_backoff_after_repeated_failures(self, monkeypatch: pytest.MonkeyPatch,
                                              tmp_path: Path) -> None:

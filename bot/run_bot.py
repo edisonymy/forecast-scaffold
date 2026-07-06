@@ -1095,7 +1095,10 @@ def forecast_question(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--tournament", required=True, help="tournament id or slug")
+    parser.add_argument("--tournament", help="tournament id or slug")
+    parser.add_argument("--post", type=int, help="forecast ONE post id (backtest / re-forecast "
+                        "a specific question, including closed ones); implies --dry-run and "
+                        "bypasses the open-status and already-forecasted filters")
     parser.add_argument("--dry-run", action="store_true", help="record locally, never submit")
     parser.add_argument("--limit", type=int, default=50)
     parser.add_argument("--effort", default="auto", choices=["auto", "low", "medium", "high"])
@@ -1137,6 +1140,12 @@ def main(argv: list[str] | None = None) -> int:
                              "so CI jobs need this to finish inside their own timeout "
                              "with room for the journal commit (0 = no cap)")
     args = parser.parse_args(argv)
+    if not args.tournament and not args.post:
+        parser.error("give --tournament or --post")
+    if args.post:
+        # Single-question backtest: never submit (the target may be closed / already
+        # forecasted / from any tournament) and don't apply the open-status filter.
+        args.dry_run = True
     deadline = (
         time.monotonic() + args.deadline_minutes * 60 if args.deadline_minutes > 0 else None
     )
@@ -1152,8 +1161,13 @@ def main(argv: list[str] | None = None) -> int:
     Path(args.journal).parent.mkdir(parents=True, exist_ok=True)
     journal = Journal(args.journal)
 
-    posts = client.open_posts(args.tournament, limit=args.limit)
-    print(f"{len(posts)} open post(s) in {args.tournament}")
+    single = args.post is not None
+    if single:
+        posts = [client.post_detail(args.post)]
+        print(f"backtest: post {args.post} (dry-run, filters bypassed)")
+    else:
+        posts = client.open_posts(args.tournament, limit=args.limit)
+        print(f"{len(posts)} open post(s) in {args.tournament}")
     ledger = failures_path(args.journal)
     failure_counts = recent_failure_counts(ledger)
     pending = []
@@ -1166,9 +1180,10 @@ def main(argv: list[str] | None = None) -> int:
                 continue
             # A group post is fetched while OPEN overall, but its subquestions open and
             # close on their own clocks — submitting to a closed one is a guaranteed 4xx
-            # after the full agent spend. Missing status stays in (fail-open).
+            # after the full agent spend. Missing status stays in (fail-open). In
+            # single-post backtest mode the target is often closed by design, so skip it.
             status = str(question.get("status") or "open")
-            if status != "open":
+            if not single and status != "open":
                 print(f"skip (question status {status!r}): {title!r}")
                 continue
             if qtype in CONTINUOUS:
@@ -1182,7 +1197,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"skip (failed {MAX_QUESTION_FAILURES}x in the last "
                       f"{FAILURE_WINDOW_HOURS:.0f}h — backing off): {title!r}")
                 continue
-            if args.include_forecasted or not client.already_forecasted(question):
+            if single or args.include_forecasted or not client.already_forecasted(question):
                 pending.append((post, question))
     # Soonest-closing first: those forecasts lock in scoring coverage a batch cannot
     # recover later, while far-out questions can wait for the next budget window.

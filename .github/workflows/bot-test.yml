@@ -4,8 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       tournament:
-        description: "Tournament id or slug (use the bot-testing-area sandbox first)"
-        required: true
+        description: "Tournament id or slug (ignored when 'post' is set)"
+        required: false
+      post:
+        description: "Single post id to backtest/re-forecast (implies dry-run; forecasts one closed or open question)"
+        required: false
       dry_run:
         description: "Dry run (record only, never submit)"
         type: boolean
@@ -64,12 +67,19 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           # via env, never interpolated into the shell line (script-injection safe)
           INPUT_TOURNAMENT: ${{ inputs.tournament }}
+          INPUT_POST: ${{ inputs.post }}
           INPUT_LIMIT: ${{ inputs.limit }}
           INPUT_PROVIDER: ${{ inputs.provider }}
           INPUT_EFFORT: ${{ inputs.effort }}
         run: |
-          python bot/run_bot.py --tournament "$INPUT_TOURNAMENT" \
-            --limit "$INPUT_LIMIT" \
+          # Single-post backtest (--post, forces dry-run) or a tournament sweep — the target
+          # comes via env, never interpolated into the command line.
+          if [ -n "$INPUT_POST" ]; then
+            target=(--post "$INPUT_POST")
+          else
+            target=(--tournament "$INPUT_TOURNAMENT" --limit "$INPUT_LIMIT")
+          fi
+          python bot/run_bot.py "${target[@]}" \
             --provider "${INPUT_PROVIDER:-subscription}" \
             --effort "${INPUT_EFFORT:-auto}" \
             ${{ inputs.dry_run && '--dry-run' || '' }} \
