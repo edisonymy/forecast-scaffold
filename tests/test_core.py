@@ -327,3 +327,33 @@ def test_load_config_merges_toml(tmp_path: Path) -> None:
     assert config["clamp"]["min"] == 0.05
     assert config["clamp"]["max"] == 0.98  # untouched default survives
     assert config["tiers"]["medium"]["draws"] == 5
+
+
+class TestBlindGrouping:
+    """`score --by blind` (the owner's standing Brier-anchor rule) must read the
+    explicit record.blind field first: v0.4.2 pinned crowd.shown_to_agent to False on
+    every bot record, so the legacy proxy would relabel all sighted records as blind."""
+
+    def test_explicit_field_beats_the_legacy_proxy(self) -> None:
+        from forecast_scaffold.core import ForecastRecord, _group_key_value
+
+        sighted = ForecastRecord(question="q?", blind=False,
+                                 crowd={"value": 0.5, "shown_to_agent": False})
+        assert _group_key_value(sighted, "blind") == "sighted"
+        blind = ForecastRecord(question="q?", blind=True)
+        assert _group_key_value(blind, "blind") == "blind"
+
+    def test_legacy_records_fall_back_to_shown_to_agent(self) -> None:
+        from forecast_scaffold.core import ForecastRecord, _group_key_value
+
+        legacy_blind = ForecastRecord(question="q?",
+                                      crowd={"value": 0.5, "shown_to_agent": False})
+        assert _group_key_value(legacy_blind, "blind") == "blind"
+        legacy_sighted = ForecastRecord(question="q?",
+                                        crowd={"value": 0.5, "shown_to_agent": True})
+        assert _group_key_value(legacy_sighted, "blind") == "sighted"
+
+    def test_no_signal_at_all_is_unknown(self) -> None:
+        from forecast_scaffold.core import ForecastRecord, _group_key_value
+
+        assert _group_key_value(ForecastRecord(question="q?"), "blind") == "unknown"

@@ -144,7 +144,10 @@ class TestPooledRunHelpers:
         # kills an ensemble (Davis-Stober 2014). The ban must stay in the instruction.
         text = run_bot.DOSSIER_SECTION.lower()
         assert "do not include your probability" in text
-    assert ForecastRecord(question="Will X?").provider is None  # additive, defaults absent
+
+    def test_provider_field_defaults_absent(self) -> None:
+        # additive schema field: old records without it must stay loadable
+        assert ForecastRecord(question="Will X?").provider is None
 
 
 class TestBenchScoring:

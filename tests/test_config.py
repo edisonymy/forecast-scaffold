@@ -19,7 +19,8 @@ def test_template_mirrors_defaults_exactly() -> None:
 
 def test_scaffold_version_matches_plugin_manifest() -> None:
     """core.SCAFFOLD_VERSION is the methodology version stamped into every record;
-    it must never drift from the plugin's published version."""
+    it must never drift from the plugin's published version — or from the pip package
+    metadata (`pip install -e .` in every workflow reads pyproject.toml)."""
     import json
     from pathlib import Path
 
@@ -29,3 +30,6 @@ def test_scaffold_version_matches_plugin_manifest() -> None:
         (Path(__file__).parents[1] / ".claude-plugin" / "plugin.json").read_text()
     )
     assert manifest["version"] == SCAFFOLD_VERSION
+    with (Path(__file__).parents[1] / "pyproject.toml").open("rb") as fh:
+        pyproject = tomllib.load(fh)
+    assert pyproject["project"]["version"] == SCAFFOLD_VERSION

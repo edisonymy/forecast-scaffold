@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -80,18 +81,42 @@ class StubClient:
         return 0.5
 
 
+class SubmitCaptureClient(StubClient):
+    """Live-mode stub: records what would hit the Metaculus API."""
+
+    def __init__(self, *, comment_error: bool = False) -> None:
+        self.submitted: list[tuple[str, Any]] = []
+        self.comments: list[tuple[int, str]] = []
+        self.comment_error = comment_error
+
+    def submit_binary(self, question_id: int, probability: float) -> None:
+        self.submitted.append(("binary", probability))
+
+    def submit_multiple_choice(self, question_id: int, by_option: dict[str, float]) -> None:
+        self.submitted.append(("mc", by_option))
+
+    def submit_cdf(self, question_id: int, cdf: list[float]) -> None:
+        self.submitted.append(("cdf", cdf))
+
+    def comment(self, post_id: int, text: str, *, private: bool = True) -> None:
+        if self.comment_error:
+            raise RuntimeError("comment API down")
+        self.comments.append((post_id, text))
+
+
 def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
         config: dict[str, Any] | None = None, effort: str = "medium",
         question: dict[str, Any] | None = None, budget: float = 0.0,
-        with_verify: bool = False,
-        blind: bool = False) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
+        with_verify: bool = False, blind: bool = False, dry_run: bool = True,
+        client: Any = None, deadline: float | None = None,
+        comment: bool = False) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
     agent = ScriptedAgent(outputs)
     monkeypatch.setattr(run_bot, "run_agent", agent)
     if not with_verify:  # most tests script only the forecast runs
         monkeypatch.setattr(run_bot, "verify_dossier", lambda *a, **k: ("", 0.0))
     args = argparse.Namespace(
         blind=blind, effort=effort, provider="subscription", timeout=60,
-        dry_run=True, comment=False, budget=budget,
+        dry_run=dry_run, comment=comment, budget=budget,
         agent_cmd=("claude -p --model claude-sonnet-5 --output-format json "
                    "--allowed-tools Read,Glob,Grep,WebSearch,WebFetch"),
     )
@@ -102,7 +127,8 @@ def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
     journal = Journal(str(journal_path))
     spent = {"usd": 0.0}
     ok = run_bot.forecast_question(
-        StubClient(), POST, question or QUESTION, args, config, journal, spent
+        client or StubClient(), POST, question or QUESTION, args, config, journal, spent,
+        deadline,
     )
     record = None
     if journal_path.exists() and journal_path.read_text(encoding="utf-8").strip():
@@ -195,6 +221,9 @@ class TestBotCrowdBoundary:
         assert record["crowd"]["value"] == 0.5  # benchmark still journaled
         assert record["crowd"]["shown_to_agent"] is False
         assert record["crowd"]["source"] == "metaculus bot aggregate"
+        # 0.4.3: shown_to_agent is pinned False, so the record itself must carry the
+        # mode or `score --by blind` mislabels every sighted tournament record.
+        assert record["blind"] is False
 
     def test_blind_brief_has_neither_value_nor_note(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
@@ -209,6 +238,7 @@ class TestBotCrowdBoundary:
             assert "Community prediction" not in call["prompt"]
             assert "Crowd signals" not in call["prompt"]
         assert record["crowd"]["shown_to_agent"] is False
+        assert record["blind"] is True
 
 
 class TestNamedScenarios:
@@ -443,3 +473,239 @@ class TestShapes:
         assert ok
         assert "--model claude-opus-4-8" in agent.calls[1]["cmd"]
         assert "--model claude-haiku-4-5" in agent.calls[2]["cmd"]
+
+    def test_collapsed_ensemble_is_marked_single_run(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # Both reasoning slots die -> the lone research number is submitted. Right call,
+        # but the journal must say the intended ensemble never happened, or scoring
+        # credits "the ensemble" with a forecast no ensemble made.
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            "AGENT_FAILURE", "AGENT_FAILURE",
+            "AGENT_FAILURE", "AGENT_FAILURE",
+        ])
+        assert ok and record is not None
+        assert record["probability"] == 0.30
+        assert record["aggregation"] == "single_run(of 3 intended)"
+
+
+class TestLiveSubmission:
+    """dry_run=False — the branch the tournament actually exercises (the review fleet
+    found it had never once run under test). The invariant throughout: the public
+    preregistration journal records exactly the numbers the platform received."""
+
+    LOW = {"low": {"draws": 1, "searches": 1, "runs": 1}}
+
+    def test_binary_journal_records_the_submitted_clamped_number(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        client = SubmitCaptureClient()
+        agent, record, ok = run(
+            monkeypatch, tmp_path,
+            [fenced({"probability": 0.998, "reasoning": "x", "sources": []})],
+            config=config_with_tiers(self.LOW), effort="low",
+            dry_run=False, client=client,
+        )
+        assert ok
+        kind, submitted = client.submitted[0]
+        assert kind == "binary"
+        assert submitted == pytest.approx(0.99)
+        assert record is not None and record["probability"] == pytest.approx(0.99)
+
+    def test_mc_normalized_before_the_record_and_identical_at_submit(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        mc_question = {**QUESTION, "type": "multiple_choice", "options": ["A", "B"]}
+        client = SubmitCaptureClient()
+        agent, record, ok = run(
+            monkeypatch, tmp_path,
+            [fenced({"probabilities": {"A": 0.999, "B": 0.0},
+                     "reasoning": "x", "sources": []})],
+            config=config_with_tiers(self.LOW), effort="low",
+            question=mc_question, dry_run=False, client=client,
+        )
+        assert ok
+        kind, submitted = client.submitted[0]
+        assert kind == "mc"
+        assert submitted["B"] == pytest.approx(0.001)  # floored into the API band
+        assert sum(submitted.values()) == pytest.approx(1.0)
+        assert record is not None
+        assert record["probabilities"] == [pytest.approx(v)
+                                           for v in (submitted["A"], submitted["B"])]
+
+    def test_discrete_submits_a_cdf_sized_by_outcome_count(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        question = {
+            **QUESTION, "type": "discrete", "inbound_outcome_count": 100,
+            "scaling": {"range_min": 0.0, "range_max": 100.0, "zero_point": None},
+            "open_lower_bound": False, "open_upper_bound": False,
+        }
+        client = SubmitCaptureClient()
+        agent, record, ok = run(
+            monkeypatch, tmp_path,
+            [fenced({"percentiles": {"10": 5.0, "25": 20.0, "50": 50.0,
+                                     "75": 75.0, "90": 95.0},
+                     "reasoning": "x", "sources": []})],
+            config=config_with_tiers(self.LOW), effort="low",
+            question=question, dry_run=False, client=client,
+        )
+        assert ok
+        kind, cdf = client.submitted[0]
+        assert kind == "cdf"
+        assert len(cdf) == 101  # inbound_outcome_count + 1
+        assert all(b >= a for a, b in zip(cdf, cdf[1:], strict=False))
+
+    def test_comment_failure_never_fails_the_question(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        client = SubmitCaptureClient(comment_error=True)
+        agent, record, ok = run(
+            monkeypatch, tmp_path,
+            [fenced({"probability": 0.4, "reasoning": "why", "sources": []})],
+            config=config_with_tiers(self.LOW), effort="low",
+            dry_run=False, client=client, comment=True,
+        )
+        assert ok  # forecast submitted; the comment is cosmetic
+        assert client.submitted and client.comments == []
+
+
+class TestFailureLedger:
+    """Per-question backoff for the hourly cron: question-content failures count,
+    infra failures (auth outage, session limit) must not poison the ledger."""
+
+    LOW = {"low": {"draws": 1, "searches": 1, "runs": 1}}
+
+    def test_invalid_payload_after_agent_reply_is_ledgered(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        bad = fenced({"probability": 7.3, "reasoning": "x", "sources": []})
+        agent, record, ok = run(monkeypatch, tmp_path, [bad, bad],
+                                config=config_with_tiers(self.LOW), effort="low")
+        assert not ok and record is None
+        entries = [json.loads(line) for line in
+                   (tmp_path / "failures.jsonl").read_text(encoding="utf-8").splitlines()]
+        assert entries[0]["question_id"] == QUESTION["id"]
+        assert "probability" in entries[0]["error"]
+
+    def test_infra_failure_is_not_ledgered(self, monkeypatch: pytest.MonkeyPatch,
+                                           tmp_path: Path) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, ["AGENT_FAILURE"] * 6)
+        assert not ok
+        assert not (tmp_path / "failures.jsonl").exists()
+
+    def test_deadline_already_passed_skips_without_calls_or_ledger(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [fenced(RESEARCH)],
+                                deadline=time.monotonic() - 1)
+        assert not ok and record is None
+        assert agent.calls == []  # the clock ran out — no agent spend
+        assert not (tmp_path / "failures.jsonl").exists()
+
+    def test_recent_failure_counts_respects_window_and_garbage(self, tmp_path: Path) -> None:
+        path = tmp_path / "failures.jsonl"
+        for _ in range(3):
+            run_bot.record_failure(path, 42, "boom")
+        with path.open("a", encoding="utf-8") as fh:
+            fh.write('{"question_id": 42, "at": "2020-01-01T00:00:00+00:00"}\n')
+            fh.write("not json at all\n")
+            fh.write('{"at": "2026-07-06T00:00:00+00:00"}\n')  # no id -> ignored
+        counts = run_bot.recent_failure_counts(path)
+        assert counts == {42: 3}  # the 2020 entry aged out; garbage ignored
+
+
+class ListClient:
+    """main()-level stub: a fixed post list, no already-forecasted state."""
+
+    def __init__(self, posts: list[dict[str, Any]]) -> None:
+        self._posts = posts
+
+    def open_posts(self, tournament: str, *, limit: int = 100) -> list[dict[str, Any]]:
+        return self._posts
+
+    questions_of = staticmethod(run_bot.MetaculusClient.questions_of)
+    already_forecasted = staticmethod(run_bot.MetaculusClient.already_forecasted)
+
+    def community_prediction(self, question: dict[str, Any]) -> None:
+        return None
+
+
+def run_main(monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+             posts: list[dict[str, Any]]) -> tuple[int, list[Any]]:
+    forecasted: list[Any] = []
+    monkeypatch.setattr(run_bot, "MetaculusClient", lambda: ListClient(posts))
+
+    def fake_forecast(client: Any, post: Any, question: Any, args: Any, config: Any,
+                      journal: Any, spent: Any = None, deadline: Any = None) -> bool:
+        forecasted.append(question.get("id"))
+        return True
+
+    monkeypatch.setattr(run_bot, "forecast_question", fake_forecast)
+    code = run_bot.main(["--tournament", "t", "--dry-run",
+                         "--journal", str(tmp_path / "j.jsonl")])
+    return code, forecasted
+
+
+class TestMainPrefilters:
+    """Structurally unforecastable questions must be skipped BEFORE any agent spend —
+    and as skips, not failures: a nonzero exit re-runs the batch on the paid fallback."""
+
+    def test_unsupported_closed_and_unbounded_are_skipped_free(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        posts = [
+            {"id": 1, "question": {"id": 11, "type": "binary", "title": "ok",
+                                   "status": "open"}},
+            {"id": 2, "question": {"id": 12, "type": "conditional", "title": "odd type"}},
+            {"id": 3, "question": {"id": 13, "type": "binary", "title": "closed sub-q",
+                                   "status": "closed"}},
+            {"id": 4, "question": {"id": 14, "type": "numeric", "title": "no bounds",
+                                   "scaling": {}}},
+        ]
+        code, forecasted = run_main(monkeypatch, tmp_path, posts)
+        assert code == 0
+        assert forecasted == [11]
+
+    def test_backoff_after_repeated_failures(self, monkeypatch: pytest.MonkeyPatch,
+                                             tmp_path: Path) -> None:
+        ledger = tmp_path / "failures.jsonl"
+        for _ in range(run_bot.MAX_QUESTION_FAILURES):
+            run_bot.record_failure(ledger, 11, "still failing")
+        posts = [
+            {"id": 1, "question": {"id": 11, "type": "binary", "title": "flaky"}},
+            {"id": 2, "question": {"id": 15, "type": "binary", "title": "fresh"}},
+        ]
+        code, forecasted = run_main(monkeypatch, tmp_path, posts)
+        assert code == 0
+        assert forecasted == [15]
+
+    def test_live_run_without_metaculus_token_fails_before_any_spend(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        monkeypatch.delenv("METACULUS_TOKEN", raising=False)
+        code = run_bot.main(["--tournament", "t",
+                             "--journal", str(tmp_path / "j.jsonl")])
+        assert code == 1
+
+
+class TestPayloadValidation:
+    MC_Q = {**QUESTION, "type": "multiple_choice", "options": ["A", "B"]}
+
+    def test_extra_option_key_is_an_error_not_an_api_400(self) -> None:
+        errors = run_bot.validate_payload(
+            {"probabilities": {"A": 0.5, "B": 0.4, "C": 0.1}}, self.MC_Q)
+        assert errors and "unknown options" in errors[0]
+
+    def test_non_numeric_option_probability_is_an_error_not_a_crash(self) -> None:
+        # An exception here would skip the repair retry and fail a fixable payload.
+        errors = run_bot.validate_payload(
+            {"probabilities": {"A": "likely", "B": 0.4}}, self.MC_Q)
+        assert errors == ["every option probability must be a number"]
+
+    def test_non_numeric_percentile_is_an_error_not_a_crash(self) -> None:
+        q = {**QUESTION, "type": "numeric",
+             "scaling": {"range_min": 0.0, "range_max": 10.0}}
+        errors = run_bot.validate_payload({"percentiles": {"50": "five"}}, q)
+        assert errors == ["every percentile value must be a number"]

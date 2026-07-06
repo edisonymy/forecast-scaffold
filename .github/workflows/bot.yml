@@ -26,6 +26,7 @@ jobs:
     timeout-minutes: 110
     permissions:
       contents: write # commits the public journal
+      issues: write # failure alerting (one open issue, not hourly spam)
     steps:
       - uses: actions/checkout@v4
 
@@ -38,9 +39,14 @@ jobs:
           node-version: "22"
 
       - name: Install
+        # The CLI is pinned: an unattended hourly cron must not pick up a broken (or
+        # compromised) release mid-season — the OpenRouter fallback runs the SAME binary,
+        # so a bad release would take out both provider paths at once. Bump deliberately,
+        # then watch one run.
         run: |
           pip install -e .
-          npm install -g @anthropic-ai/claude-code
+          npm install -g @anthropic-ai/claude-code@2.1.201
+          echo "JOB_START=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Run bot (subscription)
         # Auth: CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`) draws on the Claude
@@ -58,13 +64,16 @@ jobs:
           TOURNAMENT_ID: ${{ vars.TOURNAMENT_ID }}
         run: |
           python bot/run_bot.py --tournament "$TOURNAMENT_ID" \
-            --limit 20 --budget 3 --deadline-minutes 85 --provider subscription \
+            --limit 50 --budget 3 --deadline-minutes 85 --provider subscription \
             --agent-cmd "claude -p --model claude-sonnet-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch" --comment
 
       - name: Run bot (OpenRouter — selected or fallback)
         # Runs when chosen explicitly, or as the backup after a subscription failure.
         # Billed to OpenRouter credits; the same claude CLI is pointed at OpenRouter's
         # Anthropic-compatible endpoint and the model id becomes anthropic/<id>.
+        # Its deadline is whatever actually remains before the job timeout: after a
+        # late primary failure, an 85-minute deadline here would be a guaranteed
+        # mid-flight kill (and a possible submitted-but-unpublished journal line).
         if: ${{ inputs.provider == 'openrouter' || steps.primary.outcome == 'failure' }}
         env:
           METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
@@ -72,8 +81,15 @@ jobs:
           TOURNAMENT_ID: ${{ vars.TOURNAMENT_ID }}
         run: |
           : "${OPENROUTER_API_KEY:?set the OPENROUTER_API_KEY secret to use the OpenRouter path}"
+          elapsed_min=$(( ( $(date +%s) - JOB_START ) / 60 ))
+          remaining=$(( 100 - elapsed_min ))
+          if [ "$remaining" -lt 15 ]; then
+            echo "only ${remaining}min before the job timeout — leaving the remainder to the next hourly run"
+            exit 0
+          fi
+          deadline=$(( remaining - 10 )); [ "$deadline" -gt 85 ] && deadline=85
           python bot/run_bot.py --tournament "$TOURNAMENT_ID" \
-            --limit 20 --budget 3 --deadline-minutes 85 --provider openrouter \
+            --limit 50 --budget 3 --deadline-minutes "$deadline" --provider openrouter \
             --agent-cmd "claude -p --model claude-sonnet-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch" --comment
 
       - name: Commit journal (pre-registration)
@@ -82,6 +98,9 @@ jobs:
         if: always()
         env:
           LEAK_PATTERNS: ${{ secrets.LEAK_PATTERNS }}
+          METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           # Leak-guard the machine-generated journal BEFORE publishing it. The bot ingests
           # untrusted question text; a personal-data match must block the push, not just fail
@@ -92,26 +111,65 @@ jobs:
           set +e; grep -rniIE "$LEAK_PATTERNS" bot/journal/; status=$?; set -e
           if [ "$status" -eq 0 ]; then echo "::error::personal-data in journal — not publishing"; exit 1; fi
           if [ "$status" -ne 1 ]; then echo "::error::leak-guard grep failed ($status)"; exit 2; fi
+          # The pattern list cannot know credential VALUES — but a prompt-injected agent's
+          # visible output (sources, reasoning) lands in exactly the files this step is
+          # about to publish. Check for the values themselves, fail-closed.
+          for secret in "$METACULUS_TOKEN" "$CLAUDE_CODE_OAUTH_TOKEN" "$OPENROUTER_API_KEY"; do
+            if [ -n "$secret" ] && grep -rqF -- "$secret" bot/journal/; then
+              echo "::error::a credential value appears in the journal — not publishing"; exit 3
+            fi
+          done
           git config user.name "forecast-scaffold-bot"
           git config user.email "bot@users.noreply.github.com"
           git add bot/journal/
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "bot: journal update $(date -u +%FT%TZ)"
-          # rebase-and-retry: a concurrent commit must not lose a submitted forecast's journal line
+          # rebase-and-retry: a concurrent commit must not lose a submitted forecast's
+          # journal line. A conflicted rebase must be aborted before the next attempt or
+          # every retry fails instantly on "rebase already in progress".
           for i in 1 2 3; do
             git pull --rebase --autostash origin main && git push && exit 0
+            git rebase --abort 2>/dev/null || true
             sleep 3
           done
           exit 1
 
       - name: Preserve journal on publish failure
-        # A leak-guard match or push failure must block PUBLICATION, not destroy the
-        # evidence: a submitted forecast with no journal line anywhere would be a hole in
-        # the public preregistration trail. The artifact keeps the journal private for
-        # manual review instead of losing it with the runner.
-        if: failure()
+        # A leak-guard match, push failure, or the 110-minute kill must block PUBLICATION,
+        # not destroy the evidence: a submitted forecast with no journal line anywhere
+        # would be a hole in the public preregistration trail. cancelled() matters — a
+        # job-timeout kill is a cancellation, not a failure, and it is the one path where
+        # submitted-but-uncommitted journal lines can otherwise die with the runner.
+        if: ${{ failure() || cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: unpublished-journal-${{ github.run_id }}
           path: bot/journal/
           retention-days: 30
+
+      - name: Alert on trouble (one open issue, never hourly spam)
+        # An unattended cron fails silently otherwise — and "the subscription step failed
+        # so the metered fallback quietly took the whole workload" is invisible in a green
+        # job. While the alert issue stays open, nothing new is filed.
+        if: ${{ always() && (failure() || steps.primary.outcome == 'failure') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PRIMARY_OUTCOME: ${{ steps.primary.outcome }}
+        run: |
+          title="Tournament bot needs attention"
+          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then echo "alert issue #$existing already open"; exit 0; fi
+          {
+            echo "Automated alert from the hourly tournament workflow."
+            echo
+            if [ "$PRIMARY_OUTCOME" = "failure" ]; then
+              echo "The subscription step failed — the OpenRouter fallback may have covered the batch (check openrouter.ai/activity). Common causes: expired CLAUDE_CODE_OAUTH_TOKEN, subscription session limit, a per-question failure that exits nonzero."
+            else
+              echo "The workflow failed — check the run logs (Metaculus API change? leak-guard block? journal push conflict?)."
+            fi
+            echo
+            echo "Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo
+            echo "Close this issue once resolved — the next problem will open a fresh one."
+          } > "$RUNNER_TEMP/alert-body.md"
+          gh issue create --title "$title" --body-file "$RUNNER_TEMP/alert-body.md"

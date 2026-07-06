@@ -4,6 +4,72 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.3] - 2026-07-06
+
+The tournament-hardening release: a robustness sweep (six-dimension adversarial review +
+owner sign-off) before arming the hourly FutureEval cron. **Owner decision:** entering the
+tournament now supersedes v0.4.0's validation-debt gate — the #8/#9 batteries stay queued
+as in-flight validation while the bot competes; live resolutions are the outer loop anyway.
+No forecasting-methodology changes; everything here is ops, honesty-of-record, and security.
+
+### Fixed
+- **`score --by blind` mislabeled every v0.4.2 bot record as blind.** v0.4.2 pinned
+  `crowd.shown_to_agent` to `false` (correct — the value is never shown), which was also
+  the only blind/sighted signal. Records now carry an explicit `blind` field; grouping
+  prefers it and falls back to the legacy proxy only for pre-0.4.3 records (correct for
+  everything published before the pin). The journal viewer tag follows the same rule.
+- **The journal now records exactly the numbers submitted.** The binary band clamp and the
+  MC floor/renormalize used to run *after* the record was appended, so the public
+  preregistration journal could differ from what Metaculus received.
+- **`validate_payload` returned exceptions instead of errors on non-numeric agent values**
+  (e.g. `"probability": "likely"`), which skipped the repair retry and failed fixable
+  payloads. Same class: optional numeric fields (`base_rate`, `expected_value`,
+  `raw_draws`) now degrade to absent instead of crashing record creation.
+- **MC payloads with invented option labels** passed validation (only *missing* labels were
+  checked), siphoned probability mass, and would 400 at the API after full agent spend.
+- **`open_posts` now follows pagination** up to `--limit`: the already-forecasted filter is
+  client-side, so a single-page fetch silently hid new wave questions once more than a
+  pageful of posts was open.
+- **Transient-retry coverage**: Cloudflare origin blips (520/522/524) retry like 5xx, and a
+  parseable `Retry-After` is honored (capped at 30 s).
+
+### Added
+- **Free skips before any agent spend** for questions the bot cannot submit: unsupported
+  types, closed/upcoming group subquestions, continuous questions without numeric bounds.
+  Skips exit 0 — a deterministic defect no longer re-runs the batch on the paid fallback
+  every hour.
+- **Per-question failure backoff** (`bot/journal/failures.jsonl`, committed with the
+  journal so stateless CI runs see it): after 3 question-content failures in 24 h the
+  question is skipped. Infra failures (auth outage, session limit) deliberately do not
+  count — they are not the question's fault and must not poison the ledger.
+- **Failure alerting in `bot.yml`**: any workflow failure — or a green run whose
+  subscription step failed and silently shifted the workload to the metered fallback —
+  opens a GitHub issue (once; an open alert issue suppresses new ones).
+- **Secret-value guard before journal publication**: the leak-guard patterns cannot know
+  credential values, so the commit step now greps the journal for the actual secrets
+  (fail-closed) — closing the prompt-injection → public-journal exfiltration path.
+- **Always-on `Read` deny for the agent subprocess** (`/proc/**`, `~/.claude/**`): the
+  forecasting agent needs Read for the skill's own files, never for process environments
+  or credential stores. Inert where the paths don't exist.
+- **Deadline discipline**: the repair retry, the CoVe verification call, and
+  still-failing research runs now respect `--deadline-minutes` (previously only gated
+  between questions and after a first success), and the ensemble records
+  `single_run(of N intended)` when it collapses to one run. The OpenRouter fallback step
+  computes its deadline from the time actually remaining before the job timeout.
+- **Fail-fast preflight**: a live run without `METACULUS_TOKEN` exits before any agent
+  spend. On the OpenRouter path a $0 cost envelope is floored at a nominal $0.10/call so
+  `--budget` can never be inert on exactly the metered path.
+- **Test coverage for the live-submission branch** (found by the review: every prior test
+  ran `dry_run=True`) — submitted-equals-journaled for binary/MC, discrete CDF sizing,
+  comment-failure isolation — plus the pre-filters, the ledger, pagination, and retry
+  behavior. 199 tests.
+
+### Changed
+- `@anthropic-ai/claude-code` is version-pinned in all workflows (an unattended hourly
+  cron must not pick up a broken release — the fallback runs the same binary).
+- `pyproject.toml` version now tracks `SCAFFOLD_VERSION` (was stuck at 0.1.0) and the
+  manifest test enforces it.
+
 ## [0.4.2] - 2026-07-06
 
 ### Fixed
