@@ -216,6 +216,20 @@ class TestNamedScenarios:
         assert ok and record is not None
         assert "scenario-coherence" not in record["reasoning"]
 
+    def test_borderline_mass_within_slack_is_not_flagged(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # Live e2e (2026-07-06): 0.25 named vs 0.24 room got flagged — rounding noise.
+        # The 0.05 slack keeps the flag for real violations only.
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.76, named_scenarios=[
+                {"scenario": "NO pathway", "p": 0.25}])),  # room 0.24, within slack
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert ok and record is not None
+        assert "scenario-coherence" not in record["reasoning"]
+
 
 class TestFailureRecovery:
     def test_missing_dossier_triggers_repair_retry(self, monkeypatch: pytest.MonkeyPatch,
