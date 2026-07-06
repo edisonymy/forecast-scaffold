@@ -151,7 +151,9 @@ stay closer to the base rate and name it in "missing_evidence" in the json.
 Additionally include "named_scenarios" in the json: the concrete pathways you considered that
 lead to the OPPOSITE resolution from your lean (at most 3), each as
 {"scenario": "<one line>", "p": <the probability mass you actually assign it>} — [] is an
-honest answer when nothing distinct points the other way. The audited tail failure is naming
+honest answer when nothing distinct points the other way. List only opposite-direction,
+roughly mutually exclusive pathways (their probabilities should be addable without
+double-counting); do not restate your main scenario. The audited tail failure is naming
 such a pathway in prose and then not pricing it; the harness checks the arithmetic (your final
 number must leave at least the mass you yourself put on the other side) and flags incoherence
 in the journal. It never changes your number.
@@ -526,7 +528,10 @@ def scenario_flag(p: float, scenarios: Any) -> str | None:
         return None
     mass = clamp(mass, 0.0, 1.0)
     room = min(p, 1.0 - p)  # the side opposite the lean
-    if mass > room + 1e-9:
+    # 0.05 slack: the first live runs flagged a 0.25-vs-0.24 "violation" — rounding noise,
+    # not the named-then-unpriced failure this hunts. Genuine cases clear the slack easily
+    # (the audited misses were 0.14 named vs 0.03 priced).
+    if mass > room + 0.05:
         return (f"p={p:.2f} leaves {room:.2f} against the lean, but the run's own "
                 f"counter-scenarios total {mass:.2f}")
     return None
@@ -919,7 +924,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--dry-run", action="store_true", help="record locally, never submit")
     parser.add_argument("--limit", type=int, default=50)
     parser.add_argument("--effort", default="auto", choices=["auto", "low", "medium", "high"])
-    parser.add_argument("--agent-cmd", default="claude -p", help="headless agent command")
+    parser.add_argument(
+        "--agent-cmd",
+        # The bare "claude -p" default was a measured footgun (e2e, 2026-07-06): no JSON
+        # envelope means cost/model silently record as nothing, and no --allowed-tools
+        # means the agent researches with whatever the local CLI permits — one bare run did
+        # ZERO searches where the hardened command did seven, and moved the answer from
+        # 0.34 to 0.66. Local default now matches the workflows exactly.
+        default=("claude -p --model claude-sonnet-5 --output-format json "
+                 "--allowed-tools Read,Glob,Grep,WebSearch,WebFetch"),
+        help="headless agent command (default mirrors bot.yml's hardened production shape)",
+    )
     parser.add_argument("--provider", default="subscription", choices=PROVIDERS,
                         help="subscription = Claude Code's own OAuth (default); openrouter = "
                              "route the same CLI through OpenRouter's Anthropic-compatible "

@@ -4,6 +4,25 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.1] - 2026-07-06
+
+Fixes from the first live end-to-end runs of v0.4.0 (4 real questions: bot-testing-area
+sighted medium + the live FutureEval question blind at high and medium, all dry-run).
+The pipeline itself ran clean — dossier → verification → `named_scenarios`-compliant
+reasoning runs → untrimmed pool → v0.4-stamped journal records, zero failures.
+
+### Fixed
+- **`--agent-cmd` default was a footgun**: bare `claude -p` returns no JSON envelope (cost
+  and model silently record as nothing) and applies no `--allowed-tools` hardening — one
+  bare run did ZERO web searches where the production command did seven on the same
+  question, and the blind answer moved 0.34 → 0.66 on evidence access alone (live
+  corroboration of issue #9's evidence-threshold hypothesis). The local default now
+  mirrors bot.yml's hardened production command exactly.
+- **Scenario-coherence flag gets 0.05 slack**: the live runs flagged a 0.25-vs-0.24
+  "violation" — rounding noise, not the named-then-unpriced failure the check hunts
+  (audited real cases look like 0.14 named vs 0.03 priced). Contract wording also now
+  asks for roughly mutually exclusive, opposite-direction pathways only.
+
 ## [0.4.0] - 2026-07-06
 
 The lean-aggregation release. Rolled out on explicit owner decision on plausibility plus the
