@@ -595,11 +595,25 @@ def forecast_question(
     spent: dict[str, float] | None = None,
     deadline: float | None = None,
 ) -> bool:
-    # Blind mode: the crowd value is still captured for the journal (it is the benchmark
-    # the track record is judged against) but withheld from the agent, so the bot's skill
-    # can be measured against the community rather than its ability to anchor on it.
+    # The Metaculus API firewalls the HUMAN community prediction from bot accounts
+    # everywhere: any value a bot token can read is an aggregate of other competing bots.
+    # Measured harm (e2e, 2026-07-06): the sandbox bot-crowd said 0.63 while real markets
+    # sat ~0.82, and injecting it pulled a sighted run from 0.79 to 0.72 — toward the
+    # bots, away from the money. The crowd-anchor evidence (Halawi) is about human
+    # crowds, so the fetched value is journaled as a benchmark but NEVER shown to the
+    # agent. Sighted mode instead licenses the agent to find real human markets itself;
+    # blind mode forbids that too (that is exactly what blind measures).
     crowd = client.community_prediction(question)
-    brief = build_brief(post, question, None if args.blind else crowd)
+    brief = build_brief(post, question, None)
+    if not args.blind:
+        brief += (
+            "\n\n## Crowd signals\n"
+            "No community prediction is provided: bot accounts only ever see other "
+            "bots' aggregates, which are withheld as unvalidated anchors. If liquid "
+            "HUMAN markets or aggregators price this question (Polymarket, Kalshi, "
+            "Manifold, Metaculus's public page), finding them is part of research, and "
+            "the skill's crowd-blend step applies to what you actually find."
+        )
     base_cmd = (
         openrouter_model_cmd(args.agent_cmd)
         if args.provider == "openrouter" else args.agent_cmd
@@ -835,9 +849,10 @@ def forecast_question(
         provider=args.provider,
         crowd={
             "value": crowd,
-            "source": "metaculus community",
+            # Honest label: what a bot token reads is never the human community.
+            "source": "metaculus bot aggregate",
             "at": _utc_now(),
-            "shown_to_agent": not args.blind,
+            "shown_to_agent": False,  # v0.4.2: benchmark only, never in the brief
         }
         if crowd else None,
         reasoning=str(payload.get("reasoning", ""))[:4000],

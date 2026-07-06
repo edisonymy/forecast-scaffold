@@ -83,13 +83,14 @@ class StubClient:
 def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
         config: dict[str, Any] | None = None, effort: str = "medium",
         question: dict[str, Any] | None = None, budget: float = 0.0,
-        with_verify: bool = False) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
+        with_verify: bool = False,
+        blind: bool = False) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
     agent = ScriptedAgent(outputs)
     monkeypatch.setattr(run_bot, "run_agent", agent)
     if not with_verify:  # most tests script only the forecast runs
         monkeypatch.setattr(run_bot, "verify_dossier", lambda *a, **k: ("", 0.0))
     args = argparse.Namespace(
-        blind=False, effort=effort, provider="subscription", timeout=60,
+        blind=blind, effort=effort, provider="subscription", timeout=60,
         dry_run=True, comment=False, budget=budget,
         agent_cmd=("claude -p --model claude-sonnet-5 --output-format json "
                    "--allowed-tools Read,Glob,Grep,WebSearch,WebFetch"),
@@ -172,6 +173,42 @@ class TestHappyPath:
         assert record["probability"] == pytest.approx(geo_mean_odds([0.3, 0.2, 0.5]))
         assert record["aggregation"] == "geo_mean_odds(runs=3)"
         assert record["raw_draws"] == [0.30, 0.20, 0.50]
+
+
+class TestBotCrowdBoundary:
+    """v0.4.2: a bot token only ever sees other bots' aggregates — journal them as the
+    benchmark, never let them into the brief (measured: the injected sandbox bot-crowd
+    pulled a sighted run away from the real market consensus)."""
+
+    def test_sighted_brief_gets_note_not_bot_aggregate(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert ok and record is not None
+        for call in agent.calls:  # StubClient's 0.5 must reach no context
+            assert "Community prediction" not in call["prompt"]
+        assert "Crowd signals" in agent.calls[0]["prompt"]
+        assert record["crowd"]["value"] == 0.5  # benchmark still journaled
+        assert record["crowd"]["shown_to_agent"] is False
+        assert record["crowd"]["source"] == "metaculus bot aggregate"
+
+    def test_blind_brief_has_neither_value_nor_note(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ], blind=True)
+        assert ok and record is not None
+        for call in agent.calls:
+            assert "Community prediction" not in call["prompt"]
+            assert "Crowd signals" not in call["prompt"]
+        assert record["crowd"]["shown_to_agent"] is False
 
 
 class TestNamedScenarios:
