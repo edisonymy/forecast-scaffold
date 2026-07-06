@@ -58,6 +58,13 @@ Read the criterion the way a motivated opponent would:
   as-of date has silently passed). Before estimating anything, spend one search checking whether
   the answer already exists. Symmetrically: a question can be effectively *dead* (the only pathway
   to YES has closed) while technically open.
+- **A platform's close time is not the event window.** When predictions lock is bookkeeping about
+  *you*; when the event can happen is the contract. Spot-style questions lock within hours of
+  opening while pricing an event window that runs weeks longer — deriving the window from the
+  close time silently shrank a one-month contract to six days in a scored live miss (8% submitted
+  against a 31% crowd). The event window comes from the criterion text alone; state it as its own
+  line ("event window: ___ → ___") and, if part of it is already past, treat that part as a
+  research question (did it happen?) before pricing the remainder.
 - **Ambiguous resolver.** If two honest people reading the criterion could grade the same world
   differently, fix the criterion, not the forecast.
 

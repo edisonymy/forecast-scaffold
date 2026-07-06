@@ -145,8 +145,10 @@ and date, the status-quo outcome, the base rates you found (with source AND the 
 computed over: "over all X" vs "over X given condition Y" — when a conditioning variable is
 already known, include the conditional or component rates, never only one broad unconditional
 rate: a single prominently-placed rate acts as a shared anchor and collapses the ensemble),
-the resolution-instrument note ("resolves off ___, not ___"), and what you searched for but
-could not find. Carry evidence for BOTH directions. Do NOT include your probability, your
+the resolution-instrument note ("resolves off ___, not ___"), the event-window line
+("event window: ___ -> ___ per the criteria; as of <Now> ___% elapsed" — derived from the
+resolution criteria text, NEVER from the forecasting-close time), and what you searched for
+but could not find. Carry evidence for BOTH directions. Do NOT include your probability, your
 draws, your lean, or evaluative phrases that telegraph a number ("likely", "slim chance",
 "on track") — the dossier must inform the next forecaster without anchoring them.
 """
@@ -179,7 +181,11 @@ in the journal. It never changes your number.
 VERIFY_PROMPT = (
     "Below is a research dossier for a forecasting question. Identify the 1-3 factual premises "
     "the eventual forecast will most depend on (scheduled dates, published data points, vote or "
-    "seat arithmetic inputs, stated positions). Verify each with ONE targeted web search. Do "
+    "seat arithmetic inputs, stated positions). ALWAYS include one extra premise: the event "
+    "window the dossier assumes, checked against the contract section at the bottom (a text "
+    "check, no search) — a window narrower or wider than what the resolution criteria state "
+    "is CONTRADICTED (a silently-shrunk window turned a one-month contract into six days in "
+    "a scored miss). Verify every other premise with ONE targeted web search. Do "
     "NOT form or state any probability, and do not verify a premise by re-reading the dossier — "
     "the point is an independent check (asserted facts that fail an isolated check are the "
     "measured top failure mode). Reply with ONLY a fenced json block:\n"
@@ -249,10 +255,23 @@ LENSES = (
 
 
 def build_brief(post: dict[str, Any], question: dict[str, Any], crowd: float | None) -> str:
+    # The 2026-07-06 Lovable miss (q44378, 8% vs crowd 31%): the brief's only timestamp
+    # was "Closes: <ts>" — the forecast-lock time — and the agent read it as the event
+    # deadline, shrinking a one-month event window to six days; it then held 8% with ~73
+    # minutes left on the clock it believed, because nothing told it what time it was.
+    # Fix: give the agent the two timestamps it needs (now; scheduled resolution) and
+    # WITHHOLD the one it doesn't — when predictions lock is harness bookkeeping, useless
+    # for pricing the event, and it was the misread's raw material.
+    resolve_time = question.get("scheduled_resolve_time") or post.get(
+        "scheduled_resolve_time", "unknown"
+    )
     parts = [
         f"# Question: {question.get('title', post.get('title', ''))}",
         f"Type: {question.get('type', 'binary')}",
-        f"Closes: {question.get('scheduled_close_time', 'unknown')}",
+        f"Now (UTC): {datetime.now(UTC).strftime('%Y-%m-%dT%H:%M:%SZ')} — anchor every "
+        "elapsed/remaining-time statement to this timestamp.",
+        f"Scheduled resolution: {resolve_time} — the event window itself comes from the "
+        "resolution criteria text below, verbatim; no other timestamp defines it.",
         "\n## Resolution criteria (verbatim — the contract)",
         str(question.get("resolution_criteria", "")),
         "\n## Fine print",
@@ -325,7 +344,8 @@ def with_model(agent_cmd: str, model: str) -> str:
 
 
 def verify_dossier(
-    cmd: str, dossier: str, timeout: int, provider: str, blind: bool
+    cmd: str, dossier: str, timeout: int, provider: str, blind: bool,
+    contract: str = "",
 ) -> tuple[str, float]:
     """CoVe-style independent premise check, appended to the dossier (non-fatal).
 
@@ -333,11 +353,19 @@ def verify_dossier(
     search each, blind to any draft reasoning — the factored variant is what produces
     the measured gains (facts asserted wrongly in context pass isolated checks ~70% vs
     ~17%; CoVe 23-28% relative error reduction), and 3-4 checks is the measured optimum
-    before returns reverse. Any failure returns an empty section; the pipeline proceeds."""
+    before returns reverse. Any failure returns an empty section; the pipeline proceeds.
+
+    contract: the resolution criteria + labelled timestamps, so the verifier can check
+    the dossier's event window against the contract TEXT (the q44378 miss: a window
+    inherited from the forecasting-close time survived into every reasoning run because
+    nothing between research and pooling ever re-read the criteria)."""
     system = SECURITY_SECTION + (BLIND_SECTION if blind else "")
     cost = 0.0
+    prompt = VERIFY_PROMPT + dossier
+    if contract:
+        prompt += "\n\n## The contract (for the event-window check only)\n" + contract
     try:
-        out, cost, _ = run_agent(cmd, VERIFY_PROMPT + dossier, system, timeout, provider)
+        out, cost, _ = run_agent(cmd, prompt, system, timeout, provider)
         items = extract_json(out).get("verification") or []
     except (RuntimeError, ValueError, subprocess.TimeoutExpired):
         return "", cost
@@ -839,9 +867,16 @@ def forecast_question(
                 )
                 past_deadline = deadline is not None and time.monotonic() > deadline
                 if dossier and not budget_spent and not past_deadline:
+                    contract = (
+                        f"Now (UTC): {datetime.now(UTC).strftime('%Y-%m-%dT%H:%M:%SZ')}\n"
+                        f"Scheduled resolution: "
+                        f"{question.get('scheduled_resolve_time', 'unknown')}\n"
+                        f"Resolution criteria (verbatim): "
+                        f"{str(question.get('resolution_criteria', ''))[:2000]}"
+                    )
                     verification, verify_cost = verify_dossier(
                         agent_cmd, dossier, min(args.timeout, 600), args.provider,
-                        args.blind,
+                        args.blind, contract=contract,
                     )
                     run_cost += verify_cost
                     if verification:

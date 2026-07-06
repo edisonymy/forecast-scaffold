@@ -13,6 +13,17 @@ in-context draw ensemble on top.
 **1. Restate.** The question, the resolution criterion **verbatim**, today's date, and time left
 until resolution. Short horizons are status-quo-friendly; long horizons leave room for trends and
 surprises. If restating exposes ambiguity, go back to question-hygiene before spending effort.
+Two mandatory lines before moving on:
+- **Event window:** "___ → ___, per the criterion" — derived from the resolution text alone,
+  never from a platform's forecasting-close time (predictions locking is not the event deadline;
+  conflating them shrank a one-month contract to six days in a scored live miss).
+- **Temporal coherence:** state how much of that window is already behind today's date. The past
+  portion is a *research* question — did it already happen? — not a forecast; search before
+  estimating. Then price only the remaining time: P = P(already happened, not yet reported) +
+  P(happens in what's left). If your own window ends within hours-to-days and the event hasn't
+  happened, your number must collapse toward that arithmetic — the same live miss held 8% on a
+  window its own reasoning said had ~73 minutes left, because it never put "now" and "deadline"
+  on the same line.
 
 **2. Anchors first — before any causal story.**
 - **Status quo:** what happens if nothing much changes? The world changes slowly most of the time;

@@ -4,6 +4,39 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.4] - 2026-07-06
+
+Post-mortem release for the first scored live miss (q44378 Lovable/DeepSeek/Perplexity
+funding: submitted 8%, crowd 31%, cost $2.03). Two compounding failures, both traced to the
+brief's single ambiguous timestamp: the agent read `Closes:` (the forecast-lock time) as the
+event deadline, shrinking the contract's one-month event window to six days — and then held
+8% with ~73 minutes left on the clock it believed, because the brief never told it the
+current time. The dossier carried the misread into every reasoning run (draws 0.07/0.08/0.09
+— tight agreement around a shared wrong frame), and nothing between research and pooling
+re-read the criteria.
+
+### Fixed
+- **`build_brief` timestamps**: the brief now states `Now (UTC)` (the agent previously had
+  no stated clock at all — the bench's AS-OF header never made it to the live bot) and
+  `Scheduled resolution`, and **no longer includes the forecasting-close time at all** —
+  when predictions lock is harness bookkeeping, useless for pricing the event, and it was
+  the misread's raw material. You can't conflate a timestamp that isn't there.
+
+### Added
+- **Event-window line in the dossier contract** (`DOSSIER_SECTION`): the research run must
+  state "event window: ___ → ___ per the criteria; as of <Now> ___% elapsed", derived from
+  the resolution text — so reasoning runs inherit the correct window, not a misread.
+- **Event-window premise in CoVe verification**: `verify_dossier` now receives the contract
+  (criteria + timestamps) and the verifier must always check the dossier's assumed window
+  against it as a text check; a window narrower or wider than the criteria is CONTRADICTED.
+- **Temporal-coherence gate** (`reasoning.md` step 1): mandatory event-window and
+  elapsed-fraction lines; the past portion of a window is a research question, not a
+  forecast; P = P(already happened, unreported) + P(happens in remaining time). A number
+  incoherent with the forecaster's own stated remaining-time arithmetic is the named failure.
+- **Close-time ≠ event-window rule** (`question-hygiene.md`): a platform's lock time is
+  bookkeeping about the forecaster; the event window comes from the criterion text alone.
+- Tests for the new brief lines, the dossier/verify wording, and the version manifests.
+
 ## [0.4.3] - 2026-07-06
 
 The tournament-hardening release: a robustness sweep (six-dimension adversarial review +

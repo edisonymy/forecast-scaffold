@@ -430,7 +430,14 @@ class TestShapes:
             fenced(reasoning_payload(0.40)),
         ], with_verify=True)
         assert ok and record is not None
-        assert "Verify each with ONE targeted web search" in agent.calls[1]["prompt"]
+        assert "Verify every other premise with ONE targeted web search" in (
+            agent.calls[1]["prompt"]
+        )
+        # v0.4.4: the verifier gets the contract so it can text-check the dossier's
+        # assumed event window against the criteria (the q44378 shrunk-window miss).
+        assert "## The contract (for the event-window check only)" in (
+            agent.calls[1]["prompt"]
+        )
         for call in agent.calls[2:]:
             assert "Verification (independent premise check" in call["prompt"]
             assert "CONFIRMED" in call["prompt"]
