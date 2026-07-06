@@ -6,6 +6,8 @@ on:
   # twice over: --budget caps each invocation's notional cost, and question volume
   # (~3-6/day) caps the realistic daily total far below the cron's theoretical maximum.
   schedule:
+    # Re-registered 2026-07-06: a schedule only re-arms when this file changes on the
+    # default branch, so re-enabling a manually-disabled workflow in the UI is not enough.
     - cron: "17 * * * *" # hourly; no-op (pennies) when nothing new is open
   workflow_dispatch:
     inputs:
