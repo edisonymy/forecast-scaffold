@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.4.2"
+SCAFFOLD_VERSION = "0.4.3"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -176,6 +176,11 @@ class ForecastRecord:
     effort: str | None = None  # "low" | "medium" | "high", "(auto)" suffix if auto-triaged
     model: str = ""  # free string; never hardcoded in skills
     provider: str | None = None  # billing/routing path, e.g. "subscription" | "openrouter"
+    # Whether the run was crowd-blind (measurement mode). Explicit since 0.4.3: the old
+    # proxy — crowd.shown_to_agent — stopped encoding the mode when v0.4.2 made it
+    # always-False on bot records (a bot-visible "crowd" is other bots' aggregate and is
+    # never shown), which would have relabelled every sighted record as blind in scoring.
+    blind: bool | None = None
     crowd: dict[str, Any] | None = None  # {"value", "source", "at"} captured at forecast time
     cost_usd: float | None = None  # what producing this forecast cost (all agent calls)
     reasoning: str = ""
@@ -485,6 +490,10 @@ def _group_key_value(record: ForecastRecord, key: str) -> str:
     except ``blind`` with no crowd captured at all, which is genuinely a third state
     (neither confirmed blind nor confirmed sighted) and is labelled ``"unknown"``."""
     if key == "blind":
+        if record.blind is not None:
+            return "blind" if record.blind else "sighted"
+        # Legacy records (pre-0.4.3) encoded the mode in crowd.shown_to_agent; that stays
+        # correct for everything published before v0.4.2 pinned the flag to False.
         if record.crowd is None:
             return "unknown"
         shown = record.crowd.get("shown_to_agent")

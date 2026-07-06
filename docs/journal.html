@@ -92,7 +92,7 @@ fetch(RAW + "?t=" + Date.now()).then(r => {
         ${r.provider && r.provider !== "subscription" ? `<span class="tag">${esc(r.provider)}</span>` : ""}
         ${r.cost_usd != null ? `<span class="tag">$${Number(r.cost_usd).toFixed(2)}</span>` : ""}
         ${crowdVal ? `<span>crowd ${crowdVal}</span>` : ""}
-        ${r.crowd && r.crowd.shown_to_agent === false ? `<span class="tag">blind</span>` : ""}
+        ${r.blind === true || (r.blind == null && r.crowd && r.crowd.shown_to_agent === false) ? `<span class="tag">blind</span>` : ""}
         ${res}
       </div>
       ${r.reasoning ? `<details><summary>reasoning</summary><div class="reason">${esc(r.reasoning)}</div></details>` : ""}

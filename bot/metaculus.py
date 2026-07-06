@@ -9,6 +9,7 @@ everything here reads defensively and this file is the only place that knows the
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import time
@@ -66,8 +67,17 @@ class MetaculusClient:
                 break
             except urllib.error.HTTPError as exc:
                 detail = exc.read().decode("utf-8", errors="replace")[:500]
-                if attempt + 1 < attempts and exc.code in (429, 500, 502, 503, 504):
-                    time.sleep(2 * (attempt + 1))
+                # 520/522/524 are Cloudflare origin blips — as transient as a 502 here.
+                if attempt + 1 < attempts and exc.code in (429, 500, 502, 503, 504,
+                                                           520, 522, 524):
+                    delay = 2.0 * (attempt + 1)
+                    retry_after = exc.headers.get("Retry-After") if exc.headers else None
+                    if retry_after:
+                        # Honor a parseable Retry-After (429s often carry one), capped —
+                        # an hourly cron would rather fail than sleep for minutes.
+                        with contextlib.suppress(ValueError):
+                            delay = min(float(retry_after), 30.0)
+                    time.sleep(delay)
                     continue
                 raise MetaculusError(f"{method} {path} -> HTTP {exc.code}: {detail}") from exc
             except urllib.error.URLError as exc:
@@ -79,19 +89,29 @@ class MetaculusClient:
 
     # -- reads -------------------------------------------------------------
     def open_posts(self, tournament: str | int, *, limit: int = 100) -> list[dict[str, Any]]:
-        """Open posts in a tournament, with their nested question payloads."""
-        result = self._request(
-            "GET",
-            "/posts/",
-            params={
-                "tournaments": tournament,
-                "statuses": "open",
-                "limit": limit,
-                "with_cp": "true",
-            },
-        )
-        results: list[dict[str, Any]] = result.get("results", []) if result else []
-        return results
+        """Open posts in a tournament, with their nested question payloads.
+
+        Follows pagination up to ``limit`` total: the already-forecasted filter runs
+        client-side AFTER this fetch, so stopping at one page would silently hide new
+        wave questions whenever more than a pageful of posts is open."""
+        results: list[dict[str, Any]] = []
+        while len(results) < limit:
+            page = self._request(
+                "GET",
+                "/posts/",
+                params={
+                    "tournaments": tournament,
+                    "statuses": "open",
+                    "limit": min(limit - len(results), 100),
+                    "offset": len(results),
+                    "with_cp": "true",
+                },
+            )
+            batch: list[dict[str, Any]] = page.get("results", []) if page else []
+            results.extend(batch)
+            if not batch or not (page or {}).get("next"):
+                break
+        return results[:limit]
 
     def post_detail(self, post_id: int) -> dict[str, Any]:
         detail: dict[str, Any] = self._request(

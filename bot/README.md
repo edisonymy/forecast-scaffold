@@ -10,7 +10,9 @@ tamper-evident track record).
 
 1. **Metaculus**: create a bot account and get a token at metaculus.com/futureeval (participate
    page). Set `METACULUS_TOKEN`.
-2. **Agent**: any headless agent CLI works via `--agent-cmd`; the default is `claude -p`.
+2. **Agent**: any headless agent CLI works via `--agent-cmd`; the default mirrors the
+   production command in `bot.yml` (`claude -p` with a pinned model, the JSON envelope
+   for cost/model capture, and `--allowed-tools` hardening).
    Auth options, pick one: a local subscription login (nothing to configure), a
    `CLAUDE_CODE_OAUTH_TOKEN` from `claude setup-token` (subscription Agent SDK credit — the
    right choice for CI), or an `ANTHROPIC_API_KEY` (pay-per-token). Metaculus also sponsors
@@ -42,22 +44,26 @@ tamper-evident track record).
 
 ## How a question flows
 
-fetch open questions (skip ones already forecast) → **auto-effort triage** (one cheap agent call
-→ low/medium/high; override with `--effort`) → run the `forecast` skill with the question brief
-(resolution criteria verbatim, options/bounds, community prediction at fetch time) under a
-fenced-JSON output contract → validate the payload (`core` validators; one repair retry with the
-errors quoted) → record to `journal/` (with `crowd` captured for later edge-vs-crowd analysis) →
-submit (binary probability / renormalized MC / percentiles built into a platform-valid CDF by
-`percentiles_to_cdf`) → optional private comment with the reasoning (`--comment`).
+fetch open questions (skip ones already forecast, unsupported, closed, unbounded, or backed
+off after repeated failures — see `journal/failures.jsonl`) → **auto-effort triage** (one
+cheap agent call → low/medium/high; override with `--effort`) → run the `forecast` skill with
+the question brief (resolution criteria verbatim, options/bounds — never the fetchable
+"crowd": a bot token only ever sees other bots' aggregates, which are journaled as a
+benchmark and withheld from the agent) under a fenced-JSON output contract → validate the
+payload (`core` validators; one repair retry with the errors quoted) → record to `journal/`
+(the record carries exactly the numbers submitted) → submit (binary probability /
+renormalized MC / percentiles built into a platform-valid CDF by `percentiles_to_cdf`) →
+optional private comment with the reasoning (`--comment`).
 
 ## Workflows
 
 - `.github/workflows/bot-test.yml` — manual dispatch, defaults to a dry run; use for the
   testing-area phase (set `dry_run: false` and the sandbox tournament id). Never commits.
-- `.github/workflows/bot.yml` — the tournament workflow (manual dispatch now; a daily cron is
-  commented out until a real tournament is entered; concurrency-guarded, never cancels an
-  in-flight run). Commits the journal after each run behind the leak-guard. Requires repo
-  secrets `METACULUS_TOKEN`, `CLAUDE_CODE_OAUTH_TOKEN`, `LEAK_PATTERNS` (and optionally
+- `.github/workflows/bot.yml` — the tournament workflow (hourly cron + manual dispatch;
+  concurrency-guarded, never cancels an in-flight run). Commits the journal after each run
+  behind the leak-guard *and* a secret-value guard; opens a GitHub issue on failure or
+  when the run silently fell back to the metered provider. Requires repo secrets
+  `METACULUS_TOKEN`, `CLAUDE_CODE_OAUTH_TOKEN`, `LEAK_PATTERNS` (and optionally
   `OPENROUTER_API_KEY` for the fallback), plus the `TOURNAMENT_ID` repository variable.
 
 ## Reading the human crowd (public questions)
