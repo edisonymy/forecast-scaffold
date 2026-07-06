@@ -250,13 +250,11 @@ def test_out_of_range_draws_raise() -> None:
         aggregate_binary([5.0, 7.0])
 
 
-def test_geo_mean_odds_edge_inputs_and_no_drop() -> None:
+def test_geo_mean_odds_edge_inputs_and_trim_opt_in() -> None:
     assert geo_mean_odds([0.0, 1.0]) == pytest.approx(0.5)  # eps-clamped, symmetric
-    # n=4, no dropping: odds 1*1*1*9 -> 9**0.25 = 1.732 -> p = 0.634
-    assert geo_mean_odds([0.5, 0.5, 0.5, 0.9], drop_extremes=False) == pytest.approx(
-        0.634, abs=1e-3
-    )
-    assert geo_mean_odds([0.5, 0.5, 0.5, 0.9]) == pytest.approx(0.5)
+    # n=4, untrimmed (the v0.4.0 default): odds 1*1*1*9 -> 9**0.25 = 1.732 -> p = 0.634
+    assert geo_mean_odds([0.5, 0.5, 0.5, 0.9]) == pytest.approx(0.634, abs=1e-3)
+    assert geo_mean_odds([0.5, 0.5, 0.5, 0.9], drop_extremes=True) == pytest.approx(0.5)
 
 
 def test_crowd_beyond_clamp_band_is_clamped() -> None:

@@ -35,17 +35,28 @@ Key results the skills encode:
   *negative*. Hence `references/reasoning.md` encodes Bayesian discipline structurally (base rate
   first, evidence clustered by independent source, expected-evidence self-test) and bans the
   ritual arithmetic.
+- **The harness owns what each context sees; the agent owns what to think.** (v0.4.0, from the
+  project's own track record.) Every proven win came from controlling *information boundaries* —
+  blind mode, the estimate-free dossier, a fresh context for premise verification, contract
+  fields the harness can check mechanically. Every null or regression came from *behavior
+  forcing* — prose reason-gates satisfied narratively, scripted lenses, an arbiter overriding
+  the pool from a single context. So the scaffold's job is convenience (the forecasting meta at
+  the agent's fingertips, evidence pre-gathered, disclosures checked in code) and structure
+  (who sees what) — never scripting the reasoning or second-guessing the pooled judgment.
 
 ## Aggregation
 
 - **Trimmed mean over ~5 varied draws** for one forecaster's own ensemble: beat mean, median, and
   geometric mean in Halawi et al., and was naturally well calibrated. Even running an agent twice
   measurably improves Brier (FutureSearch's run-agents-twice result).
-- **Geometric mean of odds, dropping the single most extreme forecast on each end**, for genuinely
-  independent forecasters: the documented aggregation rule of the best-track-record human team
-  (Samotsvety — 1st, CSET-Foretell/INFER 2020–22), theoretically preferred (external Bayesianity;
-  Sevilla, *When pooling forecasts, use the geometric mean of odds*) and empirically supported
-  (Satopää et al. 2014).
+- **Geometric mean of odds, untrimmed**, for genuinely independent forecasters: theoretically
+  preferred (external Bayesianity; Sevilla, *When pooling forecasts, use the geometric mean of
+  odds*) and empirically supported (Satopää et al. 2014). Samotsvety's extreme-drop rule
+  (1st, CSET-Foretell/INFER 2020–22) is deliberately **not** applied by default since v0.4.0: it
+  was calibrated on ~7 humans with genuinely diverse information, and on this scaffold's small
+  correlated pools a rank-symmetric trim is logit-asymmetric near the boundary — measured on the
+  repo's own cases it moved one-sided pools *toward* the extreme (issue #10's direction) and at
+  n=4 deleted the dissenting lens. `median` is the contamination fallback.
 - **Never extremize a self-ensemble**: extremizing corrects for forecasters sharing only part of
   their private information — one model's repeated draws share ~all of it. (Extremizing also
   underperformed plain pooling on later Metaculus data.)

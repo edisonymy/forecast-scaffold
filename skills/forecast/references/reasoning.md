@@ -59,8 +59,15 @@ denominator of the base rate is small"). Two named defaults are banned without j
 inference). Extreme values are allowed when evidence is genuinely decisive — strong evidence is
 common, and tails that are too *thin* are a real documented failure — but an extreme number must
 cite the evidence that earns it and survive the clamp-band warning consciously.
-**Mechanical vs political near-certainty — a reason gate, not a floor.** Going below ~5% or above
-~95% must be *earned* by naming the blocking mechanism: arithmetic on a published index, a fixed
+**Price what you name.** Before committing to a tail number, list the concrete pathways to the
+opposite resolution you considered, each with the probability mass you actually give it — the
+final number must leave at least that much room on that side. Audited tail misses *named* the
+exact pathway the market was pricing and then didn't price it; support theory says unpacking the
+residual into explicit disjunctions raises its judged probability, which here is the correction
+working as intended. In the harness this disclosure is a contract field (`named_scenarios`) with
+an arithmetic coherence check; in a chat, do the same bookkeeping on the scratchpad.
+**Mechanical vs political near-certainty — a decision aid, not a rule.** Going below ~5% or above
+~95% is *earned* by naming the blocking mechanism: arithmetic on a published index, a fixed
 deadline already passed, a filing that does not exist, every enumerable pathway to the other
 outcome individually closed. When the outcome runs through a live political, diplomatic, or
 institutional choice (a vote, a signing, a negotiation with active sponsors), that mechanism

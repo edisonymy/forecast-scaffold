@@ -246,9 +246,14 @@ def test_geo_mean_odds_known_values() -> None:
     assert geo_mean_odds([0.9, 0.9, 0.5]) == pytest.approx(0.8123, abs=1e-4)
 
 
-def test_geo_mean_odds_drops_single_extreme_each_end() -> None:
-    # Samotsvety's rule: with n>=4, the most extreme forecast on each end is removed.
-    assert geo_mean_odds([0.01, 0.5, 0.5, 0.99]) == pytest.approx(0.5)
+def test_geo_mean_odds_untrimmed_by_default_trim_is_opt_in() -> None:
+    # v0.4.0: a rank-symmetric trim is logit-asymmetric near the boundary — on one-sided
+    # pools it moves the pool TOWARD the extreme and at n=4 deletes half the ensemble.
+    one_sided = [0.03, 0.03, 0.05, 0.12]
+    assert geo_mean_odds(one_sided) == pytest.approx(0.0487, abs=1e-3)
+    assert geo_mean_odds(one_sided, drop_extremes=True) < geo_mean_odds(one_sided)
+    # opt-in trim keeps Samotsvety's behavior for pools that genuinely warrant it
+    assert geo_mean_odds([0.01, 0.5, 0.5, 0.99], drop_extremes=True) == pytest.approx(0.5)
 
 
 def test_median_and_blend() -> None:

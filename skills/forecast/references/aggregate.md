@@ -16,8 +16,10 @@ prompts: measured effect nil). Copying your first number N times is not an ensem
 **Every draw estimates the same unconditional probability.** Assign each draw a different **lens**
 — where the reasoning *starts*, never what is being estimated. Lens wordings must be **neutral**:
 name both failure directions and pre-judge nothing about the dossier — a lens that hints which way
-the anchor is wrong manufactures the very movement it claims to detect. The set, in assignment
-order: **reference-class check** (2+ candidate classes with rates, at least one broader and one
+the anchor is wrong manufactures the very movement it claims to detect. Lenses are suggestions,
+not scripts — a draw may swap its lens for a better angle, as long as the estimate is its own.
+The set (the harness rotation leads with the counter-biasing opposite pair, so lean run counts
+stay directionally neutral): **reference-class check** (2+ candidate classes with rates, at least one broader and one
 narrower than any the dossier offers; self-constructed rates marked unverified and down-weighted;
 the right class may well be the dossier's), **consider-the-opposite in each direction** (strongest
 specific reasons the estimate is too high / too low, then estimate), **decomposition** (≤ 4
@@ -55,19 +57,31 @@ independent judgment. The steps:
    keep it out.
 2. **Fan out k parallel subagents** (k = config's `runs` for the tier — run
    `python fsj.py config` if you haven't this session), each given: question +
-   verbatim criterion + resolve-by + the dossier + ONE assigned lens + this instruction: do not
-   research further; reason from the dossier and your general knowledge; if a fact that would
+   verbatim criterion + resolve-by + the dossier + ONE suggested lens (a diversity device — the
+   subagent may swap it for a better angle; the estimate must be its own) + this instruction: do
+   not research further; reason from the dossier and your general knowledge; if a fact that would
    materially move the estimate is missing, stay closer to the base rate and report the gap; reply
-   with a probability at 1% granularity and a 3-line rationale. Subagents never see each other's
-   output or yours. Use different models per subagent when the surface allows it.
-3. **Pool** with `fsj.py aggregate --method geo_mean_odds`. Drop-extremes is built in **but only
-   engages at pools of ≥ 4** — below that nothing is trimmed, so size k accordingly (the config
-   defaults do). Never extremize: with a shared dossier the information overlap is ~1, and the
+   with a probability at 1% granularity, a 3-line rationale, and the **named-scenarios
+   disclosure** — the pathways it considered to the opposite resolution from its lean, each with
+   the probability mass it actually assigns ([] if nothing distinct points the other way).
+   Subagents never see each other's output or yours. Use different models per subagent when the
+   surface allows it.
+3. **Pool** with `fsj.py aggregate --method geo_mean_odds` — untrimmed since v0.4.0: a
+   rank-symmetric trim is logit-asymmetric near the boundary, so on one-sided pools it measurably
+   moved the pool *toward* the extreme while deleting the dissenting draw (at n=4 it kept only
+   the middle two). Use `median` if a draw is outright contaminated; don't trim healthy pools.
+   Never extremize: with a shared dossier the information overlap is ~1, and the
    theory says the optimal extremizing factor at overlap 1 is none.
-4. **Read the spread before trusting the pool.** A wide spread (>15 points) means the lenses found
-   a genuine crux — name it, and consider one targeted research pass on it before recording. A
-   2–3 point spread from genuinely separate contexts is fine (agreement is informative when it
-   wasn't enforced); a 2–3 point spread from in-context draws is one draw wearing k hats.
+4. **Check the disclosure arithmetic, then read the spread.** A draw that names pathways to the
+   opposite resolution must leave at least that much mass there — p=0.03 alongside named
+   YES-pathways totaling 0.14 is incoherent, and it is exactly the audited tail failure ("named
+   it, didn't price it"). Flag it and re-read that draw's rationale; never silently override the
+   number. Then the spread: judge it in odds terms at the tails (0.02 vs 0.10 is a 5× odds
+   disagreement even though the probability spread is only 8 points). A wide spread means the
+   lenses found a genuine crux — name it, and consider one targeted research pass on it before
+   recording. A 2–3 point spread from genuinely separate contexts is fine (agreement is
+   informative when it wasn't enforced); a 2–3 point spread from in-context draws is one draw
+   wearing k hats.
 
 **No subagents available** (a plain chat): run the lens set as in-context draws, pool with
 `trimmed_mean`, and tell the user: "draws were in-context (correlated) — treat the error bars as
@@ -78,7 +92,7 @@ wider than usual."
 | Situation | Method | Why |
 |---|---|---|
 | Your own draws (one forecaster, varied framings) | `trimmed_mean` (default) | Correlated draws share their information; trimming is the right robustification. **Never extremize your own draws** — extremizing assumes independent private information, which self-ensembles don't have; it just double-counts. |
-| Genuinely independent forecasters (different models/agents, separate contexts) | `--method geo_mean_odds` | Geometric mean of odds, dropping the single most extreme forecast on each end — the aggregation rule used by the best-track-record human forecasting teams. |
+| Genuinely independent forecasters (different models/agents, separate contexts) | `--method geo_mean_odds` | Geometric mean of odds, untrimmed — the pooling rule of the best-track-record human teams minus their extreme-drop, which was calibrated on ~7 genuinely diverse humans and measurably extremizes small correlated pools (pass `drop_extremes` only for a pool that actually looks like theirs). |
 | Skewed or contaminated draw set | `--method median` | Robust fallback. |
 
 ## The crowd

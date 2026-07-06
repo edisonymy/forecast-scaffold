@@ -2,7 +2,8 @@
 
 run_agent is mocked with scripted responses, so these cover the loop logic the helper
 unit tests can't: dossier retry, research-run failure recovery, reasoning-run failure,
-lens assignment order, cross-model cycling, and which run's payload feeds the record.
+suggested-angle rotation, named-scenario coherence flags, cross-model cycling, and which
+run's payload feeds the record.
 """
 
 from __future__ import annotations
@@ -50,6 +51,12 @@ RESEARCH = {"probability": 0.30, "dossier": "- fact A (src, 2026)\n- fact B (src
             "reference_class": "class R", "base_rate": 0.2}
 
 
+def reasoning_payload(p: float, **extra: Any) -> dict[str, Any]:
+    """A minimal valid reasoning-run payload (named_scenarios is contract-required)."""
+    return {"probability": p, "reasoning": "x", "sources": [],
+            "named_scenarios": [], **extra}
+
+
 class ScriptedAgent:
     """Replaces run_bot.run_agent; returns scripted outputs and records every call."""
 
@@ -76,13 +83,11 @@ class StubClient:
 def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
         config: dict[str, Any] | None = None, effort: str = "medium",
         question: dict[str, Any] | None = None, budget: float = 0.0,
-        with_verify: bool = False,
-        arbiter_spread: float = 10.0) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
+        with_verify: bool = False) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
     agent = ScriptedAgent(outputs)
     monkeypatch.setattr(run_bot, "run_agent", agent)
     if not with_verify:  # most tests script only the forecast runs
         monkeypatch.setattr(run_bot, "verify_dossier", lambda *a, **k: ("", 0.0))
-    monkeypatch.setattr(run_bot, "ARBITER_SPREAD", arbiter_spread)
     args = argparse.Namespace(
         blind=False, effort=effort, provider="subscription", timeout=60,
         dry_run=True, comment=False, budget=budget,
@@ -109,8 +114,8 @@ class TestHappyPath:
                                         tmp_path: Path) -> None:
         agent, record, ok = run(monkeypatch, tmp_path, [
             fenced(RESEARCH),
-            fenced({"probability": 0.20, "reasoning": "lens1", "sources": []}),
-            fenced({"probability": 0.40, "reasoning": "lens2", "sources": []}),
+            fenced(reasoning_payload(0.20, reasoning="lens1")),
+            fenced(reasoning_payload(0.40, reasoning="lens2")),
         ])
         assert ok and record is not None
         assert record["raw_draws"] == [0.30, 0.20, 0.40]
@@ -126,28 +131,90 @@ class TestHappyPath:
     ) -> None:
         agent, _, _ = run(monkeypatch, tmp_path, [
             fenced(RESEARCH),
-            fenced({"probability": 0.20, "reasoning": "x", "sources": []}),
-            fenced({"probability": 0.40, "reasoning": "x", "sources": []}),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
         ])
         assert "Dossier (multi-run mode" in (agent.calls[0]["system"] or "")
         for call in agent.calls[1:]:
             assert "Reasoning run (shared dossier)" in (call["system"] or "")
             assert "Dossier (multi-run mode" not in (call["system"] or "")
 
-    def test_reasoning_runs_get_dossier_and_ordered_lenses(
+    def test_reasoning_runs_get_dossier_and_rotated_angles(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
         agent, _, _ = run(monkeypatch, tmp_path, [
             fenced(RESEARCH),
-            fenced({"probability": 0.20, "reasoning": "x", "sources": []}),
-            fenced({"probability": 0.40, "reasoning": "x", "sources": []}),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
         ])
         for call in agent.calls[1:]:
             assert RESEARCH["dossier"] in call["prompt"]
             # v0.3.0: web stays available for bounded gap-filling (instruction-scoped)
             assert "Reasoning run (shared dossier)" in (call["system"] or "")
+            # v0.4.0: the angle is suggested, not assigned
+            assert "Suggested angle" in call["prompt"]
         assert run_bot.LENSES[0].split(":")[0] in agent.calls[1]["prompt"]
         assert run_bot.LENSES[1].split(":")[0] in agent.calls[2]["prompt"]
+
+    def test_wide_spread_pools_without_a_second_guess(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # v0.4.0: no arbiter — the pool is the aggregator even under wide disagreement;
+        # the spread stays auditable in raw_draws instead of being overridden by one
+        # extra context.
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20, reasoning="low view")),
+            fenced(reasoning_payload(0.50, reasoning="high view")),
+        ])
+        assert ok and record is not None
+        assert len(agent.calls) == 3  # research + 2 reasoning, nothing after the pool
+        assert record["probability"] == pytest.approx(geo_mean_odds([0.3, 0.2, 0.5]))
+        assert record["aggregation"] == "geo_mean_odds(runs=3)"
+        assert record["raw_draws"] == [0.30, 0.20, 0.50]
+
+
+class TestNamedScenarios:
+    def test_missing_named_scenarios_triggers_repair_retry(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        no_disclosure = {"probability": 0.20, "reasoning": "x", "sources": []}
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(no_disclosure),               # attempt 1: no named_scenarios
+            fenced(reasoning_payload(0.20)),     # attempt 2 (repair)
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert ok and record is not None
+        assert 'must include "named_scenarios"' in agent.calls[2]["prompt"]
+        assert record["raw_draws"] == [0.30, 0.20, 0.40]
+
+    def test_incoherent_scenario_mass_is_flagged_never_overridden(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # The audited tail failure (issue #10): p=0.03 while the run's own pathways to
+        # YES total 0.14. The harness flags the arithmetic; the number is untouched.
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.03, named_scenarios=[
+                {"scenario": "named pathway to YES", "p": 0.14}])),
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert ok and record is not None
+        assert record["probability"] == pytest.approx(geo_mean_odds([0.3, 0.03, 0.4]))
+        assert "scenario-coherence" in record["reasoning"]
+        assert "0.14" in record["reasoning"]
+
+    def test_coherent_disclosure_is_not_flagged(self, monkeypatch: pytest.MonkeyPatch,
+                                                tmp_path: Path) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.30, named_scenarios=[
+                {"scenario": "plausible YES pathway", "p": 0.20}])),  # room 0.30 >= 0.20
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert ok and record is not None
+        assert "scenario-coherence" not in record["reasoning"]
 
 
 class TestFailureRecovery:
@@ -157,8 +224,8 @@ class TestFailureRecovery:
         agent, record, ok = run(monkeypatch, tmp_path, [
             fenced(no_dossier),          # attempt 1: valid payload but no dossier
             fenced(RESEARCH),            # attempt 2 (repair): includes dossier
-            fenced({"probability": 0.20, "reasoning": "x", "sources": []}),
-            fenced({"probability": 0.40, "reasoning": "x", "sources": []}),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
         ])
         assert ok and record is not None
         assert 'requires a non-empty "dossier"' in agent.calls[1]["prompt"]
@@ -171,7 +238,7 @@ class TestFailureRecovery:
         agent, record, ok = run(monkeypatch, tmp_path, [
             "AGENT_FAILURE", "AGENT_FAILURE",   # research run, both attempts
             fenced(RESEARCH),                    # second iteration: research succeeds
-            fenced({"probability": 0.20, "reasoning": "x", "sources": []}),
+            fenced(reasoning_payload(0.20)),
         ])
         assert ok and record is not None
         assert record["raw_draws"] == [0.30, 0.20]
@@ -188,7 +255,7 @@ class TestFailureRecovery:
         agent, record, ok = run(monkeypatch, tmp_path, [
             fenced(RESEARCH),
             "AGENT_FAILURE", "AGENT_FAILURE",   # reasoning run 1 dies
-            fenced({"probability": 0.40, "reasoning": "x", "sources": []}),
+            fenced(reasoning_payload(0.40)),
         ])
         assert ok and record is not None
         assert record["raw_draws"] == [0.30, 0.40]
@@ -201,7 +268,7 @@ class TestFailureRecovery:
         agent, record, ok = run(monkeypatch, tmp_path, [
             fenced(RESEARCH),
             "AGENT_FAILURE", "AGENT_FAILURE",   # slot for LENSES[0] dies
-            fenced({"probability": 0.40, "reasoning": "x", "sources": []}),
+            fenced(reasoning_payload(0.40)),
         ])
         assert ok
         lens0, lens1 = (lens.split(":")[0] for lens in run_bot.LENSES[:2])
@@ -222,9 +289,9 @@ class TestFailureRecovery:
                                                  tmp_path: Path) -> None:
         agent, record, ok = run(monkeypatch, tmp_path, [
             fenced(RESEARCH),
-            fenced({"probability": 0.20, "reasoning": "x", "sources": [],
-                    "missing_evidence": "no polling later than March"}),
-            fenced({"probability": 0.40, "reasoning": "x", "sources": []}),
+            fenced(reasoning_payload(
+                0.20, missing_evidence="no polling later than March")),
+            fenced(reasoning_payload(0.40)),
         ])
         assert ok and record is not None
         assert record["research"]["missing_evidence"] == ["no polling later than March"]
@@ -236,8 +303,8 @@ class TestFailureRecovery:
         # run's own number, not the pooled one that was actually submitted.
         agent, record, ok = run(monkeypatch, tmp_path, [
             fenced(RESEARCH),
-            fenced({"probability": 0.20, "reasoning": "x", "sources": []}),
-            fenced({"probability": 0.40, "reasoning": "x", "sources": []}),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
         ])
         assert ok and record is not None
         assert "pooled 3 independent runs" in record["reasoning"]
@@ -278,44 +345,14 @@ class TestShapes:
                 {"premise": "seat math", "verdict": "confirmed",
                  "note": "matches official count", "source": "https://example.com/v"},
             ]}),
-            fenced({"probability": 0.20, "reasoning": "x", "sources": []}),
-            fenced({"probability": 0.40, "reasoning": "x", "sources": []}),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
         ], with_verify=True)
         assert ok and record is not None
         assert "Verify each with ONE targeted web search" in agent.calls[1]["prompt"]
         for call in agent.calls[2:]:
             assert "Verification (independent premise check" in call["prompt"]
             assert "CONFIRMED" in call["prompt"]
-
-    def test_arbiter_fires_on_wide_spread_and_overrides_pool(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-    ) -> None:
-        # O2: spread 0.30 > 0.15 -> one crux run sees the draws and overrides the pool.
-        agent, record, ok = run(monkeypatch, tmp_path, [
-            fenced(RESEARCH),
-            fenced({"probability": 0.20, "reasoning": "low view", "sources": []}),
-            fenced({"probability": 0.50, "reasoning": "high view", "sources": []}),
-            fenced({"probability": 0.42, "reasoning": "crux resolved", "crux":
-                    "the filing deadline already passed", "sources": ["https://x.y"]}),
-        ], arbiter_spread=0.15)
-        assert ok and record is not None
-        assert record["probability"] == pytest.approx(0.42)
-        assert "crux_arbiter" in record["aggregation"]
-        assert "filing deadline" in record["reasoning"]
-        # the arbiter is the aggregator: it may see the runs' numbers
-        assert "0.20: low view" in agent.calls[3]["prompt"]
-        assert record["raw_draws"] == [0.30, 0.20, 0.50]  # draws stay auditable
-
-    def test_arbiter_skipped_on_tight_spread(self, monkeypatch: pytest.MonkeyPatch,
-                                             tmp_path: Path) -> None:
-        agent, record, ok = run(monkeypatch, tmp_path, [
-            fenced(RESEARCH),
-            fenced({"probability": 0.28, "reasoning": "x", "sources": []}),
-            fenced({"probability": 0.33, "reasoning": "x", "sources": []}),
-        ], arbiter_spread=0.15)
-        assert ok and record is not None
-        assert len(agent.calls) == 3  # no arbiter call
-        assert record["aggregation"] == "geo_mean_odds(runs=3)"
 
     def test_fast_proxies_recorded_for_slow_questions(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
@@ -328,8 +365,8 @@ class TestShapes:
         ]}
         agent, record, ok = run(monkeypatch, tmp_path, [
             fenced(research),
-            fenced({"probability": 0.20, "reasoning": "x", "sources": []}),
-            fenced({"probability": 0.40, "reasoning": "x", "sources": []}),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
         ], question=slow_q)
         assert ok and record is not None
         assert "Fast proxies (slow question)" in (agent.calls[0]["system"] or "")
@@ -346,8 +383,8 @@ class TestShapes:
                                                     tmp_path: Path) -> None:
         agent, record, ok = run(monkeypatch, tmp_path, [
             fenced(RESEARCH),
-            fenced({"probability": 0.20, "reasoning": "x", "sources": []}),
-            fenced({"probability": 0.40, "reasoning": "x", "sources": []}),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
         ], config=config_with_tiers({"medium": {
             "draws": 5, "searches": 5, "runs": 3,
             "run_models": ["claude-opus-4-8", "claude-haiku-4-5"],

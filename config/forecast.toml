@@ -22,8 +22,10 @@ max = 0.98
 #              winners average ~1.8 model families; same-model trios underperform diverse
 #              ones). Empty = every run uses the command's model. Binary questions only for
 #              now: MC/numeric stay single-run until a pooling rule is preregistered.
-# Run counts keep pooled n >= 4: geo_mean_odds only drops extremes at n >= 4, and each
-# tier's reasoning runs then include a full counter-biasing lens pair.
+# Run counts are lean (v0.4.0): research + 2 (medium) / 3 (high) reasoning runs — the
+# measured BTF-2 null (+0.0002 +/- 0.0148, n=85) says reasoning multiplicity alone buys
+# ~nothing. geo_mean_odds pools untrimmed; the suggested-angle rotation leads with the
+# counter-biasing opposite pair so any k >= 2 stays directionally neutral.
 [tiers.low]
 draws = 1
 searches = 1
@@ -33,7 +35,7 @@ run_models = []
 [tiers.medium]
 draws = 5
 searches = 5
-runs = 4
+runs = 3
 run_models = []
 
 # Candidate future high-tier upgrade (NOT implemented): disjoint-retrieval runs — each run
@@ -43,7 +45,7 @@ run_models = []
 [tiers.high]
 draws = 12
 searches = 12
-runs = 6
+runs = 4
 run_models = []
 
 [blend]

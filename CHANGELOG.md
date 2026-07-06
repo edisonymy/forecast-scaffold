@@ -4,6 +4,54 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.0] - 2026-07-06
+
+The lean-aggregation release. Rolled out on explicit owner decision on plausibility plus the
+PR #11 tail audit (see the issue #10 comment trail), ahead of the preregistered #8/#9
+batteries: the audit found **no** gross outer-bucket overconfidence on resolved outcomes (the
+arbiter extension's motivating premise), found the extreme-drop trim pushing toward the one
+weak real signal (the 0.75–0.90 shoulder), and found the zero-shot ablation showing the same
+tail profile as the full harness. Principle adopted in `docs/design.md`: **the harness owns
+what each context sees; the agent owns what to think.**
+
+### Removed
+- **Crux arbiter** (v0.3.0's disagreement-triggered override). It never fired in the 4-case
+  regression; its probability-space trigger (spread > 0.15) is structurally blind at the tails
+  (0.02 vs 0.10 is a 5× odds disagreement but a 0.08 "spread"); and on firing it replaced the
+  pool with one context's number at exactly the highest-stakes moments. The pool is the
+  aggregator; disagreement stays visible in `raw_draws`.
+- **Extreme-drop trim in `geo_mean_odds`** — now opt-in (`drop_extremes=False` default). A
+  rank-symmetric trim is logit-asymmetric near the boundary: measured on the repo's own cases
+  it moved one-sided pools *toward* the extreme ([0.03, 0.03, 0.05, 0.12]: 0.049 → 0.039;
+  the both-chambers pool: 0.239 → 0.229, deleting the market-closest draw), and at n=4 it
+  kept only the middle two draws. `median` remains the contamination fallback.
+
+### Added
+- **`named_scenarios` in the reasoning-run contract + an arithmetic-only coherence flag.**
+  Each reasoning run must disclose the pathways it considered to the opposite resolution from
+  its lean, with the mass it actually assigns ([] is honest); the harness flags — never
+  overrides — a forecast that leaves less room than the mass its own run named. The audited
+  tail failure was precisely "named the scenario, didn't price it"; support theory (unpacking
+  an implicit residual raises its judged probability) predicts the disclosure alone moves
+  tails the right way. Zero extra agent calls. Flags land in the journal reasoning note.
+
+### Changed
+- **Lenses are suggestions, not assignments** — a reasoning run may swap its angle for a
+  better one (harness = convenience, not railroading). The counter-biasing opposite pair
+  moved to the front of the rotation so lean run counts stay directionally neutral at k ≥ 2.
+- **Leaner tiers:** medium 4 → 3 runs (research + 2 reasoning), high 6 → 4 (research + 3).
+  The measured BTF-2 null (harness − zero-shot = +0.0002 ± 0.0148, n=85) says reasoning
+  multiplicity wasn't paying for itself; the diversity lever that remains is cross-model
+  `run_models`.
+- Prose reason-gates in the skill references reframed as decision aids and paired with the
+  price-what-you-name discipline (the binding checks are now schema-level, where every
+  previously-proven win in this project lives).
+
+### Validation debt (deliberate)
+This version shipped on plausibility by owner decision (2026-07-06), not on the
+resolved-Brier gate the repo normally requires. Issues #8/#9 remain the validation vehicle —
+run their arms on v0.4.0, plus the 4-case regression, before re-enabling the tournament cron.
+
 ## [0.3.0] - 2026-07-05
 
 The architecture-review release (see the loop-architecture review artifact + issues #7-#9):

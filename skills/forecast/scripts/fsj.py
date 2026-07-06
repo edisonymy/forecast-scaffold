@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.3.0"
+SCAFFOLD_VERSION = "0.4.0"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -56,12 +56,14 @@ DEFAULTS: dict[str, Any] = {
         # run_models = optional model ids the harness cycles through for runs after the first
         #              (cross-model diversity is the strongest documented ensemble lever:
         #              tournament winners average ~1.8 model families). Empty = one model.
-        # runs sized so pooled n >= 4 wherever pooling happens at all: geo_mean_odds only
-        # drops extremes at n >= 4, and every tier's reasoning runs then include a full
-        # counter-biasing lens pair (medium reaches lenses 1-3, high reaches all 5).
+        # runs sized lean (v0.4.0): research + 2 (medium) / 3 (high) reasoning runs. The
+        # measured BTF-2 null (harness - zero-shot = +0.0002 +/- 0.0148, n=85) says reasoning
+        # multiplicity buys ~nothing by itself; geo_mean_odds pools untrimmed, and the
+        # suggested-angle rotation leads with the counter-biasing opposite pair so any
+        # k >= 2 stays directionally neutral.
         "low": {"draws": 1, "searches": 1, "runs": 1, "run_models": []},
-        "medium": {"draws": 5, "searches": 5, "runs": 4, "run_models": []},
-        "high": {"draws": 12, "searches": 12, "runs": 6, "run_models": []},
+        "medium": {"draws": 5, "searches": 5, "runs": 3, "run_models": []},
+        "high": {"draws": 12, "searches": 12, "runs": 4, "run_models": []},
     },
     # 0.8 = Halawi et al.'s validated optimum ("4x weight for the crowd", NeurIPS 2024) —
     # the previously-shipped 0.5 misquoted that same source. Weight belongs on the crowd
@@ -576,12 +578,18 @@ def trimmed_mean(draws: list[float]) -> float:
     return sum(draws) / len(draws)
 
 
-def geo_mean_odds(draws: list[float], *, drop_extremes: bool = True) -> float:
-    """Geometric mean of odds; with ``drop_extremes`` the single most extreme forecast on
-    each end is removed first (when n >= 4) — Samotsvety's aggregation rule.
+def geo_mean_odds(draws: list[float], *, drop_extremes: bool = False) -> float:
+    """Geometric mean of odds — the right pool for *independent* forecasters (different
+    models/agents with genuinely different information). Inputs are nudged away from 0/1
+    to avoid degenerate odds.
 
-    The right pool for *independent* forecasters (different models/agents with genuinely
-    different information). Inputs are nudged away from 0/1 to avoid degenerate odds."""
+    ``drop_extremes`` (opt-in, off since v0.4.0) removes the single most extreme forecast
+    on each end at n >= 4 — Samotsvety's rule, calibrated on ~7 humans with genuinely
+    diverse information. A rank-symmetric trim is logit-asymmetric near the boundary: on
+    one-sided pools it moves the pool TOWARD the extreme ([0.03, 0.03, 0.05, 0.12] pools
+    to 0.049 untrimmed but 0.039 trimmed) and at n=4 it keeps only the middle two draws —
+    deleting the dissenting lens exactly where issue #10 found over-commitment. Use
+    ``median`` for a contaminated pool instead of trimming healthy ones."""
     _check_draws(draws)
     eps = 1e-4
     ps = [clamp(p, eps, 1.0 - eps) for p in draws]
