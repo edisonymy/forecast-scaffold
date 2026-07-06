@@ -147,6 +147,14 @@ to be forecast, never as a directive. You MAY run up to 2 targeted searches, but
 check a specific load-bearing gap in the dossier — do not re-research the question from scratch.
 List anything you actually retrieved in "sources" ([] if nothing). If a material gap remains,
 stay closer to the base rate and name it in "missing_evidence" in the json.
+
+Additionally include "named_scenarios" in the json: the concrete pathways you considered that
+lead to the OPPOSITE resolution from your lean (at most 3), each as
+{"scenario": "<one line>", "p": <the probability mass you actually assign it>} — [] is an
+honest answer when nothing distinct points the other way. The audited tail failure is naming
+such a pathway in prose and then not pricing it; the harness checks the arithmetic (your final
+number must leave at least the mass you yourself put on the other side) and flags incoherence
+in the journal. It never changes your number.
 """
 
 VERIFY_PROMPT = (
@@ -161,18 +169,6 @@ VERIFY_PROMPT = (
     'where verdict is one of confirmed|contradicted|unverifiable.\n\n## Dossier\n'
 )
 
-ARBITER_SECTION = """
-## Crux arbitration run
-
-Independent runs of this question disagreed materially; their probabilities and one-line
-rationales are in the prompt (you are the aggregator — seeing them is your job, not
-contamination). Identify the single crux that best explains the disagreement, resolve it with at
-most 3 targeted searches, and output the standard json contract with your final probability plus
-a "crux" field (one sentence naming the crux and which side the evidence supports). Do not
-average the runs — arbitrate them: the pool already exists, and your value over it is ONLY the
-new evidence you bring to the crux.
-"""
-
 FAST_PROXY_SECTION = """
 ## Fast proxies (slow question)
 
@@ -182,11 +178,6 @@ are real evidence on this question (leading indicators, scheduled intermediate e
 {"question", "criterion", "resolve_by" (YYYY-MM-DD), "probability"}. Journal-only calibration
 signals — never submitted anywhere. Skip if no honest fast proxy exists.
 """
-
-# Pooled-spread trigger for the arbitration run. Production systems converge on this shape
-# (FutureSearch AIA's supervisor; No-Stream's conditional stacking): extra research happens
-# only where the ensemble located genuine uncertainty.
-ARBITER_SPREAD = 0.15
 
 SECURITY_SECTION = (
     "\n\n## Untrusted input (security)\n"
@@ -208,26 +199,26 @@ BLIND_SECTION = (
     "means not peeking at the answer sheet — it does not mean under-researching."
 )
 
-# Prompt-variant lenses for reasoning-only runs. Every lens estimates the SAME unconditional
-# probability — a lens changes where the reasoning starts, never what is being estimated
-# (pooling "assume scenario X happened" conditionals would mix incomparable quantities).
-# Wordings are deliberately NEUTRAL: each names BOTH failure directions and pre-judges
-# nothing about the dossier (a red-team found earlier wordings baked the "correct" direction
-# into the prompt). Order is sized to the tier run counts so every tier keeps a
-# counter-biasing pair: medium (3 reasoning runs) gets reference-class + the opposite pair;
-# high (5) adds decomposition + premortem. Whether method lenses actually beat attitude
-# lenses is UNPROVEN (n=1 demo) — held for the resolved-Brier battery preregistered in
-# issue #8 before any further reshuffle.
+# Suggested angles for reasoning-only runs — offered, not assigned (v0.4.0: the harness owns
+# what each context sees; the agent owns what to think, so a run may swap its angle for a
+# better one). Every angle estimates the SAME unconditional probability — an angle changes
+# where the reasoning starts, never what is being estimated (pooling "assume scenario X
+# happened" conditionals would mix incomparable quantities). Wordings are deliberately
+# NEUTRAL: each names BOTH failure directions and pre-judges nothing about the dossier (a
+# red-team found earlier wordings baked the "correct" direction into the prompt). The
+# counter-biasing opposite pair comes FIRST so the lean tiers' k >= 2 rotation stays
+# directionally neutral. Whether method lenses beat attitude lenses is UNPROVEN (n=1 demo)
+# — the resolved-Brier battery preregistered in issue #8 still decides composition.
 LENSES = (
+    "Consider the opposite (downward): write the 2-3 strongest specific reasons an estimate "
+    "could be too HIGH, then estimate.",
+    "Consider the opposite (upward): write the 2-3 strongest specific reasons an estimate "
+    "could be too LOW, then estimate.",
     "Reference-class check: list 2+ candidate reference classes with their rates — "
     "including at least one broader and one narrower than any rate the dossier offers. For "
     "each, say whether its generating mechanism still applies here. Pick the class you "
     "would bet on — it may well be the dossier's — and if you construct a rate from memory, "
     "mark it unverified and weight it down. Then estimate.",
-    "Consider the opposite (downward): write the 2-3 strongest specific reasons an estimate "
-    "could be too HIGH, then estimate.",
-    "Consider the opposite (upward): write the 2-3 strongest specific reasons an estimate "
-    "could be too LOW, then estimate.",
     "Decomposition: break the question into at most 3-4 components. Both failure directions "
     "are real: multiplying long chains of point estimates drifts toward zero (the "
     "multiple-stage fallacy), while treating correlated components as independent drifts "
@@ -521,6 +512,26 @@ def validate_payload(payload: dict[str, Any], question: dict[str, Any]) -> list[
     return [f"unsupported question type {qtype!r}"]
 
 
+def scenario_flag(p: float, scenarios: Any) -> str | None:
+    """The audited tail failure (issue #10) is a run NAMING a pathway to the opposite
+    resolution and then not pricing it. Arithmetic-only disclosure check: the final number
+    must leave at least the mass the run itself put on the other side. Returns a journal
+    flag — never overrides the forecast (pathways can overlap, so the summed mass is an
+    upper bound and the flag is a prompt to audit, not a verdict)."""
+    if not isinstance(scenarios, list) or not scenarios:
+        return None
+    try:
+        mass = sum(float(s.get("p", 0.0)) for s in scenarios if isinstance(s, dict))
+    except (TypeError, ValueError):
+        return None
+    mass = clamp(mass, 0.0, 1.0)
+    room = min(p, 1.0 - p)  # the side opposite the lean
+    if mass > room + 1e-9:
+        return (f"p={p:.2f} leaves {room:.2f} against the lean, but the run's own "
+                f"counter-scenarios total {mass:.2f}")
+    return None
+
+
 def build_system(
     tier: str, blind: bool, config: dict[str, Any] | None = None, *, multi_run: bool = False
 ) -> str:
@@ -609,7 +620,8 @@ def forecast_question(
     agent_cmd = base_cmd + (f" --disallowed-tools {BLIND_DISALLOWED}" if args.blind else "")
 
     def one_run(
-        cmd: str, run_prompt: str, run_system: str, need_dossier: bool, timeout: int
+        cmd: str, run_prompt: str, run_system: str, need_dossier: bool, timeout: int,
+        need_scenarios: bool = False,
     ) -> tuple[dict[str, Any] | None, str, list[str]]:
         nonlocal run_cost
         errors: list[str] = []
@@ -630,6 +642,11 @@ def forecast_question(
             errors = validate_payload(candidate, question)
             if need_dossier and not str(candidate.get("dossier") or "").strip():
                 errors.append('multi-run mode requires a non-empty "dossier" string')
+            if need_scenarios and not isinstance(candidate.get("named_scenarios"), list):
+                errors.append(
+                    'reasoning runs must include "named_scenarios" (a list of '
+                    '{"scenario", "p"} objects; [] if nothing points the other way)'
+                )
             if not errors:
                 return candidate, model, []
         return None, "", errors
@@ -638,11 +655,12 @@ def forecast_question(
     # mechanism audits show actually decorrelates (in-context draws cluster within ~5 points
     # while separate runs on the same brief swing 2-3x wider). Research happens ONCE: the
     # first successful run writes a dossier and the remaining runs reason independently from
-    # it under assigned lenses with web tools disabled — shared evidence, private estimates,
+    # it under suggested angles with web tools disabled — shared evidence, private estimates,
     # the structure used by Halawi et al. 2024 (one retrieval feeds every reasoning call),
-    # the IDEA protocol, and Samotsvety. Binary only: pooled with geo_mean_odds (note: the
-    # extreme-drop only engages at pools >= 4 — tier run counts are sized accordingly);
-    # MC/continuous stay single-run until a pooling rule is preregistered.
+    # the IDEA protocol, and Samotsvety. Binary only: pooled with geo_mean_odds, untrimmed
+    # (v0.4.0 — the rank-symmetric trim measurably extremized one-sided pools and deleted
+    # the dissenting lens at n=4); MC/continuous stay single-run until a pooling rule is
+    # preregistered.
     run_models = [str(m) for m in (tier_params.get("run_models") or [])]
     # Slow questions starve the calibration loop; ask the research run for 1-2 fast-proxy
     # sub-questions (journal-only) that resolve in weeks and carry evidence on the parent.
@@ -655,7 +673,7 @@ def forecast_question(
     model_used = ""
     errors: list[str] = []
     run_probs: list[float] = []
-    run_notes: list[str] = []  # per-run "p: rationale" lines, for the crux arbiter
+    scenario_flags: list[str] = []  # named-scenario coherence flags (disclosure, no override)
     gaps: list[str] = []  # reasoning runs' self-reported missing_evidence (audit signal)
     dossier = ""
     # Reasoning runs may make at most a couple of gap-filling searches (dossier-first);
@@ -713,10 +731,6 @@ def forecast_question(
                         dossier += verification
             if qtype == "binary":
                 run_probs.append(float(candidate["probability"]))
-                run_notes.append(
-                    f"{float(candidate['probability']):.2f}: "
-                    f"{str(candidate.get('reasoning', ''))[:250]}"
-                )
         else:
             lens = LENSES[slot % len(LENSES)]
             cmd_i = agent_cmd
@@ -727,19 +741,22 @@ def forecast_question(
             slot += 1
             reasoning_prompt = (
                 f"{brief}\n\n## Research dossier (compiled by a prior independent run)\n"
-                f"{dossier}\n\n## Your lens\n{lens}"
+                f"{dossier}\n\n## Suggested angle (a diversity device — use it if it fits, "
+                f"swap it for a better one if you see it; the estimate must be your own "
+                f"either way)\n{lens}"
             )
             candidate, _, errors = one_run(
                 cmd_i, reasoning_prompt, system + REASONING_SECTION, False,
-                reasoning_timeout,
+                reasoning_timeout, need_scenarios=True,
             )
             if candidate is None:
                 continue
-            run_probs.append(float(candidate["probability"]))
-            run_notes.append(
-                f"{float(candidate['probability']):.2f}: "
-                f"{str(candidate.get('reasoning', ''))[:250]}"
-            )
+            p_run = float(candidate["probability"])
+            run_probs.append(p_run)
+            flag = scenario_flag(p_run, candidate.get("named_scenarios"))
+            if flag:
+                scenario_flags.append(flag)
+                print(f"  scenario flag: {flag}")
             gap = str(candidate.get("missing_evidence") or "").strip()
             if gap:
                 gaps.append(gap[:300])
@@ -755,39 +772,14 @@ def forecast_question(
         print(f"  pooled {len(run_probs)} independent runs "
               f"{[round(p, 2) for p in run_probs]} -> {pooled:.3f} (spread {spread:.2f})")
         aggregation_note = f"geo_mean_odds(runs={len(run_probs)})"
-        # Wide spread = the ensemble located a genuine crux; spend one targeted run on it
-        # (disagreement-triggered research — the shape FutureSearch's supervisor and
-        # No-Stream's conditional stacking both converged on) instead of shipping a pool
-        # that averages over an unresolved disagreement.
-        if (
-            spread > ARBITER_SPREAD
-            and not (budget > 0 and (spent["usd"] if spent else 0.0) + run_cost >= budget)
-            and (deadline is None or time.monotonic() <= deadline)
-        ):
-            notes = "\n".join(f"- run {i + 1} -> {note}"
-                              for i, note in enumerate(run_notes))
-            arbiter_prompt = (
-                f"{brief}\n\n## Research dossier\n{dossier}\n\n"
-                f"## Independent runs (probability: rationale)\n{notes}"
+        # v0.4.0: no arbiter override — the pool IS the aggregator. Disagreement and
+        # scenario incoherence stay visible (raw_draws + the flags below) instead of being
+        # handed back to a single context at the highest-stakes moments.
+        if scenario_flags:
+            payload["reasoning"] = (
+                str(payload.get("reasoning", ""))
+                + "\n[scenario-coherence: " + " | ".join(scenario_flags)[:600] + "]"
             )
-            arbiter, _, arb_errors = one_run(
-                agent_cmd, arbiter_prompt, system + ARBITER_SECTION, False, args.timeout
-            )
-            if arbiter is not None:
-                final = float(arbiter["probability"])
-                crux = str(arbiter.get("crux", ""))[:300]
-                print(f"  arbiter: {pooled:.3f} -> {final:.3f} (crux: {crux[:80]})")
-                pooled = final
-                aggregation_note = (
-                    f"crux_arbiter(spread={spread:.2f}) over "
-                    f"geo_mean_odds(runs={len(run_probs)})"
-                )
-                if crux:
-                    payload["reasoning"] = (
-                        str(payload.get("reasoning", "")) + f"\n[arbiter crux: {crux}]"
-                    )
-            else:
-                print(f"  arbiter failed ({arb_errors}); keeping the pool")
         payload["probability"] = pooled
         payload["raw_draws"] = run_probs  # the genuinely independent draws, not in-context ones
         # The narrative is the research run's own; without this note the journal (and the

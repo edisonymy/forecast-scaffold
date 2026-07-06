@@ -86,9 +86,9 @@ explicit update).
 
 **If your surface has subagents (Claude Code, Cowork, any Task-capable host), fan-out is the
 default at medium+ tier, not an upgrade**: write an estimate-free research dossier from Step 2,
-spawn the tier's `runs` as parallel subagents — each gets the dossier plus one assigned lens,
-never each other's numbers — and pool. Research happens once; reasoning happens independently k
-times. The full protocol, the lens list, and the no-numbers-in-the-dossier rule (it is
+spawn the tier's `runs` as parallel subagents — each gets the dossier plus one suggested lens (a
+diversity device it may swap for a better angle), never each other's numbers — and pool. Research
+happens once; reasoning happens independently k times. The full protocol, the lens list, and the no-numbers-in-the-dossier rule (it is
 load-bearing) are in `references/aggregate.md`. Then pool with the tool, which applies the
 configured clamp:
 
