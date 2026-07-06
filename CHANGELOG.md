@@ -4,6 +4,22 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.2] - 2026-07-06
+
+### Fixed
+- **The bot-crowd anchor is removed from production briefs.** The Metaculus API
+  firewalls the human community prediction from bot accounts everywhere — every value
+  `run_bot` can fetch is an aggregate of *other competing bots*, and sighted mode was
+  injecting it into the brief as "## Community prediction". Measured harm in the e2e
+  runs: the sandbox bot-crowd said 0.63 on Dems-House-plurality while real markets sat
+  ~0.82, and the injected anchor pulled a sighted run from 0.79 (blind, ≈ the market)
+  to 0.72 — toward the bots, away from the money. The Halawi crowd-anchor evidence is
+  about human crowds and does not validate anchoring on competitors. Now: the fetched
+  value is journaled as a benchmark only (`shown_to_agent: false`, source relabeled
+  "metaculus bot aggregate"), and sighted briefs instead tell the agent that finding
+  real human markets (Polymarket, Kalshi, Manifold, public Metaculus) is part of
+  research. Blind mode is unchanged.
+
 ## [0.4.1] - 2026-07-06
 
 Fixes from the first live end-to-end runs of v0.4.0 (4 real questions: bot-testing-area
