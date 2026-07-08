@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "bot"))
 
 import metaculus  # noqa: E402
+import run_bot  # noqa: E402
 from metaculus import MetaculusClient  # noqa: E402
 
 
@@ -50,6 +51,35 @@ class TestOpenPostsPagination:
             lambda *a, **k: {"results": [], "next": "cursor"}
         )
         assert client.open_posts("tourn") == []
+
+
+class TestCollectOpenPosts:
+    """--tournament may be a comma-separated list (season + MiniBench); the union must
+    dedupe cross-listed posts and leave single-slug behaviour unchanged."""
+
+    @staticmethod
+    def _client(by_slug: dict[str, list[dict[str, Any]]]) -> MetaculusClient:
+        client = MetaculusClient(token="t")
+        client.open_posts = (  # type: ignore[method-assign]
+            lambda slug, *, limit=100: list(by_slug.get(slug, []))
+        )
+        return client
+
+    def test_single_slug_unchanged(self) -> None:
+        client = self._client({"season": [{"id": 1}, {"id": 2}]})
+        assert run_bot.collect_open_posts(client, "season", 100) == [{"id": 1}, {"id": 2}]
+
+    def test_union_dedupes_cross_listed_posts(self) -> None:
+        client = self._client({
+            "season": [{"id": 1}, {"id": 2}],
+            "minibench": [{"id": 2}, {"id": 3}],  # id 2 is cross-listed
+        })
+        posts = run_bot.collect_open_posts(client, "season, minibench", 100)
+        assert [p["id"] for p in posts] == [1, 2, 3]
+
+    def test_blank_slugs_ignored(self) -> None:
+        client = self._client({"season": [{"id": 1}]})
+        assert run_bot.collect_open_posts(client, "season,,  ", 100) == [{"id": 1}]
 
 
 class TestTransientRetry:

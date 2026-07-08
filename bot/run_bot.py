@@ -693,6 +693,30 @@ def close_time_key(pair: tuple[dict[str, Any], dict[str, Any]]) -> str:
                or "9999-12-31")
 
 
+def collect_open_posts(
+    client: MetaculusClient, tournament: str, limit: int
+) -> list[dict[str, Any]]:
+    """Open posts across one or more comma-separated tournament slugs, deduped by post id.
+
+    The bot climbs a ladder of tournaments (bot-testing-area -> MiniBench -> the seasonal
+    FutureEval) and can run several at once — the biweekly MiniBench alongside the season.
+    A question cross-listed in two of them must be forecast once, so we union and dedupe.
+    A bare slug (no comma) yields a one-element list, so single-tournament runs are
+    byte-for-byte unchanged."""
+    slugs = [s.strip() for s in str(tournament).split(",") if s.strip()]
+    posts: list[dict[str, Any]] = []
+    seen: set[Any] = set()
+    for slug in slugs:
+        fetched = client.open_posts(slug, limit=limit)
+        new = [p for p in fetched if p.get("id") not in seen]
+        seen.update(p.get("id") for p in fetched)
+        posts.extend(new)
+        print(f"{len(fetched)} open post(s) in {slug} ({len(new)} new)")
+    if len(slugs) > 1:
+        print(f"{len(posts)} open post(s) total across {len(slugs)} tournaments")
+    return posts
+
+
 def forecast_question(
     client: MetaculusClient,
     post: dict[str, Any],
@@ -1166,8 +1190,7 @@ def main(argv: list[str] | None = None) -> int:
         posts = [client.post_detail(args.post)]
         print(f"backtest: post {args.post} (dry-run, filters bypassed)")
     else:
-        posts = client.open_posts(args.tournament, limit=args.limit)
-        print(f"{len(posts)} open post(s) in {args.tournament}")
+        posts = collect_open_posts(client, args.tournament, args.limit)
     ledger = failures_path(args.journal)
     failure_counts = recent_failure_counts(ledger)
     pending = []
