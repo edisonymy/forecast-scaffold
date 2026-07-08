@@ -26,17 +26,26 @@ max = 0.98
 # measured BTF-2 null (+0.0002 +/- 0.0148, n=85) says reasoning multiplicity alone buys
 # ~nothing. geo_mean_odds pools untrimmed; the suggested-angle rotation leads with the
 # counter-biasing opposite pair so any k >= 2 stays directionally neutral.
+# min_sources = floor on DISTINCT actually-consulted sources the research (full) run must
+#               return; announced in its prompt and enforced by the bot's validate/repair
+#               loop BEFORE any forecast is accepted (reasoning runs are exempt — [] stays
+#               honest there). Added 0.4.5: the first live batch put its most
+#               crowd-divergent calls on its thinnest research (q44381 MC: 0 sources;
+#               q44382/q44511: 2) — exactly the single-run paths the dossier contract
+#               never covered.
 [tiers.low]
 draws = 1
 searches = 1
 runs = 1
 run_models = []
+min_sources = 1
 
 [tiers.medium]
 draws = 5
 searches = 5
 runs = 3
 run_models = []
+min_sources = 3
 
 # Candidate future high-tier upgrade (NOT implemented): disjoint-retrieval runs — each run
 # researches its own sources instead of sharing one dossier. Half-validated externally
@@ -47,6 +56,7 @@ draws = 12
 searches = 12
 runs = 4
 run_models = []
+min_sources = 5
 
 [blend]
 # Weight on the crowd/market number when one exists. Halawi et al.'s validated optimum is

@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.4.4"
+SCAFFOLD_VERSION = "0.4.5"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -61,9 +61,16 @@ DEFAULTS: dict[str, Any] = {
         # multiplicity buys ~nothing by itself; geo_mean_odds pools untrimmed, and the
         # suggested-angle rotation leads with the counter-biasing opposite pair so any
         # k >= 2 stays directionally neutral.
-        "low": {"draws": 1, "searches": 1, "runs": 1, "run_models": []},
-        "medium": {"draws": 5, "searches": 5, "runs": 3, "run_models": []},
-        "high": {"draws": 12, "searches": 12, "runs": 4, "run_models": []},
+        # min_sources = floor on DISTINCT actually-consulted sources the research (full)
+        #              run must return; announced in its prompt and enforced mechanically
+        #              by the bot's validate/repair loop BEFORE any forecast is accepted.
+        #              Reasoning runs are exempt ([] stays honest there). Added 0.4.5:
+        #              the first live batch put its most crowd-divergent calls on its
+        #              thinnest research (q44381 MC: 0 sources; q44382/q44511: 2) —
+        #              exactly the paths the dossier contract never covered.
+        "low": {"draws": 1, "searches": 1, "runs": 1, "run_models": [], "min_sources": 1},
+        "medium": {"draws": 5, "searches": 5, "runs": 3, "run_models": [], "min_sources": 3},
+        "high": {"draws": 12, "searches": 12, "runs": 4, "run_models": [], "min_sources": 5},
     },
     # 0.8 = Halawi et al.'s validated optimum ("4x weight for the crowd", NeurIPS 2024) —
     # the previously-shipped 0.5 misquoted that same source. Weight belongs on the crowd

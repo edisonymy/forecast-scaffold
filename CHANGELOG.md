@@ -4,6 +4,47 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.5] - 2026-07-08
+
+Research-floor release. An audit of the first live tournament batch (9 questions) found
+the under-research pattern lands exactly on the paths with no research structure: MC and
+numeric questions are hard-wired single-run, so `need_dossier` never fires and nothing
+structural ever asks them to research. The bot's most crowd-divergent calls sat on its
+thinnest evidence — q44381 (Florida MC, mode 65-75% vs crowd's 55-65%) recorded with **zero**
+sources, q44382 (47% on the lowest bucket vs crowd 20%) and q44511 with two. The fix is
+prevention, not a post-hoc gate: the floor is announced in the research run's own prompt
+and enforced in its existing validate/repair loop, so a thin run is re-prompted *before*
+any forecast is accepted, pooled, recorded, or submitted.
+
+Deliberately NOT done, after review: requiring a dossier + CoVe verification on single-run
+questions. The dossier has no consumer when `runs=1` (it exists to feed reasoning runs and
+is never journaled), CoVe verdicts arrive after the payload's number is already final, and
+"emit a dossier so you research" is the behavior-forcing pattern v0.4.0 measured as a
+regression — a source count is a contract field the harness checks in code.
+
+### Added
+- **`tiers.*.min_sources`** (low 1 / medium 3 / high 5): floor on DISTINCT actually-consulted
+  sources the research (full) run must return. Announced via `SOURCE_FLOOR_SECTION` in the
+  research run's system prompt; enforced in `one_run`'s repair loop (`distinct_source_count`,
+  deduplicated after trimming so repeating one URL counts once). Reasoning runs are exempt —
+  `[]` stays an honest answer where a run works from the shared dossier. Configs without the
+  key inherit the defaults; `min_sources = 0` disables the floor.
+- Tests: floor repair-retry on the observed q44381 failure class, duplicate-padding
+  rejection, failure-ledger path, prompt announcement scoping (research run only,
+  reasoning runs never), floor ≤ search budget invariant.
+
+### Changed
+- **Output contract**: the MC and numeric example payloads now show the `sources` field —
+  the prose demanded it for every question type, but the examples the model pattern-matches
+  omitted it on exactly the two types that under-reported. The "empty list is an honest
+  answer" sentence is scoped to runs that genuinely retrieved nothing new (reasoning runs),
+  with the research-run floor called out.
+
+### Known limit
+- A count can be padded with unread URLs. The public journal's per-question source list is
+  the audit trail, and the multi-run path's CoVe premise check remains the partial guard;
+  no mechanical check makes retrieval honest, it only makes skipping it visible.
+
 ## [0.4.4] - 2026-07-06
 
 Post-mortem release for the first scored live miss (q44378 Lovable/DeepSeek/Perplexity

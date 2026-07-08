@@ -120,19 +120,42 @@ For binary:
  "sources": ["<url or dataset you actually consulted>", "..."]}
 ```
 Every payload (all question types) must include "sources": the URLs or named datasets you
-ACTUALLY consulted this run — not background knowledge. An empty list is an honest answer;
-listing sources you did not open is not.
+ACTUALLY consulted this run — not background knowledge. Listing sources you did not open
+is never acceptable; an empty list is honest only where a run genuinely retrieved nothing
+new (reasoning runs working from a dossier) — a research run has a tier minimum stated in
+its prompt and enforced by the harness.
 For multiple_choice (probabilities over the EXACT option labels given, summing to 1):
 ```json
-{"probabilities": {"<option A>": 0.5, "<option B>": 0.5}, "reasoning": "..."}
+{"probabilities": {"<option A>": 0.5, "<option B>": 0.5}, "reasoning": "...",
+ "sources": ["<url or dataset you actually consulted>", "..."]}
 ```
 For numeric/discrete/date (strictly increasing, strictly inside the stated bounds; for date
 questions the values are unix timestamps in seconds, matching the bounds given). Optionally
 include "expected_value" (your mean/EV point estimate, same units):
 ```json
 {"percentiles": {"10": 1.0, "25": 2.0, "50": 3.0, "75": 4.0, "90": 5.0},
- "expected_value": 3.2, "reasoning": "..."}
+ "expected_value": 3.2, "reasoning": "...",
+ "sources": ["<url or dataset you actually consulted>", "..."]}
 ```
+"""
+
+# Announced in the research (full) run's system prompt AND enforced mechanically in its
+# validate/repair loop — prevention at the earliest point, not a post-hoc catch. The first
+# live batch (2026-07) put its most crowd-divergent calls on its thinnest research: the MC
+# and numeric questions run single-run, so nothing structural ever asked them to research
+# (q44381: 0 sources; q44382/q44511: 2). A count of distinct consulted sources is a contract
+# field the harness can check in code — the pattern behind every proven win (v0.4.0) —
+# unlike "write a dossier", which can be satisfied narratively from memory. Known limit:
+# a count can be padded with unread URLs; the public journal's source list is the audit
+# trail, and the multi-run path's CoVe premise check stays the partial guard.
+SOURCE_FLOOR_SECTION = """
+## Research floor (this run — mandatory)
+
+This is the research run: "sources" in your json must list at least {floor} DISTINCT
+sources you actually consulted this run (URLs or named datasets; duplicates count once).
+Fewer is an invalid payload at this tier and will be rejected — do the searches before
+estimating. If the evidence you find is thin or one-sided, say so in the reasoning and
+stay closer to the base rate; thin evidence changes the number, never the floor.
 """
 
 DOSSIER_SECTION = """
@@ -526,6 +549,17 @@ def mc_within_api_bounds(probs: dict[str, float]) -> dict[str, float]:
     return values
 
 
+def distinct_source_count(payload: dict[str, Any]) -> int:
+    """Distinct non-empty sources in a payload — the research floor's unit of account.
+
+    Deduplicated after trimming so `["a", "a ", "a"]` counts once: repetition must not
+    satisfy a floor that exists to force actual retrieval."""
+    raw = payload.get("sources")
+    if not isinstance(raw, list):
+        return 0
+    return len({str(s).strip() for s in raw if str(s).strip()})
+
+
 def validate_payload(payload: dict[str, Any], question: dict[str, Any]) -> list[str]:
     qtype = question.get("type", "binary")
     if qtype == "binary":
@@ -777,7 +811,7 @@ def forecast_question(
 
     def one_run(
         cmd: str, run_prompt: str, run_system: str, need_dossier: bool, timeout: int,
-        need_scenarios: bool = False,
+        need_scenarios: bool = False, min_sources: int = 0,
     ) -> tuple[dict[str, Any] | None, str, list[str]]:
         nonlocal run_cost, agent_responded
         errors: list[str] = []
@@ -804,6 +838,14 @@ def forecast_question(
             errors = validate_payload(candidate, question)
             if need_dossier and not str(candidate.get("dossier") or "").strip():
                 errors.append('multi-run mode requires a non-empty "dossier" string')
+            if min_sources > 0 and (found := distinct_source_count(candidate)) < min_sources:
+                # The research floor: reject BEFORE the forecast is accepted, so the
+                # repair retry re-researches rather than a gate catching it post-hoc.
+                errors.append(
+                    f'research run listed {found} distinct source(s); this tier requires '
+                    f'at least {min_sources} — run real searches and list in "sources" '
+                    f'only what you actually consulted'
+                )
             if need_scenarios and not isinstance(candidate.get("named_scenarios"), list):
                 errors.append(
                     'reasoning runs must include "named_scenarios" (a list of '
@@ -865,12 +907,18 @@ def forecast_question(
         if payload is None:
             # Full research run; when more runs follow it must also emit the dossier.
             need_dossier = n_runs > 1
+            # The source floor applies to THIS run only — reasoning runs work from the
+            # dossier and honestly return []. Announced up front so attempt 1 already
+            # knows the contract; the one_run check is the mechanical backstop.
+            min_sources = max(0, int(tier_params.get("min_sources", 0) or 0))
             full_system = (
                 system + (DOSSIER_SECTION if need_dossier else "")
+                + (SOURCE_FLOOR_SECTION.format(floor=min_sources) if min_sources else "")
                 + (FAST_PROXY_SECTION if slow_question else "")
             )
             candidate, model, errors = one_run(
-                agent_cmd, brief, full_system, need_dossier, args.timeout
+                agent_cmd, brief, full_system, need_dossier, args.timeout,
+                min_sources=min_sources,
             )
             if candidate is None:
                 continue
