@@ -47,6 +47,18 @@ honest one.
   results are comparable only within a version and the history stays interpretable.
 * **Open questions only**: sets are filtered to markets still open, so the outcome is
   not findable by research (no leakage from resolved questions).
+* **Resolved (pastcast) sets require `--leakfree`.** Live web on a resolved question can
+  find the outcome, and Read/Glob/Grep reach the set files where the resolution field
+  sits in plaintext — results produced with either path open are not evidence.
+  `--leakfree none` strips every research/filesystem tool (frozen-dossier enforcement);
+  `--leakfree timevault` allows ONLY the time-locked MCP tools (`bench/timevault_mcp.py`:
+  Wayback snapshots, Wikipedia revisions-as-of, GDELT windows — hard-bounded at each
+  question's `as_of` instant, pinned in the server's argv where the agent can't loosen
+  it, with `--strict-mcp-config` so no other MCP server rides along). Result rows stamp
+  the mode; never pool `leakfree: off` pastcast rows with clean ones. Red-team-validated:
+  an agent under an Oct-23-2025 cutoff could not determine the Nov-4-2025 NYC mayoral
+  result. Residual caveat the tool cannot fix: the MODEL's weights — pastcast only
+  questions that resolve after the model's training cutoff.
 
 ## Metrics (report.py)
 

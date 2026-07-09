@@ -17,8 +17,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
+import shlex
 import subprocess
 import sys
+import tempfile
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, datetime
@@ -49,6 +52,73 @@ BENCH_DISALLOWED = BLIND_DISALLOWED + (
 )
 TIERS = ("low", "medium", "high", "auto", "zero")
 
+# Leak-free pastcast modes. Live web on a resolved question finds outcomes; the repo's
+# own Read/Glob/Grep reach bench/sets/*.jsonl where the RESOLUTION FIELD sits in
+# plaintext — both paths must be closed before a pastcast score counts as evidence.
+#   none      = frozen-dossier enforcement: no research tools at all (the brief's
+#               "web access is disabled" line finally true).
+#   timevault = research runs through bench/timevault_mcp.py only: Wayback snapshots,
+#               Wikipedia revisions, GDELT windows — all hard-bounded at the question's
+#               as-of instant, pinned server-side where the agent cannot loosen it.
+LEAKFREE_MODES = ("off", "none", "timevault")
+LEAKFREE_DISALLOWED = (
+    "WebSearch,WebFetch,Read,Glob,Grep,Bash,Write,Edit,NotebookEdit,Task,"
+    + BENCH_DISALLOWED
+)
+TIMEVAULT_TOOLS = ("mcp__timevault__search_news,mcp__timevault__fetch_page,"
+                   "mcp__timevault__wikipedia_asof")
+_AS_OF = re.compile(r"AS-OF DATE:\s*([0-9]{4}-[0-9]{2}-[0-9]{2}(?:[ T][0-9:.]+)?)")
+
+
+def spec_as_of(spec: dict) -> str | None:
+    """The question's as-of instant: structured field first, else the brief's own line."""
+    structured = str(spec.get("as_of") or "").strip()
+    if structured:
+        return structured
+    match = _AS_OF.search(str(spec.get("background") or ""))
+    return match.group(1).strip() if match else None
+
+
+def leakfree_agent_cmd(base_cmd: str, mode: str, mcp_config: str | None) -> str:
+    """Rebuild the agent command with every live research/filesystem path removed.
+
+    The --allowed-tools value is REPLACED (not appended — the CLI is last-wins on
+    repeats), and one combined --disallowed-tools belt is attached. In timevault mode
+    the only allowed tools are the vault's, and --strict-mcp-config guarantees no other
+    MCP server (with live-web tools) rides along."""
+    tokens = shlex.split(base_cmd)
+    for flag in ("--allowed-tools", "--disallowed-tools", "--mcp-config"):
+        while flag in tokens:
+            idx = tokens.index(flag)
+            del tokens[idx: idx + 2]
+    if mode == "timevault":
+        if not mcp_config:
+            raise ValueError("timevault mode needs an mcp config path")
+        tokens += ["--allowed-tools", TIMEVAULT_TOOLS,
+                   "--mcp-config", Path(mcp_config).as_posix(), "--strict-mcp-config"]
+    tokens += ["--disallowed-tools", LEAKFREE_DISALLOWED]
+    return " ".join(shlex.quote(t) for t in tokens)
+
+
+_MCP_CONFIG_CACHE: dict[str, str] = {}
+_MCP_CONFIG_DIR: list[str] = []  # created lazily, once per invocation
+
+
+def mcp_config_for(as_of: str) -> str:
+    """One config file per distinct cutoff; the cutoff rides in the SERVER's argv."""
+    if as_of in _MCP_CONFIG_CACHE:
+        return _MCP_CONFIG_CACHE[as_of]
+    if not _MCP_CONFIG_DIR:
+        _MCP_CONFIG_DIR.append(tempfile.mkdtemp(prefix="timevault-cfg-"))
+    config = {"mcpServers": {"timevault": {
+        "command": sys.executable,
+        "args": [str(ROOT / "bench" / "timevault_mcp.py"), "--cutoff", as_of],
+    }}}
+    path = Path(_MCP_CONFIG_DIR[0]) / f"cfg-{len(_MCP_CONFIG_CACHE)}.json"
+    path.write_text(json.dumps(config), encoding="utf-8")
+    _MCP_CONFIG_CACHE[as_of] = str(path)
+    return str(path)
+
 # "zero" = the no-harness ablation cell: the identical brief and tools, none of the
 # skill's method. What it wins or loses against tells you what the scaffold is worth.
 ZERO_SYSTEM = (
@@ -69,8 +139,19 @@ ZERO_SYSTEM = (
 )
 
 
-def build_bench_brief(spec: dict) -> str:
+def build_bench_brief(spec: dict, leakfree: str = "off") -> str:
     """The agent-facing brief: question text only — no market URL, no crowd value."""
+    background = str(spec.get("background", ""))
+    if leakfree == "timevault":
+        # The btf2 fetcher wrote a dossier-only promise into the background; in vault
+        # mode the honest statement is different, and the contradiction would be noise.
+        background = background.replace(
+            "The frozen research dossier below is the ONLY evidence available; "
+            "web access is disabled for this run.",
+            "Research runs through TIME-LOCKED tools only (search_news, fetch_page, "
+            "wikipedia_asof): nothing after the AS-OF date is retrievable by any means. "
+            "The frozen dossier below is a starting point, not the only evidence.",
+        )
     return "\n".join([
         f"# Question: {spec['question']}",
         "Type: binary",
@@ -78,12 +159,13 @@ def build_bench_brief(spec: dict) -> str:
         "\n## Resolution criteria (verbatim — the contract)",
         spec.get("criteria", ""),
         "\n## Background",
-        spec.get("background", ""),
+        background,
     ])
 
 
 def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int = 0) -> dict | None:
-    brief = build_bench_brief(spec)
+    leakfree = getattr(args, "leakfree", "off")
+    brief = build_bench_brief(spec, leakfree)
     base_cmd = (
         openrouter_model_cmd(args.agent_cmd)
         if args.provider == "openrouter" else args.agent_cmd
@@ -104,7 +186,7 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
                 "tier": tier, "effort": effort, "router_only": True, "run": run_idx,
                 "probability": None, "crowd": spec.get("crowd"),
                 "cost_usd": round(cost, 4), "model": "", "provider": args.provider,
-                "scaffold_version": SCAFFOLD_VERSION,
+                "scaffold_version": SCAFFOLD_VERSION, "leakfree": leakfree,
                 "duration_s": round((datetime.now(UTC) - started).total_seconds(), 1),
                 "at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
             }
@@ -112,7 +194,15 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
         resolved, effort = tier, tier
     system = (ZERO_SYSTEM if tier == "zero"
               else build_system(resolved, blind=True, config=getattr(args, "tier_config", None)))
-    agent_cmd = f"{base_cmd} --disallowed-tools {BENCH_DISALLOWED}"
+    if leakfree == "off":
+        agent_cmd = f"{base_cmd} --disallowed-tools {BENCH_DISALLOWED}"
+    else:
+        as_of = spec_as_of(spec)
+        if not as_of:
+            print(f"    SKIP (leakfree={leakfree} but no as-of date): {spec['id']}")
+            return None
+        mcp_config = mcp_config_for(as_of) if leakfree == "timevault" else None
+        agent_cmd = leakfree_agent_cmd(base_cmd, leakfree, mcp_config)
 
     probability: float | None = None
     payload: dict = {}
@@ -154,6 +244,7 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
         "model": model,
         "provider": args.provider,
         "scaffold_version": SCAFFOLD_VERSION,
+        "leakfree": leakfree,
         # audit trail: did the tier actually do its mechanics, and why this number?
         "n_draws": len(raw_draws) or None,
         "raw_draws": raw_draws or None,
@@ -192,6 +283,13 @@ def main(argv: list[str] | None = None) -> int:
                         help="stop dispatching new forecasts once notional spend (envelope "
                              "cost_usd) reaches this; skipped jobs stay un-done, so rerunning "
                              "the same command resumes them (0 = no cap)")
+    parser.add_argument("--leakfree", default="off", choices=LEAKFREE_MODES,
+                        help="pastcast leak control: 'none' strips every research and "
+                             "filesystem tool (frozen-dossier enforcement); 'timevault' "
+                             "routes research through the time-locked MCP server "
+                             "(bench/timevault_mcp.py) hard-bounded at each question's "
+                             "as-of date. 'off' keeps live web — NEVER valid for "
+                             "resolved-question sets")
     args = parser.parse_args(argv)
 
     tiers = [t.strip() for t in args.tiers.split(",") if t.strip()]

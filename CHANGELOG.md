@@ -4,6 +4,45 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.6] - 2026-07-09
+
+Leak-proof pastcasting. The bench had two open leak paths that made every pastcast score
+suspect: agents ran with LIVE WebSearch/WebFetch on resolved questions (the btf2 brief even
+claimed "web access is disabled" — never enforced), and Read/Glob/Grep reached
+bench/sets/*.jsonl where each question's RESOLUTION field sits in plaintext. Per
+docs/evaluation.md's own standard (date-restricted retrieval leaks the future through
+today's rankings — Paleka et al.), no result produced under those conditions is evidence.
+
+### Added
+- **`bench/timevault.py`** — time-locked research clients with a machine-verifiable
+  no-future-data guarantee, enforced at one choke point (`_assert_pre_cutoff`): Wayback
+  snapshots (CDX `to=` bound + post-redirect stamp re-verification — Wayback's nearest-
+  capture redirect can otherwise serve a LATER snapshot; raw `id_` bytes gunzipped),
+  Wikipedia revisions as-of (`rvstart`/`rvdir=older`, stamp verified), GDELT news
+  discovery in a window ending at the cutoff (date-sorted, not relevance-sorted; strays
+  re-checked client-side; content routed through Wayback, never the live page).
+- **`bench/timevault_mcp.py`** — minimal stdio MCP server exposing the three tools; the
+  cutoff rides in the SERVER's argv, so the agent cannot loosen it; tool descriptions
+  state the cutoff; LeakError surfaces as tool output, never a protocol crash.
+- **`run_bench.py --leakfree {none,timevault}`** — `none` enforces the frozen-dossier
+  contract (no research tools at all); `timevault` allows ONLY the vault's MCP tools with
+  `--strict-mcp-config` (no other MCP server rides along) and one combined
+  `--disallowed-tools` belt covering WebSearch/WebFetch/Read/Glob/Grep/Bash/Write/Edit.
+  Per-question cutoffs from the new structured `as_of` field (btf2 fetcher now writes it;
+  a regex fallback reads existing sets). Result rows stamp `leakfree` so contaminated old
+  results can never be pooled with clean ones.
+- Red-team validated live: a haiku agent in the exact harness config, told to determine
+  the Nov 4, 2025 NYC mayoral result under an Oct 23 cutoff, could not — Wikipedia
+  as-of-cutoff still said `ongoing = yes`, nothing retrievable postdated the cutoff.
+- 23 tests: choke-point enforcement, the redirect trap, MCP protocol, cmd wiring.
+
+### Known limits (documented, not hidden)
+- The model's own weights: pastcast questions must RESOLVE after the model's training
+  cutoff — a set-selection duty the tool cannot enforce.
+- Wikipedia title *search* fallback ranks by today's index (content is still as-of).
+- GDELT rate-limits (~1 req/5s) and can be flaky; `search_news` degrades to an explicit
+  "unavailable" note rather than failing the run — Wayback/Wikipedia carry the guarantee.
+
 ## [0.4.5] - 2026-07-08
 
 Research-floor release. An audit of the first live tournament batch (9 questions) found

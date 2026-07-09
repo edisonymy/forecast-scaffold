@@ -233,6 +233,9 @@ def build_spec(row: dict) -> dict | None:
         "question": str(question),
         "criteria": str(criteria),
         "background": combined_background,
+        # Structured copy of the AS-OF instant: run_bench --leakfree pins the timevault
+        # cutoff to it (a regex fallback on the background line covers older set files).
+        "as_of": str(present_date) if present_date else None,
         "resolve_by": str(resolve_by)[:10] if resolve_by else None,
         "crowd": {
             "value": sota_prob,
