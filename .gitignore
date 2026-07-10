@@ -11,7 +11,12 @@ dist/
 forecasts.jsonl
 !bot/journal/forecasts.jsonl
 # benchmark data: sets embed CC-BY-SA ForecastBench content; results are experiment data
-bench/sets/
+# (contents-not-directory pattern so the prospective negation below can reach inside)
+bench/sets/*
 bench/results/
+# EXCEPT prospective freezes: a preregistration artifact only binds if committed publicly
+# BEFORE outcomes exist, and it holds Metaculus question text the bot journal already
+# publishes — not ForecastBench content
+!bench/sets/prospective-*.jsonl
 # --post backtests: recorded evidence, never public preregistration
 bot/journal/backtests.jsonl
