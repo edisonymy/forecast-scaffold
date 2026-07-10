@@ -1123,6 +1123,35 @@ def forecast_question(
     if not criterion:
         # Metaculus sometimes returns empty criteria; the title is the resolvable contract.
         criterion = f"(no criteria published) Resolves per the question as stated: {title}"
+    # Build the continuous CDF NOW, against the question's scaling, so the preregistration
+    # record captures exactly what the platform receives — percentiles alone can't be rebuilt
+    # into the ~201-pt object. The submit path below sends this same CDF rather than rebuilding
+    # it, so the journal and the platform can never silently diverge (same rule as the binary
+    # clamp and MC floor above).
+    submitted_cdf: list[float] | None = None
+    cdf_scaling: dict[str, Any] | None = None
+    if qtype in CONTINUOUS:
+        raw_scaling = question.get("scaling") or {}
+        if raw_scaling.get("range_min") is None or raw_scaling.get("range_max") is None:
+            raise ValueError(f"continuous question {question.get('id')} has no numeric bounds")
+        outcome_count = question.get("inbound_outcome_count")  # set on discrete questions
+        cdf_scaling = {
+            "range_min": float(raw_scaling["range_min"]),
+            "range_max": float(raw_scaling["range_max"]),
+            "zero_point": raw_scaling.get("zero_point"),
+            "lower_open": bool(question.get("open_lower_bound")),
+            "upper_open": bool(question.get("open_upper_bound")),
+            "cdf_size": int(outcome_count) + 1 if outcome_count else 201,
+        }
+        submitted_cdf = percentiles_to_cdf(
+            {str(k): float(v) for k, v in payload["percentiles"].items()},
+            cdf_scaling["range_min"],
+            cdf_scaling["range_max"],
+            lower_open=cdf_scaling["lower_open"],
+            upper_open=cdf_scaling["upper_open"],
+            zero_point=cdf_scaling["zero_point"],
+            cdf_size=cdf_scaling["cdf_size"],
+        )
     record = ForecastRecord(
         question=title,
         question_type=qtype if qtype in ("binary", "multiple_choice", "date") else "numeric",
@@ -1146,6 +1175,8 @@ def forecast_question(
             {str(k): float(v) for k, v in payload["percentiles"].items()}
             if qtype in CONTINUOUS else None
         ),
+        submitted_cdf=submitted_cdf,
+        scaling=cdf_scaling,
         expected_value=_as_float(payload.get("expected_value")),
         cost_usd=round(run_cost, 4) if run_cost else None,
         raw_draws=[f for d in payload.get("raw_draws") or []
@@ -1221,20 +1252,11 @@ def forecast_question(
     elif qtype == "multiple_choice":
         client.submit_multiple_choice(question_id, payload["probabilities"])
     else:
-        scaling = question.get("scaling") or {}
-        if scaling.get("range_min") is None or scaling.get("range_max") is None:
-            raise ValueError(f"continuous question {question_id} has no numeric bounds")
-        outcome_count = question.get("inbound_outcome_count")  # set on discrete questions
-        cdf = percentiles_to_cdf(
-            {str(k): float(v) for k, v in payload["percentiles"].items()},
-            float(scaling["range_min"]),
-            float(scaling["range_max"]),
-            lower_open=bool(question.get("open_lower_bound")),
-            upper_open=bool(question.get("open_upper_bound")),
-            zero_point=scaling.get("zero_point"),
-            cdf_size=int(outcome_count) + 1 if outcome_count else 201,
-        )
-        client.submit_cdf(question_id, cdf)
+        # Built and journaled at record time (record.submitted_cdf), so the preregistration
+        # record and the platform receive byte-identical numbers.
+        if record.submitted_cdf is None:  # pragma: no cover - continuous always builds one
+            raise ValueError(f"continuous question {question_id} has no submitted CDF")
+        client.submit_cdf(question_id, record.submitted_cdf)
     print("  submitted")
     if args.comment and record.reasoning:
         # A failed comment is cosmetic; letting it mark the QUESTION failed would exit

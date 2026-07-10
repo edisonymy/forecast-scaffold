@@ -292,6 +292,15 @@ def test_validate_percentiles() -> None:
     assert any("missing" in e for e in validate_percentiles({"50": 1.0}))
 
 
+def test_validate_percentiles_rejects_duplicate_normalized_keys() -> None:
+    # "50" and "50.0" are distinct dict keys that float to the same percentile; which value
+    # the CDF construction consumes is accidental, so this is a repairable error, not a pass.
+    collide = {"10": 1.0, "25": 2.0, "50": 3.0, "50.0": 3.5, "75": 4.0, "90": 5.0}
+    errors = validate_percentiles(collide)
+    assert any("normalize to" in e for e in errors)
+    assert validate_percentiles({"10": 1.0, "25": 2.0, "50": 3.0, "75": 4.0, "90": 5.0}) == []
+
+
 def test_validate_mc() -> None:
     assert validate_mc(["a", "b"], [0.6, 0.4]) == []
     assert any("sum" in e for e in validate_mc(["a", "b"], [0.6, 0.6]))

@@ -60,6 +60,32 @@ def test_numeric_kind_maps_to_magnitude() -> None:
     assert "estimand_kind: magnitude" in to_decision_record(record)["assumptions"]
 
 
+def test_multiple_choice_payload_survives_export() -> None:
+    # Regression (v0.4.12): the export previously kept only the binary probability slot
+    # (null here) and silently dropped the MC distribution.
+    record = ForecastRecord(
+        question="Which option wins?",
+        question_type="multiple_choice",
+        options=["A", "B", "C"],
+        probabilities=[0.5, 0.3, 0.2],
+    )
+    prediction = to_decision_record(record)["prediction"]
+    assert prediction["options"] == ["A", "B", "C"]
+    assert prediction["probabilities"] == [0.5, 0.3, 0.2]
+
+
+def test_numeric_percentiles_survive_export() -> None:
+    record = ForecastRecord(
+        question="How many by 2026-12-31?",
+        question_type="numeric",
+        percentiles={"10": 5.0, "25": 8.0, "50": 12.0, "75": 20.0, "90": 35.0},
+    )
+    prediction = to_decision_record(record)["prediction"]
+    assert prediction["percentiles"] == {
+        "10": 5.0, "25": 8.0, "50": 12.0, "75": 20.0, "90": 35.0,
+    }
+
+
 def test_export_cli(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     journal = tmp_path / "j.jsonl"
     Journal(journal).append(

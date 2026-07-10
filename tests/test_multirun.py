@@ -649,6 +649,51 @@ class TestLiveSubmission:
         assert len(cdf) == 101  # inbound_outcome_count + 1
         assert all(b >= a for a, b in zip(cdf, cdf[1:], strict=False))
 
+    def test_continuous_record_captures_the_submitted_cdf_and_scaling(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # A percentiles-only journal row can't be rebuilt into the object Metaculus scored,
+        # so the record must carry the exact CDF submitted AND the scaling it was built
+        # against (v0.4.12). The journaled CDF is byte-identical to what the platform got.
+        question = {
+            **QUESTION, "type": "numeric",
+            "scaling": {"range_min": 0.0, "range_max": 100.0, "zero_point": None},
+            "open_lower_bound": False, "open_upper_bound": True,
+        }
+        client = SubmitCaptureClient()
+        agent, record, ok = run(
+            monkeypatch, tmp_path,
+            [fenced({"percentiles": {"10": 5.0, "25": 20.0, "50": 50.0,
+                                     "75": 75.0, "90": 95.0},
+                     "reasoning": "x", "sources": []})],
+            config=config_with_tiers(self.LOW), effort="low",
+            question=question, dry_run=False, client=client,
+        )
+        assert ok and record is not None
+        kind, cdf = client.submitted[0]
+        assert kind == "cdf"
+        assert record["submitted_cdf"] == cdf
+        assert len(record["submitted_cdf"]) == 201
+        assert record["scaling"] == {
+            "range_min": 0.0, "range_max": 100.0, "zero_point": None,
+            "lower_open": False, "upper_open": True, "cdf_size": 201,
+        }
+
+    def test_binary_record_has_no_cdf_or_scaling(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # The provenance fields are continuous-only — absent (dropped as None) on a binary.
+        client = SubmitCaptureClient()
+        _, record, ok = run(
+            monkeypatch, tmp_path,
+            [fenced({"probability": 0.4, "reasoning": "x", "sources": []})],
+            config=config_with_tiers(self.LOW), effort="low",
+            dry_run=False, client=client,
+        )
+        assert ok and record is not None
+        assert "submitted_cdf" not in record
+        assert "scaling" not in record
+
     def test_comment_failure_never_fails_the_question(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:

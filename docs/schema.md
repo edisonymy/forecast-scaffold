@@ -44,6 +44,8 @@ Only `question` is required. Serialization drops `null` fields; absent = null.
 | `probability` | float? | binary: final pooled p, in [0,1] |
 | `options` / `probabilities` | list? | multiple_choice: parallel lists; probabilities sum to 1 (±0.01) |
 | `percentiles` | obj? | numeric/discrete: `{"10","25","50","75","90"}`, strictly increasing |
+| `submitted_cdf` | list? | numeric/date: the exact CDF (~201 points) submitted to the platform — a preregistration record of the object actually scored, since `percentiles` alone can't be rebuilt into it |
+| `scaling` | obj? | numeric/date: `{range_min, range_max, zero_point, lower_open, upper_open, cdf_size}` the CDF was built against — needed to interpret `submitted_cdf` |
 | `raw_draws` | list? | the individual ensemble draws (audit trail) |
 | `aggregation` | str? | e.g. `"trimmed_mean(n=5)"`, incl. any crowd blend and clamp |
 | `effort` | str? | `low`/`medium`/`high`, with `(auto)` when auto-triaged |
@@ -79,6 +81,8 @@ mapping is lossless in both directions:
 |---|---|
 | `question` | `title` and `prediction.expectation` |
 | `probability` | `prediction.probability` |
+| `options` / `probabilities` | `prediction.options` / `prediction.probabilities` (present for multiple_choice) |
+| `percentiles` | `prediction.percentiles` (present for numeric/discrete/date) |
 | `resolve_by` | `prediction.resolve_by` |
 | `reasoning` | `rationale` |
 | `what_would_change_my_mind` | `what_would_change_my_mind` |

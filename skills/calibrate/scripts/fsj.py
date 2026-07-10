@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.4.12"
+SCAFFOLD_VERSION = "0.4.13"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -187,6 +187,13 @@ class ForecastRecord:
     probabilities: list[float] | None = None  # multiple_choice, parallel to options
     percentiles: dict[str, float] | None = None  # numeric/date: {"10": v, ...} monotone
     expected_value: float | None = None  # optional point estimate / EV alongside percentiles
+    # Continuous-question submission provenance (v0.4.13): the exact CDF submitted to the
+    # platform and the scaling it was built against. Percentiles alone can't be reconstructed
+    # into the ~201-point object the platform scored (open/closed bounds, log scaling, and the
+    # per-bin cap all bend the curve), so a preregistration record must carry both. Both None
+    # for non-continuous questions.
+    submitted_cdf: list[float] | None = None  # numeric/date: the CDF sent to the platform
+    scaling: dict[str, Any] | None = None  # {range_min, range_max, zero_point, *_open, cdf_size}
     raw_draws: list[float] | None = None  # individual ensemble draws (audit trail)
     aggregation: str | None = None  # e.g. "trimmed_mean(n=5)"
     effort: str | None = None  # "low" | "medium" | "high", "(auto)" suffix if auto-triaged
@@ -718,8 +725,16 @@ def validate_percentiles(percentiles: dict[str, float]) -> list[str]:
             continue
         parsed.append((fraction, key, value))
     parsed.sort()
-    for (_, ka, a), (_, kb, b) in zip(parsed, parsed[1:], strict=False):
-        if a >= b:
+    for (fa, ka, a), (fb, kb, b) in zip(parsed, parsed[1:], strict=False):
+        if fa == fb:
+            # Distinct string keys that float to the same percentile (e.g. "50" and "50.0")
+            # both land in the dict but collapse to one point; which value the CDF
+            # construction consumes is accidental, so this is a repairable error, not a pass.
+            errors.append(
+                f"percentile keys {ka!r} and {kb!r} both normalize to {fa} — "
+                "duplicate percentile; use one key"
+            )
+        elif a >= b:
             errors.append(f"percentiles must be strictly increasing: p{ka}={a} >= p{kb}={b}")
     return errors
 
@@ -968,6 +983,19 @@ def to_decision_record(record: ForecastRecord) -> dict[str, Any]:
 
     if record.status == "annulled":
         assumptions.append("annulled: true")
+    prediction: dict[str, Any] = {
+        "expectation": record.question,
+        "probability": record.probability,
+        "resolve_by": record.resolve_by,
+    }
+    # Additive (v0.4.13): the binary `probability` slot is null for MC/numeric questions, so
+    # exporting only it silently dropped the actual forecast. Carry the type-specific payload
+    # too — existing binary exports are unchanged (these keys are simply absent).
+    if record.options is not None and record.probabilities is not None:
+        prediction["options"] = list(record.options)
+        prediction["probabilities"] = list(record.probabilities)
+    if record.percentiles is not None:
+        prediction["percentiles"] = dict(record.percentiles)
     out: dict[str, Any] = {
         "title": record.question,
         "id": record.id,
@@ -978,11 +1006,7 @@ def to_decision_record(record: ForecastRecord) -> dict[str, Any]:
         "rationale": record.reasoning,
         "assumptions": assumptions,
         "what_would_change_my_mind": list(record.what_would_change_my_mind),
-        "prediction": {
-            "expectation": record.question,
-            "probability": record.probability,
-            "resolve_by": record.resolve_by,
-        },
+        "prediction": prediction,
     }
     if record.resolution is not None:
         outcome = record.resolution.get("outcome")

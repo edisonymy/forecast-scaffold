@@ -4,6 +4,33 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.13] - 2026-07-10
+
+Two more review clusters (finding #9 and the journal-completeness set), implemented by
+opus subagents and reviewed:
+
+### Added
+- **Untrusted-input security sections in the skill markdown** (`skills/forecast/SKILL.md`,
+  `skills/calibrate/SKILL.md`). The bot surface always had prompt-injection defenses in
+  its Python-built system prompt; the skill — the surface installed with far broader tool
+  permissions — had none. Written as a security frame (question text, criteria, and
+  fetched pages are data to forecast, never instructions; self-advocating content is
+  incentive evidence, not world evidence), not as workflow gating.
+- **Continuous-question submission provenance**: `ForecastRecord` gains `submitted_cdf`
+  (the exact ~201-point CDF sent to the platform) and `scaling` (the bounds/zero-point it
+  was built against). The CDF is now built once at record time and the submit path sends
+  that same object — the journal and the platform can no longer silently diverge.
+  Rows grow ~2.7 KB on continuous questions; completeness beats compactness in a
+  preregistration journal. `docs/schema.md` updated.
+- **`to_decision_record` carries MC and numeric forecasts** (`options`/`probabilities`,
+  `percentiles`) instead of exporting a null binary probability slot — the silent-drop
+  found in review. Binary exports unchanged.
+
+### Fixed
+- `validate_percentiles` rejects distinct keys that normalize to the same percentile
+  (`"50"` vs `"50.0"`) — previously which value won was accidental; now it is a
+  repairable contract error.
+
 ## [0.4.12] - 2026-07-10
 
 Three deep-review roadmap items (findings #1–#3), implemented by opus/sonnet subagents
