@@ -145,6 +145,22 @@ class MetaculusClient:
         my = question.get("my_forecasts") or {}
         return bool(my.get("latest"))
 
+    @staticmethod
+    def my_forecast_age_hours(
+        question: dict[str, Any], now: float | None = None
+    ) -> float | None:
+        """Hours since this account's latest forecast on the question; None when never
+        forecast — or when the API omits the timestamp, which fails safe for the
+        refresh gate: an unknown age is never 'stale enough' to re-spend on."""
+        latest = (question.get("my_forecasts") or {}).get("latest") or {}
+        stamp = latest.get("start_time") or latest.get("created_at")
+        try:
+            then = float(stamp)
+        except (TypeError, ValueError):
+            return None
+        now = time.time() if now is None else now
+        return max(0.0, (now - then) / 3600.0)
+
     # -- writes ------------------------------------------------------------
     def submit_binary(self, question_id: int, probability: float) -> None:
         self._submit(question_id, probability_yes=probability)

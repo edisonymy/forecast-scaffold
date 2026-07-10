@@ -674,13 +674,15 @@ class ListClient:
 
     questions_of = staticmethod(run_bot.MetaculusClient.questions_of)
     already_forecasted = staticmethod(run_bot.MetaculusClient.already_forecasted)
+    my_forecast_age_hours = staticmethod(run_bot.MetaculusClient.my_forecast_age_hours)
 
     def community_prediction(self, question: dict[str, Any]) -> None:
         return None
 
 
 def run_main(monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
-             posts: list[dict[str, Any]]) -> tuple[int, list[Any]]:
+             posts: list[dict[str, Any]],
+             extra: list[str] | None = None) -> tuple[int, list[Any]]:
     forecasted: list[Any] = []
     monkeypatch.setattr(run_bot, "MetaculusClient", lambda: ListClient(posts))
 
@@ -691,8 +693,49 @@ def run_main(monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
 
     monkeypatch.setattr(run_bot, "forecast_question", fake_forecast)
     code = run_bot.main(["--tournament", "t", "--dry-run",
-                         "--journal", str(tmp_path / "j.jsonl")])
+                         "--journal", str(tmp_path / "j.jsonl")] + (extra or []))
     return code, forecasted
+
+
+class TestRefreshGate:
+    """--refresh-hours (v0.4.9): standing forecasts re-forecast only past a minimum age,
+    and always AFTER never-forecasted questions — fresh coverage beats churn, and the
+    10-minute cron must not re-spend on the same question every tick."""
+
+    @staticmethod
+    def posts(stale_age_h: float) -> list[dict[str, Any]]:
+        stale_stamp = time.time() - stale_age_h * 3600
+        return [
+            # standing forecast, closes SOONEST — would win on close time alone
+            {"id": 1, "scheduled_close_time": "2026-08-01T00:00:00Z",
+             "question": {"id": 11, "type": "binary", "title": "stale", "status": "open",
+                          "scheduled_close_time": "2026-08-01T00:00:00Z",
+                          "my_forecasts": {"latest": {"start_time": stale_stamp}}}},
+            # never forecast, closes later — must still be forecast FIRST
+            {"id": 2, "scheduled_close_time": "2026-09-01T00:00:00Z",
+             "question": {"id": 12, "type": "binary", "title": "new", "status": "open",
+                          "scheduled_close_time": "2026-09-01T00:00:00Z"}},
+        ]
+
+    def test_default_never_reforecasts(self, monkeypatch: pytest.MonkeyPatch,
+                                       tmp_path: Path) -> None:
+        code, forecasted = run_main(monkeypatch, tmp_path, self.posts(stale_age_h=100))
+        assert code == 0 and forecasted == [12]
+
+    def test_fresh_forecast_is_not_stale_enough(self, monkeypatch: pytest.MonkeyPatch,
+                                                tmp_path: Path) -> None:
+        code, forecasted = run_main(monkeypatch, tmp_path, self.posts(stale_age_h=2),
+                                    extra=["--refresh-hours", "24"])
+        assert code == 0 and forecasted == [12]
+
+    def test_stale_forecast_refreshes_after_new_questions(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        code, forecasted = run_main(monkeypatch, tmp_path, self.posts(stale_age_h=100),
+                                    extra=["--refresh-hours", "24"])
+        assert code == 0
+        # the stale question closes sooner, but the never-forecasted one still leads
+        assert forecasted == [12, 11]
 
 
 class TestMainPrefilters:

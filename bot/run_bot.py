@@ -1206,6 +1206,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--blind", action="store_true",
                         help="hide the community prediction from the agent (still journaled) "
                              "to measure skill against the crowd rather than anchoring on it")
+    parser.add_argument("--refresh-hours", type=float, default=0.0,
+                        help="re-forecast a question once this account's standing forecast "
+                             "is at least this many hours old (0 = never, the default). "
+                             "Refreshes queue strictly AFTER never-forecasted questions and "
+                             "spend from the same --budget; each refresh appends a new "
+                             "journal record at its own forecast_at, matching how the "
+                             "platform scores forecasts over time")
     parser.add_argument("--include-forecasted", action="store_true",
                         help="re-forecast questions this account already forecast")
     parser.add_argument("--budget", type=float, default=0.0,
@@ -1256,6 +1263,7 @@ def main(argv: list[str] | None = None) -> int:
     ledger = failures_path(args.journal)
     failure_counts = recent_failure_counts(ledger)
     pending = []
+    refresh = []  # standing forecasts old enough to re-forecast (see --refresh-hours)
     for post in posts:
         for question in client.questions_of(post):
             title = question.get("title", post.get("title", "untitled"))
@@ -1284,9 +1292,24 @@ def main(argv: list[str] | None = None) -> int:
                 continue
             if single or args.include_forecasted or not client.already_forecasted(question):
                 pending.append((post, question))
+            elif args.refresh_hours > 0:
+                # Re-forecast gate (v0.4.9): a standing forecast qualifies for refresh
+                # only once it is at least --refresh-hours old — the world rarely moves
+                # inside an hour, and the cron fires every 10 minutes, so without a
+                # minimum-age condition every tick would re-spend on the same question.
+                age = client.my_forecast_age_hours(question)
+                if age is not None and age >= args.refresh_hours:
+                    refresh.append((post, question))
     # Soonest-closing first: those forecasts lock in scoring coverage a batch cannot
     # recover later, while far-out questions can wait for the next budget window.
+    # NEVER-forecast questions always outrank refreshes: fresh coverage buys scoring
+    # time a stale-but-standing forecast already has.
     pending.sort(key=close_time_key)
+    refresh.sort(key=close_time_key)
+    if refresh:
+        print(f"{len(refresh)} standing forecast(s) older than {args.refresh_hours:.0f}h "
+              "queued for refresh after new questions")
+        pending.extend(refresh)
     done = failed = 0
     spent = {"usd": 0.0}
     for post, question in pending:

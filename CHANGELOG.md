@@ -4,6 +4,25 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.9] - 2026-07-10
+
+Re-forecast policy (review finding: the bot forecast each question exactly once while
+the tournament scores forecasts over time — observed live as the crowd walking away
+from a frozen Vanguard forecast, 55%->62% while the bot sat still).
+
+### Added
+- **`--refresh-hours N`**: a standing forecast qualifies for re-forecasting only once
+  it is at least N hours old (0 = never, the default — behavior unchanged unless armed).
+  The minimum-age condition is the cost gate: the cron fires every 10 minutes and the
+  world rarely moves inside an hour, so ungated updates would re-spend on the same
+  question every tick. Refreshes queue strictly AFTER never-forecasted questions (fresh
+  coverage buys scoring time a standing forecast already has) and spend from the same
+  `--budget`. Each refresh appends a new journal record at its own `forecast_at` —
+  matching how the platform scores standing forecasts through time.
+- `bot.yml` arms it at `--refresh-hours 48` on both provider paths (a dial, not a law:
+  at ~15 open questions that bounds refresh spend at ~7-8 skill runs/day worst case,
+  inside the per-run `--budget 3`).
+
 ## [0.4.8] - 2026-07-10
 
 First fixes from the 59-agent deep review (41 raw findings -> 34 adversarially
