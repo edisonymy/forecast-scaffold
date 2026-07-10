@@ -54,6 +54,21 @@ class ScriptedAgent:
         return self.outputs.pop(0), 0.01, "claude-sonnet-5"
 
 
+class ScriptedDirect:
+    """Replaces run_bench.run_direct (the openrouter-direct transport). Signature is
+    (prompt, system, model, timeout) — no cmd, no provider — echoing the model back as
+    the id, matching bench/direct_agent.run_direct."""
+
+    def __init__(self, outputs: list[str]) -> None:
+        self.outputs = list(outputs)
+        self.calls: list[dict[str, Any]] = []
+
+    def __call__(self, prompt: str, system: str | None, model: str,
+                 timeout: int) -> tuple[str, float, str]:
+        self.calls.append({"prompt": prompt, "system": system, "model": model})
+        return self.outputs.pop(0), 0.03, model
+
+
 def base_args(**overrides: Any) -> argparse.Namespace:
     defaults = dict(
         provider="subscription", agent_cmd="claude -p", timeout=60,
@@ -202,3 +217,105 @@ class TestCliWiring:
         row = json.loads(results_path.read_text(encoding="utf-8").splitlines()[0])
         assert "arm" not in row
         assert "spine_sha" not in row
+
+
+class TestDirectTransport:
+    """--provider openrouter-direct: valid ONLY for the tool-less zero cell (tiers=={zero},
+    leakfree==none), routed through run_direct not the CLI, with the spine harness and the
+    repair-retry loop intact."""
+
+    def test_openrouter_direct_is_a_provider_choice(self) -> None:
+        assert "openrouter-direct" in run_bench.BENCH_PROVIDERS
+
+    def test_rejects_non_zero_tier_at_arg_validation(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        set_path = tmp_path / "set.jsonl"
+        set_path.write_text(json.dumps(SPEC) + "\n", encoding="utf-8")
+        monkeypatch.setattr(run_bench, "RESULTS_DIR", tmp_path / "results")
+        with pytest.raises(SystemExit):
+            run_bench.main([str(set_path), "--tiers", "zero,low", "--leakfree", "none",
+                            "--provider", "openrouter-direct"])
+        err = capsys.readouterr().err
+        assert "openrouter-direct" in err and "zero" in err
+
+    def test_rejects_leakfree_not_none_at_arg_validation(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        set_path = tmp_path / "set.jsonl"
+        set_path.write_text(json.dumps(SPEC) + "\n", encoding="utf-8")
+        monkeypatch.setattr(run_bench, "RESULTS_DIR", tmp_path / "results")
+        # tiers are exactly {zero} but leakfree defaults to "off" -> must be rejected
+        with pytest.raises(SystemExit):
+            run_bench.main([str(set_path), "--tiers", "zero",
+                            "--provider", "openrouter-direct"])
+        err = capsys.readouterr().err
+        assert "leakfree" in err
+
+    def test_zero_tier_spine_runs_through_direct_transport(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        spine_path = tmp_path / "concede_uncertainty.txt"
+        spine_text = "Weigh the base rate before adjusting.\n"
+        spine_path.write_text(spine_text, encoding="utf-8")
+        expected_sha = hashlib.sha256(spine_text.encode("utf-8")).hexdigest()[:12]
+
+        set_path = tmp_path / "set.jsonl"
+        set_path.write_text(json.dumps(SPEC) + "\n", encoding="utf-8")
+
+        direct = ScriptedDirect([PAYLOAD])
+        monkeypatch.setattr(run_bench, "run_direct", direct)
+
+        def _boom(*_a: Any, **_k: Any) -> tuple[str, float, str]:
+            raise AssertionError("run_agent must not be called for openrouter-direct")
+
+        monkeypatch.setattr(run_bench, "run_agent", _boom)
+        monkeypatch.setattr(run_bench, "RESULTS_DIR", tmp_path / "results")
+
+        code = run_bench.main([
+            str(set_path), "--tiers", "zero", "--leakfree", "none",
+            "--provider", "openrouter-direct", "--spine-file", str(spine_path),
+            "--tag", "direct", "--agent-cmd", "claude -p --model google/gemini-2.5-pro",
+        ])
+        assert code == 0
+
+        results_path = tmp_path / "results" / "set.direct.results.jsonl"
+        rows = [json.loads(line) for line in
+                results_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+        assert len(rows) == 1
+        row = rows[0]
+        assert row["provider"] == "openrouter-direct"
+        assert row["probability"] == 0.42
+        # spine provenance is stamped exactly as on the CLI transport
+        assert row["arm"] == "concede_uncertainty"
+        assert row["spine_sha"] == expected_sha
+        # the direct transport got ZERO_SYSTEM + the spine text and the slug model id
+        assert len(direct.calls) == 1
+        assert direct.calls[0]["system"].startswith(run_bench.ZERO_SYSTEM)
+        assert spine_text.strip() in direct.calls[0]["system"]
+        assert direct.calls[0]["model"] == "google/gemini-2.5-pro"
+
+    def test_repair_retry_works_through_direct_transport(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        set_path = tmp_path / "set.jsonl"
+        set_path.write_text(json.dumps(SPEC) + "\n", encoding="utf-8")
+        bad = fenced({"probability": 1.5, "reasoning": "x", "sources": []})  # outside (0,1)
+        direct = ScriptedDirect([bad, PAYLOAD])
+        monkeypatch.setattr(run_bench, "run_direct", direct)
+        monkeypatch.setattr(run_bench, "RESULTS_DIR", tmp_path / "results")
+
+        code = run_bench.main([
+            str(set_path), "--tiers", "zero", "--leakfree", "none",
+            "--provider", "openrouter-direct",
+            "--agent-cmd", "claude -p --model google/gemini-2.5-pro",
+        ])
+        assert code == 0
+        results_path = tmp_path / "results" / "set.results.jsonl"
+        row = json.loads(results_path.read_text(encoding="utf-8").splitlines()[0])
+        assert row["probability"] == 0.42
+        assert len(direct.calls) == 2  # invalid payload -> corrected on retry
+        # the retry prompt carried the repair instruction back through the direct transport
+        assert "previous output was invalid" in direct.calls[1]["prompt"]

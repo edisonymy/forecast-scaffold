@@ -11,6 +11,12 @@ Usage:
         --tiers low,medium,high,auto --provider openrouter \
         --agent-cmd "claude -p --model claude-sonnet-5 --output-format json \
                      --allowed-tools Read,Glob,Grep,WebSearch,WebFetch"
+
+    # Zero-tier ablation via the direct native chat API (no CLI scaffolding, model-
+    # agnostic). Valid ONLY with --tiers zero --leakfree none (a tool-less completion):
+    python bench/run_bench.py bench/sets/2026-07-04.jsonl \
+        --tiers zero --leakfree none --provider openrouter-direct \
+        --agent-cmd "claude -p --model google/gemini-2.5-pro"
 """
 
 from __future__ import annotations
@@ -33,9 +39,11 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "bot"))
 
 # ruff: noqa: E402  (imports follow the sys.path bootstrap above)
+from direct_agent import run_direct
 from run_bot import (
     BLIND_DISALLOWED,
     PROVIDERS,
+    _model_from_cmd,
     build_system,
     extract_json,
     openrouter_model_cmd,
@@ -44,6 +52,12 @@ from run_bot import (
 )
 
 from forecast_scaffold.core import SCAFFOLD_VERSION, load_config
+
+# The bench adds a fourth provider on top of run_bot's read-only PROVIDERS: a tool-less
+# single completion straight to OpenRouter's native chat API (bench/direct_agent.py). It
+# is valid ONLY for the zero tier under --leakfree none — the one bench cell that is
+# already a tool-less single completion; every other tier/mode needs the CLI harness.
+BENCH_PROVIDERS = (*PROVIDERS, "openrouter-direct")
 
 RESULTS_DIR = ROOT / "bench" / "results"
 # The set includes RAND/INFER questions; block that aggregator too.
@@ -173,9 +187,10 @@ def build_bench_brief(spec: dict, leakfree: str = "off") -> str:
 def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int = 0) -> dict | None:
     leakfree = getattr(args, "leakfree", "off")
     brief = build_bench_brief(spec, leakfree)
+    direct = args.provider == "openrouter-direct"
     base_cmd = (
         openrouter_model_cmd(args.agent_cmd)
-        if args.provider == "openrouter" else args.agent_cmd
+        if args.provider in ("openrouter", "openrouter-direct") else args.agent_cmd
     )
     started = datetime.now(UTC)
     cost = 0.0
@@ -203,7 +218,12 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
     system = ((ZERO_SYSTEM + f"\n\n{spine_text}" if spine_text else ZERO_SYSTEM)
               if tier == "zero"
               else build_system(resolved, blind=True, config=getattr(args, "tier_config", None)))
-    if leakfree == "off":
+    if direct:
+        # Tool-less single completion (validated in main: tiers={"zero"}, leakfree="none").
+        # No CLI command and nothing to time-lock — the direct transport IS the frozen,
+        # no-tools cell, so it bypasses the leakfree agent-command machinery entirely.
+        direct_model = _model_from_cmd(base_cmd)
+    elif leakfree == "off":
         agent_cmd = f"{base_cmd} --disallowed-tools {BENCH_DISALLOWED}"
     else:
         as_of = spec_as_of(spec)
@@ -223,9 +243,14 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
             + "; ".join(errors) + "\nEmit a corrected fenced json block."
         )
         try:
-            output, attempt_cost, model = run_agent(
-                agent_cmd, prompt, system, args.timeout, args.provider
-            )
+            if direct:
+                output, attempt_cost, model = run_direct(
+                    prompt, system, direct_model, args.timeout
+                )
+            else:
+                output, attempt_cost, model = run_agent(
+                    agent_cmd, prompt, system, args.timeout, args.provider
+                )
             cost += attempt_cost
             payload = extract_json(output)
             candidate = payload.get("probability")
@@ -276,7 +301,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("set_file", help="question set from bench/fetch_set.py")
     parser.add_argument("--tiers", default="low,medium,high,auto")
     parser.add_argument("--limit", type=int, default=0, help="max questions (0 = all)")
-    parser.add_argument("--provider", default="subscription", choices=PROVIDERS)
+    parser.add_argument("--provider", default="subscription", choices=BENCH_PROVIDERS)
     parser.add_argument("--agent-cmd", default="claude -p", help="headless agent command")
     parser.add_argument("--timeout", type=int, default=1200)
     parser.add_argument("--concurrency", type=int, default=1,
@@ -315,6 +340,20 @@ def main(argv: list[str] | None = None) -> int:
     unknown = [t for t in tiers if t not in TIERS]
     if unknown:
         parser.error(f"unknown tiers {unknown}; choose from {TIERS}")
+
+    # The direct transport has no tools and no CLI harness, so it can only stand in for the
+    # one cell that is already a tool-less single completion: the zero tier under leakfree
+    # 'none'. Reject anything else here, before any agent call, rather than silently doing
+    # something the transport cannot actually do (research tiers, timevault, live web).
+    if args.provider == "openrouter-direct" and (
+        set(tiers) != {"zero"} or args.leakfree != "none"
+    ):
+        parser.error(
+            "--provider openrouter-direct is a tool-less single-completion transport: "
+            "it is valid ONLY with --tiers zero and --leakfree none (got "
+            f"--tiers {','.join(tiers)} --leakfree {args.leakfree}). Every other tier and "
+            "leak mode needs the CLI harness."
+        )
 
     args.spine_text = args.spine_arm = args.spine_sha = None
     if args.spine_file:

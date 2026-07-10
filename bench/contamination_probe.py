@@ -22,6 +22,16 @@ Usage:
         --models claude-opus-4-6,claude-haiku-4-5,claude-sonnet-5 \
         --qids-from bench/results/2026-07-05-btf2.opus46.results.jsonl --concurrency 6
     python bench/contamination_probe.py bench/sets/2026-07-05-btf2.jsonl --report
+
+    # Non-Anthropic model via OpenRouter (cross-model ensemble contamination checks;
+    # needs OPENROUTER_API_KEY, same routing run_bench.py --provider openrouter uses):
+    python bench/contamination_probe.py bench/sets/2026-07-05-btf2.jsonl \
+        --models google/gemini-2.5-pro --provider openrouter
+
+    # Same, but via the direct native chat API (no CLI scaffolding; fixes the empty
+    # result the Anthropic-compat endpoint returns for non-Anthropic models):
+    python bench/contamination_probe.py bench/sets/2026-07-05-btf2.jsonl \
+        --models google/gemini-2.5-pro --provider openrouter-direct
 """
 
 from __future__ import annotations
@@ -40,9 +50,16 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "bot"))
 
 # ruff: noqa: E402  (imports follow the sys.path bootstrap above)
-from run_bot import extract_json, run_agent
+from direct_agent import run_direct
+from run_bot import PROVIDERS, extract_json, openrouter_model_cmd, run_agent
 
 from forecast_scaffold.core import SCAFFOLD_VERSION
+
+# The direct transport is a fourth provider local to the bench (run_bot's PROVIDERS is
+# read-only): a tool-less single completion straight to OpenRouter's native chat API,
+# bypassing the CLI's ~22k-token scaffolding and its empty-result bug on non-Anthropic
+# models. See bench/direct_agent.py for the two measured problems it fixes.
+PROBE_PROVIDERS = (*PROVIDERS, "openrouter-direct")
 
 RESULTS_DIR = ROOT / "bench" / "results"
 # Belt over the absent --allowed-tools: no research or filesystem path may exist,
@@ -97,8 +114,19 @@ def parse_probe_payload(payload: dict) -> tuple[str, float, str] | None:
 
 def probe_one(spec: dict, model: str, args: argparse.Namespace) -> dict | None:
     prompt = build_probe_prompt(spec, datetime.now(UTC).strftime("%Y-%m-%d"))
-    cmd = (f"claude -p --model {model} --output-format json "
-           f"--disallowed-tools {PROBE_DISALLOWED}")
+    provider = getattr(args, "provider", "subscription")
+    direct = provider == "openrouter-direct"
+    if not direct:
+        base_cmd = f"claude -p --model {model} --output-format json"
+        if provider == "openrouter":
+            # Same rewrite run_bench.py uses: a bare Anthropic id gets "anthropic/"
+            # prefixed, a slug already carrying "/" (google/gemini-2.5-pro) passes through.
+            base_cmd = openrouter_model_cmd(base_cmd)
+        cmd = f"{base_cmd} --disallowed-tools {PROBE_DISALLOWED}"
+    # Direct transport: no CLI command and no tools to disallow — a tool-less single
+    # completion is exactly the probe's contract (recall must never become lookup). Bare
+    # Anthropic ids still get the "anthropic/" slug prefix the native API expects.
+    direct_model = model if "/" in model else f"anthropic/{model}"
     parsed = None
     cost = 0.0
     errors: list[str] = []
@@ -107,8 +135,12 @@ def probe_one(spec: dict, model: str, args: argparse.Namespace) -> dict | None:
             prompt + "\n\nYour previous output was invalid: " + "; ".join(errors)
             + "\nEmit a corrected fenced json block.")
         try:
-            output, attempt_cost, _ = run_agent(cmd, attempt_prompt, PROBE_SYSTEM,
-                                                args.timeout, "subscription")
+            if direct:
+                output, attempt_cost, _ = run_direct(
+                    attempt_prompt, PROBE_SYSTEM, direct_model, args.timeout)
+            else:
+                output, attempt_cost, _ = run_agent(cmd, attempt_prompt, PROBE_SYSTEM,
+                                                    args.timeout, provider)
             cost += attempt_cost
             parsed = parse_probe_payload(extract_json(output))
         except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
@@ -127,6 +159,7 @@ def probe_one(spec: dict, model: str, args: argparse.Namespace) -> dict | None:
         "qid": spec["id"], "model": model, "question": spec["question"][:160],
         "recall": recall, "confidence": confidence, "basis": basis,
         "resolution": resolution, "correct": correct, "cost_usd": round(cost, 4),
+        "provider": provider,
         "scaffold_version": SCAFFOLD_VERSION,
         "at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
@@ -174,6 +207,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("set_file", help="resolved-question set (needs resolution field)")
     parser.add_argument("--models", default="claude-opus-4-6")
+    parser.add_argument("--provider", default="subscription", choices=PROBE_PROVIDERS)
     parser.add_argument("--qids-from", default="",
                         help="results jsonl whose qids restrict the probe (e.g. the "
                              "scored subset of a prior bench run)")

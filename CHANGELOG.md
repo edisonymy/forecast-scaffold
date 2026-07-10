@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.16] - 2026-07-10
+
+### Added
+- **Direct OpenRouter transport for tool-less bench calls** (`bench/direct_agent.py`,
+  `--provider openrouter-direct` on the probe and on `run_bench` — the latter guarded
+  to exactly `--tiers zero --leakfree none`). Measured motivation: the claude CLI
+  prepends ~22,000 tokens of agent scaffolding to every call ($0.066 to say "hello";
+  5–10× the cost of the actual probe/arm prompt) and returns an EMPTY result for
+  non-Anthropic models through the Anthropic-compat endpoint (gemini-2.5-pro:
+  `result:"", output_tokens:16`). The direct transport posts the prompt alone to
+  OpenRouter's native API, takes cost from the response's own usage accounting, and
+  makes cross-family models (the `run_models` ensemble lever) probeable and runnable.
+- `contamination_probe --provider {subscription,openrouter,openrouter-direct}` —
+  non-Anthropic models can now be contamination-probed before joining an ensemble.
+
 ## [0.4.15] - 2026-07-10
 
 The reasoning-spine A/B harness, and improvement-loop 1's results — the negatives are
