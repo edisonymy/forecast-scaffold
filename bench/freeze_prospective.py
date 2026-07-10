@@ -157,7 +157,9 @@ def freeze(
                 rows_by_id.setdefault(row["id"], row)
     rows = sorted(rows_by_id.values(), key=lambda r: r["id"])
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    with out_path.open("w", encoding="utf-8") as fh:
+    # newline pinned: the frozen file is committed (LF in git) and resolve() promises
+    # byte-stable rewrites — Windows' default CRLF translation would break both.
+    with out_path.open("w", encoding="utf-8", newline="\n") as fh:
         for row in rows:
             fh.write(json.dumps(row, ensure_ascii=False) + "\n")
     print(
@@ -252,7 +254,7 @@ def resolve(client: MetaculusClient, set_path: str | Path) -> dict[str, Any]:
         elif "annulled" in row:
             del row["annulled"]
         out_lines.append(json.dumps(row, ensure_ascii=False))
-    set_path.write_text("\n".join(out_lines) + "\n", encoding="utf-8")
+    set_path.write_text("\n".join(out_lines) + "\n", encoding="utf-8", newline="\n")
     summary = (f"{len(raw_lines)} frozen | {n_resolved} resolved | "
                f"{n_open} open | {n_annulled} annulled")
     if n_errors:
