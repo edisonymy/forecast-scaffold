@@ -857,6 +857,7 @@ def forecast_question(
     ) -> tuple[dict[str, Any] | None, str, list[str]]:
         nonlocal run_cost, agent_responded
         errors: list[str] = []
+        first_error: str | None = None
         for attempt in range(2):
             if attempt and deadline is not None and time.monotonic() > deadline:
                 # The repair retry can add a whole agent-call to a run already past the
@@ -867,6 +868,12 @@ def forecast_question(
                 run_prompt + "\n\nYour previous output was invalid: "
                 + "; ".join(errors) + "\nEmit a corrected fenced json block."
             )
+            if attempt:
+                # Attempt 0's errors are about to be overwritten by this attempt's
+                # validate_payload() call — capture the reason for the retry now, so a
+                # success below can say what was repaired instead of looking identical
+                # to a clean first attempt.
+                first_error = errors[0] if errors else None
             try:
                 output, attempt_cost, model = run_agent(
                     cmd, prompt, run_system, timeout, args.provider
@@ -922,6 +929,11 @@ def forecast_question(
                     '{"scenario", "p"} objects; [] if nothing points the other way)'
                 )
             if not errors:
+                if attempt:
+                    print(
+                        f"  repaired on retry: {question.get('id')} "
+                        f"({(first_error or '')[:200]})"
+                    )
                 return candidate, model, []
         return None, "", errors
 

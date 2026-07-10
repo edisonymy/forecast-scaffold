@@ -67,7 +67,8 @@ jobs:
         run: |
           python bot/run_bot.py --tournament "$TOURNAMENT_ID" \
             --limit 50 --budget 3 --refresh-hours 48 --deadline-minutes 85 --provider subscription \
-            --agent-cmd "claude -p --model claude-sonnet-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch" --comment
+            --agent-cmd "claude -p --model claude-sonnet-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch" --comment \
+            | tee "$RUNNER_TEMP/bot-primary.log"
 
       - name: Run bot (OpenRouter — selected or fallback)
         # Runs when chosen explicitly, or as the backup after a subscription failure.
@@ -92,7 +93,26 @@ jobs:
           deadline=$(( remaining - 10 )); [ "$deadline" -gt 85 ] && deadline=85
           python bot/run_bot.py --tournament "$TOURNAMENT_ID" \
             --limit 50 --budget 3 --refresh-hours 48 --deadline-minutes "$deadline" --provider openrouter \
-            --agent-cmd "claude -p --model claude-sonnet-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch" --comment
+            --agent-cmd "claude -p --model claude-sonnet-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch" --comment \
+            | tee "$RUNNER_TEMP/bot-fallback.log"
+
+      - name: Bot run summary
+        # Mirrors bench.yml's Report step: a filtered digest of the load-bearing stdout
+        # lines (forecast recorded/submitted, repair retries, dossier truncation, pooling,
+        # SKIPs, floor rejections) in the job summary — no need to open raw logs to see
+        # what a run actually did. if: always() + the trailing `|| true` on grep (which
+        # exits 1 on zero matches, e.g. an empty or missing log) mean this never fails the
+        # job, including when an earlier step never ran and left no log file at all.
+        if: always()
+        run: |
+          {
+            echo "### Bot run digest"
+            echo
+            echo '```'
+            grep -hE "recorded|submitted|repaired on retry|scenario flag|dossier truncated|pooled|SKIP|floor" \
+              "$RUNNER_TEMP"/bot-*.log || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Commit journal (pre-registration)
         # always(): submitted forecasts must be committed even when a later question errored

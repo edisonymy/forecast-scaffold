@@ -181,6 +181,34 @@ class TestFloorOnResearchRun:
         assert "Research floor" not in agent.calls[0]["system"]
 
 
+class TestRepairedOnRetryMarker:
+    """A payload accepted on attempt 2 must leave a trace: today it is otherwise
+    indistinguishable from a clean first attempt (``errors`` resets to [] on success and
+    nothing is printed or journaled). The one_run loop knows ``attempt`` — this is the
+    natural point to say so."""
+
+    def test_marker_prints_when_accepted_on_retry(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+            capsys: pytest.CaptureFixture[str]) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path,
+                                [fenced(THIN_MC), fenced(RESEARCHED_MC)],
+                                tiers(min_sources=3), MC_Q)
+        assert ok and record is not None
+        out = capsys.readouterr().out
+        assert f"repaired on retry: {MC_Q['id']}" in out
+        # names what was repaired: the source-floor rejection that forced the retry.
+        assert "0 distinct source(s)" in out
+
+    def test_no_marker_on_clean_first_attempt(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+            capsys: pytest.CaptureFixture[str]) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [fenced(RESEARCHED_MC)],
+                                tiers(min_sources=3), MC_Q)
+        assert ok and record is not None and len(agent.calls) == 1
+        out = capsys.readouterr().out
+        assert "repaired on retry" not in out
+
+
 class TestReasoningRunsExempt:
     def test_multirun_reasoning_sources_may_be_empty(
             self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

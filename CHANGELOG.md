@@ -4,6 +4,23 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.14] - 2026-07-10
+
+### Added
+- **Prospective freezing** (`bench/freeze_prospective.py`): `freeze` snapshots the bot
+  tournaments' currently-open binary questions into a preregistration set file
+  (`bench/sets/prospective-<date>.jsonl`, `frozen_at`-stamped, refuses to overwrite
+  without `--force`); `resolve` later fills outcomes idempotently, never touching a
+  frozen field. With timevault research cut at `frozen_at`, this is the only valid
+  evaluation path for models (like the live bot's sonnet-5) whose training window
+  covers every already-resolved question. The weight leak stays a set-selection duty:
+  only evaluate models whose cutoff predates `frozen_at`.
+- **Repair-retry visibility**: `one_run` prints `repaired on retry: <qid> (<reason>)`
+  when a payload is accepted on the second attempt (previously indistinguishable from a
+  clean first attempt anywhere), and `bot.yml` now tees both provider runs and appends a
+  filtered digest (recorded/submitted/repaired/flags/floor lines) to the Actions job
+  summary, mirroring `bench.yml`'s existing pattern.
+
 ## [0.4.13] - 2026-07-10
 
 Two more review clusters (finding #9 and the journal-completeness set), implemented by
