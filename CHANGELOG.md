@@ -4,6 +4,25 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.8] - 2026-07-10
+
+First fixes from the 59-agent deep review (41 raw findings -> 34 adversarially
+confirmed; full roadmap in the review report). The three lowest-risk, highest-value
+confirmed bugs, each with a regression test:
+
+### Fixed
+- **Pooling/scenario disclosure notes now LEAD the reasoning field** (were appended to
+  the tail, where the record's 4000-char head-truncation silently deleted exactly the
+  note saying which pooled number was actually submitted — a disclosure that can be
+  truncated away is no disclosure at all).
+- **Blind-mode denylist now blocks gjopen.com** (Good Judgment Open's actual forecast
+  domain; only goodjudgment.io — the consultancy site — was listed).
+- **Backtest/dry-run provenance**: ForecastRecord gains `dry_run: bool | None`
+  (additive, no schema bump; None on older records = assume live), and `--post`
+  backtests now default to a gitignored `bot/journal/backtests.jsonl` instead of the
+  public preregistration journal — a debugging run can no longer write records that are
+  byte-identical to live submissions into the scored track record.
+
 ## [0.4.7] - 2026-07-10
 
 Contamination probe. The one leak timevault cannot close is the model's own weights,

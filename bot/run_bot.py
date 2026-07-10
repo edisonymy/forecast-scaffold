@@ -52,6 +52,9 @@ from forecast_scaffold.core import (
 
 SKILL = ROOT / "skills" / "forecast"
 DEFAULT_JOURNAL = ROOT / "bot" / "journal" / "forecasts.jsonl"
+# --post backtests default here (gitignored) so a debugging run can never write records
+# into the public preregistration journal unless --journal names it explicitly (v0.4.8).
+BACKTEST_JOURNAL = ROOT / "bot" / "journal" / "backtests.jsonl"
 FENCED_JSON = re.compile(r"```json\s*(\{.*?\})\s*```", re.DOTALL)
 # Continuous question types: elicited as percentiles, submitted as a CDF. Metaculus `date`
 # questions are timestamp-scaled continuous questions and flow through the same path.
@@ -84,7 +87,8 @@ PROVIDERS = ("subscription", "openrouter")
 BLIND_DISALLOWED = (
     "WebFetch(domain:metaculus.com),WebFetch(domain:manifold.markets),"
     "WebFetch(domain:polymarket.com),WebFetch(domain:kalshi.com),"
-    "WebFetch(domain:goodjudgment.io),WebFetch(domain:metaforecast.org)"
+    "WebFetch(domain:goodjudgment.io),WebFetch(domain:gjopen.com),"
+    "WebFetch(domain:metaforecast.org)"
 )
 # Defense-in-depth against prompt injection (every run, not just blind ones): the agent
 # needs Read for the skill's own references and scripts, never for process environments
@@ -1014,21 +1018,20 @@ def forecast_question(
         # v0.4.0: no arbiter override — the pool IS the aggregator. Disagreement and
         # scenario incoherence stay visible (raw_draws + the flags below) instead of being
         # handed back to a single context at the highest-stakes moments.
-        if scenario_flags:
-            payload["reasoning"] = (
-                str(payload.get("reasoning", ""))
-                + "\n[scenario-coherence: " + " | ".join(scenario_flags)[:600] + "]"
-            )
         payload["probability"] = pooled
         payload["raw_draws"] = run_probs  # the genuinely independent draws, not in-context ones
         # The narrative is the research run's own; without this note the journal (and the
-        # posted comment) would argue for a number that was never submitted.
-        payload["reasoning"] = (
-            str(payload.get("reasoning", ""))
-            + f"\n[pooled {len(run_probs)} independent runs "
-            f"{[round(p, 2) for p in run_probs]} -> {pooled:.3f}; the narrative above is "
+        # posted comment) would argue for a number that was never submitted. The notes go
+        # FIRST: the record head-truncates reasoning to 4000 chars, and a disclosure that
+        # a long narrative can push off the end is no disclosure at all (v0.4.8).
+        notes = [
+            f"[pooled {len(run_probs)} independent runs "
+            f"{[round(p, 2) for p in run_probs]} -> {pooled:.3f}; the narrative below is "
             f"the research run's own view ({run_probs[0]:.2f})]"
-        )
+        ]
+        if scenario_flags:
+            notes.append("[scenario-coherence: " + " | ".join(scenario_flags)[:600] + "]")
+        payload["reasoning"] = "\n".join(notes) + "\n" + str(payload.get("reasoning", ""))
     # The journal is a preregistration record of the numbers SUBMITTED, so apply the
     # platform normalization (binary band clamp; MC floor+renormalize over the exact
     # option labels) BEFORE the record is written — not at the submit call after it,
@@ -1079,6 +1082,9 @@ def forecast_question(
         # Explicit mode flag (0.4.3): crowd.shown_to_agent is pinned False below, so it
         # can no longer distinguish blind from sighted for `score --by blind`.
         blind=args.blind,
+        # Provenance: a --dry-run / --post record never reached the platform and must
+        # never be scored as the live track record (review finding, v0.4.8).
+        dry_run=bool(args.dry_run),
         crowd={
             "value": crowd,
             # Honest label: what a bot token reads is never the human community.
@@ -1192,7 +1198,9 @@ def main(argv: list[str] | None = None) -> int:
                              "rewritten to anthropic/<id> slugs)")
     parser.add_argument("--timeout", type=int, default=1200, help="seconds per agent call")
     parser.add_argument(
-        "--journal", default=os.environ.get("FORECAST_JOURNAL", str(DEFAULT_JOURNAL))
+        "--journal", default=None,
+        help="journal path (default: $FORECAST_JOURNAL, else the public journal — "
+             "except --post backtests, which default to the gitignored backtests journal)"
     )
     parser.add_argument("--comment", action="store_true", help="post reasoning as private comment")
     parser.add_argument("--blind", action="store_true",
@@ -1218,6 +1226,12 @@ def main(argv: list[str] | None = None) -> int:
         # Single-question backtest: never submit (the target may be closed / already
         # forecasted / from any tournament) and don't apply the open-status filter.
         args.dry_run = True
+    if args.journal is None:
+        # Explicit flag > $FORECAST_JOURNAL > the public journal — except --post
+        # backtests, which must not silently enter the public preregistration record.
+        args.journal = os.environ.get("FORECAST_JOURNAL") or str(
+            BACKTEST_JOURNAL if args.post else DEFAULT_JOURNAL
+        )
     deadline = (
         time.monotonic() + args.deadline_minutes * 60 if args.deadline_minutes > 0 else None
     )

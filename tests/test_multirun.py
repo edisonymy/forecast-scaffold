@@ -150,8 +150,45 @@ class TestHappyPath:
         assert record["aggregation"] == "geo_mean_odds(runs=3)"
         # the RECORD payload is the researcher's: its sources/reasoning/base_rate survive
         assert record["research"]["sources"] == ["https://example.com/a"]
-        assert record["reasoning"].startswith("researched")  # + the appended pooling note
+        # v0.4.8: the pooling disclosure LEADS (truncation-proof); the narrative follows
+        assert record["reasoning"].startswith("[pooled 3 independent runs")
+        assert "researched" in record["reasoning"]
         assert record["base_rate"] == 0.2
+
+    def test_pooling_note_survives_a_narrative_longer_than_the_record_cap(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # The record head-truncates reasoning to 4000 chars; before v0.4.8 a long
+        # research narrative silently pushed the which-number-was-submitted disclosure
+        # off the end of the journal and the posted comment.
+        long_research = dict(RESEARCH, reasoning="researched " * 400)  # ~4400 chars
+        _, record, ok = run(monkeypatch, tmp_path, [
+            fenced(long_research),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert ok and record is not None
+        assert len(record["reasoning"]) <= 4000
+        assert "pooled 3 independent runs" in record["reasoning"]
+
+    def test_records_carry_dry_run_provenance(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # A --dry-run/--post record never reached the platform; the journal must say so
+        # (pre-0.4.8 records have dry_run=None and are assumed live).
+        _, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ])  # the harness default in these tests is dry_run=True
+        assert ok and record["dry_run"] is True
+        client = SubmitCaptureClient()
+        _, live_record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ], dry_run=False, client=client)
+        assert ok and live_record["dry_run"] is False and client.submitted
 
     def test_research_run_asks_for_dossier_reasoning_runs_do_not(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path

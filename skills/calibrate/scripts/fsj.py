@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.4.7"
+SCAFFOLD_VERSION = "0.4.8"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -156,6 +156,10 @@ class ForecastRecord:
     created: str = field(default_factory=_utc_now)
     forecast_at: str | None = None  # when the probability was committed (pre-registration)
     status: str = "open"  # "draft" | "open" | "resolved" | "annulled"
+    # Provenance (v0.4.8): True when the producing run never submitted anywhere (--dry-run
+    # / --post backtests). None on pre-0.4.8 records — treat None as "assume live". A
+    # dry-run record must never be scored as part of the live track record.
+    dry_run: bool | None = None
 
     # estimand
     question_type: str = "binary"

@@ -20,6 +20,7 @@ Only `question` is required. Serialization drops `null` fields; absent = null.
 | `created` | str | UTC ISO-8601, when the record was drafted |
 | `forecast_at` | str? | UTC ISO-8601, when the probability was committed — the pre-registration timestamp |
 | `status` | str | `draft` \| `open` \| `resolved` \| `annulled` (annulled = ambiguous/voided; excluded from all scoring) |
+| `dry_run` | bool? | v0.4.8: `true` = produced by a `--dry-run`/`--post` run that never submitted anywhere — exclude from the live track record; `null` on older records (assume live) |
 
 ### Estimand (the question)
 
