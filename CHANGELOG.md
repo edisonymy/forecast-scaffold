@@ -4,6 +4,32 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.10] - 2026-07-10
+
+Crowd blend gets a real code path — with a double-count guard. The review found
+blend_with_crowd was never called anywhere: config's crowd_weight was decorative and
+design.md claimed a win the bot could not produce. Operator decision: never blend in
+blind/testing modes (they measure own skill); in prod the sighted agent already reads
+everything, so the harness may blend — but must not count the crowd twice.
+
+### Added
+- **Harness-level crowd blend** on sighted binaries: after pooling, when the platform
+  exposes an aggregate at forecast time, submit blend(pooled, crowd, w) — the agent
+  still never sees the value (the v0.4.2 boundary holds; blending is arithmetic, not
+  anchoring). The journal records the raw pooled number, the crowd, the weight, and
+  the submitted blend, so blended-vs-raw is scoreable at resolution.
+- **Double-count guard (`market_sourced`)**: if the research run's own source list
+  cites a market/aggregator (Polymarket, Manifold, Kalshi, Metaculus, GJ Open, ...),
+  the crowd already entered the estimate cognitively — the sighted brief tells the
+  agent to blend what it finds — and the harness blend is SKIPPED. Effective crowd
+  weight stays ~w instead of compounding to w + a(1-w).
+- Blind mode and the bench NEVER blend (mechanical, not prose).
+
+### Changed
+- `blend.crowd_weight` default 0.8 -> 0.5: Halawi's 4:1-crowd optimum was calibrated
+  on HUMAN crowds; a bot tournament exposes only other bots, of unproven quality. The
+  even split is the prior until blended-vs-raw resolution data says otherwise.
+
 ## [0.4.9] - 2026-07-10
 
 Re-forecast policy (review finding: the bot forecast each question exactly once while

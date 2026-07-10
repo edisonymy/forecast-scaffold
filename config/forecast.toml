@@ -59,11 +59,13 @@ run_models = []
 min_sources = 5
 
 [blend]
-# Weight on the crowd/market number when one exists. Halawi et al.'s validated optimum is
-# 4:1 in the CROWD's favor ("4x weight for the crowd... optimal on the validation set",
-# Brier .149 -> .146) — the 0.5 this file used to ship misquoted that source. The optimum
-# shrinks as your own skill (and correlation with the crowd) rises; it is horizon-dependent.
-crowd_weight = 0.8
+# Weight on the crowd/market number when one exists. 0.5 (v0.4.10): Halawi's 4:1-crowd
+# optimum was calibrated on HUMAN crowds/markets; a bot tournament exposes only other
+# bots, of unproven quality, so an even split is the prior until blended-vs-raw resolves
+# score it. Applied by the bot harness ONLY on sighted binaries whose research cited no
+# market source (double-count guard: the sighted agent blends what it finds itself) —
+# never in blind or bench runs.
+crowd_weight = 0.5
 
 [aggregation]
 # "trimmed_mean" for correlated draws from one forecaster (the default);

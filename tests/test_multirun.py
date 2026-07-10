@@ -77,8 +77,18 @@ class ScriptedAgent:
 
 
 class StubClient:
+    def community_prediction(self, question: dict[str, Any]) -> None:
+        # No crowd by default: pipeline tests assert raw pooled numbers; blend
+        # behavior gets its own client + tests (TestHarnessCrowdBlend).
+        return None
+
+
+class CrowdClient(StubClient):
+    def __init__(self, value: float = 0.28) -> None:
+        self.value = value
+
     def community_prediction(self, question: dict[str, Any]) -> float:
-        return 0.5
+        return self.value
 
 
 class SubmitCaptureClient(StubClient):
@@ -250,9 +260,9 @@ class TestBotCrowdBoundary:
             fenced(RESEARCH),
             fenced(reasoning_payload(0.20)),
             fenced(reasoning_payload(0.40)),
-        ])
+        ], client=CrowdClient(0.5))
         assert ok and record is not None
-        for call in agent.calls:  # StubClient's 0.5 must reach no context
+        for call in agent.calls:  # the crowd value must reach no agent context
             assert "Community prediction" not in call["prompt"]
         assert "Crowd signals" in agent.calls[0]["prompt"]
         assert record["crowd"]["value"] == 0.5  # benchmark still journaled
@@ -269,13 +279,70 @@ class TestBotCrowdBoundary:
             fenced(RESEARCH),
             fenced(reasoning_payload(0.20)),
             fenced(reasoning_payload(0.40)),
-        ], blind=True)
+        ], blind=True, client=CrowdClient(0.5))
         assert ok and record is not None
         for call in agent.calls:
             assert "Community prediction" not in call["prompt"]
             assert "Crowd signals" not in call["prompt"]
         assert record["crowd"]["shown_to_agent"] is False
         assert record["blind"] is True
+        # blind mode NEVER harness-blends: it measures own skill against the crowd
+        assert record["probability"] == pytest.approx(
+            geo_mean_odds([RESEARCH["probability"], 0.20, 0.40]))
+
+
+class TestHarnessCrowdBlend:
+    """v0.4.10: sighted binaries blend with the platform aggregate at the HARNESS
+    level (the agent never sees it) — except when the research run already cited a
+    market/aggregator source, which means the crowd entered the estimate once
+    already and blending again would double-count it."""
+
+    def test_sighted_unanchored_blends_and_discloses(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ], client=CrowdClient(0.28))
+        assert ok and record is not None
+        pooled = geo_mean_odds([RESEARCH["probability"], 0.20, 0.40])
+        expected = 0.5 * 0.28 + 0.5 * pooled  # even-split default
+        assert record["probability"] == pytest.approx(expected)
+        assert "harness crowd-blend" in record["reasoning"]
+
+    def test_market_anchored_research_skips_the_blend(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        anchored = dict(RESEARCH, sources=[
+            "https://example.com/a", "https://polymarket.com/event/x"])
+        _, record, ok = run(monkeypatch, tmp_path, [
+            fenced(anchored),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ], client=CrowdClient(0.28))
+        assert ok and record is not None
+        assert record["probability"] == pytest.approx(
+            geo_mean_odds([RESEARCH["probability"], 0.20, 0.40]))
+        assert "harness crowd-blend" not in record["reasoning"]
+
+    def test_no_crowd_no_blend(self, monkeypatch: pytest.MonkeyPatch,
+                               tmp_path: Path) -> None:
+        _, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ])  # StubClient: crowd is None
+        assert ok and record is not None
+        assert record["probability"] == pytest.approx(
+            geo_mean_odds([RESEARCH["probability"], 0.20, 0.40]))
+
+    def test_market_sourced_detector(self) -> None:
+        assert run_bot.market_sourced({"sources": ["https://Polymarket.com/e/x"]})
+        assert run_bot.market_sourced({"sources": ["https://www.metaculus.com/q/1"]})
+        assert not run_bot.market_sourced({"sources": ["https://reuters.com/a"]})
+        assert not run_bot.market_sourced({"sources": "not-a-list"})
+        assert not run_bot.market_sourced({})
 
 
 class TestNamedScenarios:
