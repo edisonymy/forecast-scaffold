@@ -197,6 +197,59 @@ def main(argv: list[str] | None = None) -> int:
         lines += ["", "Negative Δ = this tier beats the teacher (for btf2 sets the teacher "
                   "is FutureSearch's SOTA forecast on identical frozen research).", ""]
 
+        # Paired per-question Brier diff between every pair of tiers — the sharpest test
+        # of "does tier A actually beat tier B", since it cancels question-to-question
+        # difficulty instead of comparing two unpaired tier averages. Reuses the same
+        # per-tier effective rows as the table above (by_tier is already pooled across
+        # runs per (qid, tier) via geometric-mean-of-odds; auto uses the router-imputed
+        # auto_effective rows) — a duplicate (qid, tier) can't reach this section.
+        resolved_by_tier: dict[str, dict[str, float]] = {}
+        for tier, tier_rows in [(t, by_tier.get(t, [])) for t in
+                                ("zero", "low", "medium", "high")] + [("auto", auto_effective)]:
+            probs = {r["qid"]: float(r["probability"]) for r in tier_rows
+                     if r.get("probability") is not None and r["qid"] in outcome_of}
+            if probs:
+                resolved_by_tier[tier] = probs
+
+        PAIR_ORDER = ("high", "medium", "low", "zero", "auto")
+        present = [t for t in PAIR_ORDER if t in resolved_by_tier]
+        pair_lines: list[str] = []
+        for i, tier_a in enumerate(present):
+            for tier_b in present[i + 1:]:
+                qids = sorted(set(resolved_by_tier[tier_a]) & set(resolved_by_tier[tier_b]))
+                if not qids:
+                    continue  # no overlap between these two tiers; skip silently
+                diffs: list[float] = []
+                wins_a = wins_b = ties = 0
+                for qid in qids:
+                    y = outcome_of[qid]
+                    brier_a = (resolved_by_tier[tier_a][qid] - y) ** 2
+                    brier_b = (resolved_by_tier[tier_b][qid] - y) ** 2
+                    d = brier_a - brier_b
+                    diffs.append(d)
+                    if d < 0:
+                        wins_a += 1
+                    elif d > 0:
+                        wins_b += 1
+                    else:
+                        ties += 1
+                n = len(diffs)
+                mean_d = st.mean(diffs)
+                se = st.stdev(diffs) / math.sqrt(n) if n > 1 else 0.0
+                pair_lines.append(
+                    f"- {tier_a} - {tier_b}: mean {mean_d:+.4f} ±{se:.4f} "
+                    f"(n={n}, {tier_a} wins {wins_a}/{n}, {tier_b} wins {wins_b}/{n}, "
+                    f"ties {ties})"
+                )
+        if pair_lines:
+            lines += ["## paired Brier comparison (per question, resolved outcomes only)", "",
+                      "Per shared question: d = Brier(tierA) − Brier(tierB); negative means "
+                      "tierA wins that question. Paired over the qids where BOTH tiers have "
+                      "a forecast and a known resolution — this cancels question difficulty, "
+                      "which the unpaired tier averages above cannot.", ""]
+            lines += pair_lines
+            lines.append("")
+
     lines += ["## vs crowd (teacher = market/community probability in the set)", "",
               HEADER, RULE]
     tier_rowsets = [(t, by_tier.get(t, [])) for t in ("zero", "low", "medium", "high")]

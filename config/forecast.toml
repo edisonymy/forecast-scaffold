@@ -22,10 +22,14 @@ max = 0.98
 #              winners average ~1.8 model families; same-model trios underperform diverse
 #              ones). Empty = every run uses the command's model. Binary questions only for
 #              now: MC/numeric stay single-run until a pooling rule is preregistered.
-# Run counts are lean (v0.4.0): research + 2 (medium) / 3 (high) reasoning runs — the
-# measured BTF-2 null (+0.0002 +/- 0.0148, n=85) says reasoning multiplicity alone buys
-# ~nothing. geo_mean_odds pools untrimmed; the suggested-angle rotation leads with the
-# counter-biasing opposite pair so any k >= 2 stays directionally neutral.
+# Run counts are lean (v0.4.0): research + 2 (medium) / 3 (high) reasoning runs. This is
+# a cost/quality judgment call, not a measured result: the old BTF-2 null
+# (+0.0002 +/- 0.0148, n=85, v0.1.0) tested in-context draws, not this independent-runs
+# architecture, and its BTF-2 corpus was later found partially contaminated (2026-07
+# probe: 8/55 questions flagged) — so it neither supports nor refutes these sizes. A
+# leak-free re-measurement is pending. geo_mean_odds pools untrimmed; the suggested-angle
+# rotation leads with the counter-biasing opposite pair so any k >= 2 stays directionally
+# neutral.
 # min_sources = floor on DISTINCT actually-consulted sources the research (full) run must
 #               return; announced in its prompt and enforced by the bot's validate/repair
 #               loop BEFORE any forecast is accepted (reasoning runs are exempt — [] stays

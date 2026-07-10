@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.4.11"
+SCAFFOLD_VERSION = "0.4.12"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -56,11 +56,14 @@ DEFAULTS: dict[str, Any] = {
         # run_models = optional model ids the harness cycles through for runs after the first
         #              (cross-model diversity is the strongest documented ensemble lever:
         #              tournament winners average ~1.8 model families). Empty = one model.
-        # runs sized lean (v0.4.0): research + 2 (medium) / 3 (high) reasoning runs. The
-        # measured BTF-2 null (harness - zero-shot = +0.0002 +/- 0.0148, n=85) says reasoning
-        # multiplicity buys ~nothing by itself; geo_mean_odds pools untrimmed, and the
-        # suggested-angle rotation leads with the counter-biasing opposite pair so any
-        # k >= 2 stays directionally neutral.
+        # runs sized lean (v0.4.0): research + 2 (medium) / 3 (high) reasoning runs. This
+        # is a cost/quality judgment call, not a measured result: the old BTF-2 null
+        # (harness - zero-shot = +0.0002 +/- 0.0148, n=85, v0.1.0) tested in-context draws,
+        # not this independent-runs architecture, and its BTF-2 corpus was later found
+        # partially contaminated (2026-07 probe: 8/55 questions flagged) — so it neither
+        # supports nor refutes these sizes. A leak-free re-measurement is pending.
+        # geo_mean_odds pools untrimmed, and the suggested-angle rotation leads with the
+        # counter-biasing opposite pair so any k >= 2 stays directionally neutral.
         # min_sources = floor on DISTINCT actually-consulted sources the research (full)
         #              run must return; announced in its prompt and enforced mechanically
         #              by the bot's validate/repair loop BEFORE any forecast is accepted.

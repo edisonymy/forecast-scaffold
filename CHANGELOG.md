@@ -4,6 +4,34 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.12] - 2026-07-10
+
+Three deep-review roadmap items (findings #1–#3), implemented by opus/sonnet subagents
+and reviewed:
+
+### Added
+- **Reference-class floor for MC/numeric research runs** (`bot/run_bot.py`). The MC and
+  numeric contract examples now carry `reference_class`/`base_rate` (binary already did),
+  and on research runs (`min_sources > 0`) a missing or empty `reference_class` is
+  rejected in the same validate/repair loop as the source floor; an MC `base_rate` dict
+  is checked against the exact option labels. Motivated by the live Vanguard ETF bucket
+  question: an even 32/31/34 spread where a Poisson/historical reference class implied
+  ~50/35/16 — nothing structural ever asked a single-run MC question to derive a prior.
+  Known limits documented at `REFERENCE_CLASS_SECTION`.
+- **Paired per-question Brier section in `bench/report.py`** — for every tier pair, the
+  mean per-question Brier difference ± SE with win/loss/tie counts, over qids where both
+  tiers forecast and the resolution is known. This is the pivotal experiment statistic
+  and was previously hand-computed for every run. Additive; reuses the report's existing
+  per-(qid, tier) pooling.
+
+### Changed
+- **Retired the stale n=85 justification for tier `runs` sizing** (comments in
+  `core.py`, `config/forecast.toml`, vendored `fsj.py`). That null measured in-context
+  draws at v0.1.0 — not the independent-runs architecture — and the 2026-07 contamination
+  probe flagged 8/55 of its corpus, so it neither supports nor refutes current sizes.
+  Sizing is now labeled the cost/quality judgment call it is, pending the leak-free
+  re-measurement.
+
 ## [0.4.11] - 2026-07-10
 
 Reversal of 0.4.10's harness blend, same day, on operator review — kept here rather

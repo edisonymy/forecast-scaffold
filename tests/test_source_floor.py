@@ -102,8 +102,26 @@ def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
 
 
 THIN_MC = {"probabilities": {"A": 0.6, "B": 0.4}, "reasoning": "from memory", "sources": []}
+# reference_class is now a research-run requirement for MC (v0.4.6), so the "researched"
+# fixture that stands in for a valid repaired payload carries one.
 RESEARCHED_MC = {"probabilities": {"A": 0.6, "B": 0.4}, "reasoning": "researched",
+                 "reference_class": "past comparable cases", "base_rate": {"A": 0.55, "B": 0.45},
                  "sources": ["https://s/1", "https://s/2", "https://s/3"]}
+
+NUMERIC_Q = {
+    "id": 3,
+    "type": "numeric",
+    "title": "How many filings?",
+    "scaling": {"range_min": 0, "range_max": 100},
+    "resolution_criteria": "Resolves to the count.",
+    "scheduled_close_time": "2026-12-01T00:00:00Z",
+    "scheduled_resolve_time": "2026-12-15T00:00:00Z",
+}
+RESEARCHED_NUMERIC = {
+    "percentiles": {"10": 10, "25": 20, "50": 30, "75": 40, "90": 50},
+    "reasoning": "researched", "reference_class": "past quarters", "base_rate": 30,
+    "sources": ["https://s/1", "https://s/2", "https://s/3"],
+}
 
 
 class TestDistinctSourceCount:
@@ -179,6 +197,84 @@ class TestReasoningRunsExempt:
         # the floor announcement is the research run's alone
         assert "Research floor" in agent.calls[0]["system"]
         assert "Research floor" not in agent.calls[1]["system"]
+
+
+class TestReferenceClassFloor:
+    """v0.4.6: research runs on MC/continuous must name a reference_class (the even-spread
+    32/31/34 failure was an MC run that never derived a prior from one). Enforced only when
+    min_sources>0 and the type is non-binary; binary keeps its own contract example."""
+
+    def test_mc_missing_reference_class_repairs(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        no_ref = {"probabilities": {"A": 0.6, "B": 0.4}, "reasoning": "researched",
+                  "sources": ["https://s/1", "https://s/2", "https://s/3"]}
+        agent, record, ok = run(monkeypatch, tmp_path,
+                                [fenced(no_ref), fenced(RESEARCHED_MC)],
+                                tiers(min_sources=3), MC_Q)
+        assert ok and record is not None
+        assert "reference_class" in agent.calls[1]["prompt"]
+        assert record["reference_class"] == "past comparable cases"
+
+    def test_numeric_missing_reference_class_repairs(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        no_ref = {"percentiles": {"10": 10, "25": 20, "50": 30, "75": 40, "90": 50},
+                  "reasoning": "researched",
+                  "sources": ["https://s/1", "https://s/2", "https://s/3"]}
+        agent, record, ok = run(monkeypatch, tmp_path,
+                                [fenced(no_ref), fenced(RESEARCHED_NUMERIC)],
+                                tiers(min_sources=3), NUMERIC_Q)
+        assert ok and record is not None
+        assert "reference_class" in agent.calls[1]["prompt"]
+        assert record["reference_class"] == "past quarters"
+
+    def test_min_sources_zero_does_not_require_reference_class(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        # A reasoning-tier run (min_sources=0) never has to name a reference class.
+        no_ref = {"probabilities": {"A": 0.6, "B": 0.4}, "reasoning": "from memory",
+                  "sources": []}
+        agent, record, ok = run(monkeypatch, tmp_path, [fenced(no_ref)],
+                                tiers(min_sources=0), MC_Q)
+        assert ok and record is not None and len(agent.calls) == 1
+        assert "Reference-class floor" not in agent.calls[0]["system"]
+
+    def test_mc_base_rate_invented_label_rejected(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        bad = {"probabilities": {"A": 0.6, "B": 0.4}, "reasoning": "researched",
+               "reference_class": "past cases", "base_rate": {"A": 0.5, "C": 0.5},
+               "sources": ["https://s/1", "https://s/2", "https://s/3"]}
+        agent, record, ok = run(monkeypatch, tmp_path,
+                                [fenced(bad), fenced(RESEARCHED_MC)],
+                                tiers(min_sources=3), MC_Q)
+        assert ok and record is not None  # repaired on the retry
+        retry = agent.calls[1]["prompt"]
+        assert "base_rate" in retry and "invent labels" in retry
+
+    def test_mc_base_rate_not_summing_to_one_accepted(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        # base_rate is an anchor, not the submission: valid labels but summing to 1.2 is fine.
+        payload = {"probabilities": {"A": 0.6, "B": 0.4}, "reasoning": "researched",
+                   "reference_class": "past cases", "base_rate": {"A": 0.6, "B": 0.6},
+                   "sources": ["https://s/1", "https://s/2", "https://s/3"]}
+        agent, record, ok = run(monkeypatch, tmp_path, [fenced(payload)],
+                                tiers(min_sources=3), MC_Q)
+        assert ok and record is not None and len(agent.calls) == 1
+
+    def test_binary_research_run_needs_no_reference_class(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        no_ref = {"probability": 0.6, "reasoning": "researched",
+                  "sources": ["https://s/1", "https://s/2", "https://s/3"]}
+        agent, record, ok = run(monkeypatch, tmp_path, [fenced(no_ref)],
+                                tiers(min_sources=3), BINARY_Q)
+        assert ok and record is not None and len(agent.calls) == 1
+        assert "Reference-class floor" not in agent.calls[0]["system"]
+
+    def test_reference_class_announced_for_mc_research(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        agent, _, ok = run(monkeypatch, tmp_path, [fenced(RESEARCHED_MC)],
+                           tiers(min_sources=3), MC_Q)
+        assert ok
+        assert "Reference-class floor" in agent.calls[0]["system"]
+        assert "REQUIRED" in agent.calls[0]["system"]
 
 
 class TestDefaults:

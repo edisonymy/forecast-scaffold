@@ -128,9 +128,16 @@ ACTUALLY consulted this run — not background knowledge. Listing sources you di
 is never acceptable; an empty list is honest only where a run genuinely retrieved nothing
 new (reasoning runs working from a dossier) — a research run has a tier minimum stated in
 its prompt and enforced by the harness.
+On a research run, derive your prior from a NAMED "reference_class" (the class of past cases
+it is computed over) BEFORE adjusting on news, and state the rough "base_rate" it implies — a
+dict over the SAME exact option labels for multiple_choice, or a number in the question's units
+for numeric/discrete/date; base_rate is an anchor, not your submission (it need not sum to 1).
+An even spread you cannot trace to a reference class is the known failure mode.
 For multiple_choice (probabilities over the EXACT option labels given, summing to 1):
 ```json
 {"probabilities": {"<option A>": 0.5, "<option B>": 0.5}, "reasoning": "...",
+ "reference_class": "<the class of past cases the prior is computed over>",
+ "base_rate": {"<option A>": 0.5, "<option B>": 0.35, ...},
  "sources": ["<url or dataset you actually consulted>", "..."]}
 ```
 For numeric/discrete/date (strictly increasing, strictly inside the stated bounds; for date
@@ -139,6 +146,7 @@ include "expected_value" (your mean/EV point estimate, same units):
 ```json
 {"percentiles": {"10": 1.0, "25": 2.0, "50": 3.0, "75": 4.0, "90": 5.0},
  "expected_value": 3.2, "reasoning": "...",
+ "reference_class": "...", "base_rate": <number in question units, e.g. the historical median>,
  "sources": ["<url or dataset you actually consulted>", "..."]}
 ```
 """
@@ -160,6 +168,29 @@ sources you actually consulted this run (URLs or named datasets; duplicates coun
 Fewer is an invalid payload at this tier and will be rejected — do the searches before
 estimating. If the evidence you find is thin or one-sided, say so in the reasoning and
 stay closer to the base rate; thin evidence changes the number, never the floor.
+"""
+
+# Announced in the research run's prompt AND enforced in its validate/repair loop, the same
+# earliest-point pattern as the source floor. The binary contract example already asked for a
+# reference_class/base_rate; the MC and numeric examples did not, and nothing checked either —
+# so a live MC bucket question (Vanguard ETF filing counts, 2026-07) came back an even
+# 32/31/34 when a Poisson/historical reference class implied ~50/35/16, because nothing
+# structural ever asked the MC run to derive a prior before adjusting on news. Requiring a
+# NAMED class the harness can see empty-check turns "derive a base rate" from narrative advice
+# into a contract field. Known limits: a named class can still be hand-waved into the string
+# (this floor cannot verify the class actually fits the question), and the record's base_rate
+# field is a scalar, so an MC base-rate dict is validated here but not journaled — the audit
+# trail there is reference_class plus the reasoning text.
+REFERENCE_CLASS_SECTION = """
+## Reference-class floor (this run — mandatory)
+
+"reference_class" is REQUIRED on this run and will be REJECTED if missing: before adjusting on
+news, derive your prior from a NAMED class of past cases and put that class in
+"reference_class" (a non-empty string). Also give the rough "base_rate" it implies — for
+multiple_choice a dict over the SAME exact option labels, for numeric/discrete/date a number in
+the question's units. base_rate is an anchor, not your submission: it need not sum to 1, and
+you adjust off it with the evidence. An even spread you cannot trace to a reference class is the
+known failure mode.
 """
 
 DOSSIER_SECTION = """
@@ -857,6 +888,34 @@ def forecast_question(
                     f'at least {min_sources} — run real searches and list in "sources" '
                     f'only what you actually consulted'
                 )
+            # Reference-class floor: research runs on MC/continuous must name the class their
+            # prior is computed over (binary's contract example + multi-run CoVe are its own
+            # guard, so it is left alone here). Same reject-before-accept point as the source
+            # floor — the live 32/31/34 even-spread failure was an MC run that never derived a
+            # prior from a reference class. See the block comment on REFERENCE_CLASS_SECTION.
+            if min_sources > 0 and qtype in ("multiple_choice", *CONTINUOUS):
+                if not str(candidate.get("reference_class") or "").strip():
+                    errors.append(
+                        'research run must name a "reference_class" (the class of past cases '
+                        'your prior is computed over) as a non-empty string — derive the prior '
+                        'from it before adjusting on news; an even spread you cannot trace to a '
+                        'reference class is the known failure mode'
+                    )
+                base_rate = candidate.get("base_rate")
+                if qtype == "multiple_choice" and isinstance(base_rate, dict):
+                    options = [str(o) for o in question.get("options") or []]
+                    # Same invented-label hazard as the probabilities check: a base_rate keyed
+                    # on a label that is not an option is a prior over a case that cannot happen.
+                    extra = [k for k in base_rate if k not in options]
+                    if extra:
+                        errors.append(
+                            f'"base_rate" keys must be the exact option labels given (do not '
+                            f'invent labels): {extra}'
+                        )
+                    try:
+                        [float(v) for v in base_rate.values()]
+                    except (TypeError, ValueError):
+                        errors.append('every "base_rate" value must be a number')
             if need_scenarios and not isinstance(candidate.get("named_scenarios"), list):
                 errors.append(
                     'reasoning runs must include "named_scenarios" (a list of '
@@ -925,6 +984,10 @@ def forecast_question(
             full_system = (
                 system + (DOSSIER_SECTION if need_dossier else "")
                 + (SOURCE_FLOOR_SECTION.format(floor=min_sources) if min_sources else "")
+                # MC/continuous research runs get the reference-class requirement up front,
+                # matching the one_run backstop's gate (min_sources>0 and non-binary type).
+                + (REFERENCE_CLASS_SECTION
+                   if min_sources and qtype in ("multiple_choice", *CONTINUOUS) else "")
                 + (FAST_PROXY_SECTION if slow_question else "")
             )
             candidate, model, errors = one_run(
