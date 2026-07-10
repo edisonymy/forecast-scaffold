@@ -44,7 +44,11 @@ the point of preregistering:
 - **Extremization of single-run outputs: negative** — train-optimal d=1.0; the test-set
   Brier curve worsens monotonically in d. Single-run opus is not underconfident.
 - **Method-diversity ensembles (geo-mean-odds over spines): null** (+0.0013 ±0.0024).
-- Baseline gap to the FutureSearch ensemble teacher on identical frozen research:
+- Baseline gap to the FutureSearch ensemble teacher on identical frozen research
+  [CORRECTED same day: the BTF-2 dataset card states the SOTA forecast was made from
+  their full frozen scraped corpus, independent of the research_summary digest our
+  briefs carry — so this gap confounds evidence access with reasoning; "identical
+  frozen research" was wrong]:
   +0.0197 ±0.0218 mean, but the teacher wins 106/152 per-question — a small, consistent
   refinement edge (RES 0.111 vs our 0.042) that prompt text did not close. Next lever:
   cross-model ensembling (`run_models`, documented but never exercised).

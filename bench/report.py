@@ -195,7 +195,11 @@ def main(argv: list[str] | None = None) -> int:
             lines.append(f"| {tier} | {len(scored)} | {st.mean(briers):.4f} | {teacher_s} "
                          f"| {delta} | {base_brier:.4f} |")
         lines += ["", "Negative Δ = this tier beats the teacher (for btf2 sets the teacher "
-                  "is FutureSearch's SOTA forecast on identical frozen research).", ""]
+                  "is FutureSearch's proprietary SOTA agent. Per the dataset card its "
+                  "forecast was made from their full frozen scraped corpus — NOT from the "
+                  "research_summary digest our briefs carry, which came from a separate "
+                  "open-web search. Teacher comparisons therefore confound evidence access "
+                  "with reasoning: an upper bound to chase, not a controlled cell).", ""]
 
         # Paired per-question Brier diff between every pair of tiers — the sharpest test
         # of "does tier A actually beat tier B", since it cancels question-to-question
