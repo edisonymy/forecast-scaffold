@@ -4,6 +4,36 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.15] - 2026-07-10
+
+The reasoning-spine A/B harness, and improvement-loop 1's results — the negatives are
+the point of preregistering:
+
+### Added
+- **`run_bench --spine-file`**: the zero tier (dossier-only reasoning cell) doubles as a
+  reasoning-spine A/B harness — same frozen research, no tools, only the method text
+  varies. Rows stamp `arm` + `spine_sha` so no results file is ambiguous about which
+  prompt produced it. Spine variants live in `bench/spines/`.
+- **Memory-claim screen** for pastcast validity: the recall probe under-detects (its own
+  documented caveat) — a probe-cleared ECB question surfaced "high confidence as this
+  event has already occurred" mid-forecast (a confabulated memory: it "remembered" a cut;
+  the ECB held). Screen = mechanical regex shortlist over all arms' reasoning, judged by
+  reading, excluded pairwise. One row in ~350 flagged.
+
+### Measured (loop 1, opus-4.6 on 152 probe-admissible BTF-2 questions, frozen dossiers)
+- **Premortem/perspectives/wildcards spine: null** (−0.0003 ±0.0068, n=47) — it hedges
+  (REL and RES both drop) rather than redistributing mass.
+- **Source-skepticism spine: null** (+0.0037 ±0.0046, n=152) — tranche-1's promise
+  (−0.0076, n=47) regressed on fresh questions; it over-discounts on-schedule
+  institutional events (elections held as scheduled, enforcement that landed).
+- **Extremization of single-run outputs: negative** — train-optimal d=1.0; the test-set
+  Brier curve worsens monotonically in d. Single-run opus is not underconfident.
+- **Method-diversity ensembles (geo-mean-odds over spines): null** (+0.0013 ±0.0024).
+- Baseline gap to the FutureSearch ensemble teacher on identical frozen research:
+  +0.0197 ±0.0218 mean, but the teacher wins 106/152 per-question — a small, consistent
+  refinement edge (RES 0.111 vs our 0.042) that prompt text did not close. Next lever:
+  cross-model ensembling (`run_models`, documented but never exercised).
+
 ## [0.4.14] - 2026-07-10
 
 ### Added

@@ -16,6 +16,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shlex
@@ -138,6 +139,12 @@ ZERO_SYSTEM = (
     "means not peeking at the answer sheet — it does not mean under-researching."
 )
 
+# --spine-file (reasoning-spine A/B harness): the zero cell already isolates the
+# scaffold's method from the dossier, so it doubles as the ablation rig for the METHOD
+# text itself — same dossier, same tools (none, under --leakfree none), only the words
+# after ZERO_SYSTEM vary between arms. --tag then routes each arm to its own results
+# file so report.py can pair them per question without one arm resuming into the other.
+
 
 def build_bench_brief(spec: dict, leakfree: str = "off") -> str:
     """The agent-facing brief: question text only — no market URL, no crowd value."""
@@ -192,7 +199,9 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
             }
     else:
         resolved, effort = tier, tier
-    system = (ZERO_SYSTEM if tier == "zero"
+    spine_text = getattr(args, "spine_text", None)
+    system = ((ZERO_SYSTEM + f"\n\n{spine_text}" if spine_text else ZERO_SYSTEM)
+              if tier == "zero"
               else build_system(resolved, blind=True, config=getattr(args, "tier_config", None)))
     if leakfree == "off":
         agent_cmd = f"{base_cmd} --disallowed-tools {BENCH_DISALLOWED}"
@@ -231,7 +240,7 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
         print(f"    FAILED after retry: {errors}")
         return None
     raw_draws = [float(d) for d in payload.get("raw_draws") or [] if isinstance(d, int | float)]
-    return {
+    row = {
         "qid": spec["id"],
         "source": spec["source"],
         "question": spec["question"][:200],
@@ -254,6 +263,12 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
         "duration_s": round((datetime.now(UTC) - started).total_seconds(), 1),
         "at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
+    if tier == "zero" and spine_text is not None:
+        # provenance: a results file alone must never be ambiguous about which spine
+        # produced it (arm = the file's own name; spine_sha ties it to the exact text).
+        row["arm"] = args.spine_arm
+        row["spine_sha"] = args.spine_sha
+    return row
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -290,12 +305,26 @@ def main(argv: list[str] | None = None) -> int:
                              "(bench/timevault_mcp.py) hard-bounded at each question's "
                              "as-of date. 'off' keeps live web — NEVER valid for "
                              "resolved-question sets")
+    parser.add_argument("--spine-file", default=None,
+                        help="text file appended to ZERO_SYSTEM for the zero tier ONLY — "
+                             "one reasoning-spine A/B arm. Pair with --tag so the arm's "
+                             "results land in their own file")
     args = parser.parse_args(argv)
 
     tiers = [t.strip() for t in args.tiers.split(",") if t.strip()]
     unknown = [t for t in tiers if t not in TIERS]
     if unknown:
         parser.error(f"unknown tiers {unknown}; choose from {TIERS}")
+
+    args.spine_text = args.spine_arm = args.spine_sha = None
+    if args.spine_file:
+        spine_path = Path(args.spine_file)
+        args.spine_text = spine_path.read_text(encoding="utf-8")
+        args.spine_arm = spine_path.stem
+        args.spine_sha = hashlib.sha256(args.spine_text.encode("utf-8")).hexdigest()[:12]
+        other_tiers = [t for t in tiers if t != "zero"]
+        if other_tiers:
+            print(f"--spine-file only applies to the zero tier; ignored for {other_tiers}")
 
     set_path = Path(args.set_file)
     specs = [json.loads(line) for line in set_path.read_text(encoding="utf-8").splitlines()
