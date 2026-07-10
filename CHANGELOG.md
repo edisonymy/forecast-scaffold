@@ -4,6 +4,26 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.7] - 2026-07-10
+
+Contamination probe. The one leak timevault cannot close is the model's own weights,
+and admissibility turned out to be empirical, not a model-card lookup: the live bot's
+model (sonnet-5, training data through Jan 2026) fully covers BTF-2's Oct-Dec 2025
+resolutions, and even the original n=85 run's opus-4.6 (stated Aug 2025) sits inside
+the +3-4-month effective-knowledge drift the repo's own evaluation.md cites.
+
+### Added
+- **`bench/contamination_probe.py`** — asks a model directly, with every tool stripped
+  (no --allowed-tools, full --disallowed-tools belt), whether each already-resolved
+  question resolved YES/NO, from memory only, with an explicit unknown-over-guessing
+  honesty contract. Scores recall accuracy on answered items against the majority-class
+  baseline; flags (model, question) pairs as contaminated on confident-correct recall
+  (confidence >= 0.75). Interpretation is DIFFERENTIAL by design: a model whose data
+  covers the window (positive control) should light up; a genuinely earlier model
+  should sit at baseline. Resumable; per-question rows in bench/results/*.probe.jsonl.
+- Documented limit: the probe under-detects (latent knowledge a model does not surface
+  as explicit memory still shapes forecasts) — 'clean' means admissible, never proven.
+
 ## [0.4.6] - 2026-07-09
 
 Leak-proof pastcasting. The bench had two open leak paths that made every pastcast score
