@@ -59,13 +59,12 @@ run_models = []
 min_sources = 5
 
 [blend]
-# Weight on the crowd/market number when one exists. 0.5 (v0.4.10): Halawi's 4:1-crowd
-# optimum was calibrated on HUMAN crowds/markets; a bot tournament exposes only other
-# bots, of unproven quality, so an even split is the prior until blended-vs-raw resolves
-# score it. Applied by the bot harness ONLY on sighted binaries whose research cited no
-# market source (double-count guard: the sighted agent blends what it finds itself) —
-# never in blind or bench runs.
-crowd_weight = 0.5
+# Weight on the crowd/market number when one exists — used by the chat/CLI aggregate
+# path when the SAME question's human crowd/market value is passed explicitly (Halawi's
+# validated 4:1-crowd optimum applies there). The BOT harness never blends (v0.4.11,
+# operator decision): cross-platform contract equivalence takes judgment, so market
+# anchoring lives in the agent's research step, disclosed in its reasoning.
+crowd_weight = 0.8
 
 [aggregation]
 # "trimmed_mean" for correlated draws from one forecaster (the default);

@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.4.10"
+SCAFFOLD_VERSION = "0.4.11"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -72,12 +72,12 @@ DEFAULTS: dict[str, Any] = {
         "medium": {"draws": 5, "searches": 5, "runs": 3, "run_models": [], "min_sources": 3},
         "high": {"draws": 12, "searches": 12, "runs": 4, "run_models": [], "min_sources": 5},
     },
-    # 0.5 (v0.4.10): Halawi's 4:1-crowd optimum was calibrated on HUMAN crowds/markets;
-    # the only crowd a bot tournament exposes is other bots, of unproven quality, so an
-    # even split is the defensible prior until blended-vs-raw resolves score it. The
-    # harness applies this ONLY on sighted binaries whose research cited no market
-    # source (double-count guard) — never in blind/test runs.
-    "blend": {"crowd_weight": 0.5},
+    # 0.8 = Halawi et al.'s validated optimum ("4x weight for the crowd", NeurIPS 2024)
+    # for blending with the SAME question's human crowd/market — the chat/CLI use where a
+    # judged-relevant value is passed explicitly. The BOT harness never blends (v0.4.11,
+    # operator decision): cross-platform contract equivalence takes judgment, so market
+    # anchoring lives in the agent's research step, disclosed in its reasoning.
+    "blend": {"crowd_weight": 0.8},
     "aggregation": {"method": "trimmed_mean"},
     "journal": {"path": "forecasts.jsonl"},
     # Informational: which models the host agent should prefer. The scaffold never calls

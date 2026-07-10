@@ -4,6 +4,32 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.11] - 2026-07-10
+
+Reversal of 0.4.10's harness blend, same day, on operator review — kept here rather
+than history-rewritten because the reasoning is the valuable part:
+
+1. **Determinism**: 0.4.10 blended sometimes-at-the-harness, sometimes-in-the-agent
+   (guard-dependent). Two conditional mechanisms make submitted numbers hard to reason
+   about. One mechanism, owned by the agent, always.
+2. **Contract equivalence cannot be checked mechanically.** The same-question case is
+   easy but rare (Metaculus hides aggregates from bots); in practice the available
+   market is a similarly-worded question on another platform, and "similar wording"
+   with one differing clause legitimately prices 4x away (the repo's own $386k
+   Polymarket/NPM case). Deciding whether a market is THIS contract takes judgment —
+   an agent capability, not an arithmetic one.
+
+### Changed
+- The bot harness never blends, in any mode. The journal still captures the platform
+  aggregate as a benchmark (never shown to the agent — v0.4.2 boundary unchanged).
+- The sighted brief's "Crowd signals" section now makes the market scan a REQUIRED,
+  disclosed research step: report what was found (including "no market found"), and
+  state the contract differences checked before leaning on any market number. Blending
+  is explicitly the agent's judgment call.
+- `blend.crowd_weight` restored to 0.8 — its remaining consumer is the chat/CLI
+  aggregate path where a judged-relevant same-question value is passed explicitly,
+  which is exactly what Halawi's 4:1 optimum was calibrated on.
+
 ## [0.4.10] - 2026-07-10
 
 Crowd blend gets a real code path — with a double-count guard. The review found

@@ -291,33 +291,17 @@ class TestBotCrowdBoundary:
             geo_mean_odds([RESEARCH["probability"], 0.20, 0.40]))
 
 
-class TestHarnessCrowdBlend:
-    """v0.4.10: sighted binaries blend with the platform aggregate at the HARNESS
-    level (the agent never sees it) — except when the research run already cited a
-    market/aggregator source, which means the crowd entered the estimate once
-    already and blending again would double-count it."""
+class TestHarnessNeverBlends:
+    """v0.4.11 (operator decision): the harness never blends, in any mode. Market
+    anchoring is the agent judgment call — contract equivalence across platforms
+    cannot be checked mechanically — and the sighted brief makes the market scan a
+    required, disclosed research step instead."""
 
-    def test_sighted_unanchored_blends_and_discloses(
+    def test_sighted_with_crowd_submits_the_raw_pool(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        agent, record, ok = run(monkeypatch, tmp_path, [
-            fenced(RESEARCH),
-            fenced(reasoning_payload(0.20)),
-            fenced(reasoning_payload(0.40)),
-        ], client=CrowdClient(0.28))
-        assert ok and record is not None
-        pooled = geo_mean_odds([RESEARCH["probability"], 0.20, 0.40])
-        expected = 0.5 * 0.28 + 0.5 * pooled  # even-split default
-        assert record["probability"] == pytest.approx(expected)
-        assert "harness crowd-blend" in record["reasoning"]
-
-    def test_market_anchored_research_skips_the_blend(
-        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-    ) -> None:
-        anchored = dict(RESEARCH, sources=[
-            "https://example.com/a", "https://polymarket.com/event/x"])
         _, record, ok = run(monkeypatch, tmp_path, [
-            fenced(anchored),
+            fenced(RESEARCH),
             fenced(reasoning_payload(0.20)),
             fenced(reasoning_payload(0.40)),
         ], client=CrowdClient(0.28))
@@ -325,24 +309,21 @@ class TestHarnessCrowdBlend:
         assert record["probability"] == pytest.approx(
             geo_mean_odds([RESEARCH["probability"], 0.20, 0.40]))
         assert "harness crowd-blend" not in record["reasoning"]
+        assert record["crowd"]["value"] == 0.28  # benchmark still journaled
 
-    def test_no_crowd_no_blend(self, monkeypatch: pytest.MonkeyPatch,
-                               tmp_path: Path) -> None:
-        _, record, ok = run(monkeypatch, tmp_path, [
+    def test_sighted_brief_demands_a_disclosed_market_scan(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, _, ok = run(monkeypatch, tmp_path, [
             fenced(RESEARCH),
             fenced(reasoning_payload(0.20)),
             fenced(reasoning_payload(0.40)),
-        ])  # StubClient: crowd is None
-        assert ok and record is not None
-        assert record["probability"] == pytest.approx(
-            geo_mean_odds([RESEARCH["probability"], 0.20, 0.40]))
-
-    def test_market_sourced_detector(self) -> None:
-        assert run_bot.market_sourced({"sources": ["https://Polymarket.com/e/x"]})
-        assert run_bot.market_sourced({"sources": ["https://www.metaculus.com/q/1"]})
-        assert not run_bot.market_sourced({"sources": ["https://reuters.com/a"]})
-        assert not run_bot.market_sourced({"sources": "not-a-list"})
-        assert not run_bot.market_sourced({})
+        ], client=CrowdClient(0.28))
+        assert ok
+        research_prompt = agent.calls[0]["prompt"]
+        assert "REQUIRED research step" in research_prompt
+        assert "judgment call" in research_prompt
+        assert "contract" in research_prompt  # equivalence check, not arithmetic
 
 
 class TestNamedScenarios:

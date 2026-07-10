@@ -41,7 +41,6 @@ from forecast_scaffold.core import (
     ForecastRecord,
     Journal,
     _utc_now,
-    blend_with_crowd,
     clamp,
     geo_mean_odds,
     load_config,
@@ -554,23 +553,6 @@ def mc_within_api_bounds(probs: dict[str, float]) -> dict[str, float]:
     return values
 
 
-# Aggregator/market hosts: a research run citing any of these has already blended the
-# crowd cognitively — the harness must not blend it in again (double-count guard).
-MARKET_SOURCE_HOSTS = ("polymarket.com", "manifold.markets", "kalshi.com",
-                       "metaculus.com", "gjopen.com", "goodjudgment.io",
-                       "metaforecast.org", "predictit.org", "smarkets.com",
-                       "betfair.com")
-
-
-def market_sourced(payload: dict[str, Any]) -> bool:
-    """True when the research run's own source list cites a market/aggregator —
-    the mechanical tell that crowd information already entered the estimate."""
-    raw = payload.get("sources")
-    if not isinstance(raw, list):
-        return False
-    return any(host in str(s).lower() for s in raw for host in MARKET_SOURCE_HOSTS)
-
-
 def distinct_source_count(payload: dict[str, Any]) -> int:
     """Distinct non-empty sources in a payload — the research floor's unit of account.
 
@@ -800,10 +782,17 @@ def forecast_question(
         brief += (
             "\n\n## Crowd signals\n"
             "No community prediction is provided: bot accounts only ever see other "
-            "bots' aggregates, which are withheld as unvalidated anchors. If liquid "
-            "HUMAN markets or aggregators price this question (Polymarket, Kalshi, "
-            "Manifold, Metaculus's public page), finding them is part of research, and "
-            "the skill's crowd-blend step applies to what you actually find."
+            "bots' aggregates, which are withheld as unvalidated anchors. Searching "
+            "for HUMAN markets is a REQUIRED research step, not an option: check "
+            "whether Polymarket, Kalshi, Manifold, or a bookmaker prices this event, "
+            "and say in your reasoning what you found — including 'no market found'. "
+            "Blending is YOUR judgment call, never arithmetic: a market is a valid "
+            "anchor only if its contract matches this question's resolution criteria "
+            "on the terms that matter (threshold, deadline, resolution source, fine "
+            "print). A near-miss contract is evidence, not an anchor — a real $386k "
+            "book once priced a similarly-worded question 4x away from its Metaculus "
+            "twin because one clause differed. State the contract differences you "
+            "checked before you lean on any market number."
         )
     base_cmd = (
         openrouter_model_cmd(args.agent_cmd)
@@ -1055,24 +1044,11 @@ def forecast_question(
     # option labels) BEFORE the record is written — not at the submit call after it,
     # where the journal and the platform could silently diverge.
     if qtype == "binary":
-        # Harness-level crowd blend (v0.4.10) — prod/sighted binaries only, and only
-        # when the agent did NOT already anchor on a market/aggregator itself. The
-        # sighted brief tells the agent to blend with whatever market it finds, so
-        # blending again here would count the crowd twice (effective crowd weight
-        # w + a*(1-w) — over-shrunk toward consensus). The research run's own source
-        # list is the mechanical tell; blind runs never blend (they measure own skill).
-        blend_weight = float((config.get("blend") or {}).get("crowd_weight") or 0.0)
-        if (not args.blind and crowd is not None and blend_weight > 0
-                and not market_sourced(payload)):
-            raw_p = float(payload["probability"])
-            blended = blend_with_crowd(raw_p, float(crowd), crowd_weight=blend_weight)
-            payload["probability"] = blended
-            payload["reasoning"] = (
-                f"[harness crowd-blend: own {raw_p:.3f} x crowd {float(crowd):.3f} "
-                f"@weight {blend_weight:.2f} -> submitted {blended:.3f}; no market "
-                f"source in the research run, so the crowd is independent info]\n"
-                + str(payload.get("reasoning", ""))
-            )
+        # v0.4.11 (operator decision): the harness NEVER blends. Cross-platform
+        # markets rarely share this question's exact contract, and judging contract
+        # equivalence is the agent's job (see the Crowd signals brief section) — a
+        # mechanical average of non-equivalent probabilities is not a blend, it is a
+        # category error. One blending mechanism, owned by the agent, deterministic.
         payload["probability"] = clamp(float(payload["probability"]), 0.01, 0.99)
     elif qtype == "multiple_choice":
         payload["probabilities"] = mc_within_api_bounds(
