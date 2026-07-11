@@ -67,9 +67,23 @@ def test_selection_happy_path_and_volume_ranking() -> None:
 
 
 def test_selection_bettor_floor() -> None:
-    below = run_manifold.select_markets([mk(uniqueBettorCount=49)], 10, NOW_MS)
-    at = run_manifold.select_markets([mk(uniqueBettorCount=50)], 10, NOW_MS)
+    # [AMENDED 2026-07-11] the floor is 25 unique bettors (was 50).
+    below = run_manifold.select_markets([mk(uniqueBettorCount=24)], 10, NOW_MS)
+    at = run_manifold.select_markets([mk(uniqueBettorCount=25)], 10, NOW_MS)
     assert below == [] and len(at) == 1
+
+
+def test_selection_half_top_half_mid_band() -> None:
+    # [AMENDED 2026-07-11] a batch is drawn half from the top of the volume ranking and half
+    # from the mid-band (ranks limit..limit*4), skipping the upper-middle ranks between them.
+    # 8 eligible markets, distinct tags, strictly descending volume; limit=4 -> top_k=2,
+    # mid_k=2. Top band picks m0,m1; the mid band (candidates[4:16]) picks m4,m5; m2,m3 in the
+    # gap are deliberately skipped.
+    markets = [
+        mk(f"m{i}", groupSlugs=[f"g{i}"], volume24Hours=float(100 - i)) for i in range(8)
+    ]
+    picked = run_manifold.select_markets(markets, limit=4, now_ms=NOW_MS)
+    assert [m["id"] for m in picked] == ["m0", "m1", "m4", "m5"]
 
 
 def test_selection_close_time_window() -> None:
@@ -174,11 +188,15 @@ def test_sighted_brief_has_price_and_judgment_language() -> None:
 
 
 def test_decide_bet_divergence_gate() -> None:
-    # Below threshold -> no bet.
+    # [AMENDED 2026-07-11] the divergence floor is 0.05 (was 0.08).
+    # Below threshold (0.03 < 0.05) -> no bet.
     assert run_manifold.decide_bet(
-        0.55, 0.50, 25, balance=1000, already_positioned=False
+        0.53, 0.50, 25, balance=1000, already_positioned=False
     ) is None
-    # At/above threshold, forecast higher -> YES.
+    # Exactly at the 0.05 threshold -> a bet.
+    at = run_manifold.decide_bet(0.55, 0.50, 25, balance=1000, already_positioned=False)
+    assert at == {"outcome": "YES", "stake": 25.0}
+    # Above threshold, forecast higher -> YES.
     up = run_manifold.decide_bet(0.60, 0.50, 25, balance=1000, already_positioned=False)
     assert up == {"outcome": "YES", "stake": 25.0}
     # Forecast lower -> NO.
@@ -198,18 +216,26 @@ def test_decide_bet_balance_floor_and_position_guard() -> None:
 # --------------------------------------------------------------------------- run loop
 
 
-def fenced(probability: float, market_read: str | None = "herding") -> str:
+# The medium tier's min_sources floor is 3; the default stub payload clears it.
+DEFAULT_SOURCES = ["https://example.com/a", "https://example.com/b", "https://example.com/c"]
+
+
+def fenced(
+    probability: float, market_read: str | None = "herding",
+    sources: list[str] | None = None,
+) -> str:
     payload: dict[str, Any] = {
         "probability": probability,
         "reasoning": "stub reasoning",
         "reference_class": "past comparable cases",
         "base_rate": 0.4,
         "raw_draws": [probability],
-        "sources": ["https://example.com/a", "https://example.com/b"],
+        "sources": DEFAULT_SOURCES if sources is None else sources,
         "what_would_change_my_mind": ["new data"],
     }
-    # A sighted payload carries a market_read (the trading gate); the blind run ignores it.
-    # None simulates an agent that omitted the required field (drives the repair path).
+    # A sighted payload carries a market_read (journaled as a preregistered hypothesis, no
+    # longer a bet gate); the blind run ignores it. None simulates an agent that omitted the
+    # required field (drives the repair path).
     if market_read is not None:
         payload["market_read"] = market_read
     return f"```json\n{json.dumps(payload)}\n```"
@@ -218,15 +244,19 @@ def fenced(probability: float, market_read: str | None = "herding") -> str:
 class ScriptedAgent:
     """Stands in for run_bot.run_agent. Returns a constant forecast; records calls."""
 
-    def __init__(self, probability: float, market_read: str | None = "herding") -> None:
+    def __init__(
+        self, probability: float, market_read: str | None = "herding",
+        sources: list[str] | None = None,
+    ) -> None:
         self.probability = probability
         self.market_read = market_read
+        self.sources = DEFAULT_SOURCES if sources is None else sources
         self.calls: list[dict[str, Any]] = []
 
     def __call__(self, cmd: str, prompt: str, system: str | None, timeout: int,
                  provider: str = "subscription") -> tuple[str, float, str]:
         self.calls.append({"cmd": cmd, "prompt": prompt, "system": system})
-        return fenced(self.probability, self.market_read), 0.01, "claude-sonnet-5"
+        return fenced(self.probability, self.market_read, self.sources), 0.01, "claude-sonnet-5"
 
 
 class BetSpy:
@@ -331,10 +361,13 @@ def test_run_skips_market_with_existing_position(
     monkeypatch.setattr(run_manifold, "place_bet", spy)
     monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
 
-    # Pre-seed the journal with an existing bet on this market.
+    # Pre-seed the journal with an existing bet on this market. The forecast_at is > 3 days
+    # old so the re-forecast dedupe does NOT skip it — the position guard is what blocks the
+    # bet here, not the fresh-pair skip.
+    old = (datetime.now(UTC) - timedelta(days=10)).isoformat(timespec="seconds")
     journal = Journal(str(tmp_path / "manifold.jsonl"))
     journal.append(ForecastRecord(
-        question="held market", question_type="binary", probability=0.5,
+        question="held market", question_type="binary", probability=0.5, forecast_at=old,
         source={"platform": "manifold", "question_id": "held", "pair_id": "old",
                 "bet": {"outcome": "YES", "stake": 25, "dry_run": False}},
     ))
@@ -343,6 +376,36 @@ def test_run_skips_market_with_existing_position(
     args = make_args(tmp_path, live=True)
     assert run_manifold.run(args) == 0
     assert spy.calls == []  # already positioned -> no new bet
+
+
+def test_run_skips_market_with_fresh_pair(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # A market whose journaled pair is < 3 days old is skipped before any forecast runs
+    # (re-forecasting the same market every run wastes budget).
+    market = mk("dup", probability=0.30)
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
+    agent = ScriptedAgent(0.90)
+    monkeypatch.setattr(run_bot, "run_agent", agent)
+    monkeypatch.setattr(run_manifold, "place_bet", BetSpy())
+
+    now_iso = datetime.now(UTC).isoformat(timespec="seconds")
+    journal = Journal(str(tmp_path / "manifold.jsonl"))
+    for mode in ("blind", "sighted"):
+        journal.append(ForecastRecord(
+            question="dup market", question_type="binary", probability=0.5,
+            blind=(mode == "blind"), forecast_at=now_iso,
+            source={"platform": "manifold", "question_id": "dup", "pair_id": "fresh",
+                    "mode": mode},
+            crowd={"value": 0.30, "source": "manifold market",
+                   "shown_to_agent": mode == "sighted"},
+        ))
+
+    args = make_args(tmp_path)
+    assert run_manifold.run(args) == 0
+    assert "skip (fresh pair exists)" in capsys.readouterr().out
+    assert agent.calls == []               # the fresh market is never forecast again
+    assert len(read_journal(args.journal)) == 2  # only the seeded pair; nothing appended
 
 
 # --------------------------------------------------------------------------- scoring math
@@ -455,9 +518,11 @@ def test_market_read_validation_missing_and_invalid() -> None:
     assert run_manifold.validate_market_read({"market_read": "  INFORMED "}) == []
 
 
-def test_run_informed_read_logs_and_skips_bet(
+def test_run_informed_read_still_bets(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
+    # [AMENDED 2026-07-11] market_read is no longer a bet gate: an "informed" read is
+    # journaled as a preregistered hypothesis but the divergent bet still goes through.
     market = mk("inf", probability=0.30)
     monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
     monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90, market_read="informed"))
@@ -470,12 +535,13 @@ def test_run_informed_read_logs_and_skips_bet(
     args = make_args(tmp_path, live=True)
     assert run_manifold.run(args) == 0
 
-    assert spy.calls == []  # an "informed" read never bets, even wildly divergent + live
+    assert len(spy.calls) == 1  # informed no longer gates: the divergent bet is placed
+    assert spy.calls[0][2] == "YES"
     rows = read_journal(args.journal)
     sighted = next(r for r in rows if r["source"]["mode"] == "sighted")
-    assert sighted["source"]["market_read"] == "informed"
-    assert "bet" not in sighted["source"]  # forecast logged, no bet recorded
-    assert "market_read=informed" in capsys.readouterr().out  # the one-line marker
+    assert sighted["source"]["market_read"] == "informed"  # still REQUIRED + journaled
+    assert sighted["source"]["bet"]["outcome"] == "YES"    # and the bet IS recorded
+    assert "market_read=informed" in capsys.readouterr().out  # the informational marker
 
 
 def test_run_herding_read_produces_bet(
@@ -507,6 +573,49 @@ def test_run_sighted_missing_market_read_fails_the_pair(
     args = make_args(tmp_path)
     assert run_manifold.run(args) == 0
     # The pair is dropped before either mode is journaled (no file, or an empty one).
+    assert not Path(args.journal).exists() or read_journal(args.journal) == []
+
+
+# --------------------------------------------------------------------------- source floor
+
+
+def test_run_source_floor_announced_and_journaled(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # The tier's min_sources floor (medium -> 3) is announced in every brief and the
+    # consulted sources land in the journal on BOTH modes.
+    market = mk("src", probability=0.30)
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
+    srcs = ["https://a.example", "https://b.example", "https://c.example"]
+    agent = ScriptedAgent(0.90, sources=srcs)
+    monkeypatch.setattr(run_bot, "run_agent", agent)
+    monkeypatch.setattr(run_manifold, "place_bet", BetSpy())
+
+    args = make_args(tmp_path)  # medium tier -> min_sources = 3
+    assert run_manifold.run(args) == 0
+    # Announced in the brief the blind AND sighted agents saw.
+    assert agent.calls and all("Research floor" in c["prompt"] for c in agent.calls)
+    assert all("at least 3 DISTINCT" in c["prompt"] for c in agent.calls)
+    # Journaled on both records.
+    rows = read_journal(args.journal)
+    assert len(rows) == 2
+    for r in rows:
+        assert r["research"]["sources"] == srcs
+        assert r["research"]["n_searches"] == 3
+
+
+def test_run_source_floor_rejects_too_few_sources(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # An agent returning fewer than the floor (here 0 < 3) is rejected by the repair loop;
+    # the stub repeats the too-thin payload, so the pair is dropped entirely.
+    market = mk("thin", probability=0.30)
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
+    monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90, sources=[]))
+    monkeypatch.setattr(run_manifold, "place_bet", BetSpy())
+
+    args = make_args(tmp_path)  # medium -> min_sources = 3; [] fails the floor
+    assert run_manifold.run(args) == 0
     assert not Path(args.journal).exists() or read_journal(args.journal) == []
 
 

@@ -24,13 +24,18 @@ was evaluated without error.
 - Stake: **flat 25 mana** per qualifying bet (~1% of adoption bankroll). Flat, not sized:
   equal-weighted bets keep movement statistics clean.
 - Bet only when ALL hold:
-  (a) |sighted forecast − market| >= 0.08;
-  (b) the sighted run's REQUIRED judgment concluded the market is **herding / thin /
-      stale** (contract field `market_read`; a conclusion of "informed" logs the forecast
-      and does not bet — the v0.4.11 judgment call as a trading gate);
-  (c) no open position in the market;
-  (d) hygiene screens pass (>= 50 unique bettors, closes 3–60 days out, meme/self-
-      referential excluded, <= 3 markets per topic group per run).
+  (a) |sighted forecast − market| >= 0.05
+      [AMENDED 2026-07-11, operator: "i dont mind if we are less cautious about bets" —
+      was 0.08; the objective is signal volume, and the caps below already bound risk];
+  (b) no open position in the market;
+  (c) hygiene screens pass (>= 25 unique bettors, closes 3–60 days out, meme/self-
+      referential excluded, <= 3 markets per topic group per run; selection takes half
+      top-volume + half mid-volume so the batch includes markets thin enough to beat)
+      [AMENDED 2026-07-11: bettor floor was 50, selection was pure volume-rank].
+- `market_read` (informed/herding/thin/stale) is REQUIRED and journaled but is NO LONGER
+  a bet gate [AMENDED 2026-07-11]: it is a preregistered hypothesis — at review we test
+  whether informed-read bets underperform. The original gate starved the signal: liquid
+  markets read "informed" almost by construction.
 - Hard caps: <= 10 bets/run, <= 1 run/day, total open exposure <= 30% of balance,
   refuse all betting below 50% of adoption bankroll (1,100 mana floor).
 - Exit: hold to resolution.

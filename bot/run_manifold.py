@@ -75,7 +75,9 @@ UA = {"User-Agent": "forecast-scaffold-manifold/0.1 "
       "(+https://github.com/edisonymy/forecast-scaffold)"}
 
 # ---- selection policy (design decisions; see the module docstring) ---------------------
-MIN_BETTORS = 50            # uniqueBettorCount floor: below this the price is not a crowd
+MIN_BETTORS = 25            # uniqueBettorCount floor: below this the price is not a crowd
+#                             [AMENDED 2026-07-11: was 50 — signal volume over caution; the
+#                             hard caps (stake/max-bets/exposure/floor) bound the thin-book risk]
 CLOSE_MIN_DAYS = 3          # too soon and price movement can't teach anything before resolve
 CLOSE_MAX_DAYS = 60         # too far and the days-scale movement signal is too slow
 DIVERSITY_CAP = 3           # max markets sharing the same top groupSlug (one theme can't
@@ -87,15 +89,21 @@ DAY_MS = 86_400_000
 MEME_RE = re.compile(r"this market|will i\b|\bmy |@", re.IGNORECASE)
 
 # ---- betting policy -------------------------------------------------------------------
-DIVERGENCE_THRESHOLD = 0.08   # bet only when |p_sighted - p_market| >= this
+DIVERGENCE_THRESHOLD = 0.05   # bet only when |p_sighted - p_market| >= this
+#                               [AMENDED 2026-07-11: was 0.08 — signal volume over caution;
+#                               the hard caps (stake/max-bets/exposure/floor) bound the risk]
 MIN_BALANCE_MANA = 200.0      # decide_bet's own hard floor (a would-be bet needs SOME balance)
+REFORECAST_DEDUPE_DAYS = 3    # skip re-forecasting a market whose journaled pair is newer than
+#                               this many days (re-forecasting every run wastes budget)
 
-# ---- market_read contract (sighted trading gate; policy v0.4.11 judgment call) ----------
-# The sighted forecast must return its judgment of the market price. Only the three
-# non-"informed" reads clear the gate: "informed" means the crowd holds evidence we lack, so
-# we log the forecast and DO NOT bet.
+# ---- market_read contract (REQUIRED + journaled; NO LONGER a bet gate) ------------------
+# The sighted forecast must still return its judgment of the market price — a REQUIRED,
+# journaled field. [AMENDED 2026-07-11] it is NO LONGER a bet gate: the journaled read is a
+# preregistered hypothesis instead, so at review we can test whether informed-read bets
+# underperform. The old gate starved the signal — on a liquid book the price reads "informed"
+# almost by construction, so gating those out deleted most bettable divergences before any
+# evidence was collected.
 MARKET_READS = ("informed", "herding", "thin", "stale")
-BETTABLE_READS = ("herding", "thin", "stale")
 
 # ---- phase-machine policy (docs/manifold-policy.md; transitions are AUTOMATIC + journaled) --
 DEFAULT_PHASE_FILE = ROOT / "bot" / "journal" / "manifold-phase.json"
@@ -245,27 +253,48 @@ def eligible_lite(market: dict[str, Any], now_ms: int) -> bool:
 def select_markets(
     markets: list[dict[str, Any]], limit: int, now_ms: int | None = None
 ) -> list[dict[str, Any]]:
-    """Filter, rank by 24h volume, and take ``limit`` with a per-tag diversity cap.
+    """Filter, rank by 24h volume, and take ``limit`` split half top-volume / half mid-band.
 
-    Expects enriched market dicts (textDescription + groupSlugs present). Deterministic:
-    ranking and the cap both walk the volume-sorted order.
+    Expects enriched market dicts (textDescription + groupSlugs present). Deterministic and
+    stateless: both bands walk the same volume-sorted eligible list and share one per-tag
+    diversity counter.
+
+    Selection rule [AMENDED 2026-07-11 — signal volume over caution]:
+      * sort eligible candidates by 24h volume, descending;
+      * take ``top_k = limit - limit // 2`` from the TOP band (ranks 0..limit): the deep,
+        liquid books (the top band gets the odd market on an odd ``limit``);
+      * take ``mid_k = limit // 2`` from the MID band (ranks limit..limit*4 of the same
+        list): thinner books the bot can actually move, so the batch is not all
+        crowd-favourites and includes markets thin enough to beat.
+    Ranks between ``top_k`` and ``limit`` are deliberately skipped to keep the two bands
+    separate. The diversity cap is shared across bands; a short band simply under-fills (no
+    backfill), which keeps the rule deterministic.
     """
     now_ms = now_ms if now_ms is not None else _now_ms()
     candidates = [
         m for m in markets if eligible_lite(m, now_ms) and criteria_text(m)
     ]
     candidates.sort(key=lambda m: float(m.get("volume24Hours") or 0.0), reverse=True)
+    mid_k = limit // 2
+    top_k = limit - mid_k
     selected: list[dict[str, Any]] = []
     tag_counts: dict[str, int] = {}
-    for m in candidates:
-        tag = top_tag(m)
-        if tag is not None and tag_counts.get(tag, 0) >= DIVERSITY_CAP:
-            continue
-        selected.append(m)
-        if tag is not None:
-            tag_counts[tag] = tag_counts.get(tag, 0) + 1
-        if len(selected) >= limit:
-            break
+
+    def draw(band: list[dict[str, Any]], k: int) -> None:
+        taken = 0
+        for m in band:
+            if taken >= k:
+                break
+            tag = top_tag(m)
+            if tag is not None and tag_counts.get(tag, 0) >= DIVERSITY_CAP:
+                continue
+            selected.append(m)
+            taken += 1
+            if tag is not None:
+                tag_counts[tag] = tag_counts.get(tag, 0) + 1
+
+    draw(candidates[:limit], top_k)             # top band: ranks 0..limit
+    draw(candidates[limit:limit * 4], mid_k)    # mid band: ranks limit..limit*4
     return selected
 
 
@@ -370,6 +399,14 @@ def forecast_market(
     """
     blind = mode == "blind"
     brief = build_manifold_brief(market, sighted=not blind)
+    # Research floor (both modes are research forecasts): ANNOUNCE the tier's min_sources in
+    # the brief and ENFORCE it in the validate/repair loop below — reused verbatim from
+    # run_bot (SOURCE_FLOOR_SECTION + distinct_source_count), so this floor matches the
+    # Metaculus bot's exactly and the sources actually consulted land in the journal.
+    tier_params = (config.get("tiers") or {}).get(tier) or {}
+    min_sources = max(0, int(tier_params.get("min_sources", 0) or 0))
+    if min_sources:
+        brief += "\n" + run_bot.SOURCE_FLOOR_SECTION.format(floor=min_sources)
     base_cmd = (
         run_bot.openrouter_model_cmd(args.agent_cmd)
         if args.provider == "openrouter" else args.agent_cmd
@@ -397,10 +434,21 @@ def forecast_market(
             errors = [str(exc)[:300]]
             continue
         errors = run_bot.validate_payload(payload, _BINARY_Q)
-        # The sighted contract additionally REQUIRES a valid market_read (the trading gate);
-        # the blind run never sees the price and is not asked for one.
+        # The sighted contract additionally REQUIRES a valid market_read (journaled as a
+        # preregistered hypothesis, no longer a bet gate); the blind run is never asked.
         if not errors and not blind:
             errors = validate_market_read(payload)
+        # Research floor (both modes): reject BEFORE the forecast is accepted so the repair
+        # retry re-researches — same reject-before-accept point run_bot uses. Empty sources
+        # (0 < min_sources) fail here with a clear message.
+        if not errors and min_sources:
+            found = run_bot.distinct_source_count(payload)
+            if found < min_sources:
+                errors = [
+                    f"research run listed {found} distinct source(s); this tier requires "
+                    f'at least {min_sources} — run real searches and list in "sources" '
+                    "only what you actually consulted"
+                ]
         if not errors:
             probability = float(payload["probability"])
             break
@@ -433,22 +481,20 @@ def forecast_market(
 
 def decide_bet(
     p_sighted: float, p_market: float, stake: float, *,
-    balance: float, already_positioned: bool, market_read: str | None = None,
+    balance: float, already_positioned: bool,
 ) -> dict[str, Any] | None:
     """The betting gate as a pure function. Returns the bet {outcome, stake} or None.
 
-    Bet only when the sighted forecast diverges from the market by at least the threshold,
-    we hold no open position already, the balance clears the floor, and the sighted run's
-    ``market_read`` is tradeable (herding/thin/stale). ``market_read=None`` leaves the read
-    ungated (blind/legacy callers); an "informed" read never bets. Direction: YES when our
-    forecast is higher than the market (we think it's underpriced), NO when lower.
+    Bet when the sighted forecast diverges from the market by at least the threshold, we hold
+    no open position already, and the balance clears the floor. [AMENDED 2026-07-11] the
+    sighted run's ``market_read`` is NO LONGER checked here — it is journaled as a
+    preregistered hypothesis, not a gate (see the MARKET_READS note above). Direction: YES
+    when our forecast is higher than the market (we think it's underpriced), NO when lower.
     """
     if already_positioned:
         return None
     if balance < MIN_BALANCE_MANA:
         return None
-    if market_read is not None and market_read not in BETTABLE_READS:
-        return None  # an "informed" (or otherwise non-tradeable) read logs, never bets
     if abs(p_sighted - p_market) < DIVERGENCE_THRESHOLD:
         return None
     outcome = "YES" if p_sighted > p_market else "NO"
@@ -464,6 +510,31 @@ def already_bet_market_ids(journal: Journal) -> set[str]:
         if src.get("platform") == "manifold" and src.get("bet") and src.get("question_id"):
             ids.add(str(src["question_id"]))
     return ids
+
+
+def recently_forecast_market_ids(
+    records: list[Any], now: datetime | None = None,
+    within_days: float = REFORECAST_DEDUPE_DAYS,
+) -> set[str]:
+    """Market ids that already have a journaled forecast pair newer than ``within_days``.
+
+    Read from the journal the same way the open-position guard is (scan the manifold records).
+    Re-forecasting the same market every run wastes budget — a live IMO market was forecast
+    twice in 6 hours — so a market with a fresh pair is skipped this run. Timing is read from
+    ``forecast_at`` (fallback ``created``), the same field the phase machine ages against."""
+    now = now or datetime.now(UTC)
+    fresh: set[str] = set()
+    for record in records:
+        src = record.source or {}
+        if src.get("platform") != "manifold":
+            continue
+        qid = src.get("question_id")
+        if not qid:
+            continue
+        age = _age_days(record.forecast_at or record.created, now)
+        if age is not None and age < within_days:
+            fresh.add(str(qid))
+    return fresh
 
 
 def open_exposure(records: list[Any]) -> float:
@@ -950,10 +1021,16 @@ def run(args: argparse.Namespace) -> int:
         return 0
 
     exposure = open_exposure(records_before)  # mana already at risk in open placed bets
+    # Re-forecast dedupe: markets whose journaled pair is < REFORECAST_DEDUPE_DAYS old are
+    # skipped this run (re-forecasting the same market every run wastes budget).
+    fresh_pairs = recently_forecast_market_ids(records_before)
     bets_placed = 0
     for market in markets:
         market_id = str(market.get("id"))
         title = str(market.get("question", ""))[:70]
+        if market_id in fresh_pairs:
+            print(f"- {title!r} skip (fresh pair exists)")
+            continue
         print(f"- {title!r} (p={market.get('probability')}, "
               f"vol24h={market.get('volume24Hours')})")
         blind_fc = forecast_market(market, "blind", args.tier, args, config)
@@ -974,11 +1051,12 @@ def run(args: argparse.Namespace) -> int:
         market_read = sighted_fc.get("market_read")
         at_cap = bets_placed >= args.max_bets
         positioned = market_id in already or at_cap
-        diverges = abs(p_sighted - p_market) >= DIVERGENCE_THRESHOLD
-        # The v0.4.11 trading gate: an "informed" read logs the forecast and skips the bet.
-        if diverges and not positioned and market_read == "informed":
-            print("  market_read=informed — the crowd holds evidence we lack; "
-                  "logging forecast, not betting")
+        # [AMENDED 2026-07-11] market_read no longer gates the bet — it is journaled as a
+        # preregistered hypothesis. The "informed" read is printed for the record only; the
+        # bet proceeds so review can test whether informed-read bets underperform.
+        if market_read == "informed":
+            print("  market_read=informed (preregistered hypothesis: at review we test "
+                  "whether informed-read bets underperform) — betting is no longer gated")
         # Phase 2 sizes each bet quarter-Kelly; phases 0/1 stake flat.
         if phase == 2:
             size_balance = balance if balance is not None else ADOPTION_BANKROLL
@@ -988,7 +1066,7 @@ def run(args: argparse.Namespace) -> int:
         bet = decide_bet(
             p_sighted, p_market, stake,
             balance=balance if balance is not None else MIN_BALANCE_MANA,
-            already_positioned=positioned, market_read=market_read,
+            already_positioned=positioned,
         )
         # Exposure cap (live only): total open exposure must stay <= 30% of balance.
         if (bet is not None and can_post and balance is not None
