@@ -33,8 +33,10 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT / "bot"))  # so sibling bot modules (asknews) import when run direct
 
 # ruff: noqa: E402  (imports follow the sys.path bootstrap above)
+import asknews  # optional AskNews research source (dark by default; no key -> no-op)
 from metaculus import MetaculusClient
 
 from forecast_scaffold.core import (
@@ -878,6 +880,13 @@ def forecast_question(
     # types is an option/CDF artifact and would journal a nonsense benchmark value.
     crowd = client.community_prediction(question) if qtype == "binary" else None
     base_brief = build_brief(post, question, None)
+    # Optional AskNews starting material, fetched ONCE for the RESEARCH run only (dark by
+    # default: no key/kill-switch -> ""). Appended to the research/angle briefs below, and to
+    # NOTHING else — triage is a cheap classify call and reasoning-only runs work from the
+    # dossier, so neither needs it. It is ADDITIONAL evidence to verify and search beyond,
+    # never a replacement, and carries no yes/no lean (see bot/asknews.py). Metaculus-only key
+    # terms are why this rides the tournament run and not run_manifold.
+    news = asknews.news_section(question.get("title") or post.get("title") or "")
     # The market-scan mandate (sighted only). Kept as a SEPARATE string so angle mode can
     # hand it to sighted angles and WITHHOLD it from the blind angle F, which must stay
     # market-blind by design even when the overall run is sighted.
@@ -1089,7 +1098,7 @@ def forecast_question(
                 + angle_brief_section(letter, angle_sections[letter])
             )
             candidate, model, errors = one_run(
-                run_cmd, run_brief, run_system, False, args.timeout,
+                run_cmd, run_brief + news, run_system, False, args.timeout,
                 min_sources=min_sources,
             )
             if candidate is None:
@@ -1131,7 +1140,7 @@ def forecast_question(
                 + (FAST_PROXY_SECTION if slow_question else "")
             )
             candidate, model, errors = one_run(
-                agent_cmd, brief, full_system, need_dossier, args.timeout,
+                agent_cmd, brief + news, full_system, need_dossier, args.timeout,
                 min_sources=min_sources,
             )
             if candidate is None:

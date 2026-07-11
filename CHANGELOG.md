@@ -4,6 +4,23 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.20] - 2026-07-11
+
+### Added
+- **AskNews as an optional, competition-scoped research source** (`bot/asknews.py`):
+  when a key is present (env or `~/.asknews/key[.txt]`), the tournament bot's research
+  and angle runs get a "Recent news" section — hot (`strategy=latest news`, 6 articles)
+  + historical (`news knowledge`, 10) passes, deduped, dated, capped, and explicitly
+  labeled "starting material; verify key claims and search beyond it" (the measured
+  lesson: digests reduce research agency — this seeds, never replaces, self-directed
+  search). No preliminary lean is ever injected (the reference bots' anti-pattern).
+  Ships dark: no key = byte-identical briefs. `ASKNEWS_DISABLE=1` kill switch.
+  **Key usage terms enforced structurally**: the key is licensed for the Metaculus
+  competition only — `run_manifold` has no asknews import and a compliance-guard test
+  keeps it that way. bot.yml passes `ASKNEWS_API_KEY` through (absent secret = off).
+  Suite-wide conftest defaults AskNews off in tests so a developer's keyfile never
+  leaks live calls into CI or local runs.
+
 ## [0.4.19] - 2026-07-11
 
 Post-hoc logistic recalibration (Platt scaling) — the highest-value portable lever from a

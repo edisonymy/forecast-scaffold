@@ -62,6 +62,8 @@ jobs:
         env:
           METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # AskNews: competition-licensed research source; absent secret = section silently off
+          ASKNEWS_API_KEY: ${{ secrets.ASKNEWS_API_KEY }}
           # via env, never interpolated into the shell line (script-injection safe)
           TOURNAMENT_ID: ${{ vars.TOURNAMENT_ID }}
         run: |
@@ -122,6 +124,8 @@ jobs:
           LEAK_PATTERNS: ${{ secrets.LEAK_PATTERNS }}
           METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # AskNews: competition-licensed research source; absent secret = section silently off
+          ASKNEWS_API_KEY: ${{ secrets.ASKNEWS_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           # Leak-guard the machine-generated journal BEFORE publishing it. The bot ingests
