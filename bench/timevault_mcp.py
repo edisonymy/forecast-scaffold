@@ -25,13 +25,23 @@ from timevault import LeakError, TimeVault, parse_cutoff  # noqa: E402
 PROTOCOL_FALLBACK = "2024-11-05"
 
 
-def tool_definitions(cutoff_label: str) -> list[dict]:
-    """Tool schemas; every description states the cutoff so the agent plans around it."""
+def tool_definitions(cutoff_label: str, with_corpus: bool = False) -> list[dict]:
+    """Tool schemas; every description states the cutoff so the agent plans around it.
+
+    The two corpus tools are advertised only when the server was launched with --corpus."""
     locked = (
         f" TIME-LOCKED: only material from on or before {cutoff_label} exists; "
         "later information is not retrievable by any means."
     )
-    return [
+    corpus_caveat = (
+        " CORPUS CAVEAT: results are URLs from FutureSearch's frozen scrape manifest "
+        "(what the SOTA agent searched), NOT page content — the dataset ships no page "
+        "text. Each url's crawl date is cutoff-checked (hits scraped after the as-of are "
+        "excluded), but the crawl window (2025-10-13..28) can post-date a question's "
+        "as-of by a few days. Retrieve the real pre-cutoff content by passing the url to "
+        "fetch_page."
+    )
+    tools = [
         {
             "name": "search_news",
             "description": "Search worldwide news coverage inside a window ending at the "
@@ -76,6 +86,41 @@ def tool_definitions(cutoff_label: str) -> list[dict]:
             },
         },
     ]
+    if with_corpus:
+        tools += [
+            {
+                "name": "search_corpus",
+                "description": "Keyword-search the frozen BTF-2 corpus to DISCOVER the "
+                               "source URLs FutureSearch's SOTA agent actually scraped. "
+                               "Returns {url, title, date, snippet} only." + corpus_caveat,
+                "inputSchema": {
+                    "type": "object", "required": ["query"],
+                    "properties": {
+                        "query": {"type": "string", "description": "keywords to match"},
+                        "limit": {"type": "integer", "description": "default 8, max 25"},
+                        "include_undated": {"type": "boolean",
+                                            "description": "include hits with no parseable "
+                                                           "crawl date (default false)"},
+                    },
+                },
+            },
+            {
+                "name": "fetch_corpus_page",
+                "description": "Return the stored manifest record for a corpus url. The "
+                               "dataset ships NO page body, so 'text' is URL-derived "
+                               "tokens, not article content — use fetch_page for the real "
+                               "pre-cutoff content." + corpus_caveat,
+                "inputSchema": {
+                    "type": "object", "required": ["url"],
+                    "properties": {
+                        "url": {"type": "string"},
+                        "max_chars": {"type": "integer", "description": "default 8000"},
+                        "include_undated": {"type": "boolean", "description": "default false"},
+                    },
+                },
+            },
+        ]
+    return tools
 
 
 def handle_message(msg: dict, vault: TimeVault) -> dict | None:
@@ -102,13 +147,17 @@ def handle_message(msg: dict, vault: TimeVault) -> dict | None:
         })
     if method == "ping":
         return ok({})
+    with_corpus = bool(vault.corpus_db)
+    valid = {"search_news", "fetch_page", "wikipedia_asof"}
+    if with_corpus:
+        valid |= {"search_corpus", "fetch_corpus_page"}
     if method == "tools/list":
-        return ok({"tools": tool_definitions(cutoff_label)})
+        return ok({"tools": tool_definitions(cutoff_label, with_corpus=with_corpus)})
     if method == "tools/call":
         params = msg.get("params") or {}
         name = str(params.get("name") or "")
         arguments = params.get("arguments") or {}
-        if name not in ("search_news", "fetch_page", "wikipedia_asof"):
+        if name not in valid:
             return rpc_error(-32602, f"unknown tool {name!r}")
         try:
             result = getattr(vault, name)(**arguments)
@@ -131,8 +180,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cutoff", required=True,
                         help="ISO date/datetime; bare dates lock to 00:00 UTC that day")
+    parser.add_argument("--corpus", default=None,
+                        help="path to btf2_corpus.sqlite; enables the search_corpus and "
+                             "fetch_corpus_page tools (time-locked + scrape-window caveat)")
     args = parser.parse_args(argv)
-    vault = TimeVault(parse_cutoff(args.cutoff))
+    vault = TimeVault(parse_cutoff(args.cutoff), corpus_db=args.corpus)
 
     stdin = sys.stdin
     stdout = sys.stdout

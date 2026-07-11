@@ -20,6 +20,14 @@ Sources and their guarantee strength:
   ranking informed by later importance); each hit's ``seendate`` is re-checked client-side.
   Discovery only — for article CONTENT route the URL through ``fetch_page`` so the text
   comes from a pre-cutoff snapshot, not today's live page.
+- **BTF-2 corpus** (``search_corpus`` / ``fetch_corpus_page``, optional): a local SQLite
+  FTS index over FutureSearch's frozen scrape manifest (build it with
+  ``bench/build_corpus_index.py``). The manifest ships URLs + crawl dates ONLY — no page
+  text — so this source is DISCOVERY of the exact sources the SOTA teacher searched; the
+  ``date_scraped`` crawl timestamp is run through the same ``_assert_pre_cutoff`` choke
+  point (hits scraped after the as-of instant are excluded), and every result carries the
+  documented scrape-window caveat. Route discovered URLs through ``fetch_page`` for
+  pre-cutoff content. Absent a configured corpus, both methods raise a clear error.
 
 Residual leak surfaces, documented not hidden: the model's own weights (choose questions
 that RESOLVE after the model's training cutoff — a set-selection duty, not a tool duty),
@@ -33,12 +41,14 @@ import contextlib
 import gzip
 import json
 import re
+import sqlite3
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import UTC, datetime
 from html.parser import HTMLParser
+from pathlib import Path
 
 USER_AGENT = "forecast-scaffold-timevault/0.1 (leak-free pastcast research)"
 WAYBACK_CDX = "https://web.archive.org/cdx/search/cdx"
@@ -81,6 +91,11 @@ def _parse_stamp(raw: str) -> datetime:
             return datetime.strptime(text, fmt).replace(tzinfo=UTC)
         except ValueError:
             continue
+    # Fallback: full ISO 8601 — e.g. the corpus 'date_scraped' carries microseconds and
+    # no 'Z' ("2025-10-22T21:30:11.912205"), which the fixed formats above don't cover.
+    with contextlib.suppress(ValueError):
+        dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
+        return dt if dt.tzinfo else dt.replace(tzinfo=UTC)
     raise ValueError(f"unrecognized timestamp {raw!r}")
 
 
@@ -121,11 +136,23 @@ def html_to_text(html: str) -> str:
 class TimeVault:
     """Time-locked research over Wayback + Wikipedia + GDELT. One cutoff, enforced once."""
 
-    def __init__(self, cutoff: datetime | str, timeout: int = 45) -> None:
+    # Fallback caveat if the corpus db predates the corpus_meta table (build writes one).
+    CORPUS_CAVEAT_FALLBACK = (
+        "BTF-2 scrape manifest (discovery only): hits are URLs the SOTA agent scraped, "
+        "NOT page content; 'date' is a crawl timestamp that may post-date the as-of by a "
+        "few days (same skew the teacher had). Retrieve real pre-cutoff content via "
+        "fetch_page."
+    )
+
+    def __init__(self, cutoff: datetime | str, timeout: int = 45,
+                 corpus_db: str | None = None) -> None:
         self.cutoff = cutoff if isinstance(cutoff, datetime) else parse_cutoff(cutoff)
         if self.cutoff.tzinfo is None:
             self.cutoff = self.cutoff.replace(tzinfo=UTC)
         self.timeout = timeout
+        self.corpus_db = str(corpus_db) if corpus_db else None
+        self._corpus_conn: sqlite3.Connection | None = None
+        self._corpus_caveat: str | None = None
 
     # -- the choke point ---------------------------------------------------------------
     def _assert_pre_cutoff(self, stamp: str, what: str) -> datetime:
@@ -270,15 +297,133 @@ class TimeVault:
             "text": content[:max_chars],
         }
 
+    # -- BTF-2 corpus (optional; the SOTA teacher's frozen scrape manifest) -------------
+    def _corpus(self) -> sqlite3.Connection:
+        """Open (once, read-only) the corpus index, or fail with a clear message."""
+        if not self.corpus_db:
+            raise RuntimeError(
+                "no corpus configured — search_corpus / fetch_corpus_page need a corpus "
+                "db; build it with bench/build_corpus_index.py and pass its path as "
+                "corpus_db (or --corpus to the MCP server)"
+            )
+        if self._corpus_conn is None:
+            if not Path(self.corpus_db).exists():
+                raise RuntimeError(f"corpus db not found: {self.corpus_db}")
+            con = sqlite3.connect(f"file:{self.corpus_db}?mode=ro", uri=True)
+            with contextlib.suppress(sqlite3.Error):
+                meta = dict(con.execute("SELECT key, value FROM corpus_meta").fetchall())
+                self._corpus_caveat = meta.get("caveat")
+            self._corpus_conn = con
+        return self._corpus_conn
+
+    @property
+    def _caveat(self) -> str:
+        return self._corpus_caveat or self.CORPUS_CAVEAT_FALLBACK
+
+    @staticmethod
+    def _fts_match(query: str) -> str:
+        """User text -> a safe FTS5 MATCH string: alnum tokens, each phrase-quoted (so
+        reserved words / punctuation can't inject operators), OR-joined for recall over
+        short URL-derived docs (bm25 still ranks multi-term, rarer-term hits first)."""
+        toks = [t for t in re.split(r"[^0-9A-Za-z]+", str(query).lower()) if len(t) > 1]
+        return " OR ".join(f'"{t}"' for t in toks)
+
+    def _corpus_date_gate(self, raw: str, what: str,
+                          include_undated: bool) -> tuple[bool, str | None]:
+        """Same choke point as every other source. -> (keep?, YYYY-MM-DD or None).
+
+        Post-cutoff scrape -> dropped (leak-safe). Unparseable/empty date -> dropped
+        unless include_undated (documented caveat: the manifest date is a crawl time)."""
+        try:
+            dt = self._assert_pre_cutoff(str(raw or ""), what)
+            return True, dt.strftime("%Y-%m-%d")
+        except LeakError:
+            return False, None
+        except ValueError:
+            return include_undated, None
+
+    def search_corpus(self, query: str, limit: int = 8,
+                      include_undated: bool = False) -> list[dict]:
+        """Keyword-search the teacher's scrape manifest. Returns discovery metadata only —
+        {url, title, date, snippet} — never page content (route urls through fetch_page).
+        Every returned url was crawled on or before the as-of instant; the caveat field
+        states the scrape-window skew and that the text is URL-derived, not page body."""
+        con = self._corpus()
+        limit = max(1, min(int(limit), 25))
+        match = self._fts_match(query)
+        if not match:
+            return []
+        over = max(limit * 8, 40)  # over-fetch: the cutoff gate drops post-scrape hits
+        try:
+            rows = con.execute(
+                "SELECT p.url, p.title, p.date_scraped, "
+                "snippet(pages_fts, 1, '[', ']', ' … ', 12) "
+                "FROM pages_fts JOIN pages p ON p.rowid = pages_fts.rowid "
+                "WHERE pages_fts MATCH ? ORDER BY rank LIMIT ?",
+                (match, over),
+            ).fetchall()
+        except sqlite3.OperationalError:  # FTS4 fallback build: no external content / bm25
+            rows = con.execute(
+                "SELECT url, title, date_scraped, text FROM pages_fts "
+                "WHERE pages_fts MATCH ? LIMIT ?", (match, over),
+            ).fetchall()
+        out: list[dict] = []
+        for url, title, date_scraped, snip in rows:
+            keep, date = self._corpus_date_gate(date_scraped, f"corpus hit {url}",
+                                                include_undated)
+            if not keep:
+                continue
+            out.append({"url": url, "title": title, "date": date,
+                        "snippet": (snip or "")[:400], "caveat": self._caveat})
+            if len(out) >= limit:
+                break
+        return out
+
+    def fetch_corpus_page(self, url: str, max_chars: int = 8000,
+                          include_undated: bool = False) -> dict:
+        """The stored manifest record for a url. NOTE: the dataset ships no page body, so
+        'text' is URL-derived tokens, not article content — fetch_page (time-locked
+        Wayback) is the path to the real pre-cutoff content. Respects the cutoff: a url
+        scraped after the as-of instant raises LeakError."""
+        con = self._corpus()
+        max_chars = max(500, min(int(max_chars), 30000))  # match the other fetchers' cap
+        row = con.execute(
+            "SELECT title, date_scraped, question_id, text FROM pages WHERE url = ?",
+            (url,),
+        ).fetchone()
+        if row is None:
+            return {"url": url, "found": False, "date": None,
+                    "text": "This URL is not in the BTF-2 scrape manifest.",
+                    "caveat": self._caveat}
+        title, date_scraped, qid, text = row
+        try:
+            date = self._assert_pre_cutoff(str(date_scraped or ""),
+                                           f"corpus page {url}").strftime("%Y-%m-%d")
+        except ValueError:
+            if not include_undated:
+                raise LeakError(
+                    f"corpus page {url} has no parseable scrape date; excluded by default "
+                    "(pass include_undated to override — documented caveat)"
+                ) from None
+            date = None
+        text = text or ""
+        truncated = len(text) > max_chars
+        return {"url": url, "found": True, "title": title, "date": date,
+                "question_id": qid, "truncated": truncated,
+                "text": text[:max_chars], "caveat": self._caveat}
+
 
 def main(argv: list[str] | None = None) -> int:
     """Manual smoke: python bench/timevault.py --cutoff 2025-10-23 <tool> <arg>."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cutoff", required=True)
-    parser.add_argument("tool", choices=("search_news", "fetch_page", "wikipedia_asof"))
+    parser.add_argument("--corpus", default=None,
+                        help="path to btf2_corpus.sqlite (for search_corpus/fetch_corpus_page)")
+    parser.add_argument("tool", choices=("search_news", "fetch_page", "wikipedia_asof",
+                                         "search_corpus", "fetch_corpus_page"))
     parser.add_argument("arg")
     args = parser.parse_args(argv)
-    vault = TimeVault(parse_cutoff(args.cutoff))
+    vault = TimeVault(parse_cutoff(args.cutoff), corpus_db=args.corpus)
     result = getattr(vault, args.tool)(args.arg)
     print(json.dumps(result, ensure_ascii=False, indent=1))
     return 0

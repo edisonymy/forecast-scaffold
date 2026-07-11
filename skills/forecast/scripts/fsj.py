@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.4.17"
+SCAFFOLD_VERSION = "0.4.18"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -71,9 +71,22 @@ DEFAULTS: dict[str, Any] = {
         #              the first live batch put its most crowd-divergent calls on its
         #              thinnest research (q44381 MC: 0 sources; q44382/q44511: 2) —
         #              exactly the paths the dossier contract never covered.
-        "low": {"draws": 1, "searches": 1, "runs": 1, "run_models": [], "min_sources": 1},
-        "medium": {"draws": 5, "searches": 5, "runs": 3, "run_models": [], "min_sources": 3},
-        "high": {"draws": 12, "searches": 12, "runs": 4, "run_models": [], "min_sources": 5},
+        # run_angles = engineered evidence diversity — SHIPS DARK (empty everywhere until
+        #              benched). [] = the dossier architecture above, unchanged. Non-empty
+        #              (e.g. ["F","D","A"]) FLIPS the bot flow: instead of one shared-dossier
+        #              research run + reasoning-only runs, it launches one INDEPENDENT
+        #              full-research run per angle (operator briefs in
+        #              skills/forecast/references/research-angles.md), each on a deliberately
+        #              different information diet, then pools them. Measured why: runs that
+        #              share one dossier correlate ~0.97 (members disagree ~0.03), so the pool
+        #              equals the member average at N times the cost — evidence diversity is
+        #              the pooling prerequisite. Binary only, like runs (geo_mean_odds pool).
+        "low": {"draws": 1, "searches": 1, "runs": 1, "run_models": [], "min_sources": 1,
+                "run_angles": []},
+        "medium": {"draws": 5, "searches": 5, "runs": 3, "run_models": [], "min_sources": 3,
+                   "run_angles": []},
+        "high": {"draws": 12, "searches": 12, "runs": 4, "run_models": [], "min_sources": 5,
+                 "run_angles": []},
     },
     # 0.8 = Halawi et al.'s validated optimum ("4x weight for the crowd", NeurIPS 2024)
     # for blending with the SAME question's human crowd/market — the chat/CLI use where a

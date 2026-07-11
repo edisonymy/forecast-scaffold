@@ -4,6 +4,31 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.18] - 2026-07-11
+
+The research-side answer to "why does FutureSearch beat frontier models" — their own
+paper and a first-party ablation say: research agency (Opus loses 0.022 Brier when denied
+its own search: 0.131→0.153, their measurement) plus evidence-diverse ensembling (+0.005)
+plus a strategy stack (+0.006). Two pieces shipped toward that:
+
+### Added
+- **Corpus-backed discovery for the vault** (committed separately as `b407635`): an
+  8,025,921-row FTS5 index over FutureSearch's published BTF-2 scrape manifest —
+  ranked, date-stamped, question-linked URL discovery, with content still flowing
+  through the time-locked Wayback fetch (the manifest ships no page bodies).
+  RetroSearch-lite: corpus for finding, archive for reading. `timevault_mcp --corpus`,
+  `run_bench --corpus`.
+- **Angle-diverse independent research** (`run_angles` tier knob, ships dark): when set
+  (e.g. `["F","D","A"]`), a tier runs one INDEPENDENT full-research run per angle from
+  `skills/forecast/references/research-angles.md` — fundamentals (market-blind by
+  design, even in sighted mode), decomposition, anomaly hunt — and pools with
+  geo-mean-odds, journaling per-angle probabilities. Measured why: dossier-sharing runs
+  disagree by only ~0.03, so their pool equals the member average; FutureSearch
+  transcripts show members that research independently with assigned angles and
+  deliberately different information diets. Evidence diversity is the pooling
+  prerequisite. The method text ships as skill markdown (portable); the harness only
+  orchestrates.
+
 ## [0.4.17] - 2026-07-11
 
 ### Added

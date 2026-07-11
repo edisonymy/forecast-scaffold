@@ -44,14 +44,16 @@ from run_bot import (
     BLIND_DISALLOWED,
     PROVIDERS,
     _model_from_cmd,
+    angle_brief_section,
     build_system,
     extract_json,
+    load_angle_sections,
     openrouter_model_cmd,
     run_agent,
     triage,
 )
 
-from forecast_scaffold.core import SCAFFOLD_VERSION, load_config
+from forecast_scaffold.core import SCAFFOLD_VERSION, geo_mean_odds, load_config
 
 # The bench adds a fourth provider on top of run_bot's read-only PROVIDERS: a tool-less
 # single completion straight to OpenRouter's native chat API (bench/direct_agent.py). It
@@ -65,7 +67,7 @@ BENCH_DISALLOWED = BLIND_DISALLOWED + (
     ",WebFetch(domain:randforecastinginitiative.org)"
     ",WebFetch(domain:www.randforecastinginitiative.org)"
 )
-TIERS = ("low", "medium", "high", "auto", "zero")
+TIERS = ("low", "medium", "high", "auto", "zero", "plain", "angles")
 
 # Leak-free pastcast modes. Live web on a resolved question finds outcomes; the repo's
 # own Read/Glob/Grep reach bench/sets/*.jsonl where the RESOLUTION FIELD sits in
@@ -82,6 +84,8 @@ LEAKFREE_DISALLOWED = (
 )
 TIMEVAULT_TOOLS = ("mcp__timevault__search_news,mcp__timevault__fetch_page,"
                    "mcp__timevault__wikipedia_asof")
+# Optional BTF-2 corpus tools, allowed only when --corpus wires an index into the server.
+CORPUS_TOOLS = "mcp__timevault__search_corpus,mcp__timevault__fetch_corpus_page"
 _AS_OF = re.compile(r"AS-OF DATE:\s*([0-9]{4}-[0-9]{2}-[0-9]{2}(?:[ T][0-9:.]+)?)")
 
 
@@ -94,13 +98,16 @@ def spec_as_of(spec: dict) -> str | None:
     return match.group(1).strip() if match else None
 
 
-def leakfree_agent_cmd(base_cmd: str, mode: str, mcp_config: str | None) -> str:
+def leakfree_agent_cmd(base_cmd: str, mode: str, mcp_config: str | None,
+                       with_corpus: bool = False) -> str:
     """Rebuild the agent command with every live research/filesystem path removed.
 
     The --allowed-tools value is REPLACED (not appended — the CLI is last-wins on
     repeats), and one combined --disallowed-tools belt is attached. In timevault mode
     the only allowed tools are the vault's, and --strict-mcp-config guarantees no other
-    MCP server (with live-web tools) rides along."""
+    MCP server (with live-web tools) rides along. When ``with_corpus`` the two corpus
+    tools are added to the allow-list (the server only exposes them if it was launched
+    with --corpus, which mcp_config_for wires in tandem)."""
     tokens = shlex.split(base_cmd)
     for flag in ("--allowed-tools", "--disallowed-tools", "--mcp-config"):
         while flag in tokens:
@@ -109,37 +116,42 @@ def leakfree_agent_cmd(base_cmd: str, mode: str, mcp_config: str | None) -> str:
     if mode == "timevault":
         if not mcp_config:
             raise ValueError("timevault mode needs an mcp config path")
-        tokens += ["--allowed-tools", TIMEVAULT_TOOLS,
+        allowed = TIMEVAULT_TOOLS + (f",{CORPUS_TOOLS}" if with_corpus else "")
+        tokens += ["--allowed-tools", allowed,
                    "--mcp-config", Path(mcp_config).as_posix(), "--strict-mcp-config"]
     tokens += ["--disallowed-tools", LEAKFREE_DISALLOWED]
     return " ".join(shlex.quote(t) for t in tokens)
 
 
-_MCP_CONFIG_CACHE: dict[str, str] = {}
+_MCP_CONFIG_CACHE: dict[tuple[str, str], str] = {}
 _MCP_CONFIG_DIR: list[str] = []  # created lazily, once per invocation
 
 
-def mcp_config_for(as_of: str) -> str:
-    """One config file per distinct cutoff; the cutoff rides in the SERVER's argv."""
-    if as_of in _MCP_CONFIG_CACHE:
-        return _MCP_CONFIG_CACHE[as_of]
+def mcp_config_for(as_of: str, corpus: str | None = None) -> str:
+    """One config file per distinct (cutoff, corpus); both ride in the SERVER's argv."""
+    key = (as_of, corpus or "")
+    if key in _MCP_CONFIG_CACHE:
+        return _MCP_CONFIG_CACHE[key]
     if not _MCP_CONFIG_DIR:
         _MCP_CONFIG_DIR.append(tempfile.mkdtemp(prefix="timevault-cfg-"))
+    server_args = [str(ROOT / "bench" / "timevault_mcp.py"), "--cutoff", as_of]
+    if corpus:
+        server_args += ["--corpus", str(Path(corpus).resolve())]
     config = {"mcpServers": {"timevault": {
         "command": sys.executable,
-        "args": [str(ROOT / "bench" / "timevault_mcp.py"), "--cutoff", as_of],
+        "args": server_args,
     }}}
     path = Path(_MCP_CONFIG_DIR[0]) / f"cfg-{len(_MCP_CONFIG_CACHE)}.json"
     path.write_text(json.dumps(config), encoding="utf-8")
-    _MCP_CONFIG_CACHE[as_of] = str(path)
+    _MCP_CONFIG_CACHE[key] = str(path)
     return str(path)
 
-# "zero" = the no-harness ablation cell: the identical brief and tools, none of the
-# skill's method. What it wins or loses against tells you what the scaffold is worth.
-ZERO_SYSTEM = (
-    "You are forecasting a real question. Read the resolution criteria as a binding "
-    "contract — adversarially: what exactly counts, what explicitly does not. Research "
-    "with your available tools as you see fit, then give your honest probability.\n"
+# The tail every bench system prompt shares: the mandatory output contract (a fenced json
+# block with probability/reasoning/sources) and the safety/leak-hygiene sections
+# (untrusted-input + blind mode). Safety and blindness are properties of the HARNESS, not
+# of the method under test, so every arm carries this identical block — the no-method zero
+# cell, the minimal PLAIN baseline, and the skill's own tiers alike.
+_BENCH_CONTRACT_AND_HYGIENE = (
     "END your reply with exactly one fenced json block, no text after it:\n"
     '```json\n{"probability": 0.63, "reasoning": "<3-6 lines>", '
     '"sources": ["<url or dataset actually consulted; [] if none>"]}\n```\n'
@@ -152,6 +164,34 @@ ZERO_SYSTEM = (
     "polls, expert analysis and ratings, official statistics, domain literature. Blind "
     "means not peeking at the answer sheet — it does not mean under-researching."
 )
+
+# "zero" = the no-harness ablation cell: the identical brief and tools, none of the
+# skill's method. What it wins or loses against tells you what the scaffold is worth.
+ZERO_SYSTEM = (
+    "You are forecasting a real question. Read the resolution criteria as a binding "
+    "contract — adversarially: what exactly counts, what explicitly does not. Research "
+    "with your available tools as you see fit, then give your honest probability.\n"
+    + _BENCH_CONTRACT_AND_HYGIENE
+)
+
+# "plain" = the research-capable MINIMAL-prompt arm. FutureSearch's own benchmark baseline
+# directive (the prompt their frontier agents used to reach leaderboard scores) + the SAME
+# contract/hygiene tail as every other arm, and NOTHING of the skill's method: no tiers,
+# draws, dossier, reference class, or research floors. It isolates "does the method beat a
+# competent minimal agent given the same tools and evidence access?".
+PLAIN_SYSTEM = (
+    "You have been given a prediction question with its resolution criteria. Your task "
+    "is to research this question and produce the most accurate probabilistic forecast "
+    "you can. Write a brief rationale summarizing your research and reasoning, then "
+    "provide your final forecast.\n"
+    + _BENCH_CONTRACT_AND_HYGIENE
+)
+
+# "angles" reproduces bot/run_bot.py's angle mode for the bench: one INDEPENDENT
+# full-research run per angle letter (build_system high + the operator's angle brief from
+# skills/forecast/references/research-angles.md), pooled by geometric mean of odds. Default
+# trio mirrors the bot's flagged set; --angles overrides it.
+DEFAULT_ANGLES = ("F", "D", "A")
 
 # --spine-file (reasoning-spine A/B harness): the zero cell already isolates the
 # scaffold's method from the dossier, so it doubles as the ablation rig for the METHOD
@@ -182,6 +222,49 @@ def build_bench_brief(spec: dict, leakfree: str = "off") -> str:
         "\n## Background",
         background,
     ])
+
+
+def _run_forecast(
+    system: str | None, brief: str, args: argparse.Namespace, *,
+    direct: bool = False, direct_model: str = "", agent_cmd: str = "",
+) -> tuple[float | None, dict, str, float, list[str]]:
+    """One binary forecast with a single repair retry.
+
+    Runs the agent (the CLI ``run_agent`` or the tool-less ``run_direct`` transport),
+    extracts the fenced-json payload, and accepts a probability strictly inside (0, 1); an
+    invalid payload triggers one corrective retry. Returns (probability|None, payload,
+    model, cost, errors). Shared by the single-prompt tiers and by every angle sub-run of
+    the angles tier, so all arms get identical extraction, validation, and retry behavior."""
+    probability: float | None = None
+    payload: dict = {}
+    model = ""
+    errors: list[str] = []
+    cost = 0.0
+    for attempt in range(2):
+        prompt = brief if attempt == 0 else (
+            brief + "\n\nYour previous output was invalid: "
+            + "; ".join(errors) + "\nEmit a corrected fenced json block."
+        )
+        try:
+            if direct:
+                output, attempt_cost, model = run_direct(
+                    prompt, system, direct_model, args.timeout
+                )
+            else:
+                output, attempt_cost, model = run_agent(
+                    agent_cmd, prompt, system, args.timeout, args.provider
+                )
+            cost += attempt_cost
+            payload = extract_json(output)
+            candidate = payload.get("probability")
+        except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
+            errors = [str(exc)[:300]]
+            continue
+        if isinstance(candidate, int | float) and 0 < float(candidate) < 1:
+            probability = float(candidate)
+            break
+        errors = [f"binary needs a probability in (0,1), got {candidate!r}"]
+    return probability, payload, model, cost, errors
 
 
 def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int = 0) -> dict | None:
@@ -215,9 +298,20 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
     else:
         resolved, effort = tier, tier
     spine_text = getattr(args, "spine_text", None)
-    system = ((ZERO_SYSTEM + f"\n\n{spine_text}" if spine_text else ZERO_SYSTEM)
-              if tier == "zero"
-              else build_system(resolved, blind=True, config=getattr(args, "tier_config", None)))
+    if tier == "zero":
+        system = (ZERO_SYSTEM + f"\n\n{spine_text}") if spine_text else ZERO_SYSTEM
+    elif tier == "plain":
+        # Research-capable minimal arm: FutureSearch's baseline directive + the shared
+        # contract/hygiene tail, none of the skill's method. Same tool treatment as any
+        # research tier under the active leakfree mode (handled by the agent-cmd block).
+        system = PLAIN_SYSTEM
+    elif tier == "angles":
+        system = None  # each angle sub-run below builds its own (high base + angle brief)
+    else:
+        system = build_system(resolved, blind=True, config=getattr(args, "tier_config", None))
+
+    direct_model = ""
+    agent_cmd = ""
     if direct:
         # Tool-less single completion (validated in main: tiers={"zero"}, leakfree="none").
         # No CLI command and nothing to time-lock — the direct transport IS the frozen,
@@ -228,43 +322,55 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
     else:
         as_of = spec_as_of(spec)
         if not as_of:
+            # The graceful rejection both new research tiers inherit: leak control needs an
+            # as-of instant, and a set row without one can't be pastcast — skip, don't guess.
             print(f"    SKIP (leakfree={leakfree} but no as-of date): {spec['id']}")
             return None
-        mcp_config = mcp_config_for(as_of) if leakfree == "timevault" else None
-        agent_cmd = leakfree_agent_cmd(base_cmd, leakfree, mcp_config)
+        corpus = getattr(args, "corpus", None)
+        mcp_config = mcp_config_for(as_of, corpus) if leakfree == "timevault" else None
+        agent_cmd = leakfree_agent_cmd(base_cmd, leakfree, mcp_config,
+                                       with_corpus=bool(corpus))
 
-    probability: float | None = None
-    payload: dict = {}
-    model = ""
-    errors: list[str] = []
-    for attempt in range(2):
-        prompt = brief if attempt == 0 else (
-            brief + "\n\nYour previous output was invalid: "
-            + "; ".join(errors) + "\nEmit a corrected fenced json block."
-        )
-        try:
-            if direct:
-                output, attempt_cost, model = run_direct(
-                    prompt, system, direct_model, args.timeout
-                )
-            else:
-                output, attempt_cost, model = run_agent(
-                    agent_cmd, prompt, system, args.timeout, args.provider
-                )
-            cost += attempt_cost
-            payload = extract_json(output)
-            candidate = payload.get("probability")
-        except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
-            errors = [str(exc)[:300]]
-            continue
-        if isinstance(candidate, int | float) and 0 < float(candidate) < 1:
-            probability = float(candidate)
-            break
-        errors = [f"binary needs a probability in (0,1), got {candidate!r}"]
-    if probability is None:
-        print(f"    FAILED after retry: {errors}")
-        return None
-    raw_draws = [float(d) for d in payload.get("raw_draws") or [] if isinstance(d, int | float)]
+    angle_letters: list[str] | None = None
+    raw_draws: list[float] = []
+    if tier == "angles":
+        # Reproduce bot/run_bot.py's angle mode: one INDEPENDENT full-research run per angle
+        # (build_system high + the operator's angle brief), pooled by geo_mean_odds. Bench is
+        # ALWAYS blind (module docstring), so EVERY angle already carries the tool-level blind
+        # denylist and the blind prompt section; angle F's by-design market-blindness is thus
+        # ambient here, and the crowd value never enters build_bench_brief in the first place.
+        # All sub-runs share this one forecast_one call, so the (qid, tier) row is written only
+        # if every angle produced a valid forecast — any failure returns None (nothing
+        # journaled) and the whole question reruns cleanly on the next invocation.
+        angle_letters = list(getattr(args, "angle_list", None) or DEFAULT_ANGLES)
+        sections = load_angle_sections()
+        base_system = build_system("high", blind=True,
+                                   config=getattr(args, "tier_config", None), multi_run=True)
+        per_angle: list[float] = []
+        payload = {}
+        model = ""
+        for letter in angle_letters:
+            angle_system = base_system + angle_brief_section(letter, sections[letter])
+            p_angle, angle_payload, angle_model, sub_cost, errors = _run_forecast(
+                angle_system, brief, args, agent_cmd=agent_cmd)
+            cost += sub_cost  # each angle sub-run's spend rolls into the single row's cost
+            if p_angle is None:
+                print(f"    FAILED angle {letter} after retry: {errors}")
+                return None
+            per_angle.append(p_angle)
+            if not payload:  # the first angle's narrative/sources speak for the pooled row
+                payload, model = angle_payload, angle_model
+        probability = geo_mean_odds(per_angle)
+        raw_draws = per_angle
+    else:
+        probability, payload, model, loop_cost, errors = _run_forecast(
+            system, brief, args, direct=direct, direct_model=direct_model, agent_cmd=agent_cmd)
+        cost += loop_cost
+        if probability is None:
+            print(f"    FAILED after retry: {errors}")
+            return None
+        raw_draws = [float(d) for d in payload.get("raw_draws") or []
+                     if isinstance(d, int | float)]
     row = {
         "qid": spec["id"],
         "source": spec["source"],
@@ -288,6 +394,10 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
         "duration_s": round((datetime.now(UTC) - started).total_seconds(), 1),
         "at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
+    if angle_letters is not None:
+        # provenance: WHICH information diets disagreed is the whole point of the pool, so
+        # the pooled value in raw_draws must be traceable to its angle set.
+        row["angles"] = ",".join(angle_letters)
     if tier == "zero" and spine_text is not None:
         # provenance: a results file alone must never be ambiguous about which spine
         # produced it (arm = the file's own name; spine_sha ties it to the exact text).
@@ -334,12 +444,49 @@ def main(argv: list[str] | None = None) -> int:
                         help="text file appended to ZERO_SYSTEM for the zero tier ONLY — "
                              "one reasoning-spine A/B arm. Pair with --tag so the arm's "
                              "results land in their own file")
+    parser.add_argument("--corpus", default=None,
+                        help="path to bench/corpus/btf2_corpus.sqlite; wires the "
+                             "time-locked search_corpus/fetch_corpus_page tools into the "
+                             "vault so research runs can discover the SOTA teacher's "
+                             "scraped source URLs. Only valid with --leakfree timevault")
+    parser.add_argument("--angles", default="F,D,A",
+                        help="comma-separated angle letters for the 'angles' tier (default "
+                             "F,D,A); each must match a '## Angle X' header in "
+                             "skills/forecast/references/research-angles.md. Ignored by "
+                             "every other tier")
     args = parser.parse_args(argv)
 
     tiers = [t.strip() for t in args.tiers.split(",") if t.strip()]
     unknown = [t for t in tiers if t not in TIERS]
     if unknown:
         parser.error(f"unknown tiers {unknown}; choose from {TIERS}")
+
+    # The angles tier maps each letter to an operator-authored '## Angle X' brief; an unknown
+    # letter is a CONFIG error caught at startup — before the set is loaded or any agent runs,
+    # never a mid-question failure after research is already paid for.
+    args.angle_list = [a.strip().upper() for a in args.angles.split(",") if a.strip()]
+    if "angles" in tiers:
+        if not args.angle_list:
+            parser.error("the 'angles' tier needs at least one angle in --angles")
+        known_angles = load_angle_sections()
+        bad_angles = [a for a in args.angle_list if a not in known_angles]
+        if bad_angles:
+            parser.error(
+                f"unknown research angle(s) {bad_angles}; known angles: "
+                f"{', '.join(sorted(known_angles))} (defined by '## Angle X' headers in "
+                "skills/forecast/references/research-angles.md)"
+            )
+
+    # The corpus rides inside the timevault MCP server, so it only means anything when
+    # research actually routes through that server. Reject the combination early rather
+    # than silently ignoring --corpus.
+    if args.corpus:
+        if args.leakfree != "timevault":
+            parser.error("--corpus is only meaningful with --leakfree timevault "
+                         f"(got --leakfree {args.leakfree})")
+        if not Path(args.corpus).exists():
+            parser.error(f"--corpus path not found: {args.corpus} "
+                         "(build it with bench/build_corpus_index.py)")
 
     # The direct transport has no tools and no CLI harness, so it can only stand in for the
     # one cell that is already a tool-less single completion: the zero tier under leakfree

@@ -37,12 +37,22 @@ max = 0.98
 #               crowd-divergent calls on its thinnest research (q44381 MC: 0 sources;
 #               q44382/q44511: 2) — exactly the single-run paths the dossier contract
 #               never covered.
+# run_angles  = engineered evidence diversity — SHIPS DARK (empty everywhere until benched).
+#               [] = the dossier architecture above, unchanged. Non-empty (e.g. ["F","D","A"])
+#               FLIPS the bot flow: instead of one shared-dossier research run + reasoning-only
+#               runs, it launches one INDEPENDENT full-research run per angle (operator briefs
+#               in skills/forecast/references/research-angles.md), each on a deliberately
+#               different information diet, then pools them. Measured why: runs that share one
+#               dossier correlate ~0.97 (members disagree ~0.03), so the pool equals the member
+#               average at N times the cost — evidence diversity is the pooling prerequisite.
+#               Binary only, like runs (geo_mean_odds pool).
 [tiers.low]
 draws = 1
 searches = 1
 runs = 1
 run_models = []
 min_sources = 1
+run_angles = []
 
 [tiers.medium]
 draws = 5
@@ -50,6 +60,7 @@ searches = 5
 runs = 3
 run_models = []
 min_sources = 3
+run_angles = []
 
 # Candidate future high-tier upgrade (NOT implemented): disjoint-retrieval runs — each run
 # researches its own sources instead of sharing one dossier. Half-validated externally
@@ -61,6 +72,7 @@ searches = 12
 runs = 4
 run_models = []
 min_sources = 5
+run_angles = []
 
 [blend]
 # Weight on the crowd/market number when one exists — used by the chat/CLI aggregate

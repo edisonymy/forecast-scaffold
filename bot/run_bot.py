@@ -51,6 +51,9 @@ from forecast_scaffold.core import (
 )
 
 SKILL = ROOT / "skills" / "forecast"
+# Operator-authored angle briefs (read-only): the harness routes ONE section per
+# independent research run in angle mode. Parsed by the "## Angle X" headers below.
+ANGLES_REF = SKILL / "references" / "research-angles.md"
 DEFAULT_JOURNAL = ROOT / "bot" / "journal" / "forecasts.jsonl"
 # --post backtests default here (gitignored) so a debugging run can never write records
 # into the public preregistration journal unless --journal names it explicitly (v0.4.8).
@@ -310,6 +313,66 @@ LENSES = (
     "Premortem: form a first-instinct estimate, assume it turned out badly wrong, write the "
     "most plausible story of how, then estimate fresh.",
 )
+
+
+# Angle mode (v0.4.x): a tier with a non-empty run_angles list flips the bot flow from
+# one-dossier + reasoning-only runs to N INDEPENDENT full-research runs, each assigned a
+# different angle. Measured motivation: runs that share one dossier correlate ~0.97
+# (members disagree ~0.03), so the pool equals the member average at N times the cost —
+# only evidence diversity born from independent research is the kind pooling can harvest.
+# The angle briefs are operator-authored (references/research-angles.md); the harness only
+# parses the "## Angle X" headers and routes the matching section to the matching run.
+_ANGLE_HEADER = re.compile(r"^## Angle ([A-Za-z])\b", re.MULTILINE)
+
+
+def parse_angle_sections(text: str) -> dict[str, str]:
+    """Angle LETTER -> its full brief, split on the '## Angle X' headers.
+
+    Each section runs from its own header to the next angle header (or EOF), so the
+    operator's brief text is carried verbatim — the harness never rewrites it."""
+    matches = list(_ANGLE_HEADER.finditer(text))
+    sections: dict[str, str] = {}
+    for i, match in enumerate(matches):
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
+        sections[match.group(1).upper()] = text[match.start():end].strip()
+    return sections
+
+
+def load_angle_sections() -> dict[str, str]:
+    """The parsed angle briefs from the reference file (letter -> section)."""
+    return parse_angle_sections(ANGLES_REF.read_text(encoding="utf-8"))
+
+
+def validate_run_angles(config: dict[str, Any]) -> dict[str, str]:
+    """Fail fast on a misconfigured run_angles and return the parsed sections.
+
+    An unknown angle letter is a CONFIG error caught at startup — before any question loop
+    or agent spend — never a mid-run failure after research is already paid for. Called
+    once in main(); the sections are re-read (cheap) where a run actually needs them."""
+    sections = load_angle_sections()
+    for tier_name, params in (config.get("tiers") or {}).items():
+        for letter in (params or {}).get("run_angles") or []:
+            if str(letter).strip().upper() not in sections:
+                raise ValueError(
+                    f"tier {tier_name!r} lists unknown research angle {letter!r}; "
+                    f"known angles: {', '.join(sorted(sections))} "
+                    f"(defined by '## Angle X' headers in {ANGLES_REF.name})"
+                )
+    return sections
+
+
+def angle_brief_section(letter: str, body: str) -> str:
+    """The assigned-angle brief appended to a full research run's system prompt.
+
+    Independent research under different angles is what makes pooling worth its cost;
+    the operator owns the brief content, the harness only frames and routes it."""
+    return (
+        f"\n## Assigned research angle {letter} (mandatory this run)\n"
+        "You are ONE of several INDEPENDENT research runs on this question, each assigned a "
+        "different angle and pooled by geometric mean of odds. Research and forecast under "
+        "this angle — it changes what you go looking for, never the output contract or the "
+        "honesty rules:\n\n" + body
+    )
 
 
 def build_brief(post: dict[str, Any], question: dict[str, Any], crowd: float | None) -> str:
@@ -808,23 +871,27 @@ def forecast_question(
     # The recency-weighted center is only meaningful on binaries; centers[0] on other
     # types is an option/CDF artifact and would journal a nonsense benchmark value.
     crowd = client.community_prediction(question) if qtype == "binary" else None
-    brief = build_brief(post, question, None)
-    if not args.blind:
-        brief += (
-            "\n\n## Crowd signals\n"
-            "No community prediction is provided: bot accounts only ever see other "
-            "bots' aggregates, which are withheld as unvalidated anchors. Searching "
-            "for HUMAN markets is a REQUIRED research step, not an option: check "
-            "whether Polymarket, Kalshi, Manifold, or a bookmaker prices this event, "
-            "and say in your reasoning what you found — including 'no market found'. "
-            "Blending is YOUR judgment call, never arithmetic: a market is a valid "
-            "anchor only if its contract matches this question's resolution criteria "
-            "on the terms that matter (threshold, deadline, resolution source, fine "
-            "print). A near-miss contract is evidence, not an anchor — a real $386k "
-            "book once priced a similarly-worded question 4x away from its Metaculus "
-            "twin because one clause differed. State the contract differences you "
-            "checked before you lean on any market number."
-        )
+    base_brief = build_brief(post, question, None)
+    # The market-scan mandate (sighted only). Kept as a SEPARATE string so angle mode can
+    # hand it to sighted angles and WITHHOLD it from the blind angle F, which must stay
+    # market-blind by design even when the overall run is sighted.
+    crowd_signals = (
+        "\n\n## Crowd signals\n"
+        "No community prediction is provided: bot accounts only ever see other "
+        "bots' aggregates, which are withheld as unvalidated anchors. Searching "
+        "for HUMAN markets is a REQUIRED research step, not an option: check "
+        "whether Polymarket, Kalshi, Manifold, or a bookmaker prices this event, "
+        "and say in your reasoning what you found — including 'no market found'. "
+        "Blending is YOUR judgment call, never arithmetic: a market is a valid "
+        "anchor only if its contract matches this question's resolution criteria "
+        "on the terms that matter (threshold, deadline, resolution source, fine "
+        "print). A near-miss contract is evidence, not an anchor — a real $386k "
+        "book once priced a similarly-worded question 4x away from its Metaculus "
+        "twin because one clause differed. State the contract differences you "
+        "checked before you lean on any market number."
+    )
+    # Ambient brief (unchanged for the dossier path): sighted mode carries the mandate.
+    brief = base_brief + ("" if args.blind else crowd_signals)
     base_cmd = (
         openrouter_model_cmd(args.agent_cmd)
         if args.provider == "openrouter" else args.agent_cmd
@@ -841,9 +908,21 @@ def forecast_question(
     # in-context-draw instruction is replaced (a reasoning-only run being told both
     # "produce 5 in-context draws" and "skip in-context draws" is undefined behavior).
     tier_params = (config.get("tiers") or {}).get(tier) or {}
-    n_runs = max(1, int(tier_params.get("runs", 1)))
-    if qtype != "binary":
-        n_runs = 1
+    # Angle mode: a non-empty run_angles list swaps the dossier flow for N independent
+    # full-research runs, one per angle (see the block comment on parse_angle_sections).
+    # Binary only, exactly like the runs path — the geo_mean_odds pool is defined for
+    # binaries; MC/continuous stay single-run until a pooling rule is preregistered.
+    run_angles = [str(a).strip().upper()
+                  for a in (tier_params.get("run_angles") or []) if str(a).strip()]
+    angle_mode = bool(run_angles) and qtype == "binary"
+    # Sections are re-read here (cheap); the unknown-letter guard already ran in main().
+    angle_sections = load_angle_sections() if angle_mode else {}
+    if angle_mode:
+        n_runs = len(run_angles)
+    else:
+        n_runs = max(1, int(tier_params.get("runs", 1)))
+        if qtype != "binary":
+            n_runs = 1
     system = build_system(tier, args.blind, config, multi_run=n_runs > 1)
 
     # One --disallowed-tools flag only: repeated flags are last-wins in the CLI, so the
@@ -962,6 +1041,7 @@ def forecast_question(
     # (auth outage, session limit: the QUESTION is fine, back off nothing).
     errors: list[str] = []
     run_probs: list[float] = []
+    used_angles: list[str] = []  # angle letters that actually produced a pooled probability
     scenario_flags: list[str] = []  # named-scenario coherence flags (disclosure, no override)
     gaps: list[str] = []  # reasoning runs' self-reported missing_evidence (audit signal)
     dossier = ""
@@ -972,7 +1052,49 @@ def forecast_question(
     slot = 0  # lens/model assignment counter — advances on every reasoning ATTEMPT, so a
     # failed slot cannot hand its lens (and model) to the next one (that silently
     # collapsed ensemble diversity on any transient error).
-    for _ in range(n_runs):
+    if angle_mode:
+        # Angle mode: len(run_angles) INDEPENDENT full-research runs, each with the source
+        # floor, the contract, and its assigned angle section. The first successful run's
+        # payload becomes the record's spokesperson (its sources/reference_class survive);
+        # the pool overwrites probability + raw_draws. No dossier and no reasoning-only runs
+        # here — every angle researches for itself, which is the whole point.
+        min_sources = max(0, int(tier_params.get("min_sources", 0) or 0))
+        for letter in run_angles:
+            over_budget = budget > 0 and (spent["usd"] if spent else 0.0) + run_cost >= budget
+            past_deadline = deadline is not None and time.monotonic() > deadline
+            if over_budget or past_deadline:
+                what = "budget" if over_budget else "deadline"
+                if payload is not None:
+                    print(f"  {what}: stopping after {len(run_probs)} angle run(s)")
+                else:
+                    errors = errors or [f"{what} exhausted before a valid angle run"]
+                break
+            # Angle F is market-blind BY DESIGN even in sighted mode — the blind denylist on
+            # its command, the blind section in its system, and no crowd-scan in its brief.
+            # Every other angle follows the ambient (--blind) mode.
+            run_blind = args.blind or letter == "F"
+            run_disallowed = ALWAYS_DISALLOWED + ("," + BLIND_DISALLOWED if run_blind else "")
+            run_cmd = f"{base_cmd} --disallowed-tools {run_disallowed}"
+            run_brief = base_brief if run_blind else base_brief + crowd_signals
+            run_system = (
+                build_system(tier, run_blind, config, multi_run=n_runs > 1)
+                + (SOURCE_FLOOR_SECTION.format(floor=min_sources) if min_sources else "")
+                + (FAST_PROXY_SECTION if slow_question else "")
+                + angle_brief_section(letter, angle_sections[letter])
+            )
+            candidate, model, errors = one_run(
+                run_cmd, run_brief, run_system, False, args.timeout,
+                min_sources=min_sources,
+            )
+            if candidate is None:
+                continue
+            p_run = float(candidate["probability"])
+            run_probs.append(p_run)
+            used_angles.append(letter)
+            if payload is None:
+                payload, model_used = candidate, model
+            print(f"  angle {letter}: {p_run:.2f}{' (blind)' if run_blind else ''}")
+    for _ in range(0 if angle_mode else n_runs):
         # A question's runs can outspend the whole invocation budget on their own —
         # stop starting new slots once it's exhausted; whatever pooled so far records.
         # This must hold even while payload is still None: a research run that keeps
@@ -1094,23 +1216,40 @@ def forecast_question(
     if len(run_probs) > 1:
         pooled = geo_mean_odds(run_probs)
         spread = max(run_probs) - min(run_probs)
-        print(f"  pooled {len(run_probs)} independent runs "
-              f"{[round(p, 2) for p in run_probs]} -> {pooled:.3f} (spread {spread:.2f})")
-        aggregation_note = f"geo_mean_odds(runs={len(run_probs)})"
+        rounded = [round(p, 2) for p in run_probs]
+        if angle_mode:
+            # Name the angles in the tag AND the note: the pool's value comes from WHICH
+            # information diets disagreed, so scoring and the posted comment must be able to
+            # see them (the numbers live in raw_draws).
+            angles_str = ",".join(used_angles)
+            print(f"  pooled {len(run_probs)} independent research runs (angles "
+                  f"{angles_str}) {rounded} -> {pooled:.3f} (spread {spread:.2f})")
+            aggregation_note = f"geo_mean_odds(angles={angles_str})"
+        else:
+            print(f"  pooled {len(run_probs)} independent runs "
+                  f"{rounded} -> {pooled:.3f} (spread {spread:.2f})")
+            aggregation_note = f"geo_mean_odds(runs={len(run_probs)})"
         # v0.4.0: no arbiter override — the pool IS the aggregator. Disagreement and
         # scenario incoherence stay visible (raw_draws + the flags below) instead of being
         # handed back to a single context at the highest-stakes moments.
         payload["probability"] = pooled
         payload["raw_draws"] = run_probs  # the genuinely independent draws, not in-context ones
-        # The narrative is the research run's own; without this note the journal (and the
+        # The narrative is the spokesperson run's own; without this note the journal (and the
         # posted comment) would argue for a number that was never submitted. The notes go
         # FIRST: the record head-truncates reasoning to 4000 chars, and a disclosure that
         # a long narrative can push off the end is no disclosure at all (v0.4.8).
-        notes = [
-            f"[pooled {len(run_probs)} independent runs "
-            f"{[round(p, 2) for p in run_probs]} -> {pooled:.3f}; the narrative below is "
-            f"the research run's own view ({run_probs[0]:.2f})]"
-        ]
+        if angle_mode:
+            notes = [
+                f"[pooled {len(run_probs)} independent research runs (angles "
+                f"{angles_str}) {rounded} -> {pooled:.3f}; the narrative below is the "
+                f"{used_angles[0]}-angle run's own view ({run_probs[0]:.2f})]"
+            ]
+        else:
+            notes = [
+                f"[pooled {len(run_probs)} independent runs "
+                f"{rounded} -> {pooled:.3f}; the narrative below is "
+                f"the research run's own view ({run_probs[0]:.2f})]"
+            ]
         if scenario_flags:
             notes.append("[scenario-coherence: " + " | ".join(scenario_flags)[:600] + "]")
         payload["reasoning"] = "\n".join(notes) + "\n" + str(payload.get("reasoning", ""))
@@ -1359,6 +1498,9 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     config = load_config()
+    # Angle mode is config-driven; an unknown angle letter must fail HERE — before the
+    # question loop or any agent spend — not mid-run after research is already paid for.
+    validate_run_angles(config)
     client = MetaculusClient()
     Path(args.journal).parent.mkdir(parents=True, exist_ok=True)
     journal = Journal(args.journal)
