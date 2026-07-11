@@ -108,7 +108,7 @@ def _load_staging(con: sqlite3.Connection, src: Path, limit_row_groups: int) -> 
         urls = rg.column("url").to_pylist()
         dates = rg.column("date_scraped").to_pylist()
         qids = rg.column("question_id").to_pylist()
-        batch = [(u, d, q) for u, d, q in zip(urls, dates, qids) if u]
+        batch = [(u, d, q) for u, d, q in zip(urls, dates, qids, strict=True) if u]
         con.executemany("INSERT INTO staging VALUES(?,?,?)", batch)
         total += len(batch)
         if i % 8 == 7:

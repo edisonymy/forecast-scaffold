@@ -78,7 +78,7 @@ def write_journal(path: Path, pairs: list[tuple[float, bool]]) -> None:
 def test_fit_recovers_half_slope() -> None:
     a, b = fit_platt(overconfident_pairs())
     # true slope is 0.5; finite-sample noise keeps it comfortably inside a wide band
-    assert 0.5 == pytest.approx(a, abs=0.15)
+    assert a == pytest.approx(0.5, abs=0.15)
     assert abs(b) < 0.25
     # record the recovered slope for the caller
     print(f"recovered slope a = {a:.4f}")
