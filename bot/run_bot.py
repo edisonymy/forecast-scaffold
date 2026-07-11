@@ -41,9 +41,11 @@ from forecast_scaffold.core import (
     ForecastRecord,
     Journal,
     _utc_now,
+    apply_recalibration,
     clamp,
     geo_mean_odds,
     load_config,
+    load_recalibration,
     percentiles_to_cdf,
     validate_mc,
     validate_percentiles,
@@ -55,6 +57,10 @@ SKILL = ROOT / "skills" / "forecast"
 # independent research run in angle mode. Parsed by the "## Angle X" headers below.
 ANGLES_REF = SKILL / "references" / "research-angles.md"
 DEFAULT_JOURNAL = ROOT / "bot" / "journal" / "forecasts.jsonl"
+# Post-hoc logistic recalibration params, fitted from resolved history by
+# `fsj calibrate-fit`. Absent by default: load_recalibration() then returns the identity
+# map and the recalibration step is a byte-exact no-op (the layer ships inert).
+RECAL_PARAMS_PATH = ROOT / "bot" / "journal" / "recalibration.json"
 # --post backtests default here (gitignored) so a debugging run can never write records
 # into the public preregistration journal unless --journal names it explicitly (v0.4.8).
 BACKTEST_JOURNAL = ROOT / "bot" / "journal" / "backtests.jsonl"
@@ -1257,13 +1263,24 @@ def forecast_question(
     # platform normalization (binary band clamp; MC floor+renormalize over the exact
     # option labels) BEFORE the record is written — not at the submit call after it,
     # where the journal and the platform could silently diverge.
+    raw_probability: float | None = None  # set only when recalibration moves the number
     if qtype == "binary":
         # v0.4.11 (operator decision): the harness NEVER blends. Cross-platform
         # markets rarely share this question's exact contract, and judging contract
         # equivalence is the agent's job (see the Crowd signals brief section) — a
         # mechanical average of non-equivalent probabilities is not a blend, it is a
         # category error. One blending mechanism, owned by the agent, deterministic.
-        payload["probability"] = clamp(float(payload["probability"]), 0.01, 0.99)
+        #
+        # Post-hoc logistic recalibration (v0.4.19): fitted from OUR resolved history by
+        # `fsj calibrate-fit`. With no recalibration.json present load returns identity and
+        # this is byte-exact identical to the old single-clamp line; when params exist we
+        # journal BOTH the raw pooled p and the recalibrated one that was submitted.
+        raw_pooled = float(payload["probability"])
+        recal_a, recal_b = load_recalibration(RECAL_PARAMS_PATH)
+        recal_pooled = apply_recalibration(raw_pooled, recal_a, recal_b)
+        if recal_pooled != raw_pooled:
+            raw_probability = raw_pooled
+        payload["probability"] = clamp(recal_pooled, 0.01, 0.99)
     elif qtype == "multiple_choice":
         payload["probabilities"] = mc_within_api_bounds(
             {str(o): float(payload["probabilities"][str(o)])
@@ -1317,6 +1334,7 @@ def forecast_question(
         reference_class=str(payload.get("reference_class", "")),
         base_rate=_as_float(payload.get("base_rate")),
         probability=float(payload["probability"]) if qtype == "binary" else None,
+        raw_probability=raw_probability,
         options=[str(o) for o in question.get("options") or []] or None,
         probabilities=(
             [float(payload["probabilities"][str(o)]) for o in question.get("options") or []]

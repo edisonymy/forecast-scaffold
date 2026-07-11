@@ -41,7 +41,8 @@ Only `question` is required. Serialization drops `null` fields; absent = null.
 
 | Field | Type | Meaning |
 |---|---|---|
-| `probability` | float? | binary: final pooled p, in [0,1] |
+| `probability` | float? | binary: final pooled p, in [0,1] (the value submitted — post recalibration when one is fitted) |
+| `raw_probability` | float? | v0.4.19: binary pooled p BEFORE post-hoc logistic recalibration (Platt scaling). Present only when a fitted `recalibration.json` actually moved the number; `null`/absent when no recalibration applied (then `probability` is the raw value) |
 | `options` / `probabilities` | list? | multiple_choice: parallel lists; probabilities sum to 1 (±0.01) |
 | `percentiles` | obj? | numeric/discrete: `{"10","25","50","75","90"}`, strictly increasing |
 | `submitted_cdf` | list? | numeric/date: the exact CDF (~201 points) submitted to the platform — a preregistration record of the object actually scored, since `percentiles` alone can't be rebuilt into it |

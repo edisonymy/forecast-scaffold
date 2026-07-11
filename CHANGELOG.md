@@ -4,6 +4,27 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.19] - 2026-07-11
+
+Post-hoc logistic recalibration (Platt scaling) — the highest-value portable lever from a
+sweep of the Metaculus bot ecosystem (their own analysis: Brier −0.016 binary; independent
+test on our pastcast data: 0.1997→0.1761, question-level CV, fitted logit slope 0.573 =
+opus-4-6 overconfident on hard-news questions).
+
+### Added
+- `fsj calibrate-fit`: fits a 2-parameter logistic map `sigmoid(a·logit(p)+b)` from the
+  journal's own resolved binary forecasts, refuses to emit unless n ≥ 40 AND out-of-sample
+  5-fold CV improves, and writes `bot/journal/recalibration.json`. `fit_platt`,
+  `apply_recalibration`, `recalibration_cv`, `load_recalibration`, and the unwired
+  `extremize_logodds` (AIA Forecaster's data-free √3 fallback — opposite sign to our data,
+  an A/B candidate only) in core.py.
+- The bot applies the fitted map to the final pooled binary probability before submission,
+  journaling both `raw_probability` and the recalibrated value. **Ships inert**: with no
+  params file, load returns identity and the path is byte-identical to before — the
+  correction only ever comes from the deployment's OWN resolved history, never a hardcoded
+  direction (the live tournament regime can be under-, not over-, confident; the sign is
+  not portable across model/distribution). `docs/schema.md` updated for `raw_probability`.
+
 ## [0.4.18] - 2026-07-11
 
 The research-side answer to "why does FutureSearch beat frontier models" — their own

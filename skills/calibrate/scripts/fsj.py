@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.4.18"
+SCAFFOLD_VERSION = "0.4.19"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -196,6 +196,12 @@ class ForecastRecord:
 
     # forecast (shape gated by question_type; see validate_record)
     probability: float | None = None  # binary
+    # The pooled binary probability BEFORE post-hoc logistic recalibration (Platt scaling)
+    # was applied. Additive/optional (v0.4.19): defaults None and is written ONLY when a
+    # recalibration actually moved the number, so a deployment with no recalibration.json
+    # journals byte-identically to before this field existed. When set, ``probability`` is
+    # the recalibrated value that was submitted and this is the raw pre-recalibration one.
+    raw_probability: float | None = None
     options: list[str] | None = None  # multiple_choice
     probabilities: list[float] | None = None  # multiple_choice, parallel to options
     percentiles: dict[str, float] | None = None  # numeric/date: {"10": v, ...} monotone
@@ -594,6 +600,143 @@ def score_by(records: list[ForecastRecord], keys: tuple[str, ...]) -> GroupedCal
         for label, bucket in sorted(buckets.items())
     ]
     return GroupedCalibrationReport(keys=keys, groups=groups, pooled=calibration_report(records))
+
+
+# --------------------------------------------------------------------------- recalibration
+#
+# Post-hoc logistic recalibration (Platt scaling): fit a 2-parameter logistic map
+#     outcome ~ sigmoid(a * logit(p) + b)
+# from the deployment's OWN resolved history, then apply it to future probabilities before
+# submission. This is the highest-value portable lever from the Metaculus bot ecosystem.
+#
+# Measured on our pastcast data (760 forecasts, honest question-level 5-fold CV):
+# Brier 0.1997 -> 0.1761 with a fitted slope a=0.573 — opus-4-6 is OVERconfident on hard-news
+# questions and wants shrinking toward 0.5 (a<1). CRITICAL: the sign is model- and
+# distribution-specific. Live tournament bots are frequently UNDER-confident (a>1). So this
+# layer MUST be fitted from the deployment's own resolved history and it SHIPS INERT (the
+# identity map) until fitted — we never hardcode a shrink or a stretch.
+
+#: A 2-parameter logistic fit needs materially more data than the 1-threshold direction
+#: check's MIN_CALIBRATION_N=5. With two free parameters, N in the single digits overfits the
+#: noise and can emit a map worse than identity; 40 is a conservative floor for a stable slope.
+RECAL_MIN_N = 40
+
+_RECAL_EPS = 1e-6  # clamp p away from {0,1} so logit stays finite
+
+
+def _logit(p: float) -> float:
+    p = min(1.0 - _RECAL_EPS, max(_RECAL_EPS, float(p)))
+    return math.log(p / (1.0 - p))
+
+
+def _sigmoid(x: float) -> float:
+    # Overflow-safe on both tails.
+    if x >= 0.0:
+        return 1.0 / (1.0 + math.exp(-x))
+    z = math.exp(x)
+    return z / (1.0 + z)
+
+
+def fit_platt(
+    pairs: list[tuple[float, Any]], min_n: int = RECAL_MIN_N
+) -> tuple[float, float]:
+    """Fit ``(a, b)`` maximizing the log-likelihood of ``outcome ~ sigmoid(a*logit(p)+b)``
+    over ``(probability, outcome)`` pairs by batch gradient ascent.
+
+    Returns the identity map ``(1.0, 0.0)`` when there are fewer than ``min_n`` pairs — too
+    little data to fit two parameters without overfitting. Probabilities are clamped to
+    ``(1e-6, 1-1e-6)`` before the logit so 0/1 inputs stay finite."""
+    pts = [(_logit(p), 1.0 if o else 0.0) for p, o in pairs]
+    if len(pts) < min_n:
+        return (1.0, 0.0)
+    a, b = 1.0, 0.0
+    n = len(pts)
+    lr = 0.1
+    for _ in range(1000):
+        grad_a = 0.0
+        grad_b = 0.0
+        for x, y in pts:
+            err = y - _sigmoid(a * x + b)  # d/dtheta of log-likelihood
+            grad_a += err * x
+            grad_b += err
+        a += lr * grad_a / n
+        b += lr * grad_b / n
+    return (a, b)
+
+
+def apply_recalibration(p: float, a: float, b: float) -> float:
+    """Map ``p`` through the fitted logistic: ``sigmoid(a*logit(p)+b)``, clamped to the
+    DEFAULTS clamp band. Returns ``p`` unchanged — exact identity — when ``(a, b)`` is the
+    identity map ``(1.0, 0.0)``, so an unfitted deployment is byte-for-byte a no-op."""
+    if (a, b) == (1.0, 0.0):
+        return p
+    lo = float(DEFAULTS["clamp"]["min"])
+    hi = float(DEFAULTS["clamp"]["max"])
+    return clamp(_sigmoid(a * _logit(p) + b), lo, hi)
+
+
+def recalibration_cv(
+    pairs: list[tuple[float, Any]], folds: int = 5
+) -> dict[str, float]:
+    """k-fold out-of-sample check. For each held-out fold, fit Platt on the other folds and
+    score raw vs recalibrated Brier on the held-out points. Returns ``raw_brier``,
+    ``recal_brier``, ``delta`` (recal - raw; NEGATIVE means recalibration helped), and
+    ``mean_slope`` (mean fitted ``a`` across folds).
+
+    Used to REFUSE emitting params when the out-of-sample ``delta >= 0`` (recalibration did
+    not beat identity). Folds fit with ``min_n=1`` so each training split actually fits — the
+    RECAL_MIN_N gate is applied separately to the full dataset by the caller."""
+    data = list(pairs)
+    n = len(data)
+    if n == 0:
+        return {"raw_brier": 0.0, "recal_brier": 0.0, "delta": 0.0, "mean_slope": 1.0}
+    k = min(folds, n)
+    raw_sq = 0.0
+    recal_sq = 0.0
+    scored = 0
+    slopes: list[float] = []
+    for fold in range(k):
+        test = [data[i] for i in range(n) if i % k == fold]
+        train = [data[i] for i in range(n) if i % k != fold]
+        if not test or not train:
+            continue
+        a, b = fit_platt(train, min_n=1)
+        slopes.append(a)
+        for p, o in test:
+            y = 1.0 if o else 0.0
+            raw_sq += (float(p) - y) ** 2
+            recal_sq += (apply_recalibration(float(p), a, b) - y) ** 2
+            scored += 1
+    if scored == 0:
+        return {"raw_brier": 0.0, "recal_brier": 0.0, "delta": 0.0, "mean_slope": 1.0}
+    raw_brier = raw_sq / scored
+    recal_brier = recal_sq / scored
+    return {
+        "raw_brier": raw_brier,
+        "recal_brier": recal_brier,
+        "delta": recal_brier - raw_brier,
+        "mean_slope": sum(slopes) / len(slopes) if slopes else 1.0,
+    }
+
+
+def load_recalibration(path: str | Path) -> tuple[float, float]:
+    """Read fitted ``(a, b)`` from the params JSON written by ``calibrate-fit``. Returns the
+    identity map ``(1.0, 0.0)`` on a missing or malformed file, so a deployment with no params
+    file behaves exactly as if recalibration were absent (ships inert)."""
+    try:
+        with open(path, encoding="utf-8") as fh:
+            data = json.load(fh)
+        return (float(data["a"]), float(data["b"]))
+    except (OSError, ValueError, KeyError, TypeError):
+        return (1.0, 0.0)
+
+
+def extremize_logodds(p: float, d: float = math.sqrt(3)) -> float:
+    """The AIA Forecaster's data-free extremizing fallback: ``sigmoid(d*logit(p))``, pushing
+    probabilities AWAY from 0.5 (``d=sqrt(3)`` is their published default). Implemented but
+    deliberately NOT wired as a default: our pastcast shows the OPPOSITE sign (we are
+    overconfident and want shrinking, a<1), so this is an A/B candidate only, never shipped."""
+    return _sigmoid(d * _logit(p))
 
 
 # --------------------------------------------------------------------------- aggregation
@@ -1194,6 +1337,61 @@ def _cmd_score(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_calibrate_fit(args: argparse.Namespace) -> int:
+    """Fit post-hoc logistic recalibration from the journal's resolved binaries and, only
+    if it improves out-of-sample, write the params. Reuses the exact resolved-binary
+    extraction ``calibration_report`` uses (``ForecastRecord.scorable``)."""
+    config = _config_or_none(args)
+    if config is None:
+        return 2
+    journal = _journal_from(args, config)
+    pairs: list[tuple[float, bool]] = []
+    for r in journal.all():
+        if r.scorable:
+            assert r.probability is not None and r.resolution is not None
+            pairs.append((r.probability, bool(r.resolution["outcome"])))
+    n = len(pairs)
+    out = Path(args.out)
+
+    cv = recalibration_cv(pairs)
+    print(f"Recalibration fit over N = {n} resolved binary forecast(s):")
+    print(f"  raw Brier         : {cv['raw_brier']:.4f}")
+    print(f"  recalibrated Brier: {cv['recal_brier']:.4f}  (5-fold out-of-sample)")
+    print(f"  CV delta          : {cv['delta']:+.4f}  (negative = recalibration helps)")
+    print(f"  mean fitted slope : {cv['mean_slope']:.3f}")
+
+    if n < RECAL_MIN_N:
+        print(f"  NOT emitting: N < RECAL_MIN_N ({n} < {RECAL_MIN_N}) — a 2-param fit needs "
+              "more than the direction check's 5; too-small N overfits. Shipping inert.")
+        return 0
+    if cv["delta"] >= 0:
+        print(f"  NOT emitting: out-of-sample recalibration did not beat identity "
+              f"(delta {cv['delta']:+.4f} >= 0). Shipping inert.")
+        return 0
+
+    a, b = fit_platt(pairs)
+    params = {
+        "a": a,
+        "b": b,
+        "n": n,
+        "cv_delta": cv["delta"],
+        "fit_at": _utc_now(),
+        "scaffold_version": SCAFFOLD_VERSION,
+    }
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open("w", encoding="utf-8") as fh:
+        json.dump(params, fh, indent=2)
+    if a < 1.0:
+        interp = "a < 1: overconfident — shrinking probabilities toward 0.5"
+    elif a > 1.0:
+        interp = "a > 1: under-confident — stretching probabilities away from 0.5"
+    else:
+        interp = "a = 1: no slope adjustment"
+    print(f"  fitted a = {a:.4f}, b = {b:+.4f}   ({interp})")
+    print(f"  wrote {out}")
+    return 0
+
+
 def _cmd_aggregate(args: argparse.Namespace) -> int:
     config = _config_or_none(args)
     if config is None:
@@ -1348,6 +1546,18 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--json", action="store_true")
     p.add_argument("--journal")
     p.set_defaults(func=_cmd_score)
+
+    p = sub.add_parser(
+        "calibrate-fit",
+        help="fit post-hoc logistic recalibration (Platt) from the journal's resolved history",
+    )
+    p.add_argument(
+        "--out", default=str(Path("bot") / "journal" / "recalibration.json"),
+        help="where to write the fitted params (default: %(default)s) — written only if the "
+             "out-of-sample CV delta is negative and N >= RECAL_MIN_N",
+    )
+    p.add_argument("--journal")
+    p.set_defaults(func=_cmd_calibrate_fit)
 
     p = sub.add_parser("aggregate", help="pool ensemble draws into one probability")
     p.add_argument("--draws", required=True, help="comma-separated, e.g. 0.55,0.6,0.62")
