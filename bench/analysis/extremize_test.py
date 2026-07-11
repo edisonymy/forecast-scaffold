@@ -1,22 +1,22 @@
 """Free post-processing test: does logit-extremization p' = sigma(d * logit(p)) close the
 refinement gap? Honest split: fit d on the 47 tranche-1 qids, evaluate the chosen d on the
 105 fresh qids only. Run for base and skeptic arms; teacher for reference."""
-import io
 import json
 import math
 import statistics as st
 import sys
 
 import os as _os; sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+from pathlib import Path as _P
+
 import contamination_probe as cp  # noqa: E402
 
-from pathlib import Path as _P
 ROOT = str(_P(__file__).resolve().parents[2])
 MEMORY_LEAK = {"btf2:516f111d-d70e-5198-95dc-5d38c0d9d789"}
 
 
 def load(path):
-    return [json.loads(line) for line in io.open(path, encoding="utf-8") if line.strip()]
+    return [json.loads(line) for line in open(path, encoding="utf-8") if line.strip()]
 
 
 qrows = load(f"{ROOT}/bench/sets/btf2-loop1.jsonl")

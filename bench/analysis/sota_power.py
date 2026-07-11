@@ -1,18 +1,18 @@
-import io
 import json
 import math
 import statistics as st
 import sys
 
 import os as _os; sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+from pathlib import Path as _P
+
 import contamination_probe as cp  # noqa: E402
 
-from pathlib import Path as _P
 ROOT = str(_P(__file__).resolve().parents[2])
 
 
 def load(path):
-    return [json.loads(line) for line in io.open(path, encoding="utf-8") if line.strip()]
+    return [json.loads(line) for line in open(path, encoding="utf-8") if line.strip()]
 
 
 res, teacher = {}, {}
@@ -111,7 +111,7 @@ print(f"  clean high-vs-teacher      sd_d={st.stdev(ds):.4f}  "
 
 # how many more questions COULD exist
 try:
-    raw = json.load(io.open(f"{ROOT}/bench/sets/btf2_raw.json", encoding="utf-8"))
+    raw = json.load(open(f"{ROOT}/bench/sets/btf2_raw.json", encoding="utf-8"))
     items = raw if isinstance(raw, list) else raw.get("questions", raw.get("data", []))
     print(f"\nbtf2_raw.json: {len(items)} entries total")
 except Exception as e:

@@ -2,11 +2,10 @@
 question's outcome as remembered fact (weights leakage surfacing mid-forecast). Applied
 uniformly to every arm; flagged rows are then read and judged. Pastcast-only artifact —
 a live bot cannot remember an unresolved outcome."""
-import io
 import json
 import re
-
 from pathlib import Path as _P
+
 ROOT = str(_P(__file__).resolve().parents[2])
 ARMS = ("base", "premortem", "skeptic")
 
@@ -24,7 +23,7 @@ PATTERNS = re.compile(
 for arm in ARMS:
     try:
         rows = [json.loads(line) for line in
-                io.open(f"{ROOT}/bench/results/btf2-loop1-adm.{arm}.results.jsonl",
+                open(f"{ROOT}/bench/results/btf2-loop1-adm.{arm}.results.jsonl",
                         encoding="utf-8") if line.strip()]
     except FileNotFoundError:
         continue

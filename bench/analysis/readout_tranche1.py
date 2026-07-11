@@ -12,9 +12,7 @@ PRE-REGISTERED RULES (docs/roadmap-v05.md, set BEFORE looking at results):
 - Run bench/analysis/memory_screen.py FIRST over the tranche results file and exclude
   any confirmed memory-claim rows from all arms pairwise.
 """
-import io
 import json
-import math
 import random
 import statistics as st
 import sys
@@ -29,7 +27,7 @@ ARMS = ("plain", "high", "angles")
 
 
 def load(path):
-    return [json.loads(line) for line in io.open(path, encoding="utf-8") if line.strip()]
+    return [json.loads(line) for line in open(path, encoding="utf-8") if line.strip()]
 
 
 qrows = load(ROOT / "bench/sets/btf2-loop1.jsonl")
@@ -88,6 +86,7 @@ for a in ARMS:
 
 print("\nPAIRED (negative = first arm better; bootstrap 90% CI primary)")
 import itertools
+
 for a, b in itertools.combinations(ARMS, 2):
     common = sorted(set(arm[a]) & set(arm[b]))
     if len(common) < 5:

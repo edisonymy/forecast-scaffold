@@ -31,6 +31,11 @@ line-length = 100
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
+[tool.ruff.lint.per-file-ignores]
+# session analysis scripts: correctness rules (F) kept, style exempted — scratch-grade
+# tooling ported into the repo for reproducibility, not shipped code
+"bench/analysis/*" = ["E402", "E501", "E702", "I001", "SIM115"]
+
 [tool.mypy]
 strict = true
 python_version = "3.11"

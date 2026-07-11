@@ -1,22 +1,22 @@
 """Loop-2 analysis: cross-model ensembles on frozen dossiers. Each pool is scored only on
 questions admissible for EVERY member (per-model probe flags + the opus ECB memory leak),
 paired against opus-base on the same questions."""
-import io
 import json
 import math
 import statistics as st
 import sys
 
 import os as _os; sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+from pathlib import Path as _P
+
 import contamination_probe as cp  # noqa: E402
 
-from pathlib import Path as _P
 ROOT = str(_P(__file__).resolve().parents[2])
 
 
 def load(path):
     try:
-        return [json.loads(line) for line in io.open(path, encoding="utf-8") if line.strip()]
+        return [json.loads(line) for line in open(path, encoding="utf-8") if line.strip()]
     except FileNotFoundError:
         return []
 
@@ -114,6 +114,7 @@ report(["opus", "haiku", "gemini"], "opus+haiku+gemini")
 # error decorrelation: correlation of per-question Brier between members
 print("\n=== member error correlation (Pearson r of per-question Brier) ===")
 import itertools
+
 for a, b in itertools.combinations(("opus", "haiku", "gemini"), 2):
     qids = sorted(admissible_for([a, b]))
     if len(qids) < 10:

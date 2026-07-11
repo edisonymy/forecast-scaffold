@@ -1,21 +1,21 @@
 """Loop-3 verdict: same-model multiplicity. Pools (geo-mean-odds) of plain resamples
 (base, r2, r3) vs spine-diverse members (base, premortem, skeptic), each vs single-run
 base, paired on the 152 admissible questions (opus flags + ECB leak excluded)."""
-import io
 import json
 import math
 import statistics as st
 import sys
 
 import os as _os; sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+from pathlib import Path as _P
+
 import contamination_probe as cp  # noqa: E402
 
-from pathlib import Path as _P
 ROOT = str(_P(__file__).resolve().parents[2])
 
 
 def load(path):
-    return [json.loads(line) for line in io.open(path, encoding="utf-8") if line.strip()]
+    return [json.loads(line) for line in open(path, encoding="utf-8") if line.strip()]
 
 
 qrows = load(f"{ROOT}/bench/sets/btf2-loop1.jsonl")
@@ -98,6 +98,7 @@ for name, probs in pools.items():
 # disagreement diagnostics: do spines generate the diversity resampling lacks?
 print("\nmember disagreement (mean |dp| across pairs):")
 import itertools
+
 for a, b in itertools.combinations(("base", "base-r2", "base-r3"), 2):
     g = [abs(arms[a][q] - arms[b][q]) for q in common]
     print(f"  {a} vs {b}: {st.mean(g):.3f}")

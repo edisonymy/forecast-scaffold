@@ -1,21 +1,21 @@
 """Failure-mode analysis of existing loop-1 arms: catastrophic losses (Brier >= 0.49),
 extreme-claim error rates (p<=0.10 or p>=0.90), and whether pooling prunes the tail."""
-import io
 import json
 import math
 import statistics as st
 import sys
 
 import os as _os; sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+from pathlib import Path as _P
+
 import contamination_probe as cp  # noqa: E402
 
-from pathlib import Path as _P
 ROOT = str(_P(__file__).resolve().parents[2])
 MEMORY_LEAK = {"btf2:516f111d-d70e-5198-95dc-5d38c0d9d789"}
 
 
 def load(path):
-    return [json.loads(line) for line in io.open(path, encoding="utf-8") if line.strip()]
+    return [json.loads(line) for line in open(path, encoding="utf-8") if line.strip()]
 
 
 qrows = load(f"{ROOT}/bench/sets/btf2-loop1.jsonl")
@@ -67,6 +67,6 @@ for label in ("base", "premortem", "skeptic", "pool(b+s)", "teacher"):
     cats[label] = tail_stats(arms[label], label)
 
 print("\n=== base's catastrophes, and what each arm did on them ===")
-for q, p, y in sorted(cats["base"], key=lambda t: -(t[1] - t[2]) ** 2):
+for q, _p, y in sorted(cats["base"], key=lambda t: -(t[1] - t[2]) ** 2):
     parts = [f"{a}={arms[a][q]:.2f}" for a in ("base", "skeptic", "teacher") if q in arms[a]]
     print(f"  y={y:.0f}  {'  '.join(parts)}  {qtext.get(q, q)}")
