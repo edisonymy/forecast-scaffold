@@ -1,0 +1,119 @@
+name: Manifold bot
+
+on:
+  # One run/day per the policy (docs/manifold-policy.md). bot.yml is NOT GitHub-cron driven
+  # (it is kicked by an external Cloud Scheduler via workflow_dispatch every 10 min), so there
+  # is no bot.yml cron hour to collide with — this 07:30 UTC slot is simply a quiet daily time,
+  # distinct from any wave the tournament bot happens to be working. GitHub cron is best-effort
+  # and drops ticks; a daily bet cadence tolerates that (a missed day just skips a day), unlike
+  # the tournament bot's sub-hourly needs, so a plain cron is fine here.
+  schedule:
+    - cron: "30 7 * * *"
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: "LLM billing path"
+        type: choice
+        options: [subscription, openrouter]
+        default: subscription
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false # never kill an in-flight forecasting/betting run
+
+jobs:
+  manifold:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write # commits the public journal + phase file
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install
+        # Same pinned CLI as bot.yml: an unattended cron must not pick up a broken or
+        # compromised release mid-flight. Bump deliberately, then watch one run.
+        run: |
+          pip install -e .
+          npm install -g @anthropic-ai/claude-code@2.1.201
+
+      - name: Run Manifold bot
+        # Auth mirrors bot.yml: CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`) draws on
+        # the Claude subscription. We deliberately do NOT set ANTHROPIC_API_KEY: if present it
+        # takes precedence and silently bills the API per-token instead.
+        #
+        # MANIFOLD_API_KEY is the ONLY thing that turns real betting on. Without it (secret
+        # unset), manifold_api_key() returns "" and --live falls back to a dry-run that
+        # journals would-be bets and POSTs nothing — harmless. Betting is ALSO gated by the
+        # phase machine: phase 0 forces dry-run regardless of --live, and a killed bot never
+        # bets again, so an early workflow run is safe even with the key present.
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          MANIFOLD_API_KEY: ${{ secrets.MANIFOLD_API_KEY }}
+          PROVIDER: ${{ inputs.provider || 'subscription' }}
+        run: |
+          python bot/run_manifold.py --limit 10 --tier medium --live --provider "$PROVIDER" \
+            | tee "$RUNNER_TEMP/manifold.log"
+
+      - name: Manifold run summary
+        # Mirrors bot.yml's digest step: the load-bearing stdout lines (phase transitions,
+        # recorded pairs, bets, skips, the informed-read/exposure/floor markers) in the job
+        # summary. always() + trailing `|| true` (grep exits 1 on zero matches, e.g. a missing
+        # log) mean this never fails the job.
+        if: always()
+        run: |
+          {
+            echo "### Manifold bot digest"
+            echo
+            echo '```'
+            grep -hiE "phase|recorded|journaled pair|BET |DRY-RUN would bet|market_read|exposure|floor|skip|CONVERGENCE|selected" \
+              "$RUNNER_TEMP/manifold.log" || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit journal + phase (pre-registration)
+        # always(): journaled pairs and any phase promotion must be committed even if a later
+        # market errored or the run timed out — the journal + phase file are the public record.
+        if: always()
+        env:
+          LEAK_PATTERNS: ${{ secrets.LEAK_PATTERNS }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          MANIFOLD_API_KEY: ${{ secrets.MANIFOLD_API_KEY }}
+        run: |
+          # Leak-guard the machine-generated files BEFORE publishing. The bot ingests untrusted
+          # market text and agent output; a personal-data match must block the push, not fail a
+          # later CI run after the content is already public. Fail closed: require the deny-list.
+          : "${LEAK_PATTERNS:?set the LEAK_PATTERNS secret before the bot can publish}"
+          FILES="bot/journal/manifold.jsonl bot/journal/manifold-phase.json"
+          for f in $FILES; do [ -f "$f" ] || continue; done
+          set +e; grep -rniIE "$LEAK_PATTERNS" $FILES 2>/dev/null; status=$?; set -e
+          if [ "$status" -eq 0 ]; then echo "::error::personal-data in journal — not publishing"; exit 1; fi
+          if [ "$status" -ne 1 ]; then echo "::error::leak-guard grep failed ($status)"; exit 2; fi
+          # A prompt-injected agent's visible output lands in exactly these files — scan for the
+          # credential VALUES themselves, fail-closed.
+          for secret in "$CLAUDE_CODE_OAUTH_TOKEN" "$MANIFOLD_API_KEY"; do
+            if [ -n "$secret" ] && grep -rqF -- "$secret" $FILES 2>/dev/null; then
+              echo "::error::a credential value appears in the journal — not publishing"; exit 3
+            fi
+          done
+          git config user.name "forecast-scaffold-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add bot/journal/manifold.jsonl bot/journal/manifold-phase.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "manifold: journal + phase update $(date -u +%FT%TZ)"
+          # rebase-and-retry: a concurrent commit (the tournament bot shares this journal dir)
+          # must not lose a journaled pair. A conflicted rebase is aborted before the next try.
+          for i in 1 2 3; do
+            git pull --rebase --autostash origin main && git push && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep 3
+          done
+          exit 1

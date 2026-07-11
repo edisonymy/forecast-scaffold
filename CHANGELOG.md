@@ -4,6 +4,30 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.17] - 2026-07-11
+
+### Added
+- **Manifold Markets bot** (`bot/run_manifold.py`, `bot/score_manifold.py`) — the
+  days-scale feedback channel. Selects liquid binary markets (>=50 bettors, 3-60d close,
+  volume-ranked, meme/self-referential excluded, topic-diversity cap), forecasts each
+  BLIND and SIGHTED in the same run (blind blocks manifold.markets; sighted carries the
+  price under the v0.4.11 judgment framing and must return a checkable
+  `market_read` ∈ informed|herding|thin|stale — only non-"informed" reads may bet).
+  Signals: price movement toward the forecast at t+3/7d, mark-to-market P&L, resolution
+  Brier, paired blind-vs-sighted comparison. Journal: `bot/journal/manifold.jsonl`
+  (committed preregistration).
+- **Operator-approved betting policy with an automatic phase machine**
+  (`docs/manifold-policy.md`, `bot/journal/manifold-phase.json`): phase 0 dry-run →
+  phase 1 flat 25-mana stakes (<=10 bets/run, exposure <=30% of balance, 1,100-mana
+  floor) → phase 2 quarter-Kelly (5%-of-balance cap, convergence exits, adverse-move
+  re-forecasts). Promotions and the kill criterion (n>=50 movement sample, exact
+  binomial test) are evaluated mechanically each run and journaled with their evidence —
+  preregistered phase transitions, no in-the-moment judgment.
+- Daily GitHub Actions workflow (`manifold.yml`, 07:30 UTC) mirroring bot.yml's
+  commit/leak-guard patterns; without the `MANIFOLD_API_KEY` secret it dry-runs.
+- Key lookup: `MANIFOLD_API_KEY` env or `~/.manifold/key(.txt)` — a keyfile outside the
+  repo so the credential never enters git or session transcripts.
+
 ## [0.4.16] - 2026-07-10
 
 ### Added
