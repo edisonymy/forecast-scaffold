@@ -134,9 +134,16 @@ jobs:
           # Require the deny-list (fail-closed): never publish an unscanned journal, and keep
           # the literal pattern out of this file so the ci.yml guard does not match it.
           : "${LEAK_PATTERNS:?set the LEAK_PATTERNS secret before the bot can publish}"
-          set +e; grep -rniIE "$LEAK_PATTERNS" bot/journal/; status=$?; set -e
-          if [ "$status" -eq 0 ]; then echo "::error::personal-data in journal — not publishing"; exit 1; fi
-          if [ "$status" -ne 1 ]; then echo "::error::leak-guard grep failed ($status)"; exit 2; fi
+          # Scan only the lines THIS run adds. The committed journal is already public, so a
+          # pattern match on historical lines cannot un-leak anything — it can only lock every
+          # future publish forever (measured 2026-07-12: two long-committed market records
+          # false-positived on public market text and blocked publishing for hours, losing
+          # each run's new journal lines). New content stays fail-closed.
+          git add bot/journal/
+          NEW_LINES=$(git diff --cached -U0 -- bot/journal/ | sed -n 's/^+//p' | sed '/^++/d')
+          set +e; printf '%s\n' "$NEW_LINES" | grep -niIE "$LEAK_PATTERNS"; status=$?; set -e
+          if [ "$status" -eq 0 ]; then echo "::error::personal-data in NEW journal lines — not publishing"; git reset -q; exit 1; fi
+          if [ "$status" -ne 1 ]; then echo "::error::leak-guard grep failed ($status)"; git reset -q; exit 2; fi
           # The pattern list cannot know credential VALUES — but a prompt-injected agent's
           # visible output (sources, reasoning) lands in exactly the files this step is
           # about to publish. Check for the values themselves, fail-closed.
