@@ -4,6 +4,41 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.21] - 2026-07-12
+
+### Added
+- **Hourly Manifold cloud runner with a hard subscription-credit boundary.** The scheduled
+  workflow is Claude-OAuth-only (OpenRouter and metered/gateway auth are rejected), caps
+  every run at $5 USD-equivalent usage both cumulatively and through Claude's native
+  remaining-budget flag, reserves unknown usage on failures/timeouts, and stops model work
+  after 45 minutes so the journal can publish before the next tick. The Manifold API key is
+  required before model spend; the existing mana exposure/floor/position gates still bind.
+- **Research-mechanics telemetry for future benchmark A/Bs.** Each time-locked forecast gets
+  a private content-free MCP event sink; rows now carry `n_searches`, `n_full_reads`, bounded
+  exact queries, and model-declared source classes. Angle subruns aggregate telemetry into
+  their pooled row, and concurrent forecasts cannot commingle logs.
+- **Deadline-move preregistration.** A manually audited census partitions all 152 admissible
+  BTF-2 questions into 92 tagged development questions, 10 exact motivating holdouts, and 50
+  non-fired controls. The experiment-only move fetches official status/dockets, enumerates
+  remaining steps, does window arithmetic, and checks institution-specific slippage; no live
+  production prompt changed and no paid A/B has run.
+
+### Fixed
+- Tranche1 analysis now screens and scores only the preregistered `run == 0` cells. The
+  original resume command accidentally let the configured high tier expand to four runs;
+  six paid nonzero-run rows remain preserved as unused raw data, while `--max-runs 1`
+  restores the intended 40 questions x 3 arms = 120-cell design.
+- `memory_screen.py` accepts arbitrary result files and a run filter; the tranche readout
+  rejects duplicate cells and accepts repeatable pairwise memory exclusions.
+
+### Measured / diagnostic
+- A literal teacher-cited-page recall audit is not reconstructible from the public BTF-2
+  release (no page-read trace or citation-to-URL map). On a frozen first-20
+  question-source-set proxy, production-global search surfaced a linked source for 18/20
+  questions (90%, Wilson 95% CI 70-97%), equal to question-scoped retrieval. Only 50.6% of
+  linked URLs were eligible under the production crawl-time cutoff on average, so corpus
+  discovery is not broadly broken but load-bearing recall remains unverified.
+
 ## [0.4.20] - 2026-07-11
 
 ### Added

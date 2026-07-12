@@ -29,7 +29,12 @@ pastcast (slope 0.573 = overconfident THERE; sign not portable — layer built, 
 `bench/results/btf2-loop1-adm.tranche1.results.jsonl` (resumable — rerun the exact
 command in git log `86dc390`'s message context or: run_bench on btf2-loop1-adm.jsonl,
 --tiers plain,high,angles --leakfree timevault --corpus bench/corpus/btf2_corpus.sqlite
---limit 40 --budget 80 --timeout 900 --tag tranche1, agent-cmd opus-4-6). FIRST ACTION:
+--limit 40 --max-runs 1 --budget 80 --timeout 900 --tag tranche1, agent-cmd opus-4-6).
+`--max-runs 1` is load-bearing: without it, the configured high tier expands to four
+runs and the command targets 240 rows instead of the preregistered 120 arm rows. Six
+nonzero-run high rows were already produced before this was caught; preserve them as paid
+raw data, but memory-screen and score only `run == 0`. The completed raw file will therefore
+have 126 lines while still containing exactly 120 preregistered/scorable arm rows. FIRST ACTION:
 `python bench/analysis/memory_screen.py` (adapted to the tranche file), then
 `python bench/analysis/readout_tranche1.py`. Interpret ONLY by the pre-registered rules
 in the script docstring / roadmap. If rows < ~90/120, resume the run first.

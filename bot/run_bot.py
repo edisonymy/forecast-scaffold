@@ -87,7 +87,7 @@ FAILURE_WINDOW_HOURS = 24.0
 # as ANTHROPIC_AUTH_TOKEN (the CLI's own credential), never as the raw variable.
 _SECRETS_TO_HIDE = frozenset(
     {"METACULUS_TOKEN", "METACULUS_CP_TOKEN", "LEAK_PATTERNS", "GITHUB_TOKEN",
-     "OPENROUTER_API_KEY"}
+     "ASKNEWS_API_KEY", "MANIFOLD_API_KEY", "OPENROUTER_API_KEY"}
 )
 # OpenRouter's Anthropic-compatible endpoint ("Anthropic skin"): Claude Code speaks its
 # native protocol to it directly, billed to OpenRouter credits instead of the subscription.

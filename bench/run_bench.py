@@ -33,6 +33,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, datetime
 from pathlib import Path
+from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -87,6 +88,23 @@ TIMEVAULT_TOOLS = ("mcp__timevault__search_news,mcp__timevault__fetch_page,"
 # Optional BTF-2 corpus tools, allowed only when --corpus wires an index into the server.
 CORPUS_TOOLS = "mcp__timevault__search_corpus,mcp__timevault__fetch_corpus_page"
 _AS_OF = re.compile(r"AS-OF DATE:\s*([0-9]{4}-[0-9]{2}-[0-9]{2}(?:[ T][0-9:.]+)?)")
+_SEARCH_TOOLS = frozenset(("search_news", "search_corpus"))
+_FULL_READ_TOOLS = frozenset(("fetch_page", "wikipedia_asof"))
+MAX_TELEMETRY_QUERIES = 50
+MAX_SOURCE_CLASSES = 12
+MAX_SOURCE_CLASS_CHARS = 48
+_OFFICIAL_DOMAINS = (
+    "europa.eu", "gov.uk", "gov.au", "gov.ca", "un.org", "who.int", "worldbank.org",
+)
+_ACADEMIC_DOMAINS = (
+    "arxiv.org", "doi.org", "jstor.org", "nature.com", "science.org",
+    "semanticscholar.org",
+)
+_NEWS_DOMAINS = (
+    "apnews.com", "bbc.com", "bbc.co.uk", "bloomberg.com", "economist.com",
+    "ft.com", "guardian.com", "nytimes.com", "reuters.com", "washingtonpost.com",
+)
+_REFERENCE_DOMAINS = ("britannica.com", "wikipedia.org")
 
 
 def spec_as_of(spec: dict) -> str | None:
@@ -127,24 +145,164 @@ _MCP_CONFIG_CACHE: dict[tuple[str, str], str] = {}
 _MCP_CONFIG_DIR: list[str] = []  # created lazily, once per invocation
 
 
-def mcp_config_for(as_of: str, corpus: str | None = None) -> str:
-    """One config file per distinct (cutoff, corpus); both ride in the SERVER's argv."""
+def mcp_config_for(
+    as_of: str,
+    corpus: str | None = None,
+    telemetry: str | None = None,
+) -> str:
+    """Build a TimeVault MCP config, optionally with one run-private telemetry sink.
+
+    Without ``telemetry`` this retains the historical cached-per-(cutoff, corpus) API and
+    behavior.  Telemetry configs are intentionally never cached: ``forecast_one`` puts
+    each in its own temporary directory so concurrent calls cannot commingle events.
+    """
     key = (as_of, corpus or "")
-    if key in _MCP_CONFIG_CACHE:
-        return _MCP_CONFIG_CACHE[key]
-    if not _MCP_CONFIG_DIR:
-        _MCP_CONFIG_DIR.append(tempfile.mkdtemp(prefix="timevault-cfg-"))
+    if telemetry is None:
+        if key in _MCP_CONFIG_CACHE:
+            return _MCP_CONFIG_CACHE[key]
+        if not _MCP_CONFIG_DIR:
+            _MCP_CONFIG_DIR.append(tempfile.mkdtemp(prefix="timevault-cfg-"))
+        path = Path(_MCP_CONFIG_DIR[0]) / f"cfg-{len(_MCP_CONFIG_CACHE)}.json"
+    else:
+        telemetry_path = Path(telemetry).resolve()
+        telemetry_path.parent.mkdir(parents=True, exist_ok=True)
+        path = telemetry_path.parent / "mcp-config.json"
     server_args = [str(ROOT / "bench" / "timevault_mcp.py"), "--cutoff", as_of]
     if corpus:
         server_args += ["--corpus", str(Path(corpus).resolve())]
+    if telemetry is not None:
+        server_args += ["--telemetry", str(Path(telemetry).resolve())]
     config = {"mcpServers": {"timevault": {
         "command": sys.executable,
         "args": server_args,
     }}}
-    path = Path(_MCP_CONFIG_DIR[0]) / f"cfg-{len(_MCP_CONFIG_CACHE)}.json"
     path.write_text(json.dumps(config), encoding="utf-8")
-    _MCP_CONFIG_CACHE[key] = str(path)
+    if telemetry is None:
+        _MCP_CONFIG_CACHE[key] = str(path)
     return str(path)
+
+
+def _telemetry_events(telemetry_path: Path | None) -> list[dict] | None:
+    """Read valid telemetry objects, distinguishing unavailable from an observed zero."""
+    if telemetry_path is None:
+        return None
+    try:
+        lines = telemetry_path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return None
+    events: list[dict] = []
+    for line in lines:
+        try:
+            event = json.loads(line)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if isinstance(event, dict):
+            events.append(event)
+    return events
+
+
+def _telemetry_fields(telemetry_path: Path | None) -> dict:
+    """Summarize observed TimeVault calls; failed calls still consumed research moves."""
+    events = _telemetry_events(telemetry_path)
+    if events is None:
+        return {"n_searches": None, "n_full_reads": None, "queries": None}
+
+    n_searches = 0
+    n_full_reads = 0
+    queries: list[str] = []
+    for event in events:
+        tool = event.get("tool")
+        if tool in _SEARCH_TOOLS:
+            n_searches += 1
+            arguments = event.get("arguments")
+            query = arguments.get("query") if isinstance(arguments, dict) else None
+            if isinstance(query, str) and len(queries) < MAX_TELEMETRY_QUERIES:
+                # Preserve the exact search string.  The list length, rather than its
+                # contents, is bounded so downstream query-mechanics work stays faithful.
+                queries.append(query)
+        if tool in _FULL_READ_TOOLS:
+            n_full_reads += 1
+    return {"n_searches": n_searches, "n_full_reads": n_full_reads, "queries": queries}
+
+
+def _host_matches(host: str, domains: tuple[str, ...]) -> bool:
+    return any(host == domain or host.endswith(f".{domain}") for domain in domains)
+
+
+def _classify_source(source: object) -> str | None:
+    """Coarsely classify a recorded URL/named dataset without fetching anything."""
+    if not isinstance(source, str) or not source.strip():
+        return None
+    value = source.strip()
+    looks_like_url = "://" in value or bool(
+        re.match(r"^(?:www\.)?[a-z0-9.-]+\.[a-z]{2,}(?:[/:]|$)", value, re.IGNORECASE)
+    )
+    parsed = urlparse(value if "://" in value else f"//{value}") if looks_like_url else None
+    host = ((parsed.hostname if parsed else "") or "").lower().rstrip(".")
+    if host:
+        if host.endswith((".gov", ".mil", ".edu")) or ".gov." in host:
+            if host.endswith(".edu"):
+                return "academic"
+            return "official"
+        if _host_matches(host, _OFFICIAL_DOMAINS):
+            return "official"
+        if _host_matches(host, _ACADEMIC_DOMAINS):
+            return "academic"
+        if _host_matches(host, _NEWS_DOMAINS):
+            return "news"
+        if _host_matches(host, _REFERENCE_DOMAINS):
+            return "reference"
+        return "web"
+    if re.search(r"\b(dataset|database|census|statistics)\b", value, re.IGNORECASE):
+        return "dataset"
+    return None
+
+
+def _sanitize_source_classes(raw_classes: list[object]) -> list[str] | None:
+    """Normalize and bound inferred or opportunistically model-declared classes."""
+    cleaned: list[str] = []
+    seen: set[str] = set()
+    for raw in raw_classes:
+        if not isinstance(raw, str):
+            continue
+        value = re.sub(r"[^a-z0-9]+", "-", raw.strip().lower()).strip("-")
+        value = value[:MAX_SOURCE_CLASS_CHARS].rstrip("-")
+        if value and value not in seen:
+            cleaned.append(value)
+            seen.add(value)
+        if len(cleaned) >= MAX_SOURCE_CLASSES:
+            return cleaned
+    return cleaned or None
+
+
+def _source_classes(
+    payloads: list[dict], telemetry_path: Path | None
+) -> list[str] | None:
+    """Infer observed source types, then merge any legacy/model-declared labels."""
+    raw_classes: list[object] = []
+    for event in _telemetry_events(telemetry_path) or []:
+        if event.get("success") is not True:
+            continue
+        tool = event.get("tool")
+        arguments = event.get("arguments")
+        arguments = arguments if isinstance(arguments, dict) else {}
+        if tool == "search_news":
+            raw_classes.append("news")
+        elif tool == "wikipedia_asof":
+            raw_classes.append("reference")
+        elif tool in ("search_corpus", "fetch_corpus_page"):
+            raw_classes.append("corpus")
+        elif tool == "fetch_page":
+            raw_classes.append(_classify_source(arguments.get("url")))
+    for payload in payloads:
+        sources = payload.get("sources")
+        if isinstance(sources, list):
+            for source in sources:
+                raw_classes.append(_classify_source(source))
+        declared = payload.get("source_classes")
+        if isinstance(declared, list):
+            raw_classes.extend(declared)
+    return _sanitize_source_classes(raw_classes)
 
 # The tail every bench system prompt shares: the mandatory output contract (a fenced json
 # block with probability/reasoning/sources) and the safety/leak-hygiene sections
@@ -267,7 +425,29 @@ def _run_forecast(
     return probability, payload, model, cost, errors
 
 
-def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int = 0) -> dict | None:
+def forecast_one(
+    spec: dict,
+    tier: str,
+    args: argparse.Namespace,
+    run_idx: int = 0,
+) -> dict | None:
+    """Run one row with a private, automatically cleaned TimeVault telemetry workspace."""
+    if getattr(args, "leakfree", "off") != "timevault":
+        return _forecast_one(spec, tier, args, run_idx, telemetry_path=None)
+    with tempfile.TemporaryDirectory(prefix="timevault-run-") as temp_dir:
+        telemetry_path = Path(temp_dir) / "tools.jsonl"
+        telemetry_path.touch()
+        return _forecast_one(spec, tier, args, run_idx, telemetry_path=telemetry_path)
+
+
+def _forecast_one(
+    spec: dict,
+    tier: str,
+    args: argparse.Namespace,
+    run_idx: int,
+    *,
+    telemetry_path: Path | None,
+) -> dict | None:
     leakfree = getattr(args, "leakfree", "off")
     brief = build_bench_brief(spec, leakfree)
     direct = args.provider == "openrouter-direct"
@@ -292,6 +472,8 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
                 "probability": None, "crowd": spec.get("crowd"),
                 "cost_usd": round(cost, 4), "model": "", "provider": args.provider,
                 "scaffold_version": SCAFFOLD_VERSION, "leakfree": leakfree,
+                "n_searches": None, "n_full_reads": None, "queries": None,
+                "source_classes": None,
                 "duration_s": round((datetime.now(UTC) - started).total_seconds(), 1),
                 "at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
             }
@@ -327,12 +509,18 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
             print(f"    SKIP (leakfree={leakfree} but no as-of date): {spec['id']}")
             return None
         corpus = getattr(args, "corpus", None)
-        mcp_config = mcp_config_for(as_of, corpus) if leakfree == "timevault" else None
+        if leakfree == "timevault" and telemetry_path is None:
+            raise RuntimeError("timevault forecast missing its private telemetry path")
+        mcp_config = (
+            mcp_config_for(as_of, corpus, str(telemetry_path))
+            if leakfree == "timevault" else None
+        )
         agent_cmd = leakfree_agent_cmd(base_cmd, leakfree, mcp_config,
                                        with_corpus=bool(corpus))
 
     angle_letters: list[str] | None = None
     raw_draws: list[float] = []
+    telemetry_payloads: list[dict] = []
     if tier == "angles":
         # Reproduce bot/run_bot.py's angle mode: one INDEPENDENT full-research run per angle
         # (build_system high + the operator's angle brief), pooled by geo_mean_odds. Bench is
@@ -358,6 +546,7 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
                 print(f"    FAILED angle {letter} after retry: {errors}")
                 return None
             per_angle.append(p_angle)
+            telemetry_payloads.append(angle_payload)
             if not payload:  # the first angle's narrative/sources speak for the pooled row
                 payload, model = angle_payload, angle_model
         probability = geo_mean_odds(per_angle)
@@ -369,8 +558,10 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
         if probability is None:
             print(f"    FAILED after retry: {errors}")
             return None
+        telemetry_payloads.append(payload)
         raw_draws = [float(d) for d in payload.get("raw_draws") or []
                      if isinstance(d, int | float)]
+    research_telemetry = _telemetry_fields(telemetry_path)
     row = {
         "qid": spec["id"],
         "source": spec["source"],
@@ -390,6 +581,10 @@ def forecast_one(spec: dict, tier: str, args: argparse.Namespace, run_idx: int =
         "raw_draws": raw_draws or None,
         "sources": [str(s)[:300] for s in payload.get("sources") or []
                     if str(s).strip()] or None,
+        "n_searches": research_telemetry["n_searches"],
+        "n_full_reads": research_telemetry["n_full_reads"],
+        "queries": research_telemetry["queries"],
+        "source_classes": _source_classes(telemetry_payloads, telemetry_path),
         "reasoning": str(payload.get("reasoning", ""))[:2000] or None,
         "duration_s": round((datetime.now(UTC) - started).total_seconds(), 1),
         "at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),

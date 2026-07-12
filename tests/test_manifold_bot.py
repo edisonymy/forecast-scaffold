@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shlex
 import sys
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -171,6 +172,32 @@ def test_blind_agent_cmd_blocks_manifold() -> None:
     assert "manifold.markets" not in sighted_cmd
 
 
+def test_with_credit_cap_replaces_caller_value() -> None:
+    cmd = run_manifold.with_credit_cap(
+        run_manifold.DEFAULT_AGENT_CMD + " --max-budget-usd 99", 1.2345678
+    )
+    tokens = shlex.split(cmd)
+    assert tokens.count("--max-budget-usd") == 1
+    i = tokens.index("--max-budget-usd")
+    assert tokens[i + 1] == "1.234568"
+
+
+def test_subscription_auth_preflight(monkeypatch: pytest.MonkeyPatch) -> None:
+    for name in run_manifold.METERED_AUTH_ENV:
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.delenv("CLAUDE_CODE_OAUTH_TOKEN", raising=False)
+    assert run_manifold.subscription_auth_error(require_oauth=False) is None
+    assert "CLAUDE_CODE_OAUTH_TOKEN" in (
+        run_manifold.subscription_auth_error(require_oauth=True) or ""
+    )
+    monkeypatch.setenv("CLAUDE_CODE_OAUTH_TOKEN", "test-oauth")
+    assert run_manifold.subscription_auth_error(require_oauth=True) is None
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-metered-key")
+    assert "ANTHROPIC_API_KEY" in (
+        run_manifold.subscription_auth_error(require_oauth=True) or ""
+    )
+
+
 def test_sighted_brief_has_price_and_judgment_language() -> None:
     market = mk(probability=0.37, volume24Hours=4242.0, uniqueBettorCount=321)
     brief = run_manifold.build_manifold_brief(market, sighted=True)
@@ -259,6 +286,22 @@ class ScriptedAgent:
         return fenced(self.probability, self.market_read, self.sources), 0.01, "claude-sonnet-5"
 
 
+class CostAgent(ScriptedAgent):
+    """Valid forecasts with a scripted positive cost for budget-boundary tests."""
+
+    def __init__(self, costs: list[float]) -> None:
+        super().__init__(0.90)
+        self.costs = costs
+
+    def __call__(self, cmd: str, prompt: str, system: str | None, timeout: int,
+                 provider: str = "subscription") -> tuple[str, float, str]:
+        index = len(self.calls)
+        self.calls.append({"cmd": cmd, "prompt": prompt, "system": system})
+        return fenced(self.probability, self.market_read, self.sources), self.costs[index], (
+            "claude-sonnet-5"
+        )
+
+
 class BetSpy:
     def __init__(self) -> None:
         self.calls: list[tuple[str, str, str, float]] = []
@@ -272,6 +315,8 @@ def make_args(tmp_path: Path, **over: Any) -> argparse.Namespace:
     base = dict(
         limit=10, tier="medium", live=False, stake=25.0, max_bets=10,
         provider="subscription", timeout=60, agent_cmd=run_manifold.DEFAULT_AGENT_CMD,
+        budget=run_manifold.MAX_CREDIT_BUDGET_USD, deadline_minutes=0.0,
+        require_subscription_auth=False,
         journal=str(tmp_path / "manifold.jsonl"),
         phase_file=str(tmp_path / "manifold-phase.json"),
     )
@@ -289,6 +334,97 @@ def seed_phase(tmp_path: Path, phase: int = 1, killed: bool = False) -> str:
 def read_journal(path: str) -> list[dict[str, Any]]:
     lines = Path(path).read_text(encoding="utf-8").splitlines()
     return [json.loads(line) for line in lines if line.strip()]
+
+
+def test_run_rejects_non_subscription_before_any_work(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(
+        run_bot, "load_config", lambda: pytest.fail("preflight must precede repo/network work")
+    )
+    assert run_manifold.run(make_args(tmp_path, provider="openrouter")) == 2
+
+
+def test_run_rejects_budget_above_operator_cap(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(
+        run_bot, "load_config", lambda: pytest.fail("budget check must precede work")
+    )
+    assert run_manifold.run(
+        make_args(tmp_path, budget=run_manifold.MAX_CREDIT_BUDGET_USD + 0.01)
+    ) == 2
+
+
+def test_run_requires_explicit_oauth_when_requested(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    for name in run_manifold.METERED_AUTH_ENV:
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.delenv("CLAUDE_CODE_OAUTH_TOKEN", raising=False)
+    monkeypatch.setattr(
+        run_bot, "load_config", lambda: pytest.fail("auth check must precede work")
+    )
+    assert run_manifold.run(make_args(tmp_path, require_subscription_auth=True)) == 2
+
+
+def test_run_cumulative_credit_cap_is_pair_atomic(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    markets = [mk("a", groupSlugs=["a"]), mk("b", groupSlugs=["b"])]
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: markets)
+    agent = CostAgent([1.5, 1.5, 2.0])
+    monkeypatch.setattr(run_bot, "run_agent", agent)
+    monkeypatch.setattr(run_manifold, "place_bet", BetSpy())
+
+    args = make_args(tmp_path, budget=5.0)
+    assert run_manifold.run(args) == 0
+    # First pair costs $3. The next blind call receives only the $2 remainder; after it uses
+    # that allowance, no sighted call starts and no orphan half-pair is journaled.
+    assert len(agent.calls) == 3
+    caps = []
+    for call in agent.calls:
+        tokens = shlex.split(call["cmd"])
+        i = tokens.index("--max-budget-usd")
+        caps.append(float(tokens[i + 1]))
+    assert caps == pytest.approx([5.0, 3.5, 2.0])
+    rows = read_journal(args.journal)
+    assert len(rows) == 2
+    assert {r["source"]["question_id"] for r in rows} == {"a"}
+
+
+def test_run_missing_cost_telemetry_reserves_cap_and_fails_closed(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    market = mk("unknown-cost")
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
+    agent = CostAgent([0.0])
+    monkeypatch.setattr(run_bot, "run_agent", agent)
+    monkeypatch.setattr(run_manifold, "place_bet", BetSpy())
+
+    args = make_args(tmp_path, budget=5.0)
+    assert run_manifold.run(args) == 1
+    assert len(agent.calls) == 1
+    assert not Path(args.journal).exists() or read_journal(args.journal) == []
+
+
+def test_cloud_workflow_is_hourly_subscription_only_and_hard_capped() -> None:
+    workflow = (ROOT / ".github" / "workflows" / "manifold.yml").read_text(
+        encoding="utf-8"
+    )
+    lower = workflow.lower()
+    assert 'cron: "17 * * * *"' in workflow
+    assert "workflow_dispatch" not in workflow  # no extra manual budget window
+    assert "--provider subscription" in workflow
+    assert "--budget 5" in workflow
+    assert "--deadline-minutes 45" in workflow
+    assert "--require-subscription-auth" in workflow
+    assert "set -o pipefail" in workflow
+    assert "claude_code_oauth_token" in lower
+    assert "manifold_api_key" in lower
+    assert "leak_patterns" in lower
+    assert "openrouter" not in lower
+    assert "asknews" not in lower
 
 
 def test_run_dry_run_journals_both_modes_and_never_posts(

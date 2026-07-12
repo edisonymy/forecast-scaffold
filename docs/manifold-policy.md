@@ -12,6 +12,28 @@ measurements interpretable.
 Bankroll at adoption: 2,200 mana (user EdisonYiCA2S). Percentages bind to the balance
 read live at each run, not to this snapshot.
 
+## Cloud cadence and model-credit boundary
+
+[AMENDED 2026-07-12, operator: cloud runs hourly; up to $5/hour of Claude subscription
+credits is acceptable. Clarified explicitly: never use OpenRouter for Manifold.]
+
+- The default-branch GitHub workflow schedules at most one run per hour. A dropped or delayed
+  cron tick is not replayed.
+- Manifold forecasting is Claude-subscription-only. The unattended path requires an explicit
+  `CLAUDE_CODE_OAUTH_TOKEN` setup-token and rejects Anthropic API or gateway routing before
+  doing any model, market, journal, or phase work. There is no paid-provider fallback.
+- Each scheduled invocation has a hard $5 USD-equivalent Claude credit cap. Before every
+  subprocess, the runner passes the exact unspent remainder to Claude's native
+  `--max-budget-usd` and also accumulates the returned `total_cost_usd`. A failed or timed-out
+  subprocess, missing/non-positive cost telemetry, or a reported native-cap breach reserves
+  the entire unknown remainder, stops all further calls, and fails the workflow closed.
+- At 24 successful ticks, the theoretical ceiling is $120 of notional subscription usage per
+  day. This is a usage-equivalent ceiling, not permission to bill an API account. The
+  three-day per-market forecast dedupe and lack of eligible markets usually reduce realized
+  use. Manual/local invocations obey the same maximum $5 cap.
+- The bot has a 45-minute run deadline inside a 55-minute job boundary, leaving time to
+  leak-check and publish the preregistration journal before the next hourly tick.
+
 ## Phases (transitions are AUTOMATIC and journaled)
 
 ### Phase 0 — dry-run validation (zero mana)
@@ -36,8 +58,8 @@ was evaluated without error.
   a bet gate [AMENDED 2026-07-11]: it is a preregistered hypothesis — at review we test
   whether informed-read bets underperform. The original gate starved the signal: liquid
   markets read "informed" almost by construction.
-- Hard caps: <= 10 bets/run, <= 1 run/day, total open exposure <= 30% of balance,
-  refuse all betting below 50% of adoption bankroll (1,100 mana floor).
+- Hard caps: <= 10 bets/run, <= 1 scheduled run/hour, total open exposure <= 30% of
+  balance, refuse all betting below 50% of adoption bankroll (1,100 mana floor).
 - Exit: hold to resolution.
 - **Promotion to 2** when, among live divergent bets at least 7 days old, the market has
   moved TOWARD our entry forecast in significantly more than half of cases (exact
@@ -59,4 +81,4 @@ was evaluated without error.
 ## Standing risk notes
 Creator mis-resolution (mitigated by bettor floor + hygiene; accepted residual — play
 money). Correlated batches (topic cap). Self-influence (small stakes on >= 50-bettor
-books). Model-cost creep (<= ~30 calls/day at one run/day).
+books). Model-cost creep is bounded by the hourly subscription-credit policy above.

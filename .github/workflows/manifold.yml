@@ -1,21 +1,11 @@
 name: Manifold bot
 
 on:
-  # One run/day per the policy (docs/manifold-policy.md). bot.yml is NOT GitHub-cron driven
-  # (it is kicked by an external Cloud Scheduler via workflow_dispatch every 10 min), so there
-  # is no bot.yml cron hour to collide with — this 07:30 UTC slot is simply a quiet daily time,
-  # distinct from any wave the tournament bot happens to be working. GitHub cron is best-effort
-  # and drops ticks; a daily bet cadence tolerates that (a missed day just skips a day), unlike
-  # the tournament bot's sub-hourly needs, so a plain cron is fine here.
+  # Hourly per the operator's 2026-07-12 amendment. Minute 17 avoids the top-of-hour cron
+  # surge. GitHub cron is best-effort; a dropped tick is skipped rather than replayed because
+  # replaying it could violate the one-$5-budget-window-per-scheduled-run contract.
   schedule:
-    - cron: "30 7 * * *"
-  workflow_dispatch:
-    inputs:
-      provider:
-        description: "LLM billing path"
-        type: choice
-        options: [subscription, openrouter]
-        default: subscription
+    - cron: "17 * * * *"
 
 concurrency:
   group: ${{ github.workflow }}
@@ -24,7 +14,7 @@ concurrency:
 jobs:
   manifold:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 55
     permissions:
       contents: write # commits the public journal + phase file
     steps:
@@ -46,21 +36,26 @@ jobs:
           npm install -g @anthropic-ai/claude-code@2.1.201
 
       - name: Run Manifold bot
-        # Auth mirrors bot.yml: CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`) draws on
-        # the Claude subscription. We deliberately do NOT set ANTHROPIC_API_KEY: if present it
-        # takes precedence and silently bills the API per-token instead.
+        # This path is Claude-subscription-only. The explicit setup-token is required and
+        # run_manifold rejects metered/gateway auth before doing any repo or network work.
+        # Its cumulative $5 accounting is backed by Claude's native --max-budget-usd on each
+        # subprocess, set to exactly the unspent remainder. Unknown usage reserves the entire
+        # remainder and fails the step closed.
         #
-        # MANIFOLD_API_KEY is the ONLY thing that turns real betting on. Without it (secret
-        # unset), manifold_api_key() returns "" and --live falls back to a dry-run that
-        # journals would-be bets and POSTs nothing — harmless. Betting is ALSO gated by the
-        # phase machine: phase 0 forces dry-run regardless of --live, and a killed bot never
-        # bets again, so an early workflow run is safe even with the key present.
+        # Require the Manifold key before model spend: a missing live credential must not burn
+        # an hourly credit window on forecasts that can only be dry-run. Betting remains gated
+        # by the phase machine, balance floor, exposure cap, position guard, and killed state.
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           MANIFOLD_API_KEY: ${{ secrets.MANIFOLD_API_KEY }}
-          PROVIDER: ${{ inputs.provider || 'subscription' }}
+          LEAK_PATTERNS: ${{ secrets.LEAK_PATTERNS }}
         run: |
-          python bot/run_manifold.py --limit 10 --tier medium --live --provider "$PROVIDER" \
+          set -o pipefail
+          : "${CLAUDE_CODE_OAUTH_TOKEN:?set the subscription setup-token secret}"
+          : "${MANIFOLD_API_KEY:?set the live Manifold credential secret}"
+          : "${LEAK_PATTERNS:?set the publication deny-list secret}"
+          python bot/run_manifold.py --limit 10 --tier medium --live --provider subscription \
+            --budget 5 --deadline-minutes 45 --timeout 900 --require-subscription-auth \
             | tee "$RUNNER_TEMP/manifold.log"
 
       - name: Manifold run summary
@@ -74,7 +69,7 @@ jobs:
             echo "### Manifold bot digest"
             echo
             echo '```'
-            grep -hiE "phase|recorded|journaled pair|BET |DRY-RUN would bet|market_read|exposure|floor|skip|CONVERGENCE|selected" \
+            grep -hiE "phase|recorded|journaled pair|BET |DRY-RUN would bet|market_read|exposure|floor|skip|CONVERGENCE|selected|credit" \
               "$RUNNER_TEMP/manifold.log" || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
@@ -109,10 +104,11 @@ jobs:
           git add bot/journal/manifold.jsonl bot/journal/manifold-phase.json
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "manifold: journal + phase update $(date -u +%FT%TZ)"
-          # rebase-and-retry: a concurrent commit (the tournament bot shares this journal dir)
-          # must not lose a journaled pair. A conflicted rebase is aborted before the next try.
+          # Rebase-and-retry: a concurrent tournament-bot commit must not lose a journaled
+          # pair. The tree is clean after the commit, so autostash is both unnecessary and
+          # forbidden by the repository's feature-work safety rule.
           for i in 1 2 3; do
-            git pull --rebase --autostash origin main && git push && exit 0
+            git pull --rebase origin main && git push && exit 0
             git rebase --abort 2>/dev/null || true
             sleep 3
           done

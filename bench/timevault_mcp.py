@@ -24,6 +24,57 @@ from timevault import LeakError, TimeVault, parse_cutoff  # noqa: E402
 
 PROTOCOL_FALLBACK = "2024-11-05"
 
+# Telemetry is deliberately an allow-list, not a dump of the JSON-RPC request or tool
+# result.  Search text and read targets are enough to classify research mechanics; page
+# bodies, snippets, exception messages, and every other argument stay out of the log.
+_SAFE_TELEMETRY_ARGUMENTS = {
+    "search_news": ("query",),
+    "search_corpus": ("query",),
+    "fetch_page": ("url",),
+    "wikipedia_asof": ("title",),
+    "fetch_corpus_page": ("url",),
+}
+
+
+def _safe_telemetry_arguments(name: str, arguments: object) -> dict[str, str]:
+    """Return only the string arguments needed to classify a search/read call."""
+    if not isinstance(arguments, dict):
+        return {}
+    return {
+        key: value
+        for key in _SAFE_TELEMETRY_ARGUMENTS.get(name, ())
+        if isinstance((value := arguments.get(key)), str)
+    }
+
+
+def _append_telemetry(
+    telemetry_path: str | Path | None,
+    name: str,
+    arguments: object,
+    *,
+    success: bool,
+    error: str | None,
+) -> None:
+    """Append one content-free event without ever changing the tool call's outcome."""
+    if telemetry_path is None:
+        return
+    event = {
+        "tool": name,
+        "arguments": _safe_telemetry_arguments(name, arguments),
+        "success": success,
+        "error": error,
+    }
+    try:
+        path = Path(telemetry_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(event, ensure_ascii=False) + "\n")
+    except OSError:
+        # Observability must not make the time-locked research tool less reliable.  The
+        # bench uses a private, pre-created temp directory, so this is only a defensive
+        # fallback for direct/manual server launches.
+        return
+
 
 def tool_definitions(cutoff_label: str, with_corpus: bool = False) -> list[dict]:
     """Tool schemas; every description states the cutoff so the agent plans around it.
@@ -123,7 +174,11 @@ def tool_definitions(cutoff_label: str, with_corpus: bool = False) -> list[dict]
     return tools
 
 
-def handle_message(msg: dict, vault: TimeVault) -> dict | None:
+def handle_message(
+    msg: dict,
+    vault: TimeVault,
+    telemetry_path: str | Path | None = None,
+) -> dict | None:
     """One JSON-RPC message in, one response out (None for notifications)."""
     method = msg.get("method")
     msg_id = msg.get("id")
@@ -154,22 +209,52 @@ def handle_message(msg: dict, vault: TimeVault) -> dict | None:
     if method == "tools/list":
         return ok({"tools": tool_definitions(cutoff_label, with_corpus=with_corpus)})
     if method == "tools/call":
-        params = msg.get("params") or {}
+        raw_params = msg.get("params") or {}
+        if not isinstance(raw_params, dict):
+            _append_telemetry(
+                telemetry_path, "", {}, success=False, error="invalid_params"
+            )
+            return rpc_error(-32602, "tools/call params must be an object")
+        params = raw_params
         name = str(params.get("name") or "")
         arguments = params.get("arguments") or {}
         if name not in valid:
+            _append_telemetry(
+                telemetry_path, name, arguments, success=False, error="unknown_tool"
+            )
             return rpc_error(-32602, f"unknown tool {name!r}")
+        if not isinstance(arguments, dict):
+            _append_telemetry(
+                telemetry_path, name, arguments, success=False, error="invalid_arguments"
+            )
+            return rpc_error(-32602, "tool arguments must be an object")
         try:
             result = getattr(vault, name)(**arguments)
             text = json.dumps(result, ensure_ascii=False, indent=1)
+            _append_telemetry(
+                telemetry_path, name, arguments, success=True, error=None
+            )
             return ok({"content": [{"type": "text", "text": text}], "isError": False})
         except LeakError as exc:
             # The guarantee held: report it as tool output, not a crash.
+            _append_telemetry(
+                telemetry_path, name, arguments, success=False, error="leak_error"
+            )
             return ok({"content": [{"type": "text",
                                     "text": f"[time-lock] {exc}"}], "isError": True})
         except TypeError as exc:  # bad/missing arguments
+            _append_telemetry(
+                telemetry_path, name, arguments, success=False, error="invalid_arguments"
+            )
             return rpc_error(-32602, str(exc)[:200])
         except Exception as exc:  # noqa: BLE001 - network faults etc.: tool-level error
+            _append_telemetry(
+                telemetry_path,
+                name,
+                arguments,
+                success=False,
+                error=type(exc).__name__,
+            )
             return ok({"content": [{"type": "text",
                                     "text": f"[{type(exc).__name__}] {str(exc)[:300]}"}],
                        "isError": True})
@@ -183,6 +268,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--corpus", default=None,
                         help="path to btf2_corpus.sqlite; enables the search_corpus and "
                              "fetch_corpus_page tools (time-locked + scrape-window caveat)")
+    parser.add_argument("--telemetry", default=None,
+                        help="optional JSONL path for content-free tools/call telemetry")
     args = parser.parse_args(argv)
     vault = TimeVault(parse_cutoff(args.cutoff), corpus_db=args.corpus)
 
@@ -202,7 +289,7 @@ def main(argv: list[str] | None = None) -> int:
                               "error": {"code": -32700, "message": "parse error"}}),
                   flush=True)
             continue
-        response = handle_message(msg, vault)
+        response = handle_message(msg, vault, args.telemetry)
         if response is not None:
             print(json.dumps(response, ensure_ascii=False), flush=True)
     return 0

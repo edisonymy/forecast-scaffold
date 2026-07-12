@@ -35,8 +35,10 @@ import json
 import math
 import os
 import re
+import shlex
 import subprocess
 import sys
+import time
 import urllib.parse
 import urllib.request
 from datetime import UTC, datetime
@@ -122,6 +124,22 @@ KELLY_STAKE_FLOOR = 10.0        # never size below 10 mana
 CONVERGENCE_BAND = 0.03         # sell when the price comes within this of our forecast
 REFORECAST_ADVERSE = 0.10       # re-forecast a position the market moved this far against us
 ADOPTION_BANKROLL = 2200.0      # only used to size phase-2 would-be bets in an offline dry-run
+
+# ---- model-credit policy ---------------------------------------------------------------
+# Manifold is subscription-only.  The workflow runs once per hour and every invocation is
+# capped at five USD-equivalent Claude credits.  ``total_cost_usd`` is the Claude CLI's
+# notional usage meter even when OAuth routes the calls through a subscription; no metered
+# Anthropic/API gateway credential is permitted on this path.
+MAX_CREDIT_BUDGET_USD = 5.0
+BUDGET_EPSILON_USD = 1e-6
+METERED_AUTH_ENV = (
+    "ANTHROPIC_API_KEY",
+    "ANTHROPIC_AUTH_TOKEN",
+    "ANTHROPIC_BASE_URL",
+    "CLAUDE_CODE_USE_BEDROCK",
+    "CLAUDE_CODE_USE_VERTEX",
+    "CLAUDE_CODE_USE_FOUNDRY",
+)
 
 # The default agent command mirrors bot/run_bot.py's hardened production shape exactly:
 # a JSON envelope (so cost/model record), and the same research toolset the workflows use.
@@ -361,6 +379,47 @@ def agent_cmd_for(base_cmd: str, blind: bool) -> str:
     return f"{base_cmd} --disallowed-tools {disallowed}"
 
 
+def with_credit_cap(agent_cmd: str, remaining_usd: float) -> str:
+    """Return ``agent_cmd`` with exactly one native Claude per-process credit cap.
+
+    Cumulative accounting lives in :func:`forecast_market`; this second layer makes the
+    remaining allowance a hard ceiling even when one agent call runs unusually long.  A
+    caller-supplied cap is replaced, never trusted or duplicated.
+    """
+    if not math.isfinite(remaining_usd) or remaining_usd <= 0:
+        raise ValueError("remaining credit budget must be positive and finite")
+    tokens = shlex.split(agent_cmd)
+    cleaned: list[str] = []
+    i = 0
+    while i < len(tokens):
+        token = tokens[i]
+        if token == "--max-budget-usd":
+            i += 2
+            continue
+        if token.startswith("--max-budget-usd="):
+            i += 1
+            continue
+        cleaned.append(token)
+        i += 1
+    return shlex.join([*cleaned, "--max-budget-usd", f"{remaining_usd:.6f}"])
+
+
+def subscription_auth_error(require_oauth: bool = False) -> str | None:
+    """Explain why the Manifold agent path is not provably subscription-only, if so.
+
+    Local runs may use Claude Code's cached subscription login.  Unattended cloud runs pass
+    ``--require-subscription-auth`` and must present the long-lived setup-token explicitly.
+    Any metered API/gateway setting is rejected in both cases because Claude Code otherwise
+    gives some of those credentials precedence over subscription OAuth.
+    """
+    forbidden = [name for name in METERED_AUTH_ENV if os.environ.get(name, "").strip()]
+    if forbidden:
+        return "metered or gateway auth is set: " + ", ".join(forbidden)
+    if require_oauth and not os.environ.get("CLAUDE_CODE_OAUTH_TOKEN", "").strip():
+        return "CLAUDE_CODE_OAUTH_TOKEN is required for unattended subscription auth"
+    return None
+
+
 # --------------------------------------------------------------------------- forecasting
 
 # Binary-only question shape for run_bot.validate_payload (Manifold markets we select are
@@ -390,7 +449,8 @@ def validate_market_read(payload: dict[str, Any]) -> list[str]:
 
 def forecast_market(
     market: dict[str, Any], mode: str, tier: str, args: argparse.Namespace,
-    config: dict[str, Any],
+    config: dict[str, Any], budget_state: dict[str, Any] | None = None,
+    deadline: float | None = None,
 ) -> dict[str, Any] | None:
     """One blind or sighted research forecast for one market. Thin runner over run_bot's
     agent machinery (modeled on bench/run_bench.forecast_one): build the system prompt via
@@ -407,30 +467,75 @@ def forecast_market(
     min_sources = max(0, int(tier_params.get("min_sources", 0) or 0))
     if min_sources:
         brief += "\n" + run_bot.SOURCE_FLOOR_SECTION.format(floor=min_sources)
-    base_cmd = (
-        run_bot.openrouter_model_cmd(args.agent_cmd)
-        if args.provider == "openrouter" else args.agent_cmd
-    )
+    base_cmd = args.agent_cmd
     system = run_bot.build_system(tier, blind, config)
     agent_cmd = agent_cmd_for(base_cmd, blind)
 
+    budget_state = budget_state if budget_state is not None else {
+        "usd": 0.0, "uncertain": False,
+    }
+    budget = float(getattr(args, "budget", 0.0) or 0.0)
     cost = 0.0
     model = ""
     payload: dict[str, Any] = {}
     errors: list[str] = []
     probability: float | None = None
     for attempt in range(2):
+        call_cmd = agent_cmd
+        remaining: float | None = None
+        if budget > 0:
+            remaining = budget - float(budget_state.get("usd", 0.0) or 0.0)
+            if remaining <= BUDGET_EPSILON_USD:
+                errors = [f"credit budget ${budget:.2f} exhausted before {mode} attempt"]
+                break
+            call_cmd = with_credit_cap(agent_cmd, remaining)
+        call_timeout = int(args.timeout)
+        if deadline is not None:
+            seconds_left = deadline - time.monotonic()
+            if seconds_left <= 1:
+                errors = [f"wall-clock deadline reached before {mode} attempt"]
+                break
+            call_timeout = min(call_timeout, max(1, int(seconds_left)))
         prompt = brief if attempt == 0 else (
             brief + "\n\nYour previous output was invalid: " + "; ".join(errors)
             + "\nEmit a corrected fenced json block."
         )
         try:
             output, attempt_cost, model = run_bot.run_agent(
-                agent_cmd, prompt, system, args.timeout, args.provider
+                call_cmd, prompt, system, call_timeout, args.provider
             )
-            cost += attempt_cost
-            payload = run_bot.extract_json(output)
         except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
+            # A failed/timed-out subprocess may already have consumed any amount up to its
+            # native cap, but it returned no trustworthy meter. Reserve the ENTIRE unknown
+            # remainder and stop: the next call must never be able to double-spend it.
+            if remaining is not None:
+                budget_state["usd"] = budget
+                budget_state["uncertain"] = True
+                errors = [f"{str(exc)[:220]}; unknown usage reserved to the hard cap"]
+                break
+            errors = [str(exc)[:300]]
+            continue
+        if not math.isfinite(attempt_cost) or attempt_cost < 0:
+            attempt_cost = 0.0
+        if budget > 0 and attempt_cost <= 0:
+            # The cumulative layer cannot safely release any allowance without positive
+            # Claude JSON-envelope telemetry. The native process cap still bounded this
+            # call; reserve that whole remainder and stop all further calls.
+            budget_state["usd"] = budget
+            budget_state["uncertain"] = True
+            errors = ["agent returned no positive total_cost_usd; usage reserved to hard cap"]
+            break
+        cost += attempt_cost
+        budget_state["usd"] = float(budget_state.get("usd", 0.0) or 0.0) + attempt_cost
+        if remaining is not None and attempt_cost > remaining + BUDGET_EPSILON_USD:
+            budget_state["uncertain"] = True
+            errors = [
+                f"agent reported ${attempt_cost:.4f} above its ${remaining:.4f} native cap"
+            ]
+            break
+        try:
+            payload = run_bot.extract_json(output)
+        except (RuntimeError, ValueError) as exc:
             errors = [str(exc)[:300]]
             continue
         errors = run_bot.validate_payload(payload, _BINARY_Q)
@@ -960,6 +1065,27 @@ def _manage_phase2_positions(
 
 
 def run(args: argparse.Namespace) -> int:
+    if getattr(args, "provider", "subscription") != "subscription":
+        print("Manifold is subscription-only; refusing a non-subscription provider")
+        return 2
+    budget = float(getattr(args, "budget", MAX_CREDIT_BUDGET_USD) or 0.0)
+    if (not math.isfinite(budget) or budget <= 0
+            or budget > MAX_CREDIT_BUDGET_USD + BUDGET_EPSILON_USD):
+        print(f"credit budget must be > $0 and <= ${MAX_CREDIT_BUDGET_USD:.2f}")
+        return 2
+    auth_error = subscription_auth_error(
+        bool(getattr(args, "require_subscription_auth", False))
+    )
+    if auth_error:
+        print(f"subscription-auth preflight failed: {auth_error}")
+        return 2
+    deadline_minutes = float(getattr(args, "deadline_minutes", 0.0) or 0.0)
+    deadline = (
+        time.monotonic() + deadline_minutes * 60 if deadline_minutes > 0 else None
+    )
+    budget_state: dict[str, Any] = {"usd": 0.0, "uncertain": False}
+    print(f"Claude subscription credit cap: ${budget:.2f} this run")
+
     config = run_bot.load_config()
     journal_path = args.journal or str(DEFAULT_JOURNAL)
     Path(journal_path).parent.mkdir(parents=True, exist_ok=True)
@@ -1018,6 +1144,7 @@ def run(args: argparse.Namespace) -> int:
         )
     print(f"selected {len(markets)} market(s)")
     if not markets:
+        print(f"credit usage accounted: $0.00 / ${budget:.2f}")
         return 0
 
     exposure = open_exposure(records_before)  # mana already at risk in open placed bets
@@ -1026,6 +1153,13 @@ def run(args: argparse.Namespace) -> int:
     fresh_pairs = recently_forecast_market_ids(records_before)
     bets_placed = 0
     for market in markets:
+        if float(budget_state["usd"]) >= budget - BUDGET_EPSILON_USD:
+            print(f"credit cap reached (${float(budget_state['usd']):.2f} accounted); "
+                  "leaving remaining markets for the next hourly run")
+            break
+        if deadline is not None and time.monotonic() >= deadline:
+            print("wall-clock deadline reached; leaving remaining markets for the next run")
+            break
         market_id = str(market.get("id"))
         title = str(market.get("question", ""))[:70]
         if market_id in fresh_pairs:
@@ -1033,10 +1167,17 @@ def run(args: argparse.Namespace) -> int:
             continue
         print(f"- {title!r} (p={market.get('probability')}, "
               f"vol24h={market.get('volume24Hours')})")
-        blind_fc = forecast_market(market, "blind", args.tier, args, config)
-        sighted_fc = forecast_market(market, "sighted", args.tier, args, config)
-        if blind_fc is None or sighted_fc is None:
-            print("  skip: a forecast failed")
+        blind_fc = forecast_market(
+            market, "blind", args.tier, args, config, budget_state, deadline
+        )
+        if blind_fc is None:
+            print("  skip: blind forecast failed; sighted call not started")
+            continue
+        sighted_fc = forecast_market(
+            market, "sighted", args.tier, args, config, budget_state, deadline
+        )
+        if sighted_fc is None:
+            print("  skip: sighted forecast failed")
             continue
         for fc in (blind_fc, sighted_fc):
             fc["tier"] = args.tier
@@ -1099,7 +1240,10 @@ def run(args: argparse.Namespace) -> int:
 
     mode = "live" if can_post else "dry-run"
     print(f"done ({mode}, phase {phase}): {len(markets)} market(s), {bets_placed} bet(s)")
-    return 0
+    qualifier = " (unknown usage reserved)" if budget_state["uncertain"] else ""
+    print(f"credit usage accounted: ${float(budget_state['usd']):.2f} / ${budget:.2f}"
+          f"{qualifier}")
+    return 1 if budget_state["uncertain"] else 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1116,8 +1260,18 @@ def main(argv: list[str] | None = None) -> int:
                              "quarter-Kelly and ignores this")
     parser.add_argument("--max-bets", dest="max_bets", type=int, default=MAX_BETS_PER_RUN,
                         help=f"cap on bets placed per run (default {MAX_BETS_PER_RUN})")
-    parser.add_argument("--provider", default="subscription", choices=run_bot.PROVIDERS,
-                        help="agent billing/routing path, as in run_bot")
+    parser.add_argument("--provider", default="subscription", choices=("subscription",),
+                        help="fixed subscription billing path (Manifold never uses a "
+                             "metered provider)")
+    parser.add_argument("--budget", type=float, default=MAX_CREDIT_BUDGET_USD,
+                        help=f"Claude subscription credit cap for this invocation; hard "
+                             f"maximum ${MAX_CREDIT_BUDGET_USD:.2f}")
+    parser.add_argument("--deadline-minutes", type=float, default=0.0,
+                        help="stop starting/continuing agent calls after this wall-clock "
+                             "window (0 = no deadline; cloud uses 45)")
+    parser.add_argument("--require-subscription-auth", action="store_true",
+                        help="require explicit CLAUDE_CODE_OAUTH_TOKEN (for unattended cloud "
+                             "runs; local cached subscription login remains supported)")
     parser.add_argument("--timeout", type=int, default=1200, help="seconds per agent call")
     parser.add_argument("--agent-cmd", dest="agent_cmd", default=DEFAULT_AGENT_CMD,
                         help="headless agent command (default mirrors run_bot's)")
