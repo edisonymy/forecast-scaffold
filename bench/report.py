@@ -27,6 +27,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS_DIR = ROOT / "bench" / "results"
 EPS = 1e-3  # clamp probabilities into [0.001, 0.999] before logit/KL
+# The tiers this report's tables know how to place; anything else (experiment arms like
+# plain/angles) is silently absent from them, which the NOTE banner below flags.
+RECOGNIZED_TIERS = {"zero", "low", "medium", "high", "auto"}
 
 
 def _clamp(p: float) -> float:
@@ -156,6 +159,16 @@ def main(argv: list[str] | None = None) -> int:
     lines += [f"# Benchmark report: {set_path.stem}", "",
               f"scaffold_version {', '.join(versions)} · model {', '.join(models)} "
               f"· provider {', '.join(providers)}", ""]
+
+    # This script silently pools every run and its tables drop unknown tiers. Against an
+    # experiment file (tranche arms like plain/angles, or multi-run data) that yields a
+    # mislabeled, non-preregistered number — say so up front. Silent for ordinary files.
+    odd_tiers = sum(1 for r in rows if r.get("tier") not in RECOGNIZED_TIERS)
+    nonzero_runs = sum(1 for r in rows if int(r.get("run") or 0) != 0)
+    if odd_tiers or nonzero_runs:
+        lines += [f"NOTE: {odd_tiers} rows in unrecognized tiers / {nonzero_runs} "
+                  "nonzero runs pooled — general report, NOT the preregistered tranche "
+                  "readout (see bench/analysis/readout_tranche1.py)", ""]
 
     # Resolution scoring — only possible when the set carries known outcomes (pastcasting
     # sets like btf2). Brier against reality outranks every distance-to-teacher proxy.

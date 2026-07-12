@@ -39,8 +39,10 @@ have 126 lines while still containing exactly 120 preregistered/scorable arm row
 `python bench/analysis/readout_tranche1.py`. Interpret ONLY by the pre-registered rules
 in the script docstring / roadmap. If rows < ~90/120, resume the run first.
 
-**Manifold bot (live, phase 1, betting enabled, 0 bets so far — all completed pairs
-converged < 0.05):** journal `bot/journal/manifold.jsonl`, phase file
+**Manifold bot (live, phase 1, betting enabled — 2 live 25-mana bets placed (dry_run=False:
+qid uIQlEUOhuS NO, qid IyZz6yqqqQ YES; 50 mana open exposure), remaining pairs converged;
+numbers drift, the journal is the source of truth and `python bot/score_manifold.py` is
+the authoritative live count):** journal `bot/journal/manifold.jsonl`, phase file
 `manifold-phase.json`. Run: `python bot/run_manifold.py --limit 10 --tier medium --live`
 (key in `~/.manifold/key.txt`). Daily CI workflow exists (needs MANIFOLD_API_KEY secret
 to bet from CI). Score with `python bot/score_manifold.py`. Known finding to fix: the

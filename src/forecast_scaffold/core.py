@@ -664,14 +664,24 @@ def fit_platt(
     return (a, b)
 
 
-def apply_recalibration(p: float, a: float, b: float) -> float:
-    """Map ``p`` through the fitted logistic: ``sigmoid(a*logit(p)+b)``, clamped to the
-    DEFAULTS clamp band. Returns ``p`` unchanged — exact identity — when ``(a, b)`` is the
-    identity map ``(1.0, 0.0)``, so an unfitted deployment is byte-for-byte a no-op."""
+def apply_recalibration(
+    p: float, a: float, b: float, clamp_band: tuple[float, float] | None = None
+) -> float:
+    """Map ``p`` through the fitted logistic: ``sigmoid(a*logit(p)+b)``, clamped to
+    ``clamp_band`` (default ``None`` = the DEFAULTS clamp band). Returns ``p`` unchanged —
+    exact identity — when ``(a, b)`` is the identity map ``(1.0, 0.0)``, so an unfitted
+    deployment is byte-for-byte a no-op.
+
+    ``clamp_band`` exists for callers whose own submission band is WIDER than the DEFAULTS
+    one (the bot clamps to [0.01, 0.99]): ACTIVATING recalibration must never tighten the
+    effective band, so such a caller passes its band instead of inheriting the default."""
     if (a, b) == (1.0, 0.0):
         return p
-    lo = float(DEFAULTS["clamp"]["min"])
-    hi = float(DEFAULTS["clamp"]["max"])
+    if clamp_band is None:
+        lo = float(DEFAULTS["clamp"]["min"])
+        hi = float(DEFAULTS["clamp"]["max"])
+    else:
+        lo, hi = float(clamp_band[0]), float(clamp_band[1])
     return clamp(_sigmoid(a * _logit(p) + b), lo, hi)
 
 

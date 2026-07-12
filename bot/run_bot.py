@@ -1286,7 +1286,12 @@ def forecast_question(
         # journal BOTH the raw pooled p and the recalibrated one that was submitted.
         raw_pooled = float(payload["probability"])
         recal_a, recal_b = load_recalibration(RECAL_PARAMS_PATH)
-        recal_pooled = apply_recalibration(raw_pooled, recal_a, recal_b)
+        # Pass the bot's OWN submission band (the clamp two lines down): the default band
+        # is the narrower DEFAULTS [0.02, 0.98], and inheriting it would mean ACTIVATING
+        # recalibration silently tightens what a params-free run could submit.
+        recal_pooled = apply_recalibration(
+            raw_pooled, recal_a, recal_b, clamp_band=(0.01, 0.99)
+        )
         if recal_pooled != raw_pooled:
             raw_probability = raw_pooled
         payload["probability"] = clamp(recal_pooled, 0.01, 0.99)

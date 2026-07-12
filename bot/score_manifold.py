@@ -6,8 +6,9 @@ and pooled:
 
   * movement toward us — sign(p_us - p_0) * (p_now - p_0), where p_0 is the market price at
     forecast time and p_now is today's. Positive means the market moved our way. Rows where
-    our forecast barely diverged from the market (|p_us - p_0| < 0.08) carry no signal and
-    are skipped for this metric.
+    our forecast barely diverged from the market (|p_us - p_0| <
+    run_manifold.DIVERGENCE_THRESHOLD, currently 0.05) carry no signal and are skipped for
+    this metric.
   * mark-to-market P&L for placed bets (a simple share-model proxy; ignores CPMM slippage
     and fees).
   * resolution Brier for resolved markets, BLIND and SIGHTED scored separately.

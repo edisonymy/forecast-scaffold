@@ -273,6 +273,10 @@ def test_decide_bet_balance_floor_and_position_guard() -> None:
 # The medium tier's min_sources floor is 3; the default stub payload clears it.
 DEFAULT_SOURCES = ["https://example.com/a", "https://example.com/b", "https://example.com/c"]
 
+# A still-open market state for stubbing score_manifold.fetch_market_state: live-path runs
+# consult live state for the exposure cap, and a test must never let that hit the network.
+OPEN_STATE = {"probability": 0.50, "resolved": False, "outcome": None}
+
 
 def fenced(
     probability: float, market_read: str | None = "herding",
@@ -559,6 +563,8 @@ def test_run_live_posts_and_respects_max_bets(
     with_bet = [r for r in sighted if "bet" in r["source"]]
     assert len(with_bet) == 1
     assert with_bet[0]["source"]["bet"]["dry_run"] is False
+    # The stub response carried a betId, so the POST is provably filled.
+    assert with_bet[0]["source"]["bet"]["status"] == "placed"
     assert all(r["dry_run"] is False for r in rows)  # live provenance
 
 
@@ -569,6 +575,7 @@ def test_run_skips_market_with_existing_position(
     monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
     monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90))
     monkeypatch.setattr(run_manifold, "get_balance", lambda key: 5000.0)
+    monkeypatch.setattr(score_manifold, "fetch_market_state", lambda mid: dict(OPEN_STATE))
     spy = BetSpy()
     monkeypatch.setattr(run_manifold, "place_bet", spy)
     monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
@@ -588,6 +595,106 @@ def test_run_skips_market_with_existing_position(
     args = make_args(tmp_path, live=True)
     assert run_manifold.run(args) == 0
     assert spy.calls == []  # already positioned -> no new bet
+
+
+def test_already_bet_ids_ignore_dry_run_and_count_unknown() -> None:
+    # A dry-run would-be bet is not a position; a placed bet is; an "unknown"-status bet
+    # (POST failed after send — may have filled) is guarded too.
+    records = [
+        mf_record("a", "sighted", 0.9, 0.4, market_id="paper",
+                  bet={"outcome": "YES", "stake": 25, "dry_run": True}),
+        mf_record("b", "sighted", 0.9, 0.4, market_id="real",
+                  bet={"outcome": "YES", "stake": 25, "dry_run": False}),
+        mf_record("c", "sighted", 0.9, 0.4, market_id="lost",
+                  bet={"outcome": "YES", "stake": 25, "dry_run": False,
+                       "status": "unknown"}),
+    ]
+    assert run_manifold.already_bet_market_ids(records) == {"real", "lost"}
+
+
+def test_dry_run_bet_does_not_block_later_live_bet(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # A phase-0 paper bet journaled >3 days ago (so the fresh-pair dedupe is out of the way)
+    # must NOT hold the position guard against a later live bet on the same market.
+    market = mk("paper", probability=0.30, groupSlugs=["z"])
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
+    monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90))
+    monkeypatch.setattr(run_manifold, "get_balance", lambda key: 5000.0)
+    monkeypatch.setattr(score_manifold, "fetch_market_state", lambda mid: dict(OPEN_STATE))
+    spy = BetSpy()
+    monkeypatch.setattr(run_manifold, "place_bet", spy)
+    monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
+
+    old = (datetime.now(UTC) - timedelta(days=10)).isoformat(timespec="seconds")
+    journal = Journal(str(tmp_path / "manifold.jsonl"))
+    journal.append(ForecastRecord(
+        question="paper market", question_type="binary", probability=0.5, forecast_at=old,
+        source={"platform": "manifold", "question_id": "paper", "pair_id": "old",
+                "bet": {"outcome": "YES", "stake": 25, "dry_run": True}},
+    ))
+
+    seed_phase(tmp_path, phase=1)
+    args = make_args(tmp_path, live=True)
+    assert run_manifold.run(args) == 0
+    assert len(spy.calls) == 1 and spy.calls[0][1] == "paper"  # the paper bet did not block
+
+
+def test_bet_post_failure_journals_unknown_and_guards(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # A POST that raises may still have filled (timeout after fill): the bet is journaled
+    # with status "unknown" so the market stays guarded and the stake stays in exposure.
+    market = mk("tmo", probability=0.30)
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
+    monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90))
+    monkeypatch.setattr(run_manifold, "get_balance", lambda key: 5000.0)
+    monkeypatch.setattr(score_manifold, "fetch_market_state", lambda mid: dict(OPEN_STATE))
+    monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
+
+    def boom(api_key: str, market_id: str, outcome: str, amount: float) -> dict:
+        raise RuntimeError("timeout after send")
+
+    monkeypatch.setattr(run_manifold, "place_bet", boom)
+    seed_phase(tmp_path, phase=1)
+    args = make_args(tmp_path, live=True)
+    assert run_manifold.run(args) == 0
+
+    sighted = next(r for r in read_journal(args.journal) if r["source"]["mode"] == "sighted")
+    bet = sighted["source"]["bet"]
+    assert bet["status"] == "unknown" and bet["dry_run"] is False
+    assert bet["outcome"] == "YES" and bet["stake"] == 25.0
+    assert bet["p_market_at_bet"] == 0.30
+
+    # The unknown-status stake counts toward exposure (conservative: it may have filled).
+    assert run_manifold.open_exposure(list(Journal(args.journal))) == pytest.approx(25.0)
+
+    # A second run must NOT re-bet the market even with the fresh-pair dedupe window forced
+    # to 0 — the position guard alone holds it.
+    monkeypatch.setattr(run_manifold, "recently_forecast_market_ids",
+                        lambda records, **k: set())
+    spy = BetSpy()
+    monkeypatch.setattr(run_manifold, "place_bet", spy)
+    assert run_manifold.run(args) == 0
+    assert spy.calls == []
+
+
+def test_bet_response_without_id_treated_as_unknown(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # A 2xx body with no bet id is no proof of a fill: same conservative path as a raise.
+    market = mk("noid", probability=0.30)
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
+    monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90))
+    monkeypatch.setattr(run_manifold, "get_balance", lambda key: 5000.0)
+    monkeypatch.setattr(run_manifold, "place_bet", lambda *a: {})
+    monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
+
+    seed_phase(tmp_path, phase=1)
+    args = make_args(tmp_path, live=True)
+    assert run_manifold.run(args) == 0
+    sighted = next(r for r in read_journal(args.journal) if r["source"]["mode"] == "sighted")
+    assert sighted["source"]["bet"]["status"] == "unknown"
 
 
 def test_run_skips_market_with_fresh_pair(
@@ -927,7 +1034,7 @@ def test_phase_promotion_0_to_1_not_met_without_pairs() -> None:
 
 
 def _movement_journal(
-    n: int, n_toward: int, *, now: datetime
+    n: int, n_toward: int, *, now: datetime, dry_run: bool = False
 ) -> tuple[list[ForecastRecord], dict[str, dict[str, Any]]]:
     """n live divergent YES bets (p_us=0.9, entry 0.4), `n_toward` of which the market moved
     toward; plus a lookup mapping each market to its current (open) price."""
@@ -941,7 +1048,8 @@ def _movement_journal(
         records.append(mf_record(
             f"b{i}", "sighted", 0.90, 0.40, market_id=mid, market_read="herding",
             forecast_at=old,
-            bet={"outcome": "YES", "stake": 25, "dry_run": False, "p_market_at_bet": 0.40},
+            bet={"outcome": "YES", "stake": 25, "dry_run": dry_run,
+                 "p_market_at_bet": 0.40},
         ))
     return records, states
 
@@ -994,6 +1102,37 @@ def test_phase_kill_path_sets_killed() -> None:
     assert new["killed"] is True
     assert transitions[-1]["to"] == "killed"
     assert transitions[-1]["evidence"]["n_movement"] == 50
+
+
+def test_eval_phase1_excludes_dry_run_bets() -> None:
+    # The movement test counts LIVE divergent bets only: an aged dry-run would-be bet is
+    # excluded from n_movement while an otherwise-identical placed bet counts.
+    now = datetime(2026, 7, 11, tzinfo=UTC)
+    old = (now - timedelta(days=10)).isoformat(timespec="seconds")
+    states = {mid: {"probability": 0.60, "resolved": False, "outcome": None}
+              for mid in ("live", "paper")}
+    records = [
+        mf_record("a", "sighted", 0.90, 0.40, market_id="live", forecast_at=old,
+                  bet={"outcome": "YES", "stake": 25, "dry_run": False,
+                       "p_market_at_bet": 0.40}),
+        mf_record("b", "sighted", 0.90, 0.40, market_id="paper", forecast_at=old,
+                  bet={"outcome": "YES", "stake": 25, "dry_run": True,
+                       "p_market_at_bet": 0.40}),
+    ]
+    ev = run_manifold.eval_phase1(records, lambda mid: states[mid], now=now)
+    assert ev["n_movement"] == 1 and ev["moved_toward"] == 1
+
+
+def test_phase_kill_ignores_dry_run_bets() -> None:
+    # 50 aged divergent DRY-RUN bets at toward-rate 0.4 must NOT trip the permanent kill:
+    # would-be bets carry no live-money movement evidence.
+    now = datetime(2026, 7, 11, tzinfo=UTC)
+    records, states = _movement_journal(50, 20, now=now, dry_run=True)
+    state = {"phase": 1, "killed": False, "history": []}
+    new, transitions = run_manifold.evaluate_promotions(
+        state, records, lambda mid: states[mid], now=now
+    )
+    assert new["killed"] is False and transitions == []
 
 
 def test_killed_state_blocks_betting_forever(
@@ -1053,6 +1192,30 @@ def test_open_exposure_counts_only_open_placed_bets() -> None:
     assert run_manifold.open_exposure(records) == pytest.approx(25.0)
 
 
+def test_open_exposure_live_state_lookup() -> None:
+    # Journal status is never written back, so the live lookup is what closes a position:
+    # a resolved market's stake falls out; a lookup failure fails CLOSED (still counted);
+    # no lookup (offline/dry paths) keeps journal-only behavior.
+    records = [
+        mf_record("a", "sighted", 0.9, 0.4, market_id="open1",
+                  bet={"outcome": "YES", "stake": 25, "dry_run": False}),
+        mf_record("b", "sighted", 0.9, 0.4, market_id="done1",
+                  bet={"outcome": "NO", "stake": 40, "dry_run": False}),
+    ]
+    states = {
+        "open1": {"probability": 0.5, "resolved": False, "outcome": None},
+        "done1": {"probability": 1.0, "resolved": True, "outcome": True},
+    }
+    live = run_manifold.open_exposure(records, state_lookup=lambda mid: states[mid])
+    assert live == pytest.approx(25.0)
+
+    def raising(mid: str) -> dict[str, Any]:
+        raise RuntimeError("api down")
+
+    assert run_manifold.open_exposure(records, state_lookup=raising) == pytest.approx(65.0)
+    assert run_manifold.open_exposure(records) == pytest.approx(65.0)
+
+
 def test_exposure_cap_blocks_a_bet_over_30pct(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
@@ -1060,6 +1223,7 @@ def test_exposure_cap_blocks_a_bet_over_30pct(
     monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
     monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90))
     monkeypatch.setattr(run_manifold, "get_balance", lambda key: 1200.0)  # 30% = 360
+    monkeypatch.setattr(score_manifold, "fetch_market_state", lambda mid: dict(OPEN_STATE))
     spy = BetSpy()
     monkeypatch.setattr(run_manifold, "place_bet", spy)
     monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
@@ -1075,6 +1239,78 @@ def test_exposure_cap_blocks_a_bet_over_30pct(
     args = make_args(tmp_path, live=True)
     assert run_manifold.run(args) == 0
     assert spy.calls == []  # the exposure cap refused the bet
+
+
+# ------------------------------------------------------------------ degradation markers
+
+
+def test_betting_disabled_marker_on_balance_read_failure(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # A --live phase-1 run silently degraded to forecast-only must print the grep-able
+    # marker (the workflow alert step watches stdout for BETTING-DISABLED).
+    market = mk("bal", probability=0.30)
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
+    monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90))
+
+    def bad_balance(key: str) -> float:
+        raise RuntimeError("503 from /v0/me")
+
+    monkeypatch.setattr(run_manifold, "get_balance", bad_balance)
+    spy = BetSpy()
+    monkeypatch.setattr(run_manifold, "place_bet", spy)
+    monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
+
+    seed_phase(tmp_path, phase=1)
+    assert run_manifold.run(make_args(tmp_path, live=True)) == 0
+    assert "BETTING-DISABLED: balance-read" in capsys.readouterr().out
+    assert spy.calls == []
+
+
+def test_betting_disabled_marker_on_missing_key(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    market = mk("nk", probability=0.30)
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
+    monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90))
+    monkeypatch.setattr(run_manifold, "place_bet", BetSpy())
+    # Stub the whole lookup: the env var AND the operator keyfile fallback must both miss.
+    monkeypatch.setattr(run_manifold, "manifold_api_key", lambda: "")
+
+    seed_phase(tmp_path, phase=1)
+    assert run_manifold.run(make_args(tmp_path, live=True)) == 0
+    assert "BETTING-DISABLED: no-key" in capsys.readouterr().out
+
+
+def test_betting_disabled_marker_below_floor(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    market = mk("bf", probability=0.30)
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
+    monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90))
+    monkeypatch.setattr(run_manifold, "get_balance", lambda key: 500.0)  # < 1,100 floor
+    spy = BetSpy()
+    monkeypatch.setattr(run_manifold, "place_bet", spy)
+    monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
+
+    seed_phase(tmp_path, phase=1)
+    assert run_manifold.run(make_args(tmp_path, live=True)) == 0
+    assert "BETTING-DISABLED: below-floor" in capsys.readouterr().out
+    assert spy.calls == []
+
+
+def test_no_marker_on_phase0_run(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # Phase 0 forcing dry-run is a LEGITIMATE zero-bet state, not a degradation: no marker.
+    market = mk("p0m", probability=0.30)
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
+    monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90))
+    monkeypatch.setattr(run_manifold, "place_bet", BetSpy())
+    monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
+
+    assert run_manifold.run(make_args(tmp_path, live=True)) == 0  # fresh -> phase 0
+    assert "BETTING-DISABLED" not in capsys.readouterr().out
 
 
 def test_phase_load_save_round_trip(tmp_path: Path) -> None:
