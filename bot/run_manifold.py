@@ -607,12 +607,17 @@ def decide_bet(
 
 
 def already_bet_market_ids(journal: Journal) -> set[str]:
-    """Market ids we have already journaled a bet against (open-position guard, journal-based
-    per the design — simpler and it survives a fresh checkout the way the journal does)."""
+    """Market ids we hold an actually-placed open position in (open-position guard,
+    journal-based per the design — simpler and it survives a fresh checkout the way the
+    journal does). A dry-run would-be bet is NOT a position: a phase-0 paper bet, or a
+    phase-1 run degraded to dry-run, must not block a later live bet on the same market.
+    An "unknown"-status bet (POST failed after send) does count — it may have filled."""
     ids: set[str] = set()
     for record in journal:
         src = record.source or {}
-        if src.get("platform") == "manifold" and src.get("bet") and src.get("question_id"):
+        bet = src.get("bet")
+        if (src.get("platform") == "manifold" and bet and not bet.get("dry_run")
+                and src.get("question_id")):
             ids.add(str(src["question_id"]))
     return ids
 
@@ -642,17 +647,28 @@ def recently_forecast_market_ids(
     return fresh
 
 
-def open_exposure(records: list[Any]) -> float:
+def open_exposure(records: list[Any], state_lookup: Any = None) -> float:
     """Total mana staked in still-open, actually-placed (non-dry-run) bets — the base the
-    30%-of-balance exposure cap binds against. Unresolved is read from the journal's own
-    resolution status (a resolved/annulled record's position is closed)."""
+    30%-of-balance exposure cap binds against. Nothing ever writes resolution status back to
+    the Manifold journal, so the journal-status filter alone never decrements: when
+    ``state_lookup(question_id)`` is given (the live path), a bet whose live market state has
+    resolved is excluded — that is what actually closes a position. A lookup failure COUNTS
+    the bet (fail closed: a transient API outage must not uncap exposure). With no lookup
+    (offline/dry paths) behavior is journal-only, exactly as before."""
     total = 0.0
     for record in records:
         src = record.source or {}
         bet = src.get("bet")
-        if (src.get("platform") == "manifold" and bet and not bet.get("dry_run")
+        if not (src.get("platform") == "manifold" and bet and not bet.get("dry_run")
                 and record.status not in ("resolved", "annulled")):
-            total += float(bet.get("stake") or 0.0)
+            continue
+        if state_lookup is not None:
+            try:
+                if state_lookup(str(src.get("question_id"))).get("resolved"):
+                    continue
+            except Exception:  # noqa: BLE001 — fail closed: an unreadable market stays counted
+                pass
+        total += float(bet.get("stake") or 0.0)
     return total
 
 
@@ -823,7 +839,9 @@ def eval_phase1(
         if src.get("platform") != "manifold" or record.blind:
             continue
         bet = src.get("bet")
-        if not bet:
+        # A dry-run would-be bet is not a live position and carries no live-money movement
+        # evidence (mirrors open_exposure / _manage_phase2_positions).
+        if not bet or bet.get("dry_run"):
             continue
         age = _age_days(record.forecast_at or record.created, now)
         if age is None or age < MOVEMENT_AGE_DAYS:
@@ -964,6 +982,11 @@ def build_record(
             "outcome": bet["outcome"], "stake": bet["stake"], "dry_run": dry_run,
             "p_market_at_bet": p_market,
         }
+        # POST provenance: "placed" (bet id confirmed) or "unknown" (POST failed after send —
+        # it may have filled, so readers treat it as an open position). Dry-run would-be bets
+        # and pre-status journal records carry no status; absent reads as "placed".
+        if bet.get("status"):
+            source["bet"]["status"] = bet["status"]
     criterion = criteria_text(market) or (
         f"(no creator description) Resolves per the plain reading of: "
         f"{market.get('question', '')}"
@@ -1018,6 +1041,9 @@ def _manage_phase2_positions(
     for record in records:
         src = record.source or {}
         bet = src.get("bet")
+        # The record.status filter is belt only: resolution status is never written back to
+        # the Manifold journal, so the live resolved-check below is what authoritatively
+        # closes a position.
         if (src.get("platform") != "manifold" or record.blind or not bet
                 or bet.get("dry_run") or record.status in ("resolved", "annulled")):
             continue
@@ -1095,10 +1121,19 @@ def run(args: argparse.Namespace) -> int:
     # Lazy import avoids an import cycle (score_manifold imports run_manifold at its top).
     from score_manifold import fetch_market_state
 
+    # One cached live-state lookup shared by promotion evaluation, phase-2 position
+    # management, and the exposure computation: each market is fetched at most once per run.
+    state_cache: dict[str, dict[str, Any]] = {}
+
+    def live_state(market_id: str) -> dict[str, Any]:
+        if market_id not in state_cache:
+            state_cache[market_id] = fetch_market_state(market_id)
+        return state_cache[market_id]
+
     phase_path = Path(args.phase_file or DEFAULT_PHASE_FILE)
     state = load_phase(phase_path)
     records_before = list(journal)
-    state, transitions = evaluate_promotions(state, records_before, fetch_market_state)
+    state, transitions = evaluate_promotions(state, records_before, live_state)
     for t in transitions:
         print(f"PHASE TRANSITION -> {t['to']} at {t['at']}: {json.dumps(t['evidence'])}")
     save_phase(phase_path, state)
@@ -1119,6 +1154,10 @@ def run(args: argparse.Namespace) -> int:
         print("--live given but no Manifold key found (MANIFOLD_API_KEY env or "
               f"{KEYFILE}) — falling back to dry-run "
               "(would-be bets are journaled, nothing is POSTed)")
+        # Machine-readable degradation marker: a --live phase>=1 run that CANNOT bet prints
+        # one (the workflow alert step greps stdout for "BETTING-DISABLED"). Legitimate
+        # zero-bet states — phase 0, killed, no eligible markets, no divergence — never do.
+        print("BETTING-DISABLED: no-key")
 
     already = already_bet_market_ids(journal)
     balance: float | None = None
@@ -1128,11 +1167,13 @@ def run(args: argparse.Namespace) -> int:
             print(f"account balance: {balance:.0f} mana")
         except Exception as exc:  # noqa: BLE001 — a balance read failure just blocks betting
             print(f"could not read balance ({exc}); betting disabled this run")
+            print("BETTING-DISABLED: balance-read")
             can_post = False
     # Refuse ALL betting below the 1,100-mana floor (50% of the 2,200 adoption bankroll).
     if can_post and balance is not None and balance < PHASE1_BALANCE_FLOOR:
         print(f"balance {balance:.0f} below the {PHASE1_BALANCE_FLOOR:.0f}-mana floor — "
               "refusing all betting this run")
+        print("BETTING-DISABLED: below-floor")
         can_post = False
 
     markets = gather_markets(args.limit)
@@ -1140,14 +1181,17 @@ def run(args: argparse.Namespace) -> int:
     if phase == 2 and not killed:
         markets = _manage_phase2_positions(
             records_before, markets, args,
-            api_key=api_key, can_post=can_post, state_lookup=fetch_market_state,
+            api_key=api_key, can_post=can_post, state_lookup=live_state,
         )
     print(f"selected {len(markets)} market(s)")
     if not markets:
         print(f"credit usage accounted: $0.00 / ${budget:.2f}")
         return 0
 
-    exposure = open_exposure(records_before)  # mana already at risk in open placed bets
+    # Mana already at risk in open placed bets. On the live path the cached live-state
+    # lookup lets resolved positions fall out of the cap (journal status never closes them);
+    # offline/dry paths stay journal-only and make no network calls.
+    exposure = open_exposure(records_before, state_lookup=live_state if can_post else None)
     # Re-forecast dedupe: markets whose journaled pair is < REFORECAST_DEDUPE_DAYS old are
     # skipped this run (re-forecasting the same market every run wastes budget).
     fresh_pairs = recently_forecast_market_ids(records_before)
@@ -1218,20 +1262,29 @@ def run(args: argparse.Namespace) -> int:
         if bet is not None:
             if can_post:
                 try:
-                    place_bet(api_key, market_id, bet["outcome"], bet["stake"])
+                    placed = place_bet(api_key, market_id, bet["outcome"], bet["stake"])
+                    # POST /v0/bet returns the created bet object; no bet id in the body is
+                    # no proof of a fill, so it takes the same conservative path as a raise.
+                    if not (isinstance(placed, dict)
+                            and (placed.get("betId") or placed.get("id"))):
+                        raise RuntimeError(f"bet response has no id: {str(placed)[:200]}")
+                    bet["status"] = "placed"
                     print(f"  BET {bet['outcome']} {bet['stake']:.0f} mana "
                           f"(p_us={p_sighted:.2f} vs market {p_market:.2f}, "
                           f"read={market_read})")
-                    exposure += bet["stake"]
                 except Exception as exc:  # noqa: BLE001 — a failed POST must not abort the run
-                    print(f"  bet POST failed ({exc}); recording as not placed")
-                    bet = None
+                    # The POST may have filled before the failure (e.g. timeout after fill).
+                    # Journaling the bet as status "unknown" — not dropping it — keeps the
+                    # market position-guarded and the stake under the exposure cap, instead
+                    # of risking a double stake once the dedupe window expires.
+                    bet["status"] = "unknown"
+                    print(f"  bet POST failed ({exc}); journaling bet with status=unknown")
+                exposure += bet["stake"]
             else:
                 print(f"  DRY-RUN would bet {bet['outcome']} {bet['stake']:.0f} mana "
                       f"(p_us={p_sighted:.2f} vs market {p_market:.2f}, read={market_read})")
-            if bet is not None:
-                bets_placed += 1
-                already.add(market_id)
+            bets_placed += 1
+            already.add(market_id)
         journal.append(
             build_record(market, sighted_fc, pair_id, dry_run=not can_post, bet=bet)
         )

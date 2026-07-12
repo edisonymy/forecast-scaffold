@@ -17,6 +17,7 @@ jobs:
     timeout-minutes: 55
     permissions:
       contents: write # commits the public journal + phase file
+      issues: write # the betting-disabled alert below files one deduped issue
     steps:
       - uses: actions/checkout@v4
 
@@ -74,6 +75,38 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Alert on betting disabled (one open issue, never daily spam)
+        # A --live run that degrades to forecast-only (invalid key, balance-read failure,
+        # balance below the phase-1 floor) exits GREEN and keeps burning agent spend daily
+        # with no bets possible. run_manifold.py prints a "BETTING-DISABLED: <reason>"
+        # stdout line on exactly those illegitimate paths — never on a legitimate zero-bet
+        # run (convergence exits, informed reads) — so grep ONLY for the marker, never for
+        # bet counts. Dedupe mirrors bot.yml's alert step: while the issue stays open,
+        # nothing new is filed.
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [ -f "$RUNNER_TEMP/manifold.log" ] || exit 0
+          markers=$(grep -E "^BETTING-DISABLED:" "$RUNNER_TEMP/manifold.log" || true)
+          [ -n "$markers" ] || exit 0
+          title="Manifold bot: betting disabled while live"
+          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then echo "alert issue #$existing already open"; exit 0; fi
+          {
+            echo "Automated alert from the daily Manifold workflow: a --live run degraded to"
+            echo "forecast-only — forecasts continue (and cost money) but no bets can be placed."
+            echo
+            echo '```'
+            echo "$markers"
+            echo '```'
+            echo
+            echo "Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo
+            echo "Close this issue once resolved — the next degraded run will open a fresh one."
+          } > "$RUNNER_TEMP/alert-body.md"
+          gh issue create --title "$title" --body-file "$RUNNER_TEMP/alert-body.md"
+
       - name: Commit journal + phase (pre-registration)
         # always(): journaled pairs and any phase promotion must be committed even if a later
         # market errored or the run timed out — the journal + phase file are the public record.
@@ -88,13 +121,18 @@ jobs:
           # later CI run after the content is already public. Fail closed: require the deny-list.
           : "${LEAK_PATTERNS:?set the LEAK_PATTERNS secret before the bot can publish}"
           FILES="bot/journal/manifold.jsonl bot/journal/manifold-phase.json"
+          # Scan (and commit) only the files that exist: a zero-market first run can leave
+          # the journal uncreated, and a missing path must not fail the scan or the add.
+          EXISTING=""
+          for f in $FILES; do if [ -f "$f" ]; then EXISTING="$EXISTING $f"; fi; done
+          if [ -z "$EXISTING" ]; then echo "no journal/phase files yet — nothing to publish"; exit 0; fi
           # Scan only the lines THIS run adds. The committed journal is already public, so a
           # pattern match on historical lines cannot un-leak anything — it can only lock every
           # future publish forever (measured 2026-07-12: two long-committed market records
           # false-positived on public market text and blocked publishing for hours). New
           # content stays fail-closed.
-          git add -- $FILES 2>/dev/null || true
-          NEW_LINES=$(git diff --cached -U0 -- $FILES | sed -n 's/^+//p' | sed '/^++/d')
+          git add -- $EXISTING
+          NEW_LINES=$(git diff --cached -U0 -- $EXISTING | sed -n 's/^+//p' | sed '/^++/d')
           set +e; printf '%s\n' "$NEW_LINES" | grep -niIE "$LEAK_PATTERNS"; status=$?; set -e
           if [ "$status" -eq 0 ]; then echo "::error::personal-data in NEW journal lines — not publishing"; git reset -q; exit 1; fi
           if [ "$status" -ne 1 ]; then echo "::error::leak-guard grep failed ($status)"; git reset -q; exit 2; fi
@@ -107,7 +145,7 @@ jobs:
           done
           git config user.name "forecast-scaffold-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add bot/journal/manifold.jsonl bot/journal/manifold-phase.json
+          git add $EXISTING
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "manifold: journal + phase update $(date -u +%FT%TZ)"
           # Rebase-and-retry: a concurrent tournament-bot commit must not lose a journaled

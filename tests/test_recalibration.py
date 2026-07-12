@@ -109,6 +109,15 @@ def test_apply_clamps_to_defaults_band() -> None:
     assert apply_recalibration(0.001, 3.0, 0.0) >= 0.02
 
 
+def test_apply_caller_clamp_band_does_not_tighten() -> None:
+    # The bot submits inside [0.01, 0.99] (run_bot's final binary clamp). Passing that band
+    # means ACTIVATING recalibration never tightens it: a stretch fit pushes 0.95 above the
+    # DEFAULTS 0.98 ceiling and is capped at the caller's own 0.99 instead.
+    stretched = apply_recalibration(0.95, 3.0, 0.0, clamp_band=(0.01, 0.99))
+    assert stretched > 0.98
+    assert stretched == pytest.approx(0.99)
+
+
 def test_extremize_pushes_away_from_half_and_is_not_wired() -> None:
     # Data-free AIA fallback: sigmoid(sqrt(3)*logit(p)) moves AWAY from 0.5.
     assert extremize_logodds(0.9) > 0.9

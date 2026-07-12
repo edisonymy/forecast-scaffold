@@ -4,6 +4,36 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [Unreleased] — second-eyes review fixes (2026-07-12)
+
+### Fixed
+- `eval_phase1` counted dry-run bets in the promote/kill movement statistic; live only now.
+- Dry-run would-be bets blocked later LIVE bets on the same market — the position guard
+  now excludes dry-run entries.
+- `open_exposure` was monotone-increasing forever: it now excludes live-resolved markets
+  via a state lookup, fail-closed (an unresolvable state keeps the market counted).
+- `place_bet` failures are journaled as status `"unknown"` and kept as positions (the
+  double-stake guard); the response's bet id is now verified rather than assumed.
+- `manifold.yml`: alert step opens one deduped issue when a `--live` run prints a
+  `BETTING-DISABLED:` marker (degraded to forecast-only while still burning spend);
+  the commit step's dead skip-missing-files no-op is replaced with a real existing-files
+  filter (a zero-market first run no longer trips the leak guard's fail-closed exit).
+- `readout_tranche1`: coverage/attrition/common-set reporting; `--exclude-qid`
+  provenance is self-enforcing.
+- `report.py` prints a banner when fed non-standard tiers or pooled nonzero runs.
+- `evidence_ablation.py`: runnable command (`--leakfree none`); the `resolution` field is
+  stripped from emitted set files.
+- `contamination_probe`: the majority baseline is recomputed over the probed subset.
+- `apply_recalibration` accepts the caller's clamp band, so ACTIVATING recalibration no
+  longer silently tightens the bot's wider [0.01, 0.99] submission band to the DEFAULTS
+  [0.02, 0.98].
+- `score_manifold` docstring: the divergence threshold corrected to the 0.05 constant.
+
+### Changed (documentation)
+- Retro-note: the `market_read` bet-gate was removed by the 2026-07-11 policy amendment —
+  `decide_bet` no longer inspects it (it is journaled as a preregistered hypothesis).
+  Recorded here because the 0.4.17 entry below describes the old behavior.
+
 ## [0.4.21] - 2026-07-12
 
 ### Added

@@ -169,13 +169,30 @@ def contaminated(row: dict, threshold: float = CONFIDENCE_FLAG) -> bool:
     return bool(row.get("correct")) and float(row.get("confidence", 0.0)) >= threshold
 
 
-def report(rows: list[dict], base_rate_yes: float) -> str:
-    """Per-model recall table + contaminated-question lists. Pure function for tests."""
+def yes_rate(specs: list[dict]) -> float:
+    """YES base rate over specs with an int resolution. 0.0 on empty by convention."""
+    return (sum(s["resolution"] for s in specs) / len(specs)) if specs else 0.0
+
+
+def report(rows: list[dict], base_rate_yes: float,
+           full_base_rate_yes: float | None = None) -> str:
+    """Per-model recall table + contaminated-question lists. Pure function for tests.
+
+    ``base_rate_yes`` must be the YES rate of the PROBED SUBSET (the qids actually in
+    ``rows``), not the full set — the majority-class baseline is compared against
+    subset accuracy, so a full-set rate would misstate the lift whenever --qids-from
+    or --limit changed the mix. Pass the full-set rate too so divergence is visible."""
     majority = max(base_rate_yes, 1 - base_rate_yes)
-    lines = [f"question-set majority-class baseline: {majority:.0%} "
-             f"(YES base rate {base_rate_yes:.0%})",
-             f"contamination flag: correct recall with confidence >= {CONFIDENCE_FLAG}",
-             ""]
+    lines = [f"probed-subset majority-class baseline: {majority:.0%} "
+             f"(subset YES base rate {base_rate_yes:.0%})"]
+    if full_base_rate_yes is not None:
+        lines.append(f"full-set YES base rate: {full_base_rate_yes:.0%} "
+                     "(a gap vs the subset rate means the probe sampled a skewed slice)")
+    lines += [f"contamination flag: correct recall with confidence >= {CONFIDENCE_FLAG}",
+              "per-model acc@ans and lift are over model-ANSWERED rows only "
+              "(recall != unknown); the contamination flag is per-row and independent "
+              "of the majority baseline",
+              ""]
     lines.append(f"{'model':<22} {'n':>4} {'answered':>9} {'acc@ans':>8} "
                  f"{'lift':>6} {'flagged':>8}")
     by_model: dict[str, list[dict]] = {}
@@ -225,7 +242,7 @@ def main(argv: list[str] | None = None) -> int:
     specs = [s for s in specs if s.get("resolution") in (0, 1, "0", "1")]
     for spec in specs:
         spec["resolution"] = int(spec["resolution"])
-    base_rate_yes = (sum(s["resolution"] for s in specs) / len(specs)) if specs else 0.0
+    full_base_rate = yes_rate(specs)
 
     results_path = RESULTS_DIR / f"{set_path.stem}.probe.jsonl"
     done_rows: list[dict] = []
@@ -234,7 +251,11 @@ def main(argv: list[str] | None = None) -> int:
                      in results_path.read_text(encoding="utf-8").splitlines()
                      if line.strip()]
     if args.report:
-        print(report(done_rows, base_rate_yes))
+        # Baseline from the rows actually on file: each probed qid's stored resolution,
+        # counted once (a qid probed by several models is still one question).
+        probed = {row["qid"]: int(row["resolution"]) for row in done_rows}
+        subset_rate = yes_rate([{"resolution": v} for v in probed.values()])
+        print(report(done_rows, subset_rate, full_base_rate))
         return 0
 
     if args.qids_from:
@@ -244,6 +265,9 @@ def main(argv: list[str] | None = None) -> int:
         specs = [s for s in specs if s["id"] in keep]
     if args.limit:
         specs = specs[: args.limit]
+    # The majority-class baseline must describe the slice the probe actually runs on —
+    # computed AFTER --qids-from/--limit, where the YES rate can differ from the full set.
+    subset_base_rate = yes_rate(specs)
 
     models = [m.strip() for m in args.models.split(",") if m.strip()]
     done = {(row["qid"], row["model"]) for row in done_rows}
@@ -282,7 +306,7 @@ def main(argv: list[str] | None = None) -> int:
                       f"conf={row['confidence']:.2f} ${spent:.2f} "
                       f"{row['question'][:48]}")
     print()
-    print(report(done_rows, base_rate_yes))
+    print(report(done_rows, subset_base_rate, full_base_rate))
     return 1 if failures else 0
 
 

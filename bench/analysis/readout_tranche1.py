@@ -17,6 +17,22 @@ PRE-REGISTERED RULES (docs/roadmap-v05.md, set BEFORE looking at results):
 
 Only run 0 belongs to this pre-registered experiment. Extra nonzero runs remain preserved
 as paid raw data, but this readout counts and ignores them completely.
+
+METHODOLOGY GUARDS (second-eyes review; strengthen the registration without changing any
+threshold, statistic, or the paired-bootstrap math above):
+- COVERAGE: the angles arm journals a row only when ALL its per-angle sub-runs succeed, so
+  its attrition is structurally higher and plausibly difficulty-correlated. Per-arm run-0
+  scorable coverage is printed against the three-arm union, naming each arm's missing qids.
+- COMPARABLE SUMMARY: Brier/REL/RES are printed BOTH per arm on its OWN scorable set (NOT
+  comparable across arms) and on the three-way common complete-case set (n_common). The
+  PAIRED deltas stay on each pair's own common set -- that is the correct paired math,
+  unchanged.
+- DIFFERENTIAL-ATTRITION: if angles' run-0 coverage is more than 5% below high's AND high's
+  mean Brier on the angle-missing qids is >= 0.02 worse than on the angle-complete qids, the
+  readout is ATTRITION-COMPROMISED -- resume the missing angles cells before promoting.
+- EXCLUSION PROVENANCE: each --exclude-qid must be admitted by evidence (a memory_screen
+  run-0 regex candidate in this results file, or the standard ECB memory-leak exclusion);
+  anything else is an error, so the manual exclusion lever cannot be used unaccountably.
 """
 
 from __future__ import annotations
@@ -36,8 +52,10 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "bench"))
 import contamination_probe as cp  # noqa: E402
 
-MEMORY_LEAK = {"btf2:516f111d-d70e-5198-95dc-5d38c0d9d789"}  # known memory claim
+MEMORY_LEAK = {"btf2:516f111d-d70e-5198-95dc-5d38c0d9d789"}  # known memory claim (ECB)
 ARMS = ("plain", "high", "angles")
+DEFAULT_SETS = ROOT / "bench/sets/btf2-loop1.jsonl"
+DEFAULT_PROBE = ROOT / "bench/results/btf2-loop1-adm.probe.jsonl"
 DEFAULT_RESULTS = ROOT / "bench/results/btf2-loop1-adm.tranche1.results.jsonl"
 
 ResultRow = dict[str, Any]
@@ -128,6 +146,82 @@ def ignored_summary(counts: Counter[str]) -> str:
     return f"Ignored {total} nonzero-run row(s){suffix}; readout uses run==0 only."
 
 
+def validate_exclusions(
+    exclude_qids: list[str],
+    rows: list[ResultRow],
+    stream: TextIO = sys.stdout,
+) -> None:
+    """Provenance gate for --exclude-qid. Every excluded qid must be admitted by evidence:
+    a memory_screen run-0 regex candidate in THIS results file, or membership in the standard
+    hardcoded memory-leak set (the ECB qid). Otherwise exit, naming the offending qid. Each
+    accepted exclusion is printed with its admitting evidence -- no unaccountable manual
+    exclusion lever."""
+    if not exclude_qids:
+        return
+    # Lazy import from the sibling analysis directory (memory_screen has no import-time side
+    # effects in v0.4.21); only pay it when an exclusion actually needs vetting.
+    analysis_dir = str(ROOT / "bench" / "analysis")
+    if analysis_dir not in sys.path:
+        sys.path.insert(0, analysis_dir)
+    import memory_screen  # noqa: E402
+    _screened, candidates = memory_screen.find_candidates(rows, run=0)
+    hits: dict[str, str] = {}  # qid -> memory_screen regex text admitting the exclusion
+    for row, match in candidates:
+        qid = row.get("qid")
+        if qid and qid not in hits:
+            hits[qid] = match.group(0)
+    for qid in exclude_qids:
+        if qid in hits:
+            print(f"exclusion {qid} accepted: memory_screen prefilter match "
+                  f"{hits[qid]!r} on a run-0 row", file=stream)
+        elif qid in MEMORY_LEAK:
+            print(f"exclusion {qid} accepted: standard exclusion list (ECB memory leak)",
+                  file=stream)
+        else:
+            sys.exit(f"--exclude-qid {qid} rejected: not a memory_screen prefilter "
+                     "candidate in the run-0 rows and not on the standard exclusion list")
+
+
+def attrition_diagnostic(
+    arm: dict[str, dict[str, float]],
+    resolutions: dict[str, float],
+    stream: TextIO = sys.stdout,
+) -> None:
+    """Differential-attrition guard. angles' missingness can be difficulty-correlated (a row
+    exists only when every angle sub-run succeeded). Split high's Brier -- high completed the
+    qid regardless -- by whether angles also completed it, then apply the pre-registered rule:
+    coverage gap strictly > 5% AND missing-vs-complete Brier split >= 0.02 => compromised."""
+    print("\n== DIFFERENTIAL-ATTRITION DIAGNOSTIC (high's Brier split by angles coverage) ==",
+          file=stream)
+    high, angles = set(arm["high"]), set(arm["angles"])
+    if not high:
+        print("high arm has no scorable rows; diagnostic not computable", file=stream)
+        return
+    complete = sorted(high & angles)
+    missing = sorted(high - angles)
+    b_complete = (st.mean(brier(arm["high"][q], resolutions[q]) for q in complete)
+                  if complete else None)
+    b_missing = (st.mean(brier(arm["high"][q], resolutions[q]) for q in missing)
+                 if missing else None)
+    gap = (len(high) - len(angles)) / len(high)
+    print(f"high on angle-complete qids (n={len(complete)}): "
+          + (f"{b_complete:.4f}" if b_complete is not None else "n/a"), file=stream)
+    print(f"high on angle-missing  qids (n={len(missing)}): "
+          + (f"{b_missing:.4f}" if b_missing is not None else "n/a"), file=stream)
+    print(f"angles run-0 coverage {len(angles)} vs high {len(high)} ({gap:+.1%} below high)",
+          file=stream)
+    split = (b_missing - b_complete
+             if (b_missing is not None and b_complete is not None) else None)
+    if gap > 0.05 and split is not None and split >= 0.02:
+        print("VERDICT: ATTRITION-COMPROMISED -- angles coverage is >5% below high's AND high "
+              "scores >=0.02 worse Brier on the angle-missing qids; resume the missing angles "
+              "cells to completion before applying the promote rule.", file=stream)
+    else:
+        print("VERDICT: attrition non-differential (rule: coverage gap >5% AND "
+              f"missing-vs-complete Brier split >= 0.02; got gap {gap:+.1%}, split "
+              + (f"{split:+.4f})" if split is not None else "n/a)"), file=stream)
+
+
 def print_readout(
     rows: Iterable[ResultRow],
     resolutions: dict[str, float],
@@ -141,7 +235,19 @@ def print_readout(
     for name in ARMS:
         print(f"{name:7s} {len(arm[name])} scorable rows, ${cost[name]:.2f}", file=stream)
 
-    print(f"\n{'arm':7s} {'n':>3s} {'Brier':>7s} {'REL':>7s} {'RES':>7s}  vs teacher",
+    # COVERAGE: name each arm's missing run-0 qids against the three-arm union so
+    # angles-only attrition cannot hide behind bare per-arm counts.
+    union = sorted(set().union(*(set(arm[name]) for name in ARMS)))
+    print(f"\n== COVERAGE (run-0 scorable qids per arm vs three-arm union, "
+          f"n_union={len(union)}) ==", file=stream)
+    for name in ARMS:
+        missing = [q for q in union if q not in arm[name]]
+        print(f"{name:7s} {len(arm[name])}/{len(union)}  missing: "
+              + (", ".join(missing) if missing else "none"), file=stream)
+
+    print("\n== SUMMARY on each arm's OWN scorable set (NOT comparable across arms) ==",
+          file=stream)
+    print(f"{'arm':7s} {'n':>3s} {'Brier':>7s} {'REL':>7s} {'RES':>7s}  vs teacher",
           file=stream)
     for name in ARMS:
         qs = sorted(set(arm[name]) & set(teacher))
@@ -153,6 +259,33 @@ def print_readout(
                      for q in qs)
         print(f"{name:7s} {len(arm[name]):3d} {bs:7.4f} {rel:7.4f} {resol:7.4f}  {dt:+.4f}",
               file=stream)
+
+    # COMPARABLE SUMMARY: same stats on the three-way common complete-case set (identical
+    # qids for every arm), so cross-arm Brier/REL/RES read on equal footing.
+    common = sorted(set(arm["plain"]) & set(arm["high"]) & set(arm["angles"]))
+    if common:
+        print(f"\n== SUMMARY on the three-way common complete-case set "
+              f"(comparable; n_common={len(common)}) ==", file=stream)
+        print(f"{'arm':7s} {'n':>3s} {'Brier':>7s} {'REL':>7s} {'RES':>7s}  vs teacher",
+              file=stream)
+        qs_common = sorted(set(common) & set(teacher))
+        for name in ARMS:
+            probs = {q: arm[name][q] for q in common}
+            bs = st.mean(brier(probs[q], resolutions[q]) for q in common)
+            rel, resol = murphy(probs, resolutions)
+            if qs_common:
+                dt = st.mean(brier(probs[q], resolutions[q]) - brier(teacher[q], resolutions[q])
+                             for q in qs_common)
+                dt_s = f"{dt:+.4f}"
+            else:
+                dt_s = "    n/a"
+            print(f"{name:7s} {len(common):3d} {bs:7.4f} {rel:7.4f} {resol:7.4f}  {dt_s}",
+                  file=stream)
+    else:
+        print("\nno three-way common complete-case set (an arm has zero scorable overlap)",
+              file=stream)
+
+    attrition_diagnostic(arm, resolutions, stream)
 
     print("\nPAIRED (negative = first arm better; bootstrap 90% CI primary)", file=stream)
     for first, second in itertools.combinations(ARMS, 2):
@@ -182,18 +315,23 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    qrows = load(ROOT / "bench/sets/btf2-loop1.jsonl")
+    qrows = load(DEFAULT_SETS)
     resolutions = {q["id"]: float(q["resolution"])
                    for q in qrows if q.get("resolution") is not None}
     teacher = {q["id"]: float(q["crowd"]["value"]) for q in qrows
                if isinstance(q.get("crowd"), dict) and q["crowd"].get("value") is not None}
-    probe = load(ROOT / "bench/results/btf2-loop1-adm.probe.jsonl")
+    probe = load(DEFAULT_PROBE)
     flagged = {row["qid"] for row in probe
                if "opus" in row.get("model", "") and cp.contaminated(row)}
     flagged |= MEMORY_LEAK
+
+    rows = load(args.results)
+    # Pass sys.stdout explicitly (resolved now, not at def time) so the readout is captured
+    # correctly when main() is driven in-process under a redirected stdout.
+    validate_exclusions(args.exclude_qid, rows, sys.stdout)  # provenance-gate before excluding
     flagged.update(args.exclude_qid)
 
-    print_readout(load(args.results), resolutions, teacher, flagged)
+    print_readout(rows, resolutions, teacher, flagged, sys.stdout)
     return 0
 
 
