@@ -134,16 +134,12 @@ jobs:
           # Require the deny-list (fail-closed): never publish an unscanned journal, and keep
           # the literal pattern out of this file so the ci.yml guard does not match it.
           : "${LEAK_PATTERNS:?set the LEAK_PATTERNS secret before the bot can publish}"
-          # Scan only the lines THIS run adds. The committed journal is already public, so a
-          # pattern match on historical lines cannot un-leak anything — it can only lock every
-          # future publish forever (measured 2026-07-12: two long-committed market records
-          # false-positived on public market text and blocked publishing for hours, losing
-          # each run's new journal lines). New content stays fail-closed.
+          # Scan only the lines THIS run adds. The content-free scanner applies the private
+          # deny-list to every field, with one narrow workaround for the exact pound sign in
+          # public question/contract fields; model-authored content remains fail-closed.
           git add bot/journal/
-          NEW_LINES=$(git diff --cached -U0 -- bot/journal/ | sed -n 's/^+//p' | sed '/^++/d')
-          set +e; printf '%s\n' "$NEW_LINES" | grep -niIE "$LEAK_PATTERNS"; status=$?; set -e
-          if [ "$status" -eq 0 ]; then echo "::error::personal-data in NEW journal lines — not publishing"; git reset -q; exit 1; fi
-          if [ "$status" -ne 1 ]; then echo "::error::leak-guard grep failed ($status)"; git reset -q; exit 2; fi
+          set +e; python scripts/journal_leak_guard.py bot/journal/; status=$?; set -e
+          if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
           # The pattern list cannot know credential VALUES — but a prompt-injected agent's
           # visible output (sources, reasoning) lands in exactly the files this step is
           # about to publish. Check for the values themselves, fail-closed.
@@ -157,11 +153,11 @@ jobs:
           git add bot/journal/
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "bot: journal update $(date -u +%FT%TZ)"
-          # rebase-and-retry: a concurrent commit must not lose a submitted forecast's
-          # journal line. A conflicted rebase must be aborted before the next attempt or
-          # every retry fails instantly on "rebase already in progress".
+          # Rebase-and-retry: a concurrent commit must not lose a submitted forecast's
+          # journal line. The tree is clean after the commit, so autostash is unnecessary
+          # and forbidden by the repository's feature-work safety rule.
           for i in 1 2 3; do
-            git pull --rebase --autostash origin main && git push && exit 0
+            git pull --rebase origin main && git push && exit 0
             git rebase --abort 2>/dev/null || true
             sleep 3
           done

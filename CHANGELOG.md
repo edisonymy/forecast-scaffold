@@ -30,6 +30,15 @@ and mirror `.claude-plugin/plugin.json`.
   restores the intended 40 questions x 3 arms = 120-cell design.
 - `memory_screen.py` accepts arbitrary result files and a run filter; the tranche readout
   rejects duplicate cells and accepts repeatable pairwise memory exclusions.
+- The hourly Manifold runner strips UTF-8 BOM/whitespace framing from its API credential,
+  so a BOM copied from the operator keyfile cannot corrupt the HTTP authorization header.
+  A recognized Claude subscription session-limit 429 now defers cleanly to the next hourly
+  tick while reserving the full $5 allowance; generic 429s and all other failures stay red,
+  and the path remains subscription-only with no OpenRouter fallback.
+- Journal publication no longer dumps a matched private line into Actions logs. A
+  content-free staged-diff scanner keeps the unknown private deny-list intact and permits
+  only an exact pound-sign match in public Metaculus/Manifold question or contract fields;
+  the same match in model-authored output still blocks publication.
 
 ### Measured / diagnostic
 - A literal teacher-cited-page recall audit is not reconstructible from the public BTF-2

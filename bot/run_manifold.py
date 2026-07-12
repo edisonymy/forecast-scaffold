@@ -62,14 +62,25 @@ MANIFOLD_API = "https://api.manifold.markets/v0"
 KEYFILE = Path.home() / ".manifold" / "key"
 
 
+def _clean_manifold_key(value: str) -> str:
+    """Remove transport/editor framing without ever logging the credential.
+
+    A UTF-8 BOM survives when a key file is uploaded to a GitHub secret byte-for-byte.
+    ``str.strip`` does not remove U+FEFF, and urllib then rejects the Authorization header
+    because HTTP headers are Latin-1.  Normalize only leading BOMs and surrounding
+    whitespace; never alter the key body.
+    """
+    return value.strip().lstrip("\ufeff").strip()
+
+
 def manifold_api_key() -> str:
     key = os.environ.get("MANIFOLD_API_KEY", "")
     if key:
-        return key.strip()
+        return _clean_manifold_key(key)
     # Accept key.txt too: Notepad appends .txt and the operator should not have to care.
     for path in (KEYFILE, KEYFILE.with_suffix(".txt")):
         try:
-            return path.read_text(encoding="utf-8").strip()
+            return _clean_manifold_key(path.read_text(encoding="utf-8"))
         except OSError:
             continue
     return ""
@@ -420,6 +431,22 @@ def subscription_auth_error(require_oauth: bool = False) -> str | None:
     return None
 
 
+def is_subscription_session_limit_error(error: BaseException | str) -> bool:
+    """True only for Claude's explicit subscription-session quota response.
+
+    A generic 429, auth failure, timeout, or provider error must remain red.  This narrow
+    recognition lets an hourly subscription-only runner defer until the next tick without
+    producing an operator alert every hour while Claude has stated that the session is
+    exhausted.
+    """
+    message = str(error).lower()
+    return (
+        "api_error_status" in message
+        and "429" in message
+        and "session limit" in message
+    )
+
+
 # --------------------------------------------------------------------------- forecasting
 
 # Binary-only question shape for run_bot.validate_payload (Manifold markets we select are
@@ -472,7 +499,7 @@ def forecast_market(
     agent_cmd = agent_cmd_for(base_cmd, blind)
 
     budget_state = budget_state if budget_state is not None else {
-        "usd": 0.0, "uncertain": False,
+        "usd": 0.0, "uncertain": False, "subscription_deferred": False,
     }
     budget = float(getattr(args, "budget", 0.0) or 0.0)
     cost = 0.0
@@ -505,6 +532,17 @@ def forecast_market(
                 call_cmd, prompt, system, call_timeout, args.provider
             )
         except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
+            if is_subscription_session_limit_error(exc):
+                # Claude says this subscription session is exhausted. Reserve the entire
+                # remaining allowance exactly as for any unmetered failure, stop this run,
+                # and let the next hourly tick retry. This is not permission to fall back to
+                # OpenRouter (the Manifold path remains subscription-only).
+                if remaining is not None:
+                    budget_state["usd"] = budget
+                    budget_state["uncertain"] = True
+                budget_state["subscription_deferred"] = True
+                errors = ["Claude subscription session limit; deferred to next hourly run"]
+                break
             # A failed/timed-out subprocess may already have consumed any amount up to its
             # native cap, but it returned no trustworthy meter. Reserve the ENTIRE unknown
             # remainder and stop: the next call must never be able to double-spend it.
@@ -1083,7 +1121,11 @@ def run(args: argparse.Namespace) -> int:
     deadline = (
         time.monotonic() + deadline_minutes * 60 if deadline_minutes > 0 else None
     )
-    budget_state: dict[str, Any] = {"usd": 0.0, "uncertain": False}
+    budget_state: dict[str, Any] = {
+        "usd": 0.0,
+        "uncertain": False,
+        "subscription_deferred": False,
+    }
     print(f"Claude subscription credit cap: ${budget:.2f} this run")
 
     config = run_bot.load_config()
@@ -1243,6 +1285,9 @@ def run(args: argparse.Namespace) -> int:
     qualifier = " (unknown usage reserved)" if budget_state["uncertain"] else ""
     print(f"credit usage accounted: ${float(budget_state['usd']):.2f} / ${budget:.2f}"
           f"{qualifier}")
+    if budget_state.get("subscription_deferred"):
+        print("SUBSCRIPTION-DEFER: Claude session limit; next hourly tick will retry")
+        return 0
     return 1 if budget_state["uncertain"] else 0
 
 

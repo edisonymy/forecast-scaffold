@@ -198,6 +198,33 @@ def test_subscription_auth_preflight(monkeypatch: pytest.MonkeyPatch) -> None:
     )
 
 
+def test_manifold_key_strips_utf8_bom_from_env_and_keyfile(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    bom = chr(0xFEFF)
+    monkeypatch.setenv("MANIFOLD_API_KEY", f" {bom}test-key\r\n")
+    assert run_manifold.manifold_api_key() == "test-key"
+
+    monkeypatch.delenv("MANIFOLD_API_KEY")
+    keyfile = tmp_path / "key"
+    keyfile.write_text("test-key\n", encoding="utf-8-sig")
+    monkeypatch.setattr(run_manifold, "KEYFILE", keyfile)
+    assert run_manifold.manifold_api_key() == "test-key"
+
+
+def test_subscription_session_limit_detection_is_narrow() -> None:
+    quota = RuntimeError(
+        'agent failed (1): {"api_error_status":429,"result":"session limit; resets later"}'
+    )
+    assert run_manifold.is_subscription_session_limit_error(quota) is True
+    assert run_manifold.is_subscription_session_limit_error(
+        RuntimeError('agent failed (1): {"api_error_status":429,"result":"rate limited"}')
+    ) is False
+    assert run_manifold.is_subscription_session_limit_error(
+        RuntimeError("session limit text without a 429 envelope")
+    ) is False
+
+
 def test_sighted_brief_has_price_and_judgment_language() -> None:
     market = mk(probability=0.37, volume24Hours=4242.0, uniqueBettorCount=321)
     brief = run_manifold.build_manifold_brief(market, sighted=True)
@@ -408,6 +435,54 @@ def test_run_missing_cost_telemetry_reserves_cap_and_fails_closed(
     assert not Path(args.journal).exists() or read_journal(args.journal) == []
 
 
+def test_run_subscription_session_limit_defers_cleanly_and_reserves_cap(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    market = mk("quota")
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
+
+    calls: list[str] = []
+
+    def session_limited(
+        cmd: str, prompt: str, system: str | None, timeout: int,
+        provider: str = "subscription",
+    ) -> tuple[str, float, str]:
+        calls.append(cmd)
+        raise RuntimeError(
+            'agent failed (1): {"api_error_status":429,'
+            '"result":"You have hit your session limit; resets later"}'
+        )
+
+    monkeypatch.setattr(run_bot, "run_agent", session_limited)
+    args = make_args(tmp_path, budget=5.0)
+
+    assert run_manifold.run(args) == 0
+    assert len(calls) == 1
+    assert "--max-budget-usd 5.000000" in calls[0]
+    assert not Path(args.journal).exists() or read_journal(args.journal) == []
+    output = capsys.readouterr().out
+    assert "SUBSCRIPTION-DEFER" in output
+    assert "credit usage accounted: $5.00 / $5.00" in output
+
+
+def test_run_generic_429_still_fails_closed(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(
+        run_manifold, "gather_markets", lambda limit, **k: [mk("generic-429")]
+    )
+
+    def rate_limited(*args: Any, **kwargs: Any) -> tuple[str, float, str]:
+        raise RuntimeError(
+            'agent failed (1): {"api_error_status":429,"result":"rate limited"}'
+        )
+
+    monkeypatch.setattr(run_bot, "run_agent", rate_limited)
+    assert run_manifold.run(make_args(tmp_path, budget=5.0)) == 1
+
+
 def test_cloud_workflow_is_hourly_subscription_only_and_hard_capped() -> None:
     workflow = (ROOT / ".github" / "workflows" / "manifold.yml").read_text(
         encoding="utf-8"
@@ -423,6 +498,7 @@ def test_cloud_workflow_is_hourly_subscription_only_and_hard_capped() -> None:
     assert "claude_code_oauth_token" in lower
     assert "manifold_api_key" in lower
     assert "leak_patterns" in lower
+    assert "journal_leak_guard.py" in workflow
     assert "openrouter" not in lower
     assert "asknews" not in lower
 

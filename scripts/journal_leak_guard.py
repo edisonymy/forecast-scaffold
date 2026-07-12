@@ -1,0 +1,170 @@
+"""Content-free leak guard for newly staged machine-generated journal lines.
+
+The private ``LEAK_PATTERNS`` regex remains authoritative and is never printed.  The only
+exception is an exact pound-sign match inside the top-level public ``question`` or
+``resolution_criterion`` field of a Metaculus/Manifold record.  All model-authored fields,
+all other matches, and all non-record JSON remain fail-closed.
+
+The script reads additions directly from ``git diff --cached`` so historical public lines
+cannot lock future publication and matched content never enters workflow logs.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import subprocess
+import sys
+from collections.abc import Iterable, Sequence
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+PUBLIC_PLATFORMS = frozenset({"manifold", "metaculus"})
+PUBLIC_CONTRACT_FIELDS = frozenset({("question",), ("resolution_criterion",)})
+PUBLIC_CURRENCY_SYMBOL = chr(0xA3)
+
+
+@dataclass(frozen=True, order=True)
+class Finding:
+    path: str
+    added_line: int
+    field: str
+
+
+class GuardError(RuntimeError):
+    """The staged additions could not be scanned safely."""
+
+
+def _iter_strings(value: Any, path: tuple[str, ...] = ()) -> Iterable[tuple[tuple[str, ...], str]]:
+    if isinstance(value, dict):
+        for key, child in value.items():
+            key_text = str(key)
+            yield (*path, "<key>"), key_text
+            yield from _iter_strings(child, (*path, key_text))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            yield from _iter_strings(child, (*path, f"[{index}]"))
+    elif isinstance(value, str):
+        yield path, value
+
+
+def _field_label(path: tuple[str, ...]) -> str:
+    return ".".join(path) if path else "<raw>"
+
+
+def scan_added_line(
+    pattern: re.Pattern[str], path: str, added_line: int, text: str
+) -> tuple[list[Finding], int]:
+    """Return blocked locations and the count of narrow public-field exceptions."""
+    try:
+        payload = json.loads(text)
+    except (json.JSONDecodeError, TypeError):
+        payload = None
+
+    findings: list[Finding] = []
+    allowed = 0
+    if not isinstance(payload, dict):
+        for _match in pattern.finditer(text):
+            findings.append(Finding(path, added_line, "<raw>"))
+        return findings, allowed
+
+    source = payload.get("source")
+    platform = str(source.get("platform", "")).lower() if isinstance(source, dict) else ""
+    for field_path, value in _iter_strings(payload):
+        for match in pattern.finditer(value):
+            public_contract_currency = (
+                platform in PUBLIC_PLATFORMS
+                and field_path in PUBLIC_CONTRACT_FIELDS
+                and match.group(0) == PUBLIC_CURRENCY_SYMBOL
+            )
+            if public_contract_currency:
+                allowed += 1
+            else:
+                findings.append(Finding(path, added_line, _field_label(field_path)))
+    return findings, allowed
+
+
+def staged_diff(paths: Sequence[str], *, root: Path) -> str:
+    result = subprocess.run(
+        ["git", "diff", "--cached", "--unified=0", "--no-color", "--", *paths],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="surrogateescape",
+        check=False,
+    )
+    if result.returncode != 0:
+        raise GuardError("git could not produce the staged journal diff")
+    return result.stdout
+
+
+def scan_patch(pattern: re.Pattern[str], patch: str) -> tuple[tuple[Finding, ...], int, int]:
+    current_path = "<unknown>"
+    additions = 0
+    allowed = 0
+    findings: set[Finding] = set()
+    for line in patch.splitlines():
+        if line.startswith("+++ "):
+            current_path = line[4:].removeprefix("b/")
+            continue
+        if not line.startswith("+") or line.startswith("+++"):
+            continue
+        additions += 1
+        new_findings, new_allowed = scan_added_line(
+            pattern, current_path, additions, line[1:]
+        )
+        findings.update(new_findings)
+        allowed += new_allowed
+    return tuple(sorted(findings)), additions, allowed
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("paths", nargs="+", help="staged journal paths to scan")
+    parser.add_argument("--root", type=Path, default=Path.cwd())
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    private_pattern = os.environ.get("LEAK_PATTERNS", "")
+    if not private_pattern:
+        print("journal leak guard configuration missing", file=sys.stderr)
+        return 2
+    try:
+        pattern = re.compile(private_pattern, re.IGNORECASE)
+    except re.error:
+        print("journal leak guard pattern is invalid; content suppressed", file=sys.stderr)
+        return 2
+    try:
+        patch = staged_diff(args.paths, root=args.root.resolve())
+        findings, additions, allowed = scan_patch(pattern, patch)
+    except (GuardError, OSError):
+        print("journal leak guard could not complete safely", file=sys.stderr)
+        return 2
+
+    if findings:
+        print(
+            f"journal leak guard blocked {len(findings)} location(s); content suppressed",
+            file=sys.stderr,
+        )
+        for finding in findings:
+            print(
+                f"  {finding.path}:added-line-{finding.added_line}:{finding.field}",
+                file=sys.stderr,
+            )
+        return 1
+
+    print(
+        f"clean ({additions} staged added line(s); "
+        f"{allowed} public contract currency match(es) allowed)"
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
