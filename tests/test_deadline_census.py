@@ -2,14 +2,19 @@
 
 from __future__ import annotations
 
+import sys
 from copy import deepcopy
 from pathlib import Path
 
 import pytest
 
-from bench.analysis import deadline_census as census
-
 ROOT = Path(__file__).resolve().parents[1]
+# bench/ is not a package (same pattern as tests/test_probe.py): CI's bare `pytest`
+# does not put the repo root on sys.path, so a `from bench.analysis import` only
+# works under `python -m pytest` from the root.
+sys.path.insert(0, str(ROOT / "bench" / "analysis"))
+
+import deadline_census as census  # noqa: E402
 
 
 def frozen_rows() -> list[dict]:

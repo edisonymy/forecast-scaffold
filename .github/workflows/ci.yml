@@ -45,14 +45,19 @@ jobs:
       - name: No personal data
         # The full deny-list lives in the LEAK_PATTERNS repository secret (set it to an
         # extended-regex alternation) so the list itself is never published; the fallback
-        # below covers the generic classes. Case-insensitive, scans ALL text files
-        # (including .jsonl journals), and fails loudly if grep itself errors.
+        # below covers the generic classes. Case-insensitive, scans all human-authored
+        # text files and fails loudly if grep itself errors. bot/journal/ is EXCLUDED:
+        # it is machine-generated public market text, guarded at publish time by the bot
+        # workflows' diff-scoped scans — and it legitimately quotes things like "£5
+        # million" from UK questions, which redlined CI for hours on 2026-07-12 when a
+        # bare currency term in the deny-list matched two long-committed market records.
+        # (Keep bare currency symbols out of the secret for the same reason.)
         env:
           LEAK_PATTERNS: ${{ secrets.LEAK_PATTERNS }}
         run: |
-          PATTERNS="${LEAK_PATTERNS:-£|net.?worth|users.Edison.Yi}"
+          PATTERNS="${LEAK_PATTERNS:-net.?worth|users.Edison.Yi}"
           set +e
-          grep -rniIE --exclude-dir=.git --exclude-dir=.venv --exclude=ci.yml "$PATTERNS" .
+          grep -rniIE --exclude-dir=.git --exclude-dir=.venv --exclude-dir=journal --exclude=ci.yml "$PATTERNS" .
           status=$?
           set -e
           if [ "$status" -eq 0 ]; then

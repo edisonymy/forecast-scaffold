@@ -7,14 +7,19 @@ these tests never open the live tranche artifact.
 from __future__ import annotations
 
 import json
+import sys
 from collections import Counter
 from io import StringIO
 from pathlib import Path
 
 import pytest
 
-from bench.analysis import memory_screen
-from bench.analysis import readout_tranche1 as readout
+# bench/ is not a package (same pattern as tests/test_probe.py): CI's bare `pytest`
+# does not put the repo root on sys.path.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "bench" / "analysis"))
+
+import memory_screen  # noqa: E402
+import readout_tranche1 as readout  # noqa: E402
 
 
 def write_jsonl(path: Path, rows: list[dict]) -> Path:

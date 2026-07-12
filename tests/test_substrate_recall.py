@@ -3,12 +3,17 @@
 from __future__ import annotations
 
 import sqlite3
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
 
-from bench.analysis import substrate_recall as audit
+# bench/ is not a package (same pattern as tests/test_probe.py): CI's bare `pytest`
+# does not put the repo root on sys.path.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "bench" / "analysis"))
+
+import substrate_recall as audit  # noqa: E402
 
 
 def make_corpus(path: Path, rows: list[tuple[str, str, str]]) -> Path:
