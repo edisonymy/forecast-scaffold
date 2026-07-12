@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import re
 import subprocess
 import sys
 from pathlib import Path
@@ -27,19 +26,21 @@ def record(**over: object) -> dict[str, object]:
 
 def test_exact_currency_symbol_allowed_only_in_public_contract_fields() -> None:
     symbol = chr(0xA3)
-    pattern = re.compile(re.escape(symbol))
+    pattern = symbol
     public = record(
         question=f"Public {symbol} question",
         resolution_criterion=f"Public {symbol} contract",
     )
-    findings, allowed = guard.scan_added_line(pattern, "journal.jsonl", 1, json.dumps(public))
+    findings, allowed = guard.scan_added_line(
+        pattern, "journal.jsonl", 1, json.dumps(public, ensure_ascii=False)
+    )
 
     assert findings == []
     assert allowed == 2
 
     private = record(reasoning=f"model wrote {symbol} here")
     findings, allowed = guard.scan_added_line(
-        pattern, "journal.jsonl", 1, json.dumps(private)
+        pattern, "journal.jsonl", 1, json.dumps(private, ensure_ascii=False)
     )
     assert findings == [guard.Finding("journal.jsonl", 1, "reasoning")]
     assert allowed == 0
@@ -47,7 +48,7 @@ def test_exact_currency_symbol_allowed_only_in_public_contract_fields() -> None:
 
 def test_other_private_match_in_public_field_still_blocks() -> None:
     private_marker = "private" + "-marker-739"
-    pattern = re.compile(re.escape(private_marker), re.IGNORECASE)
+    pattern = private_marker
     payload = record(question=f"Public question {private_marker}")
 
     findings, allowed = guard.scan_added_line(
@@ -60,11 +61,11 @@ def test_other_private_match_in_public_field_still_blocks() -> None:
 
 def test_non_public_platform_gets_no_currency_exception() -> None:
     symbol = chr(0xA3)
-    pattern = re.compile(re.escape(symbol))
+    pattern = symbol
     payload = record(question=f"Question {symbol}", source={"platform": "other"})
 
     findings, allowed = guard.scan_added_line(
-        pattern, "journal.jsonl", 1, json.dumps(payload)
+        pattern, "journal.jsonl", 1, json.dumps(payload, ensure_ascii=False)
     )
 
     assert findings == [guard.Finding("journal.jsonl", 1, "question")]
@@ -73,7 +74,7 @@ def test_non_public_platform_gets_no_currency_exception() -> None:
 
 def test_patch_scan_reports_locations_without_content() -> None:
     private_marker = "private" + "-marker-739"
-    pattern = re.compile(re.escape(private_marker))
+    pattern = private_marker
     payload = json.dumps(record(reasoning=private_marker))
     patch = f"diff --git a/journal b/journal\n+++ b/journal\n+{payload}\n"
 
@@ -85,6 +86,13 @@ def test_patch_scan_reports_locations_without_content() -> None:
     assert private_marker not in repr(findings)
 
 
+def test_scanner_uses_gnu_ere_not_python_regex() -> None:
+    # An unmatched close parenthesis is literal in GNU ERE but raises in Python re.
+    findings, allowed = guard.scan_added_line("literal)", "journal.txt", 1, "literal)")
+    assert findings == [guard.Finding("journal.txt", 1, "<raw>")]
+    assert allowed == 0
+
+
 def test_cli_reads_staged_diff_and_never_logs_matched_content(
     tmp_path: Path, monkeypatch, capsys
 ) -> None:
@@ -94,18 +102,21 @@ def test_cli_reads_staged_diff_and_never_logs_matched_content(
     symbol = chr(0xA3)
     private_marker = "private" + "-marker-739"
     target.write_text(
-        json.dumps(record(question=f"Public {symbol} question", reasoning=private_marker))
+        json.dumps(
+            record(question=f"Public {symbol} question", reasoning=private_marker),
+            ensure_ascii=False,
+        )
         + "\n",
         encoding="utf-8",
     )
     subprocess.run(["git", "add", "--", str(target)], cwd=tmp_path, check=True)
 
-    monkeypatch.setenv("LEAK_PATTERNS", re.escape(symbol))
+    monkeypatch.setenv("LEAK_PATTERNS", symbol)
     assert guard.main(["--root", str(tmp_path), "bot/journal/manifold.jsonl"]) == 0
     allowed_output = capsys.readouterr()
     assert "1 public contract currency match" in allowed_output.out
 
-    monkeypatch.setenv("LEAK_PATTERNS", re.escape(private_marker))
+    monkeypatch.setenv("LEAK_PATTERNS", private_marker)
     assert guard.main(["--root", str(tmp_path), "bot/journal/manifold.jsonl"]) == 1
     blocked_output = capsys.readouterr()
     assert "reasoning" in blocked_output.err

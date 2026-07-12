@@ -14,11 +14,13 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import re
+import shutil
 import subprocess
 import sys
+from collections import Counter
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -55,10 +57,60 @@ def _field_label(path: tuple[str, ...]) -> str:
     return ".".join(path) if path else "<raw>"
 
 
+@lru_cache(maxsize=1)
+def _grep_executable() -> str:
+    """Find GNU grep on Linux runners and Git-for-Windows development machines."""
+    direct = shutil.which("grep")
+    if direct:
+        return direct
+    git = shutil.which("git")
+    if git:
+        for parent in Path(git).resolve().parents:
+            for relative in (Path("usr/bin/grep.exe"), Path("usr/bin/grep")):
+                candidate = parent / relative
+                if candidate.is_file():
+                    return str(candidate)
+    raise GuardError("GNU grep is unavailable")
+
+
+def _ere_matches(pattern: str, value: str) -> tuple[str, ...]:
+    """Return GNU-ERE matches without writing the private pattern/content to logs."""
+    env = os.environ.copy()
+    env.setdefault("LC_ALL", "C.UTF-8")
+    result = subprocess.run(
+        [
+            _grep_executable(),
+            "--only-matching",
+            "--extended-regexp",
+            "--ignore-case",
+            "--",
+            pattern,
+        ],
+        input=value,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="surrogateescape",
+        env=env,
+        check=False,
+    )
+    if result.returncode == 1:
+        return ()
+    if result.returncode != 0:
+        raise GuardError("the private GNU ERE could not be evaluated")
+    matches = tuple(result.stdout.splitlines())
+    # GNU grep reports success for a zero-width match but -o emits no text. Such a pattern
+    # still matched, so return a sentinel that can never receive the public-field exception.
+    return matches or ("",)
+
+
 def scan_added_line(
-    pattern: re.Pattern[str], path: str, added_line: int, text: str
+    pattern: str, path: str, added_line: int, text: str
 ) -> tuple[list[Finding], int]:
     """Return blocked locations and the count of narrow public-field exceptions."""
+    raw_matches = Counter(_ere_matches(pattern, text))
+    if not raw_matches:
+        return [], 0
     try:
         payload = json.loads(text)
     except (json.JSONDecodeError, TypeError):
@@ -67,23 +119,29 @@ def scan_added_line(
     findings: list[Finding] = []
     allowed = 0
     if not isinstance(payload, dict):
-        for _match in pattern.finditer(text):
+        for _match in raw_matches.elements():
             findings.append(Finding(path, added_line, "<raw>"))
         return findings, allowed
 
     source = payload.get("source")
     platform = str(source.get("platform", "")).lower() if isinstance(source, dict) else ""
     for field_path, value in _iter_strings(payload):
-        for match in pattern.finditer(value):
+        for match in _ere_matches(pattern, value):
+            if raw_matches[match] > 0:
+                raw_matches[match] -= 1
             public_contract_currency = (
                 platform in PUBLIC_PLATFORMS
                 and field_path in PUBLIC_CONTRACT_FIELDS
-                and match.group(0) == PUBLIC_CURRENCY_SYMBOL
+                and match == PUBLIC_CURRENCY_SYMBOL
             )
             if public_contract_currency:
                 allowed += 1
             else:
                 findings.append(Finding(path, added_line, _field_label(field_path)))
+    if any(raw_matches.values()):
+        # The ERE matched serialized JSON syntax/escaping rather than a decoded string field.
+        # It is not eligible for the public-contract exception.
+        findings.append(Finding(path, added_line, "<raw>"))
     return findings, allowed
 
 
@@ -102,7 +160,7 @@ def staged_diff(paths: Sequence[str], *, root: Path) -> str:
     return result.stdout
 
 
-def scan_patch(pattern: re.Pattern[str], patch: str) -> tuple[tuple[Finding, ...], int, int]:
+def scan_patch(pattern: str, patch: str) -> tuple[tuple[Finding, ...], int, int]:
     current_path = "<unknown>"
     additions = 0
     allowed = 0
@@ -136,13 +194,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("journal leak guard configuration missing", file=sys.stderr)
         return 2
     try:
-        pattern = re.compile(private_pattern, re.IGNORECASE)
-    except re.error:
-        print("journal leak guard pattern is invalid; content suppressed", file=sys.stderr)
-        return 2
-    try:
+        # Compile/probe the exact GNU ERE even when this run has no staged additions.
+        _ere_matches(private_pattern, "")
         patch = staged_diff(args.paths, root=args.root.resolve())
-        findings, additions, allowed = scan_patch(pattern, patch)
+        findings, additions, allowed = scan_patch(private_pattern, patch)
     except (GuardError, OSError):
         print("journal leak guard could not complete safely", file=sys.stderr)
         return 2
