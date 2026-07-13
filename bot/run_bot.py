@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import json
+import math
 import os
 import re
 import shlex
@@ -93,6 +94,10 @@ _SECRETS_TO_HIDE = frozenset(
 # native protocol to it directly, billed to OpenRouter credits instead of the subscription.
 OPENROUTER_BASE_URL = "https://openrouter.ai/api"
 PROVIDERS = ("subscription", "openrouter")
+# ``claude --output-format json`` does not always price gateway model slugs. A negative
+# sentinel keeps a successful answer usable while forcing the caller to reserve the entire
+# remaining metered allowance before it starts another subprocess.
+UNKNOWN_METERED_COST = -1.0
 # Blind mode: enforce no-crowd-peeking at the tool level too (the prompt instruction alone
 # is not verifiable). Search snippets can still leak in principle; this closes direct fetches.
 BLIND_DISALLOWED = (
@@ -474,7 +479,7 @@ def with_model(agent_cmd: str, model: str) -> str:
 
 def verify_dossier(
     cmd: str, dossier: str, timeout: int, provider: str, blind: bool,
-    contract: str = "",
+    contract: str = "", fail_closed: bool = False, strict_metering: bool = False,
 ) -> tuple[str, float]:
     """CoVe-style independent premise check, appended to the dossier (non-fatal).
 
@@ -494,9 +499,18 @@ def verify_dossier(
     if contract:
         prompt += "\n\n## The contract (for the event-window check only)\n" + contract
     try:
-        out, cost, _ = run_agent(cmd, prompt, system, timeout, provider)
+        if strict_metering:
+            out, cost, _ = run_agent(
+                cmd, prompt, system, timeout, provider, strict_metering=True
+            )
+        else:
+            out, cost, _ = run_agent(cmd, prompt, system, timeout, provider)
         items = extract_json(out).get("verification") or []
-    except (RuntimeError, ValueError, subprocess.TimeoutExpired):
+    except (RuntimeError, subprocess.TimeoutExpired):
+        if fail_closed:
+            raise
+        return "", cost
+    except ValueError:
         return "", cost
     lines = []
     for item in items[:4]:
@@ -524,6 +538,45 @@ def openrouter_model_cmd(agent_cmd: str) -> str:
         if tok == "--model" and i + 1 < len(tokens) and "/" not in tokens[i + 1]:
             tokens[i + 1] = f"anthropic/{tokens[i + 1]}"
     return shlex.join(tokens)
+
+
+def with_credit_cap(agent_cmd: str, remaining_usd: float) -> str:
+    """Return ``agent_cmd`` with exactly one native Claude per-process spend cap.
+
+    The caller owns provider selection: this helper is deliberately provider-agnostic so
+    the subscription path is never changed implicitly. Both CLI spellings are removed
+    before one effective cap is appended. An operator-supplied lower cap stays in force;
+    a stale higher cap cannot override the invocation-wide remainder.
+    """
+    if not math.isfinite(remaining_usd) or remaining_usd <= 0:
+        raise ValueError("remaining OpenRouter budget must be finite and positive")
+    tokens = shlex.split(agent_cmd)
+    cleaned: list[str] = []
+    existing_caps: list[float] = []
+    i = 0
+    while i < len(tokens):
+        token = tokens[i]
+        if token == "--max-budget-usd":
+            if i + 1 < len(tokens):
+                with contextlib.suppress(ValueError):
+                    value = float(tokens[i + 1])
+                    if math.isfinite(value) and value > 0:
+                        existing_caps.append(value)
+            i += 2
+            continue
+        if token.startswith("--max-budget-usd="):
+            with contextlib.suppress(ValueError):
+                value = float(token.split("=", 1)[1])
+                if math.isfinite(value) and value > 0:
+                    existing_caps.append(value)
+            i += 1
+            continue
+        cleaned.append(token)
+        i += 1
+    effective_cap = min([remaining_usd, *existing_caps])
+    # Round-trip precision avoids six-decimal round-to-nearest ever raising the native cap
+    # above a tiny remainder (e.g. 0.0000006 becoming 0.000001).
+    return shlex.join([*cleaned, "--max-budget-usd", format(effective_cap, ".17g")])
 
 
 def agent_environment(provider: str = "subscription") -> dict[str, str]:
@@ -568,7 +621,7 @@ def agent_environment(provider: str = "subscription") -> dict[str, str]:
 
 def run_agent(
     agent_cmd: str, prompt: str, system: str | None, timeout: int,
-    provider: str = "subscription",
+    provider: str = "subscription", strict_metering: bool = False,
 ) -> tuple[str, float, str]:
     """Run the headless agent; returns (text, cost_usd, model).
 
@@ -601,14 +654,19 @@ def run_agent(
             model = _primary_model(envelope.get("modelUsage"), agent_cmd)
             cost = float(envelope.get("total_cost_usd") or 0.0)
             if provider == "openrouter" and cost <= 0.0:
-                # The CLI may not price third-party slugs; a $0 report would make
-                # --budget inert on exactly the metered path. Count a nominal floor so
-                # the cap still bounds the invocation (real spend: openrouter.ai/activity).
-                cost = 0.10
+                # Tournament production opts into strict metering and reserves the whole
+                # remainder before another paid subprocess. Shared benchmark/probe callers
+                # retain their historical nominal floor until they adopt the same protocol.
+                cost = UNKNOWN_METERED_COST if strict_metering else 0.10
             return str(envelope["result"]), cost, model
     except (json.JSONDecodeError, TypeError, ValueError):
         pass
-    return result.stdout, 0.0, _model_from_cmd(agent_cmd)
+    cost = (
+        UNKNOWN_METERED_COST
+        if provider == "openrouter" and strict_metering
+        else 0.0
+    )
+    return result.stdout, cost, _model_from_cmd(agent_cmd)
 
 
 def extract_json(text: str) -> dict[str, Any]:
@@ -620,16 +678,30 @@ def extract_json(text: str) -> dict[str, Any]:
 
 
 def triage(
-    agent_cmd: str, brief: str, timeout: int, provider: str = "subscription"
+    agent_cmd: str, brief: str, timeout: int, provider: str = "subscription",
+    fail_closed: bool = False, strict_metering: bool = False,
 ) -> tuple[str, float]:
+    cost = 0.0
     try:
-        output, cost, _ = run_agent(
-            agent_cmd, TRIAGE_PROMPT + brief[:2000], None, timeout, provider
-        )
+        if strict_metering:
+            output, cost, _ = run_agent(
+                agent_cmd, TRIAGE_PROMPT + brief[:2000], None, timeout, provider,
+                strict_metering=True,
+            )
+        else:
+            output, cost, _ = run_agent(
+                agent_cmd, TRIAGE_PROMPT + brief[:2000], None, timeout, provider
+            )
         tier = extract_json(output).get("tier", "medium")
         return (tier if tier in ("low", "medium", "high") else "medium"), cost
-    except (RuntimeError, ValueError, subprocess.TimeoutExpired):
+    except (RuntimeError, subprocess.TimeoutExpired):
+        if fail_closed:
+            raise
         return "medium", 0.0
+    except ValueError:
+        # The subprocess completed and its cost is known; invalid triage JSON can safely
+        # fall back to medium without forgetting that metered spend.
+        return "medium", cost
 
 
 def mc_within_api_bounds(probs: dict[str, float]) -> dict[str, float]:
@@ -867,6 +939,35 @@ def forecast_question(
     spent: dict[str, float] | None = None,
     deadline: float | None = None,
 ) -> bool:
+    budget = float(getattr(args, "budget", 0.0) or 0.0)
+    hard_cap_openrouter = (
+        args.provider == "openrouter" and math.isfinite(budget) and budget > 0
+    )
+    run_cost = 0.0
+    metered_spend_uncertain = False
+
+    def fail_closed_metered() -> None:
+        """Reserve the unknown remainder and forbid later paid calls this invocation."""
+        nonlocal metered_spend_uncertain, run_cost
+        if metered_spend_uncertain:
+            return
+        metered_spend_uncertain = True
+        # Charge the unknown call the entire remaining allowance. This makes both the
+        # invocation ledger and the journal conservative while avoiding double-counting
+        # successful calls whose cost is already in run_cost.
+        run_cost += max(0.0, budget - (spent["usd"] if spent else 0.0) - run_cost)
+
+    def metered_cmd(cmd: str) -> str | None:
+        """Cap this OpenRouter subprocess at the invocation's unspent remainder."""
+        if not hard_cap_openrouter:
+            return cmd
+        if metered_spend_uncertain:
+            return None
+        remaining = budget - (spent["usd"] if spent else 0.0) - run_cost
+        if remaining <= 0:
+            return None
+        return with_credit_cap(cmd, remaining)
+
     # The Metaculus API firewalls the HUMAN community prediction from bot accounts
     # everywhere: any value a bot token can read is an aggregate of other competing bots.
     # Measured harm (e2e, 2026-07-06): the sandbox bot-crowd said 0.63 while real markets
@@ -911,12 +1012,32 @@ def forecast_question(
         openrouter_model_cmd(args.agent_cmd)
         if args.provider == "openrouter" else args.agent_cmd
     )
-    run_cost = 0.0
     if args.effort != "auto":
         tier = args.effort
     else:
         # Triage is one cheap call — never let it hold the full research timeout.
-        tier, triage_cost = triage(base_cmd, brief, min(args.timeout, 300), args.provider)
+        triage_cmd = metered_cmd(base_cmd)
+        if triage_cmd is None:
+            print("  budget exhausted before triage")
+            return False
+        try:
+            tier, triage_cost = triage(
+                triage_cmd, brief, min(args.timeout, 300), args.provider,
+                fail_closed=hard_cap_openrouter,
+                strict_metering=hard_cap_openrouter,
+            )
+        except (RuntimeError, subprocess.TimeoutExpired) as exc:
+            fail_closed_metered()
+            if spent is not None:
+                spent["usd"] += run_cost
+            print(f"  metered triage failed with unknown usage; budget closed: {exc}")
+            return False
+        if triage_cost == UNKNOWN_METERED_COST:
+            fail_closed_metered()
+            if spent is not None:
+                spent["usd"] += run_cost
+            print("  metered triage returned unknown usage; budget closed")
+            return False
         run_cost += triage_cost
 
     # Tier shape must be known before the system prompt is built: in multi-run mode the
@@ -969,14 +1090,38 @@ def forecast_question(
                 # to a clean first attempt.
                 first_error = errors[0] if errors else None
             try:
-                output, attempt_cost, model = run_agent(
-                    cmd, prompt, run_system, timeout, args.provider
-                )
-                run_cost += attempt_cost
+                call_cmd = metered_cmd(cmd)
+                if call_cmd is None:
+                    errors = ["budget exhausted before agent call"]
+                    break
+                if hard_cap_openrouter:
+                    output, attempt_cost, model = run_agent(
+                        call_cmd, prompt, run_system, timeout, args.provider,
+                        strict_metering=True,
+                    )
+                else:
+                    output, attempt_cost, model = run_agent(
+                        call_cmd, prompt, run_system, timeout, args.provider
+                    )
+                if attempt_cost == UNKNOWN_METERED_COST:
+                    fail_closed_metered()
+                else:
+                    run_cost += attempt_cost
                 agent_responded = True
                 candidate = extract_json(output)
             except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
                 errors = [str(exc)]
+                if hard_cap_openrouter and isinstance(
+                    exc, (RuntimeError, subprocess.TimeoutExpired)
+                ):
+                    # A failed/timed-out CLI process may still have been billed, but gives
+                    # us no trustworthy usage envelope. Reusing the apparent remainder in
+                    # a retry could exceed the invocation cap, so reserve it and stop paid
+                    # work for this invocation. ValueError is different: run_agent returned
+                    # successfully, and its known cost was added before JSON parsing.
+                    fail_closed_metered()
+                    errors.append("metered usage unknown; budget closed")
+                    break
                 continue
             errors = validate_payload(candidate, question)
             if need_dossier and not str(candidate.get("dossier") or "").strip():
@@ -1063,7 +1208,6 @@ def forecast_question(
     # Reasoning runs may make at most a couple of gap-filling searches (dossier-first);
     # they never need the research run's long leash.
     reasoning_timeout = min(args.timeout, 600)
-    budget = float(getattr(args, "budget", 0.0) or 0.0)
     slot = 0  # lens/model assignment counter — advances on every reasoning ATTEMPT, so a
     # failed slot cannot hand its lens (and model) to the next one (that silently
     # collapsed ensemble diversity on any transient error).
@@ -1169,15 +1313,28 @@ def forecast_question(
                         f"Resolution criteria (verbatim): "
                         f"{str(question.get('resolution_criteria', ''))[:2000]}"
                     )
-                    verification, verify_cost = verify_dossier(
-                        agent_cmd, dossier, min(args.timeout, 600), args.provider,
-                        args.blind, contract=contract,
-                    )
-                    run_cost += verify_cost
-                    if verification:
-                        print("  verification: "
-                              f"{verification.count(chr(10))} premise(s) checked")
-                        dossier += verification
+                    verify_cmd = metered_cmd(agent_cmd)
+                    if verify_cmd is not None:
+                        try:
+                            verification, verify_cost = verify_dossier(
+                                verify_cmd, dossier, min(args.timeout, 600), args.provider,
+                                args.blind, contract=contract,
+                                fail_closed=hard_cap_openrouter,
+                                strict_metering=hard_cap_openrouter,
+                            )
+                        except (RuntimeError, subprocess.TimeoutExpired) as exc:
+                            fail_closed_metered()
+                            print("  metered verification failed with unknown usage; "
+                                  f"budget closed: {exc}")
+                        else:
+                            if verify_cost == UNKNOWN_METERED_COST:
+                                fail_closed_metered()
+                            else:
+                                run_cost += verify_cost
+                            if verification:
+                                print("  verification: "
+                                      f"{verification.count(chr(10))} premise(s) checked")
+                                dossier += verification
             if qtype == "binary":
                 run_probs.append(float(candidate["probability"]))
         else:
@@ -1496,10 +1653,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--include-forecasted", action="store_true",
                         help="re-forecast questions this account already forecast")
     parser.add_argument("--budget", type=float, default=0.0,
-                        help="stop before the next question once notional agent spend "
-                             "(envelope cost_usd) reaches this; forecasted questions are "
-                             "skipped on rerun, so batched sessions just rerun the same "
-                             "command (0 = no cap)")
+                        help="cap notional agent spend for this invocation; OpenRouter "
+                             "subprocesses receive the unspent remainder through Claude's "
+                             "native max-budget flag, while other providers stop before "
+                             "the next call once envelope cost_usd reaches this; forecasted "
+                             "questions are skipped on rerun (0 = no cap)")
     parser.add_argument("--deadline-minutes", type=float, default=0.0,
                         help="wall-clock cap: stop starting new questions (and new runs "
                              "within a question) this many minutes after launch. The "
@@ -1507,6 +1665,10 @@ def main(argv: list[str] | None = None) -> int:
                              "so CI jobs need this to finish inside their own timeout "
                              "with room for the journal commit (0 = no cap)")
     args = parser.parse_args(argv)
+    if not math.isfinite(args.budget) or args.budget < 0:
+        parser.error("--budget must be finite and non-negative")
+    if args.provider == "openrouter" and args.budget <= 0:
+        parser.error("--provider openrouter requires a positive --budget hard cap")
     if not args.tournament and not args.post:
         parser.error("give --tournament or --post")
     if args.post:

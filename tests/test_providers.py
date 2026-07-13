@@ -7,6 +7,7 @@ import math
 import shlex
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -81,6 +82,76 @@ class TestOpenrouterModelCmd:
 
     def test_no_model_flag_is_a_noop(self) -> None:
         assert run_bot.openrouter_model_cmd("claude -p") == "claude -p"
+
+
+class TestOpenrouterCreditCap:
+    def test_replaces_duplicate_flags_with_current_remainder(self) -> None:
+        cmd = run_bot.with_credit_cap(
+            "claude -p --max-budget-usd 9 --max-budget-usd=8", 1.25
+        )
+        tokens = shlex.split(cmd)
+        assert tokens.count("--max-budget-usd") == 1
+        assert not any(token.startswith("--max-budget-usd=") for token in tokens)
+        assert tokens[tokens.index("--max-budget-usd") + 1] == "1.25"
+
+    def test_preserves_stricter_operator_cap(self) -> None:
+        cmd = run_bot.with_credit_cap("claude -p --max-budget-usd 0.40", 1.25)
+        tokens = shlex.split(cmd)
+        assert tokens.count("--max-budget-usd") == 1
+        assert tokens[tokens.index("--max-budget-usd") + 1] == "0.40000000000000002"
+
+    @pytest.mark.parametrize(
+        "stdout",
+        [
+            json.dumps({"result": "answer", "total_cost_usd": 0}),
+            "plain unpriced answer",
+        ],
+    )
+    def test_openrouter_unpriced_success_is_marked_unknown(
+        self, monkeypatch: pytest.MonkeyPatch, stdout: str
+    ) -> None:
+        monkeypatch.setattr(run_bot, "agent_environment", lambda provider: {})
+        monkeypatch.setattr(
+            run_bot.subprocess,
+            "run",
+            lambda *args, **kwargs: SimpleNamespace(
+                returncode=0, stdout=stdout, stderr=""
+            ),
+        )
+        _, cost, _ = run_bot.run_agent(
+            "claude -p", "prompt", None, 30, provider="openrouter",
+            strict_metering=True,
+        )
+        assert cost == run_bot.UNKNOWN_METERED_COST
+
+    @pytest.mark.parametrize(
+        ("stdout", "expected"),
+        [
+            (json.dumps({"result": "answer", "total_cost_usd": 0}), 0.10),
+            ("plain unpriced answer", 0.0),
+        ],
+    )
+    def test_shared_run_agent_default_never_leaks_unknown_cost_sentinel(
+        self, monkeypatch: pytest.MonkeyPatch, stdout: str, expected: float
+    ) -> None:
+        monkeypatch.setattr(run_bot, "agent_environment", lambda provider: {})
+        monkeypatch.setattr(
+            run_bot.subprocess,
+            "run",
+            lambda *args, **kwargs: SimpleNamespace(
+                returncode=0, stdout=stdout, stderr=""
+            ),
+        )
+        _, cost, _ = run_bot.run_agent(
+            "claude -p", "prompt", None, 30, provider="openrouter"
+        )
+        assert cost == expected
+
+
+@pytest.mark.parametrize("budget", ["nan", "inf", "-1", "0"])
+def test_openrouter_cli_rejects_non_hard_budget(budget: str) -> None:
+    with pytest.raises(SystemExit):
+        run_bot.main(["--post", "1", "--provider", "openrouter", "--budget", budget])
 
 
 class TestPrimaryModel:

@@ -7,6 +7,12 @@ and mirror `.claude-plugin/plugin.json`.
 ## [Unreleased] — second-eyes review fixes (2026-07-12)
 
 ### Fixed
+- Tournament OpenRouter budgets are now enforced on every Claude subprocess with the
+  invocation's unspent remainder, rather than only stopping before the next call. A live
+  `--budget 3` recovery run exposed the old behavior by reporting $3.2212 for one question.
+  Triage, repair, verification, and reasoning calls all receive the decreasing native cap;
+  an error or timeout with unknown metered usage reserves the rest and stops further calls.
+  The Claude-subscription path is unchanged.
 - `eval_phase1` counted dry-run bets in the promote/kill movement statistic; live only now.
 - Dry-run would-be bets blocked later LIVE bets on the same market — the position guard
   now excludes dry-run entries.

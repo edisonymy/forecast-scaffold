@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shlex
 import sys
 import time
 from pathlib import Path
@@ -64,15 +65,19 @@ class ScriptedAgent:
     def __init__(self, outputs: list[str]) -> None:
         self.outputs = list(outputs)
         self.calls: list[dict[str, Any]] = []
+        self.final_spent: float | None = None
 
     def __call__(self, cmd: str, prompt: str, system: str | None, timeout: int,
-                 provider: str = "subscription") -> tuple[str, float, str]:
+                 provider: str = "subscription",
+                 strict_metering: bool = False) -> tuple[str, float, str]:
         self.calls.append({"cmd": cmd, "prompt": prompt, "system": system})
         if not self.outputs:
             raise RuntimeError("script exhausted")
         out = self.outputs.pop(0)
         if out == "AGENT_FAILURE":
             raise RuntimeError("agent failed (1): boom")
+        if out == "UNPRICED_VALID":
+            return fenced(RESEARCH), run_bot.UNKNOWN_METERED_COST, "claude-sonnet-5"
         return out, 0.05, "claude-sonnet-5"
 
 
@@ -119,13 +124,14 @@ def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
         question: dict[str, Any] | None = None, budget: float = 0.0,
         with_verify: bool = False, blind: bool = False, dry_run: bool = True,
         client: Any = None, deadline: float | None = None,
-        comment: bool = False) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
+        comment: bool = False, provider: str = "subscription",
+        spent_usd: float = 0.0) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
     agent = ScriptedAgent(outputs)
     monkeypatch.setattr(run_bot, "run_agent", agent)
     if not with_verify:  # most tests script only the forecast runs
         monkeypatch.setattr(run_bot, "verify_dossier", lambda *a, **k: ("", 0.0))
     args = argparse.Namespace(
-        blind=blind, effort=effort, provider="subscription", timeout=60,
+        blind=blind, effort=effort, provider=provider, timeout=60,
         dry_run=dry_run, comment=comment, budget=budget,
         agent_cmd=("claude -p --model claude-sonnet-5 --output-format json "
                    "--allowed-tools Read,Glob,Grep,WebSearch,WebFetch"),
@@ -135,11 +141,12 @@ def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
     )
     journal_path = tmp_path / "j.jsonl"
     journal = Journal(str(journal_path))
-    spent = {"usd": 0.0}
+    spent = {"usd": spent_usd}
     ok = run_bot.forecast_question(
         client or StubClient(), POST, question or QUESTION, args, config, journal, spent,
         deadline,
     )
+    agent.final_spent = spent["usd"]
     record = None
     if journal_path.exists() and journal_path.read_text(encoding="utf-8").strip():
         record = json.loads(journal_path.read_text(encoding="utf-8").splitlines()[-1])
@@ -450,6 +457,86 @@ class TestFailureRecovery:
         assert ok and record is not None
         assert len(agent.calls) == 1
         assert record.get("raw_draws") is None
+
+    def test_openrouter_cap_decreases_across_every_agent_stage(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # Start with $0.20 already spent. Triage, an invalid research attempt, its repair,
+        # dossier verification, and a reasoning run each report $0.05. Every new process
+        # must get only the then-current invocation remainder.
+        invalid = dict(RESEARCH, probability=7.3)
+        agent, record, ok = run(
+            monkeypatch,
+            tmp_path,
+            [
+                fenced({"tier": "medium"}),
+                fenced(invalid),
+                fenced(RESEARCH),
+                fenced({"verification": []}),
+                fenced(reasoning_payload(0.40)),
+            ],
+            config=config_with_tiers(
+                {"medium": {"draws": 5, "searches": 5, "runs": 2}}
+            ),
+            effort="auto",
+            budget=1.0,
+            with_verify=True,
+            provider="openrouter",
+            spent_usd=0.20,
+        )
+        assert ok and record is not None
+        assert len(agent.calls) == 5
+        caps = []
+        for call in agent.calls:
+            tokens = shlex.split(call["cmd"])
+            assert tokens.count("--max-budget-usd") == 1
+            caps.append(float(tokens[tokens.index("--max-budget-usd") + 1]))
+        assert caps == pytest.approx([0.80, 0.75, 0.70, 0.65, 0.60])
+
+    def test_subscription_never_gets_metered_cli_cap(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(
+            monkeypatch,
+            tmp_path,
+            [fenced({"probability": 0.4, "reasoning": "x", "sources": []})],
+            config=config_with_tiers(
+                {"low": {"draws": 1, "searches": 1, "runs": 1}}
+            ),
+            effort="low",
+            budget=1.0,
+        )
+        assert ok and record is not None
+        assert "--max-budget-usd" not in shlex.split(agent.calls[0]["cmd"])
+
+    def test_openrouter_unknown_cost_failure_stops_all_later_calls(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(
+            monkeypatch,
+            tmp_path,
+            ["AGENT_FAILURE", fenced(RESEARCH)],
+            budget=1.0,
+            provider="openrouter",
+        )
+        assert not ok and record is None
+        assert len(agent.calls) == 1
+        assert agent.final_spent == pytest.approx(1.0)
+
+    def test_openrouter_unpriced_success_records_once_and_closes_budget(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(
+            monkeypatch,
+            tmp_path,
+            ["UNPRICED_VALID", fenced(reasoning_payload(0.40))],
+            budget=1.0,
+            provider="openrouter",
+        )
+        assert ok and record is not None
+        assert len(agent.calls) == 1
+        assert agent.final_spent == pytest.approx(1.0)
+        assert record["cost_usd"] == pytest.approx(1.0)
 
     def test_missing_evidence_reaches_the_record(self, monkeypatch: pytest.MonkeyPatch,
                                                  tmp_path: Path) -> None:
