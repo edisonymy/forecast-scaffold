@@ -7,9 +7,9 @@ and mirror `.claude-plugin/plugin.json`.
 ## [Unreleased] — second-eyes review fixes (2026-07-12)
 
 ### Fixed
-- Tournament/MiniBench temporarily has a native GitHub Actions `*/10` cron fallback while
-  the external GCP scheduler credentials are rotated. It matches `forecast-bot-kicker`'s
-  cadence and retains the existing concurrency, provider, and per-run budget controls.
+- The temporary native Tournament/MiniBench cron fallback used during GCP credential
+  rotation has been removed. External `forecast-bot-kicker` dispatches are again the sole
+  clock; the existing concurrency, provider, and per-run budget controls are unchanged.
 - The Manifold cloud workflow now uses reliable hourly dispatches from the external GCP
   Cloud Scheduler `manifold-bot-kicker` (minute 17 UTC) instead of GitHub's best-effort
   native cron. A first-step activation gate keeps every setup, secret, Claude, alert,
