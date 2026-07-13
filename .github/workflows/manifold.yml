@@ -1,11 +1,10 @@
 name: Manifold bot
 
 on:
-  # Hourly per the operator's 2026-07-12 amendment. Minute 17 avoids the top-of-hour cron
-  # surge. GitHub cron is best-effort; a dropped tick is skipped rather than replayed because
-  # replaying it could violate the one-$5-budget-window-per-scheduled-run contract.
-  schedule:
-    - cron: "17 * * * *"
+  # GCP Cloud Scheduler `manifold-bot-kicker` invokes this workflow_dispatch hourly at
+  # minute 17 UTC. The activation gate below keeps those reliable ticks dark until the
+  # operator's requested start date without exposing secrets or consuming Claude credits.
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}
@@ -19,17 +18,33 @@ jobs:
       contents: write # commits the public journal + phase file
       issues: write # the betting-disabled alert below files one deduped issue
     steps:
+      - name: Activation gate (not before 2026-07-15)
+        id: activation
+        shell: bash
+        run: |
+          not_before="2026-07-15T00:00:00Z"
+          if [ "$(date -u +%s)" -lt "$(date -u -d "$not_before" +%s)" ]; then
+            echo "active=false" >> "$GITHUB_OUTPUT"
+            echo "Manifold bot is dormant until $not_before."
+            exit 0
+          fi
+          echo "active=true" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v4
+        if: steps.activation.outputs.active == 'true'
 
       - uses: actions/setup-python@v5
+        if: steps.activation.outputs.active == 'true'
         with:
           python-version: "3.12"
 
       - uses: actions/setup-node@v4
+        if: steps.activation.outputs.active == 'true'
         with:
           node-version: "22"
 
       - name: Install
+        if: steps.activation.outputs.active == 'true'
         # Same pinned CLI as bot.yml: an unattended cron must not pick up a broken or
         # compromised release mid-flight. Bump deliberately, then watch one run.
         run: |
@@ -37,6 +52,7 @@ jobs:
           npm install -g @anthropic-ai/claude-code@2.1.201
 
       - name: Run Manifold bot
+        if: steps.activation.outputs.active == 'true'
         # This path is Claude-subscription-only. The explicit setup-token is required and
         # run_manifold rejects metered/gateway auth before doing any repo or network work.
         # Its cumulative $5 accounting is backed by Claude's native --max-budget-usd on each
@@ -64,7 +80,7 @@ jobs:
         # recorded pairs, bets, skips, the informed-read/exposure/floor markers) in the job
         # summary. always() + trailing `|| true` (grep exits 1 on zero matches, e.g. a missing
         # log) mean this never fails the job.
-        if: always()
+        if: always() && steps.activation.outputs.active == 'true'
         run: |
           {
             echo "### Manifold bot digest"
@@ -83,7 +99,7 @@ jobs:
         # run (convergence exits, informed reads) — so grep ONLY for the marker, never for
         # bet counts. Dedupe mirrors bot.yml's alert step: while the issue stays open,
         # nothing new is filed.
-        if: always()
+        if: always() && steps.activation.outputs.active == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -110,7 +126,7 @@ jobs:
       - name: Commit journal + phase (pre-registration)
         # always(): journaled pairs and any phase promotion must be committed even if a later
         # market errored or the run timed out — the journal + phase file are the public record.
-        if: always()
+        if: always() && steps.activation.outputs.active == 'true'
         env:
           LEAK_PATTERNS: ${{ secrets.LEAK_PATTERNS }}
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}

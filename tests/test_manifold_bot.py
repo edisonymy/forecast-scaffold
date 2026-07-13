@@ -492,8 +492,22 @@ def test_cloud_workflow_is_hourly_subscription_only_and_hard_capped() -> None:
         encoding="utf-8"
     )
     lower = workflow.lower()
-    assert 'cron: "17 * * * *"' in workflow
-    assert "workflow_dispatch" not in workflow  # no extra manual budget window
+    assert "workflow_dispatch:" in workflow
+    assert "schedule:" not in workflow
+    assert "manifold-bot-kicker" in workflow
+    assert "minute 17 UTC" in workflow
+    assert 'not_before="2026-07-15T00:00:00Z"' in workflow
+    gate = workflow.index("id: activation")
+    checkout = workflow.index("uses: actions/checkout@v4")
+    assert gate < checkout  # no checkout, install, secrets, or spend before the gate
+    step_blocks = workflow.split("\n      - ")[1:]
+    activation_index = next(
+        index for index, block in enumerate(step_blocks) if "id: activation" in block
+    )
+    post_gate = step_blocks[activation_index + 1 :]
+    assert len(post_gate) == 8
+    for block in post_gate:
+        assert "steps.activation.outputs.active == 'true'" in block
     assert "--provider subscription" in workflow
     assert "--budget 5" in workflow
     assert "--deadline-minutes 45" in workflow

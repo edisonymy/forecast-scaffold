@@ -44,8 +44,11 @@ qid uIQlEUOhuS NO, qid IyZz6yqqqQ YES; 50 mana open exposure), remaining pairs c
 numbers drift, the journal is the source of truth and `python bot/score_manifold.py` is
 the authoritative live count):** journal `bot/journal/manifold.jsonl`, phase file
 `manifold-phase.json`. Run: `python bot/run_manifold.py --limit 10 --tier medium --live`
-(key in `~/.manifold/key.txt`). Daily CI workflow exists (needs MANIFOLD_API_KEY secret
-to bet from CI). Score with `python bot/score_manifold.py`. Known finding to fix: the
+(key in `~/.manifold/key.txt`). The cloud workflow is dispatched hourly at minute 17 UTC
+by GCP Cloud Scheduler `manifold-bot-kicker`; its activation gate keeps all setup and
+Claude work dormant until `2026-07-15T00:00:00Z`. It needs the `MANIFOLD_API_KEY` secret
+to bet from CI and remains subscription-only with a $5/run cap. Score with
+`python bot/score_manifold.py`. Known finding to fix: the
 Odyssey pair — sighted read the market "thin" then capitulated to it anyway (blind 0.70 →
 sighted 0.23 vs mkt 0.199; Fable teacher says 0.60). One-line sighted-brief fix: a
 thin/stale read means YOUR number carries the weight. Also verify sources journaling

@@ -7,6 +7,13 @@ and mirror `.claude-plugin/plugin.json`.
 ## [Unreleased] — second-eyes review fixes (2026-07-12)
 
 ### Fixed
+- The Manifold cloud workflow now uses reliable hourly dispatches from the external GCP
+  Cloud Scheduler `manifold-bot-kicker` (minute 17 UTC) instead of GitHub's best-effort
+  native cron. A first-step activation gate keeps every setup, secret, Claude, alert,
+  summary, and journal-publication step dormant until `2026-07-15T00:00:00Z`; early
+  dispatches finish green and consume no forecasting credits. The existing $5 cap,
+  subscription-only provider boundary, concurrency serialization, and live policy are
+  unchanged.
 - Tournament OpenRouter budgets are now enforced on every Claude subprocess with the
   invocation's unspent remainder, rather than only stopping before the next call. A live
   `--budget 3` recovery run exposed the old behavior by reporting $3.2212 for one question.
