@@ -123,10 +123,11 @@ def test_cli_reads_staged_diff_and_never_logs_matched_content(
     assert private_marker not in blocked_output.out + blocked_output.err
 
 
-def test_workflows_use_content_free_scanner_and_tournament_never_autostashes() -> None:
+def test_workflows_use_content_free_scanner_and_tournament_publish_safely() -> None:
     for name in ("bot.yml", "manifold.yml"):
         text = (ROOT / ".github" / "workflows" / name).read_text(encoding="utf-8")
         assert "scripts/journal_leak_guard.py" in text
         assert "grep -niIE" not in text
     bot = (ROOT / ".github" / "workflows" / "bot.yml").read_text(encoding="utf-8")
     assert "--autostash" not in bot
+    assert "- uses: actions/checkout@v4\n        with:\n          ref: main" in bot

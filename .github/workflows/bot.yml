@@ -30,7 +30,15 @@ jobs:
       contents: write # commits the public journal
       issues: write # failure alerting (one open issue, not hourly spam)
     steps:
+      # workflow_dispatch pins github.sha when the tick is queued. Because this workflow's
+      # concurrency group can leave a tick waiting behind a long forecast run, that SHA may
+      # be stale by the time checkout starts (the preceding run has appended to the same
+      # journal). Start from current main so the later append can publish without a guaranteed
+      # rebase conflict. The concurrency group still prevents two Tournament jobs running at
+      # once.
       - uses: actions/checkout@v4
+        with:
+          ref: main
 
       - uses: actions/setup-python@v5
         with:
