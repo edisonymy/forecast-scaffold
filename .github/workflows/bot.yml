@@ -2,13 +2,15 @@ name: Tournament bot
 
 on:
   # FutureEval runs on fast "spot" questions that open in weekday waves and close within
-  # hours, so the bot needs a reliable sub-hourly cadence. GitHub's own scheduler is
-  # best-effort and silently DROPS most ticks (measured 2026-07-06/07: ~7 of 23 hourly
-  # ticks fired), so it is NOT used to drive this bot. Instead an external Cloud Scheduler
-  # job ("forecast-bot-kicker", GCP project edison-util-mcp, us-central1) fires
-  # workflow_dispatch every 10 min, 24/7 — a dependable clock GitHub cron can't provide.
+  # hours, so the bot needs a reliable sub-hourly cadence. While the external Cloud Scheduler
+  # credentials are rotated, native GitHub cron is a temporary best-effort fallback at the
+  # kicker's same 10-minute cadence. The external "forecast-bot-kicker" normally dispatches
+  # every 10 min, 24/7 from GCP project edison-util-mcp (us-central1); restore it as the sole
+  # clock once credential rotation is complete.
   # Over-firing is safe: the already-forecasted filter no-ops each repeat for pennies,
   # spend is capped by --budget, and the concurrency group serialises overlapping runs.
+  schedule:
+    - cron: "*/10 * * * *"
   workflow_dispatch:
     inputs:
       provider:

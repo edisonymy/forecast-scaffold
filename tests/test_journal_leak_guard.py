@@ -131,3 +131,6 @@ def test_workflows_use_content_free_scanner_and_tournament_publish_safely() -> N
     bot = (ROOT / ".github" / "workflows" / "bot.yml").read_text(encoding="utf-8")
     assert "--autostash" not in bot
     assert "- uses: actions/checkout@v4\n        with:\n          ref: main" in bot
+    assert 'schedule:\n    - cron: "*/10 * * * *"' in bot
+    assert "workflow_dispatch:" in bot
+    assert "temporary best-effort fallback" in bot
