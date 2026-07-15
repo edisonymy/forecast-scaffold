@@ -1,9 +1,12 @@
 """Content-free leak guard for newly staged machine-generated journal lines.
 
 The private ``LEAK_PATTERNS`` regex remains authoritative and is never printed.  The only
-exception is an exact pound-sign match inside the top-level public ``question`` or
-``resolution_criterion`` field of a Metaculus/Manifold record.  All model-authored fields,
-all other matches, and all non-record JSON remain fail-closed.
+exception is an exact decoded pound-sign match anywhere in a valid public Metaculus or
+Manifold JSON record.  This narrowly works around a bad literal currency-symbol branch in
+the private pattern without weakening other matches: model reasoning may contain the
+pound sign, but any different sensitive match on the same line still blocks publication.
+Raw/non-record
+lines, invalid patterns, zero-width matches, and every other match remain fail-closed.
 
 The script reads additions directly from ``git diff --cached`` so historical public lines
 cannot lock future publication and matched content never enters workflow logs.
@@ -25,7 +28,6 @@ from pathlib import Path
 from typing import Any
 
 PUBLIC_PLATFORMS = frozenset({"manifold", "metaculus"})
-PUBLIC_CONTRACT_FIELDS = frozenset({("question",), ("resolution_criterion",)})
 PUBLIC_CURRENCY_SYMBOL = chr(0xA3)
 
 
@@ -107,10 +109,8 @@ def _ere_matches(pattern: str, value: str) -> tuple[str, ...]:
 def scan_added_line(
     pattern: str, path: str, added_line: int, text: str
 ) -> tuple[list[Finding], int]:
-    """Return blocked locations and the count of narrow public-field exceptions."""
+    """Return blocked locations and exact-pound exceptions in a public JSON record."""
     raw_matches = Counter(_ere_matches(pattern, text))
-    if not raw_matches:
-        return [], 0
     try:
         payload = json.loads(text)
     except (json.JSONDecodeError, TypeError):
@@ -125,16 +125,17 @@ def scan_added_line(
 
     source = payload.get("source")
     platform = str(source.get("platform", "")).lower() if isinstance(source, dict) else ""
+    public_record = platform in PUBLIC_PLATFORMS
     for field_path, value in _iter_strings(payload):
         for match in _ere_matches(pattern, value):
             if raw_matches[match] > 0:
                 raw_matches[match] -= 1
-            public_contract_currency = (
-                platform in PUBLIC_PLATFORMS
-                and field_path in PUBLIC_CONTRACT_FIELDS
+            public_record_currency = (
+                public_record
+                and PUBLIC_CURRENCY_SYMBOL in pattern
                 and match == PUBLIC_CURRENCY_SYMBOL
             )
-            if public_contract_currency:
+            if public_record_currency:
                 allowed += 1
             else:
                 findings.append(Finding(path, added_line, _field_label(field_path)))
@@ -194,8 +195,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("journal leak guard configuration missing", file=sys.stderr)
         return 2
     try:
-        # Compile/probe the exact GNU ERE even when this run has no staged additions.
-        _ere_matches(private_pattern, "")
+        # Compile/probe the exact GNU ERE even when this run has no staged additions. A
+        # zero-width match is unsafe because GNU grep -o emits no content for it; reject it
+        # rather than silently treating an unobservable match as clean.
+        if (
+            "" in _ere_matches(private_pattern, "")
+            or "" in _ere_matches(private_pattern, "!")
+        ):
+            raise GuardError("the private GNU ERE has a zero-width match")
         patch = staged_diff(args.paths, root=args.root.resolve())
         findings, additions, allowed = scan_patch(private_pattern, patch)
     except (GuardError, OSError):
@@ -216,7 +223,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     print(
         f"clean ({additions} staged added line(s); "
-        f"{allowed} public contract currency match(es) allowed)"
+        f"{allowed} public-record currency match(es) allowed)"
     )
     return 0
 
