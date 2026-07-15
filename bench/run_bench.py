@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import re
 import shlex
 import subprocess
@@ -44,6 +45,7 @@ from direct_agent import run_direct
 from run_bot import (
     BLIND_DISALLOWED,
     PROVIDERS,
+    UNKNOWN_METERED_COST,
     _model_from_cmd,
     angle_brief_section,
     build_system,
@@ -52,6 +54,7 @@ from run_bot import (
     openrouter_model_cmd,
     run_agent,
     triage,
+    with_credit_cap,
 )
 
 from forecast_scaffold.core import SCAFFOLD_VERSION, geo_mean_odds, load_config
@@ -108,10 +111,13 @@ _REFERENCE_DOMAINS = ("britannica.com", "wikipedia.org")
 
 
 def spec_as_of(spec: dict) -> str | None:
-    """The question's as-of instant: structured field first, else the brief's own line."""
+    """The question's as-of instant: explicit field, prospective freeze, then brief."""
     structured = str(spec.get("as_of") or "").strip()
     if structured:
         return structured
+    frozen_at = str(spec.get("frozen_at") or "").strip()
+    if frozen_at:
+        return frozen_at
     match = _AS_OF.search(str(spec.get("background") or ""))
     return match.group(1).strip() if match else None
 
@@ -202,16 +208,45 @@ def _telemetry_events(telemetry_path: Path | None) -> list[dict] | None:
 
 
 def _telemetry_fields(telemetry_path: Path | None) -> dict:
-    """Summarize observed TimeVault calls; failed calls still consumed research moves."""
+    """Summarize TimeVault attempts and the evidence they actually returned.
+
+    Attempt counts preserve the original mechanics telemetry.  Semantic counts are
+    emitted only when every successful relevant event carries the content-free result
+    metadata added in v0.4.22; this prevents a Wayback miss with explanatory text from
+    masquerading as a full read while keeping legacy rows honest (semantic fields null).
+    """
     events = _telemetry_events(telemetry_path)
     if events is None:
-        return {"n_searches": None, "n_full_reads": None, "queries": None}
+        return {
+            "n_searches": None,
+            "n_full_reads": None,
+            "queries": None,
+            "n_searches_succeeded": None,
+            "n_searches_unavailable": None,
+            "n_searches_with_results": None,
+            "n_full_reads_succeeded": None,
+            "n_full_reads_unavailable": None,
+            "n_unique_full_read_targets": None,
+            "n_tool_errors": None,
+            "semantic_telemetry_complete": None,
+        }
 
     n_searches = 0
     n_full_reads = 0
     queries: list[str] = []
+    successful_searches = 0
+    unavailable_searches = 0
+    searches_with_results = 0
+    successful_full_reads = 0
+    unavailable_full_reads = 0
+    full_read_targets: set[str] = set()
+    tool_errors = 0
+    semantic_complete = True
     for event in events:
         tool = event.get("tool")
+        success = event.get("success") is True
+        result = event.get("result")
+        result = result if isinstance(result, dict) else None
         if tool in _SEARCH_TOOLS:
             n_searches += 1
             arguments = event.get("arguments")
@@ -220,9 +255,51 @@ def _telemetry_fields(telemetry_path: Path | None) -> dict:
                 # Preserve the exact search string.  The list length, rather than its
                 # contents, is bounded so downstream query-mechanics work stays faithful.
                 queries.append(query)
+            if success:
+                if (result is None or "available" not in result
+                        or "result_count" not in result):
+                    semantic_complete = False
+                elif result.get("available") is True:
+                    successful_searches += 1
+                    if int(result.get("result_count") or 0) > 0:
+                        searches_with_results += 1
+                else:
+                    unavailable_searches += 1
         if tool in _FULL_READ_TOOLS:
             n_full_reads += 1
-    return {"n_searches": n_searches, "n_full_reads": n_full_reads, "queries": queries}
+            arguments = event.get("arguments")
+            target = None
+            if isinstance(arguments, dict):
+                target = arguments.get("url") or arguments.get("title")
+            if isinstance(target, str):
+                full_read_targets.add(target)
+            if success:
+                if result is None or "available" not in result:
+                    semantic_complete = False
+                elif result.get("available") is True:
+                    successful_full_reads += 1
+                else:
+                    unavailable_full_reads += 1
+        if event.get("success") is False:
+            tool_errors += 1
+    semantic_fields = {
+        "n_searches_succeeded": successful_searches,
+        "n_searches_unavailable": unavailable_searches,
+        "n_searches_with_results": searches_with_results,
+        "n_full_reads_succeeded": successful_full_reads,
+        "n_full_reads_unavailable": unavailable_full_reads,
+    }
+    if not semantic_complete:
+        semantic_fields = {key: None for key in semantic_fields}
+    return {
+        "n_searches": n_searches,
+        "n_full_reads": n_full_reads,
+        "queries": queries,
+        **semantic_fields,
+        "n_unique_full_read_targets": len(full_read_targets),
+        "n_tool_errors": tool_errors,
+        "semantic_telemetry_complete": semantic_complete,
+    }
 
 
 def _host_matches(host: str, domains: tuple[str, ...]) -> bool:
@@ -278,12 +355,31 @@ def _sanitize_source_classes(raw_classes: list[object]) -> list[str] | None:
 def _source_classes(
     payloads: list[dict], telemetry_path: Path | None
 ) -> list[str] | None:
-    """Infer observed source types, then merge any legacy/model-declared labels."""
+    """Infer source types conservatively from the strongest available provenance.
+
+    A TimeVault row has content-free tool telemetry, so only successful evidence-return
+    events earn classes. Model-declared labels and cited URLs cannot restore coverage for
+    a failed/unavailable tool call. Non-TimeVault rows lack that observation layer and
+    retain the legacy payload inference.
+    """
     raw_classes: list[object] = []
-    for event in _telemetry_events(telemetry_path) or []:
+    events = _telemetry_events(telemetry_path)
+    for event in events or []:
         if event.get("success") is not True:
             continue
         tool = event.get("tool")
+        result = event.get("result")
+        result = result if isinstance(result, dict) else None
+        if result is None:
+            continue
+        if (tool in _SEARCH_TOOLS and (
+            result.get("available") is not True
+            or int(result.get("result_count") or 0) <= 0
+        )):
+            continue
+        if (tool in (*_FULL_READ_TOOLS, "fetch_corpus_page")
+                and result.get("available") is not True):
+            continue
         arguments = event.get("arguments")
         arguments = arguments if isinstance(arguments, dict) else {}
         if tool == "search_news":
@@ -294,14 +390,15 @@ def _source_classes(
             raw_classes.append("corpus")
         elif tool == "fetch_page":
             raw_classes.append(_classify_source(arguments.get("url")))
-    for payload in payloads:
-        sources = payload.get("sources")
-        if isinstance(sources, list):
-            for source in sources:
-                raw_classes.append(_classify_source(source))
-        declared = payload.get("source_classes")
-        if isinstance(declared, list):
-            raw_classes.extend(declared)
+    if events is None:
+        for payload in payloads:
+            sources = payload.get("sources")
+            if isinstance(sources, list):
+                for source in sources:
+                    raw_classes.append(_classify_source(source))
+            declared = payload.get("source_classes")
+            if isinstance(declared, list):
+                raw_classes.extend(declared)
     return _sanitize_source_classes(raw_classes)
 
 # The tail every bench system prompt shares: the mandatory output contract (a fenced json
@@ -385,14 +482,22 @@ def build_bench_brief(spec: dict, leakfree: str = "off") -> str:
 def _run_forecast(
     system: str | None, brief: str, args: argparse.Namespace, *,
     direct: bool = False, direct_model: str = "", agent_cmd: str = "",
+    remaining_budget: float | None = None,
 ) -> tuple[float | None, dict, str, float, list[str]]:
     """One binary forecast with a single repair retry.
 
     Runs the agent (the CLI ``run_agent`` or the tool-less ``run_direct`` transport),
     extracts the fenced-json payload, and accepts a probability strictly inside (0, 1); an
-    invalid payload triggers one corrective retry. Returns (probability|None, payload,
-    model, cost, errors). Shared by the single-prompt tiers and by every angle sub-run of
-    the angles tier, so all arms get identical extraction, validation, and retry behavior."""
+    invalid *completed* payload triggers one corrective retry. Transport failures and
+    timeouts fail closed after the first call: retrying a hung agent can silently double
+    both wall time and unknown spend. Returns (probability|None, payload, model, cost,
+    errors). Shared by the single-prompt tiers and by every angle sub-run of the angles
+    tier, so all arms get identical extraction, validation, and retry behavior.
+
+    When ``remaining_budget`` is set, every CLI call receives the decreasing native
+    Claude cap. A transport failure marks the invocation's usage uncertain so the caller
+    can reserve the whole remainder rather than dispatch more work.
+    """
     probability: float | None = None
     payload: dict = {}
     model = ""
@@ -409,13 +514,54 @@ def _run_forecast(
                     prompt, system, direct_model, args.timeout
                 )
             else:
-                output, attempt_cost, model = run_agent(
-                    agent_cmd, prompt, system, args.timeout, args.provider
-                )
+                call_cmd = agent_cmd
+                if remaining_budget is not None:
+                    call_remaining = remaining_budget - cost
+                    if call_remaining <= 0:
+                        errors = ["budget exhausted before corrective call"]
+                        break
+                    call_cmd = with_credit_cap(call_cmd, call_remaining)
+                if remaining_budget is not None and args.provider == "openrouter":
+                    output, attempt_cost, model = run_agent(
+                        call_cmd, prompt, system, args.timeout, args.provider,
+                        strict_metering=True,
+                    )
+                else:
+                    output, attempt_cost, model = run_agent(
+                        call_cmd, prompt, system, args.timeout, args.provider
+                    )
+                if remaining_budget is not None and (
+                    attempt_cost == UNKNOWN_METERED_COST
+                    or not math.isfinite(attempt_cost)
+                    or attempt_cost <= 0
+                ):
+                    args._budget_uncertain = True
+                    errors = [
+                        "budgeted agent call returned no positive metered cost; "
+                        "reserving the remaining allowance"
+                    ]
+                    break
             cost += attempt_cost
-            payload = extract_json(output)
+            if remaining_budget is not None:
+                args._known_job_cost = (
+                    float(getattr(args, "_known_job_cost", 0.0) or 0.0)
+                    + attempt_cost
+                )
+            extracted = extract_json(output)
+            if not isinstance(extracted, dict):
+                raise ValueError(
+                    f"fenced json payload must be an object, got {type(extracted).__name__}"
+                )
+            payload = extracted
             candidate = payload.get("probability")
-        except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
+        except (RuntimeError, subprocess.TimeoutExpired) as exc:
+            if remaining_budget is not None:
+                args._budget_uncertain = True
+            errors = [str(exc)[:300]]
+            break
+        except ValueError as exc:
+            # The subprocess completed and reported its cost. Only output-contract
+            # failures are safe to repair, using the reduced native credit remainder.
             errors = [str(exc)[:300]]
             continue
         if isinstance(candidate, int | float) and 0 < float(candidate) < 1:
@@ -455,11 +601,35 @@ def _forecast_one(
         openrouter_model_cmd(args.agent_cmd)
         if args.provider in ("openrouter", "openrouter-direct") else args.agent_cmd
     )
+    job_budget = float(getattr(args, "job_budget", 0.0) or 0.0)
     started = datetime.now(UTC)
     cost = 0.0
     if tier == "auto":
-        resolved, triage_cost = triage(base_cmd, brief, args.timeout, args.provider)
+        triage_cmd = with_credit_cap(base_cmd, job_budget) if job_budget > 0 else base_cmd
+        try:
+            resolved, triage_cost = triage(
+                triage_cmd, brief, args.timeout, args.provider,
+                fail_closed=job_budget > 0,
+                strict_metering=job_budget > 0,
+            )
+        except (RuntimeError, subprocess.TimeoutExpired):
+            if job_budget > 0:
+                args._budget_uncertain = True
+            raise
+        if job_budget > 0 and (
+            triage_cost == UNKNOWN_METERED_COST
+            or not math.isfinite(triage_cost)
+            or triage_cost <= 0
+        ):
+            args._budget_uncertain = True
+            args._failed_job_cost = cost
+            print("    FAILED triage: metered cost unavailable; budget remainder reserved")
+            return None
         cost += triage_cost
+        if job_budget > 0:
+            args._known_job_cost = (
+                float(getattr(args, "_known_job_cost", 0.0) or 0.0) + triage_cost
+            )
         effort = f"{resolved} (auto)"
         if args.auto_mode == "router":
             # The router IS the thing under test; its forecast at the routed tier would
@@ -473,6 +643,14 @@ def _forecast_one(
                 "cost_usd": round(cost, 4), "model": "", "provider": args.provider,
                 "scaffold_version": SCAFFOLD_VERSION, "leakfree": leakfree,
                 "n_searches": None, "n_full_reads": None, "queries": None,
+                "n_searches_succeeded": None,
+                "n_searches_unavailable": None,
+                "n_searches_with_results": None,
+                "n_full_reads_succeeded": None,
+                "n_full_reads_unavailable": None,
+                "n_unique_full_read_targets": None,
+                "n_tool_errors": None,
+                "semantic_telemetry_complete": None,
                 "source_classes": None,
                 "duration_s": round((datetime.now(UTC) - started).total_seconds(), 1),
                 "at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -540,9 +718,12 @@ def _forecast_one(
         for letter in angle_letters:
             angle_system = base_system + angle_brief_section(letter, sections[letter])
             p_angle, angle_payload, angle_model, sub_cost, errors = _run_forecast(
-                angle_system, brief, args, agent_cmd=agent_cmd)
+                angle_system, brief, args, agent_cmd=agent_cmd,
+                remaining_budget=(job_budget - cost) if job_budget > 0 else None,
+            )
             cost += sub_cost  # each angle sub-run's spend rolls into the single row's cost
             if p_angle is None:
+                args._failed_job_cost = cost
                 print(f"    FAILED angle {letter} after retry: {errors}")
                 return None
             per_angle.append(p_angle)
@@ -553,9 +734,13 @@ def _forecast_one(
         raw_draws = per_angle
     else:
         probability, payload, model, loop_cost, errors = _run_forecast(
-            system, brief, args, direct=direct, direct_model=direct_model, agent_cmd=agent_cmd)
+            system, brief, args, direct=direct, direct_model=direct_model,
+            agent_cmd=agent_cmd,
+            remaining_budget=(job_budget - cost) if job_budget > 0 else None,
+        )
         cost += loop_cost
         if probability is None:
+            args._failed_job_cost = cost
             print(f"    FAILED after retry: {errors}")
             return None
         telemetry_payloads.append(payload)
@@ -584,6 +769,16 @@ def _forecast_one(
         "n_searches": research_telemetry["n_searches"],
         "n_full_reads": research_telemetry["n_full_reads"],
         "queries": research_telemetry["queries"],
+        "n_searches_succeeded": research_telemetry["n_searches_succeeded"],
+        "n_searches_unavailable": research_telemetry["n_searches_unavailable"],
+        "n_searches_with_results": research_telemetry["n_searches_with_results"],
+        "n_full_reads_succeeded": research_telemetry["n_full_reads_succeeded"],
+        "n_full_reads_unavailable": research_telemetry["n_full_reads_unavailable"],
+        "n_unique_full_read_targets": research_telemetry["n_unique_full_read_targets"],
+        "n_tool_errors": research_telemetry["n_tool_errors"],
+        "semantic_telemetry_complete": research_telemetry[
+            "semantic_telemetry_complete"
+        ],
         "source_classes": _source_classes(telemetry_payloads, telemetry_path),
         "reasoning": str(payload.get("reasoning", ""))[:2000] or None,
         "duration_s": round((datetime.now(UTC) - started).total_seconds(), 1),
@@ -607,7 +802,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--tiers", default="low,medium,high,auto")
     parser.add_argument("--limit", type=int, default=0, help="max questions (0 = all)")
     parser.add_argument("--provider", default="subscription", choices=BENCH_PROVIDERS)
-    parser.add_argument("--agent-cmd", default="claude -p", help="headless agent command")
+    parser.add_argument("--agent-cmd", default="claude -p --output-format json",
+                        help="headless agent command")
     parser.add_argument("--timeout", type=int, default=1200)
     parser.add_argument("--concurrency", type=int, default=1,
                         help="how many forecasts to run at once (independent agent "
@@ -625,9 +821,10 @@ def main(argv: list[str] | None = None) -> int:
                         help="cap independent runs per tier (0 = use config); e.g. 1 for a "
                              "single-run ablation cell")
     parser.add_argument("--budget", type=float, default=0.0,
-                        help="stop dispatching new forecasts once notional spend (envelope "
-                             "cost_usd) reaches this; skipped jobs stay un-done, so rerunning "
-                             "the same command resumes them (0 = no cap)")
+                        help="hard invocation spend cap for Claude CLI transports: requires "
+                             "--concurrency 1, sends the decreasing remainder through the "
+                             "native --max-budget-usd flag, and reserves unknown usage; "
+                             "skipped jobs stay resumable (0 = no cap)")
     parser.add_argument("--leakfree", default="off", choices=LEAKFREE_MODES,
                         help="pastcast leak control: 'none' strips every research and "
                              "filesystem tool (frozen-dossier enforcement); 'timevault' "
@@ -650,6 +847,38 @@ def main(argv: list[str] | None = None) -> int:
                              "skills/forecast/references/research-angles.md. Ignored by "
                              "every other tier")
     args = parser.parse_args(argv)
+
+    if not math.isfinite(args.budget) or args.budget < 0:
+        parser.error("--budget must be finite and non-negative")
+    if args.budget > 0:
+        if args.provider == "openrouter-direct":
+            parser.error(
+                "--provider openrouter-direct has no native dollar cap; use the Claude "
+                "CLI transport for a hard --budget"
+            )
+        if args.concurrency != 1:
+            parser.error(
+                "a hard --budget requires --concurrency 1 so concurrent subprocesses "
+                "cannot each reserve the same remainder"
+            )
+        executable = Path(shlex.split(args.agent_cmd)[0]).stem.lower()
+        if executable != "claude":
+            parser.error(
+                "a hard --budget requires a Claude CLI --agent-cmd so "
+                "--max-budget-usd can bind every subprocess"
+            )
+        tokens = shlex.split(args.agent_cmd)
+        output_formats: list[str] = []
+        for index, token in enumerate(tokens):
+            if token == "--output-format" and index + 1 < len(tokens):
+                output_formats.append(tokens[index + 1].lower())
+            elif token.startswith("--output-format="):
+                output_formats.append(token.split("=", 1)[1].lower())
+        if not output_formats or output_formats[-1] != "json":
+            parser.error(
+                "a hard --budget requires --output-format json so every successful "
+                "Claude call returns a metered result envelope"
+            )
 
     tiers = [t.strip() for t in args.tiers.split(",") if t.strip()]
     unknown = [t for t in tiers if t not in TIERS]
@@ -742,14 +971,42 @@ def main(argv: list[str] | None = None) -> int:
           f"at concurrency {args.concurrency} -> {results_path}")
 
     def work(job: tuple[dict, str, int]) -> tuple[dict, str, dict | None, str | None]:
+        nonlocal spent
         spec, tier, run = job
+        args._failed_job_cost = 0.0
+        args._known_job_cost = 0.0
         if args.budget > 0:
             with lock:
                 if spent >= args.budget:
                     return spec, tier, None, "budget"
+                args.job_budget = args.budget - spent
         try:
-            return spec, tier, forecast_one(spec, tier, args, run), None
+            row = forecast_one(spec, tier, args, run)
+            if args.budget > 0:
+                with lock:
+                    if row is None and getattr(args, "_budget_uncertain", False):
+                        spent = args.budget
+                    elif row is None:
+                        spent += min(
+                            float(getattr(args, "_known_job_cost", 0.0) or 0.0),
+                            args.budget - spent,
+                        )
+                    else:
+                        # Account before returning the future. With one budgeted worker,
+                        # the next queued job now sees the reduced remainder even if it
+                        # starts before the main thread prints this completion.
+                        spent += float(getattr(args, "_known_job_cost", 0.0) or 0.0)
+            return spec, tier, row, None
         except Exception as exc:  # noqa: BLE001 - one crashed job must not kill the pool
+            if args.budget > 0:
+                with lock:
+                    if getattr(args, "_budget_uncertain", False):
+                        spent = args.budget
+                    else:
+                        spent += min(
+                            float(getattr(args, "_known_job_cost", 0.0) or 0.0),
+                            args.budget - spent,
+                        )
             return spec, tier, None, str(exc)[:200]
 
     # Threads (not processes): each job blocks on a claude subprocess, so the GIL is
@@ -757,6 +1014,10 @@ def main(argv: list[str] | None = None) -> int:
     # shared journal handle, the running totals, and stdout so lines don't interleave.
     lock = threading.Lock()
     spent = 0.0
+    args.job_budget = 0.0
+    args._budget_uncertain = False
+    args._failed_job_cost = 0.0
+    args._known_job_cost = 0.0
     failures = 0
     skipped = 0
     completed = 0
@@ -778,11 +1039,15 @@ def main(argv: list[str] | None = None) -> int:
                     continue
                 fh.write(json.dumps(row, ensure_ascii=False) + "\n")
                 fh.flush()
-                spent += row["cost_usd"]
+                if args.budget <= 0:
+                    spent += row["cost_usd"]
                 shown = (f"-> {row['effort']}" if row.get("router_only")
                          else f"p={row['probability']:.2f}")
+                crowd_value = (spec.get("crowd") or {}).get("value")
+                crowd_shown = (f"{float(crowd_value):.2f}"
+                               if crowd_value is not None else "n/a")
                 print(f"[{completed}/{len(jobs)}] {tier:<7} {shown} "
-                      f"crowd={spec['crowd']['value']:.2f} ${row['cost_usd']:.2f} "
+                      f"crowd={crowd_shown} ${row['cost_usd']:.2f} "
                       f"(total ${spent:.2f}) {title}")
     if skipped:
         print(f"budget cap ${args.budget:.2f} reached: {skipped} job(s) left un-run "

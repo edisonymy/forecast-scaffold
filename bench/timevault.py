@@ -12,9 +12,12 @@ Sources and their guarantee strength:
   because Wayback's own redirects resolve to the NEAREST capture — which can be after the
   requested instant — the effective URL's embedded timestamp is re-verified post-redirect.
   Content is byte-identical to what was live at capture time. Strongest guarantee.
-- **Wikipedia** (``wikipedia_asof``): the revision API returns the article exactly as it
-  stood at the cutoff (``rvstart=cutoff, rvdir=older``); the revision timestamp is
-  verified. Strong guarantee; note the title *search* fallback ranks by today's index.
+- **Wikipedia** (``wikipedia_asof``): the exact requested title is converted directly to
+  an ``en.wikipedia.org/wiki/...`` URL and retrieved only through ``fetch_page``'s
+  cutoff-bounded Wayback path. The live MediaWiki API is never queried: even an apparently
+  historical revision query first resolves today's title to today's page ID, leaking
+  future page moves. A missing pre-cutoff capture is unavailable. Strong guarantee,
+  archive coverage permitting.
 - **GDELT DOC 2.0** (``search_news``): full-text news discovery inside a window that ends
   at the cutoff (server-side ``ENDDATETIME``), date-sorted (not relevance-sorted, to avoid
   ranking informed by later importance); each hit's ``seendate`` is re-checked client-side.
@@ -29,9 +32,9 @@ Sources and their guarantee strength:
   documented scrape-window caveat. Route discovered URLs through ``fetch_page`` for
   pre-cutoff content. Absent a configured corpus, both methods raise a clear error.
 
-Residual leak surfaces, documented not hidden: the model's own weights (choose questions
-that RESOLVE after the model's training cutoff — a set-selection duty, not a tool duty),
-and Wikipedia title-search ranking. There is no live-web path in this module at all.
+Residual leak surface, documented not hidden: the model's own weights (choose questions
+that RESOLVE after the model's training cutoff — a set-selection duty, not a tool duty).
+There is no live-web path in this module at all.
 """
 
 from __future__ import annotations
@@ -42,6 +45,7 @@ import gzip
 import json
 import re
 import sqlite3
+import sys
 import time
 import urllib.error
 import urllib.parse
@@ -54,10 +58,12 @@ USER_AGENT = "forecast-scaffold-timevault/0.1 (leak-free pastcast research)"
 WAYBACK_CDX = "https://web.archive.org/cdx/search/cdx"
 WAYBACK_SNAP = "https://web.archive.org/web"
 GDELT_DOC = "https://api.gdeltproject.org/api/v2/doc/doc"
-WIKI_API = "https://en.wikipedia.org/w/api.php"
 
-_SNAP_TS = re.compile(r"/web/(\d{14})")
+_SNAP_REPLAY = re.compile(r"^/web/(\d{14})id_/(https?://.+)$")
 _GDELT_RATELIMIT = "limit requests"
+_TRANSIENT_HTTP_STATUS = frozenset({408, 425, 429, 500, 502, 503, 504})
+_HTTP_ATTEMPTS = 3
+_MAX_RETRY_AFTER_S = 8.0
 
 
 class LeakError(RuntimeError):
@@ -170,14 +176,47 @@ class TimeVault:
 
         Wayback's ``id_`` mode returns the EXACT bytes captured — for many snapshots
         that is the origin server's gzip stream, so decompress on magic bytes (urllib
-        never auto-decompresses)."""
+        never auto-decompresses).
+
+        The three public archive services occasionally return 429/5xx responses or
+        stall a read.  A single such blip used to turn an otherwise discoverable source
+        into an empty research run.  Retry only transport-level transient failures;
+        timestamp validation remains downstream and is never retried or weakened.
+        """
         req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-        with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310
-            raw = resp.read()
-            if raw[:2] == b"\x1f\x8b":
-                with contextlib.suppress(OSError, EOFError):
-                    raw = gzip.decompress(raw)
-            return raw.decode("utf-8", errors="replace"), str(resp.geturl())
+        for attempt in range(_HTTP_ATTEMPTS):
+            try:
+                with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # noqa: S310
+                    effective = str(resp.geturl())
+                    if (
+                        urllib.parse.urlparse(url).scheme == "https"
+                        and urllib.parse.urlparse(effective).scheme != "https"
+                    ):
+                        raise LeakError(
+                            "HTTPS research transport downgraded after redirect; "
+                            f"refusing effective URL {effective!r}"
+                        )
+                    raw = resp.read()
+                    if raw[:2] == b"\x1f\x8b":
+                        with contextlib.suppress(OSError, EOFError):
+                            raw = gzip.decompress(raw)
+                    return raw.decode("utf-8", errors="replace"), effective
+            except urllib.error.HTTPError as exc:
+                if exc.code not in _TRANSIENT_HTTP_STATUS or attempt + 1 >= _HTTP_ATTEMPTS:
+                    raise
+                retry_after = exc.headers.get("Retry-After") if exc.headers else None
+                try:
+                    delay = min(float(retry_after), _MAX_RETRY_AFTER_S)
+                except (TypeError, ValueError):
+                    # GDELT documents a five-second request interval; use that for 429,
+                    # and a short exponential delay for archive-server 5xx responses.
+                    delay = 6.0 if exc.code == 429 else 0.5 * (2**attempt)
+                time.sleep(max(0.0, delay))
+            except (TimeoutError, ConnectionError, urllib.error.URLError):
+                if attempt + 1 >= _HTTP_ATTEMPTS:
+                    raise
+                time.sleep(0.5 * (2**attempt))
+        raise AssertionError("unreachable transport retry loop")
 
     # -- tools --------------------------------------------------------------------------
     def search_news(self, query: str, days_back: int = 120, max_results: int = 10) -> dict:
@@ -207,10 +246,16 @@ class TimeVault:
             data = json.loads(body)
         except json.JSONDecodeError:
             return {"query": query, "articles": [],
+                    "response_valid": False,
                     "note": f"GDELT unavailable ({body.strip()[:120]!r}); "
                             "try fetch_page or wikipedia_asof instead"}
+        raw_articles = data.get("articles") if isinstance(data, dict) else None
+        if not isinstance(raw_articles, list):
+            return {"query": query, "articles": [], "response_valid": False,
+                    "note": "GDELT returned no valid article-list payload; "
+                            "try fetch_page or wikipedia_asof instead"}
         articles = []
-        for art in data.get("articles") or []:
+        for art in raw_articles:
             seen = str(art.get("seendate") or "")
             try:
                 seen_dt = self._assert_pre_cutoff(seen, f"article {art.get('url')}")
@@ -225,6 +270,7 @@ class TimeVault:
             })
         return {"query": query,
                 "window": f"{start_dt.date()} -> {self.cutoff.date()}",
+                "response_valid": True,
                 "articles": articles}
 
     def fetch_page(self, url: str, max_chars: int = 8000) -> dict:
@@ -232,7 +278,7 @@ class TimeVault:
         max_chars = max(500, min(int(max_chars), 30000))
         params = urllib.parse.urlencode({
             "url": url, "to": _ts14(self.cutoff), "limit": "-1", "output": "json",
-            "filter": "statuscode:200",
+            "filter": "statuscode:200", "matchType": "exact",
         })
         body, _ = self._http(f"{WAYBACK_CDX}?{params}")
         try:
@@ -245,11 +291,30 @@ class TimeVault:
                             f"{self.cutoff.date()} — this page is unavailable pre-cutoff."}
         stamp, original = str(rows[-1][1]), str(rows[-1][2])
         self._assert_pre_cutoff(stamp, f"CDX capture of {url}")
+        if original != url:
+            raise LeakError(
+                "CDX did not preserve the exact requested historical URL; "
+                f"refusing {original!r} for {url!r}"
+            )
         snap_body, effective = self._http(f"{WAYBACK_SNAP}/{stamp}id_/{original}")
         # Wayback redirects resolve to the NEAREST capture, which can postdate the request
-        # — the effective URL's embedded stamp is the authoritative one. Verify it.
-        match = _SNAP_TS.search(effective)
-        final_stamp = match.group(1) if match else stamp
+        # — or can escape replay entirely to the live origin.  The effective URL is the
+        # authoritative provenance: it must still be the exact ``id_`` replay shape, not
+        # a current Wayback calendar/timemap/toolbar page that merely contains a stamp.
+        # Falling back to the requested stamp when the final URL had no stamp admitted
+        # live bytes.
+        parsed_effective = urllib.parse.urlparse(effective)
+        match = _SNAP_REPLAY.fullmatch(parsed_effective.path)
+        if (
+            parsed_effective.scheme != "https"
+            or parsed_effective.hostname != "web.archive.org"
+            or match is None
+        ):
+            raise LeakError(
+                "served snapshot escaped the exact stamped web.archive.org id_ replay; "
+                f"refusing effective URL {effective!r}"
+            )
+        final_stamp = match.group(1)
         final_dt = self._assert_pre_cutoff(final_stamp, f"served snapshot of {url}")
         text = html_to_text(snap_body)
         truncated = len(text) > max_chars
@@ -261,40 +326,28 @@ class TimeVault:
         }
 
     def wikipedia_asof(self, title: str, max_chars: int = 8000) -> dict:
-        """The Wikipedia article exactly as it stood at the cutoff (revision history)."""
-        max_chars = max(500, min(int(max_chars), 30000))
-        params = urllib.parse.urlencode({
-            "action": "query", "prop": "revisions", "titles": title, "redirects": "1",
-            "rvlimit": "1", "rvdir": "older", "rvslots": "main",
-            "rvstart": self.cutoff.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "rvprop": "timestamp|ids|content",
-            "format": "json", "formatversion": "2",
-        })
-        body, _ = self._http(f"{WIKI_API}?{params}")
-        data = json.loads(body)
-        pages = (data.get("query") or {}).get("pages") or []
-        if not pages or pages[0].get("missing") or not pages[0].get("revisions"):
-            suggest_params = urllib.parse.urlencode({
-                "action": "opensearch", "search": title, "limit": "5", "format": "json",
-            })
-            sbody, _ = self._http(f"{WIKI_API}?{suggest_params}")
-            try:
-                suggestions = json.loads(sbody)[1]
-            except (json.JSONDecodeError, IndexError, TypeError):
-                suggestions = []
-            return {"title": title, "revision_at": None,
-                    "text": f"No article (or no pre-cutoff revision) for {title!r}.",
-                    "did_you_mean": suggestions}
-        page = pages[0]
-        rev = page["revisions"][0]
-        rev_dt = self._assert_pre_cutoff(str(rev["timestamp"]), f"revision of {title!r}")
-        content = str(((rev.get("slots") or {}).get("main") or {}).get("content") or "")
-        truncated = len(content) > max_chars
+        """The exact Wikipedia title URL's last archived pre-cutoff snapshot.
+
+        MediaWiki's revision API is intentionally not used: ``titles=`` is resolved
+        against today's title->page mapping before ``rvstart`` filters revisions, so a
+        post-cutoff move can reveal a future title while returning old content.
+        """
+        clean_title = str(title).strip()
+        if not clean_title:
+            raise ValueError("Wikipedia title must not be blank")
+        encoded_title = urllib.parse.quote(
+            clean_title.replace(" ", "_"), safe="()_-/"
+        )
+        page = self.fetch_page(
+            f"https://en.wikipedia.org/wiki/{encoded_title}",
+            max_chars=max_chars,
+        )
         return {
-            "title": page.get("title", title),
-            "revision_at": rev_dt.isoformat(),
-            "truncated": truncated,
-            "text": content[:max_chars],
+            "title": clean_title,
+            "archived_at": page.get("archived_at"),
+            "truncated": page.get("truncated", False),
+            "text": page.get("text", ""),
+            "retrieval": "wayback_exact_title",
         }
 
     # -- BTF-2 corpus (optional; the SOTA teacher's frozen scrape manifest) -------------
@@ -328,22 +381,20 @@ class TimeVault:
         toks = [t for t in re.split(r"[^0-9A-Za-z]+", str(query).lower()) if len(t) > 1]
         return " OR ".join(f'"{t}"' for t in toks)
 
-    def _corpus_date_gate(self, raw: str, what: str,
-                          include_undated: bool) -> tuple[bool, str | None]:
+    def _corpus_date_gate(self, raw: str, what: str) -> tuple[bool, str | None]:
         """Same choke point as every other source. -> (keep?, YYYY-MM-DD or None).
 
-        Post-cutoff scrape -> dropped (leak-safe). Unparseable/empty date -> dropped
-        unless include_undated (documented caveat: the manifest date is a crawl time)."""
+        Post-cutoff and unparseable/empty scrape dates are both dropped fail-closed. The
+        agent cannot opt an undated row back into a time-locked result set."""
         try:
             dt = self._assert_pre_cutoff(str(raw or ""), what)
             return True, dt.strftime("%Y-%m-%d")
         except LeakError:
             return False, None
         except ValueError:
-            return include_undated, None
+            return False, None
 
-    def search_corpus(self, query: str, limit: int = 8,
-                      include_undated: bool = False) -> list[dict]:
+    def search_corpus(self, query: str, limit: int = 8) -> list[dict]:
         """Keyword-search the teacher's scrape manifest. Returns discovery metadata only —
         {url, title, date, snippet} — never page content (route urls through fetch_page).
         Every returned url was crawled on or before the as-of instant; the caveat field
@@ -369,8 +420,7 @@ class TimeVault:
             ).fetchall()
         out: list[dict] = []
         for url, title, date_scraped, snip in rows:
-            keep, date = self._corpus_date_gate(date_scraped, f"corpus hit {url}",
-                                                include_undated)
+            keep, date = self._corpus_date_gate(date_scraped, f"corpus hit {url}")
             if not keep:
                 continue
             out.append({"url": url, "title": title, "date": date,
@@ -379,8 +429,7 @@ class TimeVault:
                 break
         return out
 
-    def fetch_corpus_page(self, url: str, max_chars: int = 8000,
-                          include_undated: bool = False) -> dict:
+    def fetch_corpus_page(self, url: str, max_chars: int = 8000) -> dict:
         """The stored manifest record for a url. NOTE: the dataset ships no page body, so
         'text' is URL-derived tokens, not article content — fetch_page (time-locked
         Wayback) is the path to the real pre-cutoff content. Respects the cutoff: a url
@@ -400,12 +449,9 @@ class TimeVault:
             date = self._assert_pre_cutoff(str(date_scraped or ""),
                                            f"corpus page {url}").strftime("%Y-%m-%d")
         except ValueError:
-            if not include_undated:
-                raise LeakError(
-                    f"corpus page {url} has no parseable scrape date; excluded by default "
-                    "(pass include_undated to override — documented caveat)"
-                ) from None
-            date = None
+            raise LeakError(
+                f"corpus page {url} has no parseable scrape date; excluded fail-closed"
+            ) from None
         text = text or ""
         truncated = len(text) > max_chars
         return {"url": url, "found": True, "title": title, "date": date,
@@ -425,6 +471,8 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     vault = TimeVault(parse_cutoff(args.cutoff), corpus_db=args.corpus)
     result = getattr(vault, args.tool)(args.arg)
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     print(json.dumps(result, ensure_ascii=False, indent=1))
     return 0
 

@@ -14,6 +14,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import shlex
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -99,6 +101,218 @@ class TestPlainSystemPrompt:
         # the safety/leak-hygiene sections
         assert "## Untrusted input (security)" in system
         assert "## Blind mode (mandatory)" in system
+
+
+class TestRepairAndBudgetSafety:
+    def test_timeout_is_not_retried_and_marks_budget_unknown(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        calls: list[str] = []
+
+        def timeout_agent(
+            cmd: str, _prompt: str, _system: str | None, timeout: int,
+            _provider: str = "subscription",
+        ) -> tuple[str, float, str]:
+            calls.append(cmd)
+            raise subprocess.TimeoutExpired(cmd=cmd, timeout=timeout)
+
+        monkeypatch.setattr(run_bench, "run_agent", timeout_agent)
+        args = base_args(budget=1.0, job_budget=1.0)
+        row = run_bench.forecast_one(SPEC, "plain", args)
+
+        assert row is None
+        assert len(calls) == 1
+        tokens = shlex.split(calls[0])
+        assert tokens[tokens.index("--max-budget-usd") + 1] == "1"
+        assert args._budget_uncertain is True
+
+    def test_completed_invalid_output_repairs_under_decreasing_native_cap(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        agent = ScriptedAgent(["not fenced json", PAYLOAD])
+        monkeypatch.setattr(run_bench, "run_agent", agent)
+
+        row = run_bench.forecast_one(
+            SPEC, "plain", base_args(budget=1.0, job_budget=1.0)
+        )
+
+        assert row is not None
+        assert len(agent.calls) == 2
+        caps: list[float] = []
+        for call in agent.calls:
+            tokens = shlex.split(call["cmd"])
+            caps.append(float(tokens[tokens.index("--max-budget-usd") + 1]))
+        assert caps == pytest.approx([1.0, 0.99])
+
+    def test_unknown_usage_reserves_remainder_and_stops_queued_jobs(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        specs = [SPEC, {**SPEC, "id": "btf2:q2", "question": "Will Y happen?"}]
+        set_path = tmp_path / "set.jsonl"
+        set_path.write_text(
+            "".join(json.dumps(spec) + "\n" for spec in specs), encoding="utf-8"
+        )
+        monkeypatch.setattr(run_bench, "RESULTS_DIR", tmp_path / "results")
+        calls = 0
+
+        def timeout_agent(
+            cmd: str, _prompt: str, _system: str | None, timeout: int,
+            _provider: str = "subscription",
+        ) -> tuple[str, float, str]:
+            nonlocal calls
+            calls += 1
+            raise subprocess.TimeoutExpired(cmd=cmd, timeout=timeout)
+
+        monkeypatch.setattr(run_bench, "run_agent", timeout_agent)
+
+        code = run_bench.main([
+            str(set_path), "--tiers", "plain", "--max-runs", "1", "--budget", "1",
+        ])
+
+        assert code == 1
+        assert calls == 1
+        assert "budget cap $1.00 reached: 1 job(s) left un-run" in capsys.readouterr().out
+
+    def test_zero_metering_reserves_remainder_and_stops_queued_jobs(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        specs = [SPEC, {**SPEC, "id": "btf2:q2", "question": "Will Y happen?"}]
+        set_path = tmp_path / "set.jsonl"
+        set_path.write_text(
+            "".join(json.dumps(spec) + "\n" for spec in specs), encoding="utf-8"
+        )
+        monkeypatch.setattr(run_bench, "RESULTS_DIR", tmp_path / "results")
+        calls = 0
+
+        def unmetered_agent(
+            _cmd: str, _prompt: str, _system: str | None, _timeout: int,
+            _provider: str = "subscription",
+        ) -> tuple[str, float, str]:
+            nonlocal calls
+            calls += 1
+            return PAYLOAD, 0.0, "claude-opus-4-6"
+
+        monkeypatch.setattr(run_bench, "run_agent", unmetered_agent)
+        code = run_bench.main([
+            str(set_path), "--tiers", "plain", "--max-runs", "1", "--budget", "1",
+        ])
+
+        assert code == 1
+        assert calls == 1
+        assert "budget cap $1.00 reached: 1 job(s) left un-run" in capsys.readouterr().out
+
+    def test_unknown_auto_triage_metering_reserves_remainder(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        specs = [SPEC, {**SPEC, "id": "btf2:q2", "question": "Will Y happen?"}]
+        set_path = tmp_path / "set.jsonl"
+        set_path.write_text(
+            "".join(json.dumps(spec) + "\n" for spec in specs), encoding="utf-8"
+        )
+        monkeypatch.setattr(run_bench, "RESULTS_DIR", tmp_path / "results")
+        triage_calls = 0
+
+        def unknown_triage(*_args: Any, **_kwargs: Any) -> tuple[str, float]:
+            nonlocal triage_calls
+            triage_calls += 1
+            return "high", run_bench.UNKNOWN_METERED_COST
+
+        monkeypatch.setattr(run_bench, "triage", unknown_triage)
+        monkeypatch.setattr(
+            run_bench, "run_agent",
+            lambda *_args, **_kwargs: pytest.fail("forecast must not follow unknown triage"),
+        )
+
+        code = run_bench.main([
+            str(set_path), "--tiers", "auto", "--max-runs", "1", "--budget", "1",
+        ])
+
+        assert code == 1
+        assert triage_calls == 1
+        assert "budget cap $1.00 reached: 1 job(s) left un-run" in capsys.readouterr().out
+
+    def test_metered_nonobject_auto_triage_reduces_next_job_cap(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+    ) -> None:
+        specs = [SPEC, {**SPEC, "id": "btf2:q2", "question": "Will Y happen?"}]
+        set_path = tmp_path / "set.jsonl"
+        set_path.write_text(
+            "".join(json.dumps(spec) + "\n" for spec in specs), encoding="utf-8"
+        )
+        monkeypatch.setattr(run_bench, "RESULTS_DIR", tmp_path / "results")
+        outputs = ["```json\n[]\n```", fenced({"tier": "low"})]
+        caps: list[float] = []
+
+        def metered_triage_agent(
+            cmd: str, _prompt: str, _system: str | None, _timeout: int,
+            _provider: str = "subscription", **_kwargs: Any,
+        ) -> tuple[str, float, str]:
+            tokens = shlex.split(cmd)
+            caps.append(float(tokens[tokens.index("--max-budget-usd") + 1]))
+            return outputs.pop(0), 0.2, "claude-opus-4-6"
+
+        monkeypatch.setitem(
+            run_bench.triage.__globals__, "run_agent", metered_triage_agent
+        )
+        code = run_bench.main([
+            str(set_path), "--tiers", "auto", "--max-runs", "1", "--budget", "1",
+        ])
+
+        assert code == 0
+        assert caps == pytest.approx([1.0, 0.8])
+
+    def test_metered_nonobject_payload_cost_reduces_next_job_cap(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+    ) -> None:
+        specs = [SPEC, {**SPEC, "id": "btf2:q2", "question": "Will Y happen?"}]
+        set_path = tmp_path / "set.jsonl"
+        set_path.write_text(
+            "".join(json.dumps(spec) + "\n" for spec in specs), encoding="utf-8"
+        )
+        results = tmp_path / "results"
+        monkeypatch.setattr(run_bench, "RESULTS_DIR", results)
+        outputs = ["```json\n[]\n```", "```json\n[]\n```", PAYLOAD]
+        caps: list[float] = []
+
+        def metered_agent(
+            cmd: str, _prompt: str, _system: str | None, _timeout: int,
+            _provider: str = "subscription",
+        ) -> tuple[str, float, str]:
+            tokens = shlex.split(cmd)
+            caps.append(float(tokens[tokens.index("--max-budget-usd") + 1]))
+            return outputs.pop(0), 0.2, "claude-opus-4-6"
+
+        monkeypatch.setattr(run_bench, "run_agent", metered_agent)
+
+        code = run_bench.main([
+            str(set_path), "--tiers", "plain", "--max-runs", "1", "--budget", "1",
+        ])
+
+        assert code == 1  # first row failed its two completed repair attempts
+        assert caps == pytest.approx([1.0, 0.8, 0.6])
+        rows = [
+            json.loads(line) for line in (results / "set.results.jsonl").read_text().splitlines()
+            if line.strip()
+        ]
+        assert [row["qid"] for row in rows] == ["btf2:q2"]
+
+    def test_hard_budget_rejects_unmetered_output_mode(
+        self, tmp_path: Path,
+    ) -> None:
+        set_path = tmp_path / "set.jsonl"
+        set_path.write_text(json.dumps(SPEC) + "\n", encoding="utf-8")
+
+        with pytest.raises(SystemExit):
+            run_bench.main([
+                str(set_path), "--tiers", "plain", "--budget", "1",
+                "--agent-cmd", "claude -p",
+            ])
+
+
+class TestPlainMethodBoundary:
 
     def test_omits_the_skill_method_text(self, monkeypatch: pytest.MonkeyPatch) -> None:
         agent = ScriptedAgent([PAYLOAD])
@@ -240,10 +454,11 @@ class TestAnglesTier:
     def test_a_failed_angle_journals_nothing(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        # The D angle dies both attempts; the whole question fails (no partial row).
+        # The D angle has a transport failure; it is not retried, and the whole question
+        # fails (no partial row).
         agent = ScriptedAgent([
-            fenced(payload(0.30)),               # F ok
-            "AGENT_FAILURE", "AGENT_FAILURE",    # D fails both attempts
+            fenced(payload(0.30)),  # F ok
+            "AGENT_FAILURE",        # D fails closed after one transport attempt
         ])
         monkeypatch.setattr(run_bench, "run_agent", agent)
         row = run_bench.forecast_one(SPEC, "angles", base_args(angle_list=["F", "D", "A"]))
@@ -270,6 +485,62 @@ class TestAnglesCliValidation:
 
 
 class TestBenchWiringAndResumability:
+    def test_prospective_freeze_row_runs_timevault_with_null_crowd(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        frozen_at = "2026-07-10T10:49:31Z"
+        spec = {
+            "id": "metaculus:44389",
+            "source": "metaculus",
+            "url": "https://www.metaculus.com/questions/44379/",
+            "post_id": 44379,
+            "question_id": 44389,
+            "question": "Will Anthropic or Mistral sign before September?",
+            "background": "Background copied at freeze time.",
+            "criteria": "Resolves YES if either company signs before September 1, 2026.",
+            "resolve_by": "2026-09-01",
+            "crowd": {
+                "value": None,
+                "at": frozen_at,
+                "source": "metaculus bot aggregate",
+            },
+            "frozen_at": frozen_at,
+            "resolution": None,
+        }
+        set_path = tmp_path / "prospective.jsonl"
+        set_path.write_text(json.dumps(spec) + "\n", encoding="utf-8")
+        results = tmp_path / "results"
+        monkeypatch.setattr(run_bench, "RESULTS_DIR", results)
+
+        config_path = tmp_path / "mcp.json"
+        config_path.write_text("{}", encoding="utf-8")
+        cutoffs: list[tuple[str, str | None, bool]] = []
+
+        def fake_mcp_config(as_of: str, corpus: str | None = None,
+                            telemetry_path: str | None = None) -> str:
+            cutoffs.append((as_of, corpus, telemetry_path is not None))
+            return str(config_path)
+
+        monkeypatch.setattr(run_bench, "mcp_config_for", fake_mcp_config)
+        agent = ScriptedAgent([PAYLOAD])
+        monkeypatch.setattr(run_bench, "run_agent", agent)
+
+        code = run_bench.main([
+            str(set_path), "--tiers", "plain", "--leakfree", "timevault",
+            "--max-runs", "1",
+        ])
+
+        assert code == 0
+        assert cutoffs == [(frozen_at, None, True)]
+        row = json.loads(
+            (results / "prospective.results.jsonl").read_text(encoding="utf-8")
+        )
+        assert row["leakfree"] == "timevault"
+        assert row["crowd"]["value"] is None
+        assert run_bench.TIMEVAULT_TOOLS in agent.calls[0]["cmd"]
+        assert "crowd=n/a" in capsys.readouterr().out
+
     def test_angles_row_written_via_main(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:

@@ -318,7 +318,8 @@ def main(argv: list[str] | None = None) -> int:
     stale: dict[str, int] = defaultdict(int)
     for rs in by_tier.values():
         for r in rs:
-            if r.get("probability") is None or not r.get("crowd"):
+            if (r.get("probability") is None or not r.get("crowd")
+                    or r["crowd"].get("value") is None):
                 continue
             src_gaps[r["source"]].append(abs(r["probability"] - r["crowd"]["value"]))
             if "freeze" in str(r["crowd"].get("source", "")):

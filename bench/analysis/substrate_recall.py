@@ -249,7 +249,11 @@ def audit_one(row: Json, spec: Json, sources: dict[str, str], retained: dict[str
     if fetch_readability and first_global_url:
         try:
             fetched = vault.fetch_page(first_global_url, max_chars=2000)
-            readable = bool(str(fetched.get("text", "")).strip())
+            # An unavailable capture is a normal TimeVault result with explanatory text;
+            # that text is not page evidence and must not count as a successful read.
+            readable = bool(fetched.get("archived_at")) and bool(
+                str(fetched.get("text", "")).strip()
+            )
         except Exception as exc:  # noqa: BLE001 - readability is explicitly non-fatal
             readable = False
             readability_error = type(exc).__name__

@@ -4,9 +4,43 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
-## [Unreleased] — second-eyes review fixes (2026-07-12)
+## [0.4.22] - 2026-07-15
+
+### Added
+- `bench/analysis/minibench_2026_07_15.py` reproduces the operator-supplied 15-question
+  bot/community diagnostic without treating unresolved disagreement as error. It exposes
+  the three-row concentration of binary disagreement and the repeated numeric
+  interval-width signature.
+- `bench/analysis/pastcast_validity.py` audits a result file's provenance, tool-use
+  mechanics, and optional substrate proxy before score inspection. It intentionally does
+  not read forecast probabilities.
+- `docs/minibench-pastcast-analysis-2026-07-15.html` records the findings, nulls, spend
+  boundary, and pre-registered external-validity gates in a standalone reviewed memo.
+- `bench/analysis/timevault-smoke-2026-07-15.json` freezes the final-code no-model smoke
+  inputs and content-free outcomes so later changes cannot silently inherit its verdict.
 
 ### Fixed
+- TimeVault now requires an exact CDX original and an HTTPS, anchored, stamped `id_`
+  replay—not a live origin, downgrade, calendar/timemap, or toolbar page. Wikipedia retrieves an
+  exact title URL through the same cutoff-bounded archive path; it never calls MediaWiki,
+  whose revision endpoint resolves today's title-to-page mapping before filtering by date.
+  Corpus rows with missing or unparseable crawl dates now fail closed, with no
+  agent-exposed override.
+- Transient archive/GDELT failures receive bounded retries; persistent failures remain
+  explicit. Corpus/Wayback/Wikipedia smoke retrieval passed after repair, while GDELT
+  remained unavailable and is not represented as parity with live search.
+- TimeVault telemetry now distinguishes attempts, successful searches with results,
+  readable pages, unavailable captures, unique targets, and tool errors. Unavailable
+  explanatory text no longer earns a source class or readability success; legacy rows
+  keep semantic fields null rather than being upgraded retroactively.
+- Prospective frozen rows use `frozen_at` as their TimeVault cutoff, null crowd values no
+  longer crash progress/report aggregation, and source aggregation skips null crowds.
+- Benchmark transport errors and timeouts fail closed after one agent call; only a
+  completed malformed output may receive a corrective retry. A positive `run_bench`
+  budget now requires concurrency 1 and the Claude CLI, sends the decreasing native cap
+  to each subprocess, accounts before the next queued job starts, and reserves the full
+  remainder when usage is unknown. Fenced JSON must be an object across forecasting and
+  triage, so malformed paid triage output cannot lose its known cost.
 - The temporary native Tournament/MiniBench cron fallback used during GCP credential
   rotation has been removed. External `forecast-bot-kicker` dispatches are again the sole
   clock; the existing concurrency, provider, and per-run budget controls are unchanged.
@@ -49,6 +83,21 @@ and mirror `.claude-plugin/plugin.json`.
 - Retro-note: the `market_read` bet-gate was removed by the 2026-07-11 policy amendment —
   `decide_bet` no longer inspects it (it is journaled as a preregistered hypothesis).
   Recorded here because the 0.4.17 entry below describes the old behavior.
+
+### Measured / diagnostic
+- On the 9 updated unresolved binary forecasts, 7/9 bot values were below community, but
+  SK Hynix, the NBA investigation, and SOL contributed 76.9% of absolute disagreement.
+  Excluding SK Hynix, Pearson was 0.972 and Spearman 0.958; no global recalibration is
+  promoted.
+- All 6 updated numeric bot intervals were narrower than the displayed community
+  intervals (mean width ratio 0.547, median 0.550), while every bot median remained
+  inside the community interval. With two prior numeric rows, 8/8 were narrower. This is
+  an exploratory dispersion hypothesis with a pre-registered next test, not an
+  outcome-based calibration result.
+- The legacy TimeVault tranche contains 71 run-0 rows across only 24 questions, mixes
+  scaffold versions 0.4.18/0.4.20/0.4.21, and has no semantic evidence-return telemetry.
+  Its plain arm had median zero search/read attempts among the 17 telemetered rows. It is
+  not treated as evidence that frozen retrieval matches live agentic search.
 
 ## [0.4.21] - 2026-07-12
 
