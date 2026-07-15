@@ -24,26 +24,56 @@ def record(**over: object) -> dict[str, object]:
     return value
 
 
-def test_exact_currency_symbol_allowed_only_in_public_contract_fields() -> None:
+def test_exact_currency_symbol_allowed_anywhere_in_public_record() -> None:
     symbol = chr(0xA3)
     pattern = symbol
     public = record(
         question=f"Public {symbol} question",
         resolution_criterion=f"Public {symbol} contract",
+        reasoning=f"model compares prices in {symbol}",
+        nested={"notes": [f"another {symbol} amount"]},
     )
     findings, allowed = guard.scan_added_line(
         pattern, "journal.jsonl", 1, json.dumps(public, ensure_ascii=False)
     )
 
     assert findings == []
-    assert allowed == 2
+    assert allowed == 4
 
-    private = record(reasoning=f"model wrote {symbol} here")
+    private = record(reasoning=f"model wrote {symbol} here", source={"platform": "other"})
     findings, allowed = guard.scan_added_line(
         pattern, "journal.jsonl", 1, json.dumps(private, ensure_ascii=False)
     )
     assert findings == [guard.Finding("journal.jsonl", 1, "reasoning")]
     assert allowed == 0
+
+
+def test_encoded_currency_symbol_is_allowed_after_json_decode() -> None:
+    symbol = chr(0xA3)
+    payload = record(reasoning=f"model wrote {symbol} here")
+
+    findings, allowed = guard.scan_added_line(
+        symbol, "journal.jsonl", 1, json.dumps(payload, ensure_ascii=True)
+    )
+
+    assert findings == []
+    assert allowed == 1
+
+
+def test_currency_plus_sensitive_match_still_blocks_sensitive_field() -> None:
+    symbol = chr(0xA3)
+    private_marker = "private" + "-marker-739"
+    payload = record(reasoning=f"price {symbol}; secret {private_marker}")
+
+    findings, allowed = guard.scan_added_line(
+        f"{symbol}|{private_marker}",
+        "journal.jsonl",
+        2,
+        json.dumps(payload, ensure_ascii=False),
+    )
+
+    assert findings == [guard.Finding("journal.jsonl", 2, "reasoning")]
+    assert allowed == 1
 
 
 def test_other_private_match_in_public_field_still_blocks() -> None:
@@ -114,13 +144,30 @@ def test_cli_reads_staged_diff_and_never_logs_matched_content(
     monkeypatch.setenv("LEAK_PATTERNS", symbol)
     assert guard.main(["--root", str(tmp_path), "bot/journal/manifold.jsonl"]) == 0
     allowed_output = capsys.readouterr()
-    assert "1 public contract currency match" in allowed_output.out
+    assert "1 public-record currency match" in allowed_output.out
 
     monkeypatch.setenv("LEAK_PATTERNS", private_marker)
     assert guard.main(["--root", str(tmp_path), "bot/journal/manifold.jsonl"]) == 1
     blocked_output = capsys.readouterr()
     assert "reasoning" in blocked_output.err
     assert private_marker not in blocked_output.out + blocked_output.err
+
+
+def test_raw_currency_and_zero_width_pattern_fail_closed(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    target = tmp_path / "journal.txt"
+    target.write_text(f"raw {chr(0xA3)} text\n", encoding="utf-8")
+    subprocess.run(["git", "add", "--", str(target)], cwd=tmp_path, check=True)
+
+    monkeypatch.setenv("LEAK_PATTERNS", chr(0xA3))
+    assert guard.main(["--root", str(tmp_path), "journal.txt"]) == 1
+    assert "<raw>" in capsys.readouterr().err
+
+    monkeypatch.setenv("LEAK_PATTERNS", "a*")
+    assert guard.main(["--root", str(tmp_path), "journal.txt"]) == 2
+    assert "could not complete safely" in capsys.readouterr().err
 
 
 def test_workflows_use_content_free_scanner_and_tournament_publish_safely() -> None:

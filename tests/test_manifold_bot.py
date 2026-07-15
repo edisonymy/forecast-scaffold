@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import shlex
+import subprocess
 import sys
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -222,6 +223,26 @@ def test_subscription_session_limit_detection_is_narrow() -> None:
     ) is False
     assert run_manifold.is_subscription_session_limit_error(
         RuntimeError("session limit text without a 429 envelope")
+    ) is False
+
+
+def test_claude_budget_cap_detection_is_narrow() -> None:
+    capped = RuntimeError(
+        'agent failed (1): {"type": "result", '
+        '"subtype": "error_max_budget_usd", "is_error": true, "num_turns": 2'
+    )
+    assert run_manifold.is_claude_budget_cap_error(capped) is True
+    assert run_manifold.is_claude_budget_cap_error(
+        RuntimeError(
+            'agent failed (1): {"type":"result","subtype":"error_invalid_request",'
+            '"is_error":true}'
+        )
+    ) is False
+    assert run_manifold.is_claude_budget_cap_error(
+        RuntimeError('malformed output mentions error_max_budget_usd')
+    ) is False
+    assert run_manifold.is_claude_budget_cap_error(
+        subprocess.TimeoutExpired("claude", 60)
     ) is False
 
 
@@ -469,6 +490,42 @@ def test_run_subscription_session_limit_defers_cleanly_and_reserves_cap(
     output = capsys.readouterr().out
     assert "SUBSCRIPTION-DEFER" in output
     assert "credit usage accounted: $5.00 / $5.00" in output
+
+
+def test_run_native_budget_cap_defers_green_and_keeps_completed_pairs(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    markets = [mk("complete", groupSlugs=["a"]), mk("capped", groupSlugs=["b"])]
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: markets)
+
+    calls: list[str] = []
+
+    def cap_after_pair(
+        cmd: str, prompt: str, system: str | None, timeout: int,
+        provider: str = "subscription",
+    ) -> tuple[str, float, str]:
+        calls.append(cmd)
+        if len(calls) == 3:
+            raise RuntimeError(
+                'agent failed (1): {"type":"result",'
+                '"subtype":"error_max_budget_usd","is_error":true,"num_turns":2}'
+            )
+        return fenced(0.90), 0.50, "claude-sonnet-5"
+
+    monkeypatch.setattr(run_bot, "run_agent", cap_after_pair)
+    args = make_args(tmp_path, budget=5.0)
+
+    assert run_manifold.run(args) == 0
+    assert len(calls) == 3
+    assert "--max-budget-usd 4.000000" in calls[-1]
+    rows = read_journal(args.journal)
+    assert len(rows) == 2
+    assert {row["source"]["question_id"] for row in rows} == {"complete"}
+    output = capsys.readouterr().out
+    assert "BUDGET-DEFER: Claude --max-budget-usd cap reached" in output
+    assert "credit usage accounted: $5.00 / $5.00 (unknown usage reserved)" in output
 
 
 def test_run_generic_429_still_fails_closed(

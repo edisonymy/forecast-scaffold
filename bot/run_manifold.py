@@ -447,6 +447,26 @@ def is_subscription_session_limit_error(error: BaseException | str) -> bool:
     )
 
 
+def is_claude_budget_cap_error(error: BaseException | str) -> bool:
+    """True only for Claude CLI's explicit native ``--max-budget-usd`` stop.
+
+    Claude exits nonzero with a JSON result envelope when the per-process cap supplied by
+    :func:`with_credit_cap` is reached.  That is an expected, locally imposed budget stop,
+    not an infrastructure failure.  Keep recognition deliberately narrow: timeouts, auth
+    failures, generic provider errors, and malformed/other Claude envelopes must stay red.
+    ``run_agent`` truncates diagnostic envelopes, so matching the required leading fields
+    is safer than attempting to decode possibly truncated JSON.
+    """
+    message = str(error)
+    compact = "".join(message.split())
+    return (
+        message.startswith("agent failed (")
+        and '"type":"result"' in compact
+        and '"subtype":"error_max_budget_usd"' in compact
+        and '"is_error":true' in compact
+    )
+
+
 # --------------------------------------------------------------------------- forecasting
 
 # Binary-only question shape for run_bot.validate_payload (Manifold markets we select are
@@ -499,7 +519,10 @@ def forecast_market(
     agent_cmd = agent_cmd_for(base_cmd, blind)
 
     budget_state = budget_state if budget_state is not None else {
-        "usd": 0.0, "uncertain": False, "subscription_deferred": False,
+        "usd": 0.0,
+        "uncertain": False,
+        "subscription_deferred": False,
+        "budget_deferred": False,
     }
     budget = float(getattr(args, "budget", 0.0) or 0.0)
     cost = 0.0
@@ -532,6 +555,18 @@ def forecast_market(
                 call_cmd, prompt, system, call_timeout, args.provider
             )
         except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
+            if is_claude_budget_cap_error(exc):
+                # Our own native cap stopped Claude. Its envelope does not provide usable
+                # cost telemetry, so conservatively reserve the full remaining allowance,
+                # stop all further calls, and let the next hourly run continue. Completed
+                # pairs have already been journaled by run(); an in-progress half-pair is
+                # intentionally discarded.
+                if remaining is not None:
+                    budget_state["usd"] = budget
+                    budget_state["uncertain"] = True
+                budget_state["budget_deferred"] = True
+                errors = ["Claude native credit cap reached; deferred to next hourly run"]
+                break
             if is_subscription_session_limit_error(exc):
                 # Claude says this subscription session is exhausted. Reserve the entire
                 # remaining allowance exactly as for any unmetered failure, stop this run,
@@ -1151,6 +1186,7 @@ def run(args: argparse.Namespace) -> int:
         "usd": 0.0,
         "uncertain": False,
         "subscription_deferred": False,
+        "budget_deferred": False,
     }
     print(f"Claude subscription credit cap: ${budget:.2f} this run")
 
@@ -1338,6 +1374,10 @@ def run(args: argparse.Namespace) -> int:
     qualifier = " (unknown usage reserved)" if budget_state["uncertain"] else ""
     print(f"credit usage accounted: ${float(budget_state['usd']):.2f} / ${budget:.2f}"
           f"{qualifier}")
+    if budget_state.get("budget_deferred"):
+        print("BUDGET-DEFER: Claude --max-budget-usd cap reached; remaining allowance "
+              "reserved; next hourly tick will retry")
+        return 0
     if budget_state.get("subscription_deferred"):
         print("SUBSCRIPTION-DEFER: Claude session limit; next hourly tick will retry")
         return 0
