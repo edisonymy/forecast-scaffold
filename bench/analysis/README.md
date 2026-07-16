@@ -12,6 +12,11 @@ data — regenerate via the fetchers/probe if absent) and apply the standard exc
   docstring and docs/roadmap-v05.md. Do not peek before the screen.
 - `memory_screen.py` — regex prefilter + judged reading for memory-claim leakage
   (weights recall surfacing mid-forecast). Point it at any new results file.
+- `minibench_counterfactuals.py` — preregistered (2026-07-16, pre-outcome) transforms
+  for the 2026-07 MiniBench wave: binary logit shrink + numeric widening, scored
+  globally and per outcome-blind subgroup (`minibench-2026-07-tags.json`). Run with
+  `--resolutions FILE.json` once the wave resolves (Jul 23-25); decision rules in the
+  docstring. Companion memo: `docs/minibench-analysis-2026-07-16.md`.
 - `pastcast_validity.py` — pre-score provenance and research-mechanics audit for a
   TimeVault result file. It deliberately never reads probabilities: it exposes mixed
   versions, unused tools, legacy attempt-only telemetry, and the optional substrate

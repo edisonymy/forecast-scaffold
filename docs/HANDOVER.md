@@ -1,8 +1,27 @@
-# HANDOVER — continuation state as of 2026-07-15
+# HANDOVER — continuation state as of 2026-07-16
 
 For the next working session. Everything load-bearing is in this repo; this file is the
 map. Operator: Edison. Mission (his words): "the aspiration is definitely to reach SOTA
 level performance with frontier models" — weak-model lift is a feature, never the pitch.
+
+## 2026-07-16 MiniBench full-census addendum
+
+- `docs/minibench-analysis-2026-07-16.md` is the reviewed readout: 58 bot-vs-crowd
+  pairs, top gaps audited live with adversarial skeptic verification. Net: our three
+  largest divergences are verified research-edge WINS (schedule/docket/registry); the
+  confirmed misses are extrapolation overconfidence, institutional-process
+  overdiscount, numeric narrowness (19/21 narrower, ratio 0.62), and one
+  conditional-criterion leak.
+- DUE JUL 23-25: enter resolutions and run
+  `python bench/analysis/minibench_counterfactuals.py --resolutions FILE.json` —
+  transforms + subgroup tags preregistered 2026-07-16 pre-outcome. CI-gated rules in
+  the docstring; do not fit anything on this wave's outcomes.
+- `docs/proposals-research-v2.md` gained a 2026-07-16 addendum (question-shape research
+  rules + reasoning-side missing-evidence gate and conditional guard). Still awaiting
+  operator approval as one unit; no production prompt changed.
+- Journal integrity: 6 submitted-but-unjournaled MiniBench rows were backfilled from
+  the platform record (`scripts/backfill_journal.py`); run it after any suspected
+  journal-commit loss.
 
 ## 2026-07-15 MiniBench / pastcast addendum
 

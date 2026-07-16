@@ -4,6 +4,29 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [Unreleased] — MiniBench full-census diagnosis (2026-07-16)
+
+### Added
+- `docs/minibench-analysis-2026-07-16.md`: full 58-pair census vs the ~125-bot crowd
+  (binary extremity 31/37, p=2e-5; numeric width ratio 0.62, 19/21 narrower) with the
+  top ten gaps adversarially audited against live primary sources the same day. Verdict:
+  the largest gaps are mostly OUR wins via schedule/docket/registry research (SK Hynix,
+  Utah brief, EU GPAI, ECB); confirmed misses are extrapolation overconfidence,
+  institutional-process overdiscount (one resolved-YES same day), interval narrowness,
+  and one conditional-criterion leak.
+- `bench/analysis/minibench_counterfactuals.py`: preregistered (2026-07-16, pre-outcome)
+  counterfactual transforms for the wave — binary logit shrink and numeric widening —
+  scored globally and per outcome-blind reasoning-basis subgroup
+  (`minibench-2026-07-tags.json`), CI-gated decision rules in the docstring.
+- `scripts/backfill_journal.py`: reconstructs submitted-but-unjournaled forecasts from
+  Metaculus `my_forecasts` (platform timestamp = provenance). Backfilled the 6 MiniBench
+  rows lost in the 2026-07-12 git incident, clearly labelled `backfilled: true`.
+- `docs/proposals-research-v2.md` addendum (rides the same approval): schedule-first
+  institutional-deadline rule, no-schedule momentum rule, barrier-question
+  volatility/semantics facts, bottom-up partial aggregates, live registry-count anchor,
+  adjacent-entity disambiguation, opponent-schedule for standings; plus reasoning-side
+  missing-evidence gate and conditional-question guard.
+
 ## [0.4.22] - 2026-07-15
 
 ### Added

@@ -128,3 +128,57 @@ and any crowd number **with its timestamp** the moment you see it (`--crowd-valu
 evidence bullets, base rates with the class each is computed over, the resolution-instrument and
 event-window lines, no probability, no lean, no telegraphing adjectives. The number belongs to the
 reasoning step, which this file deliberately leaves alone.
+
+## Addendum (2026-07-16) — question-shape rules from the MiniBench full-census diagnosis
+
+Provenance: 37 binary + 21 numeric bot-vs-crowd pairs (crowd revealed at close), top-10 gaps
+adversarially audited against live primary sources on 2026-07-16. Three of our four largest
+"disagreements" turned out to be OUR wins — the crowd herds at moderate probabilities while a
+schedule/docket search settles the question. The rules below encode the two confirmed misses and
+harden the confirmed edge. Approval covers them with the rest of this file.
+
+**Institutional action by a deadline — the schedule IS the question.** For every "will X do Y
+by/before DATE": the first research move is the official schedule — earnings calendar (IR page,
+exchange filing, 6-K), court scheduling order, regulator's agenda, legislative calendar — in the
+institution's own language (a Korean earnings-calendar item beat 125 bots' Western-press priors).
+If a concrete schedule places the event relative to the window, say so in one dated bullet; that
+bullet dominates the dossier. If NO schedule exists, record the procedural state instead: which
+formal steps are complete, what single step remains, any statutory deadline (a ceiling — processes
+signaled as imminent routinely conclude well before it), and any official statement of imminence.
+"Steps remain, therefore unlikely" is the measured failure mode (an EC decision priced at 16%
+adopted nine days later); the absence of a schedule reverts the estimate toward the momentum-
+conditional base rate, not toward a single-digit default.
+
+**Price/threshold barrier questions.** Separate the semantics in the dossier's resolution-
+instrument line: intraday touch vs daily close, single occurrence vs average. Record three dated
+facts: days already elapsed in the window (and whether any already resolved the question), spot
+distance to the barrier in trailing-2-3-day realized-volatility units (not full-window units), and
+whether the recent move is accelerating or decelerating. A decelerating move extrapolated at crash
+speed was the single worst overshoot in the census (61% on a barrier the price never reached).
+
+**Partially-published aggregates (numeric).** When the target statistic aggregates published
+sub-components — prefecture sentinel counts, state tallies, weekly partials — fetch the
+components and record a bottom-up estimate next to the trend line. The one numeric miss where
+truth escaped our interval entirely had the leading prefectures already public at forecast time.
+
+**Registry-count questions.** When resolution reads a specific registry/list/page against a
+threshold, fetch the authoritative count LIVE at forecast time and record it dated — a snapshot
+from last week is a stale anchor on a moving list. And run an adjacent-entity check: does a
+near-identically-named object exist (two EU "Codes of Practice", two similarly-numbered bills)?
+One dated bullet naming the distinction; the 125-bot crowd missed exactly this and we did not.
+
+**Standings/leader-holds questions (sports or rankings).** The remaining schedule is the
+question: fetch each contender's exact opponents and home/away split across the window and
+record opponent strength. The symmetric-strength shortcut cost us 15 points on a question where
+the leader faced two top-5 teams on the road while the chaser hosted a last-place team.
+
+### Reasoning-side companion rules (separate surface: skill prompt + validation, same approval)
+
+- **The missing-evidence gate.** If the dossier's negative-space line names a unknown that is
+  DECISIVE for the resolution (the Dodgers run listed the opponents' strength as missing, then
+  forecast 82% anyway), the reasoning step must move toward the base rate and, for numerics,
+  widen — a named decisive gap and a confident number in the same record is a contract
+  violation, checkable mechanically.
+- **Conditional-question guard.** When the question conditions on an event ("if X launches…"),
+  the probability of X must not appear as a factor. Validation: flag any run whose reasoning
+  multiplies by the conditioning event's probability.

@@ -29,6 +29,15 @@ PRE-REGISTERED SCORING (run with --score once resolutions are entered)
   extended as more values are revealed), its score is reported alongside as context,
   not as a decision input.
 
+SUBGROUP HYPOTHESIS (registered 2026-07-16, tags frozen outcome-blind from journal
+reasoning text in ``minibench-2026-07-tags.json``: schedule/momentum/other): the live
+diagnosis found our biggest crowd-gaps on schedule-backed questions were mostly OUR
+wins (the crowd herds; our docket/calendar research is the edge) while the confirmed
+misses were extrapolation-driven. Therefore: logit shrink should HURT the 'schedule'
+group and HELP the 'other' group; 'momentum' is where institutional overdiscount lives
+and is predicted to gain from shrink toward 0.5 on the LOW side specifically. Scored
+per-tag alongside the global readout; same decision rule per group.
+
 Resolutions are supplied via --resolutions FILE.json: {"<qid>": 0|1|value, ...} in
 display units for numerics. Rows without an entry are skipped (reported).
 """
@@ -135,22 +144,34 @@ def main(argv: list[str] | None = None) -> int:
     resolutions = {int(k): v for k, v in
                    json.loads(args.resolutions.read_text(encoding="utf-8")).items()}
 
+    tags_path = Path(__file__).with_name("minibench-2026-07-tags.json")
+    tags: dict[int, str] = {}
+    if tags_path.exists():
+        raw = json.loads(tags_path.read_text(encoding="utf-8"))
+        tags = {int(k): str(v) for k, v in (raw.get("tags") or {}).items()}
+
     scored_b = [r for r in binaries if r["source"]["question_id"] in resolutions]
     print(f"\nbinaries resolved: {len(scored_b)}/{len(binaries)}")
-    per_a: dict[float, list[float]] = {a: [] for a in SHRINKS}
-    for row in scored_b:
-        y = float(resolutions[row["source"]["question_id"]])
-        for a in SHRINKS:
-            per_a[a].append(brier(shrink(float(row["probability"]), a), y))
-    for a in SHRINKS:
-        if per_a[a]:
-            tag = " (submitted)" if a == 1.0 else ""
-            print(f"  a={a:<5} mean Brier {st.mean(per_a[a]):.4f}{tag}")
-    if len(scored_b) >= 5:
-        deltas = [x - y for x, y in zip(per_a[0.573], per_a[1.0], strict=True)]
-        lo, hi = boot_ci(deltas)
-        print(f"  PRIMARY a=0.573 vs 1.0: mean delta {st.mean(deltas):+.4f} "
-              f"CI90 [{lo:+.4f},{hi:+.4f}]  (negative favors shrink)")
+    groups = ["all"] + sorted({tags.get(r["source"]["question_id"], "untagged")
+                               for r in scored_b})
+    for group in groups:
+        rows_g = (scored_b if group == "all" else
+                  [r for r in scored_b
+                   if tags.get(r["source"]["question_id"], "untagged") == group])
+        if not rows_g:
+            continue
+        per_a: dict[float, list[float]] = {a: [] for a in SHRINKS}
+        for row in rows_g:
+            y = float(resolutions[row["source"]["question_id"]])
+            for a in SHRINKS:
+                per_a[a].append(brier(shrink(float(row["probability"]), a), y))
+        line = "  ".join(f"a={a}: {st.mean(per_a[a]):.4f}" for a in SHRINKS)
+        print(f"  [{group}] n={len(rows_g)}  {line}")
+        if len(rows_g) >= 5:
+            deltas = [x - y for x, y in zip(per_a[0.573], per_a[1.0], strict=True)]
+            lo, hi = boot_ci(deltas)
+            print(f"    a=0.573 vs 1.0: mean delta {st.mean(deltas):+.4f} "
+                  f"CI90 [{lo:+.4f},{hi:+.4f}]  (negative favors shrink)")
 
     scored_n = [r for r in numerics if r["source"]["question_id"] in resolutions]
     print(f"\nnumerics resolved: {len(scored_n)}/{len(numerics)}")
