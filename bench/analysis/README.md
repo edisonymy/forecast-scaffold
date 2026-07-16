@@ -12,6 +12,18 @@ data — regenerate via the fetchers/probe if absent) and apply the standard exc
   docstring and docs/roadmap-v05.md. Do not peek before the screen.
 - `memory_screen.py` — regex prefilter + judged reading for memory-claim leakage
   (weights recall surfacing mid-forecast). Point it at any new results file.
+- `pastcast_validity.py` — pre-score provenance and research-mechanics audit for a
+  TimeVault result file. It deliberately never reads probabilities: it exposes mixed
+  versions, unused tools, legacy attempt-only telemetry, and the optional substrate
+  any-hit proxy before anyone interprets an A/B as evidence about forecasting quality.
+- `minibench_2026_07_15.py` — reproducible diagnostic for the operator-supplied 15
+  closed MiniBench forecasts (9 binary, 6 numeric). It measures bot/community
+  disagreement and displayed interval-width signatures, with explicit unresolved and
+  timestamp-mismatch boundaries; it does not score disagreement as error.
+- `timevault-smoke-2026-07-15.json` — content-free inputs and outcomes from the final-code,
+  no-model TimeVault smoke. It preserves the 5/5 corpus hits, strict Wayback and
+  exact-title Wikipedia archive timestamps, and the failed GDELT response without upgrading the
+  smoke into a recall or external-validity result.
 - `substrate_recall.py` — diagnostic first-20 audit of the corpus discovery substrate.
   The public BTF-2 release omits teacher search/page-read traces, so this is explicitly a
   question-source-set proxy, not "teacher-cited page" recall. It separates production-

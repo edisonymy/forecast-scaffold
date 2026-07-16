@@ -1,13 +1,43 @@
-# HANDOVER — continuation state as of 2026-07-12 (session end)
+# HANDOVER — continuation state as of 2026-07-15
 
 For the next working session. Everything load-bearing is in this repo; this file is the
 map. Operator: Edison. Mission (his words): "the aspiration is definitely to reach SOTA
 level performance with frontier models" — weak-model lift is a feature, never the pitch.
 
+## 2026-07-15 MiniBench / pastcast addendum
+
+- The operator supplied 15 new closed MiniBench comparisons (9 binary, 6 numeric).
+  They are unresolved and may not be timestamp-matched, so they are diagnostic rather
+  than score evidence. The reproducible readout is
+  `bench/analysis/minibench_2026_07_15.py`; the reviewed memo is
+  `docs/minibench-pastcast-analysis-2026-07-15.html`.
+- Binary disagreement is concentrated: three rows (SK Hynix, NBA investigation, SOL)
+  carry 76.9% of absolute disagreement; excluding SK Hynix, bot/community Pearson is
+  0.972 and Spearman 0.958. Do NOT apply a global YES lift.
+- Numeric dispersion is the stronger new hypothesis: all 6 current displayed bot
+  intervals are narrower (mean width ratio 0.547), and all 8 current+prior comparisons
+  are narrower. The binary-only harness cannot test this; build continuous support and
+  score CRPS/coverage/sharpness before changing production widths.
+- An adversarial TimeVault audit found and fixed a live-origin redirect leak, removed a
+  live MediaWiki title-map dependency (including the subtler page-move leak), made corpus
+  dates fail closed, recognized prospective `frozen_at` rows, added bounded transient
+  retries, and separated attempts from successful/unavailable reads.
+  Legacy tranche rows have no semantic telemetry and mix scaffold versions; do not use
+  them as evidence of parity with live agentic search.
+- A single bounded Opus 4.6 capability smoke timed out without a result. The old harness
+  incorrectly retried the timeout; v0.4.22 makes transport failures single-shot and a
+  positive bench budget serialized/native, reserving its remainder when usage is
+  unknown. No OpenRouter or AskNews spend occurred; killed subscription-equivalent usage
+  is unknown.
+- Do not resume the incomplete legacy tranche without approval: estimated completion is
+  roughly $40.6, above the standing $25 threshold and of limited value while provenance
+  is heterogeneous. First pass the $0 no-model retrieval gate pre-registered in the HTML;
+  only then consider its maximum-$12 paired web-vs-TimeVault pilot.
+
 ## Read these first, in order
 1. `docs/roadmap-v05.md` — THE plan (Fable panel + adversarial critics; every step has a
    pre-registered decision rule). Execute it top to bottom.
-2. `CHANGELOG.md` v0.4.15–v0.4.20 — what was measured and shipped, with numbers.
+2. `CHANGELOG.md` v0.4.15–v0.4.22 — what was measured and shipped, with numbers.
 3. `docs/manifold-policy.md` — the operator-approved betting policy + amendments.
 4. `bench/analysis/README.md` — the analysis scripts behind every claim.
 5. `docs/proposals-research-v2.md` — research.md v2 merged draft, AWAITING OPERATOR
@@ -24,20 +54,15 @@ single runs) — externally replicated. Research AGENCY is the mechanism (their 
 pastcast (slope 0.573 = overconfident THERE; sign not portable — layer built, ships inert,
 `fsj calibrate-fit`).
 
-**The decisive experiment ("tranche1") may be complete or partial**: 3 arms
-(plain ReAct / high / angles) × 40q, corpus+vault research, results accumulate in
-`bench/results/btf2-loop1-adm.tranche1.results.jsonl` (resumable — rerun the exact
-command in git log `86dc390`'s message context or: run_bench on btf2-loop1-adm.jsonl,
---tiers plain,high,angles --leakfree timevault --corpus bench/corpus/btf2_corpus.sqlite
---limit 40 --max-runs 1 --budget 80 --timeout 900 --tag tranche1, agent-cmd opus-4-6).
-`--max-runs 1` is load-bearing: without it, the configured high tier expands to four
-runs and the command targets 240 rows instead of the preregistered 120 arm rows. Six
-nonzero-run high rows were already produced before this was caught; preserve them as paid
-raw data, but memory-screen and score only `run == 0`. The completed raw file will therefore
-have 126 lines while still containing exactly 120 preregistered/scorable arm rows. FIRST ACTION:
-`python bench/analysis/memory_screen.py` (adapted to the tranche file), then
-`python bench/analysis/readout_tranche1.py`. Interpret ONLY by the pre-registered rules
-in the script docstring / roadmap. If rows < ~90/120, resume the run first.
+**The decisive experiment ("tranche1") is incomplete and quarantined from score
+interpretation:** 71 preregistered `run == 0` rows across only 24 unique questions, plus
+six preserved nonzero-run high rows. The run-0 memory screen found 0 candidates, but the
+file mixes scaffold versions 0.4.18/0.4.20/0.4.21 and none of its telemetry distinguishes
+attempted tools from returned evidence. Run the mechanics/provenance diagnostic with
+`python bench/analysis/pastcast_validity.py RESULTS --run 0 --substrate-details DETAILS`;
+do not read the incomplete score. Estimated completion is roughly $40.6 and requires
+operator approval, but is not recommended: first prove TimeVault's external validity
+using the $0 retrieval gate in the 2026-07-15 HTML memo. Preserve all 77 existing rows.
 
 **Manifold bot (live, phase 1, betting enabled — 2 live 25-mana bets placed (dry_run=False:
 qid uIQlEUOhuS NO, qid IyZz6yqqqQ YES; 50 mana open exposure), remaining pairs converged;
@@ -64,17 +89,22 @@ AskNews armed locally (COMPETITION-ONLY key — never Manifold, compliance test 
 CI needs ASKNEWS_API_KEY secret to use it there).
 
 ## Immediate queue (from roadmap, in order)
-1. memory_screen + readout_tranche1 (rules pre-registered — no peeking first).
-2. Substrate recall audit BEFORE interpreting any research-mechanics null (roadmap
-   critic amendment: coverage vs discoverability, diagnostic not gate).
-3. Deadline-discipline test: build deadline tagging (does NOT exist yet), router census
-   over all 152, NET paired scoring, HOLD OUT the ~10 motivating catastrophes.
-4. research.md v2: get operator approval on docs/proposals-research-v2.md, then A/B it
+1. Build and run the $0, 18-fact TimeVault external-validity gate pre-registered in
+   `docs/minibench-pastcast-analysis-2026-07-15.html`. A security miss is an automatic
+   kill; do not substitute the permissive question-source-set any-hit proxy.
+2. Only if that passes, seek approval for the maximum-$12, nine-question paired
+   live-web-vs-TimeVault capability pilot. Keep Terra/Opus, prompts, and questions paired;
+   concurrency stays 1 and no score is interpreted before contamination/memory screens.
+3. Add continuous/numeric benchmark support and proper CRPS/coverage/sharpness readout
+   before testing the repeated MiniBench interval-width signature.
+4. Deadline-discipline test using the existing all-152 census, NET paired scoring, and
+   exact 10 motivating holdouts excluded from promotion.
+5. research.md v2: get operator approval on docs/proposals-research-v2.md, then A/B it
    (paired vs current, RES the target metric).
-5. Bundle arm at n=152: related-resolved-question lookup + numeric 5→6 percentiles +
+6. Bundle arm at n=152: related-resolved-question lookup + numeric 5→6 percentiles +
    tail-widening + re-research-only auditor (ablate only if bundle clears +0.006).
-6. Pool-level extremization fitted on angle-member pools (free once tranche angles rows
-   exist). 7. Weekly prospective freeze (bench/freeze_prospective.py) + resolve pass.
+7. Pool-level extremization fitted on angle-member pools only after a valid paired set
+   exists. 8. Weekly prospective freeze (bench/freeze_prospective.py) + resolve pass.
 
 ## Operating rules (operator directives, standing)
 - Fable main loop → delegate small implementations to opus/sonnet subagents with precise

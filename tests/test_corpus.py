@@ -100,12 +100,9 @@ class TestSearchCorpus:
         # the pre-cutoff moldova pages still come through
         assert OSCE_URL in {h["url"] for h in hits}
 
-    def test_undated_hit_excluded_by_default_included_on_opt_in(self, vault: TimeVault) -> None:
-        default = {h["url"] for h in vault.search_corpus("moldova briefing", limit=25)}
-        assert UNDATED_URL not in default
-        opted = vault.search_corpus("moldova briefing", limit=25, include_undated=True)
-        undated = next(h for h in opted if h["url"] == UNDATED_URL)
-        assert undated["date"] is None
+    def test_undated_hit_is_always_excluded(self, vault: TimeVault) -> None:
+        hits = {h["url"] for h in vault.search_corpus("moldova briefing", limit=25)}
+        assert UNDATED_URL not in hits
 
     def test_every_hit_carries_the_scrape_window_caveat(self, vault: TimeVault) -> None:
         hits = vault.search_corpus("moldova")
@@ -127,11 +124,9 @@ class TestFetchCorpusPage:
         with pytest.raises(LeakError):
             vault.fetch_corpus_page(LEAK_URL)
 
-    def test_undated_raises_by_default_and_returns_on_opt_in(self, vault: TimeVault) -> None:
+    def test_undated_raises_fail_closed(self, vault: TimeVault) -> None:
         with pytest.raises(LeakError):
             vault.fetch_corpus_page(UNDATED_URL)
-        got = vault.fetch_corpus_page(UNDATED_URL, include_undated=True)
-        assert got["found"] is True and got["date"] is None
 
     def test_unknown_url_is_information_not_error(self, vault: TimeVault) -> None:
         got = vault.fetch_corpus_page("https://not.in/the/manifest")
@@ -174,6 +169,7 @@ class TestMcpCorpusTools:
             desc = tools[name]["description"]
             assert "2025-10-13..28" in desc          # the scrape-window caveat
             assert "fetch_page" in desc               # points at the content path
+            assert "include_undated" not in tools[name]["inputSchema"]["properties"]
 
     def test_tools_list_reflects_corpus_configuration(self, corpus_db: str) -> None:
         msg = {"jsonrpc": "2.0", "id": 1, "method": "tools/list"}
@@ -190,6 +186,17 @@ class TestMcpCorpusTools:
         got = timevault_mcp.handle_message(msg, TimeVault(CUTOFF, corpus_db=corpus_db))
         assert got["result"]["isError"] is False
         assert OSCE_URL in got["result"]["content"][0]["text"]
+
+    def test_agent_cannot_opt_into_undated_corpus_rows(self, corpus_db: str) -> None:
+        msg = {
+            "jsonrpc": "2.0", "id": 4, "method": "tools/call",
+            "params": {
+                "name": "search_corpus",
+                "arguments": {"query": "moldova briefing", "include_undated": True},
+            },
+        }
+        got = timevault_mcp.handle_message(msg, TimeVault(CUTOFF, corpus_db=corpus_db))
+        assert got["error"]["code"] == -32602
 
     def test_corpus_tool_is_unknown_without_corpus(self) -> None:
         msg = {"jsonrpc": "2.0", "id": 3, "method": "tools/call",

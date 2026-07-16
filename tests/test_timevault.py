@@ -9,8 +9,11 @@ one combined disallow belt, per-cutoff MCP configs).
 
 from __future__ import annotations
 
+import io
 import json
 import sys
+import urllib.error
+import urllib.parse
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -28,6 +31,24 @@ from timevault import LeakError, TimeVault, html_to_text, parse_cutoff  # noqa: 
 CUTOFF = datetime(2025, 10, 23, 10, 54, 7, tzinfo=UTC)
 
 
+class FakeResponse:
+    def __init__(self, body: bytes = b"ok", url: str = "https://effective.test/") -> None:
+        self.body = body
+        self.url = url
+
+    def __enter__(self) -> FakeResponse:
+        return self
+
+    def __exit__(self, *_args: object) -> None:
+        return None
+
+    def read(self) -> bytes:
+        return self.body
+
+    def geturl(self) -> str:
+        return self.url
+
+
 def vault_with(responses: dict[str, tuple[str, str]]) -> TimeVault:
     """A vault whose transport serves canned (body, effective_url) by URL substring."""
     vault = TimeVault(CUTOFF)
@@ -40,6 +61,62 @@ def vault_with(responses: dict[str, tuple[str, str]]) -> TimeVault:
 
     vault._http = fake_http  # type: ignore[method-assign]
     return vault
+
+
+class TestTransportRetries:
+    def test_timeout_is_retried_without_weakening_the_response(self, monkeypatch) -> None:
+        calls = 0
+        sleeps: list[float] = []
+
+        def flaky(*_args: object, **_kwargs: object) -> FakeResponse:
+            nonlocal calls
+            calls += 1
+            if calls < 3:
+                raise TimeoutError("archive stalled")
+            return FakeResponse(b"archived body", "https://archive.test/final")
+
+        monkeypatch.setattr(timevault.urllib.request, "urlopen", flaky)
+        monkeypatch.setattr(timevault.time, "sleep", sleeps.append)
+        body, effective = TimeVault(CUTOFF)._http("https://archive.test/query")
+
+        assert calls == 3
+        assert sleeps == [0.5, 1.0]
+        assert body == "archived body"
+        assert effective == "https://archive.test/final"
+
+    def test_429_retries_but_nontransient_http_error_does_not(self, monkeypatch) -> None:
+        calls = 0
+
+        def rate_limited(*_args: object, **_kwargs: object) -> FakeResponse:
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                raise urllib.error.HTTPError(
+                    "https://api.test", 429, "slow down", {"Retry-After": "0"}, None
+                )
+            return FakeResponse()
+
+        monkeypatch.setattr(timevault.urllib.request, "urlopen", rate_limited)
+        monkeypatch.setattr(timevault.time, "sleep", lambda _seconds: None)
+        assert TimeVault(CUTOFF)._http("https://api.test")[0] == "ok"
+        assert calls == 2
+
+        def not_found(*_args: object, **_kwargs: object) -> FakeResponse:
+            raise urllib.error.HTTPError(
+                "https://api.test", 404, "missing", {}, None
+            )
+
+        monkeypatch.setattr(timevault.urllib.request, "urlopen", not_found)
+        with pytest.raises(urllib.error.HTTPError) as excinfo:
+            TimeVault(CUTOFF)._http("https://api.test")
+        assert excinfo.value.code == 404
+
+    def test_https_transport_downgrade_is_fatal_before_body_read(self, monkeypatch) -> None:
+        response = FakeResponse(b"injected future bytes", "http://archive.test/final")
+        monkeypatch.setattr(timevault.urllib.request, "urlopen", lambda *_a, **_kw: response)
+
+        with pytest.raises(LeakError, match="transport downgraded"):
+            TimeVault(CUTOFF)._http("https://archive.test/query")
 
 
 class TestParseCutoff:
@@ -63,7 +140,8 @@ class TestFetchPage:
         vault = vault_with({
             "cdx/search": (cdx, "cdx"),
             "20251020010528id_": ("<html><body>Old news.</body></html>",
-                                  "https://web.archive.org/web/20251020010528id_/x"),
+                                  "https://web.archive.org/web/20251020010528id_/"
+                                  "https://example.com/x"),
         })
         got = vault.fetch_page("https://example.com/x")
         assert "Old news." in got["text"]
@@ -78,9 +156,44 @@ class TestFetchPage:
         vault = vault_with({
             "cdx/search": (cdx, "cdx"),
             "20251023000000id_": ("<html>tomorrow's paper</html>",
-                                  "https://web.archive.org/web/20260101000000id_/x"),
+                                  "https://web.archive.org/web/20260101000000id_/"
+                                  "https://example.com/x"),
         })
         with pytest.raises(LeakError):
+            vault.fetch_page("https://example.com/x")
+
+    def test_redirect_out_of_wayback_replay_is_fatal(self) -> None:
+        cdx = json.dumps([["urlkey", "timestamp", "original", "mime", "status", "d", "l"],
+                          ["k", "20251020010528", "https://example.com/x", "text/html",
+                           "200", "D", "1"]])
+        vault = vault_with({
+            "cdx/search": (cdx, "cdx"),
+            # A captured redirect can escape to today's live origin.  The requested CDX
+            # stamp is not provenance for bytes served from this final URL.
+            "20251020010528id_": ("<html>live future content</html>",
+                                  "https://example.com/x"),
+        })
+        with pytest.raises(LeakError, match="escaped the exact stamped"):
+            vault.fetch_page("https://example.com/x")
+
+    @pytest.mark.parametrize("effective", [
+        "https://web.archive.org/foo/web/20251020010528id_/https://example.com/x",
+        "https://web.archive.org/web/20251020010528*/https://example.com/x",
+        "https://web.archive.org/web/20251020010528/https://example.com/x",
+        "http://web.archive.org/web/20251020010528id_/https://example.com/x",
+    ])
+    def test_calendar_toolbar_and_nonprefix_wayback_pages_are_fatal(
+        self, effective: str,
+    ) -> None:
+        cdx = json.dumps([["urlkey", "timestamp", "original", "mime", "status", "d", "l"],
+                          ["k", "20251020010528", "https://example.com/x", "text/html",
+                           "200", "D", "1"]])
+        vault = vault_with({
+            "cdx/search": (cdx, "cdx"),
+            "20251020010528id_": ("<html>current Wayback UI</html>", effective),
+        })
+
+        with pytest.raises(LeakError, match="exact stamped"):
             vault.fetch_page("https://example.com/x")
 
     def test_no_pre_cutoff_snapshot_is_information_not_error(self) -> None:
@@ -89,6 +202,15 @@ class TestFetchPage:
         got = vault.fetch_page("https://example.com/brand-new-page")
         assert got["archived_at"] is None
         assert "unavailable pre-cutoff" in got["text"] or "No archived version" in got["text"]
+
+    def test_exact_cdx_mismatch_is_fatal_for_generic_agent_fetch(self) -> None:
+        cdx = json.dumps([["urlkey", "timestamp", "original"], [
+            "k", "20211229023618", "https://en.wikipedia.org/wiki/Twitter",
+        ]])
+        vault = vault_with({"cdx/search": (cdx, "cdx")})
+
+        with pytest.raises(LeakError, match="exact requested historical URL"):
+            vault.fetch_page("https://en.wikipedia.org/wiki/X_(social_network)")
 
 
 class TestSearchNews:
@@ -108,6 +230,7 @@ class TestSearchNews:
         vault._http = fake_http  # type: ignore[method-assign]
         got = vault.search_news("test query")
         assert "ENDDATETIME=20251023105407" in captured[0]
+        assert got["response_valid"] is True
         assert [a["url"] for a in got["articles"]] == ["https://a"]
 
     def test_rate_limit_text_degrades_to_empty_not_crash(self, monkeypatch) -> None:
@@ -115,35 +238,128 @@ class TestSearchNews:
         vault._http = lambda url: ("Please limit requests to one every 5 seconds", url)  # type: ignore[method-assign]
         monkeypatch.setattr(timevault.time, "sleep", lambda s: None)
         got = vault.search_news("anything")
+        assert got["response_valid"] is False
         assert got["articles"] == [] and "unavailable" in got["note"]
 
 
 class TestWikipediaAsof:
-    def test_revision_at_cutoff_is_served(self) -> None:
-        body = json.dumps({"query": {"pages": [{
-            "title": "Lebanese Armed Forces",
-            "revisions": [{"revid": 1, "timestamp": "2025-10-07T14:09:54Z",
-                           "slots": {"main": {"content": "The LAF is..."}}}],
-        }]}})
-        vault = vault_with({"action=query": (body, "wiki")})
+    def test_exact_title_snapshot_at_cutoff_is_served(self) -> None:
+        cdx = json.dumps([["urlkey", "timestamp", "original"], [
+            "k", "20251007140954",
+            "https://en.wikipedia.org/wiki/Lebanese_Armed_Forces",
+        ]])
+        vault = vault_with({
+            "cdx/search": (cdx, "cdx"),
+            "20251007140954id_": (
+                "<html><body>The LAF is...</body></html>",
+                "https://web.archive.org/web/20251007140954id_/"
+                "https://en.wikipedia.org/wiki/Lebanese_Armed_Forces",
+            ),
+        })
         got = vault.wikipedia_asof("Lebanese Armed Forces")
-        assert got["revision_at"].startswith("2025-10-07")
+        assert got["archived_at"].startswith("2025-10-07")
         assert "The LAF is" in got["text"]
+        assert got["retrieval"] == "wayback_exact_title"
 
-    def test_post_cutoff_revision_stamp_is_fatal(self) -> None:
-        body = json.dumps({"query": {"pages": [{
-            "title": "X",
-            "revisions": [{"revid": 1, "timestamp": "2026-01-01T00:00:00Z",
-                           "slots": {"main": {"content": "future"}}}],
-        }]}})
-        vault = vault_with({"action=query": (body, "wiki")})
+    def test_post_cutoff_snapshot_redirect_is_fatal(self) -> None:
+        cdx = json.dumps([["urlkey", "timestamp", "original"], [
+            "k", "20251007140954", "https://en.wikipedia.org/wiki/X",
+        ]])
+        vault = vault_with({
+            "cdx/search": (cdx, "cdx"),
+            "20251007140954id_": (
+                "<html><body>future</body></html>",
+                "https://web.archive.org/web/20260101000000id_/"
+                "https://en.wikipedia.org/wiki/X",
+            ),
+        })
         with pytest.raises(LeakError):
             vault.wikipedia_asof("X")
+
+    def test_missing_pre_cutoff_title_never_uses_live_mediawiki(self) -> None:
+        header_only = json.dumps([["urlkey", "timestamp", "original"]])
+        calls: list[str] = []
+        vault = TimeVault(CUTOFF)
+
+        def exact_archive_only(url: str) -> tuple[str, str]:
+            calls.append(url)
+            parsed = urllib.parse.urlparse(url)
+            params = urllib.parse.parse_qs(parsed.query)
+            assert parsed.hostname == "web.archive.org"
+            assert params["url"] == [
+                "https://en.wikipedia.org/wiki/2026_future-created_article"
+            ]
+            assert params["matchType"] == ["exact"]
+            return header_only, url
+
+        vault._http = exact_archive_only  # type: ignore[method-assign]
+        got = vault.wikipedia_asof("2026 future-created article")
+
+        assert got["archived_at"] is None
+        assert got["retrieval"] == "wayback_exact_title"
+        assert len(calls) == 1
+
+    def test_post_cutoff_x_rename_cannot_reveal_old_twitter_revision(self) -> None:
+        """Regression: MediaWiki mapped this post-2023 title to Twitter's old revisions."""
+        cutoff = datetime(2022, 1, 1, tzinfo=UTC)
+        header_only = json.dumps([["urlkey", "timestamp", "original"]])
+        vault = TimeVault(cutoff)
+        calls: list[str] = []
+
+        def historical_url_only(url: str) -> tuple[str, str]:
+            calls.append(url)
+            params = urllib.parse.parse_qs(urllib.parse.urlparse(url).query)
+            assert params["url"] == [
+                "https://en.wikipedia.org/wiki/X_(social_network)"
+            ]
+            assert params["to"] == ["20220101000000"]
+            return header_only, url
+
+        vault._http = historical_url_only  # type: ignore[method-assign]
+        got = vault.wikipedia_asof("X (social network)")
+
+        assert got["archived_at"] is None
+        assert "Twitter" not in got["text"]
+        assert len(calls) == 1
+
+    def test_cdx_cannot_alias_future_wikipedia_title_to_old_page(self) -> None:
+        cdx = json.dumps([["urlkey", "timestamp", "original"], [
+            "k", "20211229023618", "https://en.wikipedia.org/wiki/Twitter",
+        ]])
+        vault = vault_with({"cdx/search": (cdx, "cdx")})
+
+        with pytest.raises(LeakError, match="exact requested historical URL"):
+            vault.wikipedia_asof("X (social network)")
 
 
 def test_html_to_text_drops_scripts() -> None:
     text = html_to_text("<html><script>evil()</script><p>kept</p></html>")
     assert "kept" in text and "evil" not in text
+
+
+def test_manual_cli_reconfigures_windows_console_for_unicode(monkeypatch) -> None:
+    class FakeVault:
+        def __init__(self, *_args: object, **_kwargs: object) -> None:
+            pass
+
+        def wikipedia_asof(self, _title: str) -> dict:
+            return {"title": "Pogačar", "text": "pre-cutoff ✅"}
+
+    raw = io.BytesIO()
+    cp1252_stdout = io.TextIOWrapper(raw, encoding="cp1252", write_through=True)
+    original_stdout = sys.stdout
+    monkeypatch.setattr(timevault, "TimeVault", FakeVault)
+    monkeypatch.setattr(sys, "stdout", cp1252_stdout)
+    try:
+        assert timevault.main([
+            "--cutoff", "2025-10-23", "wikipedia_asof", "Pogačar",
+        ]) == 0
+        cp1252_stdout.flush()
+    finally:
+        monkeypatch.setattr(sys, "stdout", original_stdout)
+
+    assert "Pogačar" in raw.getvalue().decode("utf-8")
+    assert "✅" in raw.getvalue().decode("utf-8")
 
 
 class TestMcpServer:
@@ -222,6 +438,15 @@ class TestRunBenchWiring:
     def test_as_of_prefers_structured_field(self) -> None:
         spec = {"as_of": "2025-10-23 10:54:07", "background": "AS-OF DATE: 1999-01-01"}
         assert run_bench.spec_as_of(spec) == "2025-10-23 10:54:07"
+
+    def test_as_of_uses_prospective_freeze_after_explicit_field(self) -> None:
+        spec = {
+            "frozen_at": "2026-07-10T10:49:31Z",
+            "background": "AS-OF DATE: 1999-01-01",
+        }
+        assert run_bench.spec_as_of(spec) == "2026-07-10T10:49:31Z"
+        spec["as_of"] = "2026-07-09T00:00:00Z"
+        assert run_bench.spec_as_of(spec) == "2026-07-09T00:00:00Z"
 
     def test_as_of_regex_fallback_reads_existing_btf2_sets(self) -> None:
         spec = {"background": "AS-OF DATE: 2025-10-23 10:54:07.843152 — forecast as if"}

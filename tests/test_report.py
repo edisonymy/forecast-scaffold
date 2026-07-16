@@ -136,3 +136,27 @@ class TestPairedBrierComparison:
         text = (results_dir / "s.report.md").read_text(encoding="utf-8")
         assert "## resolution scoring" not in text
         assert "## paired Brier comparison" not in text
+
+
+def test_by_source_skips_null_crowd_without_dropping_valid_rows(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    specs = [{"id": "q-null"}, {"id": "q-valued"}]
+    rows = [
+        {
+            "qid": "q-null", "source": "metaculus", "tier": "high",
+            "probability": 0.4, "crowd": {"value": None}, "cost_usd": 0.01,
+        },
+        {
+            "qid": "q-valued", "source": "manifold", "tier": "high",
+            "probability": 0.6, "crowd": {"value": 0.5}, "cost_usd": 0.01,
+        },
+    ]
+
+    results_dir, rc = _run_report(monkeypatch, tmp_path, "null-crowd", specs, rows)
+
+    assert rc == 0
+    text = (results_dir / "null-crowd.report.md").read_text(encoding="utf-8")
+    assert "## by source (all tiers pooled)" in text
+    assert "| manifold | 1 |" in text
+    assert "| metaculus |" not in text

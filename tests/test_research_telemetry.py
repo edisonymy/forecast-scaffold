@@ -89,8 +89,12 @@ def event(
     *,
     success: bool = True,
     error: str | None = None,
+    result: dict[str, object] | None = None,
 ) -> dict:
-    return {"tool": tool, "arguments": arguments, "success": success, "error": error}
+    row = {"tool": tool, "arguments": arguments, "success": success, "error": error}
+    if result is not None:
+        row["result"] = result
+    return row
 
 
 def test_mcp_events_are_one_per_call_and_never_contain_page_content(tmp_path: Path) -> None:
@@ -143,14 +147,17 @@ def test_mcp_events_are_one_per_call_and_never_contain_page_content(tmp_path: Pa
         "arguments": {"query": 'exact "quoted" query'},
         "success": True,
         "error": None,
+        "result": {"available": True, "result_count": 1},
     }
     assert events[1] == {
         "tool": "fetch_page",
         "arguments": {"url": "https://example.test/a"},
         "success": False,
         "error": "RuntimeError",
+        "result": {},
     }
     assert events[2]["arguments"] == {}
+    assert events[2]["result"] == {}
     assert secret not in raw_log
 
     # Attempts count as mechanics even when the read failed; unknown tools do not.
@@ -159,7 +166,84 @@ def test_mcp_events_are_one_per_call_and_never_contain_page_content(tmp_path: Pa
         "n_searches": 1,
         "n_full_reads": 1,
         "queries": ['exact "quoted" query'],
+        "n_searches_succeeded": 1,
+        "n_searches_unavailable": 0,
+        "n_searches_with_results": 1,
+        "n_full_reads_succeeded": 0,
+        "n_full_reads_unavailable": 0,
+        "n_unique_full_read_targets": 1,
+        "n_tool_errors": 2,
+        "semantic_telemetry_complete": True,
     }
+
+
+def test_semantic_telemetry_separates_attempts_from_returned_evidence(
+    tmp_path: Path,
+) -> None:
+    telemetry = tmp_path / "events.jsonl"
+    append_events(telemetry, [
+        event(
+            "search_news", {"query": "backend down"},
+            result={"available": False, "result_count": 0},
+        ),
+        event(
+            "search_corpus", {"query": "found"},
+            result={"available": True, "result_count": 3},
+        ),
+        event(
+            "fetch_page",
+            {"url": "https://example.test/unavailable"},
+            result={"available": False, "content_chars": 0, "document_at": None},
+        ),
+        event(
+            "wikipedia_asof",
+            {"title": "Available"},
+            result={
+                "available": True,
+                "content_chars": 100,
+                "document_at": "2025-10-20T00:00:00+00:00",
+            },
+        ),
+        event(
+            "fetch_page",
+            {"url": "https://example.test/timeout"},
+            success=False,
+            error="TimeoutError",
+            result={},
+        ),
+    ])
+
+    fields = run_bench._telemetry_fields(telemetry)
+    assert fields == {
+        "n_searches": 2,
+        "n_full_reads": 3,
+        "queries": ["backend down", "found"],
+        "n_searches_succeeded": 1,
+        "n_searches_unavailable": 1,
+        "n_searches_with_results": 1,
+        "n_full_reads_succeeded": 1,
+        "n_full_reads_unavailable": 1,
+        "n_unique_full_read_targets": 3,
+        "n_tool_errors": 1,
+        "semantic_telemetry_complete": True,
+    }
+    # Empty searches and unavailable reads no longer manufacture source-class coverage,
+    # and model-declared labels cannot restore it when tool telemetry exists.
+    payloads = [{
+        "sources": ["https://example.test/unavailable"],
+        "source_classes": ["official"],
+    }]
+    assert run_bench._source_classes(payloads, telemetry) == ["corpus", "reference"]
+
+    assert timevault_mcp._safe_telemetry_result(
+        "fetch_page", {"archived_at": "2025-10-20T00:00:00Z", "text": "   "}
+    )["available"] is False
+    wiki_result = timevault_mcp._safe_telemetry_result(
+        "wikipedia_asof",
+        {"archived_at": "2025-09-20T15:04:05Z", "text": "archived article"},
+    )
+    assert wiki_result["available"] is True
+    assert wiki_result["document_at"] == "2025-09-20T15:04:05Z"
 
 
 def test_query_list_is_bounded_without_changing_exact_strings(tmp_path: Path) -> None:
@@ -206,9 +290,7 @@ def test_parallel_forecasts_get_unique_configs_and_cleanup(
     assert all(row is not None for row in rows)
     assert {row["n_searches"] for row in rows if row is not None} == {0}
     assert {tuple(row["queries"]) for row in rows if row is not None} == {()}
-    assert {tuple(row["source_classes"]) for row in rows if row is not None} == {
-        ("official",)
-    }
+    assert {row["source_classes"] for row in rows if row is not None} == {None}
     assert len({config for config, _telemetry in seen}) == 2
     assert len({telemetry for _config, telemetry in seen}) == 2
     assert all(not config.exists() and not telemetry.exists() for config, telemetry in seen)
@@ -223,8 +305,14 @@ def test_angle_subruns_aggregate_calls_queries_and_source_classes(
     scripted = [
         (
             [
-                event("search_news", {"query": 'exact F query "quoted"'}),
-                event("fetch_page", {"url": "https://example.test/f"}),
+                event(
+                    "search_news", {"query": 'exact F query "quoted"'},
+                    result={"available": True, "result_count": 2},
+                ),
+                event(
+                    "fetch_page", {"url": "https://example.test/f"},
+                    result={"available": True, "content_chars": 500},
+                ),
             ],
             fenced(0.3, source_classes=[" Official data ", "NEWS", 7]),
         ),
@@ -237,7 +325,10 @@ def test_angle_subruns_aggregate_calls_queries_and_source_classes(
                     error="RuntimeError",
                 ),
                 # Manifest metadata is not a full-page read.
-                event("fetch_corpus_page", {"url": "https://example.test/d"}),
+                event(
+                    "fetch_corpus_page", {"url": "https://example.test/d"},
+                    result={"available": True},
+                ),
             ],
             fenced(0.5, source_classes=["news", "Academic / paper"]),
         ),
@@ -283,9 +374,9 @@ def test_angle_subruns_aggregate_calls_queries_and_source_classes(
     assert row["n_searches"] == 2
     assert row["n_full_reads"] == 2
     assert row["queries"] == ['exact F query "quoted"', "exact D query"]
-    assert row["source_classes"] == [
-        "news", "web", "corpus", "official-data", "academic-paper"
-    ]
+    # With TimeVault telemetry, model-declared classes cannot upgrade unsuccessful or
+    # unobserved evidence. Only successful tool-observed classes survive.
+    assert row["source_classes"] == ["news", "web", "corpus"]
     assert len(systems) == 3
     sections = run_bench.load_angle_sections()
     base_system = run_bench.build_system("high", blind=True, config=None, multi_run=True)

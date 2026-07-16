@@ -673,7 +673,11 @@ def extract_json(text: str) -> dict[str, Any]:
     matches = FENCED_JSON.findall(text)
     if not matches:
         raise ValueError("no fenced json block in agent output")
-    parsed: dict[str, Any] = json.loads(matches[-1])
+    parsed = json.loads(matches[-1])
+    if not isinstance(parsed, dict):
+        raise ValueError(
+            f"fenced json payload must be an object, got {type(parsed).__name__}"
+        )
     return parsed
 
 

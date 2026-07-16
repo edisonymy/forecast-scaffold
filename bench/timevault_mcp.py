@@ -47,6 +47,56 @@ def _safe_telemetry_arguments(name: str, arguments: object) -> dict[str, str]:
     }
 
 
+def _safe_telemetry_result(name: str, result: object) -> dict[str, object]:
+    """Reduce a tool result to content-free evidence-availability metadata.
+
+    Attempt counts alone overstate research depth: a Wayback miss historically returned
+    a normal object with explanatory text, so it was logged as a successful full read.
+    Keep only counts, booleans, timestamps, and character lengths; never snippets, titles,
+    URLs, or page bodies.
+    """
+    if name == "search_corpus" and isinstance(result, list):
+        return {"available": True, "result_count": len(result)}
+    if not isinstance(result, dict):
+        return {}
+    if name == "search_news":
+        articles = result.get("articles")
+        available = result.get("response_valid") is not False and isinstance(
+            articles, list
+        )
+        return {
+            "available": available,
+            "result_count": len(articles) if available else 0,
+        }
+    if name == "fetch_page":
+        stamp = result.get("archived_at")
+        body = result.get("text")
+        available = (
+            isinstance(stamp, str) and bool(stamp)
+            and isinstance(body, str) and bool(body.strip())
+        )
+        return {
+            "available": available,
+            "document_at": stamp if isinstance(stamp, str) else None,
+            "content_chars": len(body) if available else 0,
+        }
+    if name == "wikipedia_asof":
+        stamp = result.get("archived_at")
+        body = result.get("text")
+        available = (
+            isinstance(stamp, str) and bool(stamp)
+            and isinstance(body, str) and bool(body.strip())
+        )
+        return {
+            "available": available,
+            "document_at": stamp if isinstance(stamp, str) else None,
+            "content_chars": len(body) if available else 0,
+        }
+    if name == "fetch_corpus_page":
+        return {"available": result.get("found") is True}
+    return {}
+
+
 def _append_telemetry(
     telemetry_path: str | Path | None,
     name: str,
@@ -54,6 +104,7 @@ def _append_telemetry(
     *,
     success: bool,
     error: str | None,
+    result: object = None,
 ) -> None:
     """Append one content-free event without ever changing the tool call's outcome."""
     if telemetry_path is None:
@@ -63,6 +114,7 @@ def _append_telemetry(
         "arguments": _safe_telemetry_arguments(name, arguments),
         "success": success,
         "error": error,
+        "result": _safe_telemetry_result(name, result),
     }
     try:
         path = Path(telemetry_path)
@@ -126,8 +178,9 @@ def tool_definitions(cutoff_label: str, with_corpus: bool = False) -> list[dict]
         },
         {
             "name": "wikipedia_asof",
-            "description": "Read a Wikipedia article exactly as it stood at the as-of "
-                           "date (revision history)." + locked,
+            "description": "Read the exact Wikipedia title URL from its last Wayback "
+                           "capture at or before the as-of date. The live MediaWiki title "
+                           "map is never queried; uncaptured titles are unavailable." + locked,
             "inputSchema": {
                 "type": "object", "required": ["title"],
                 "properties": {
@@ -149,9 +202,6 @@ def tool_definitions(cutoff_label: str, with_corpus: bool = False) -> list[dict]
                     "properties": {
                         "query": {"type": "string", "description": "keywords to match"},
                         "limit": {"type": "integer", "description": "default 8, max 25"},
-                        "include_undated": {"type": "boolean",
-                                            "description": "include hits with no parseable "
-                                                           "crawl date (default false)"},
                     },
                 },
             },
@@ -166,7 +216,6 @@ def tool_definitions(cutoff_label: str, with_corpus: bool = False) -> list[dict]
                     "properties": {
                         "url": {"type": "string"},
                         "max_chars": {"type": "integer", "description": "default 8000"},
-                        "include_undated": {"type": "boolean", "description": "default false"},
                     },
                 },
             },
@@ -232,7 +281,7 @@ def handle_message(
             result = getattr(vault, name)(**arguments)
             text = json.dumps(result, ensure_ascii=False, indent=1)
             _append_telemetry(
-                telemetry_path, name, arguments, success=True, error=None
+                telemetry_path, name, arguments, success=True, error=None, result=result
             )
             return ok({"content": [{"type": "text", "text": text}], "isError": False})
         except LeakError as exc:

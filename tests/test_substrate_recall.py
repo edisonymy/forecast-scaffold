@@ -108,6 +108,47 @@ def test_audit_one_separates_discovery_from_cutoff(tmp_path: Path) -> None:
     assert detail["failure_reason"] is None
 
 
+def test_unavailable_archive_explanation_is_not_readable(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    relevant = "https://official.example/alpha-status"
+    stamp = "2025-10-20T00:00:00"
+    corpus = make_corpus(tmp_path / "corpus.sqlite", [(relevant, stamp, "q1")])
+    sources = {relevant: stamp}
+    scoped = audit.build_scoped_index({"btf2:q1": sources})
+    monkeypatch.setattr(
+        audit.TimeVault,
+        "fetch_page",
+        lambda *_args, **_kwargs: {
+            "archived_at": None,
+            "text": "No archived version exists; unavailable pre-cutoff.",
+        },
+    )
+    try:
+        detail = audit.audit_one(
+            {
+                "qid": "btf2:q1",
+                "proxy_kind": "question_source_set",
+                "load_bearing_claim": "alpha status",
+                "queries": ["alpha status"],
+            },
+            {"id": "btf2:q1", "as_of": "2025-10-23T00:00:00+00:00"},
+            sources,
+            {relevant: stamp},
+            scoped,
+            corpus,
+            top_k=25,
+            secondary_k=8,
+            fetch_readability=True,
+        )
+    finally:
+        scoped.close()
+
+    assert detail["global_discoverable_top25"] is True
+    assert detail["wayback_readable"] is False
+    assert detail["wayback_error"] is None
+
+
 def test_wilson_interval_contains_observed_rate() -> None:
     lo, hi = audit.wilson(18, 20)
     assert lo < 0.9 < hi
