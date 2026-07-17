@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [Unreleased] — tranche1 + research.md v2 A/B verdicts (2026-07-17)
+
+- Tranche1 completed (126 rows, $96): NOTHING PROMOTES OVER HIGH. plain worse by
+  +0.022 mean Brier (high wins 21/37; RES 0.0972 vs 0.0699 — the scaffold buys
+  refinement over plain ReAct); angles null vs high at 3x cost (stays dark); high
+  BEATS the FutureSearch teacher by 0.0136 on the corpus-levelled common set.
+  Substrate audit: 90% discoverability — corpus not the bottleneck.
+  `bench/analysis/tranche1-readout-2026-07-17.txt`; --dedupe first policy added for
+  9 duplicate cells from overlapping resume invocations.
+- research.md v2 A/B (40 fresh high-tier cells from branch ab/research-v2, $25.68):
+  preregistered verdict PROMISING, DO NOT SHIP — RES +0.0180 (target hit; v2 RES at
+  teacher level) but Brier CI90 guard not clean ([-0.0178,+0.0122]); REL +0.0156
+  (bolder, noisier). Next: pool 40 fresh questions (~$45), same rule.
+  `bench/analysis/ab-research-v2-readout-2026-07-17.txt`. Production untouched.
+
 ## [Unreleased] — MiniBench full-census diagnosis (2026-07-16)
 
 ### Added

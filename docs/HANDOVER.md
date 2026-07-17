@@ -170,7 +170,21 @@ CI needs ASKNEWS_API_KEY secret to use it there).
 - Version ritual: SCAFFOLD_VERSION (core.py) + pyproject + plugin.json + `python
   scripts/vendor_sync.py`; config/forecast.toml mirrors DEFAULTS (test-enforced).
 
-## Windows gotchas
+## Windows gotchas (updated 2026-07-17)
+- Local pytest needs a clean auth env: this dev machine's sessions export
+  ANTHROPIC_BASE_URL, which the manifold runner's fail-closed subscription preflight
+  correctly rejects → 25+ "failures" that are environment artifacts. Run
+  `env -u ANTHROPIC_BASE_URL -u ANTHROPIC_API_KEY -u ANTHROPIC_AUTH_TOKEN python -m pytest -q`.
+- NEVER let two run_bench invocations share a results file: resume detection reads the
+  file at start, so overlapping runs duplicate (tier,qid) cells (9 dups on 2026-07-17,
+  ~$10 wasted). Before relaunching, verify the old process tree is DEAD via PowerShell
+  Get-Process (Git Bash ps cannot see native processes) and confirm each PID gone —
+  one taskkill in a sweep can fail silently (exit 128).
+- run_bench: hard --budget forces --concurrency 1 (sequential native-cap accounting).
+  For parallel resumes drop --budget and guard with a wrapper-loop cumulative-cost
+  halt (see the tranche/ab loop scripts pattern in the analysis snapshots).
+- The angles tier's anomaly-hunt sub-run needs --timeout 1500 under timevault (900
+  produced repeatable TimeoutExpired → fail-closed full-budget reservations).
 Bash heredocs mangle backslashes (write patch scripts via the Write tool); PC restarts
 kill detached background jobs (relaunch with resume semantics; verify liveness via row
 counts, not task status); `git add` on bench/sets needs the prospective-* carve-out only;
