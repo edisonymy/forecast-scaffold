@@ -21,10 +21,13 @@ Substrate audit (critic amendment): 90% discoverability (18/20, 2 lexical misses
 100% URL retention — substrate not the bottleneck; verdicts interpretable.
 Caveats recorded: scaffold-version mix v0.4.18-0.4.22 across rows; timeout 900->1500
 mid-run; coverage ragged (plain 38 / high 37 / angles 36 scorable).
-IN FLIGHT: research.md v2 arm (worktree forecast-scaffold-ab-research-v2, branch
-ab/research-v2 af5d343) — 40 high-tier cells, tag ab-research-v2; score with
-`python bench/analysis/readout_ab_research_v2.py` (rules preregistered in its
-docstring: RES target, Brier CI90 guard < +0.008 to ship).
+V2 A/B DONE (2026-07-17 evening): 40/40 cells, $25.68. Preregistered verdict:
+PROMISING, DO NOT SHIP — RES +0.0180 (target metric, hit; v2 RES 0.1143 ~ teacher
+level) but Brier guard not clean (paired mean -0.0016, CI90 [-0.0178,+0.0122]); REL
+worsened +0.0156 (v2 is bolder: more refinement, slightly noisier calibration).
+Snapshot: bench/analysis/ab-research-v2-readout-2026-07-17.txt. NEXT WAVE to decide:
+run current-vs-v2 paired on 40 FRESH decontaminated btf2 questions (~$45) to pool
+n~77 and re-apply the same rule; v2 stays on branch ab/research-v2 until then.
 
 ## 2026-07-16 MiniBench full-census addendum
 
