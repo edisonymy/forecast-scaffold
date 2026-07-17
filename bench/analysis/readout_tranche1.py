@@ -81,12 +81,19 @@ def collect_run_zero(
     rows: Iterable[ResultRow],
     resolutions: dict[str, float],
     excluded_qids: set[str],
+    dedupe: str = "error",
 ) -> tuple[dict[str, dict[str, float]], dict[str, float], Counter[str]]:
     """Build scorable run-0 arm cells and count every ignored nonzero row.
 
-    Duplicate ``(tier, qid, run=0)`` cells raise before any value can be silently
-    overwritten. Nonzero rows are counted by tier and otherwise left untouched.
+    Duplicate ``(tier, qid, run=0)`` cells raise by default so nothing is silently
+    overwritten. ``dedupe="first"`` instead keeps the FIRST-appended row per cell —
+    the row a sequential run would have produced — and counts the dropped copies
+    (2026-07-17: overlapping resume invocations produced 9 such duplicates; the later
+    copies are paid raw data, never scored). Nonzero rows are counted by tier and
+    otherwise left untouched.
     """
+    if dedupe not in ("error", "first"):
+        raise ValueError(f"dedupe must be 'error' or 'first', got {dedupe!r}")
     arm = {name: {} for name in ARMS}
     cost = {name: 0.0 for name in ARMS}
     ignored_nonzero: Counter[str] = Counter()
@@ -104,6 +111,9 @@ def collect_run_zero(
         qid = row.get("qid")
         key = (tier, qid)
         if key in seen_run_zero:
+            if dedupe == "first":
+                ignored_nonzero[f"{tier} duplicate"] += 1
+                continue
             raise ValueError(f"duplicate run-0 row for tier={tier!r}, qid={qid!r}")
         seen_run_zero.add(key)
 
@@ -228,9 +238,11 @@ def print_readout(
     teacher: dict[str, float],
     excluded_qids: set[str],
     stream: TextIO = sys.stdout,
+    dedupe: str = "error",
 ) -> None:
     """Compute and print the pre-registered readout from already-loaded data."""
-    arm, cost, ignored_nonzero = collect_run_zero(rows, resolutions, excluded_qids)
+    arm, cost, ignored_nonzero = collect_run_zero(rows, resolutions, excluded_qids,
+                                                  dedupe=dedupe)
     print(ignored_summary(ignored_nonzero), file=stream)
     for name in ARMS:
         print(f"{name:7s} {len(arm[name])} scorable rows, ${cost[name]:.2f}", file=stream)
@@ -306,6 +318,9 @@ def print_readout(
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--dedupe", choices=("error", "first"), default="error",
+                        help="duplicate run-0 cell policy: hard error (default) or keep the "
+                             "first-appended row and count the drops")
     parser.add_argument("--exclude-qid", action="append", default=[], metavar="QID",
                         help="confirmed memory hit to exclude pairwise (repeatable)")
     parser.add_argument("--results", type=Path, default=DEFAULT_RESULTS,
@@ -331,7 +346,7 @@ def main(argv: list[str] | None = None) -> int:
     validate_exclusions(args.exclude_qid, rows, sys.stdout)  # provenance-gate before excluding
     flagged.update(args.exclude_qid)
 
-    print_readout(rows, resolutions, teacher, flagged, sys.stdout)
+    print_readout(rows, resolutions, teacher, flagged, sys.stdout, dedupe=args.dedupe)
     return 0
 
 

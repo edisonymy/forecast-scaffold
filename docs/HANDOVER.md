@@ -4,6 +4,28 @@ For the next working session. Everything load-bearing is in this repo; this file
 map. Operator: Edison. Mission (his words): "the aspiration is definitely to reach SOTA
 level performance with frontier models" — weak-model lift is a feature, never the pitch.
 
+## 2026-07-17 tranche1 verdict (queue items 1-2 DONE)
+
+Tranche1 completed to 126 rows ($96 total, incl. ~$10 of duplicate waste from
+overlapping resume invocations — 9 dup cells, scored keep-first via `--dedupe first`).
+Memory screen: 1 candidate (Ofcom/4chan), judged corpus-legitimate, no exclusions.
+Frozen readout: `bench/analysis/tranche1-readout-2026-07-17.txt`. By the pre-registered
+rules: NOTHING PROMOTES OVER HIGH. plain-vs-high mean +0.0219 (plain worse; CI90
+[-0.0027,+0.0505] straddles but direction is clear at n=37, high wins 21/37) — the
+scaffold's high tier BEATS plain ReAct, and the mechanism is refinement (RES 0.0972 vs
+plain 0.0699). angles-vs-high: high better by 0.006 (CI straddles) at 3x the cost —
+angle mode stays dark. On the common set high also scores BELOW the FutureSearch
+teacher (-0.0136 Brier vs teacher) — with the corpus levelling discovery, our method
+matches/beats theirs, supporting "discovery agency is the gap, not reasoning".
+Substrate audit (critic amendment): 90% discoverability (18/20, 2 lexical misses),
+100% URL retention — substrate not the bottleneck; verdicts interpretable.
+Caveats recorded: scaffold-version mix v0.4.18-0.4.22 across rows; timeout 900->1500
+mid-run; coverage ragged (plain 38 / high 37 / angles 36 scorable).
+IN FLIGHT: research.md v2 arm (worktree forecast-scaffold-ab-research-v2, branch
+ab/research-v2 af5d343) — 40 high-tier cells, tag ab-research-v2; score with
+`python bench/analysis/readout_ab_research_v2.py` (rules preregistered in its
+docstring: RES target, Brier CI90 guard < +0.008 to ship).
+
 ## 2026-07-16 MiniBench full-census addendum
 
 - `docs/minibench-analysis-2026-07-16.md` is the reviewed readout: 58 bot-vs-crowd
