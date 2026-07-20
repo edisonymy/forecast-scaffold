@@ -46,14 +46,22 @@ was evaluated without error.
 - Stake: **flat 25 mana** per qualifying bet (~1% of adoption bankroll). Flat, not sized:
   equal-weighted bets keep movement statistics clean.
 - Bet only when ALL hold:
-  (a) |sighted forecast − market| >= 0.05
-      [AMENDED 2026-07-11, operator: "i dont mind if we are less cautious about bets" —
-      was 0.08; the objective is signal volume, and the caps below already bound risk];
+  (a) |sighted forecast − market| >= 0.03
+      [AMENDED 2026-07-20, operator: "make more predictions … the standards are too tight" —
+      was 0.05 (2026-07-11: was 0.08). Journal evidence at amendment: median sighted
+      divergence 0.018; 0.05 admitted 18% of sighted forecasts, 0.03 admits 35%. The caps
+      below still bound risk. Note for a future phase-2 promotion: entry divergence 0.03
+      equals the convergence-exit band, so revisit (a) before phase 2 goes live];
   (b) no open position in the market;
   (c) hygiene screens pass (>= 25 unique bettors, closes 3–60 days out, meme/self-
       referential excluded, <= 3 markets per topic group per run; selection takes half
       top-volume + half mid-volume so the batch includes markets thin enough to beat)
       [AMENDED 2026-07-11: bettor floor was 50, selection was pure volume-rank].
+      [AMENDED 2026-07-20: markets with a journaled pair newer than the 3-day dedupe are
+      excluded BEFORE selection, not skipped after — volume-ranked selection is stable
+      hour to hour, so post-selection skipping had collapsed throughput to zero pairs per
+      run once the top of the ranking was saturated (no journal records 07-18..07-20
+      despite green hourly runs).]
 - `market_read` (informed/herding/thin/stale) is REQUIRED and journaled but is NO LONGER
   a bet gate [AMENDED 2026-07-11]: it is a preregistered hypothesis — at review we test
   whether informed-read bets underperform. The original gate starved the signal: liquid

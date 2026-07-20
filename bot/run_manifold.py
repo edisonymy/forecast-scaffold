@@ -102,9 +102,12 @@ DAY_MS = 86_400_000
 MEME_RE = re.compile(r"this market|will i\b|\bmy |@", re.IGNORECASE)
 
 # ---- betting policy -------------------------------------------------------------------
-DIVERGENCE_THRESHOLD = 0.05   # bet only when |p_sighted - p_market| >= this
-#                               [AMENDED 2026-07-11: was 0.08 — signal volume over caution;
-#                               the hard caps (stake/max-bets/exposure/floor) bound the risk]
+DIVERGENCE_THRESHOLD = 0.03   # bet only when |p_sighted - p_market| >= this
+#                               [AMENDED 2026-07-20: was 0.05 (2026-07-11: was 0.08) — the
+#                               operator asked for more signal volume; journal data showed a
+#                               median divergence of 0.018, so 0.05 admitted only 18% of
+#                               sighted forecasts vs 35% at 0.03. The hard caps
+#                               (stake/max-bets/exposure/floor) still bound the risk]
 MIN_BALANCE_MANA = 200.0      # decide_bet's own hard floor (a would-be bet needs SOME balance)
 REFORECAST_DEDUPE_DAYS = 3    # skip re-forecasting a market whose journaled pair is newer than
 #                               this many days (re-forecasting every run wastes budget)
@@ -327,12 +330,25 @@ def select_markets(
     return selected
 
 
-def gather_markets(limit: int, now_ms: int | None = None) -> list[dict[str, Any]]:
+def gather_markets(
+    limit: int, now_ms: int | None = None, exclude: set[str] | None = None
+) -> list[dict[str, Any]]:
     """Live selection end to end: fetch the listing, pre-screen, enrich the top candidates
-    with detail (criteria + tags), then apply the full selection. Read-only, no key."""
+    with detail (criteria + tags), then apply the full selection. Read-only, no key.
+
+    ``exclude`` drops market ids BEFORE enrichment and selection. The run loop passes the
+    fresh-pair dedupe set here [AMENDED 2026-07-20]: selection is volume-ranked and mostly
+    stable hour to hour, so once the top of the ranking had been forecast, every hourly
+    batch re-selected the same markets and the in-loop dedupe skipped them all — the bot
+    produced zero pairs per run for days. Excluding them up front fills the batch with
+    markets that can actually be forecast this run."""
     now_ms = now_ms if now_ms is not None else _now_ms()
+    exclude = exclude or set()
     listing = search_markets(max(200, limit * 25))
-    prescreened = [m for m in listing if eligible_lite(m, now_ms)]
+    prescreened = [
+        m for m in listing
+        if eligible_lite(m, now_ms) and str(m.get("id")) not in exclude
+    ]
     prescreened.sort(key=lambda m: float(m.get("volume24Hours") or 0.0), reverse=True)
     # Enrich only as many as could plausibly be needed (the diversity cap can reject some),
     # not the whole listing — a detail fetch per market is the expensive part.
@@ -1254,7 +1270,11 @@ def run(args: argparse.Namespace) -> int:
         print("BETTING-DISABLED: below-floor")
         can_post = False
 
-    markets = gather_markets(args.limit)
+    # Re-forecast dedupe: markets whose journaled pair is < REFORECAST_DEDUPE_DAYS old are
+    # excluded from selection itself (not just skipped after), so the hourly batch fills
+    # with markets the run can actually forecast [AMENDED 2026-07-20 — see gather_markets].
+    fresh_pairs = recently_forecast_market_ids(records_before)
+    markets = gather_markets(args.limit, exclude=fresh_pairs)
     # Phase 2 manages open positions (convergence exit + re-forecast) before new markets.
     if phase == 2 and not killed:
         markets = _manage_phase2_positions(
@@ -1270,9 +1290,6 @@ def run(args: argparse.Namespace) -> int:
     # lookup lets resolved positions fall out of the cap (journal status never closes them);
     # offline/dry paths stay journal-only and make no network calls.
     exposure = open_exposure(records_before, state_lookup=live_state if can_post else None)
-    # Re-forecast dedupe: markets whose journaled pair is < REFORECAST_DEDUPE_DAYS old are
-    # skipped this run (re-forecasting the same market every run wastes budget).
-    fresh_pairs = recently_forecast_market_ids(records_before)
     bets_placed = 0
     for market in markets:
         if float(budget_state["usd"]) >= budget - BUDGET_EPSILON_USD:

@@ -152,6 +152,28 @@ def test_selection_limit_is_honored() -> None:
     assert len(run_manifold.select_markets(markets, limit=2, now_ms=NOW_MS)) == 2
 
 
+def test_gather_markets_excludes_fresh_pairs_before_selection(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # [AMENDED 2026-07-20] markets with a fresh journaled pair are dropped BEFORE
+    # enrichment/selection so the batch backfills with novel markets. Volume-ranked
+    # selection is stable hour to hour: without this, every hourly run re-selected the
+    # same saturated top-volume markets and skipped them all (zero pairs per run).
+    listing = [
+        mk(f"m{i}", groupSlugs=[f"g{i}"], volume24Hours=1000.0 - i) for i in range(6)
+    ]
+    monkeypatch.setattr(run_manifold, "search_markets", lambda pool: listing)
+    monkeypatch.setattr(run_manifold, "market_detail", lambda mid: {})
+    monkeypatch.setattr(run_manifold, "_now_ms", lambda: NOW_MS)
+
+    # Without exclusion: limit=2 -> top band takes rank 0, mid band (ranks 2..8) takes m2.
+    assert [m["id"] for m in run_manifold.gather_markets(2)] == ["m0", "m2"]
+    # With the leaders excluded the ranking re-forms over novel markets only, so the batch
+    # fills with the next eligible ones instead of selecting-then-skipping.
+    picked = run_manifold.gather_markets(2, exclude={"m0", "m1"})
+    assert [m["id"] for m in picked] == ["m2", "m4"]
+
+
 # --------------------------------------------------------------------------- briefs
 
 
@@ -263,13 +285,13 @@ def test_sighted_brief_has_price_and_judgment_language() -> None:
 
 
 def test_decide_bet_divergence_gate() -> None:
-    # [AMENDED 2026-07-11] the divergence floor is 0.05 (was 0.08).
-    # Below threshold (0.03 < 0.05) -> no bet.
+    # [AMENDED 2026-07-20] the divergence floor is 0.03 (was 0.05, before that 0.08).
+    # Below threshold (0.02 < 0.03) -> no bet.
     assert run_manifold.decide_bet(
-        0.53, 0.50, 25, balance=1000, already_positioned=False
+        0.52, 0.50, 25, balance=1000, already_positioned=False
     ) is None
-    # Exactly at the 0.05 threshold -> a bet.
-    at = run_manifold.decide_bet(0.55, 0.50, 25, balance=1000, already_positioned=False)
+    # Exactly at the 0.03 threshold -> a bet.
+    at = run_manifold.decide_bet(0.53, 0.50, 25, balance=1000, already_positioned=False)
     assert at == {"outcome": "YES", "stake": 25.0}
     # Above threshold, forecast higher -> YES.
     up = run_manifold.decide_bet(0.60, 0.50, 25, balance=1000, already_positioned=False)
