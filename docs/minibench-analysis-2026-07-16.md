@@ -152,24 +152,60 @@ density there → 100·log2(density/uniform), the units peer score moves in 1:1.
 - **All five negative-scoring numerics were upper-tail misses**, four of them barely
   above p90: UKMTO attacks 8 (p90 8), NIFC large fires 78 (p90 66), Ebola deaths 1271
   (p90 1230), Japan HFMD 7.03 (p90 7.0), Brent 96.78 (p90 97). The worst single score,
-  -359 (HFMD), came from an outcome **0.4% above p90** — the 5-percentile → CDF
-  construction drops density ~45x at the p90 cliff, so "barely wrong" scores like
-  "impossible".
-- Counterfactual totals over the same 21 questions (submitted = 1141):
+  -119, came from an outcome **0.43% above p90** — past the outermost declared
+  percentile the CDF builder has nothing to interpolate against but the edge of the
+  question's range, so mass thins out abruptly (median 6.4x drop at the cliff across
+  this wave, max 21x, min 1.0x).
+- Counterfactual totals over the same 21 questions, in LEADERBOARD POINTS
+  (submitted = 469; see the units correction below):
 
   | transform | total | Δ | worst q | inside 10–90 |
   |---|---|---|---|---|
-  | submitted | 1141 | — | -359 | 16/21 |
-  | global widen w=1.3 | 1419 | +278 | -191 | 19/21 |
-  | **right-tail only r=1.5** | **1572** | **+431** | **-157** | 20/21 |
-  | right-tail only r=2.0 | 1367 | +225 | -183 | 20/21 |
-  | uniform mixture e=0.10 | 1220 | +78 | -252 | 17/21 |
-  | tail-only (both) t=1.5 | 1163 | +22 | -157 | 20/21 |
-  | shift up d=0.1 | 1262 | +121 | -208 | 15/21 |
+  | submitted | 469 | — | -119 | 16/21 |
+  | global widen w=1.3 | 565 | +96 | -64 | 19/21 |
+  | **right-tail only r=1.5** | **618** | **+149** | **-52** | 20/21 |
+  | right-tail only r=2.0 | 547 | +78 | -61 | 20/21 |
+  | no open-bound halving | 512 | +43 | -92 | 19/21 |
+  | uniform mixture e=0.10 | 496 | +27 | -82 | 17/21 |
+  | tail-only (both) t=1.5 | 476 | +7 | -52 | 20/21 |
+  | shift up d=0.1 | 511 | +42 | -70 | 15/21 |
 
-  Right-tail widening at r=1.5 is worth **+20.5 log-score points per question**, CI90
-  [-61.8,+101.5] — straddles zero at n=21, so by the standing rule it is a hypothesis,
+  Right-tail widening at r=1.5 is worth **+7.1 leaderboard points per question**, CI90
+  [-21.5,+35.1] — straddles zero at n=21, so by the standing rule it is a hypothesis,
   not a shipped change.
+
+### Units and bucket correction (2026-07-26, same day)
+
+The first version of this readout was scored in `100*log2` units with a left-closed
+bucket rule and a uniform reference of 1.0. Verified against Metaculus/metaculus source
+(`scoring/score_math.py`, `utils/the_math/formulas.py`), the platform uses:
+
+    k        = max(int(u*N + 1 - 1e-10), 1)          # RIGHT-closed: an outcome exactly
+                                                     # on a bucket edge scores BELOW it
+    baseline = (1 - 0.05*open_bounds) / N            # 0.05 if the outcome is out of bounds
+    score    = 50 * ln( mass_in_bucket_k / baseline )
+
+Three consequences. (1) Every figure in the first version was **2.885x too large**
+(`100*log2 = 144.27*ln` vs `50*ln`); all numbers above are restated. (2) The left-closed
+rule was biased pessimistic exactly at declared percentiles — 35 of this wave's 105 sit
+on a bucket edge. (3) MiniBench pays a PEER score, `50*(ln p - mean of the field's ln p)`:
+the field term is independent of our forecast, so it cancels in any paired comparison of
+two of our own forecasts and every DELTA above is a delta in real leaderboard points,
+while the absolute levels are baseline scores and are not what the leaderboard shows.
+Also corrected: an out-of-bound outcome is scored against a flat 0.05 baseline and, under
+peer, is near-neutral because every bot's out-of-bound mass is pinned near the same floor
+— so pushing mass past a bound is not a way to buy tail insurance. `bucket_index`,
+`platform_pmf` and `platform_score` are locked by tests in `tests/test_minibench_analysis.py`.
+
+### A cheaper lever the audit surfaced: the open-bound halving
+
+`percentiles_to_cdf` places the bound anchor at `1 - 0.5*(1-max_frac)` when the upper
+bound is open (`core.py:1046-1048`), i.e. it assumes half of the outermost declared decile
+lies outside the question's range. Measured across this wave, our declared p90 actually
+lands at a mean CDF of **0.930**: every distribution we submit is sharper than the one we
+elicited. Removing the halving is worth **+43 points (+2.0/question)** and needs no new
+elicitation at all — it is a pure harness change. It is inherited from the upstream
+reference implementation, so changing it is a deliberate divergence, not a bug fix.
 
 ## The binary side points the same direction
 

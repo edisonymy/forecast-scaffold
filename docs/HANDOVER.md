@@ -68,9 +68,26 @@ n~77 and re-apply the same rule; v2 stays on branch ab/research-v2 until then.
   ASYMMETRY, not width: 25-75 coverage 52% and 10-90 coverage 76% are calibrated, but
   15/21 outcomes landed above our median (p=0.039) and all five negative-scoring
   numerics were upper-tail misses, four barely above p90. Right-tail-only widening
-  r=1.5 is worth +431 log-score points over 21 questions (+20.5/q) with CI90 straddling
-  — preregistered as the primary transform for the 2026-07-27 wave. New scorer:
-  `bench/analysis/minibench_numeric_tails.py`.
+  r=1.5 is worth +149 leaderboard points over 21 questions (+7.1/q) with CI90
+  [-21.5,+35.1] straddling — preregistered as the primary transform for the 2026-07-27
+  wave. New scorer: `bench/analysis/minibench_numeric_tails.py`.
+- SCORING RULE VERIFIED 2026-07-26 against Metaculus/metaculus source, after the first
+  version of the scorer got it wrong three ways. Platform truth:
+  `score = 50*ln(mass_in_bucket / baseline)`, `baseline = (1-0.05*open_bounds)/N`, bucket
+  index RIGHT-closed (`max(int(u*N + 1 - 1e-10), 1)`), and MiniBench pays the PEER form
+  `50*(ln p - field mean ln p)` at a single spot instant (no standing forecast at that
+  instant scores 0, never negative). Our first pass used `100*log2`, a left-closed bucket
+  and a uniform reference of 1.0 — every figure was 2.885x too large and biased
+  pessimistic exactly at declared percentiles. Semantics now locked by tests in
+  `tests/test_minibench_analysis.py`; do not re-derive these by intuition.
+- Out-of-bound mass is NOT tail insurance: under peer everyone's is pinned near the same
+  floor, so an out-of-bound outcome is near score-neutral. Tail budget only pays inside
+  the range.
+- Open lever, no elicitation needed: `percentiles_to_cdf`'s open-bound halving
+  (`core.py:1046-1048`) makes every submission sharper than what we elicited (declared p90
+  lands at mean CDF 0.930). Removing it is worth +43 points (+2.0/q) on this wave. It is
+  inherited from the upstream reference implementation — diverging is a decision, not a
+  bug fix.
 - `docs/proposals-research-v2.md` gained a 2026-07-16 addendum (question-shape research
   rules + reasoning-side missing-evidence gate and conditional guard). Still awaiting
   operator approval as one unit; no production prompt changed.

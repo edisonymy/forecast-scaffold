@@ -19,11 +19,22 @@ tournament, for two reasons:
    mass sits where the outcome actually landed. A forecast can have textbook 50%
    coverage and still be destroyed by the 20% of outcomes that land outside 10-90.
 
-So this script scores the thing the tournament scores. For each resolved numeric it
-maps the outcome onto the question's internal [0,1] location scale (linear or
-log/zero_point, exactly as ``percentiles_to_cdf`` does), reads the submitted CDF's
-density there, and reports it against the uniform reference — i.e. Metaculus's own
-baseline-style log score, in which a peer score moves one-for-one.
+So this script scores the thing the tournament scores. For each resolved numeric it maps
+the outcome onto the question's internal [0,1] location scale (linear or log/zero_point,
+exactly as ``percentiles_to_cdf`` does), finds the resolution BUCKET, and scores the mass
+in it against the platform's baseline — Metaculus's own formula, in leaderboard points.
+
+CORRECTED 2026-07-26 against Metaculus/metaculus source (scoring/score_math.py,
+utils/the_math/formulas.py). The first version of this file got three things wrong:
+  - it used 100*log2 where the platform uses 50*ln, overstating every figure by 2.885x;
+  - it picked the bucket LEFT-closed where the platform is RIGHT-closed, which matters
+    precisely at declared percentiles (35 of this wave's 105 sit exactly on a bucket
+    edge) and was biased pessimistic there;
+  - it used a uniform reference of 1.0 instead of (1 - 0.05*open_bounds).
+MiniBench pays a PEER score (this log mass minus the field's average). The field term is
+independent of our forecast, so it cancels in any paired comparison of two of our own
+forecasts on the same question: deltas printed here are deltas in leaderboard points.
+Absolute levels are baseline scores and are NOT what the leaderboard shows.
 
 Counterfactual CDFs, all rebuilt through the production ``percentiles_to_cdf`` so the
 platform's own standardization/tail rules apply:
@@ -70,13 +81,18 @@ def clamp01(x: float) -> float:
     return min(max(x, 0.0), 1.0)
 
 
-def location_of(value: float, scaling: dict) -> float:
-    return clamp01(_scale_location(
+def raw_location(value: float, scaling: dict) -> float:
+    """Internal [0,1] location, UNclamped — <0 or >1 means the outcome fell out of bounds."""
+    return _scale_location(
         value,
         float(scaling["range_min"]),
         float(scaling["range_max"]),
         scaling.get("zero_point"),
-    ))
+    )
+
+
+def location_of(value: float, scaling: dict) -> float:
+    return clamp01(raw_location(value, scaling))
 
 
 def cdf_at(cdf: list[float], loc: float) -> float:
@@ -87,16 +103,51 @@ def cdf_at(cdf: list[float], loc: float) -> float:
     return cdf[i] + (cdf[i + 1] - cdf[i]) * (x - i)
 
 
-def log_density_score(cdf: list[float], loc: float) -> float:
-    """100 * log2(density / uniform) at ``loc``, densities taken in location space.
-
-    This is Metaculus's continuous baseline score up to the constant it adds; peer score
-    is own-log-score minus the field's, so DIFFERENCES here transfer one-for-one.
+def bucket_index(u: float, n_buckets: int) -> int:
+    """Metaculus's resolution bucket for internal location ``u`` (Metaculus/metaculus,
+    utils/the_math/formulas.py). RIGHT-CLOSED: an outcome exactly on a bucket edge scores
+    in the bucket BELOW. Index 0 is mass under the lower bound, n_buckets+1 over the upper.
     """
-    n = len(cdf)
-    i = min(int(loc * (n - 1)), n - 2)
-    density = (cdf[i + 1] - cdf[i]) * (n - 1)  # mass per unit location
-    return 100.0 * math.log2(max(density, 1e-12))
+    if u < 0:
+        return 0
+    if u > 1:
+        return n_buckets + 1
+    if u == 1:
+        return n_buckets
+    return max(int(u * n_buckets + 1 - 1e-10), 1)
+
+
+def platform_pmf(cdf: list[float]) -> list[float]:
+    """The scored mass array: [below-bound, ...per-bucket..., above-bound], length N+2."""
+    return [cdf[0], *[cdf[i] - cdf[i - 1] for i in range(1, len(cdf))], 1.0 - cdf[-1]]
+
+
+def platform_score(cdf: list[float], u: float, open_bounds: int) -> float:
+    """Metaculus's continuous BASELINE score, in leaderboard points (scoring/score_math.py):
+
+        baseline = 0.05                        if the outcome fell out of bounds
+                 = (1 - 0.05*open_bounds) / N  otherwise
+        score    = 50 * ln(mass_in_outcome_bucket / baseline)
+
+    Note the units: 50*ln, NOT the 100*log2 this file used before 2026-07-26 (which
+    overstated every figure by 2.885x). MiniBench pays a PEER score — this same log mass
+    minus the field's average. The field term does not depend on our forecast, so for a
+    PAIRED comparison of two of our own forecasts on the same question it cancels exactly:
+    a delta computed here is a delta in leaderboard points.
+    """
+    n_buckets = len(cdf) - 1
+    pmf = platform_pmf(cdf)
+    k = bucket_index(u, n_buckets)
+    baseline = 0.05 if k in (0, len(pmf) - 1) else (1.0 - 0.05 * open_bounds) / n_buckets
+    return 50.0 * math.log(max(pmf[k], 1e-12) / baseline)
+
+
+def open_bounds_of(scaling: dict) -> int:
+    return int(bool(scaling.get("lower_open"))) + int(bool(scaling.get("upper_open")))
+
+
+def score_row(cdf: list[float], outcome: float, scaling: dict) -> float:
+    return platform_score(cdf, raw_location(outcome, scaling), open_bounds_of(scaling))
 
 
 def widen(pcts: dict[str, float], w: float, *, tails_only: bool = False) -> dict[str, float]:
@@ -134,6 +185,48 @@ def rebuild(pcts: dict[str, float], scaling: dict) -> list[float] | None:
         return None
 
 
+def cdf_without_open_bound_halving(pcts: dict[str, float], scaling: dict) -> list[float] | None:
+    """``percentiles_to_cdf`` with ONE change: an open bound no longer assumes that half of
+    the outermost declared decile lies outside the question's range.
+
+    core.py:1046-1048 sets the bound anchor to ``0.5*min_frac`` / ``1 - 0.5*(1-max_frac)``,
+    so a declared p90 under an open upper bound is placed as if it were p95 and the
+    standardization then rescales the interior. Measured across this wave, our declared p90
+    actually lands at a mean CDF of 0.930: every distribution we submit is SHARPER than the
+    one we elicited. This variant pins the declared percentiles where they were declared and
+    lets the platform's own min-step/tail terms supply the out-of-bound mass. Requires no new
+    elicitation — it is a pure harness change.
+    """
+    lo, hi = float(scaling["range_min"]), float(scaling["range_max"])
+    zero_point, cdf_size = scaling.get("zero_point"), int(scaling.get("cdf_size") or 201)
+    lower_open, upper_open = bool(scaling.get("lower_open")), bool(scaling.get("upper_open"))
+    declared = sorted((float(k) / 100.0, float(v)) for k, v in pcts.items())
+    if not all(lo < v < hi for _, v in declared):
+        return None
+    points = [(clamp01(_scale_location(v, lo, hi, zero_point)), f) for f, v in declared]
+    anchors = [(0.0, 0.0), *points, (1.0, 1.0)]   # <-- the only change: no halving
+    if any(a[0] >= b[0] for a, b in zip(anchors, anchors[1:], strict=False)):
+        return None
+    locations = [i / (cdf_size - 1) for i in range(cdf_size)]
+    raw, seg = [], 0
+    for x in locations:
+        while seg < len(anchors) - 2 and anchors[seg + 1][0] < x:
+            seg += 1
+        (x0, y0), (x1, y1) = anchors[seg], anchors[seg + 1]
+        raw.append(y0 + (y1 - y0) * (x - x0) / (x1 - x0))
+    span = raw[-1] - raw[0]
+    rescaled = [(y - raw[0]) / span for y in raw]
+    if lower_open and upper_open:
+        cdf = [0.988 * r + 0.01 * x + 0.001 for r, x in zip(rescaled, locations, strict=True)]
+    elif lower_open:
+        cdf = [0.989 * r + 0.01 * x + 0.001 for r, x in zip(rescaled, locations, strict=True)]
+    elif upper_open:
+        cdf = [0.989 * r + 0.01 * x for r, x in zip(rescaled, locations, strict=True)]
+    else:
+        cdf = [0.99 * r + 0.01 * x for r, x in zip(rescaled, locations, strict=True)]
+    return [round(v, 10) for v in cdf]
+
+
 def mix_uniform(cdf: list[float], eps: float) -> list[float]:
     n = len(cdf)
     return [(1 - eps) * v + eps * (i / (n - 1)) for i, v in enumerate(cdf)]
@@ -168,7 +261,7 @@ def main(argv: list[str] | None = None) -> int:
         y = resolutions[qid]
         loc = location_of(y, row["scaling"])
         pit = cdf_at(row["submitted_cdf"], loc)
-        score = log_density_score(row["submitted_cdf"], loc)
+        score = score_row(row["submitted_cdf"], y, row["scaling"])
         pit_values.append(pit)
         base_scores.append(score)
         p = row["percentiles"]
@@ -200,7 +293,8 @@ def main(argv: list[str] | None = None) -> int:
             if cdf is None:
                 return None
             loc = location_of(resolutions[row["source"]["question_id"]], row["scaling"])
-            scores.append(log_density_score(cdf, loc))
+            scores.append(score_row(cdf, resolutions[row["source"]["question_id"]],
+                                    row["scaling"]))
             pits.append(cdf_at(cdf, loc))
         inside = sum(1 for p in pits if 0.10 <= p <= 0.90)
         print(f"  {label:<26} {sum(scores):>10.0f} {sum(scores) - base_total:>+13.0f} "
@@ -224,6 +318,9 @@ def main(argv: list[str] | None = None) -> int:
                      [mix_uniform(r["submitted_cdf"], e) for r in rows])
         if got:
             mix_scores[e] = got
+    nohalve = report("no open-bound halving",
+                     [cdf_without_open_bound_halving(r["percentiles"], r["scaling"])
+                      for r in rows])
     right_scores: dict[float, list[float]] = {}
     for r_ in RIGHT_WIDENS:
         got = report(f"right-tail only r={r_}",
@@ -246,7 +343,8 @@ def main(argv: list[str] | None = None) -> int:
     for label, scores in ([(f"tail-only t={t}", s) for t, s in tail_scores.items()]
                           + [(f"mixture e={e}", s) for e, s in mix_scores.items()]
                           + [(f"right-tail r={r_}", s) for r_, s in right_scores.items()]
-                          + [(f"shift up d={d}", s) for d, s in shift_scores.items()]):
+                          + [(f"shift up d={d}", s) for d, s in shift_scores.items()]
+                          + ([("no-halving", nohalve)] if nohalve else [])):
         deltas = [a - b for a, b in zip(scores, base_scores, strict=True)]
         lo, hi = boot_ci(deltas)
         print(f"  {label:<20} mean {st.mean(deltas):+8.1f} per question  "

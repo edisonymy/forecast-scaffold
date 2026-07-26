@@ -1,4 +1,6 @@
-MiniBench 2026-07-13 wave — frozen readout, generated 2026-07-26 (57 platform resolutions)
+MiniBench 2026-07-13 wave - frozen readout, regenerated 2026-07-26 after the scoring-rule
+verification (50*ln, right-closed buckets, (1-0.05*open)/N baseline). Supersedes the first
+pass, whose figures were 2.885x too large.
 ================================================================================
 $ python bench/analysis/minibench_counterfactuals.py --resolutions bench/analysis/minibench-2026-07-resolutions.json
 frozen wave: 41 binaries, 25 numerics (resolve_by in 2026-07-17..2026-08-05)
@@ -24,66 +26,68 @@ resolved numerics with a submitted CDF: 21
 
 === per-question: where the outcome landed in OUR distribution ===
    qid     PIT   logscore         p10        p50        p90    outcome  question
- 44712   0.644      137.5        3.32       3.55       3.95       3.64  What will be the total tokenized real-world 
- 44717   0.735      236.0     4.2e+05    6.8e+05   1.05e+06    8.1e+05  What will TAC chain's DeFi TVL (per DefiLlam
- 44719   0.157       41.6       19.15      24.05      28.85         20  What fill percentage will Conagua's SINA rep
- 44720   0.638      146.2         119        122        127        123  What will be the highest daily maximum tempe
- 44724   0.520      215.1       1.127      1.143      1.153      1.139  What will the ECB EUR/USD reference rate be 
- 44725   0.190       76.4       3.925      4.275      4.875       4.01  How many total acres will have burned in U.S
- 44728   0.886      102.9       4.385      4.555      4.725       4.71  What will the U.S. 10-year Treasury constant
- 44731   0.251      172.4           9         11         14         10  How many orbital launches will SpaceX conduc
- 44733   0.933     -123.9           1          3          8          8  How many UKMTO-classified "Attack" incidents
- 44735   0.533      175.6        1900       2100       2550       2124  How many cumulative confirmed Ebola (Bundibu
- 44737   0.609      123.8         4.6        5.8        7.2          6  How many named storms will the 2026 Eastern 
- 44744   0.971     -229.8          30         46         66         78  How many large active wildfires will NIFC re
- 44747   0.291      120.2           4          6          8          5  How many SpaceX Falcon 9 and Falcon Heavy la
- 44751   0.955     -194.3         860       1020       1230       1271  How many cumulative Ebola-related deaths wil
- 44752   0.596      112.1         400        540        720        571  What will be the highest overnight number of
- 44753   0.937     -358.8         5.4        6.1          7       7.03  What will Japan's national hand-foot-and-mou
- 44755   0.853        9.5           0          5         20         15  How many ship transit calls will IMF PortWat
- 44756   0.638      159.9          68         78         90         81  What will the French 10-year OAT–German Bund
- 44757   0.177      103.7         383        440        507        401  What will Nan Ya Technology's (2408.TW) clos
- 44759   0.939      -19.3          70         83         97      96.78  What will the front-month Brent crude oil fu
- 44770   0.352      134.7       21.59      22.29       23.5         22  How many total complete losses of off-site p
+ 44712   0.644       52.9        3.32       3.55       3.95       3.64  What will be the total tokenized real-world 
+ 44717   0.735       87.1     4.2e+05    6.8e+05   1.05e+06    8.1e+05  What will TAC chain's DeFi TVL (per DefiLlam
+ 44719   0.157       14.4       19.15      24.05      28.85         20  What fill percentage will Conagua's SINA rep
+ 44720   0.638       55.9         119        122        127        123  What will be the highest daily maximum tempe
+ 44724   0.520       74.6       1.127      1.143      1.153      1.139  What will the ECB EUR/USD reference rate be 
+ 44725   0.190       26.5       3.925      4.275      4.875       4.01  How many total acres will have burned in U.S
+ 44728   0.886       35.7       4.385      4.555      4.725       4.71  What will the U.S. 10-year Treasury constant
+ 44731   0.251       65.0           9         11         14         10  How many orbital launches will SpaceX conduc
+ 44733   0.933      -40.4           1          3          8          8  How many UKMTO-classified "Attack" incidents
+ 44735   0.533       66.1        1900       2100       2550       2124  How many cumulative confirmed Ebola (Bundibu
+ 44737   0.609       45.5         4.6        5.8        7.2          6  How many named storms will the 2026 Eastern 
+ 44744   0.971      -77.1          30         46         66         78  How many large active wildfires will NIFC re
+ 44747   0.291       44.2           4          6          8          5  How many SpaceX Falcon 9 and Falcon Heavy la
+ 44751   0.955      -62.1         860       1020       1230       1271  How many cumulative Ebola-related deaths wil
+ 44752   0.596       44.1         400        540        720        571  What will be the highest overnight number of
+ 44753   0.937     -119.1         5.4        6.1          7       7.03  What will Japan's national hand-foot-and-mou
+ 44755   0.853        5.9           0          5         20         15  How many ship transit calls will IMF PortWat
+ 44756   0.638       60.7          68         78         90         81  What will the French 10-year OAT–German Bund
+ 44757   0.177       41.2         383        440        507        401  What will Nan Ya Technology's (2408.TW) clos
+ 44759   0.939       -1.4          70         83         97      96.78  What will the front-month Brent crude oil fu
+ 44770   0.352       49.2       21.59      22.29       23.5         22  How many total complete losses of off-site p
 
 === calibration of the submitted distributions (n=21) ===
   outcome inside 25-75 : 11/21 (52%)   target 50%
   outcome inside 10-90 : 16/21 (76%)   target 80%
   outcome beyond 2/98  : 0/21 (0%)   target 4%
-  mean log score +54.3  median +112.1  worst -358.8
+  mean log score +22.3  median +44.1  worst -119.1
 
 === counterfactual transforms (total log score over the same n) ===
   transform                       total  vs submitted    mean/q     worst  inside 10-90
-  submitted (identity)             1141            +0     +54.3    -358.8       16/21
-  global widen w=1.3               1419          +278     +67.6    -191.0       19/21
-  global widen w=1.6               1111           -30     +52.9    -120.8       20/21
-  tail-only widen t=1.5            1163           +22     +55.4    -157.1       20/21
-  tail-only widen t=2.0             756          -386     +36.0    -183.3       20/21
-  tail-only widen t=3.0             448          -693     +21.4    -197.6       21/21
-  uniform mixture e=0.02           1167           +26     +55.6    -330.0       16/21
-  uniform mixture e=0.05           1195           +53     +56.9    -295.4       16/21
-  uniform mixture e=0.1            1220           +78     +58.1    -251.6       17/21
-  right-tail only r=1.5            1572          +431     +74.9    -157.1       20/21
-  right-tail only r=2.0            1367          +225     +65.1    -183.3       20/21
-  right-tail only r=3.0            1134            -7     +54.0    -197.6       21/21
-  shift up d=0.1                   1262          +121     +60.1    -207.9       15/21
-  shift up d=0.2                   1138            -4     +54.2    -244.2       16/21
-  shift up d=0.3                    769          -373     +36.6    -260.5       16/21
+  submitted (identity)              469            +0     +22.3    -119.1       16/21
+  global widen w=1.3                565           +96     +26.9     -63.6       19/21
+  global widen w=1.6                458           -10     +21.8     -39.3       20/21
+  tail-only widen t=1.5             476            +7     +22.7     -51.9       20/21
+  tail-only widen t=2.0             335          -134     +16.0     -61.0       20/21
+  tail-only widen t=3.0             229          -240     +10.9     -65.9       21/21
+  uniform mixture e=0.02            478            +9     +22.8    -109.1       16/21
+  uniform mixture e=0.05            487           +18     +23.2     -97.1       16/21
+  uniform mixture e=0.1             496           +27     +23.6     -81.9       17/21
+  no open-bound halving             512           +43     +24.4     -92.4       19/21
+  right-tail only r=1.5             618          +149     +29.4     -51.9       20/21
+  right-tail only r=2.0             547           +78     +26.0     -61.0       20/21
+  right-tail only r=3.0             467            -2     +22.2     -65.9       21/21
+  shift up d=0.1                    511           +42     +24.3     -69.5       15/21
+  shift up d=0.2                    468            -1     +22.3     -79.4       16/21
+  shift up d=0.3                    340          -129     +16.2     -85.0       16/21
 
 === median bias (sign test) ===
   outcome above our median in 15/21 questions (71%); a calibrated median gives 50%
 
 === paired bootstrap vs submitted (90% CI, 10k draws, seed 7) ===
   EXPLORATORY: these transforms were chosen after seeing this wave.
-  tail-only t=1.5      mean     +1.0 per question  CI90 [   -77.8,   +79.6]  (positive favors the transform)
-  tail-only t=2.0      mean    -18.4 per question  CI90 [   -98.3,   +61.3]  (positive favors the transform)
-  tail-only t=3.0      mean    -33.0 per question  CI90 [  -115.8,   +49.7]  (positive favors the transform)
-  mixture e=0.02       mean     +1.2 per question  CI90 [   -90.4,   +88.7]  (positive favors the transform)
-  mixture e=0.05       mean     +2.5 per question  CI90 [   -86.0,   +88.0]  (positive favors the transform)
-  mixture e=0.1        mean     +3.7 per question  CI90 [   -80.9,   +86.8]  (positive favors the transform)
-  right-tail r=1.5     mean    +20.5 per question  CI90 [   -61.8,  +101.5]  (positive favors the transform)
-  right-tail r=2.0     mean    +10.7 per question  CI90 [   -73.5,   +94.4]  (positive favors the transform)
-  right-tail r=3.0     mean     -0.3 per question  CI90 [   -88.7,   +87.3]  (positive favors the transform)
-  shift up d=0.1       mean     +5.8 per question  CI90 [   -73.6,   +84.0]  (positive favors the transform)
-  shift up d=0.2       mean     -0.2 per question  CI90 [   -71.4,   +70.8]  (positive favors the transform)
-  shift up d=0.3       mean    -17.7 per question  CI90 [   -82.5,   +48.1]  (positive favors the transform)
+  tail-only t=1.5      mean     +0.4 per question  CI90 [   -27.0,   +27.8]  (positive favors the transform)
+  tail-only t=2.0      mean     -6.4 per question  CI90 [   -34.1,   +21.4]  (positive favors the transform)
+  tail-only t=3.0      mean    -11.4 per question  CI90 [   -40.2,   +17.3]  (positive favors the transform)
+  mixture e=0.02       mean     +0.4 per question  CI90 [   -31.1,   +30.5]  (positive favors the transform)
+  mixture e=0.05       mean     +0.9 per question  CI90 [   -29.6,   +30.3]  (positive favors the transform)
+  mixture e=0.1        mean     +1.3 per question  CI90 [   -28.0,   +29.9]  (positive favors the transform)
+  right-tail r=1.5     mean     +7.1 per question  CI90 [   -21.5,   +35.1]  (positive favors the transform)
+  right-tail r=2.0     mean     +3.7 per question  CI90 [   -25.6,   +32.7]  (positive favors the transform)
+  right-tail r=3.0     mean     -0.1 per question  CI90 [   -30.8,   +30.3]  (positive favors the transform)
+  shift up d=0.1       mean     +2.0 per question  CI90 [   -25.7,   +29.4]  (positive favors the transform)
+  shift up d=0.2       mean     -0.1 per question  CI90 [   -24.8,   +24.9]  (positive favors the transform)
+  shift up d=0.3       mean     -6.2 per question  CI90 [   -28.9,   +16.8]  (positive favors the transform)
+  no-halving           mean     +2.0 per question  CI90 [   -27.0,   +30.5]  (positive favors the transform)
