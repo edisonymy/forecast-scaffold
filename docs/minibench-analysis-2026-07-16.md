@@ -244,3 +244,43 @@ that wave is confounded for any prompt-level comparison. Registered now:
 - Binary: no shrink. Report the 10–25% band's realized rate as a standing monitor.
 - The scale-dominated pinball metric is retired; `minibench_numeric_tails.py` is the
   numeric scorer from here.
+
+---
+
+# A/B: five percentiles vs seven (2026-07-26)
+
+`bench/analysis/ab_numeric_anchors.py`, 21 resolved numerics, both arms opus-5 with tools
+disabled, context held identical (question + bounds + the model's own journaled reasoning
+from the live run), $4.08, memory screen clean on 42/42 cells. Frozen readout:
+`bench/analysis/ab-numeric-anchors-2026-07-26-readout.txt`.
+
+**Verdict by the standing rule: DOES NOT PROMOTE.** Paired mean seven − five
+**+3.7 leaderboard points/question, CI90 [-3.3,+11.0]**, treatment better on 11/21.
+
+The decomposition is the transferable finding — split by where the outcome landed in the
+CONTROL's own distribution:
+
+| group | n | mean delta |
+|---|---|---|
+| outcome outside 10–90 (tail miss) | 2 | **+45.1** |
+| outcome inside 10–90 | 19 | **-0.7** |
+
+Extra tail mass is paid for out of the centre, so it costs where the outcome lands in the
+calibrated core and pays enormously where it does not. The measured premium is -0.7/q —
+close to free. The whole expected value therefore turns on the tail-miss RATE, which this
+A/B does not measure: the control missed 2/21 (9.5%), our live submissions to the same
+wave missed 5/21 (24%). At 24% the same split implies +10.3/q.
+
+Arm summary (totals over the same 21): live 469 / five 504 / seven 582; worst question
+-119.1 / -80.8 / -27.6; inside 10-90 16 / 19 / 18. **The live-vs-five gap is NOT a model
+comparison** — the re-elicited arms get a distilled dossier of their own prior reasoning,
+a materially easier task.
+
+Compliance: 21/21 treatment runs named a tail mechanism at each end before writing
+numbers; 17/21 came back skewed upward (median upper/lower tail-length ratio 1.34). The
+instruction lands; the open question is only whether tails pay at our hit rate.
+
+Deflation worth recording: Japan HFMD — the -119 outlier that motivated the proposal —
+got WORSE under the treatment (-11.4), because the re-elicited control already placed its
+p90 better than the live run. The gain came from NIFC wildfire counts (+57.1) and Ebola
+deaths (+33.1) instead.

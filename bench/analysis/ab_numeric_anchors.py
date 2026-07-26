@@ -285,6 +285,23 @@ def score(out: Path) -> int:
         print(f"  worst for seven: qid {big[0][0]} {big[0][1]:+.1f}   "
               f"best for seven: qid {big[-1][0]} {big[-1][1]:+.1f}")
 
+    # The decomposition that decides whether wider tails are worth it: extra tail mass is
+    # paid for out of the centre, so it should LOSE a little wherever the outcome landed in
+    # the calibrated 10-90 core and WIN big on the minority of questions that miss the tail.
+    # A net verdict is just the mix of those two; the split is the transferable finding.
+    if "five" in stats and "seven" in stats:
+        miss, interior = [], []
+        for e, d in zip(per_q, [b - a for a, b in zip(stats["five"]["score"],
+                                                      stats["seven"]["score"], strict=True)],
+                        strict=True):
+            pit_five = e["five"]["pit"]
+            (miss if (pit_five < 0.10 or pit_five > 0.90) else interior).append(d)
+        print("\ndecomposition by where the outcome landed in the CONTROL distribution")
+        for label, group in (("tail miss (outside 10-90)", miss), ("interior", interior)):
+            if group:
+                print(f"  {label:<26} n={len(group):<3} mean {st.mean(group):+8.1f} "
+                      f"points/question  (total {sum(group):+.0f})")
+
     named = [e for e in per_q if e.get("seven") and e["seven"].get("tail_high")]
     print(f"\ntail mechanisms named: {len(named)}/{len(per_q)}")
     skews = []
