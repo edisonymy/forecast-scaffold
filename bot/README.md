@@ -21,8 +21,8 @@ tamper-evident track record).
 3. **Provider** (`--provider`, default `subscription`): `openrouter` routes the same
    `claude` CLI through OpenRouter's Anthropic-compatible endpoint, billed to OpenRouter
    credits (e.g. Metaculus's sponsored $100) instead of the subscription. Needs
-   `OPENROUTER_API_KEY`; a bare `--model claude-sonnet-5` is rewritten to the
-   `anthropic/claude-sonnet-5` slug automatically. In `bot.yml` the OpenRouter step also
+   `OPENROUTER_API_KEY`; a bare `--model claude-opus-5` is rewritten to the
+   `anthropic/claude-opus-5` slug automatically. In `bot.yml` the OpenRouter step also
    runs as an automatic **fallback** when the subscription step fails (rate limit, auth
    outage): the rerun skips already-forecasted questions, so nothing double-submits.
    Caveats: `cost_usd` in the journal is the CLI's own estimate, which may not exactly

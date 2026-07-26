@@ -9,7 +9,7 @@ so an interrupted run resumes where it stopped.
 Usage:
     python bench/run_bench.py bench/sets/2026-07-04.jsonl \
         --tiers low,medium,high,auto --provider openrouter \
-        --agent-cmd "claude -p --model claude-sonnet-5 --output-format json \
+        --agent-cmd "claude -p --model claude-opus-5 --output-format json \
                      --allowed-tools Read,Glob,Grep,WebSearch,WebFetch"
 
     # Zero-tier ablation via the direct native chat API (no CLI scaffolding, model-

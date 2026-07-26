@@ -1628,7 +1628,7 @@ def main(argv: list[str] | None = None) -> int:
         # means the agent researches with whatever the local CLI permits — one bare run did
         # ZERO searches where the hardened command did seven, and moved the answer from
         # 0.34 to 0.66. Local default now matches the workflows exactly.
-        default=("claude -p --model claude-sonnet-5 --output-format json "
+        default=("claude -p --model claude-opus-5 --output-format json "
                  "--allowed-tools Read,Glob,Grep,WebSearch,WebFetch"),
         help="headless agent command (default mirrors bot.yml's hardened production shape)",
     )

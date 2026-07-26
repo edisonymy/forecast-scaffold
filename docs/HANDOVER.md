@@ -1,5 +1,29 @@
 # HANDOVER — continuation state as of 2026-07-16
 
+## 2026-07-26: default model is now opus-5, repo-wide
+
+Operator directive: every default forecasting model id moved `claude-sonnet-5` ->
+`claude-opus-5` (bot.yml both provider steps, bot-test.yml, bench.yml,
+`bot/run_bot.py` --agent-cmd default, `bot/run_manifold.py` DEFAULT_AGENT_CMD, plus the
+two doc examples). Verified the pinned CLI accepts the id and reports usage under
+`claude-opus-5`. Deliberately NOT changed: `bench/overnight_ablation.py`, whose arms are
+named sonnet/opus experiment definitions, and test fixtures asserting literal strings.
+WATCH: `--budget 3` per tournament run was sized for sonnet (~$1.57/question observed);
+opus questions cost multiples of that, so a run can spend its cap inside one question and
+collapse the intended 3-4 run ensemble to a single run. Raise the cap or accept fewer,
+better-modelled questions per tick — and note the OpenRouter FALLBACK step now bills opus
+rates to real credits when the subscription step fails.
+
+## 2026-07-27 MiniBench wave
+
+Entry needs nothing new: the slug is permanently `minibench` (project 33069 for this
+round, "the project ID for the currently active minibench is always minibench"), and the
+`TOURNAMENT_ID` repo variable is already `summer-futureeval-2026,minibench`. 60
+questions, $1k pool, spot-peer scored, forecasting ends 2026-08-01T04:16:44Z, closes
+2026-08-14. Most questions open in week 1. The 10-min Cloud Scheduler kicker is firing
+reliably. ASKNEWS_API_KEY is EMPTY in CI — the competition-licensed research source is
+off for the tournament that licenses it.
+
 For the next working session. Everything load-bearing is in this repo; this file is the
 map. Operator: Edison. Mission (his words): "the aspiration is definitely to reach SOTA
 level performance with frontier models" — weak-model lift is a feature, never the pitch.
@@ -37,10 +61,16 @@ n~77 and re-apply the same rule; v2 stays on branch ab/research-v2 until then.
   confirmed misses are extrapolation overconfidence, institutional-process
   overdiscount, numeric narrowness (19/21 narrower, ratio 0.62), and one
   conditional-criterion leak.
-- DUE JUL 23-25: enter resolutions and run
-  `python bench/analysis/minibench_counterfactuals.py --resolutions FILE.json` —
-  transforms + subgroup tags preregistered 2026-07-16 pre-outcome. CI-gated rules in
-  the docstring; do not fit anything on this wave's outcomes.
+- DONE 2026-07-26: resolutions entered (`bench/analysis/minibench-2026-07-resolutions.json`,
+  pulled from the platform record) and both scorers run. Verdict appended to the memo:
+  by the preregistered rule NOTHING PROMOTES (binary shrink CI straddles; the numeric
+  pinball metric turned out scale-dominated and is retired). The real defect is
+  ASYMMETRY, not width: 25-75 coverage 52% and 10-90 coverage 76% are calibrated, but
+  15/21 outcomes landed above our median (p=0.039) and all five negative-scoring
+  numerics were upper-tail misses, four barely above p90. Right-tail-only widening
+  r=1.5 is worth +431 log-score points over 21 questions (+20.5/q) with CI90 straddling
+  — preregistered as the primary transform for the 2026-07-27 wave. New scorer:
+  `bench/analysis/minibench_numeric_tails.py`.
 - `docs/proposals-research-v2.md` gained a 2026-07-16 addendum (question-shape research
   rules + reasoning-side missing-evidence gate and conditional guard). Still awaiting
   operator approval as one unit; no production prompt changed.

@@ -102,3 +102,109 @@ the preregistered outcome test can price that trade, which is why it is subgroup
 No production prompt changed. No recalibration armed. The extremity and width
 signatures are crowd-relative; the preregistered outcome test is the arbiter. The
 research-rule additions ride the existing research.md v2 approval gate.
+
+---
+
+# RESOLVED — 2026-07-26 readout of the preregistered tests
+
+57 resolutions pulled straight from the platform record (`bench/analysis/minibench-2026-07-resolutions.json`;
+36 binaries, 21 numerics — 2 unresolved, 1 annulled, and 6 non-MiniBench FutureEval rows
+that share the resolve_by window are excluded). Frozen output:
+`bench/analysis/minibench-2026-07-readout-2026-07-26.txt`. Leaderboard: 60 questions
+predicted, 99.7% live coverage, total score 589.
+
+## Verdict by the preregistered rule: NOTHING PROMOTES
+
+- **Binary logit shrink.** a=0.573 vs identity: mean Brier delta **-0.0026**, CI90
+  [-0.0245,+0.0174] — straddles. Grid: a=0.5 0.1585 / a=0.573 0.1552 / a=0.7 0.1529 /
+  a=0.85 0.1542 / a=1.0 0.1578. a=0.7 is nominally best; that is a post-hoc grid pick and
+  the primary comparison straddles, so no shrink ships.
+- **Subgroup predictions are falsified in direction** (all underpowered, no CI clears):
+  registered call was shrink HURTS 'schedule' and HELPS 'momentum'/'other'. Measured:
+  shrink HELPS 'schedule' (n=3, 0.4496 identity → 0.3203 at a=0.5) and HURTS 'momentum'
+  (n=9, +0.0101) and 'other' (n=24, +0.0061). The question-shape-conditional shrink
+  policy this was meant to justify is not supported.
+- **Numeric widening.** w=1.6 vs identity: mean pinball delta **+746** (worse), CI90
+  [-0.34,+2238]. 50% central-interval coverage **11/21 = 52%** against a 50% target.
+
+## The preregistered numeric metric asked the wrong question
+
+Two defects, both visible only now:
+
+1. Mean pinball over raw units is **scale-dominated** — one question priced in 10^5 (TAC
+   TVL) swamps twenty priced in 1–100, so the "primary" numeric comparison was
+   effectively a one-question test. Its CI is not interpretable.
+2. MiniBench does not score pinball. It scores the **log density the submitted CDF puts
+   at the outcome**. Interval width is nearly irrelevant to that; what matters is mass
+   where the outcome landed.
+
+`bench/analysis/minibench_numeric_tails.py` (EXPLORATORY, written after resolution)
+scores the tournament's own quantity: outcome → internal [0,1] location → submitted-CDF
+density there → 100·log2(density/uniform), the units peer score moves in 1:1.
+
+## What actually cost us points: asymmetry, not width
+
+- Interval **width is calibrated**: 25–75 coverage 11/21 (52%, target 50%), 10–90
+  coverage 16/21 (76%, target 80%). Symmetric widening therefore buys nothing, and
+  aggressive widening actively costs (tail-only t=3.0: **-693** total log score).
+- The outcome landed **above our median in 15/21 questions (71%)** — one-sided binomial
+  p=0.039. Our numeric medians are biased LOW.
+- **All five negative-scoring numerics were upper-tail misses**, four of them barely
+  above p90: UKMTO attacks 8 (p90 8), NIFC large fires 78 (p90 66), Ebola deaths 1271
+  (p90 1230), Japan HFMD 7.03 (p90 7.0), Brent 96.78 (p90 97). The worst single score,
+  -359 (HFMD), came from an outcome **0.4% above p90** — the 5-percentile → CDF
+  construction drops density ~45x at the p90 cliff, so "barely wrong" scores like
+  "impossible".
+- Counterfactual totals over the same 21 questions (submitted = 1141):
+
+  | transform | total | Δ | worst q | inside 10–90 |
+  |---|---|---|---|---|
+  | submitted | 1141 | — | -359 | 16/21 |
+  | global widen w=1.3 | 1419 | +278 | -191 | 19/21 |
+  | **right-tail only r=1.5** | **1572** | **+431** | **-157** | 20/21 |
+  | right-tail only r=2.0 | 1367 | +225 | -183 | 20/21 |
+  | uniform mixture e=0.10 | 1220 | +78 | -252 | 17/21 |
+  | tail-only (both) t=1.5 | 1163 | +22 | -157 | 20/21 |
+  | shift up d=0.1 | 1262 | +121 | -208 | 15/21 |
+
+  Right-tail widening at r=1.5 is worth **+20.5 log-score points per question**, CI90
+  [-61.8,+101.5] — straddles zero at n=21, so by the standing rule it is a hypothesis,
+  not a shipped change.
+
+## The binary side points the same direction
+
+Globally unbiased (mean p 0.285 vs base rate 0.278, Brier 0.1578) and sharp where it
+counts (11 questions under 10%: zero resolved YES). The leak is one band:
+
+| our p | n | mean p | resolved YES |
+|---|---|---|---|
+| 0–10% | 11 | 0.061 | 0% |
+| **10–25%** | **11** | **0.127** | **27%** |
+| 25–50% | 5 | 0.327 | 40% |
+| 50–75% | 5 | 0.625 | 40% |
+| 75–100% | 4 | 0.861 | 75% |
+
+The 10–25% band under-forecasts by ~2x (3/11 vs ~1.4 expected; not significant alone,
+p≈0.13), and it holds both big institutional-process misses (EC DMA non-compliance
+decision at 0.120, DMA Art. 6(11) specification at 0.156 — both YES). Direction matches
+the independently recorded "institutional-process overdiscount" and "deadline-optimism
+tail" findings.
+
+**Unified diagnosis: we under-predict change and accumulation inside the question
+window.** Numeric outcomes land above our median; low-but-live binaries fire more often
+than we say. This is one bias with two faces, not two findings.
+
+## Preregistered for the NEXT wave (frozen 2026-07-26, before it opens)
+
+The 2026-07-27 MiniBench also carries a model change (sonnet-5 → opus-5, repo-wide), so
+that wave is confounded for any prompt-level comparison. Registered now:
+
+- **Primary numeric transform: right-tail widen r=1.5** (p90' = p50 + 1.5·(p90 − p50);
+  p10/p25/p50/p75 untouched), scored on 100·log2 density with a paired bootstrap CI90,
+  same rule: promote only if the CI excludes zero in its favor.
+- Secondary, reported not tested: r=2.0, global w=1.3, uniform mixture e=0.10.
+- **Median-bias sign test**: fraction of outcomes above our median, target 50%.
+  Two waves pooled (this one 15/21) is the first adequately powered look.
+- Binary: no shrink. Report the 10–25% band's realized rate as a standing monitor.
+- The scale-dominated pinball metric is retired; `minibench_numeric_tails.py` is the
+  numeric scorer from here.
