@@ -27,6 +27,21 @@ training RCTs; the aggregation literature). Sources and rationale: [docs/design.
 /plugin install forecast-scaffold@forecast-scaffold
 ```
 
+*Already added it, and the version looks old?* Third-party marketplaces have auto-update
+**off** by default, so an added catalog keeps serving whatever commit it was cloned at —
+including on the Claude desktop app, whose plugin pane reads the same catalog. Refresh the
+catalog first, then the plugin:
+
+```
+/plugin marketplace update forecast-scaffold
+/plugin update forecast-scaffold@forecast-scaffold
+```
+
+To stop it going stale again, turn the refresh on: `/plugin` → **Marketplaces** →
+*forecast-scaffold* → **Enable auto-update**. The version a surface shows is the `version`
+in [.claude-plugin/plugin.json](.claude-plugin/plugin.json); compare it against that file on
+`main` to tell a stale catalog from an actual release.
+
 **claude.ai / Claude web** (skills upload): build the bundles with
 `bash scripts/build_skill_bundles.sh` and upload `dist/*.zip` in Settings → Skills (org admins
 can deploy them org-wide).

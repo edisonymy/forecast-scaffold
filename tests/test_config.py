@@ -33,3 +33,22 @@ def test_scaffold_version_matches_plugin_manifest() -> None:
     with (Path(__file__).parents[1] / "pyproject.toml").open("rb") as fh:
         pyproject = tomllib.load(fh)
     assert pyproject["project"]["version"] == SCAFFOLD_VERSION
+
+
+def test_marketplace_entry_mirrors_the_plugin_manifest() -> None:
+    """The catalog entry is what a surface renders *before* it fetches the plugin, so it
+    carries the version and display name too. Claude Code resolves plugin.json first and
+    silently ignores a marketplace-entry version that disagrees, which would show one
+    version in the catalog and install another — pin them together here."""
+    import json
+    from pathlib import Path
+
+    manifests = Path(__file__).parents[1] / ".claude-plugin"
+    manifest = json.loads((manifests / "plugin.json").read_text())
+    marketplace = json.loads((manifests / "marketplace.json").read_text())
+
+    entries = [p for p in marketplace["plugins"] if p["name"] == manifest["name"]]
+    assert len(entries) == 1, "exactly one catalog entry names this plugin"
+    entry = entries[0]
+    assert entry["version"] == manifest["version"]
+    assert entry["displayName"] == manifest["displayName"]
