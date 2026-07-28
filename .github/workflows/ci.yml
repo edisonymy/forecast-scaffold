@@ -74,5 +74,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      # --strict promotes warnings to errors, so a misspelled manifest field fails here
+      # instead of silently publishing a catalog entry the surfaces can't read.
       - name: Validate plugin manifest and skills
-        run: npx --yes @anthropic-ai/claude-code@2.1.201 plugin validate .
+        run: npx --yes @anthropic-ai/claude-code@2.1.201 plugin validate . --strict

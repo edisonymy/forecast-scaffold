@@ -4,6 +4,27 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [Unreleased] — marketplace catalog carries the version (2026-07-27)
+
+### Fixed
+- `.claude-plugin/marketplace.json`: the plugin entry now carries `version` and
+  `displayName`, so a surface that renders the catalog before fetching the plugin reports
+  the real version instead of whatever it last cached. Diagnosed from a desktop plugin pane
+  stuck at 0.4.1 (the 2026-07-06 release) while `main` had shipped 0.4.22 since 2026-07-15.
+  The underlying cause is client-side — third-party marketplaces have auto-update off by
+  default, so an added catalog is never refreshed — but the entry was also silent about its
+  version, which left nothing to compare against. README now documents the refresh.
+- Claude Code resolves `plugin.json`'s version first and ignores a disagreeing
+  marketplace-entry version *without warning*, so the two are now pinned together by
+  `tests/test_config.py::test_marketplace_entry_mirrors_the_plugin_manifest`. Version stays
+  at 0.4.22: `skills/` and `src/` are untouched since that release, and `SCAFFOLD_VERSION`
+  is stamped into every journal record — bumping it for a metadata change would split the
+  Brier-scoring cohort for no methodological reason.
+
+### Added
+- `$schema` on both manifests (editor validation; ignored at load time), and `--strict` on
+  the CI `plugin validate` step so a misspelled manifest field fails the build.
+
 ## [Unreleased] — tranche1 + research.md v2 A/B verdicts (2026-07-17)
 
 - Tranche1 completed (126 rows, $96): NOTHING PROMOTES OVER HIGH. plain worse by
