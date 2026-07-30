@@ -106,7 +106,12 @@ def test_patch_scan_reports_locations_without_content() -> None:
     private_marker = "private" + "-marker-739"
     pattern = private_marker
     payload = json.dumps(record(reasoning=private_marker))
-    patch = f"diff --git a/journal b/journal\n+++ b/journal\n+{payload}\n"
+    patch = (
+        "diff --git a/journal b/journal\n"
+        "+++ b/journal\n"
+        "@@ -0,0 +1 @@\n"
+        f"+{payload}\n"
+    )
 
     findings, additions, allowed = guard.scan_patch(pattern, patch)
 
@@ -153,6 +158,115 @@ def test_cli_reads_staged_diff_and_never_logs_matched_content(
     assert private_marker not in blocked_output.out + blocked_output.err
 
 
+def test_cli_can_redact_only_matching_model_output_fields(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    target = tmp_path / "bot" / "journal" / "manifold.jsonl"
+    target.parent.mkdir(parents=True)
+    private_marker = "private" + "-marker-739"
+    historical = json.dumps(record(reasoning="historical public analysis")) + "\n"
+    target.write_text(historical, encoding="utf-8")
+    subprocess.run(["git", "add", "--", str(target)], cwd=tmp_path, check=True)
+    subprocess.run(
+        [
+            "git",
+            "-c",
+            "user.name=test",
+            "-c",
+            "user.email=test@example.com",
+            "commit",
+            "-qm",
+            "historical journal",
+        ],
+        cwd=tmp_path,
+        check=True,
+    )
+    target.write_text(
+        historical
+        +
+        json.dumps(
+            record(
+                reasoning=f"analysis includes {private_marker}",
+                what_would_change_my_mind=[
+                    "a public update",
+                    f"private detail {private_marker}",
+                ],
+            ),
+            ensure_ascii=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    subprocess.run(["git", "add", "--", str(target)], cwd=tmp_path, check=True)
+    monkeypatch.setenv("LEAK_PATTERNS", private_marker)
+
+    assert (
+        guard.main(
+            [
+                "--root",
+                str(tmp_path),
+                "--redact-model-output",
+                "bot/journal/manifold.jsonl",
+            ]
+        )
+        == 0
+    )
+    redaction_output = capsys.readouterr()
+    assert "redacted 2 model-output field(s)" in redaction_output.out
+    assert private_marker not in redaction_output.out + redaction_output.err
+
+    lines = target.read_text(encoding="utf-8").splitlines()
+    assert json.loads(lines[0])["reasoning"] == "historical public analysis"
+    payload = json.loads(lines[1])
+    assert payload["reasoning"] == guard.MODEL_OUTPUT_REDACTION
+    assert payload["what_would_change_my_mind"] == [
+        "a public update",
+        guard.MODEL_OUTPUT_REDACTION,
+    ]
+    assert private_marker not in target.read_text(encoding="utf-8")
+
+    subprocess.run(["git", "add", "--", str(target)], cwd=tmp_path, check=True)
+    assert guard.main(["--root", str(tmp_path), "bot/journal/manifold.jsonl"]) == 0
+
+
+def test_model_output_redaction_refuses_protected_fields(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    target = tmp_path / "bot" / "journal" / "manifold.jsonl"
+    target.parent.mkdir(parents=True)
+    private_marker = "private" + "-marker-739"
+    original = (
+        json.dumps(
+            record(
+                question=f"Public question {private_marker}",
+                reasoning=f"analysis includes {private_marker}",
+            )
+        )
+        + "\n"
+    )
+    target.write_text(original, encoding="utf-8")
+    subprocess.run(["git", "add", "--", str(target)], cwd=tmp_path, check=True)
+    monkeypatch.setenv("LEAK_PATTERNS", private_marker)
+
+    assert (
+        guard.main(
+            [
+                "--root",
+                str(tmp_path),
+                "--redact-model-output",
+                "bot/journal/manifold.jsonl",
+            ]
+        )
+        == 1
+    )
+    blocked_output = capsys.readouterr()
+    assert "question" in blocked_output.err
+    assert private_marker not in blocked_output.out + blocked_output.err
+    assert target.read_text(encoding="utf-8") == original
+
+
 def test_raw_currency_and_zero_width_pattern_fail_closed(
     tmp_path: Path, monkeypatch, capsys
 ) -> None:
@@ -176,8 +290,13 @@ def test_workflows_use_content_free_scanner_and_tournament_publish_safely() -> N
         assert "scripts/journal_leak_guard.py" in text
         assert "grep -niIE" not in text
     bot = (ROOT / ".github" / "workflows" / "bot.yml").read_text(encoding="utf-8")
+    manifold = (ROOT / ".github" / "workflows" / "manifold.yml").read_text(
+        encoding="utf-8"
+    )
     assert "--autostash" not in bot
     assert "- uses: actions/checkout@v4\n        with:\n          ref: main" in bot
     assert "schedule:" not in bot
     assert "workflow_dispatch:" in bot
     assert "forecast-bot-kicker" in bot
+    assert manifold.count("scripts/journal_leak_guard.py") == 2
+    assert "--redact-model-output" in manifold

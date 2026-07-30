@@ -5,8 +5,11 @@ exception is an exact decoded pound-sign match anywhere in a valid public Metacu
 Manifold JSON record.  This narrowly works around a bad literal currency-symbol branch in
 the private pattern without weakening other matches: model reasoning may contain the
 pound sign, but any different sensitive match on the same line still blocks publication.
-Raw/non-record
-lines, invalid patterns, zero-width matches, and every other match remain fail-closed.
+Raw/non-record lines, invalid patterns, zero-width matches, and every other match remain
+fail-closed.  The optional ``--redact-model-output`` recovery mode may replace an entire
+newly-added ``reasoning`` or ``what_would_change_my_mind`` item with a neutral marker.
+It refuses to alter public questions/contracts, sources, metadata, keys, or raw JSON; callers
+must re-stage and run the strict default scan before publication.
 
 The script reads additions directly from ``git diff --cached`` so historical public lines
 cannot lock future publication and matched content never enters workflow logs.
@@ -17,6 +20,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -29,6 +33,9 @@ from typing import Any
 
 PUBLIC_PLATFORMS = frozenset({"manifold", "metaculus"})
 PUBLIC_CURRENCY_SYMBOL = chr(0xA3)
+MODEL_OUTPUT_REDACTION = "[redacted by publication privacy guard]"
+_HUNK_HEADER = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@")
+_CHANGE_MIND_ITEM = re.compile(r"^what_would_change_my_mind\.\[(\d+)\]$")
 
 
 @dataclass(frozen=True, order=True)
@@ -36,6 +43,14 @@ class Finding:
     path: str
     added_line: int
     field: str
+
+
+@dataclass(frozen=True)
+class AddedLine:
+    path: str
+    ordinal: int
+    line_number: int
+    text: str
 
 
 class GuardError(RuntimeError):
@@ -161,30 +176,150 @@ def staged_diff(paths: Sequence[str], *, root: Path) -> str:
     return result.stdout
 
 
-def scan_patch(pattern: str, patch: str) -> tuple[tuple[Finding, ...], int, int]:
+def _iter_patch_additions(patch: str) -> Iterable[AddedLine]:
+    """Yield staged additions with both safe display ordinals and working-tree line numbers."""
     current_path = "<unknown>"
-    additions = 0
-    allowed = 0
-    findings: set[Finding] = set()
+    next_line_number: int | None = None
+    ordinal = 0
     for line in patch.splitlines():
+        if line.startswith("diff --git "):
+            next_line_number = None
+            continue
         if line.startswith("+++ "):
             current_path = line[4:].removeprefix("b/")
             continue
-        if not line.startswith("+") or line.startswith("+++"):
+        hunk = _HUNK_HEADER.match(line)
+        if hunk:
+            next_line_number = int(hunk.group(1))
             continue
+        if next_line_number is None or line.startswith("\\ No newline at end of file"):
+            continue
+        if line.startswith("+"):
+            ordinal += 1
+            yield AddedLine(current_path, ordinal, next_line_number, line[1:])
+            next_line_number += 1
+        elif line.startswith("-"):
+            continue
+        else:
+            next_line_number += 1
+
+
+def scan_patch(pattern: str, patch: str) -> tuple[tuple[Finding, ...], int, int]:
+    additions = 0
+    allowed = 0
+    findings: set[Finding] = set()
+    for addition in _iter_patch_additions(patch):
         additions += 1
         new_findings, new_allowed = scan_added_line(
-            pattern, current_path, additions, line[1:]
+            pattern, addition.path, addition.ordinal, addition.text
         )
         findings.update(new_findings)
         allowed += new_allowed
     return tuple(sorted(findings)), additions, allowed
 
 
+def _redact_model_fields(
+    pattern: str, addition: AddedLine
+) -> tuple[str, int] | None:
+    """Redact only model-authored fields, or refuse when any protected field matched."""
+    findings, _allowed = scan_added_line(
+        pattern, addition.path, addition.ordinal, addition.text
+    )
+    if not findings:
+        return addition.text, 0
+    fields = {finding.field for finding in findings}
+    if any(
+        field != "reasoning" and not _CHANGE_MIND_ITEM.fullmatch(field)
+        for field in fields
+    ):
+        return None
+    try:
+        payload = json.loads(addition.text)
+    except (json.JSONDecodeError, TypeError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+
+    if "reasoning" in fields:
+        payload["reasoning"] = MODEL_OUTPUT_REDACTION
+    change_mind = payload.get("what_would_change_my_mind")
+    for field in fields:
+        item = _CHANGE_MIND_ITEM.fullmatch(field)
+        if item:
+            index = int(item.group(1))
+            if not isinstance(change_mind, list) or index >= len(change_mind):
+                return None
+            change_mind[index] = MODEL_OUTPUT_REDACTION
+
+    redacted = json.dumps(payload, ensure_ascii=False)
+    remaining, _allowed = scan_added_line(
+        pattern, addition.path, addition.ordinal, redacted
+    )
+    if remaining:
+        # A very broad deny-list may also match the neutral marker or serialized JSON.
+        return None
+    return redacted, len(fields)
+
+
+def redact_staged_model_output(pattern: str, patch: str, *, root: Path) -> int | None:
+    """Rewrite eligible staged additions in the working tree; return None when unsafe."""
+    replacements: dict[str, dict[int, tuple[str, str]]] = {}
+    redacted_fields = 0
+    for addition in _iter_patch_additions(patch):
+        result = _redact_model_fields(pattern, addition)
+        if result is None:
+            return None
+        redacted, field_count = result
+        if not field_count:
+            continue
+        replacements.setdefault(addition.path, {})[addition.line_number] = (
+            addition.text,
+            redacted,
+        )
+        redacted_fields += field_count
+
+    root = root.resolve()
+    prepared: list[tuple[Path, str]] = []
+    for relative, line_replacements in replacements.items():
+        target = (root / relative).resolve()
+        try:
+            target.relative_to(root)
+        except ValueError as exc:
+            raise GuardError("a staged journal path escapes the repository") from exc
+        original = target.read_text(encoding="utf-8", errors="surrogateescape")
+        newline = "\r\n" if "\r\n" in original else "\n"
+        trailing_newline = original.endswith(("\r", "\n"))
+        lines = original.splitlines()
+        for line_number, (expected, replacement) in line_replacements.items():
+            index = line_number - 1
+            if index < 0 or index >= len(lines) or lines[index] != expected:
+                raise GuardError("the working journal no longer matches the staged diff")
+            lines[index] = replacement
+        rewritten = newline.join(lines) + (newline if trailing_newline else "")
+        prepared.append((target, rewritten))
+
+    for target, rewritten in prepared:
+        target.write_text(
+            rewritten,
+            encoding="utf-8",
+            errors="surrogateescape",
+            newline="",
+        )
+    return redacted_fields
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("paths", nargs="+", help="staged journal paths to scan")
     parser.add_argument("--root", type=Path, default=Path.cwd())
+    parser.add_argument(
+        "--redact-model-output",
+        action="store_true",
+        help=(
+            "replace matches only in added reasoning/change-my-mind fields; "
+            "protected fields still fail closed"
+        ),
+    )
     return parser
 
 
@@ -205,6 +340,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             raise GuardError("the private GNU ERE has a zero-width match")
         patch = staged_diff(args.paths, root=args.root.resolve())
         findings, additions, allowed = scan_patch(private_pattern, patch)
+        if findings and args.redact_model_output:
+            redacted = redact_staged_model_output(
+                private_pattern, patch, root=args.root
+            )
+            if redacted is not None:
+                print(
+                    f"redacted {redacted} model-output field(s); "
+                    "re-stage and run the guard again"
+                )
+                return 0
     except (GuardError, OSError):
         print("journal leak guard could not complete safely", file=sys.stderr)
         return 2

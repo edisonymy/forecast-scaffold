@@ -142,9 +142,13 @@ jobs:
           EXISTING=""
           for f in $FILES; do if [ -f "$f" ]; then EXISTING="$EXISTING $f"; fi; done
           if [ -z "$EXISTING" ]; then echo "no journal/phase files yet — nothing to publish"; exit 0; fi
-          # Scan only the lines THIS run adds. The content-free scanner applies the private
-          # deny-list to every field, with one narrow workaround for the exact pound sign in
-          # public question/contract fields; model-authored content remains fail-closed.
+          # Scan only the lines THIS run adds. If the private deny-list matches an AI-authored
+          # reasoning/change-my-mind field, replace that entire field with a neutral marker.
+          # Matches in questions, contracts, sources, metadata, raw JSON, or keys still block
+          # publication. Re-stage and strictly re-scan so the recovery path also fails closed.
+          git add -- $EXISTING
+          set +e; python scripts/journal_leak_guard.py --redact-model-output $EXISTING; status=$?; set -e
+          if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
           git add -- $EXISTING
           set +e; python scripts/journal_leak_guard.py $EXISTING; status=$?; set -e
           if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
