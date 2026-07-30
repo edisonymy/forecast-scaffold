@@ -7,6 +7,11 @@ and mirror `.claude-plugin/plugin.json`.
 ## [Unreleased] — marketplace catalog carries the version (2026-07-27)
 
 ### Fixed
+- The hourly Manifold workflow no longer turns harmless privacy-deny-list collisions in
+  model-authored reasoning into repeated failed-run emails. It replaces only the matching
+  `reasoning` or `what_would_change_my_mind` field with a neutral marker, then stages and
+  strictly re-scans the result. Matches in public questions/contracts, sources, metadata,
+  raw JSON, keys, or the marker itself still fail closed and block publication.
 - `.claude-plugin/marketplace.json`: the plugin entry now carries `version` and
   `displayName`, so a surface that renders the catalog before fetching the plugin reports
   the real version instead of whatever it last cached. Diagnosed from a desktop plugin pane
