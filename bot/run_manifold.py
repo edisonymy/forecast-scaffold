@@ -135,6 +135,7 @@ MOVEMENT_AGE_DAYS = 7           # a divergent bet only counts once it is this ol
 KELLY_FRACTION = 0.25
 KELLY_STAKE_CAP_FRAC = 0.05     # stake capped at 5% of balance
 KELLY_STAKE_FLOOR = 10.0        # never size below 10 mana
+PHASE2_ENTRY_DIVERGENCE = 0.05  # enter outside the 3-point convergence-exit band
 CONVERGENCE_BAND = 0.03         # sell when the price comes within this of our forecast
 REFORECAST_ADVERSE = 0.10       # re-forecast a position the market moved this far against us
 ADOPTION_BANKROLL = 2200.0      # only used to size phase-2 would-be bets in an offline dry-run
@@ -676,6 +677,7 @@ def forecast_market(
 def decide_bet(
     p_sighted: float, p_market: float, stake: float, *,
     balance: float, already_positioned: bool,
+    divergence_threshold: float = DIVERGENCE_THRESHOLD,
 ) -> dict[str, Any] | None:
     """The betting gate as a pure function. Returns the bet {outcome, stake} or None.
 
@@ -689,7 +691,7 @@ def decide_bet(
         return None
     if balance < MIN_BALANCE_MANA:
         return None
-    if abs(p_sighted - p_market) < DIVERGENCE_THRESHOLD:
+    if abs(p_sighted - p_market) < divergence_threshold:
         return None
     outcome = "YES" if p_sighted > p_market else "NO"
     return {"outcome": outcome, "stake": float(stake)}
@@ -1347,6 +1349,9 @@ def run(args: argparse.Namespace) -> int:
             p_sighted, p_market, stake,
             balance=balance if balance is not None else MIN_BALANCE_MANA,
             already_positioned=positioned,
+            divergence_threshold=(
+                PHASE2_ENTRY_DIVERGENCE if phase == 2 else DIVERGENCE_THRESHOLD
+            ),
         )
         # Exposure cap (live only): total open exposure must stay <= 30% of balance.
         if (bet is not None and can_post and balance is not None

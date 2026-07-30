@@ -34,7 +34,11 @@ credits is acceptable. Clarified explicitly: never use OpenRouter for Manifold.]
 - The bot has a 45-minute run deadline inside a 55-minute job boundary, leaving time to
   leak-check and publish the preregistration journal before the next hourly tick.
 
-## Phases (transitions are AUTOMATIC and journaled)
+## Phases (transitions are journaled)
+
+[AMENDED 2026-07-30, operator: "I'm happy to promote to phase 2." Phase 2 was activated
+by explicit operator override rather than waiting for the automatic evidence gate. The
+phase history records the override; all Phase-2 sizing and risk limits remain binding.]
 
 ### Phase 0 — dry-run validation (zero mana)
 Forecast pairs journaled, would-be bets recorded, nothing POSTed.
@@ -77,6 +81,9 @@ was evaluated without error.
   the blind-vs-sighted feed stays valuable even when the crowd is smarter than us.
 
 ### Phase 2 — earned sizing
+- Entry requires |sighted forecast − market| >= 0.05. This is deliberately above the
+  0.03 convergence-exit band, preventing an unchanged new position from qualifying for
+  sale on the next run.
 - Stake: **quarter-Kelly**, capped. Kelly fraction for YES at market m with our p:
   (p − m)/(1 − m) (mirror for NO); stake = 0.25 x kelly x balance, cap 5% of balance,
   floor 10 mana. Quarter because our p is noisy (full Kelly overbets under estimation

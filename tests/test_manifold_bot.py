@@ -301,6 +301,20 @@ def test_decide_bet_divergence_gate() -> None:
     assert down == {"outcome": "NO", "stake": 25.0}
 
 
+def test_phase2_entry_gate_stays_outside_convergence_exit_band() -> None:
+    # Phase 2 uses hysteresis: a 4-point edge is outside the 3-point exit band but is not
+    # enough to enter; a 5-point edge is.
+    assert run_manifold.PHASE2_ENTRY_DIVERGENCE > run_manifold.CONVERGENCE_BAND
+    assert run_manifold.decide_bet(
+        0.54, 0.50, 25, balance=1000, already_positioned=False,
+        divergence_threshold=run_manifold.PHASE2_ENTRY_DIVERGENCE,
+    ) is None
+    assert run_manifold.decide_bet(
+        0.55, 0.50, 25, balance=1000, already_positioned=False,
+        divergence_threshold=run_manifold.PHASE2_ENTRY_DIVERGENCE,
+    ) == {"outcome": "YES", "stake": 25.0}
+
+
 def test_decide_bet_balance_floor_and_position_guard() -> None:
     assert run_manifold.decide_bet(
         0.90, 0.30, 25, balance=199, already_positioned=False
