@@ -195,6 +195,11 @@ def test_blind_agent_cmd_blocks_manifold() -> None:
     assert "manifold.markets" not in sighted_cmd
 
 
+def test_manifold_default_agent_model_is_sonnet_5() -> None:
+    tokens = shlex.split(run_manifold.DEFAULT_AGENT_CMD)
+    assert tokens[tokens.index("--model") + 1] == "claude-sonnet-5"
+
+
 def test_with_credit_cap_replaces_caller_value() -> None:
     cmd = run_manifold.with_credit_cap(
         run_manifold.DEFAULT_AGENT_CMD + " --max-budget-usd 99", 1.2345678

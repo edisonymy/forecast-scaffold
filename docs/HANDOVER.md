@@ -1,5 +1,12 @@
 # HANDOVER — continuation state as of 2026-07-16
 
+## 2026-07-31: Manifold uses sonnet-5; Metaculus remains opus-5
+
+Operator directive: lower the hourly Manifold forecaster to `claude-sonnet-5` to reduce
+subscription usage, while retaining `claude-opus-5` for Metaculus. The Manifold runner and its
+workflow pin Sonnet explicitly; `bot/run_bot.py`, `bot.yml`, and `bot-test.yml` intentionally
+remain on Opus.
+
 ## 2026-07-26: default model is now opus-5, repo-wide
 
 Operator directive: every default forecasting model id moved `claude-sonnet-5` ->

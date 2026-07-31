@@ -156,9 +156,9 @@ METERED_AUTH_ENV = (
     "CLAUDE_CODE_USE_FOUNDRY",
 )
 
-# The default agent command mirrors bot/run_bot.py's hardened production shape exactly:
-# a JSON envelope (so cost/model record), and the same research toolset the workflows use.
-DEFAULT_AGENT_CMD = ("claude -p --model claude-opus-5 --output-format json "
+# The default agent command has the same hardened production shape as bot/run_bot.py, but
+# Manifold uses Sonnet to keep its hourly subscription cost bounded.
+DEFAULT_AGENT_CMD = ("claude -p --model claude-sonnet-5 --output-format json "
                      "--allowed-tools Read,Glob,Grep,WebSearch,WebFetch")
 
 # The SIGHTED brief's market section — the crowd-signals judgment framing from run_bot.py's

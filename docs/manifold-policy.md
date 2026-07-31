@@ -14,14 +14,19 @@ read live at each run, not to this snapshot.
 
 ## Cloud cadence and model-credit boundary
 
+[AMENDED 2026-07-31, operator: "lower the model to sonnet 5 for manifold, but keep it
+opus 5 for metaculus." Manifold's hourly runner is pinned to `claude-sonnet-5`; the
+Metaculus runner remains separately pinned to `claude-opus-5`.]
+
 [AMENDED 2026-07-12, operator: cloud runs hourly; up to $5/hour of Claude subscription
 credits is acceptable. Clarified explicitly: never use OpenRouter for Manifold.]
 
 - The default-branch GitHub workflow schedules at most one run per hour. A dropped or delayed
   cron tick is not replayed.
-- Manifold forecasting is Claude-subscription-only. The unattended path requires an explicit
-  `CLAUDE_CODE_OAUTH_TOKEN` setup-token and rejects Anthropic API or gateway routing before
-  doing any model, market, journal, or phase work. There is no paid-provider fallback.
+- Manifold forecasting is Claude-subscription-only and uses `claude-sonnet-5`. The unattended
+  path requires an explicit `CLAUDE_CODE_OAUTH_TOKEN` setup-token and rejects Anthropic API or
+  gateway routing before doing any model, market, journal, or phase work. There is no
+  paid-provider fallback.
 - Each scheduled invocation has a hard $5 USD-equivalent Claude credit cap. Before every
   subprocess, the runner passes the exact unspent remainder to Claude's native
   `--max-budget-usd` and also accumulates the returned `total_cost_usd`. A failed or timed-out
