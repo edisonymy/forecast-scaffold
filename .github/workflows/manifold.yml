@@ -30,8 +30,15 @@ jobs:
           fi
           echo "active=true" >> "$GITHUB_OUTPUT"
 
+      # workflow_dispatch pins github.sha when the tick is queued. Because this workflow's
+      # concurrency group can leave a tick waiting behind a long in-flight run, that SHA may
+      # be stale by the time checkout starts — and the phase machine READS the checked-out
+      # bot/journal/manifold-phase.json, so a stale tree can re-apply a superseded phase and
+      # guarantee a rebase conflict on publish. Start from current main, as bot.yml does.
       - uses: actions/checkout@v4
         if: steps.activation.outputs.active == 'true'
+        with:
+          ref: main
 
       - uses: actions/setup-python@v5
         if: steps.activation.outputs.active == 'true'
@@ -174,3 +181,57 @@ jobs:
             sleep 3
           done
           exit 1
+
+      - name: Preserve journal + phase on publish failure
+        # Mirrors bot.yml's artifact step, and matters MORE here: this bot posts real bets
+        # to Manifold before the journal is pushed. A leak-guard block, a push failure, or
+        # the 55-minute kill must block PUBLICATION, not destroy the evidence — otherwise a
+        # placed bet has no record anywhere and its exposure is invisible to the next run's
+        # exposure cap. cancelled() is the load-bearing half: a job-timeout kill, and a
+        # runner GitHub reclaims mid-flight, are cancellations rather than failures, and
+        # they are the paths where a bet-but-unjournaled pair can otherwise die with the
+        # runner. Best-effort by nature — a job that never acquires a runner runs no steps
+        # at all, including this one.
+        if: ${{ (failure() || cancelled()) && steps.activation.outputs.active == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: unpublished-manifold-journal-${{ github.run_id }}
+          # Scoped to this bot's two files: the tournament journal in the same directory is
+          # already published and would bloat every artifact.
+          path: |
+            bot/journal/manifold.jsonl
+            bot/journal/manifold-phase.json
+          retention-days: 30
+
+      - name: Alert on job failure (one open issue, never hourly spam)
+        # The BETTING-DISABLED alert above only fires when the run produced a log to grep,
+        # so it is structurally blind to the failure that kills the run step itself — on
+        # 2026-08-06 three consecutive runs failed and filed nothing, and the operator found
+        # out by email instead. This step covers that class: any failed or cancelled job
+        # files one deduped issue, under a title distinct from the betting-disabled alert so
+        # the two never suppress each other. Dedupe is the same: while the issue stays open,
+        # nothing new is filed.
+        if: ${{ (failure() || cancelled()) && steps.activation.outputs.active == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Manifold bot needs attention"
+          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then echo "alert issue #$existing already open"; exit 0; fi
+          {
+            echo "Automated alert from the hourly Manifold workflow: the job did not complete."
+            echo
+            echo "A journaled-but-unpublished pair (possibly with a bet already placed on"
+            echo "Manifold) is attached to the run as the unpublished-manifold-journal"
+            echo "artifact — reconcile it before the next run, or its exposure is invisible"
+            echo "to the exposure cap."
+            echo
+            echo "Common causes: leak-guard block, journal push conflict, the 55-minute"
+            echo "timeout kill, an expired CLAUDE_CODE_OAUTH_TOKEN or MANIFOLD_API_KEY, or"
+            echo "GitHub Actions failing to allocate a runner (job cancelled with no logs)."
+            echo
+            echo "Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo
+            echo "Close this issue once resolved — the next problem will open a fresh one."
+          } > "$RUNNER_TEMP/failure-body.md"
+          gh issue create --title "$title" --body-file "$RUNNER_TEMP/failure-body.md"
