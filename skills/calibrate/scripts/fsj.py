@@ -23,7 +23,7 @@ import os
 import statistics
 import sys
 import tomllib
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from dataclasses import asdict, dataclass, field, fields
 from datetime import UTC, date, datetime
 from pathlib import Path
@@ -803,7 +803,10 @@ def median(draws: list[float]) -> float:
     return float(statistics.median(draws))
 
 
-AGGREGATION_METHODS = {
+# Annotated explicitly: geo_mean_odds carries an extra keyword-only parameter, so without
+# this mypy joins the three signatures into a type it refuses to call at the lookup below.
+# Every method is invoked purely positionally as (draws) -> float, which is this type.
+AGGREGATION_METHODS: dict[str, Callable[[list[float]], float]] = {
     "trimmed_mean": trimmed_mean,
     "geo_mean_odds": geo_mean_odds,
     "median": median,

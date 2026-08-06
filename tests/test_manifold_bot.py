@@ -603,7 +603,7 @@ def test_cloud_workflow_is_hourly_subscription_only_and_hard_capped() -> None:
         index for index, block in enumerate(step_blocks) if "id: activation" in block
     )
     post_gate = step_blocks[activation_index + 1 :]
-    assert len(post_gate) == 8
+    assert len(post_gate) == 10
     for block in post_gate:
         assert "steps.activation.outputs.active == 'true'" in block
     assert "--provider subscription" in workflow
@@ -617,6 +617,38 @@ def test_cloud_workflow_is_hourly_subscription_only_and_hard_capped() -> None:
     assert "journal_leak_guard.py" in workflow
     assert "openrouter" not in lower
     assert "asknews" not in lower
+
+
+def test_cloud_workflow_survives_a_job_that_dies_mid_flight() -> None:
+    """A killed run must not lose a placed bet's journal line, or fail silently.
+
+    On 2026-08-06 three consecutive hourly runs failed and filed no alert, because the
+    only alert step greps a log the dead run never produced. These are the invariants
+    that make the next such outage both recoverable and visible.
+    """
+    workflow = (ROOT / ".github" / "workflows" / "manifold.yml").read_text(
+        encoding="utf-8"
+    )
+    # Start from current main: a queued tick's pinned SHA can carry a stale phase file.
+    assert (
+        "- uses: actions/checkout@v4\n"
+        "        if: steps.activation.outputs.active == 'true'\n"
+        "        with:\n"
+        "          ref: main" in workflow
+    )
+    # cancelled() is load-bearing: a timeout kill and a reclaimed runner are
+    # cancellations, not failures, and failure() alone would skip both steps.
+    assert workflow.count("(failure() || cancelled())") == 2
+    # The journal survives as an artifact rather than dying with the runner.
+    assert "actions/upload-artifact@v4" in workflow
+    assert "unpublished-manifold-journal-${{ github.run_id }}" in workflow
+    assert "bot/journal/manifold.jsonl" in workflow
+    assert "bot/journal/manifold-phase.json" in workflow
+    # Two independently deduped alert titles: a betting-disabled run and a dead job are
+    # different problems, and one must never suppress the other's issue.
+    assert 'title="Manifold bot: betting disabled while live"' in workflow
+    assert 'title="Manifold bot needs attention"' in workflow
+    assert workflow.count("gh issue list --state open") == 2
 
 
 def test_run_dry_run_journals_both_modes_and_never_posts(
