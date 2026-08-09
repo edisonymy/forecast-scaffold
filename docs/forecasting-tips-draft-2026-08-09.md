@@ -1,4 +1,15 @@
-# Forecasting tips — v2 draft (awaiting operator approval; not yet in the live skill)
+# Forecasting tips — v2 draft (TESTED 2026-08-09: DO NOT SHIP — stays out of the live skill)
+
+**A/B verdict (preregistered rule, `bench/analysis/ab-tips-2026-08-09-readout.txt`):**
+69 paired binaries, sonnet-5 both arms, $17.48. Primary +0.0032 Brier (tips slightly
+worse), CI90 [−0.0130, +0.0198]. Guard (sharp lows) −0.0065 — clean, no flattening
+(toward-0.5 moves 24/69 vs away 35/69). Targeted (the known loss shapes) **+0.0465
+worse, tips better on only 4/13** — the tips failed to fix the very errors they were
+written from. DO NOT SHIP fired on both clauses. Caveats: sonnet arms (live bot is
+opus), thin re-elicitation dossier (source URLs, not contents) — a research-coupled
+effect is not excluded, but the burden of proof was on the tips and they did not clear
+it. The research CHECKLIST section below was not part of this test and remains a
+candidate, separately gated.
 
 v1 (earlier today) was red-teamed against our own scored record and audited against the
 human and LLM forecasting literature. It failed the red team: its directional tips
