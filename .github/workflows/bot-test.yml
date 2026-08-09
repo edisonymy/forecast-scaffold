@@ -57,9 +57,24 @@ jobs:
           pip install -e .
           npm install -g @anthropic-ai/claude-code@2.1.201
 
+      - name: AskNews smoke
+        # Positive proof the CI secret works: bot/asknews.py fails CLOSED (returns [] on any
+        # error), so a bad key in the real run would just silently drop the news section.
+        env:
+          ASKNEWS_API_KEY: ${{ secrets.ASKNEWS_API_KEY }}
+        run: |
+          python - <<'EOF'
+          import sys
+          from bot.asknews import search_news
+          arts = search_news("global economy")
+          print(f"asknews smoke: {len(arts)} articles")
+          sys.exit(0 if arts else 1)
+          EOF
+
       - name: Run
         env:
           METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
+          ASKNEWS_API_KEY: ${{ secrets.ASKNEWS_API_KEY }}
           # Subscription OAuth by default. Do NOT add ANTHROPIC_API_KEY: it takes precedence
           # and silently switches to per-token API billing. With provider=openrouter the bot
           # maps OPENROUTER_API_KEY into the CLI's env itself.
