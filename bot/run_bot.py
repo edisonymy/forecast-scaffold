@@ -213,6 +213,36 @@ you adjust off it with the evidence. An even spread you cannot trace to a refere
 known failure mode.
 """
 
+# The research CHECKLIST from docs/forecasting-tips-draft-2026-08-09.md, shipped in v0.4.24 —
+# and ONLY the checklist: the reasoning tips drafted alongside it failed their preregistered
+# A/B (69 paired binaries, +0.0032 Brier and +0.0465 on the targeted loss shapes — DO NOT SHIP
+# fired on both clauses, bench/analysis/ab-tips-2026-08-09-readout.txt) and stay out of every
+# prompt. Every item is record-only by construction: it says what to WRITE DOWN, never which
+# way to move the number, so a wrong item costs tokens and not points. No floors, caps, or
+# directional language — imperative caution text ("be careful about X") measurably flattens LLM
+# forecasts toward 50 (arXiv 2506.01578), and the red team specifically flagged directional
+# variants of the not-found-schedule bullet. Kept to ~10 lines: prompt real estate is a
+# measured risk (attention dilution), so this is research-run-only and never reaches the
+# reasoning runs. The same four items are the "Record these facts" section of the skill's
+# references/research.md; tests/test_source_floor.py pins the two surfaces together.
+RESEARCH_CHECKLIST_SECTION = """
+## Research checklist (record-only)
+
+Record what applies — each item says what to WRITE DOWN, never which way to move the number:
+- Deciding-body calendar: term dates, recesses, scheduled sessions, bulletin cadence. Record a
+  found schedule as a fact; record a not-found schedule as "searched, absent" — nothing more.
+- Trend questions: current level, current rate, the rate's own trajectory, one named
+  regime-break candidate in each direction, and whether simple continuation exits the range
+  by the deadline.
+- Named resolution source: when it next updates relative to the deadline.
+"""
+# The checklist's fourth item (market metadata) deliberately does NOT appear above: this
+# constant reaches blind runs and the market-blind angle F, where a "record the market price"
+# instruction would contradict BLIND_SECTION (post-ship red team, 2026-08-09). Sighted runs
+# already get a REQUIRED market step with contract-match guardrails via ``crowd_signals``,
+# which carries the recording detail instead. The skill surface (references/research.md)
+# keeps all four items — it has no blind mode.
+
 DOSSIER_SECTION = """
 ## Dossier (multi-run mode — mandatory this run)
 
@@ -1041,6 +1071,9 @@ def forecast_question(
         "for HUMAN markets is a REQUIRED research step, not an option: check "
         "whether Polymarket, Kalshi, Manifold, or a bookmaker prices this event, "
         "and say in your reasoning what you found — including 'no market found'. "
+        "Record the price, venue, liquidity/volume, and when it last meaningfully "
+        "moved; keep the price in your reasoning, not the dossier body (a "
+        "prominently-placed number there anchors the whole ensemble). "
         "Blending is YOUR judgment call, never arithmetic: a market is a valid "
         "anchor only if its contract matches this question's resolution criteria "
         "on the terms that matter (threshold, deadline, resolution source, fine "
@@ -1281,6 +1314,7 @@ def forecast_question(
             run_system = (
                 build_system(tier, run_blind, config, multi_run=n_runs > 1)
                 + (SOURCE_FLOOR_SECTION.format(floor=min_sources) if min_sources else "")
+                + RESEARCH_CHECKLIST_SECTION
                 + (FAST_PROXY_SECTION if slow_question else "")
                 + angle_brief_section(letter, angle_sections[letter])
             )
@@ -1324,6 +1358,9 @@ def forecast_question(
                 # matching the one_run backstop's gate (min_sources>0 and non-binary type).
                 + (REFERENCE_CLASS_SECTION
                    if min_sources and qtype in ("multiple_choice", *CONTINUOUS) else "")
+                # Record-only checklist (v0.4.24): the research run's job list, not the
+                # reasoning runs' — they work from the dossier this run writes.
+                + RESEARCH_CHECKLIST_SECTION
                 + (FAST_PROXY_SECTION if slow_question else "")
             )
             candidate, model, errors = one_run(

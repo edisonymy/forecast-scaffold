@@ -4,6 +4,32 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.24] - 2026-08-09
+
+### Added
+- Research checklist, record-only: the deciding-body calendar, the trend-question quintet
+  (level, rate, the rate's own trajectory, one regime-break candidate each way, whether simple
+  continuation exits the range by the deadline), any relevant market with its timestamp, and
+  when the named resolution source next updates. Same four items on both surfaces — the skill's
+  `references/research.md` ("Record these facts") and the bot's research-run prompt
+  (`RESEARCH_CHECKLIST_SECTION`, ~10 lines, research runs only, never the reasoning runs).
+- Every item says what to WRITE DOWN and never which way to move the number — no floors, caps,
+  or directional prose (imperative caution text flattens LLM forecasts toward 50, arXiv
+  2506.01578). `tests/test_source_floor.py::TestResearchChecklist` pins the two surfaces to
+  identical sentences and fails on directional wording; a wrong item costs tokens, not points.
+
+### Not shipped
+- The reasoning TIPS drafted alongside the checklist (`docs/forecasting-tips-draft-2026-08-09.md`)
+  stay out of the live skill and every prompt: the preregistered A/B fired DO NOT SHIP on both
+  clauses — 69 paired binaries, primary +0.0032 Brier (tips worse, CI90 [−0.0130, +0.0198]) and
+  +0.0465 on the targeted loss shapes the tips were written from, better on only 4/13. Readout:
+  `bench/analysis/ab-tips-2026-08-09-readout.txt`. The checklist was not part of that test.
+
+### Changed
+- AskNews was armed in CI the same day (repo secret set; `bot-test.yml` gained a fail-open-proof
+  smoke step, 500a6cb), so the next tournament wave changes the research inputs and this prompt
+  at once — attribute nothing in that wave's scores to either change alone.
+
 ## [0.4.23] - 2026-08-09
 
 ### Added

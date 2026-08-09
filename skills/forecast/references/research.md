@@ -32,6 +32,21 @@ outside view *before* the current pass can anchor you on today's headlines.
   exactly; where the host provides code execution, use it for the arithmetic instead of estimating
   in prose.
 
+## Record these facts
+
+Where the question has them, these four are cheap to look up and easy to skip. Each says what to
+write down, never which way it should move the number — a wrong item costs tokens, not points.
+
+- **Deciding-body calendar**: term dates, recesses, scheduled sessions, bulletin cadence. Record a
+  found schedule as a fact; record a not-found schedule as "searched, absent" — nothing more.
+- **Trend questions**: current level, current rate, the rate's own trajectory, one named
+  regime-break candidate in each direction, and whether simple continuation exits the range
+  by the deadline.
+- **Any relevant market**: price, venue, liquidity/volume, timestamp of the last meaningful
+  move — after checking the contract actually matches the question's resolution terms
+  (threshold, deadline, source, fine print); a near-miss contract is evidence, not an anchor.
+- **Named resolution source**: when it next updates relative to the deadline.
+
 ## Red-team your own draft
 
 Once you have a tentative answer, deliberately search for **disconfirming** evidence — the query

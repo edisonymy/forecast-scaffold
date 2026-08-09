@@ -305,6 +305,116 @@ class TestReferenceClassFloor:
         assert "REQUIRED" in agent.calls[0]["system"]
 
 
+class TestResearchChecklist:
+    """v0.4.24: the record-only checklist ships in the research run's guidance and in the
+    skill's references/research.md. The reasoning TIPS drafted beside it failed their
+    preregistered A/B and must never appear in a prompt; what makes these items shippable is
+    precisely that they are record-only — so the direction ban is a test, not a convention.
+
+    DELIBERATE SURFACE DIVERGENCE (post-ship red team, 2026-08-09): the market-metadata item
+    appears ONLY in the skill reference. The bot constant reaches blind runs and the
+    market-blind angle F, where "record the market price" would contradict BLIND_SECTION;
+    sighted bot runs get the recording detail inside ``crowd_signals`` (which carries the
+    contract-match guardrail). Tests below pin both the shared sentences and the divergence."""
+
+    # Whitespace-normalized, `**` stripped: the bot prompt wraps at ~95 chars with no bold,
+    # research.md wraps at ~98 with bold lead-ins, and the SENTENCES must still be identical.
+    ITEMS = (
+        'Deciding-body calendar: term dates, recesses, scheduled sessions, bulletin cadence. '
+        'Record a found schedule as a fact; record a not-found schedule as "searched, absent" '
+        "— nothing more.",
+        "Trend questions: current level, current rate, the rate's own trajectory, one named "
+        "regime-break candidate in each direction, and whether simple continuation exits the "
+        "range by the deadline.",
+        "Named resolution source: when it next updates relative to the deadline.",
+    )
+    MARKET_ITEM_SKILL = (
+        "Any relevant market: price, venue, liquidity/volume, timestamp of the last meaningful "
+        "move — after checking the contract actually matches the question's resolution terms "
+        "(threshold, deadline, source, fine print); a near-miss contract is evidence, not an "
+        "anchor."
+    )
+
+    @staticmethod
+    def flat(text: str) -> str:
+        return " ".join(text.replace("**", "").split())
+
+    def test_checklist_reaches_the_research_run(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        agent, _, ok = run(monkeypatch, tmp_path, [fenced(RESEARCHED_MC)],
+                           tiers(min_sources=3), MC_Q)
+        assert ok
+        system = self.flat(agent.calls[0]["system"])
+        assert "## Research checklist (record-only)" in system
+        for item in self.ITEMS:
+            assert item in system, item
+
+    def test_reasoning_runs_do_not_carry_it(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        # Prompt real estate is a measured risk: research guidance goes to the run that
+        # researches, not to the reasoning runs working from its dossier.
+        research = {"probability": 0.30, "dossier": "- fact A (src, 2026)",
+                    "reasoning": "researched", "reference_class": "R", "base_rate": 0.2,
+                    "sources": ["https://s/1", "https://s/2", "https://s/3"]}
+        reasoning = {"probability": 0.35, "reasoning": "x", "sources": [],
+                     "named_scenarios": []}
+        agent, _, ok = run(monkeypatch, tmp_path,
+                           [fenced(research), fenced(reasoning), fenced(reasoning)],
+                           tiers(min_sources=3, runs=3), BINARY_Q)
+        assert ok
+        assert "Research checklist" in agent.calls[0]["system"]
+        assert "Research checklist" not in agent.calls[1]["system"]
+
+    def test_skill_reference_carries_the_same_items(self) -> None:
+        text = self.flat(
+            (ROOT / "skills" / "forecast" / "references" / "research.md")
+            .read_text(encoding="utf-8")
+        )
+        assert "## Record these facts" in text
+        for item in self.ITEMS:
+            assert item in text, item
+        assert self.MARKET_ITEM_SKILL in text
+
+    def test_market_item_stays_off_the_bot_constant_but_in_crowd_signals(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        # The bot checklist must stay blind-safe: no market instruction in the constant
+        # (it reaches blind runs and angle F). Sighted runs get the recording detail via
+        # crowd_signals in the BRIEF instead, with the dossier-anchor warning attached.
+        from bot.run_bot import RESEARCH_CHECKLIST_SECTION
+        assert "market" not in RESEARCH_CHECKLIST_SECTION.lower()
+        research = {"probability": 0.30, "dossier": "- fact A (src, 2026)",
+                    "reasoning": "researched", "reference_class": "R", "base_rate": 0.2,
+                    "sources": ["https://s/1", "https://s/2", "https://s/3"]}
+        agent, _, ok = run(monkeypatch, tmp_path, [fenced(research)],
+                           tiers(min_sources=3), BINARY_Q)
+        assert ok
+        brief = self.flat(agent.calls[0]["prompt"])
+        assert "Record the price, venue, liquidity/volume" in brief
+        assert "not the dossier body" in brief
+
+    def test_no_probability_direction_on_either_surface(self) -> None:
+        """Record-only means record-only: nothing here may tell the forecaster which way to
+        move, in numbers or in prose (imperative caution text flattens LLM forecasts toward
+        50 — arXiv 2506.01578, and the red team flagged directional variants of the
+        not-found-schedule bullet specifically)."""
+        banned = (
+            "single digit", "floor", "ceiling", " cap", "at least", "at most", "no more than",
+            "no lower", "no higher", "%", "probability", "likely", "unlikely", "odds",
+            "increase", "decrease", "raise", "lower ", "shade", "should be", "treat as",
+        )
+        research_md = (ROOT / "skills" / "forecast" / "references" / "research.md").read_text(
+            encoding="utf-8")
+        start = research_md.index("## Record these facts")
+        surfaces = {
+            "bot": run_bot.RESEARCH_CHECKLIST_SECTION,
+            "research.md": research_md[start:research_md.index("## Red-team")],
+        }
+        for name, surface in surfaces.items():
+            lowered = surface.lower()
+            for word in banned:
+                assert word not in lowered, f"{name}: directional wording {word!r}"
+
+
 class TestDefaults:
     def test_every_tier_ships_a_floor(self) -> None:
         assert DEFAULTS["tiers"]["low"]["min_sources"] == 1

@@ -1,5 +1,55 @@
 # HANDOVER — continuation state as of 2026-07-16
 
+## 2026-08-09: two-wave review; v0.4.23 + v0.4.24 shipped; AskNews armed; tips killed
+
+Full review of MiniBench 2026-07-13 (final: 584.2, rank 12, $57) and 2026-07-27
+(near-final: ~299 over 57 scored, rank 17, $0; prize line ≈ 461 under the
+score²-with-$50-floor payout rule, verified against both leaderboards).
+
+**Shipped to production, live for the 2026-08-10 wave (THREE changes at once — attribute
+nothing wave-over-wave to any single one; only paired tests separate them):**
+- **v0.4.23 escape-mass elicitation**: `p_below_lower`/`p_above_upper` on open-bounded
+  numerics, honored end-to-end in `percentiles_to_cdf`. Motivation: BMEX (45012) and
+  bluetongue (44967) resolved out-of-bounds at the exact −195.6 floor (undeclared open
+  tails pin at 0.001); BMEX's journal wanted 12–15% below the floor and the format
+  discarded it. Regression-locked (−195.6 → +47.8). Wave-2 counterfactual: fix ≈ rank
+  5–8 and $60–115 instead of $0.
+- **v0.4.24 research checklist**: four record-only items (calendars, trend/regime,
+  market metadata, source update rhythm) at the two research-run call sites in
+  `run_bot.py` + `references/research.md`. Bench arms and Manifold deliberately NOT
+  wired. Directional-language ban is test-enforced.
+- **AskNews armed in CI** (secret set 2026-08-09; both prior waves ran WITHOUT it
+  despite local arming). Fail-open-proof smoke step in bot-test.yml (commit 500a6cb).
+
+**Killed by preregistered process — do not resurrect without new evidence:**
+- All wave-1 numeric transforms (right-tail widen r=1.5 → +0.3/q on wave 2, dead;
+  pooled CI now EXCLUDES zero AGAINST global widening at n=41/42).
+- Reasoning tips v1 (red team: low-band lift −47..−128 on our own record) and v2
+  (A/B, 69 paired binaries, $17.48: primary +0.0032, targeted loss-shapes +0.0465
+  WORSE, guard clean/no flattening — `bench/analysis/ab-tips-2026-08-09-readout.txt`).
+  The wave-1 "we under-predict change" unified diagnosis DID NOT REPLICATE.
+
+**New tooling (all committed):** `bench/fetch_minibench_wave.py` (one-command wave
+capture; group posts need post-id fetches, qid-as-post-id reads the WRONG post),
+`bench/analysis/minibench_mc.py` (MC scoring verified vs platform source: baseline
+100·log(p·N)/log(N); MC peer carries 100·n/(n−1), NOT the continuous 50),
+multi-wave pooling + calibration-band monitor in both scorers
+(`minibench-pooled-readout-2026-08-09.txt` is the frozen two-wave readout),
+`bench/analysis/ab_tips_binary.py` (paired reasoning-side A/B harness).
+
+**Standing monitors (measure, don't inject):** pooled 0–10% band 3/23, 10–25% 3/17
+(neither significant); ≥75% band's three large misses (symmetric shrink a=0.7 was +214
+pooled but concentrated in 3 questions — hypothesis only); OOB outcome rate 2/42 and
+escape-mass usage from v0.4.23 on. Wave-2 community comparisons: all six big binary
+losses were us MORE extreme than the crowd in both directions; the crowd held ~11%
+below-bound on BMEX.
+
+**Known residue:** metaculus community aggregates are API-hidden for bot tournaments
+(browser only); pages-build failure on 2026-08-09 was GitHub-transient (requeued via
+`gh api -X POST .../pages/builds`); site root 404 is longstanding (no docs/index).
+The nested `claude -p` OAuth token expires and needs interactive re-login — check with
+a pong ping before any bench run. Tips draft stays in docs/ as a tested negative.
+
 ## 2026-07-31: Manifold uses sonnet-5; Metaculus remains opus-5
 
 Operator directive: lower the hourly Manifold forecaster to `claude-sonnet-5` to reduce
