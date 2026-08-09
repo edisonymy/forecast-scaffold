@@ -39,7 +39,23 @@ run its validators rather than eyeballing.
   If it errors, fix the *percentiles* (usually: not strictly increasing, or values outside the
   range) and re-run — that error-and-repair loop is the difference between a scored and a rejected
   forecast. Log-scaled questions carry a `zero_point`; pass it through.
-- Record with `fsj.py record --type numeric --percentiles "10:5,25:8,50:12,75:20,90:35" …`.
+- **Where a bound is OPEN, price the escape before you price the shape.** Ask what would take the
+  quantity out of the range entirely — collapse, shutdown or ruin below; a regime break or
+  compounding above — and if there is a concrete mechanism, declare that unconditional probability
+  as `--p-below-lower` / `--p-above-upper` (each in [0, 0.5], together at most 0.6; valid only on
+  an open bound). The five percentiles then describe the distribution *conditional* on landing
+  inside the range, and the built CDF carries the declared mass at the endpoint instead of the
+  platform's 0.001 floor. Omit them when you see no such mechanism — the CDF is then unchanged.
+
+  ```
+  python fsj.py cdf --percentiles "10:5,25:8,50:12,75:20,90:35" --min 0 --max 100 \
+      --open-upper --p-above-upper 0.08
+  ```
+
+  This is what the 2026-07-27 miss cost: two outcomes landed outside their range, each scoring the
+  worst payable value, on runs whose own reasoning had named the escape.
+- Record with `fsj.py record --type numeric --percentiles "10:5,25:8,50:12,75:20,90:35" …`
+  (add `--p-above-upper 0.08` when you declared one, so the journal preregisters it).
 
 ## Conditionals — P(A | B)
 

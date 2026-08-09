@@ -1004,3 +1004,52 @@ class TestPayloadValidation:
              "scaling": {"range_min": 0.0, "range_max": 10.0}}
         errors = run_bot.validate_payload({"percentiles": {"50": "five"}}, q)
         assert errors == ["every percentile value must be a number"]
+
+    # --- declared escape mass (v0.4.23) ------------------------------------------------
+    NUMERIC_Q = {**QUESTION, "type": "numeric",
+                 "scaling": {"range_min": 0.0, "range_max": 100.0},
+                 "open_lower_bound": True, "open_upper_bound": False}
+    PCTS = {"percentiles": {"10": 10.0, "25": 25.0, "50": 50.0, "75": 75.0, "90": 90.0}}
+
+    def test_escape_mass_on_an_open_bound_is_accepted(self) -> None:
+        assert run_bot.validate_payload({**self.PCTS, "p_below_lower": 0.13},
+                                        self.NUMERIC_Q) == []
+
+    def test_escape_mass_on_a_closed_bound_is_repairable_feedback(self) -> None:
+        errors = run_bot.validate_payload({**self.PCTS, "p_above_upper": 0.13},
+                                          self.NUMERIC_Q)
+        assert errors and "only valid when the upper bound is OPEN" in errors[0]
+
+    def test_out_of_range_escape_mass_is_rejected(self) -> None:
+        errors = run_bot.validate_payload({**self.PCTS, "p_below_lower": 0.9},
+                                          self.NUMERIC_Q)
+        assert errors and "must be in [0, 0.5]" in errors[0]
+
+    def test_non_numeric_escape_mass_is_an_error_not_a_crash(self) -> None:
+        errors = run_bot.validate_payload({**self.PCTS, "p_below_lower": "a lot"},
+                                          self.NUMERIC_Q)
+        assert errors == ["p_below_lower must be a number, got 'a lot'"]
+
+    def test_omitting_escape_mass_stays_valid(self) -> None:
+        assert run_bot.validate_payload(self.PCTS, self.NUMERIC_Q) == []
+
+
+class TestEscapeMassBrief:
+    """The Bounds block has to ASK for the escape probability — that is the elicitation
+    change the -195.6 misses (BMEX q45012, bluetongue q44967) actually needed."""
+
+    NUMERIC_Q = {**QUESTION, "type": "numeric",
+                 "scaling": {"range_min": 0.0, "range_max": 100.0, "zero_point": None},
+                 "open_lower_bound": True, "open_upper_bound": True}
+
+    def test_bounds_block_asks_for_the_escape_probability(self) -> None:
+        brief = run_bot.build_brief({}, self.NUMERIC_Q, None)
+        assert "## Bounds" in brief
+        assert "p_below_lower" in brief and "p_above_upper" in brief
+        assert "CONDITIONAL on landing inside" in brief
+
+    def test_binary_brief_says_nothing_about_bounds(self) -> None:
+        assert "p_below_lower" not in run_bot.build_brief({}, QUESTION, None)
+
+    def test_contract_offers_the_fields_to_the_numeric_forecaster(self) -> None:
+        assert "p_above_upper" in run_bot.CONTRACT

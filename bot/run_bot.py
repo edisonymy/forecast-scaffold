@@ -50,6 +50,7 @@ from forecast_scaffold.core import (
     load_config,
     load_recalibration,
     percentiles_to_cdf,
+    validate_escape_mass,
     validate_mc,
     validate_percentiles,
     validate_probability,
@@ -158,10 +159,13 @@ For multiple_choice (probabilities over the EXACT option labels given, summing t
 ```
 For numeric/discrete/date (strictly increasing, strictly inside the stated bounds; for date
 questions the values are unix timestamps in seconds, matching the bounds given). Optionally
-include "expected_value" (your mean/EV point estimate, same units):
+include "expected_value" (your mean/EV point estimate, same units), and — only where the
+Bounds section says that bound is OPEN, and only when you can name the mechanism — the
+escape masses "p_below_lower" and/or "p_above_upper" (omit the one you are not declaring;
+the example shows an upper escape priced at 8%, see the Bounds section for how to price it):
 ```json
 {"percentiles": {"10": 1.0, "25": 2.0, "50": 3.0, "75": 4.0, "90": 5.0},
- "expected_value": 3.2, "reasoning": "...",
+ "expected_value": 3.2, "p_above_upper": 0.08, "reasoning": "...",
  "reference_class": "...", "base_rate": <number in question units, e.g. the historical median>,
  "sources": ["<url or dataset you actually consulted>", "..."]}
 ```
@@ -417,12 +421,27 @@ def build_brief(post: dict[str, Any], question: dict[str, Any], crowd: float | N
         parts.append(f"\n## Options\n{json.dumps(question.get('options') or [])}")
     if question.get("type") in CONTINUOUS:
         scaling = question.get("scaling") or {}
+        # Escape-mass guidance (v0.4.23). The 2026-07-27 wave lost two numerics to outcomes
+        # OUTSIDE the range (BMEX q45012, bluetongue q44967), each scoring the -195.6 floor,
+        # because the strictly-inside-bounds contract had nowhere to put a regime break the
+        # run had actually named in its reasoning. So the elicitation asks for the escape
+        # probability FIRST and lets the percentiles describe the in-range shape.
         parts.append(
             "\n## Bounds\n"
             f"range_min={scaling.get('range_min')} range_max={scaling.get('range_max')} "
             f"zero_point={scaling.get('zero_point')} "
             f"open_lower={question.get('open_lower_bound')} "
-            f"open_upper={question.get('open_upper_bound')}"
+            f"open_upper={question.get('open_upper_bound')}\n"
+            "Where a bound is OPEN the outcome can land outside the range, and the scoring "
+            "punishes an unpriced escape harder than any interior miss. So before you pick "
+            "percentiles, ask what would have to happen for the quantity to leave the range "
+            "altogether — collapse, shutdown, delisting or ruin on the low side; a regime "
+            "break, compounding or a redefinition on the high side — and price it. If there "
+            "is a concrete mechanism, declare that probability as \"p_below_lower\" and/or "
+            "\"p_above_upper\" (each in [0, 0.5]; together at most 0.6); your five "
+            "percentiles then describe the distribution CONDITIONAL on landing inside the "
+            "range. Omit a field where you see no such mechanism, and never declare mass "
+            "past a CLOSED bound — that is an invalid payload."
         )
     if crowd is not None:
         parts.append(f"\n## Community prediction (at fetch time)\n{crowd}")
@@ -790,6 +809,26 @@ def validate_payload(payload: dict[str, Any], question: dict[str, Any]) -> list[
                     f"percentile values must lie strictly inside the stated bounds "
                     f"({rmin}, {rmax}); violating: {', '.join(bad)}"
                 )
+        # Declared escape mass (v0.4.23), same earliest-point rule: a field on a closed
+        # bound or out of [0, 0.5] is repairable feedback, not a crash at CDF build.
+        escape: dict[str, float | None] = {}
+        for name in ("p_below_lower", "p_above_upper"):
+            if payload.get(name) is None:
+                escape[name] = None
+                continue
+            try:
+                escape[name] = float(payload[name])
+            except (TypeError, ValueError):
+                errors.append(f"{name} must be a number, got {payload[name]!r}")
+                escape[name] = None
+        errors.extend(
+            validate_escape_mass(
+                escape["p_below_lower"],
+                escape["p_above_upper"],
+                lower_open=bool(question.get("open_lower_bound")),
+                upper_open=bool(question.get("open_upper_bound")),
+            )
+        )
         return errors
     return [f"unsupported question type {qtype!r}"]
 
@@ -1473,6 +1512,10 @@ def forecast_question(
     # clamp and MC floor above).
     submitted_cdf: list[float] | None = None
     cdf_scaling: dict[str, Any] | None = None
+    # Declared out-of-bound mass (v0.4.23): None unless the run priced an escape, in which
+    # case the CDF honors it at the endpoints and the record journals what was declared.
+    p_below_lower: float | None = None
+    p_above_upper: float | None = None
     if qtype in CONTINUOUS:
         raw_scaling = question.get("scaling") or {}
         if raw_scaling.get("range_min") is None or raw_scaling.get("range_max") is None:
@@ -1486,6 +1529,8 @@ def forecast_question(
             "upper_open": bool(question.get("open_upper_bound")),
             "cdf_size": int(outcome_count) + 1 if outcome_count else 201,
         }
+        p_below_lower = _as_float(payload.get("p_below_lower"))
+        p_above_upper = _as_float(payload.get("p_above_upper"))
         submitted_cdf = percentiles_to_cdf(
             {str(k): float(v) for k, v in payload["percentiles"].items()},
             cdf_scaling["range_min"],
@@ -1494,7 +1539,12 @@ def forecast_question(
             upper_open=cdf_scaling["upper_open"],
             zero_point=cdf_scaling["zero_point"],
             cdf_size=cdf_scaling["cdf_size"],
+            p_below_lower=p_below_lower,
+            p_above_upper=p_above_upper,
         )
+        if p_below_lower is not None or p_above_upper is not None:
+            print(f"  declared escape mass: below {submitted_cdf[0]:.3f}, "
+                  f"above {1.0 - submitted_cdf[-1]:.3f}")
     record = ForecastRecord(
         question=title,
         question_type=qtype if qtype in ("binary", "multiple_choice", "date") else "numeric",
@@ -1519,6 +1569,8 @@ def forecast_question(
             {str(k): float(v) for k, v in payload["percentiles"].items()}
             if qtype in CONTINUOUS else None
         ),
+        p_below_lower=p_below_lower,
+        p_above_upper=p_above_upper,
         submitted_cdf=submitted_cdf,
         scaling=cdf_scaling,
         expected_value=_as_float(payload.get("expected_value")),

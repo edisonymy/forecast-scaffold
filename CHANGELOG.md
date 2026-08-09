@@ -4,6 +4,29 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.23] - 2026-08-09
+
+### Added
+- Numeric/discrete/date forecasts may now declare out-of-bound mass: `p_below_lower` and
+  `p_above_upper`, each in [0, 0.5] (at most 0.6 together) and valid only where that bound
+  is OPEN. The five percentiles then describe the distribution CONDITIONAL on landing
+  inside the range, and `percentiles_to_cdf` puts the declared mass on the endpoint instead
+  of normalizing it away. Carried end to end: the bot's Bounds brief asks for the escape
+  probability before the percentiles, `validate_payload` accepts and range-checks the
+  fields, the CDF built for submission honors them, and the journal record preregisters
+  them. `fsj cdf` / `fsj record` take `--p-below-lower` / `--p-above-upper`.
+- Motivation: the 2026-07-27 MiniBench wave lost BMEX q45012 and bluetongue q44967 to
+  outcomes that landed OUTSIDE the question range. The strictly-inside-bounds contract had
+  nowhere to put a regime break the run had already named — the BMEX journal reads "I would
+  place ~12-15% below the $100k range floor, which the strictly-inside-bounds format
+  compresses into the 10th percentile at $102k" — and the standardization pins an undeclared
+  open tail at the platform's 0.001 floor, so both scored exactly 50·ln(0.001/0.05) = −195.6,
+  the worst payable value. On the same five percentiles, `p_below_lower=0.13` scores +47.8;
+  `tests/test_cdf.py` pins that regression against the platform's own formula.
+- Back-compatible by construction: with both fields absent the CDF is bit-for-bit what
+  v0.4.22 built (asserted for all four bound combinations and against the 201-point CDF
+  actually submitted for q45012), and the two record fields serialize only when set.
+
 ## [Unreleased] — marketplace catalog carries the version (2026-07-27)
 
 ### Fixed

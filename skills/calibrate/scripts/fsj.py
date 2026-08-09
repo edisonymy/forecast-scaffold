@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.4.22"
+SCAFFOLD_VERSION = "0.4.23"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -206,6 +206,14 @@ class ForecastRecord:
     probabilities: list[float] | None = None  # multiple_choice, parallel to options
     percentiles: dict[str, float] | None = None  # numeric/date: {"10": v, ...} monotone
     expected_value: float | None = None  # optional point estimate / EV alongside percentiles
+    # Declared out-of-bound ("escape") mass on an OPEN bound (v0.4.23). Unconditional
+    # probabilities in [0, 0.5] that the outcome lands entirely outside the question's range;
+    # when either is set the five percentiles describe the distribution CONDITIONAL on landing
+    # inside. Valid only where the corresponding bound is open (see validate_escape_mass).
+    # Both default None and are omitted from the serialized record, so a run that declares
+    # nothing journals byte-identically to before this field existed.
+    p_below_lower: float | None = None  # numeric/discrete/date: P(outcome < range_min)
+    p_above_upper: float | None = None  # numeric/discrete/date: P(outcome > range_max)
     # Continuous-question submission provenance (v0.4.13): the exact CDF submitted to the
     # platform and the scaling it was built against. Percentiles alone can't be reconstructed
     # into the ~201-point object the platform scored (open/closed bounds, log scaling, and the
@@ -908,6 +916,57 @@ def validate_percentiles(percentiles: dict[str, float]) -> list[str]:
     return errors
 
 
+#: Ceiling on each declared escape mass, and on the two together. A forecaster who believes
+#: more than half the mass sits outside the range has the wrong range, not a tail — and past
+#: 0.6 combined there is barely an in-range distribution left to elicit. Both are guard rails
+#: against a fat-finger 0.9, not calibration advice.
+MAX_ESCAPE_MASS = 0.5
+MAX_TOTAL_ESCAPE_MASS = 0.6
+
+
+def validate_escape_mass(
+    p_below_lower: float | None,
+    p_above_upper: float | None,
+    *,
+    lower_open: bool,
+    upper_open: bool,
+) -> list[str]:
+    """Errors for the declared out-of-bound mass on a numeric/discrete/date forecast.
+
+    The two fields are unconditional probabilities that the outcome escapes the question's
+    range entirely (regime break, collapse, redenomination). They are meaningful ONLY where
+    the platform left that bound open: past a CLOSED bound the outcome cannot land, so a
+    declaration there is a misread of the question, not a bold tail — an error, never a
+    silent zero. See ``percentiles_to_cdf`` for how the mass reaches the submitted CDF.
+    """
+    errors: list[str] = []
+    for name, value, is_open, bound in (
+        ("p_below_lower", p_below_lower, lower_open, "lower"),
+        ("p_above_upper", p_above_upper, upper_open, "upper"),
+    ):
+        if value is None:
+            continue
+        if not isinstance(value, int | float) or isinstance(value, bool):
+            errors.append(f"{name} must be a number, got {value!r}")
+            continue
+        if not is_open:
+            errors.append(
+                f"{name} is only valid when the {bound} bound is OPEN — this question's "
+                f"{bound} bound is closed, so no outcome can land past it"
+            )
+        if not 0.0 <= float(value) <= MAX_ESCAPE_MASS:
+            errors.append(f"{name}={value} must be in [0, {MAX_ESCAPE_MASS}]")
+    if errors:
+        return errors
+    total = float(p_below_lower or 0.0) + float(p_above_upper or 0.0)
+    if total > MAX_TOTAL_ESCAPE_MASS:
+        errors.append(
+            f"p_below_lower + p_above_upper = {total:.3f} exceeds {MAX_TOTAL_ESCAPE_MASS} — "
+            "that much escape mass means the range is wrong, not the tails"
+        )
+    return errors
+
+
 def validate_mc(options: list[str], probabilities: list[float]) -> list[str]:
     errors: list[str] = []
     if len(options) != len(probabilities):
@@ -954,6 +1013,25 @@ def validate_record(
             errors.append(f"{record.question_type} needs percentiles {{10,25,50,75,90}}")
         else:
             errors.extend(validate_percentiles(record.percentiles))
+        # Which bounds are open lives in ``scaling`` (written by whatever built the CDF). With
+        # no scaling there is nothing to contradict, so only the range/sum checks can run —
+        # assume open rather than invent a rejection the recorder cannot act on.
+        scaling = record.scaling or {}
+        errors.extend(
+            validate_escape_mass(
+                record.p_below_lower,
+                record.p_above_upper,
+                lower_open=bool(scaling.get("lower_open", True)),
+                upper_open=bool(scaling.get("upper_open", True)),
+            )
+        )
+    if record.question_type not in ("numeric", "discrete", "date") and (
+        record.p_below_lower is not None or record.p_above_upper is not None
+    ):
+        errors.append(
+            "p_below_lower / p_above_upper describe a numeric range and are meaningless on a "
+            f"{record.question_type} forecast"
+        )
     if not record.reference_class and record.status == "open":
         warnings.append("no reference_class — the outside view is the most valuable single step")
     return errors, warnings
@@ -1002,6 +1080,18 @@ def _cap_pmf(pmf: list[float], cap: float, total: float) -> list[float]:
     return [min(p * hi, cap) for p in pmf]
 
 
+#: Absolute mass the standardization spreads uniformly over the location axis so that every
+#: consecutive CDF step clears ``MIN_CDF_STEP``: 0.01 / 200 bins = 5e-05 exactly, at the
+#: platform's 201 points. It is the ``0.01 * x`` term of the inherited
+#: ``0.988*r + 0.01*x + 0.001`` mixture, pulled out so the declared-escape-mass path can
+#: reuse it against an interior span that is no longer ~0.99.
+CDF_UNIFORM_MIX = 0.01
+
+#: The platform's floor on the mass outside an open bound. A CDF that declares less is
+#: rejected, so this is also the mass an undeclared open tail silently gets.
+MIN_OPEN_TAIL = 0.001
+
+
 def percentiles_to_cdf(
     percentiles: dict[str, float],
     range_min: float,
@@ -1011,6 +1101,8 @@ def percentiles_to_cdf(
     upper_open: bool = False,
     zero_point: float | None = None,
     cdf_size: int = DEFAULT_CDF_SIZE,
+    p_below_lower: float | None = None,
+    p_above_upper: float | None = None,
 ) -> list[float]:
     """Declared percentiles -> a platform-valid CDF evaluated at ``cdf_size`` equally spaced
     locations: monotone, min step, capped per-bin mass, correct open/closed-bound tails.
@@ -1018,13 +1110,38 @@ def percentiles_to_cdf(
     Declared values must be strictly increasing and strictly inside (range_min, range_max);
     a log-scaled question's ``zero_point`` must lie outside [range_min, range_max].
 
-    Known (inherited) distortion: the standardization rescales the interpolated curve onto
-    the required tail masses, so declared mass beyond an open bound is normalized down to
-    the platform's 0.001 tail, and with exactly ONE open bound the interior percentiles
-    shift by up to ~2.6pp (e.g. the declared median sits at ~0.475 with only the lower
-    bound open). This matches the upstream reference implementation and platform rules.
+    ``p_below_lower`` / ``p_above_upper`` (v0.4.23, optional) are the forecaster's declared
+    UNCONDITIONAL probability that the outcome escapes the range past an open bound; passing
+    one leaves the other at 0.0. When either is given, the five percentiles are read as the
+    distribution CONDITIONAL on landing inside the range: fraction ``f`` is placed at
+    ``p_below + f*(1 - p_below - p_above)``, the endpoints carry the declared masses, and the
+    standardization preserves them instead of normalizing them away.
+
+    Why the option exists: the 2026-07-27 MiniBench wave lost two questions (BMEX market cap
+    q45012, England bluetongue q44967) to outcomes that landed OUTSIDE the range. The
+    strictly-inside-bounds contract had no way to say so — that run's own journal reads "I
+    would place ~12-15% below the $100k range floor, which the strictly-inside-bounds format
+    compresses into the 10th percentile at $102k" — and the standardization below pins an
+    undeclared open tail at ``MIN_OPEN_TAIL``, so both scored exactly 50*ln(0.001/0.05) =
+    -195.6, the worst payable value. With ``p_below_lower=0.13`` the same forecast scores
+    50*ln(0.13/0.05) = +47.8.
+
+    With BOTH new arguments omitted the construction is bit-for-bit what it was before
+    v0.4.23, including this inherited distortion: an open bound assumes half the outermost
+    declared decile lies outside the range, the standardization then rescales the interpolated
+    curve onto the ``MIN_OPEN_TAIL`` tails, and with exactly ONE open bound the interior
+    percentiles shift by up to ~2.6pp (the declared median sits at ~0.475 with only the lower
+    bound open). That matches the upstream reference implementation and platform rules.
+
+    Pure and total: every infeasible combination raises ``ValueError`` rather than returning
+    a CDF the platform would reject.
     """
     errors = validate_percentiles(percentiles)
+    if errors:
+        raise ValueError("; ".join(errors))
+    errors = validate_escape_mass(
+        p_below_lower, p_above_upper, lower_open=lower_open, upper_open=upper_open
+    )
     if errors:
         raise ValueError("; ".join(errors))
     if range_min >= range_max:
@@ -1043,12 +1160,24 @@ def percentiles_to_cdf(
             "declared percentile values must lie strictly inside (range_min, range_max)"
         )
 
+    escape_declared = p_below_lower is not None or p_above_upper is not None
+    p_below = float(p_below_lower or 0.0)
+    p_above = float(p_above_upper or 0.0)
+
     # (location in [0,1], cumulative fraction) anchors, incl. the bound anchors.
-    points = [(clamp(_scale_location(v, range_min, range_max, zero_point), 0.0, 1.0), f)
-              for f, v in declared]
-    min_frac, max_frac = declared[0][0], declared[-1][0]
-    lower_frac = 0.5 * min_frac if lower_open else 0.0
-    upper_frac = 1.0 - 0.5 * (1.0 - max_frac) if upper_open else 1.0
+    locs = [clamp(_scale_location(v, range_min, range_max, zero_point), 0.0, 1.0)
+            for _, v in declared]
+    if escape_declared:
+        # Declared percentiles are conditional on landing inside: stretch them onto the
+        # interior span [p_below, 1 - p_above] and pin the bound anchors on the escape mass.
+        inside = 1.0 - p_below - p_above
+        points = [(loc, p_below + f * inside) for loc, (f, _) in zip(locs, declared, strict=True)]
+        lower_frac, upper_frac = p_below, 1.0 - p_above
+    else:
+        points = [(loc, f) for loc, (f, _) in zip(locs, declared, strict=True)]
+        min_frac, max_frac = declared[0][0], declared[-1][0]
+        lower_frac = 0.5 * min_frac if lower_open else 0.0
+        upper_frac = 1.0 - 0.5 * (1.0 - max_frac) if upper_open else 1.0
     anchors = [(0.0, lower_frac), *points, (1.0, upper_frac)]
     for (loc_a, _), (loc_b, _) in zip(anchors, anchors[1:], strict=False):
         if loc_a >= loc_b:
@@ -1068,7 +1197,23 @@ def percentiles_to_cdf(
     # step, plus the 0.001 tail offset for each open bound.
     span = raw[-1] - raw[0]
     rescaled = [(y - raw[0]) / span for y in raw]
-    if lower_open and upper_open:
+    if escape_declared:
+        # Same mixture, generalized: cdf = start + (span - u)*shape + u*location, where the
+        # endpoints now honor the DECLARED escape mass (floored at the platform's minimum
+        # open tail) instead of the fixed 0.001. Substituting p_below = p_above = 0.001 and
+        # a full span reproduces the four literal branches below exactly; the uniform term
+        # stays absolute (not scaled by the span) because that is what buys MIN_CDF_STEP.
+        start = max(p_below, MIN_OPEN_TAIL) if lower_open else 0.0
+        end = 1.0 - (max(p_above, MIN_OPEN_TAIL) if upper_open else 0.0)
+        interior = end - start
+        if interior <= CDF_UNIFORM_MIX:  # pragma: no cover - MAX_TOTAL_ESCAPE_MASS forbids it
+            raise ValueError(
+                f"declared escape mass leaves only {interior:.4f} of probability inside the "
+                f"range — less than the {CDF_UNIFORM_MIX} the minimum-step term needs"
+            )
+        cdf = [start + (interior - CDF_UNIFORM_MIX) * r + CDF_UNIFORM_MIX * x
+               for r, x in zip(rescaled, locations, strict=True)]
+    elif lower_open and upper_open:
         cdf = [0.988 * r + 0.01 * x + 0.001 for r, x in zip(rescaled, locations, strict=True)]
     elif lower_open:
         cdf = [0.989 * r + 0.01 * x + 0.001 for r, x in zip(rescaled, locations, strict=True)]
@@ -1247,6 +1392,8 @@ def _cmd_record(args: argparse.Namespace) -> int:
                 options=args.options.split(",") if args.options else None,
                 probabilities=_parse_draws(args.probabilities) if args.probabilities else None,
                 percentiles=_parse_percentiles(args.percentiles) if args.percentiles else None,
+                p_below_lower=args.p_below_lower,
+                p_above_upper=args.p_above_upper,
                 raw_draws=_parse_draws(args.draws) if args.draws else None,
                 aggregation=args.aggregation,
                 effort=args.effort,
@@ -1473,10 +1620,19 @@ def _cmd_cdf(args: argparse.Namespace) -> int:
             upper_open=args.open_upper,
             zero_point=args.zero_point,
             cdf_size=args.size,
+            p_below_lower=args.p_below_lower,
+            p_above_upper=args.p_above_upper,
         )
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
+    if args.p_below_lower is not None or args.p_above_upper is not None:
+        # stderr, not stdout: stdout is the machine-readable CDF a caller pipes onward.
+        print(
+            f"tail mass in the built CDF: below range_min {cdf[0]:.4f}, "
+            f"above range_max {1.0 - cdf[-1]:.4f}",
+            file=sys.stderr,
+        )
     print(json.dumps(cdf))
     return 0
 
@@ -1507,6 +1663,14 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--options", help='multiple_choice: comma-separated labels, "A,B,C"')
     p.add_argument("--probabilities", help='multiple_choice: comma-separated, "0.5,0.3,0.2"')
     p.add_argument("--percentiles", help='numeric: "10:5,25:8,50:12,75:20,90:35"')
+    p.add_argument(
+        "--p-below-lower", dest="p_below_lower", type=float,
+        help="numeric, open lower bound only: declared P(outcome < range_min)",
+    )
+    p.add_argument(
+        "--p-above-upper", dest="p_above_upper", type=float,
+        help="numeric, open upper bound only: declared P(outcome > range_max)",
+    )
     p.add_argument(
         "--record-json", dest="record_json",
         help="a full record as one JSON object (alternative to the individual flags)",
@@ -1598,6 +1762,15 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--open-upper", dest="open_upper", action="store_true")
     p.add_argument("--zero-point", dest="zero_point", type=float)
     p.add_argument("--size", type=int, default=DEFAULT_CDF_SIZE)
+    p.add_argument(
+        "--p-below-lower", dest="p_below_lower", type=float,
+        help="P(outcome escapes below range_min); open lower bound only. Declaring it makes "
+             "the percentiles conditional on landing inside the range",
+    )
+    p.add_argument(
+        "--p-above-upper", dest="p_above_upper", type=float,
+        help="P(outcome escapes above range_max); open upper bound only",
+    )
     p.set_defaults(func=_cmd_cdf)
 
     p = sub.add_parser("export", help="export the journal in an interop format")
