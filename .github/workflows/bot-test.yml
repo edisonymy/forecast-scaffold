@@ -88,7 +88,13 @@ jobs:
           INPUT_EFFORT: ${{ inputs.effort }}
         run: |
           # Single-post backtest (--post, forces dry-run) or a tournament sweep — the target
-          # comes via env, never interpolated into the command line.
+          # comes via env, never interpolated into the command line. A dispatch with NO
+          # target is a smoke-only run (secrets/env check): succeed without forecasting
+          # instead of failing on run_bot's argparse and emailing a false alarm.
+          if [ -z "$INPUT_POST" ] && [ -z "$INPUT_TOURNAMENT" ]; then
+            echo "no tournament/post input — smoke-only dispatch, skipping the bot run"
+            exit 0
+          fi
           if [ -n "$INPUT_POST" ]; then
             target=(--post "$INPUT_POST")
           else
