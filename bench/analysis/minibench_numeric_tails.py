@@ -44,14 +44,25 @@ platform's own standardization/tail rules apply:
   - uniform mixture e : cdf' = (1-e)*cdf + e*location — a hard floor under tail density,
                         applied to the SUBMITTED CDF (no percentile round-trip)
 
+POOLING ACROSS WAVES (added 2026-08-09): --resolutions and --window are both repeatable
+and mean exactly what they mean in ``minibench_counterfactuals.py`` (a wave is a resolve_by
+window; with no --window the two known waves are used). The per-question table, the
+coverage block, the transform table and the median-bias sign test are printed PER WAVE and
+then POOLED; the paired bootstrap is pooled only, since that is the powered look.
+
 Usage:
     python bench/analysis/minibench_numeric_tails.py --resolutions FILE.json
+    python bench/analysis/minibench_numeric_tails.py \
+        --resolutions bench/analysis/minibench-2026-07-resolutions.json \
+        --resolutions bench/analysis/minibench-2026-07-27-resolutions.json
+    # one wave only:
+    python bench/analysis/minibench_numeric_tails.py \
+        --window 2026-08-06 2026-08-09 --resolutions FILE.json
 """
 
 from __future__ import annotations
 
 import argparse
-import json
 import math
 import random
 import statistics as st
@@ -65,9 +76,14 @@ from forecast_scaffold.core import _scale_location, percentiles_to_cdf  # noqa: 
 
 sys.path.insert(0, str(ROOT))
 from bench.analysis.minibench_counterfactuals import (  # noqa: E402
+    DEFAULT_WINDOWS,
     JOURNAL,
     QUANTILES,
+    WAVE_KEY,
+    load_resolutions,
     load_wave,
+    parse_windows,
+    wave_labels,
 )
 
 GLOBAL_WIDENS = (1.3, 1.6, 2.0)
@@ -238,19 +254,13 @@ def boot_ci(deltas: list[float], iters: int = 10000) -> tuple[float, float]:
     return means[int(iters * 0.05)], means[int(iters * 0.95)]
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--journal", type=Path, default=JOURNAL)
-    parser.add_argument("--resolutions", type=Path, required=True)
-    args = parser.parse_args(argv)
-
-    resolutions = {int(k): float(v) for k, v in
-                   json.loads(args.resolutions.read_text(encoding="utf-8")).items()}
-    _, numerics = load_wave(args.journal)
-    rows = [r for r in numerics
-            if r["source"]["question_id"] in resolutions and r.get("submitted_cdf")
-            and r.get("scaling")]
+def analyze(rows: list[dict], resolutions: dict[int, float], label: str,
+            *, bootstrap: bool) -> None:
+    """Full readout for one set of rows (one wave, or all waves pooled)."""
+    print(f"\n{'=' * 78}\n=== {label} ===")
     print(f"resolved numerics with a submitted CDF: {len(rows)}")
+    if not rows:
+        return
 
     print("\n=== per-question: where the outcome landed in OUR distribution ===")
     print(f"{'qid':>6}  {'PIT':>6}  {'logscore':>9}  {'p10':>10} {'p50':>10} {'p90':>10} "
@@ -287,7 +297,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  {'transform':<26} {'total':>10} {'vs submitted':>13} {'mean/q':>9} "
           f"{'worst':>9}  inside 10-90")
 
-    def report(label: str, cdfs: list[list[float] | None]) -> list[float] | None:
+    def report(name: str, cdfs: list[list[float] | None]) -> list[float] | None:
         scores, pits = [], []
         for row, cdf in zip(rows, cdfs, strict=True):
             if cdf is None:
@@ -297,7 +307,7 @@ def main(argv: list[str] | None = None) -> int:
                                     row["scaling"]))
             pits.append(cdf_at(cdf, loc))
         inside = sum(1 for p in pits if 0.10 <= p <= 0.90)
-        print(f"  {label:<26} {sum(scores):>10.0f} {sum(scores) - base_total:>+13.0f} "
+        print(f"  {name:<26} {sum(scores):>10.0f} {sum(scores) - base_total:>+13.0f} "
               f"{st.mean(scores):>+9.1f} {min(scores):>+9.1f}  {inside:>7}/{n}")
         return scores
 
@@ -338,17 +348,45 @@ def main(argv: list[str] | None = None) -> int:
     print(f"\n=== median bias (sign test) ===\n  outcome above our median in "
           f"{above}/{n} questions ({above / n:.0%}); a calibrated median gives 50%")
 
+    if not bootstrap:
+        return
     print("\n=== paired bootstrap vs submitted (90% CI, 10k draws, seed 7) ===")
-    print("  EXPLORATORY: these transforms were chosen after seeing this wave.")
-    for label, scores in ([(f"tail-only t={t}", s) for t, s in tail_scores.items()]
-                          + [(f"mixture e={e}", s) for e, s in mix_scores.items()]
-                          + [(f"right-tail r={r_}", s) for r_, s in right_scores.items()]
-                          + [(f"shift up d={d}", s) for d, s in shift_scores.items()]
-                          + ([("no-halving", nohalve)] if nohalve else [])):
+    print("  EXPLORATORY: these transforms were chosen after seeing the 2026-07 wave.")
+    for name, scores in ([(f"tail-only t={t}", s) for t, s in tail_scores.items()]
+                         + [(f"mixture e={e}", s) for e, s in mix_scores.items()]
+                         + [(f"right-tail r={r_}", s) for r_, s in right_scores.items()]
+                         + [(f"shift up d={d}", s) for d, s in shift_scores.items()]
+                         + ([("no-halving", nohalve)] if nohalve else [])):
         deltas = [a - b for a, b in zip(scores, base_scores, strict=True)]
         lo, hi = boot_ci(deltas)
-        print(f"  {label:<20} mean {st.mean(deltas):+8.1f} per question  "
+        print(f"  {name:<20} mean {st.mean(deltas):+8.1f} per question  "
               f"CI90 [{lo:+8.1f},{hi:+8.1f}]  (positive favors the transform)")
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--journal", type=Path, default=JOURNAL)
+    parser.add_argument("--resolutions", type=Path, action="append", required=True,
+                        help="JSON {qid: outcome}; repeatable, later files win on collision")
+    parser.add_argument("--window", nargs=2, metavar=("START", "END"), action="append",
+                        default=None,
+                        help="resolve_by window identifying one wave; repeatable. "
+                             f"Default: {' and '.join(f'{a}..{b}' for a, b in DEFAULT_WINDOWS)}")
+    args = parser.parse_args(argv)
+
+    windows = parse_windows(args.window)
+    resolutions = load_resolutions(args.resolutions)
+    _, numerics = load_wave(args.journal, windows)
+    rows = [r for r in numerics
+            if r["source"]["question_id"] in resolutions and r.get("submitted_cdf")
+            and r.get("scaling")]
+
+    labels = wave_labels(windows)
+    for i, label in enumerate(labels):
+        analyze([r for r in rows if r[WAVE_KEY] == i], resolutions, label,
+                bootstrap=len(windows) == 1)
+    if len(windows) > 1:
+        analyze(rows, resolutions, f"POOLED (all {len(windows)} waves)", bootstrap=True)
     return 0
 
 
