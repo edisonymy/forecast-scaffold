@@ -255,6 +255,25 @@ def _http_error_detail(exc: Exception) -> str:
     return f"{exc} — {body[:300]}" if body else str(exc)
 
 
+# Manifold rejects a sell for a position you do not hold. The status it uses for that class
+# of user-state error is not documented, and its body wording is the only reliable signal, so
+# match the wording (conservatively) rather than the status code: a genuine auth or endpoint
+# failure must stay a loud error, not be silently written off as a closed position.
+_NO_POSITION_RE = re.compile(
+    r"(no shares|don'?t have|do not have|already sold|no position)", re.IGNORECASE
+)
+
+
+def is_missing_position_error(exc: Exception) -> bool:
+    """True when a failed sell means "you hold nothing here" rather than "the call is broken".
+
+    Only 4xx bodies qualify: a 5xx is Manifold being unwell and the position may well still
+    be open, so it must be retried, never written off."""
+    if not isinstance(exc, urllib.error.HTTPError) or not 400 <= exc.code < 500:
+        return False
+    return bool(_NO_POSITION_RE.search(_http_error_detail(exc)))
+
+
 def place_bet(api_key: str, market_id: str, outcome: str, amount: float) -> dict[str, Any]:
     """POST /v0/bet. outcome is "YES" or "NO"; amount is mana. Live betting only."""
     body = json.dumps(
@@ -721,6 +740,49 @@ def decide_bet(
     return {"outcome": outcome, "stake": float(stake)}
 
 
+def record_position_exit(
+    journal: Journal, record_id: str, reason: str, price: float | None = None,
+    *, bet: dict[str, Any] | None = None,
+) -> bool:
+    """Stamp ``source.bet.exit`` on a record and persist, so the position is closed in the
+    journal the moment it is closed on Manifold.
+
+    Without this the exit was invisible to every later run: nothing wrote back, so the
+    convergence sell was re-attempted every hour forever (four positions retried from at
+    least 2026-08-18) and ``open_exposure`` kept counting the stake until the market happened
+    to resolve — ratcheting toward the 30%-of-balance cap and starving new bets. Rewrite (not
+    append) matches how ``core.Journal`` already persists a resolution; the sweep runs before
+    the market loop appends anything, so no in-flight write is clobbered.
+
+    ``bet`` is the caller's in-memory copy of the same bet dict. It is stamped too because the
+    exposure cap is computed later in this same run off that pre-read snapshot, which a
+    rewrite-then-reread would not touch — leaving the freed stake counted for one more run."""
+    records = journal.all()
+    found = False
+    for record in records:
+        record_bet = (record.source or {}).get("bet")
+        if record.id != record_id or not record_bet:
+            continue
+        exit_note: dict[str, Any] = {"at": _utc_now(), "reason": reason}
+        if price is not None:
+            exit_note["price"] = float(price)
+        record_bet["exit"] = exit_note
+        if bet is not None:
+            bet["exit"] = exit_note
+        found = True
+    if found:
+        journal.rewrite(records)
+    return found
+
+
+def is_open_position(bet: dict[str, Any] | None) -> bool:
+    """A placed, not-yet-exited bet. The exit stamp is what makes the position guard, the
+    exposure cap, and the convergence sweep agree on which positions are still live."""
+    if not bet:
+        return False
+    return not bet.get("dry_run") and not bet.get("exit")
+
+
 def already_bet_market_ids(journal: Journal) -> set[str]:
     """Market ids we hold an actually-placed open position in (open-position guard,
     journal-based per the design — simpler and it survives a fresh checkout the way the
@@ -731,7 +793,7 @@ def already_bet_market_ids(journal: Journal) -> set[str]:
     for record in journal:
         src = record.source or {}
         bet = src.get("bet")
-        if (src.get("platform") == "manifold" and bet and not bet.get("dry_run")
+        if (src.get("platform") == "manifold" and is_open_position(bet)
                 and src.get("question_id")):
             ids.add(str(src["question_id"]))
     return ids
@@ -764,8 +826,10 @@ def recently_forecast_market_ids(
 
 def open_exposure(records: list[Any], state_lookup: Any = None) -> float:
     """Total mana staked in still-open, actually-placed (non-dry-run) bets — the base the
-    30%-of-balance exposure cap binds against. Nothing ever writes resolution status back to
-    the Manifold journal, so the journal-status filter alone never decrements: when
+    30%-of-balance exposure cap binds against. A position sold by the convergence sweep drops
+    out via its ``bet.exit`` stamp (see ``record_position_exit``). Resolution status is still
+    never written back, so for a position that simply resolved the journal never decrements:
+    when
     ``state_lookup(question_id)`` is given (the live path), a bet whose live market state has
     resolved is excluded — that is what actually closes a position. A lookup failure COUNTS
     the bet (fail closed: a transient API outage must not uncap exposure). With no lookup
@@ -774,7 +838,7 @@ def open_exposure(records: list[Any], state_lookup: Any = None) -> float:
     for record in records:
         src = record.source or {}
         bet = src.get("bet")
-        if not (src.get("platform") == "manifold" and bet and not bet.get("dry_run")
+        if not (src.get("platform") == "manifold" and bet and is_open_position(bet)
                 and record.status not in ("resolved", "annulled")):
             continue
         if state_lookup is not None:
@@ -1144,7 +1208,7 @@ def build_record(
 
 def _manage_phase2_positions(
     records: list[Any], markets: list[dict[str, Any]], args: argparse.Namespace, *,
-    api_key: str, can_post: bool, state_lookup: Any,
+    api_key: str, can_post: bool, state_lookup: Any, journal: Journal,
 ) -> list[dict[str, Any]]:
     """Phase-2 open-position management, run BEFORE new markets. A position whose price has
     come within the convergence band of our forecast is sold (signal banked, capital recycled;
@@ -1159,8 +1223,9 @@ def _manage_phase2_positions(
         # The record.status filter is belt only: resolution status is never written back to
         # the Manifold journal, so the live resolved-check below is what authoritatively
         # closes a position.
-        if (src.get("platform") != "manifold" or record.blind or not bet
-                or bet.get("dry_run") or record.status in ("resolved", "annulled")):
+        if (src.get("platform") != "manifold" or record.blind
+                or not bet or not is_open_position(bet)
+                or record.status in ("resolved", "annulled")):
             continue
         qid = str(src.get("question_id"))
         try:
@@ -1180,13 +1245,28 @@ def _manage_phase2_positions(
             if can_post:
                 try:
                     sell_position(api_key, qid, bet.get("outcome"))
+                    record_position_exit(
+                        journal, record.id, "convergence", p_now, bet=bet
+                    )
                     print(f"  CONVERGENCE EXIT: sold {qid} "
                           f"(price {p_now:.2f} ~ forecast {p_us:.2f})")
                 except Exception as exc:  # noqa: BLE001 — a failed sell must not abort the run
-                    # SELL-FAILED is machine-readable on purpose: a position that cannot be
-                    # sold never releases its stake, so open exposure ratchets up against the
-                    # 30%-of-balance cap until no new bet can be placed at all.
-                    print(f"SELL-FAILED: {qid} ({_http_error_detail(exc)})")
+                    if is_missing_position_error(exc):
+                        # Manifold says we hold nothing here: the position is closed whatever
+                        # the journal thinks (an earlier sell that landed but was never
+                        # written back, or a manual sale). Stamping the exit is the whole
+                        # point — it stops the hourly retry and releases the stake from the
+                        # exposure cap instead of leaving it stuck until resolution.
+                        record_position_exit(
+                            journal, record.id, "no-position", bet=bet
+                        )
+                        print(f"  CONVERGENCE EXIT: {qid} already closed on Manifold "
+                              f"({_http_error_detail(exc)}) — journal stamped")
+                    else:
+                        # SELL-FAILED is machine-readable on purpose: a position that cannot
+                        # be sold never releases its stake, so open exposure ratchets up
+                        # against the 30%-of-balance cap until no new bet can be placed.
+                        print(f"SELL-FAILED: {qid} ({_http_error_detail(exc)})")
             else:
                 print(f"  CONVERGENCE EXIT (dry-run): would sell {qid} "
                       f"(price {p_now:.2f} ~ forecast {p_us:.2f})")
@@ -1308,7 +1388,7 @@ def run(args: argparse.Namespace) -> int:
     if phase == 2 and not killed:
         markets = _manage_phase2_positions(
             records_before, markets, args,
-            api_key=api_key, can_post=can_post, state_lookup=live_state,
+            api_key=api_key, can_post=can_post, state_lookup=live_state, journal=journal,
         )
     print(f"selected {len(markets)} market(s)")
     if not markets:

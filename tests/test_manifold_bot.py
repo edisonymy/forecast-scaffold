@@ -11,11 +11,13 @@ scorer's movement-toward math in both directions.
 from __future__ import annotations
 
 import argparse
+import io
 import json
 import re
 import shlex
 import subprocess
 import sys
+import urllib.error
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -1373,6 +1375,69 @@ def test_open_exposure_live_state_lookup() -> None:
 
     assert run_manifold.open_exposure(records, state_lookup=raising) == pytest.approx(65.0)
     assert run_manifold.open_exposure(records) == pytest.approx(65.0)
+
+
+def _positioned_record(qid: str = "held", stake: float = 100.0) -> ForecastRecord:
+    """A sighted record carrying one placed, unexited Manifold position."""
+    return ForecastRecord(
+        question="held position", question_type="binary", probability=0.50, blind=False,
+        source={"platform": "manifold", "question_id": qid, "pair_id": "p",
+                "bet": {"outcome": "YES", "stake": stake, "dry_run": False,
+                        "p_market_at_bet": 0.70}},
+    )
+
+
+def test_is_open_position_tracks_the_exit_stamp() -> None:
+    placed = {"outcome": "YES", "stake": 25, "dry_run": False}
+    assert run_manifold.is_open_position(placed)
+    assert not run_manifold.is_open_position(None)
+    assert not run_manifold.is_open_position({**placed, "dry_run": True})
+    # Once the sweep stamps an exit the position is closed for every reader.
+    assert not run_manifold.is_open_position({**placed, "exit": {"reason": "convergence"}})
+
+
+def test_record_position_exit_persists_and_releases_exposure(tmp_path: Path) -> None:
+    journal = Journal(str(tmp_path / "manifold.jsonl"))
+    record = _positioned_record()
+    journal.append(record)
+    before = journal.all()
+    assert run_manifold.open_exposure(before) == 100.0
+    assert run_manifold.already_bet_market_ids(journal) == {"held"}
+
+    stamped = journal.all()[0]
+    in_memory_bet = stamped.source["bet"]
+    assert run_manifold.record_position_exit(
+        journal, stamped.id, "convergence", 0.52, bet=in_memory_bet
+    )
+    # Persisted...
+    reread = journal.all()[0].source["bet"]["exit"]
+    assert reread["reason"] == "convergence" and reread["price"] == 0.52
+    # ...and the caller's snapshot is stamped too, so the exposure computed later in the SAME
+    # run off that pre-read list already excludes the freed stake.
+    assert in_memory_bet["exit"]["reason"] == "convergence"
+    assert run_manifold.open_exposure([stamped]) == 0.0
+    # The open-position guard releases as well, so the market can be re-entered.
+    assert run_manifold.already_bet_market_ids(journal) == set()
+
+
+def test_missing_position_error_only_matches_client_side_no_shares() -> None:
+    def http(code: int, body: str) -> urllib.error.HTTPError:
+        return urllib.error.HTTPError(
+            "https://api.manifold.markets/v0/market/x/sell", code, "Forbidden", {},
+            io.BytesIO(body.encode("utf-8")),
+        )
+
+    assert run_manifold.is_missing_position_error(
+        http(403, '{"message":"You don\'t have any shares to sell."}')
+    )
+    assert run_manifold.is_missing_position_error(http(400, '{"message":"No position found"}'))
+    # A real auth/endpoint failure must stay a loud error, never be written off as closed.
+    assert not run_manifold.is_missing_position_error(http(403, '{"message":"Unauthorized"}'))
+    # 5xx: Manifold is unwell and the position may still be open -> retry, never write off.
+    assert not run_manifold.is_missing_position_error(
+        http(503, '{"message":"You do not have any shares"}')
+    )
+    assert not run_manifold.is_missing_position_error(RuntimeError("no shares"))
 
 
 def test_exposure_cap_blocks_a_bet_over_30pct(
