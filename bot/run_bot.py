@@ -992,7 +992,15 @@ def collect_open_posts(
     posts: list[dict[str, Any]] = []
     seen: set[Any] = set()
     for slug in slugs:
-        fetched = client.open_posts(slug, limit=limit)
+        # Per-slug fault isolation [ADDED 2026-08-19]: the roster can name a tournament
+        # before Metaculus creates it (a pre-entered next-quarter round arms itself on the
+        # first tick after the tournament appears). An unknown slug — or one tournament's
+        # transient API failure — must cost only that slug's batch, never the whole run.
+        try:
+            fetched = client.open_posts(slug, limit=limit)
+        except Exception as exc:  # noqa: BLE001 — isolate the failure to this slug
+            print(f"tournament {slug!r} unavailable ({exc}) — skipping this slug")
+            continue
         new = [p for p in fetched if p.get("id") not in seen]
         seen.update(p.get("id") for p in fetched)
         posts.extend(new)
