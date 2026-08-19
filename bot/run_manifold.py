@@ -160,6 +160,16 @@ PHASE2_ENTRY_DIVERGENCE = 0.04  # enter outside the 3-point convergence-exit ban
 #                               smallest step that still keeps entry STRICTLY outside
 #                               CONVERGENCE_BAND, so a fresh position cannot immediately
 #                               qualify for its own convergence exit and churn.]
+MIN_EXPECTED_RETURN = 0.08      # phase-2 entry: expected return per mana on the chosen side
+#                               must clear this. [ADDED 2026-08-19] |dp| is the wrong gate
+#                               currency: the same 4-point gap is +40% per mana buying the
+#                               cheap side at price 0.10 and +4.4% buying the expensive side
+#                               at 0.90 (return = p_us/m - 1 for YES, (1-p_us)/(1-m) - 1 for
+#                               NO). 0.08 keeps the midpoint behavior identical (a 4-point
+#                               gap at 0.50 returns exactly 8%) while rejecting toward-bound
+#                               duds and admitting no NEW risk class: the [EDGE_PRICE_MIN,
+#                               EDGE_PRICE_MAX] selection band still keeps us out of the true
+#                               extremes where our tails are documented-overconfident (#10).
 CONVERGENCE_BAND = 0.03         # sell when the price comes within this of our forecast
 REFORECAST_ADVERSE = 0.10       # re-forecast a position the market moved this far against us
 ADOPTION_BANKROLL = 2200.0      # only used to size phase-2 would-be bets in an offline dry-run
@@ -746,10 +756,23 @@ def forecast_market(
 # --------------------------------------------------------------------------- betting
 
 
+def expected_return(p_sighted: float, p_market: float) -> tuple[str, float]:
+    """(outcome, expected return per mana) for the side our forecast says is underpriced.
+
+    A YES share costs ``m`` and pays 1 with probability ``p_us`` -> return p_us/m - 1; NO
+    mirrors at 1-m. This, not |dp|, is the profitability of a divergence: the same absolute
+    gap is worth ~10x more buying the cheap side near a bound than the expensive side."""
+    outcome = "YES" if p_sighted > p_market else "NO"
+    if outcome == "YES":
+        return outcome, p_sighted / p_market - 1.0
+    return outcome, (1.0 - p_sighted) / (1.0 - p_market) - 1.0
+
+
 def decide_bet(
     p_sighted: float, p_market: float, stake: float, *,
     balance: float, already_positioned: bool,
     divergence_threshold: float = DIVERGENCE_THRESHOLD,
+    min_expected_return: float = 0.0,
 ) -> dict[str, Any] | None:
     """The betting gate as a pure function. Returns the bet {outcome, stake} or None.
 
@@ -758,14 +781,22 @@ def decide_bet(
     sighted run's ``market_read`` is NO LONGER checked here — it is journaled as a
     preregistered hypothesis, not a gate (see the MARKET_READS note above). Direction: YES
     when our forecast is higher than the market (we think it's underpriced), NO when lower.
-    """
+
+    [AMENDED 2026-08-19] ``min_expected_return`` adds an EV gate on the chosen side (see
+    ``expected_return``); the absolute threshold is kept purely as hysteresis — entry must
+    stay strictly outside the convergence-exit band or a fresh position immediately
+    qualifies for its own exit. A price at/outside (0,1) has no tradable other side."""
     if already_positioned:
         return None
     if balance < MIN_BALANCE_MANA:
         return None
+    if not 0.0 < p_market < 1.0:
+        return None
     if abs(p_sighted - p_market) < divergence_threshold:
         return None
-    outcome = "YES" if p_sighted > p_market else "NO"
+    outcome, ret = expected_return(p_sighted, p_market)
+    if ret < min_expected_return:
+        return None
     return {"outcome": outcome, "stake": float(stake)}
 
 
@@ -1513,6 +1544,9 @@ def run(args: argparse.Namespace) -> int:
             divergence_threshold=(
                 PHASE2_ENTRY_DIVERGENCE if phase == 2 else DIVERGENCE_THRESHOLD
             ),
+            # Phases 0/1 keep the raw-divergence gate: they exist to validate the pipeline
+            # against the phase machine's movement test, not to maximize return.
+            min_expected_return=MIN_EXPECTED_RETURN if phase == 2 else 0.0,
         )
         # Exposure cap (live only): total open exposure must stay <= 30% of balance.
         if (bet is not None and can_post and balance is not None

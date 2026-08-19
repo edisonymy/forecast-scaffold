@@ -334,6 +334,35 @@ def test_phase2_entry_gate_stays_outside_convergence_exit_band() -> None:
     ) == {"outcome": "YES", "stake": 25.0}
 
 
+def test_expected_return_is_asymmetric_at_the_bounds() -> None:
+    # The same 4-point gap: cheap side near a bound pays ~10x the expensive side.
+    out, ret = run_manifold.expected_return(0.14, 0.10)
+    assert out == "YES" and abs(ret - 0.40) < 1e-9
+    out, ret = run_manifold.expected_return(0.94, 0.90)
+    assert out == "YES" and abs(ret - 0.94 / 0.90 + 1.0) < 1e-9 and ret < 0.05
+    out, ret = run_manifold.expected_return(0.86, 0.90)
+    assert out == "NO" and abs(ret - 0.40) < 1e-9
+    out, ret = run_manifold.expected_return(0.54, 0.50)
+    assert out == "YES" and abs(ret - 0.08) < 1e-9
+
+
+def test_phase2_ev_gate_rejects_toward_bound_duds_keeps_midpoint() -> None:
+    kw = dict(balance=1000.0, already_positioned=False,
+              divergence_threshold=run_manifold.PHASE2_ENTRY_DIVERGENCE,
+              min_expected_return=run_manifold.MIN_EXPECTED_RETURN)
+    # Midpoint behavior unchanged: a 4-point gap at 0.50 returns exactly 8% -> bets.
+    assert run_manifold.decide_bet(0.54, 0.50, 25, **kw) == {"outcome": "YES", "stake": 25.0}
+    # Toward-bound dud: 4-point gap buying YES at 0.90 returns 4.4% -> rejected.
+    assert run_manifold.decide_bet(0.94, 0.90, 25, **kw) is None
+    # Cheap side at the same price: 4-point gap on NO at 0.90 returns 40% -> bets.
+    assert run_manifold.decide_bet(0.86, 0.90, 25, **kw) == {"outcome": "NO", "stake": 25.0}
+    # The absolute floor still applies as hysteresis: high-EV but inside the exit band.
+    assert run_manifold.decide_bet(0.11, 0.08, 25, **kw) is None
+    # A degenerate price has no tradable other side.
+    assert run_manifold.decide_bet(0.5, 0.0, 25, **kw) is None
+    assert run_manifold.decide_bet(0.5, 1.0, 25, **kw) is None
+
+
 def test_decide_bet_balance_floor_and_position_guard() -> None:
     assert run_manifold.decide_bet(
         0.90, 0.30, 25, balance=199, already_positioned=False
