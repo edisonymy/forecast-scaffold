@@ -69,6 +69,12 @@ jobs:
         # Require the Manifold key before model spend: a missing live credential must not burn
         # an hourly credit window on forecasts that can only be dry-run. Betting remains gated
         # by the phase machine, balance floor, exposure cap, position guard, and killed state.
+        #
+        # --budget, not --limit, is what actually ends a busy run: a forecast PAIR (blind +
+        # sighted, medium tier) costs ~$1.10, so the old $5 cap stopped the run after ~4
+        # markets no matter what --limit said (measured 2026-08-18: "3 market(s), $3.39/$5.00").
+        # Raised to $8 (~7 markets) with --limit 12 to match, so the widened selection funnel
+        # can actually be worked through instead of being cut off by the cap.
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           MANIFOLD_API_KEY: ${{ secrets.MANIFOLD_API_KEY }}
@@ -78,8 +84,8 @@ jobs:
           : "${CLAUDE_CODE_OAUTH_TOKEN:?set the subscription setup-token secret}"
           : "${MANIFOLD_API_KEY:?set the live Manifold credential secret}"
           : "${LEAK_PATTERNS:?set the publication deny-list secret}"
-          python bot/run_manifold.py --limit 10 --tier medium --live --provider subscription \
-            --budget 5 --deadline-minutes 45 --timeout 900 --require-subscription-auth \
+          python bot/run_manifold.py --limit 12 --tier medium --live --provider subscription \
+            --budget 8 --deadline-minutes 45 --timeout 900 --require-subscription-auth \
             --agent-cmd "claude -p --model claude-sonnet-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch" \
             | tee "$RUNNER_TEMP/manifold.log"
 
@@ -94,7 +100,7 @@ jobs:
             echo "### Manifold bot digest"
             echo
             echo '```'
-            grep -hiE "phase|recorded|journaled pair|BET |DRY-RUN would bet|market_read|exposure|floor|skip|CONVERGENCE|selected|credit|SUBSCRIPTION-DEFER|session limit" \
+            grep -hiE "phase|recorded|journaled pair|BET |DRY-RUN would bet|market_read|exposure|floor|skip|CONVERGENCE|SELL-FAILED|selected|credit|SUBSCRIPTION-DEFER|session limit" \
               "$RUNNER_TEMP/manifold.log" || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"

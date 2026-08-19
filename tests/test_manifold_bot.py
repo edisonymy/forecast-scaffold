@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shlex
 import subprocess
 import sys
@@ -69,9 +70,11 @@ def test_selection_happy_path_and_volume_ranking() -> None:
 
 
 def test_selection_bettor_floor() -> None:
-    # [AMENDED 2026-07-11] the floor is 25 unique bettors (was 50).
-    below = run_manifold.select_markets([mk(uniqueBettorCount=24)], 10, NOW_MS)
-    at = run_manifold.select_markets([mk(uniqueBettorCount=25)], 10, NOW_MS)
+    # [AMENDED 2026-08-19] the floor is a tuning knob (50 -> 25 -> 15), so the boundary is
+    # derived from MIN_BETTORS: one below is rejected, exactly at it is accepted.
+    floor = run_manifold.MIN_BETTORS
+    below = run_manifold.select_markets([mk(uniqueBettorCount=floor - 1)], 10, NOW_MS)
+    at = run_manifold.select_markets([mk(uniqueBettorCount=floor)], 10, NOW_MS)
     assert below == [] and len(at) == 1
 
 
@@ -89,10 +92,11 @@ def test_selection_half_top_half_mid_band() -> None:
 
 
 def test_selection_close_time_window() -> None:
-    too_soon = mk("soon", closeTime=NOW_MS + 2 * DAY_MS)
-    too_far = mk("far", closeTime=NOW_MS + 61 * DAY_MS)
+    # Boundaries derive from the window constants — both ends are tuning knobs.
+    too_soon = mk("soon", closeTime=NOW_MS + (run_manifold.CLOSE_MIN_DAYS - 1) * DAY_MS)
+    too_far = mk("far", closeTime=NOW_MS + (run_manifold.CLOSE_MAX_DAYS + 1) * DAY_MS)
     no_close = mk("none", closeTime=None)
-    in_window = mk("ok", closeTime=NOW_MS + 30 * DAY_MS)
+    in_window = mk("ok", closeTime=NOW_MS + (run_manifold.CLOSE_MAX_DAYS // 2) * DAY_MS)
     picked = run_manifold.select_markets(
         [too_soon, too_far, no_close, in_window], 10, NOW_MS
     )
@@ -130,15 +134,19 @@ def test_selection_non_binary_or_non_cpmm_excluded() -> None:
 
 
 def test_selection_diversity_cap() -> None:
-    # Five markets sharing one top tag; only DIVERSITY_CAP (3) may be taken.
+    # More markets sharing one top tag than the cap allows; only DIVERSITY_CAP may be taken.
+    # Counts derive from the constant so tuning the cap does not need a test edit.
+    n = run_manifold.DIVERSITY_CAP + 2
     same = [
         mk(f"p{i}", groupSlugs=["politics"], volume24Hours=1000.0 - i)
-        for i in range(5)
+        for i in range(n)
     ]
     picked = run_manifold.select_markets(same, limit=10, now_ms=NOW_MS)
     assert len(picked) == run_manifold.DIVERSITY_CAP
-    # Kept the highest-volume three (volume desc).
-    assert [m["id"] for m in picked] == ["p0", "p1", "p2"]
+    # Kept the highest-volume ones (volume desc).
+    assert [m["id"] for m in picked] == [
+        f"p{i}" for i in range(run_manifold.DIVERSITY_CAP)
+    ]
 
 
 def test_selection_untagged_not_capped() -> None:
@@ -307,16 +315,20 @@ def test_decide_bet_divergence_gate() -> None:
 
 
 def test_phase2_entry_gate_stays_outside_convergence_exit_band() -> None:
-    # Phase 2 uses hysteresis: a 4-point edge is outside the 3-point exit band but is not
-    # enough to enter; a 5-point edge is.
-    assert run_manifold.PHASE2_ENTRY_DIVERGENCE > run_manifold.CONVERGENCE_BAND
+    # Phase 2 uses hysteresis: the entry edge must sit strictly OUTSIDE the convergence-exit
+    # band, or a fresh position would immediately qualify for its own exit and churn fees.
+    # The band relationship is the invariant; the exact entry number is a tuning knob, so
+    # both cases below are derived from the constant rather than hard-coded.
+    entry = run_manifold.PHASE2_ENTRY_DIVERGENCE
+    assert entry > run_manifold.CONVERGENCE_BAND
+    just_under = round(entry - 0.005, 4)
     assert run_manifold.decide_bet(
-        0.54, 0.50, 25, balance=1000, already_positioned=False,
-        divergence_threshold=run_manifold.PHASE2_ENTRY_DIVERGENCE,
+        0.50 + just_under, 0.50, 25, balance=1000, already_positioned=False,
+        divergence_threshold=entry,
     ) is None
     assert run_manifold.decide_bet(
-        0.55, 0.50, 25, balance=1000, already_positioned=False,
-        divergence_threshold=run_manifold.PHASE2_ENTRY_DIVERGENCE,
+        0.50 + entry, 0.50, 25, balance=1000, already_positioned=False,
+        divergence_threshold=entry,
     ) == {"outcome": "YES", "stake": 25.0}
 
 
@@ -607,7 +619,10 @@ def test_cloud_workflow_is_hourly_subscription_only_and_hard_capped() -> None:
     for block in post_gate:
         assert "steps.activation.outputs.active == 'true'" in block
     assert "--provider subscription" in workflow
-    assert "--budget 5" in workflow
+    # The exact cap is a tuning knob; that the run is HARD-capped, and capped low enough
+    # that one hourly tick cannot run away with the subscription, is the invariant.
+    budget = re.search(r"--budget (\d+(?:\.\d+)?)", workflow)
+    assert budget is not None and 0 < float(budget.group(1)) <= 15
     assert "--deadline-minutes 45" in workflow
     assert "--require-subscription-auth" in workflow
     assert "set -o pipefail" in workflow

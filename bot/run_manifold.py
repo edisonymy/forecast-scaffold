@@ -39,6 +39,7 @@ import shlex
 import subprocess
 import sys
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import UTC, datetime
@@ -88,12 +89,16 @@ UA = {"User-Agent": "forecast-scaffold-manifold/0.1 "
       "(+https://github.com/edisonymy/forecast-scaffold)"}
 
 # ---- selection policy (design decisions; see the module docstring) ---------------------
-MIN_BETTORS = 25            # uniqueBettorCount floor: below this the price is not a crowd
+MIN_BETTORS = 15            # uniqueBettorCount floor: below this the price is not a crowd
 #                             [AMENDED 2026-07-11: was 50 — signal volume over caution; the
 #                             hard caps (stake/max-bets/exposure/floor) bound the thin-book risk]
 CLOSE_MIN_DAYS = 3          # too soon and price movement can't teach anything before resolve
-CLOSE_MAX_DAYS = 60         # too far and the days-scale movement signal is too slow
-DIVERSITY_CAP = 3           # max markets sharing the same top groupSlug (one theme can't
+CLOSE_MAX_DAYS = 120        # too far and the days-scale movement signal is too slow
+#                             [AMENDED 2026-08-19: was 60. Selection, not the bet gate, was
+#                             throttling trade count — a live run with --limit 10 reported
+#                             "selected 3 market(s)" because the volume-ranked funnel ran dry
+#                             after the fresh-pair exclusion. Widened with MIN_BETTORS.]
+DIVERSITY_CAP = 4           # max markets sharing the same top groupSlug (one theme can't
 #                             swamp a batch; correlated questions aren't independent evidence)
 DAY_MS = 86_400_000
 # Self-referential / meme markets: their "resolution" is social, not a fact about the world,
@@ -109,7 +114,7 @@ DIVERGENCE_THRESHOLD = 0.03   # bet only when |p_sighted - p_market| >= this
 #                               sighted forecasts vs 35% at 0.03. The hard caps
 #                               (stake/max-bets/exposure/floor) still bound the risk]
 MIN_BALANCE_MANA = 200.0      # decide_bet's own hard floor (a would-be bet needs SOME balance)
-REFORECAST_DEDUPE_DAYS = 3    # skip re-forecasting a market whose journaled pair is newer than
+REFORECAST_DEDUPE_DAYS = 2    # skip re-forecasting a market whose journaled pair is newer than
 #                               this many days (re-forecasting every run wastes budget)
 
 # ---- market_read contract (REQUIRED + journaled; NO LONGER a bet gate) ------------------
@@ -135,7 +140,12 @@ MOVEMENT_AGE_DAYS = 7           # a divergent bet only counts once it is this ol
 KELLY_FRACTION = 0.25
 KELLY_STAKE_CAP_FRAC = 0.05     # stake capped at 5% of balance
 KELLY_STAKE_FLOOR = 10.0        # never size below 10 mana
-PHASE2_ENTRY_DIVERGENCE = 0.05  # enter outside the 3-point convergence-exit band
+PHASE2_ENTRY_DIVERGENCE = 0.04  # enter outside the 3-point convergence-exit band
+#                               [AMENDED 2026-08-19: was 0.05. Of 149 sighted forecasts since
+#                               2026-08-01, 30% cleared 0.05 and 44% clear 0.03; 0.04 is the
+#                               smallest step that still keeps entry STRICTLY outside
+#                               CONVERGENCE_BAND, so a fresh position cannot immediately
+#                               qualify for its own convergence exit and churn.]
 CONVERGENCE_BAND = 0.03         # sell when the price comes within this of our forecast
 REFORECAST_ADVERSE = 0.10       # re-forecast a position the market moved this far against us
 ADOPTION_BANKROLL = 2200.0      # only used to size phase-2 would-be bets in an offline dry-run
@@ -229,6 +239,20 @@ def get_balance(api_key: str) -> float:
     with urllib.request.urlopen(request, timeout=30) as response:
         me = json.loads(response.read().decode("utf-8"))
     return float(me.get("balance") or 0.0)
+
+
+def _http_error_detail(exc: Exception) -> str:
+    """``HTTPError`` stringifies to just "HTTP Error 403: Forbidden" and the response body —
+    where Manifold puts the actual reason — is discarded unless it is read off the exception.
+    A live betting/selling failure that says only "Forbidden" is undiagnosable from the run
+    log, which is how four convergence sells failed silently for days (2026-08-18)."""
+    if not isinstance(exc, urllib.error.HTTPError):
+        return str(exc)
+    try:
+        body = exc.read().decode("utf-8", "replace").strip()
+    except Exception:  # noqa: BLE001 — a body we cannot read must not mask the status
+        body = ""
+    return f"{exc} — {body[:300]}" if body else str(exc)
 
 
 def place_bet(api_key: str, market_id: str, outcome: str, amount: float) -> dict[str, Any]:
@@ -1159,7 +1183,10 @@ def _manage_phase2_positions(
                     print(f"  CONVERGENCE EXIT: sold {qid} "
                           f"(price {p_now:.2f} ~ forecast {p_us:.2f})")
                 except Exception as exc:  # noqa: BLE001 — a failed sell must not abort the run
-                    print(f"  convergence sell failed for {qid} ({exc})")
+                    # SELL-FAILED is machine-readable on purpose: a position that cannot be
+                    # sold never releases its stake, so open exposure ratchets up against the
+                    # 30%-of-balance cap until no new bet can be placed at all.
+                    print(f"SELL-FAILED: {qid} ({_http_error_detail(exc)})")
             else:
                 print(f"  CONVERGENCE EXIT (dry-run): would sell {qid} "
                       f"(price {p_now:.2f} ~ forecast {p_us:.2f})")
@@ -1378,7 +1405,8 @@ def run(args: argparse.Namespace) -> int:
                     # market position-guarded and the stake under the exposure cap, instead
                     # of risking a double stake once the dedupe window expires.
                     bet["status"] = "unknown"
-                    print(f"  bet POST failed ({exc}); journaling bet with status=unknown")
+                    print(f"  bet POST failed ({_http_error_detail(exc)}); "
+                          "journaling bet with status=unknown")
                 exposure += bet["stake"]
             else:
                 print(f"  DRY-RUN would bet {bet['outcome']} {bet['stake']:.0f} mana "
