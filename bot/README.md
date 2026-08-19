@@ -64,7 +64,9 @@ optional private comment with the reasoning (`--comment`).
   behind the leak-guard *and* a secret-value guard; opens a GitHub issue on failure or
   when the run silently fell back to the metered provider. Requires repo secrets
   `METACULUS_TOKEN`, `CLAUDE_CODE_OAUTH_TOKEN`, `LEAK_PATTERNS` (and optionally
-  `OPENROUTER_API_KEY` for the fallback), plus the `TOURNAMENT_ID` repository variable.
+  `OPENROUTER_API_KEY` for the fallback), plus the `TOURNAMENT_ID` repository variable —
+  unioned with the workflow's own `EXTRA_TOURNAMENTS` env, the in-repo way to enter a
+  round via pull request (the variable stays the master roster and kill switch).
 
 ## Reading the human crowd (public questions)
 
