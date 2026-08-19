@@ -39,6 +39,7 @@ import shlex
 import subprocess
 import sys
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import UTC, datetime
@@ -88,14 +89,27 @@ UA = {"User-Agent": "forecast-scaffold-manifold/0.1 "
       "(+https://github.com/edisonymy/forecast-scaffold)"}
 
 # ---- selection policy (design decisions; see the module docstring) ---------------------
-MIN_BETTORS = 25            # uniqueBettorCount floor: below this the price is not a crowd
+MIN_BETTORS = 15            # uniqueBettorCount floor: below this the price is not a crowd
 #                             [AMENDED 2026-07-11: was 50 — signal volume over caution; the
 #                             hard caps (stake/max-bets/exposure/floor) bound the thin-book risk]
 CLOSE_MIN_DAYS = 3          # too soon and price movement can't teach anything before resolve
-CLOSE_MAX_DAYS = 60         # too far and the days-scale movement signal is too slow
-DIVERSITY_CAP = 3           # max markets sharing the same top groupSlug (one theme can't
+CLOSE_MAX_DAYS = 120        # too far and the days-scale movement signal is too slow
+#                             [AMENDED 2026-08-19: was 60. Selection, not the bet gate, was
+#                             throttling trade count — a live run with --limit 10 reported
+#                             "selected 3 market(s)" because the volume-ranked funnel ran dry
+#                             after the fresh-pair exclusion. Widened with MIN_BETTORS.]
+DIVERSITY_CAP = 4           # max markets sharing the same top groupSlug (one theme can't
 #                             swamp a batch; correlated questions aren't independent evidence)
 DAY_MS = 86_400_000
+# Edge-potential price band [ADDED 2026-08-19]. Measured over all 322 sighted pairs in the
+# journal: markets priced under 0.10 or over 0.90 at forecast time produced a bettable
+# divergence (|p_us - p_market| >= 0.05) in ~4% of pairs (1/98 and 5/42), yet were 43% of
+# all forecast spend; mid-band prices hit ~43%. The mechanism is structural, not noise: near
+# a bound there is little room left for a >= 4-point edge and Kelly sizes the residual edge
+# to dust. Excluding the band up front redirects that spend to markets that can actually pay
+# — at the measured cost of ~6 of 105 historical signals.
+EDGE_PRICE_MIN = 0.08       # skip markets priced below this ...
+EDGE_PRICE_MAX = 0.92       # ... or above this: no realistic room for a tradable edge
 # Self-referential / meme markets: their "resolution" is social, not a fact about the world,
 # so a forecast against them measures nothing. Case-insensitive; word boundaries keep "my "
 # from matching "army"/"enemy" and "will i" from matching "will it".
@@ -109,7 +123,7 @@ DIVERGENCE_THRESHOLD = 0.03   # bet only when |p_sighted - p_market| >= this
 #                               sighted forecasts vs 35% at 0.03. The hard caps
 #                               (stake/max-bets/exposure/floor) still bound the risk]
 MIN_BALANCE_MANA = 200.0      # decide_bet's own hard floor (a would-be bet needs SOME balance)
-REFORECAST_DEDUPE_DAYS = 3    # skip re-forecasting a market whose journaled pair is newer than
+REFORECAST_DEDUPE_DAYS = 2    # skip re-forecasting a market whose journaled pair is newer than
 #                               this many days (re-forecasting every run wastes budget)
 
 # ---- market_read contract (REQUIRED + journaled; NO LONGER a bet gate) ------------------
@@ -124,7 +138,12 @@ MARKET_READS = ("informed", "herding", "thin", "stale")
 # ---- phase-machine policy (docs/manifold-policy.md; transitions are AUTOMATIC + journaled) --
 DEFAULT_PHASE_FILE = ROOT / "bot" / "journal" / "manifold-phase.json"
 PHASE1_BALANCE_FLOOR = 1100.0   # refuse ALL betting below 50% of the 2,200 adoption bankroll
-EXPOSURE_CAP_FRAC = 0.30        # total open exposure <= 30% of live balance
+EXPOSURE_CAP_FRAC = 0.50        # total open exposure <= this fraction of live balance
+#                               [AMENDED 2026-08-19: was 0.30. Bankruptcy is prevented by
+#                               PHASE1_BALANCE_FLOOR (all betting refused below 1,100 mana)
+#                               and the 5% per-bet Kelly stake cap; this cap only bounds
+#                               concentration, and at 30% it was pinning the trade rate —
+#                               1,265 mana of open stakes vs a ~737-mana allowance.]
 MAX_BETS_PER_RUN = 10           # policy hard cap on bets placed per run
 # Promotion 1->2 / kill thresholds.
 PROMOTION_ALPHA = 0.05          # exact one-sided binomial p must clear this
@@ -135,7 +154,22 @@ MOVEMENT_AGE_DAYS = 7           # a divergent bet only counts once it is this ol
 KELLY_FRACTION = 0.25
 KELLY_STAKE_CAP_FRAC = 0.05     # stake capped at 5% of balance
 KELLY_STAKE_FLOOR = 10.0        # never size below 10 mana
-PHASE2_ENTRY_DIVERGENCE = 0.05  # enter outside the 3-point convergence-exit band
+PHASE2_ENTRY_DIVERGENCE = 0.04  # enter outside the 3-point convergence-exit band
+#                               [AMENDED 2026-08-19: was 0.05. Of 149 sighted forecasts since
+#                               2026-08-01, 30% cleared 0.05 and 44% clear 0.03; 0.04 is the
+#                               smallest step that still keeps entry STRICTLY outside
+#                               CONVERGENCE_BAND, so a fresh position cannot immediately
+#                               qualify for its own convergence exit and churn.]
+MIN_EXPECTED_RETURN = 0.08      # phase-2 entry: expected return per mana on the chosen side
+#                               must clear this. [ADDED 2026-08-19] |dp| is the wrong gate
+#                               currency: the same 4-point gap is +40% per mana buying the
+#                               cheap side at price 0.10 and +4.4% buying the expensive side
+#                               at 0.90 (return = p_us/m - 1 for YES, (1-p_us)/(1-m) - 1 for
+#                               NO). 0.08 keeps the midpoint behavior identical (a 4-point
+#                               gap at 0.50 returns exactly 8%) while rejecting toward-bound
+#                               duds and admitting no NEW risk class: the [EDGE_PRICE_MIN,
+#                               EDGE_PRICE_MAX] selection band still keeps us out of the true
+#                               extremes where our tails are documented-overconfident (#10).
 CONVERGENCE_BAND = 0.03         # sell when the price comes within this of our forecast
 REFORECAST_ADVERSE = 0.10       # re-forecast a position the market moved this far against us
 ADOPTION_BANKROLL = 2200.0      # only used to size phase-2 would-be bets in an offline dry-run
@@ -145,7 +179,10 @@ ADOPTION_BANKROLL = 2200.0      # only used to size phase-2 would-be bets in an 
 # capped at five USD-equivalent Claude credits.  ``total_cost_usd`` is the Claude CLI's
 # notional usage meter even when OAuth routes the calls through a subscription; no metered
 # Anthropic/API gateway credential is permitted on this path.
-MAX_CREDIT_BUDGET_USD = 5.0
+MAX_CREDIT_BUDGET_USD = 10.0    # hard ceiling on --budget; one hourly tick must never be
+#                               able to run away with the subscription. [AMENDED 2026-08-19:
+#                               was 5.0 — the workflow now passes --budget 8, which the old
+#                               ceiling would have rejected outright (exit 2, zero forecasts).]
 BUDGET_EPSILON_USD = 1e-6
 METERED_AUTH_ENV = (
     "ANTHROPIC_API_KEY",
@@ -231,6 +268,39 @@ def get_balance(api_key: str) -> float:
     return float(me.get("balance") or 0.0)
 
 
+def _http_error_detail(exc: Exception) -> str:
+    """``HTTPError`` stringifies to just "HTTP Error 403: Forbidden" and the response body —
+    where Manifold puts the actual reason — is discarded unless it is read off the exception.
+    A live betting/selling failure that says only "Forbidden" is undiagnosable from the run
+    log, which is how four convergence sells failed silently for days (2026-08-18)."""
+    if not isinstance(exc, urllib.error.HTTPError):
+        return str(exc)
+    try:
+        body = exc.read().decode("utf-8", "replace").strip()
+    except Exception:  # noqa: BLE001 — a body we cannot read must not mask the status
+        body = ""
+    return f"{exc} — {body[:300]}" if body else str(exc)
+
+
+# Manifold rejects a sell for a position you do not hold. The status it uses for that class
+# of user-state error is not documented, and its body wording is the only reliable signal, so
+# match the wording (conservatively) rather than the status code: a genuine auth or endpoint
+# failure must stay a loud error, not be silently written off as a closed position.
+_NO_POSITION_RE = re.compile(
+    r"(no shares|don'?t have|do not have|already sold|no position)", re.IGNORECASE
+)
+
+
+def is_missing_position_error(exc: Exception) -> bool:
+    """True when a failed sell means "you hold nothing here" rather than "the call is broken".
+
+    Only 4xx bodies qualify: a 5xx is Manifold being unwell and the position may well still
+    be open, so it must be retried, never written off."""
+    if not isinstance(exc, urllib.error.HTTPError) or not 400 <= exc.code < 500:
+        return False
+    return bool(_NO_POSITION_RE.search(_http_error_detail(exc)))
+
+
 def place_bet(api_key: str, market_id: str, outcome: str, amount: float) -> dict[str, Any]:
     """POST /v0/bet. outcome is "YES" or "NO"; amount is mana. Live betting only."""
     body = json.dumps(
@@ -279,8 +349,20 @@ def eligible_lite(market: dict[str, Any], now_ms: int) -> bool:
         and isinstance(close, int | float)
         and lo <= close <= hi
         and (market.get("uniqueBettorCount") or 0) >= MIN_BETTORS
+        and _edge_possible(market)
         and not MEME_RE.search(str(market.get("question") or ""))
     )
+
+
+def _edge_possible(market: dict[str, Any]) -> bool:
+    """Deterministic pre-spend filter: is the price in the band where an edge is tradable?
+
+    A market with no listed probability passes (fail open — the detail fetch or the
+    forecast itself will sort it out; a missing field must not silently empty selection)."""
+    prob = market.get("probability")
+    if not isinstance(prob, int | float):
+        return True
+    return EDGE_PRICE_MIN <= float(prob) <= EDGE_PRICE_MAX
 
 
 def select_markets(
@@ -674,10 +756,23 @@ def forecast_market(
 # --------------------------------------------------------------------------- betting
 
 
+def expected_return(p_sighted: float, p_market: float) -> tuple[str, float]:
+    """(outcome, expected return per mana) for the side our forecast says is underpriced.
+
+    A YES share costs ``m`` and pays 1 with probability ``p_us`` -> return p_us/m - 1; NO
+    mirrors at 1-m. This, not |dp|, is the profitability of a divergence: the same absolute
+    gap is worth ~10x more buying the cheap side near a bound than the expensive side."""
+    outcome = "YES" if p_sighted > p_market else "NO"
+    if outcome == "YES":
+        return outcome, p_sighted / p_market - 1.0
+    return outcome, (1.0 - p_sighted) / (1.0 - p_market) - 1.0
+
+
 def decide_bet(
     p_sighted: float, p_market: float, stake: float, *,
     balance: float, already_positioned: bool,
     divergence_threshold: float = DIVERGENCE_THRESHOLD,
+    min_expected_return: float = 0.0,
 ) -> dict[str, Any] | None:
     """The betting gate as a pure function. Returns the bet {outcome, stake} or None.
 
@@ -686,15 +781,66 @@ def decide_bet(
     sighted run's ``market_read`` is NO LONGER checked here — it is journaled as a
     preregistered hypothesis, not a gate (see the MARKET_READS note above). Direction: YES
     when our forecast is higher than the market (we think it's underpriced), NO when lower.
-    """
+
+    [AMENDED 2026-08-19] ``min_expected_return`` adds an EV gate on the chosen side (see
+    ``expected_return``); the absolute threshold is kept purely as hysteresis — entry must
+    stay strictly outside the convergence-exit band or a fresh position immediately
+    qualifies for its own exit. A price at/outside (0,1) has no tradable other side."""
     if already_positioned:
         return None
     if balance < MIN_BALANCE_MANA:
         return None
+    if not 0.0 < p_market < 1.0:
+        return None
     if abs(p_sighted - p_market) < divergence_threshold:
         return None
-    outcome = "YES" if p_sighted > p_market else "NO"
+    outcome, ret = expected_return(p_sighted, p_market)
+    if ret < min_expected_return:
+        return None
     return {"outcome": outcome, "stake": float(stake)}
+
+
+def record_position_exit(
+    journal: Journal, record_id: str, reason: str, price: float | None = None,
+    *, bet: dict[str, Any] | None = None,
+) -> bool:
+    """Stamp ``source.bet.exit`` on a record and persist, so the position is closed in the
+    journal the moment it is closed on Manifold.
+
+    Without this the exit was invisible to every later run: nothing wrote back, so the
+    convergence sell was re-attempted every hour forever (four positions retried from at
+    least 2026-08-18) and ``open_exposure`` kept counting the stake until the market happened
+    to resolve — ratcheting toward the 30%-of-balance cap and starving new bets. Rewrite (not
+    append) matches how ``core.Journal`` already persists a resolution; the sweep runs before
+    the market loop appends anything, so no in-flight write is clobbered.
+
+    ``bet`` is the caller's in-memory copy of the same bet dict. It is stamped too because the
+    exposure cap is computed later in this same run off that pre-read snapshot, which a
+    rewrite-then-reread would not touch — leaving the freed stake counted for one more run."""
+    records = journal.all()
+    found = False
+    for record in records:
+        record_bet = (record.source or {}).get("bet")
+        if record.id != record_id or not record_bet:
+            continue
+        exit_note: dict[str, Any] = {"at": _utc_now(), "reason": reason}
+        if price is not None:
+            exit_note["price"] = float(price)
+        record_bet["exit"] = exit_note
+        if bet is not None:
+            bet["exit"] = exit_note
+        found = True
+    if found:
+        journal.rewrite(records)
+    return found
+
+
+def is_open_position(bet: dict[str, Any] | None) -> bool:
+    """A placed, not-yet-exited bet. The exit stamp is what makes the position guard, the
+    exposure cap, and the convergence sweep agree on which positions are still live."""
+    if not bet:
+        return False
+    return not bet.get("dry_run") and not bet.get("exit")
 
 
 def already_bet_market_ids(journal: Journal) -> set[str]:
@@ -707,7 +853,7 @@ def already_bet_market_ids(journal: Journal) -> set[str]:
     for record in journal:
         src = record.source or {}
         bet = src.get("bet")
-        if (src.get("platform") == "manifold" and bet and not bet.get("dry_run")
+        if (src.get("platform") == "manifold" and is_open_position(bet)
                 and src.get("question_id")):
             ids.add(str(src["question_id"]))
     return ids
@@ -740,8 +886,10 @@ def recently_forecast_market_ids(
 
 def open_exposure(records: list[Any], state_lookup: Any = None) -> float:
     """Total mana staked in still-open, actually-placed (non-dry-run) bets — the base the
-    30%-of-balance exposure cap binds against. Nothing ever writes resolution status back to
-    the Manifold journal, so the journal-status filter alone never decrements: when
+    30%-of-balance exposure cap binds against. A position sold by the convergence sweep drops
+    out via its ``bet.exit`` stamp (see ``record_position_exit``). Resolution status is still
+    never written back, so for a position that simply resolved the journal never decrements:
+    when
     ``state_lookup(question_id)`` is given (the live path), a bet whose live market state has
     resolved is excluded — that is what actually closes a position. A lookup failure COUNTS
     the bet (fail closed: a transient API outage must not uncap exposure). With no lookup
@@ -750,7 +898,7 @@ def open_exposure(records: list[Any], state_lookup: Any = None) -> float:
     for record in records:
         src = record.source or {}
         bet = src.get("bet")
-        if not (src.get("platform") == "manifold" and bet and not bet.get("dry_run")
+        if not (src.get("platform") == "manifold" and bet and is_open_position(bet)
                 and record.status not in ("resolved", "annulled")):
             continue
         if state_lookup is not None:
@@ -1120,7 +1268,7 @@ def build_record(
 
 def _manage_phase2_positions(
     records: list[Any], markets: list[dict[str, Any]], args: argparse.Namespace, *,
-    api_key: str, can_post: bool, state_lookup: Any,
+    api_key: str, can_post: bool, state_lookup: Any, journal: Journal,
 ) -> list[dict[str, Any]]:
     """Phase-2 open-position management, run BEFORE new markets. A position whose price has
     come within the convergence band of our forecast is sold (signal banked, capital recycled;
@@ -1135,8 +1283,9 @@ def _manage_phase2_positions(
         # The record.status filter is belt only: resolution status is never written back to
         # the Manifold journal, so the live resolved-check below is what authoritatively
         # closes a position.
-        if (src.get("platform") != "manifold" or record.blind or not bet
-                or bet.get("dry_run") or record.status in ("resolved", "annulled")):
+        if (src.get("platform") != "manifold" or record.blind
+                or not bet or not is_open_position(bet)
+                or record.status in ("resolved", "annulled")):
             continue
         qid = str(src.get("question_id"))
         try:
@@ -1156,10 +1305,28 @@ def _manage_phase2_positions(
             if can_post:
                 try:
                     sell_position(api_key, qid, bet.get("outcome"))
+                    record_position_exit(
+                        journal, record.id, "convergence", p_now, bet=bet
+                    )
                     print(f"  CONVERGENCE EXIT: sold {qid} "
                           f"(price {p_now:.2f} ~ forecast {p_us:.2f})")
                 except Exception as exc:  # noqa: BLE001 — a failed sell must not abort the run
-                    print(f"  convergence sell failed for {qid} ({exc})")
+                    if is_missing_position_error(exc):
+                        # Manifold says we hold nothing here: the position is closed whatever
+                        # the journal thinks (an earlier sell that landed but was never
+                        # written back, or a manual sale). Stamping the exit is the whole
+                        # point — it stops the hourly retry and releases the stake from the
+                        # exposure cap instead of leaving it stuck until resolution.
+                        record_position_exit(
+                            journal, record.id, "no-position", bet=bet
+                        )
+                        print(f"  CONVERGENCE EXIT: {qid} already closed on Manifold "
+                              f"({_http_error_detail(exc)}) — journal stamped")
+                    else:
+                        # SELL-FAILED is machine-readable on purpose: a position that cannot
+                        # be sold never releases its stake, so open exposure ratchets up
+                        # against the 30%-of-balance cap until no new bet can be placed.
+                        print(f"SELL-FAILED: {qid} ({_http_error_detail(exc)})")
             else:
                 print(f"  CONVERGENCE EXIT (dry-run): would sell {qid} "
                       f"(price {p_now:.2f} ~ forecast {p_us:.2f})")
@@ -1272,26 +1439,51 @@ def run(args: argparse.Namespace) -> int:
         print("BETTING-DISABLED: below-floor")
         can_post = False
 
-    # Re-forecast dedupe: markets whose journaled pair is < REFORECAST_DEDUPE_DAYS old are
-    # excluded from selection itself (not just skipped after), so the hourly batch fills
-    # with markets the run can actually forecast [AMENDED 2026-07-20 — see gather_markets].
+    # Mana already at risk in open placed bets — computed BEFORE selection, because it now
+    # gates what gets selected at all. On the live path the cached live-state lookup lets
+    # resolved positions fall out of the cap (journal status never closes them); offline/dry
+    # paths stay journal-only and make no network calls.
+    exposure = open_exposure(records_before, state_lookup=live_state if can_post else None)
+
+    # Pre-spend gates [ADDED 2026-08-19]. A forecast pair costs ~$1.10; producing one the
+    # betting gates are guaranteed to discard is compute that should have gone to a market
+    # that can pay. Measured over 2026-08-01..19: of 44 divergent sighted forecasts, 36 never
+    # became bets — 10 landed on markets we already held (the open-position guard is knowable
+    # BEFORE the spend: `already` was computed above and then ignored by selection) and most
+    # of the rest hit the exposure cap, which is equally knowable up front.
+    new_market_slots = True
+    if can_post and balance is not None:
+        headroom = EXPOSURE_CAP_FRAC * balance - exposure
+        if headroom < KELLY_STAKE_FLOOR:
+            # Not an error state (BETTING-DISABLED stays reserved for degradations): position
+            # management below still runs, and convergence exits are what free headroom.
+            print(f"exposure {exposure:.0f} of {EXPOSURE_CAP_FRAC:.0%}*{balance:.0f} leaves "
+                  f"headroom {headroom:.0f} < the {KELLY_STAKE_FLOOR:.0f}-mana stake floor — "
+                  "managing positions only, no new-market forecasts this run")
+            new_market_slots = False
+
+    # Selection dedupe: markets whose journaled pair is < REFORECAST_DEDUPE_DAYS old, and —
+    # when this run could bet — markets we already hold a position in, are excluded from
+    # selection itself (not just skipped after), so the hourly batch fills with markets the
+    # run can actually forecast AND bet [AMENDED 2026-07-20, 2026-08-19]. In forecast-only
+    # modes (dry-run, phase 0, degraded) held markets stay selectable: there the pair itself
+    # is the product and the position guard is irrelevant.
     fresh_pairs = recently_forecast_market_ids(records_before)
-    markets = gather_markets(args.limit, exclude=fresh_pairs)
+    excluded = fresh_pairs | (already if can_post else set())
+    markets = (
+        gather_markets(args.limit, exclude=excluded) if new_market_slots else []
+    )
     # Phase 2 manages open positions (convergence exit + re-forecast) before new markets.
     if phase == 2 and not killed:
         markets = _manage_phase2_positions(
             records_before, markets, args,
-            api_key=api_key, can_post=can_post, state_lookup=live_state,
+            api_key=api_key, can_post=can_post, state_lookup=live_state, journal=journal,
         )
     print(f"selected {len(markets)} market(s)")
     if not markets:
         print(f"credit usage accounted: $0.00 / ${budget:.2f}")
         return 0
 
-    # Mana already at risk in open placed bets. On the live path the cached live-state
-    # lookup lets resolved positions fall out of the cap (journal status never closes them);
-    # offline/dry paths stay journal-only and make no network calls.
-    exposure = open_exposure(records_before, state_lookup=live_state if can_post else None)
     bets_placed = 0
     for market in markets:
         if float(budget_state["usd"]) >= budget - BUDGET_EPSILON_USD:
@@ -1352,6 +1544,9 @@ def run(args: argparse.Namespace) -> int:
             divergence_threshold=(
                 PHASE2_ENTRY_DIVERGENCE if phase == 2 else DIVERGENCE_THRESHOLD
             ),
+            # Phases 0/1 keep the raw-divergence gate: they exist to validate the pipeline
+            # against the phase machine's movement test, not to maximize return.
+            min_expected_return=MIN_EXPECTED_RETURN if phase == 2 else 0.0,
         )
         # Exposure cap (live only): total open exposure must stay <= 30% of balance.
         if (bet is not None and can_post and balance is not None
@@ -1378,7 +1573,8 @@ def run(args: argparse.Namespace) -> int:
                     # market position-guarded and the stake under the exposure cap, instead
                     # of risking a double stake once the dedupe window expires.
                     bet["status"] = "unknown"
-                    print(f"  bet POST failed ({exc}); journaling bet with status=unknown")
+                    print(f"  bet POST failed ({_http_error_detail(exc)}); "
+                          "journaling bet with status=unknown")
                 exposure += bet["stake"]
             else:
                 print(f"  DRY-RUN would bet {bet['outcome']} {bet['stake']:.0f} mana "

@@ -11,10 +11,13 @@ scorer's movement-toward math in both directions.
 from __future__ import annotations
 
 import argparse
+import io
 import json
+import re
 import shlex
 import subprocess
 import sys
+import urllib.error
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -69,9 +72,11 @@ def test_selection_happy_path_and_volume_ranking() -> None:
 
 
 def test_selection_bettor_floor() -> None:
-    # [AMENDED 2026-07-11] the floor is 25 unique bettors (was 50).
-    below = run_manifold.select_markets([mk(uniqueBettorCount=24)], 10, NOW_MS)
-    at = run_manifold.select_markets([mk(uniqueBettorCount=25)], 10, NOW_MS)
+    # [AMENDED 2026-08-19] the floor is a tuning knob (50 -> 25 -> 15), so the boundary is
+    # derived from MIN_BETTORS: one below is rejected, exactly at it is accepted.
+    floor = run_manifold.MIN_BETTORS
+    below = run_manifold.select_markets([mk(uniqueBettorCount=floor - 1)], 10, NOW_MS)
+    at = run_manifold.select_markets([mk(uniqueBettorCount=floor)], 10, NOW_MS)
     assert below == [] and len(at) == 1
 
 
@@ -89,10 +94,11 @@ def test_selection_half_top_half_mid_band() -> None:
 
 
 def test_selection_close_time_window() -> None:
-    too_soon = mk("soon", closeTime=NOW_MS + 2 * DAY_MS)
-    too_far = mk("far", closeTime=NOW_MS + 61 * DAY_MS)
+    # Boundaries derive from the window constants — both ends are tuning knobs.
+    too_soon = mk("soon", closeTime=NOW_MS + (run_manifold.CLOSE_MIN_DAYS - 1) * DAY_MS)
+    too_far = mk("far", closeTime=NOW_MS + (run_manifold.CLOSE_MAX_DAYS + 1) * DAY_MS)
     no_close = mk("none", closeTime=None)
-    in_window = mk("ok", closeTime=NOW_MS + 30 * DAY_MS)
+    in_window = mk("ok", closeTime=NOW_MS + (run_manifold.CLOSE_MAX_DAYS // 2) * DAY_MS)
     picked = run_manifold.select_markets(
         [too_soon, too_far, no_close, in_window], 10, NOW_MS
     )
@@ -130,15 +136,19 @@ def test_selection_non_binary_or_non_cpmm_excluded() -> None:
 
 
 def test_selection_diversity_cap() -> None:
-    # Five markets sharing one top tag; only DIVERSITY_CAP (3) may be taken.
+    # More markets sharing one top tag than the cap allows; only DIVERSITY_CAP may be taken.
+    # Counts derive from the constant so tuning the cap does not need a test edit.
+    n = run_manifold.DIVERSITY_CAP + 2
     same = [
         mk(f"p{i}", groupSlugs=["politics"], volume24Hours=1000.0 - i)
-        for i in range(5)
+        for i in range(n)
     ]
     picked = run_manifold.select_markets(same, limit=10, now_ms=NOW_MS)
     assert len(picked) == run_manifold.DIVERSITY_CAP
-    # Kept the highest-volume three (volume desc).
-    assert [m["id"] for m in picked] == ["p0", "p1", "p2"]
+    # Kept the highest-volume ones (volume desc).
+    assert [m["id"] for m in picked] == [
+        f"p{i}" for i in range(run_manifold.DIVERSITY_CAP)
+    ]
 
 
 def test_selection_untagged_not_capped() -> None:
@@ -307,17 +317,50 @@ def test_decide_bet_divergence_gate() -> None:
 
 
 def test_phase2_entry_gate_stays_outside_convergence_exit_band() -> None:
-    # Phase 2 uses hysteresis: a 4-point edge is outside the 3-point exit band but is not
-    # enough to enter; a 5-point edge is.
-    assert run_manifold.PHASE2_ENTRY_DIVERGENCE > run_manifold.CONVERGENCE_BAND
+    # Phase 2 uses hysteresis: the entry edge must sit strictly OUTSIDE the convergence-exit
+    # band, or a fresh position would immediately qualify for its own exit and churn fees.
+    # The band relationship is the invariant; the exact entry number is a tuning knob, so
+    # both cases below are derived from the constant rather than hard-coded.
+    entry = run_manifold.PHASE2_ENTRY_DIVERGENCE
+    assert entry > run_manifold.CONVERGENCE_BAND
+    just_under = round(entry - 0.005, 4)
     assert run_manifold.decide_bet(
-        0.54, 0.50, 25, balance=1000, already_positioned=False,
-        divergence_threshold=run_manifold.PHASE2_ENTRY_DIVERGENCE,
+        0.50 + just_under, 0.50, 25, balance=1000, already_positioned=False,
+        divergence_threshold=entry,
     ) is None
     assert run_manifold.decide_bet(
-        0.55, 0.50, 25, balance=1000, already_positioned=False,
-        divergence_threshold=run_manifold.PHASE2_ENTRY_DIVERGENCE,
+        0.50 + entry, 0.50, 25, balance=1000, already_positioned=False,
+        divergence_threshold=entry,
     ) == {"outcome": "YES", "stake": 25.0}
+
+
+def test_expected_return_is_asymmetric_at_the_bounds() -> None:
+    # The same 4-point gap: cheap side near a bound pays ~10x the expensive side.
+    out, ret = run_manifold.expected_return(0.14, 0.10)
+    assert out == "YES" and abs(ret - 0.40) < 1e-9
+    out, ret = run_manifold.expected_return(0.94, 0.90)
+    assert out == "YES" and abs(ret - 0.94 / 0.90 + 1.0) < 1e-9 and ret < 0.05
+    out, ret = run_manifold.expected_return(0.86, 0.90)
+    assert out == "NO" and abs(ret - 0.40) < 1e-9
+    out, ret = run_manifold.expected_return(0.54, 0.50)
+    assert out == "YES" and abs(ret - 0.08) < 1e-9
+
+
+def test_phase2_ev_gate_rejects_toward_bound_duds_keeps_midpoint() -> None:
+    kw = dict(balance=1000.0, already_positioned=False,
+              divergence_threshold=run_manifold.PHASE2_ENTRY_DIVERGENCE,
+              min_expected_return=run_manifold.MIN_EXPECTED_RETURN)
+    # Midpoint behavior unchanged: a 4-point gap at 0.50 returns exactly 8% -> bets.
+    assert run_manifold.decide_bet(0.54, 0.50, 25, **kw) == {"outcome": "YES", "stake": 25.0}
+    # Toward-bound dud: 4-point gap buying YES at 0.90 returns 4.4% -> rejected.
+    assert run_manifold.decide_bet(0.94, 0.90, 25, **kw) is None
+    # Cheap side at the same price: 4-point gap on NO at 0.90 returns 40% -> bets.
+    assert run_manifold.decide_bet(0.86, 0.90, 25, **kw) == {"outcome": "NO", "stake": 25.0}
+    # The absolute floor still applies as hysteresis: high-EV but inside the exit band.
+    assert run_manifold.decide_bet(0.11, 0.08, 25, **kw) is None
+    # A degenerate price has no tradable other side.
+    assert run_manifold.decide_bet(0.5, 0.0, 25, **kw) is None
+    assert run_manifold.decide_bet(0.5, 1.0, 25, **kw) is None
 
 
 def test_decide_bet_balance_floor_and_position_guard() -> None:
@@ -607,7 +650,10 @@ def test_cloud_workflow_is_hourly_subscription_only_and_hard_capped() -> None:
     for block in post_gate:
         assert "steps.activation.outputs.active == 'true'" in block
     assert "--provider subscription" in workflow
-    assert "--budget 5" in workflow
+    # The exact cap is a tuning knob; that the run is HARD-capped, and capped low enough
+    # that one hourly tick cannot run away with the subscription, is the invariant.
+    budget = re.search(r"--budget (\d+(?:\.\d+)?)", workflow)
+    assert budget is not None and 0 < float(budget.group(1)) <= 15
     assert "--deadline-minutes 45" in workflow
     assert "--require-subscription-auth" in workflow
     assert "set -o pipefail" in workflow
@@ -1360,24 +1406,153 @@ def test_open_exposure_live_state_lookup() -> None:
     assert run_manifold.open_exposure(records) == pytest.approx(65.0)
 
 
+def _positioned_record(qid: str = "held", stake: float = 100.0) -> ForecastRecord:
+    """A sighted record carrying one placed, unexited Manifold position."""
+    return ForecastRecord(
+        question="held position", question_type="binary", probability=0.50, blind=False,
+        source={"platform": "manifold", "question_id": qid, "pair_id": "p",
+                "bet": {"outcome": "YES", "stake": stake, "dry_run": False,
+                        "p_market_at_bet": 0.70}},
+    )
+
+
+def test_is_open_position_tracks_the_exit_stamp() -> None:
+    placed = {"outcome": "YES", "stake": 25, "dry_run": False}
+    assert run_manifold.is_open_position(placed)
+    assert not run_manifold.is_open_position(None)
+    assert not run_manifold.is_open_position({**placed, "dry_run": True})
+    # Once the sweep stamps an exit the position is closed for every reader.
+    assert not run_manifold.is_open_position({**placed, "exit": {"reason": "convergence"}})
+
+
+def test_record_position_exit_persists_and_releases_exposure(tmp_path: Path) -> None:
+    journal = Journal(str(tmp_path / "manifold.jsonl"))
+    record = _positioned_record()
+    journal.append(record)
+    before = journal.all()
+    assert run_manifold.open_exposure(before) == 100.0
+    assert run_manifold.already_bet_market_ids(journal) == {"held"}
+
+    stamped = journal.all()[0]
+    in_memory_bet = stamped.source["bet"]
+    assert run_manifold.record_position_exit(
+        journal, stamped.id, "convergence", 0.52, bet=in_memory_bet
+    )
+    # Persisted...
+    reread = journal.all()[0].source["bet"]["exit"]
+    assert reread["reason"] == "convergence" and reread["price"] == 0.52
+    # ...and the caller's snapshot is stamped too, so the exposure computed later in the SAME
+    # run off that pre-read list already excludes the freed stake.
+    assert in_memory_bet["exit"]["reason"] == "convergence"
+    assert run_manifold.open_exposure([stamped]) == 0.0
+    # The open-position guard releases as well, so the market can be re-entered.
+    assert run_manifold.already_bet_market_ids(journal) == set()
+
+
+def test_missing_position_error_only_matches_client_side_no_shares() -> None:
+    def http(code: int, body: str) -> urllib.error.HTTPError:
+        return urllib.error.HTTPError(
+            "https://api.manifold.markets/v0/market/x/sell", code, "Forbidden", {},
+            io.BytesIO(body.encode("utf-8")),
+        )
+
+    assert run_manifold.is_missing_position_error(
+        http(403, '{"message":"You don\'t have any shares to sell."}')
+    )
+    assert run_manifold.is_missing_position_error(http(400, '{"message":"No position found"}'))
+    # A real auth/endpoint failure must stay a loud error, never be written off as closed.
+    assert not run_manifold.is_missing_position_error(http(403, '{"message":"Unauthorized"}'))
+    # 5xx: Manifold is unwell and the position may still be open -> retry, never write off.
+    assert not run_manifold.is_missing_position_error(
+        http(503, '{"message":"You do not have any shares"}')
+    )
+    assert not run_manifold.is_missing_position_error(RuntimeError("no shares"))
+
+
+def test_edge_price_band_prescreens_near_certain_markets() -> None:
+    # Measured: markets priced outside [EDGE_PRICE_MIN, EDGE_PRICE_MAX] produced a bettable
+    # divergence ~4% of the time while eating 43% of forecast spend — they must not reach
+    # the (paid) forecast stage at all. Boundaries derive from the constants.
+    lo, hi = run_manifold.EDGE_PRICE_MIN, run_manifold.EDGE_PRICE_MAX
+    assert run_manifold.select_markets([mk(probability=lo - 0.01)], 10, NOW_MS) == []
+    assert run_manifold.select_markets([mk(probability=hi + 0.01)], 10, NOW_MS) == []
+    assert len(run_manifold.select_markets([mk(probability=lo)], 10, NOW_MS)) == 1
+    assert len(run_manifold.select_markets([mk(probability=hi)], 10, NOW_MS)) == 1
+    # Fail open: a listing without a probability must not silently empty selection.
+    no_prob = mk()
+    del no_prob["probability"]
+    assert len(run_manifold.select_markets([no_prob], 10, NOW_MS)) == 1
+
+
+def test_live_selection_excludes_markets_already_held(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # A held market's forecast cannot become a bet (the position guard rejects it later),
+    # so on the live path it must be excluded BEFORE the paid forecast, not after.
+    captured: dict[str, Any] = {}
+
+    def spy_gather(limit: int, **kw: Any) -> list[dict[str, Any]]:
+        captured["exclude"] = kw.get("exclude")
+        return []
+
+    monkeypatch.setattr(run_manifold, "gather_markets", spy_gather)
+    monkeypatch.setattr(run_manifold, "get_balance", lambda key: 2000.0)
+    monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
+    for name in run_manifold.METERED_AUTH_ENV:  # a dev shell's gateway vars must not trip
+        monkeypatch.delenv(name, raising=False)  # the subscription-auth guard
+    journal = Journal(str(tmp_path / "manifold.jsonl"))
+    journal.append(_positioned_record(qid="held", stake=50))
+    seed_phase(tmp_path, phase=1)
+    assert run_manifold.run(make_args(tmp_path, live=True)) == 0
+    assert "held" in captured["exclude"]
+
+
+def test_no_headroom_skips_new_market_spend(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # Exposure at the cap: every new-market forecast would be discarded by the in-loop cap,
+    # so none may be bought. gather_markets must not even run (no listing fetch, no spend).
+    def boom(limit: int, **kw: Any) -> list[dict[str, Any]]:
+        raise AssertionError("gather_markets must not be called with zero bet headroom")
+
+    monkeypatch.setattr(run_manifold, "gather_markets", boom)
+    monkeypatch.setattr(run_manifold, "get_balance", lambda key: 1200.0)
+    monkeypatch.setattr(
+        score_manifold, "fetch_market_state", lambda mid: dict(OPEN_STATE)
+    )
+    monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
+    for name in run_manifold.METERED_AUTH_ENV:  # a dev shell's gateway vars must not trip
+        monkeypatch.delenv(name, raising=False)  # the subscription-auth guard
+    cap = run_manifold.EXPOSURE_CAP_FRAC * 1200.0
+    journal = Journal(str(tmp_path / "manifold.jsonl"))
+    journal.append(_positioned_record(qid="big", stake=cap - 1))  # headroom 1 < stake floor
+    seed_phase(tmp_path, phase=1)
+    assert run_manifold.run(make_args(tmp_path, live=True)) == 0
+
+
 def test_exposure_cap_blocks_a_bet_over_30pct(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     market = mk("e", probability=0.30, groupSlugs=["x"])
     monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
     monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90))
-    monkeypatch.setattr(run_manifold, "get_balance", lambda key: 1200.0)  # 30% = 360
+    monkeypatch.setattr(run_manifold, "get_balance", lambda key: 1200.0)
     monkeypatch.setattr(score_manifold, "fetch_market_state", lambda mid: dict(OPEN_STATE))
     spy = BetSpy()
     monkeypatch.setattr(run_manifold, "place_bet", spy)
     monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
 
-    # Pre-seed 350 mana of open exposure on a different market: 350 + 25 > 360 -> block.
+    # Pre-seed open exposure just under the cap on a different market, leaving headroom
+    # above the stake floor (so the pre-spend gate still selects markets) but below the
+    # 25-mana stake: the in-loop cap must block the bet. Derived from the constants so
+    # tuning EXPOSURE_CAP_FRAC does not need a test edit.
+    cap = run_manifold.EXPOSURE_CAP_FRAC * 1200.0
+    seed = cap - run_manifold.KELLY_STAKE_FLOOR  # headroom == stake floor: gate passes
     journal = Journal(str(tmp_path / "manifold.jsonl"))
     journal.append(ForecastRecord(
         question="prior open bet", question_type="binary", probability=0.9,
         source={"platform": "manifold", "question_id": "other", "pair_id": "old",
-                "bet": {"outcome": "YES", "stake": 350, "dry_run": False}},
+                "bet": {"outcome": "YES", "stake": seed, "dry_run": False}},
     ))
     seed_phase(tmp_path, phase=1)
     args = make_args(tmp_path, live=True)
