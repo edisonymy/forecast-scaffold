@@ -1440,24 +1440,90 @@ def test_missing_position_error_only_matches_client_side_no_shares() -> None:
     assert not run_manifold.is_missing_position_error(RuntimeError("no shares"))
 
 
+def test_edge_price_band_prescreens_near_certain_markets() -> None:
+    # Measured: markets priced outside [EDGE_PRICE_MIN, EDGE_PRICE_MAX] produced a bettable
+    # divergence ~4% of the time while eating 43% of forecast spend — they must not reach
+    # the (paid) forecast stage at all. Boundaries derive from the constants.
+    lo, hi = run_manifold.EDGE_PRICE_MIN, run_manifold.EDGE_PRICE_MAX
+    assert run_manifold.select_markets([mk(probability=lo - 0.01)], 10, NOW_MS) == []
+    assert run_manifold.select_markets([mk(probability=hi + 0.01)], 10, NOW_MS) == []
+    assert len(run_manifold.select_markets([mk(probability=lo)], 10, NOW_MS)) == 1
+    assert len(run_manifold.select_markets([mk(probability=hi)], 10, NOW_MS)) == 1
+    # Fail open: a listing without a probability must not silently empty selection.
+    no_prob = mk()
+    del no_prob["probability"]
+    assert len(run_manifold.select_markets([no_prob], 10, NOW_MS)) == 1
+
+
+def test_live_selection_excludes_markets_already_held(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # A held market's forecast cannot become a bet (the position guard rejects it later),
+    # so on the live path it must be excluded BEFORE the paid forecast, not after.
+    captured: dict[str, Any] = {}
+
+    def spy_gather(limit: int, **kw: Any) -> list[dict[str, Any]]:
+        captured["exclude"] = kw.get("exclude")
+        return []
+
+    monkeypatch.setattr(run_manifold, "gather_markets", spy_gather)
+    monkeypatch.setattr(run_manifold, "get_balance", lambda key: 2000.0)
+    monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
+    for name in run_manifold.METERED_AUTH_ENV:  # a dev shell's gateway vars must not trip
+        monkeypatch.delenv(name, raising=False)  # the subscription-auth guard
+    journal = Journal(str(tmp_path / "manifold.jsonl"))
+    journal.append(_positioned_record(qid="held", stake=50))
+    seed_phase(tmp_path, phase=1)
+    assert run_manifold.run(make_args(tmp_path, live=True)) == 0
+    assert "held" in captured["exclude"]
+
+
+def test_no_headroom_skips_new_market_spend(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # Exposure at the cap: every new-market forecast would be discarded by the in-loop cap,
+    # so none may be bought. gather_markets must not even run (no listing fetch, no spend).
+    def boom(limit: int, **kw: Any) -> list[dict[str, Any]]:
+        raise AssertionError("gather_markets must not be called with zero bet headroom")
+
+    monkeypatch.setattr(run_manifold, "gather_markets", boom)
+    monkeypatch.setattr(run_manifold, "get_balance", lambda key: 1200.0)
+    monkeypatch.setattr(
+        score_manifold, "fetch_market_state", lambda mid: dict(OPEN_STATE)
+    )
+    monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
+    for name in run_manifold.METERED_AUTH_ENV:  # a dev shell's gateway vars must not trip
+        monkeypatch.delenv(name, raising=False)  # the subscription-auth guard
+    cap = run_manifold.EXPOSURE_CAP_FRAC * 1200.0
+    journal = Journal(str(tmp_path / "manifold.jsonl"))
+    journal.append(_positioned_record(qid="big", stake=cap - 1))  # headroom 1 < stake floor
+    seed_phase(tmp_path, phase=1)
+    assert run_manifold.run(make_args(tmp_path, live=True)) == 0
+
+
 def test_exposure_cap_blocks_a_bet_over_30pct(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     market = mk("e", probability=0.30, groupSlugs=["x"])
     monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
     monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90))
-    monkeypatch.setattr(run_manifold, "get_balance", lambda key: 1200.0)  # 30% = 360
+    monkeypatch.setattr(run_manifold, "get_balance", lambda key: 1200.0)
     monkeypatch.setattr(score_manifold, "fetch_market_state", lambda mid: dict(OPEN_STATE))
     spy = BetSpy()
     monkeypatch.setattr(run_manifold, "place_bet", spy)
     monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
 
-    # Pre-seed 350 mana of open exposure on a different market: 350 + 25 > 360 -> block.
+    # Pre-seed open exposure just under the cap on a different market, leaving headroom
+    # above the stake floor (so the pre-spend gate still selects markets) but below the
+    # 25-mana stake: the in-loop cap must block the bet. Derived from the constants so
+    # tuning EXPOSURE_CAP_FRAC does not need a test edit.
+    cap = run_manifold.EXPOSURE_CAP_FRAC * 1200.0
+    seed = cap - run_manifold.KELLY_STAKE_FLOOR  # headroom == stake floor: gate passes
     journal = Journal(str(tmp_path / "manifold.jsonl"))
     journal.append(ForecastRecord(
         question="prior open bet", question_type="binary", probability=0.9,
         source={"platform": "manifold", "question_id": "other", "pair_id": "old",
-                "bet": {"outcome": "YES", "stake": 350, "dry_run": False}},
+                "bet": {"outcome": "YES", "stake": seed, "dry_run": False}},
     ))
     seed_phase(tmp_path, phase=1)
     args = make_args(tmp_path, live=True)

@@ -101,6 +101,15 @@ CLOSE_MAX_DAYS = 120        # too far and the days-scale movement signal is too 
 DIVERSITY_CAP = 4           # max markets sharing the same top groupSlug (one theme can't
 #                             swamp a batch; correlated questions aren't independent evidence)
 DAY_MS = 86_400_000
+# Edge-potential price band [ADDED 2026-08-19]. Measured over all 322 sighted pairs in the
+# journal: markets priced under 0.10 or over 0.90 at forecast time produced a bettable
+# divergence (|p_us - p_market| >= 0.05) in ~4% of pairs (1/98 and 5/42), yet were 43% of
+# all forecast spend; mid-band prices hit ~43%. The mechanism is structural, not noise: near
+# a bound there is little room left for a >= 4-point edge and Kelly sizes the residual edge
+# to dust. Excluding the band up front redirects that spend to markets that can actually pay
+# — at the measured cost of ~6 of 105 historical signals.
+EDGE_PRICE_MIN = 0.08       # skip markets priced below this ...
+EDGE_PRICE_MAX = 0.92       # ... or above this: no realistic room for a tradable edge
 # Self-referential / meme markets: their "resolution" is social, not a fact about the world,
 # so a forecast against them measures nothing. Case-insensitive; word boundaries keep "my "
 # from matching "army"/"enemy" and "will i" from matching "will it".
@@ -129,7 +138,12 @@ MARKET_READS = ("informed", "herding", "thin", "stale")
 # ---- phase-machine policy (docs/manifold-policy.md; transitions are AUTOMATIC + journaled) --
 DEFAULT_PHASE_FILE = ROOT / "bot" / "journal" / "manifold-phase.json"
 PHASE1_BALANCE_FLOOR = 1100.0   # refuse ALL betting below 50% of the 2,200 adoption bankroll
-EXPOSURE_CAP_FRAC = 0.30        # total open exposure <= 30% of live balance
+EXPOSURE_CAP_FRAC = 0.50        # total open exposure <= this fraction of live balance
+#                               [AMENDED 2026-08-19: was 0.30. Bankruptcy is prevented by
+#                               PHASE1_BALANCE_FLOOR (all betting refused below 1,100 mana)
+#                               and the 5% per-bet Kelly stake cap; this cap only bounds
+#                               concentration, and at 30% it was pinning the trade rate —
+#                               1,265 mana of open stakes vs a ~737-mana allowance.]
 MAX_BETS_PER_RUN = 10           # policy hard cap on bets placed per run
 # Promotion 1->2 / kill thresholds.
 PROMOTION_ALPHA = 0.05          # exact one-sided binomial p must clear this
@@ -155,7 +169,10 @@ ADOPTION_BANKROLL = 2200.0      # only used to size phase-2 would-be bets in an 
 # capped at five USD-equivalent Claude credits.  ``total_cost_usd`` is the Claude CLI's
 # notional usage meter even when OAuth routes the calls through a subscription; no metered
 # Anthropic/API gateway credential is permitted on this path.
-MAX_CREDIT_BUDGET_USD = 5.0
+MAX_CREDIT_BUDGET_USD = 10.0    # hard ceiling on --budget; one hourly tick must never be
+#                               able to run away with the subscription. [AMENDED 2026-08-19:
+#                               was 5.0 — the workflow now passes --budget 8, which the old
+#                               ceiling would have rejected outright (exit 2, zero forecasts).]
 BUDGET_EPSILON_USD = 1e-6
 METERED_AUTH_ENV = (
     "ANTHROPIC_API_KEY",
@@ -322,8 +339,20 @@ def eligible_lite(market: dict[str, Any], now_ms: int) -> bool:
         and isinstance(close, int | float)
         and lo <= close <= hi
         and (market.get("uniqueBettorCount") or 0) >= MIN_BETTORS
+        and _edge_possible(market)
         and not MEME_RE.search(str(market.get("question") or ""))
     )
+
+
+def _edge_possible(market: dict[str, Any]) -> bool:
+    """Deterministic pre-spend filter: is the price in the band where an edge is tradable?
+
+    A market with no listed probability passes (fail open — the detail fetch or the
+    forecast itself will sort it out; a missing field must not silently empty selection)."""
+    prob = market.get("probability")
+    if not isinstance(prob, int | float):
+        return True
+    return EDGE_PRICE_MIN <= float(prob) <= EDGE_PRICE_MAX
 
 
 def select_markets(
@@ -1379,11 +1408,40 @@ def run(args: argparse.Namespace) -> int:
         print("BETTING-DISABLED: below-floor")
         can_post = False
 
-    # Re-forecast dedupe: markets whose journaled pair is < REFORECAST_DEDUPE_DAYS old are
-    # excluded from selection itself (not just skipped after), so the hourly batch fills
-    # with markets the run can actually forecast [AMENDED 2026-07-20 — see gather_markets].
+    # Mana already at risk in open placed bets — computed BEFORE selection, because it now
+    # gates what gets selected at all. On the live path the cached live-state lookup lets
+    # resolved positions fall out of the cap (journal status never closes them); offline/dry
+    # paths stay journal-only and make no network calls.
+    exposure = open_exposure(records_before, state_lookup=live_state if can_post else None)
+
+    # Pre-spend gates [ADDED 2026-08-19]. A forecast pair costs ~$1.10; producing one the
+    # betting gates are guaranteed to discard is compute that should have gone to a market
+    # that can pay. Measured over 2026-08-01..19: of 44 divergent sighted forecasts, 36 never
+    # became bets — 10 landed on markets we already held (the open-position guard is knowable
+    # BEFORE the spend: `already` was computed above and then ignored by selection) and most
+    # of the rest hit the exposure cap, which is equally knowable up front.
+    new_market_slots = True
+    if can_post and balance is not None:
+        headroom = EXPOSURE_CAP_FRAC * balance - exposure
+        if headroom < KELLY_STAKE_FLOOR:
+            # Not an error state (BETTING-DISABLED stays reserved for degradations): position
+            # management below still runs, and convergence exits are what free headroom.
+            print(f"exposure {exposure:.0f} of {EXPOSURE_CAP_FRAC:.0%}*{balance:.0f} leaves "
+                  f"headroom {headroom:.0f} < the {KELLY_STAKE_FLOOR:.0f}-mana stake floor — "
+                  "managing positions only, no new-market forecasts this run")
+            new_market_slots = False
+
+    # Selection dedupe: markets whose journaled pair is < REFORECAST_DEDUPE_DAYS old, and —
+    # when this run could bet — markets we already hold a position in, are excluded from
+    # selection itself (not just skipped after), so the hourly batch fills with markets the
+    # run can actually forecast AND bet [AMENDED 2026-07-20, 2026-08-19]. In forecast-only
+    # modes (dry-run, phase 0, degraded) held markets stay selectable: there the pair itself
+    # is the product and the position guard is irrelevant.
     fresh_pairs = recently_forecast_market_ids(records_before)
-    markets = gather_markets(args.limit, exclude=fresh_pairs)
+    excluded = fresh_pairs | (already if can_post else set())
+    markets = (
+        gather_markets(args.limit, exclude=excluded) if new_market_slots else []
+    )
     # Phase 2 manages open positions (convergence exit + re-forecast) before new markets.
     if phase == 2 and not killed:
         markets = _manage_phase2_positions(
@@ -1395,10 +1453,6 @@ def run(args: argparse.Namespace) -> int:
         print(f"credit usage accounted: $0.00 / ${budget:.2f}")
         return 0
 
-    # Mana already at risk in open placed bets. On the live path the cached live-state
-    # lookup lets resolved positions fall out of the cap (journal status never closes them);
-    # offline/dry paths stay journal-only and make no network calls.
-    exposure = open_exposure(records_before, state_lookup=live_state if can_post else None)
     bets_placed = 0
     for market in markets:
         if float(budget_state["usd"]) >= budget - BUDGET_EPSILON_USD:
