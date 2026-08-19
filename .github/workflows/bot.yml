@@ -27,10 +27,14 @@ env:
   # by id, so overlap with the variable is harmless). The variable stays the
   # master roster and kill switch — it can't ride a pull request, so rounds
   # entered by PR land here instead.
-  # market-pulse-26q3: quarterly Market Pulse Challenge round, live since
-  # 2026-07-08, closes with Q3 — numeric group questions, rewards continuous
-  # updating (covered by --refresh-hours 48).
-  EXTRA_TOURNAMENTS: market-pulse-26q3
+  # market-pulse-26q4: the Q4 round of the quarterly Market Pulse Challenge,
+  # PRE-ENTERED before Metaculus creates it (expected ~early Oct; the Q3 round
+  # ran Jul 08 - Sep 16). collect_open_posts tolerates a slug that does not
+  # exist yet — it logs and skips — so the entry arms itself: the first hourly
+  # tick after the tournament appears starts forecasting it. If Metaculus names
+  # the slug differently, update this line. 26Q3 was entered on 2026-08-19 and
+  # withdrawn the same day (operator call: joined too late into a Jul-Sep round).
+  EXTRA_TOURNAMENTS: market-pulse-26q4
 
 jobs:
   forecast:

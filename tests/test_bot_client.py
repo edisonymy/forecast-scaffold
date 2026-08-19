@@ -81,6 +81,22 @@ class TestCollectOpenPosts:
         client = self._client({"season": [{"id": 1}]})
         assert run_bot.collect_open_posts(client, "season,,  ", 100) == [{"id": 1}]
 
+    def test_unknown_slug_is_isolated_not_fatal(self, capsys: Any) -> None:
+        # A pre-entered next-quarter round names its slug before Metaculus creates the
+        # tournament; that slug erroring must cost only its own batch, never the run.
+        client = MetaculusClient(token="t")
+
+        def open_posts(slug: str, *, limit: int = 100) -> list[dict[str, Any]]:
+            if slug == "market-pulse-26q4":
+                raise RuntimeError("404 tournament not found")
+            return [{"id": 1}]
+
+        client.open_posts = open_posts  # type: ignore[method-assign]
+        posts = run_bot.collect_open_posts(client, "season,market-pulse-26q4", 100)
+        assert [p["id"] for p in posts] == [1]
+        out = capsys.readouterr().out
+        assert "market-pulse-26q4" in out and "skipping this slug" in out
+
 
 class TestTransientRetry:
     def test_retry_after_header_is_honored_and_capped(
