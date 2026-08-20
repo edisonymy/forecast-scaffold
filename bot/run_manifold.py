@@ -101,15 +101,14 @@ CLOSE_MAX_DAYS = 120        # too far and the days-scale movement signal is too 
 DIVERSITY_CAP = 4           # max markets sharing the same top groupSlug (one theme can't
 #                             swamp a batch; correlated questions aren't independent evidence)
 DAY_MS = 86_400_000
-# Edge-potential price band [ADDED 2026-08-19]. Measured over all 322 sighted pairs in the
-# journal: markets priced under 0.10 or over 0.90 at forecast time produced a bettable
-# divergence (|p_us - p_market| >= 0.05) in ~4% of pairs (1/98 and 5/42), yet were 43% of
-# all forecast spend; mid-band prices hit ~43%. The mechanism is structural, not noise: near
-# a bound there is little room left for a >= 4-point edge and Kelly sizes the residual edge
-# to dust. Excluding the band up front redirects that spend to markets that can actually pay
-# — at the measured cost of ~6 of 105 historical signals.
-EDGE_PRICE_MIN = 0.08       # skip markets priced below this ...
-EDGE_PRICE_MAX = 0.92       # ... or above this: no realistic room for a tradable edge
+# [REMOVED 2026-08-20] An edge-potential price band (skip markets outside [0.08, 0.92]) was
+# added 2026-08-19 and removed by operator decision the next day: the EV entry gate now
+# prices divergences properly, so near-certain markets are judged on return per mana rather
+# than excluded by fiat. Note what this re-exposes, measured on the journal at the time:
+# extreme-priced markets yielded a bet ~5% of the time vs ~41% mid-band ($22 vs $4 of
+# forecast spend per bet placed), and the EV gate RANKS cheap-side longshots first — the
+# admitted set was six trades at +58%..+1018% implied EV, exactly where issue #10 documents
+# our tails as overconfident. Kelly sizing and the balance floor are what bound that now.
 # Self-referential / meme markets: their "resolution" is social, not a fact about the world,
 # so a forecast against them measures nothing. Case-insensitive; word boundaries keep "my "
 # from matching "army"/"enemy" and "will i" from matching "will it".
@@ -167,13 +166,20 @@ MIN_EXPECTED_RETURN = 0.08      # phase-2 entry: expected return per mana on the
 #                               at 0.90 (return = p_us/m - 1 for YES, (1-p_us)/(1-m) - 1 for
 #                               NO). 0.08 keeps the midpoint behavior identical (a 4-point
 #                               gap at 0.50 returns exactly 8%) while rejecting toward-bound
-#                               duds and admitting no NEW risk class: the [EDGE_PRICE_MIN,
-#                               EDGE_PRICE_MAX] selection band still keeps us out of the true
-#                               extremes where our tails are documented-overconfident (#10).
+#                               duds. NOTE: the price band that used to keep this gate away
+#                               from the extremes was removed 2026-08-20, so the EV gate now
+#                               reaches longshots where issue #10 documents our tails as
+#                               overconfident; Kelly sizing and the balance floor bound it.
 CONVERGENCE_BAND = 0.03         # sell when the price comes within this of our forecast
 HARVEST_MAX_PER_RUN = 3         # cap capital-recycling sells per run: each sell pays CPMM
 #                               slippage, so a cap-bound run trims its worst few holdings
 #                               rather than churning the whole book in one tick.
+HARVEST_MAX_FORECAST_AGE_DAYS = 1.0  # a sell decision needs a CURRENT view, not the one that
+#                               opened the position. Remaining edge is p_us vs p_now: pairing
+#                               a fresh price with a stale forecast makes any market drift
+#                               look like spent edge, so the bot would harvest its winners
+#                               for the wrong reason. Older than this -> re-forecast first,
+#                               decide next tick on the new number.
 REFORECAST_ADVERSE = 0.10       # re-forecast a position the market moved this far against us
 ADOPTION_BANKROLL = 2200.0      # only used to size phase-2 would-be bets in an offline dry-run
 
@@ -352,20 +358,8 @@ def eligible_lite(market: dict[str, Any], now_ms: int) -> bool:
         and isinstance(close, int | float)
         and lo <= close <= hi
         and (market.get("uniqueBettorCount") or 0) >= MIN_BETTORS
-        and _edge_possible(market)
         and not MEME_RE.search(str(market.get("question") or ""))
     )
-
-
-def _edge_possible(market: dict[str, Any]) -> bool:
-    """Deterministic pre-spend filter: is the price in the band where an edge is tradable?
-
-    A market with no listed probability passes (fail open — the detail fetch or the
-    forecast itself will sort it out; a missing field must not silently empty selection)."""
-    prob = market.get("probability")
-    if not isinstance(prob, int | float):
-        return True
-    return EDGE_PRICE_MIN <= float(prob) <= EDGE_PRICE_MAX
 
 
 def select_markets(
@@ -950,10 +944,32 @@ def holding_return(p_us: float, p_now: float, outcome: str) -> float | None:
     return (1.0 - p_us) / (1.0 - p_now) - 1.0 if 0.0 < p_now < 1.0 else None
 
 
+def latest_sighted_probability(
+    records: list[Any], qid: str
+) -> tuple[float, str] | None:
+    """Our most recent SIGHTED forecast for a market, as (probability, forecast_at).
+
+    NOT the probability on the bet record: that one is frozen at entry, and a re-forecast
+    journals a NEW record carrying no bet (the position guard blocks a second bet), so
+    reading the bet's own field would ignore every update we ever made. Sighted because
+    that is the number betting acts on."""
+    best: tuple[float, str] | None = None
+    for record in records:
+        src = record.source or {}
+        if (src.get("platform") != "manifold" or str(src.get("question_id")) != qid
+                or src.get("mode") != "sighted" or record.probability is None):
+            continue
+        at = str(record.forecast_at or record.created or "")
+        if best is None or at > best[1]:
+            best = (float(record.probability), at)
+    return best
+
+
 def harvest_spent_positions(
     records: list[Any], journal: Journal, *, api_key: str, state_lookup: Any,
     min_return: float = MIN_EXPECTED_RETURN, max_sells: int = HARVEST_MAX_PER_RUN,
-) -> float:
+    max_age_days: float = HARVEST_MAX_FORECAST_AGE_DAYS, now: datetime | None = None,
+) -> tuple[float, list[str]]:
     """Capital recycling: sell holdings whose remaining edge no longer earns their mana.
 
     Called ONLY when the exposure cap binds, and that condition is the whole justification.
@@ -965,10 +981,18 @@ def harvest_spent_positions(
     ~zero remaining return) and covers the case it misses: the winner that ran 80% of the way
     to our forecast, still outside the 3-point band, quietly earning almost nothing.
 
-    Sells worst-first, at most ``max_sells`` per run, and returns the mana freed. A position
-    the market moved AGAINST us has a HIGH remaining return and is never harvested here — it
-    is the re-forecast path's business, not this one."""
+    Sells worst-first, at most ``max_sells`` per run. A position the market moved AGAINST us
+    has a HIGH remaining return and is never harvested here — it is the re-forecast path's
+    business, not this one.
+
+    Returns ``(mana freed, ids needing a re-forecast)``. Nothing is sold on a forecast older
+    than ``max_age_days``: remaining edge compares our view to the CURRENT price, so a stale
+    view turns ordinary market drift into fake "spent edge" and would sell live positions.
+    Those ids go back for a re-forecast instead, and the next tick decides on the new
+    number — paying one forecast to make a correct sell decision about far more mana."""
     candidates: list[tuple[float, Any, dict[str, Any], str]] = []
+    stale: list[tuple[float, str]] = []
+    now = now or datetime.now(UTC)
     for record in records:
         src = record.source or {}
         bet = src.get("bet")
@@ -978,9 +1002,13 @@ def harvest_spent_positions(
             continue
         qid = str(src.get("question_id"))
         outcome = str(bet.get("outcome") or "")
-        p_us = record.probability
-        if p_us is None or outcome not in ("YES", "NO"):
+        if outcome not in ("YES", "NO"):
             continue
+        latest = latest_sighted_probability(records, qid)
+        if latest is None:
+            continue
+        p_us, forecast_at = latest
+        age = _age_days(forecast_at, now)
         try:
             state = state_lookup(qid)
         except Exception:  # noqa: BLE001 — an unreadable market keeps its capital, fail closed
@@ -992,6 +1020,10 @@ def harvest_spent_positions(
             continue
         ret = holding_return(float(p_us), float(p_now), outcome)
         if ret is None or ret >= min_return:
+            continue
+        if age is None or age > max_age_days:
+            # Screened as possibly spent, but on a view too old to sell on.
+            stale.append((ret, qid))
             continue
         candidates.append((ret, record, bet, qid))
 
@@ -1012,7 +1044,11 @@ def harvest_spent_positions(
         freed += stake
         print(f"  HARVEST: sold {qid} — {ret * 100:+.0f}% remaining return is under the "
               f"{min_return:.0%} entry bar; {stake:.0f} mana recycled")
-    return freed
+    stale_ids = [qid for _, qid in sorted(stale, key=lambda c: c[0])[:max_sells]]
+    for qid in stale_ids:
+        print(f"  HARVEST: {qid} screens as spent but our view is older than "
+              f"{max_age_days:g}d — re-forecasting before any sell")
+    return freed, stale_ids
 
 
 def should_converge_exit(p_us: float, p_now: float, band: float = CONVERGENCE_BAND) -> bool:
@@ -1349,14 +1385,17 @@ def build_record(
 def _manage_phase2_positions(
     records: list[Any], markets: list[dict[str, Any]], args: argparse.Namespace, *,
     api_key: str, can_post: bool, state_lookup: Any, journal: Journal,
+    extra_reforecast_ids: list[str] | None = None,
 ) -> list[dict[str, Any]]:
     """Phase-2 open-position management, run BEFORE new markets. A position whose price has
     come within the convergence band of our forecast is sold (signal banked, capital recycled;
     a would-sell is printed in dry-run). A position the market has moved > 0.10 AGAINST is
     queued for re-forecast this run, prepended to the market list and counting toward the
     run's limit."""
-    reforecast_ids: list[str] = []
-    seen = {str(m.get("id")) for m in markets}
+    # Seeded with anything the harvest screen wants a current view on before it will sell
+    # [ADDED 2026-08-20]; the adverse-move scan below adds to the same queue.
+    reforecast_ids: list[str] = list(extra_reforecast_ids or [])
+    seen = {str(m.get("id")) for m in markets} | set(reforecast_ids)
     for record in records:
         src = record.source or {}
         bet = src.get("bet")
@@ -1532,6 +1571,7 @@ def run(args: argparse.Namespace) -> int:
     # BEFORE the spend: `already` was computed above and then ignored by selection) and most
     # of the rest hit the exposure cap, which is equally knowable up front.
     new_market_slots = True
+    harvest_stale: list[str] = []
     if can_post and balance is not None:
         headroom = EXPOSURE_CAP_FRAC * balance - exposure
         if headroom < KELLY_STAKE_FLOOR and phase == 2 and not killed:
@@ -1542,9 +1582,9 @@ def run(args: argparse.Namespace) -> int:
             print(f"exposure {exposure:.0f} of {EXPOSURE_CAP_FRAC:.0%}*{balance:.0f} leaves "
                   f"headroom {headroom:.0f} < the {KELLY_STAKE_FLOOR:.0f}-mana stake floor — "
                   "harvesting spent positions")
-            freed = harvest_spent_positions(
+            freed, harvest_stale = harvest_spent_positions(
                 records_before, journal, api_key=api_key, state_lookup=live_state,
-            ) if can_post else 0.0
+            ) if can_post else (0.0, [])
             if freed:
                 exposure -= freed
                 headroom = EXPOSURE_CAP_FRAC * balance - exposure
@@ -1572,6 +1612,7 @@ def run(args: argparse.Namespace) -> int:
         markets = _manage_phase2_positions(
             records_before, markets, args,
             api_key=api_key, can_post=can_post, state_lookup=live_state, journal=journal,
+            extra_reforecast_ids=harvest_stale,
         )
     print(f"selected {len(markets)} market(s)")
     if not markets:
