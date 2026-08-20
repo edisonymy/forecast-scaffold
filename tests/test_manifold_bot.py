@@ -334,6 +334,148 @@ def test_phase2_entry_gate_stays_outside_convergence_exit_band() -> None:
     ) == {"outcome": "YES", "stake": 25.0}
 
 
+def test_holding_return_is_side_fixed_not_divergence_picked() -> None:
+    # Held YES at 0.90 with our forecast 0.94: 4.4% left. Held NO on the same numbers is
+    # negative — the side comes from the position, not from which way we diverge.
+    assert abs(run_manifold.holding_return(0.94, 0.90, "YES") - (0.94 / 0.90 - 1)) < 1e-9
+    assert run_manifold.holding_return(0.94, 0.90, "NO") < 0
+    # A winner that ran most of the way to our forecast has little left to earn...
+    assert run_manifold.holding_return(0.80, 0.78, "YES") < 0.08
+    # ...while a position the market moved AGAINST us still shows a big remaining return,
+    # which is why harvest never touches it (that is the re-forecast path's job).
+    assert run_manifold.holding_return(0.80, 0.40, "YES") > 0.9
+    assert run_manifold.holding_return(0.5, 0.0, "YES") is None
+    assert run_manifold.holding_return(0.5, 1.0, "NO") is None
+
+
+class TestHarvestSpentPositions:
+    """Capital recycling when the exposure cap binds: hold to the same bar we enter at."""
+
+    @staticmethod
+    def _journal(
+        tmp_path: Path, positions: list[tuple[str, str, float, float]],
+        *, view_age_days: float = 0.0,
+    ) -> Journal:
+        """A position as the journal really holds it: the (older) sighted record that
+        carried the bet, plus a newer sighted record from a later re-forecast.
+
+        The bet record's probability is deliberately 0.99 — a value harvest must never use.
+        In production the bet rides on a sighted record, so at entry it IS the latest view;
+        what must win once a re-forecast exists is the NEWER record, and that is the whole
+        point of ``latest_sighted_probability``."""
+        journal = Journal(str(tmp_path / "manifold.jsonl"))
+        now = datetime.now(UTC)
+        bet_at = (now - timedelta(days=view_age_days + 2)).isoformat()
+        view_at = (now - timedelta(days=view_age_days)).isoformat()
+        for qid, outcome, stake, p_us in positions:
+            journal.append(ForecastRecord(
+                question=f"held {qid}", question_type="binary", probability=0.99, blind=False,
+                forecast_at=bet_at,
+                source={"platform": "manifold", "question_id": qid, "pair_id": f"p{qid}",
+                        "mode": "sighted",
+                        "bet": {"outcome": outcome, "stake": stake, "dry_run": False}},
+            ))
+            journal.append(ForecastRecord(
+                question=f"held {qid}", question_type="binary", probability=p_us, blind=False,
+                forecast_at=view_at,
+                source={"platform": "manifold", "question_id": qid, "pair_id": f"r{qid}",
+                        "mode": "sighted"},
+            ))
+        return journal
+
+    def test_sells_spent_winners_and_frees_their_mana(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # spent: price ran to 0.78 against our 0.80 forecast -> ~2.6% left, under the bar.
+        # live: market moved against us (0.40 vs 0.80) -> 100% left, must be untouched.
+        journal = self._journal(tmp_path, [("spent", "YES", 120.0, 0.80),
+                                           ("live", "YES", 90.0, 0.80)])
+        prices = {"spent": 0.78, "live": 0.40}
+        sold: list[tuple[str, str]] = []
+        monkeypatch.setattr(
+            run_manifold, "sell_position",
+            lambda key, mid, outcome=None, shares=None: sold.append((mid, outcome)) or {},
+        )
+        freed, stale = run_manifold.harvest_spent_positions(
+            journal.all(), journal, api_key="k",
+            state_lookup=lambda q: {"resolved": False, "probability": prices[q]},
+        )
+        assert sold == [("spent", "YES")]  # the live position was never sent to Manifold
+        assert stale == []
+        assert freed == 120.0
+        exits = {r.source["question_id"]: ((r.source.get("bet") or {}).get("exit") or {})
+                 .get("reason") for r in journal.all() if r.source.get("bet")}
+        assert exits == {"spent": "harvest", "live": None}
+        # The freed position no longer counts against the cap; the live one still does.
+        assert run_manifold.open_exposure(journal.all()) == 90.0
+
+    def test_caps_sells_per_run_worst_first(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # Three spent positions, cap of 2: the two with the LEAST remaining return go first.
+        journal = self._journal(tmp_path, [("a", "YES", 10.0, 0.80), ("b", "YES", 10.0, 0.80),
+                                           ("c", "YES", 10.0, 0.80)])
+        prices = {"a": 0.795, "b": 0.75, "c": 0.79}  # remaining: a ~0.6%, c ~1.3%, b ~6.7%
+        monkeypatch.setattr(
+            run_manifold, "sell_position", lambda *a, **k: {"betId": "x"},
+        )
+        run_manifold.harvest_spent_positions(
+            journal.all(), journal, api_key="k",
+            state_lookup=lambda q: {"resolved": False, "probability": prices[q]},
+            max_sells=2,
+        )
+        harvested = {r.source["question_id"] for r in journal.all()
+                     if ((r.source.get("bet") or {}).get("exit") or {})
+                     .get("reason") == "harvest"}
+        assert harvested == {"a", "c"}
+
+    def test_unreadable_market_keeps_its_capital(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        journal = self._journal(tmp_path, [("x", "YES", 50.0, 0.80)])
+        monkeypatch.setattr(run_manifold, "sell_position", lambda *a, **k: {"betId": "x"})
+
+        def boom(_qid: str) -> dict[str, Any]:
+            raise RuntimeError("api down")
+
+        assert run_manifold.harvest_spent_positions(
+            journal.all(), journal, api_key="k", state_lookup=boom) == (0.0, [])
+        assert (journal.all()[0].source["bet"].get("exit")) is None
+
+    def test_stale_view_is_reforecast_not_sold(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # Same numbers as the "spent winner" case, but our view is 3 days old. Pairing a
+        # fresh price with a stale forecast is exactly how ordinary drift masquerades as
+        # spent edge, so nothing may be sold — the id goes back for a re-forecast.
+        journal = self._journal(tmp_path, [("spent", "YES", 120.0, 0.80)], view_age_days=3.0)
+        sold: list[str] = []
+        monkeypatch.setattr(
+            run_manifold, "sell_position",
+            lambda key, mid, outcome=None, shares=None: sold.append(mid) or {},
+        )
+        freed, stale = run_manifold.harvest_spent_positions(
+            journal.all(), journal, api_key="k",
+            state_lookup=lambda q: {"resolved": False, "probability": 0.78},
+        )
+        assert (freed, stale, sold) == (0.0, ["spent"], [])
+        assert (journal.all()[0].source["bet"].get("exit")) is None
+
+    def test_uses_latest_view_not_the_frozen_entry_probability(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # _journal stamps 0.99 on the (older) bet record. Against a 0.78 price that frozen
+        # number reads as +27% remaining (hold); the newer 0.80 view reads ~2.6% (sell), so
+        # a pass that used the bet's own probability would wrongly keep the position.
+        journal = self._journal(tmp_path, [("spent", "YES", 120.0, 0.80)])
+        monkeypatch.setattr(run_manifold, "sell_position", lambda *a, **k: {"betId": "x"})
+        freed, _ = run_manifold.harvest_spent_positions(
+            journal.all(), journal, api_key="k",
+            state_lookup=lambda q: {"resolved": False, "probability": 0.78},
+        )
+        assert freed == 120.0
+
+
 def test_expected_return_is_asymmetric_at_the_bounds() -> None:
     # The same 4-point gap: cheap side near a bound pays ~10x the expensive side.
     out, ret = run_manifold.expected_return(0.14, 0.10)
@@ -1469,16 +1611,12 @@ def test_missing_position_error_only_matches_client_side_no_shares() -> None:
     assert not run_manifold.is_missing_position_error(RuntimeError("no shares"))
 
 
-def test_edge_price_band_prescreens_near_certain_markets() -> None:
-    # Measured: markets priced outside [EDGE_PRICE_MIN, EDGE_PRICE_MAX] produced a bettable
-    # divergence ~4% of the time while eating 43% of forecast spend — they must not reach
-    # the (paid) forecast stage at all. Boundaries derive from the constants.
-    lo, hi = run_manifold.EDGE_PRICE_MIN, run_manifold.EDGE_PRICE_MAX
-    assert run_manifold.select_markets([mk(probability=lo - 0.01)], 10, NOW_MS) == []
-    assert run_manifold.select_markets([mk(probability=hi + 0.01)], 10, NOW_MS) == []
-    assert len(run_manifold.select_markets([mk(probability=lo)], 10, NOW_MS)) == 1
-    assert len(run_manifold.select_markets([mk(probability=hi)], 10, NOW_MS)) == 1
-    # Fail open: a listing without a probability must not silently empty selection.
+def test_no_price_band_prescreen() -> None:
+    # [REMOVED 2026-08-20] Near-certain markets are no longer excluded from selection by
+    # price; the EV entry gate judges them on return per mana instead. This test pins the
+    # removal so the band cannot creep back in silently.
+    assert len(run_manifold.select_markets([mk(probability=0.01)], 10, NOW_MS)) == 1
+    assert len(run_manifold.select_markets([mk(probability=0.99)], 10, NOW_MS)) == 1
     no_prob = mk()
     del no_prob["probability"]
     assert len(run_manifold.select_markets([no_prob], 10, NOW_MS)) == 1
