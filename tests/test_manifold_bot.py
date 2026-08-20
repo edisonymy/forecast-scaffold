@@ -334,6 +334,92 @@ def test_phase2_entry_gate_stays_outside_convergence_exit_band() -> None:
     ) == {"outcome": "YES", "stake": 25.0}
 
 
+def test_holding_return_is_side_fixed_not_divergence_picked() -> None:
+    # Held YES at 0.90 with our forecast 0.94: 4.4% left. Held NO on the same numbers is
+    # negative — the side comes from the position, not from which way we diverge.
+    assert abs(run_manifold.holding_return(0.94, 0.90, "YES") - (0.94 / 0.90 - 1)) < 1e-9
+    assert run_manifold.holding_return(0.94, 0.90, "NO") < 0
+    # A winner that ran most of the way to our forecast has little left to earn...
+    assert run_manifold.holding_return(0.80, 0.78, "YES") < 0.08
+    # ...while a position the market moved AGAINST us still shows a big remaining return,
+    # which is why harvest never touches it (that is the re-forecast path's job).
+    assert run_manifold.holding_return(0.80, 0.40, "YES") > 0.9
+    assert run_manifold.holding_return(0.5, 0.0, "YES") is None
+    assert run_manifold.holding_return(0.5, 1.0, "NO") is None
+
+
+class TestHarvestSpentPositions:
+    """Capital recycling when the exposure cap binds: hold to the same bar we enter at."""
+
+    @staticmethod
+    def _journal(tmp_path: Path, positions: list[tuple[str, str, float, float]]) -> Journal:
+        journal = Journal(str(tmp_path / "manifold.jsonl"))
+        for qid, outcome, stake, p_us in positions:
+            journal.append(ForecastRecord(
+                question=f"held {qid}", question_type="binary", probability=p_us, blind=False,
+                source={"platform": "manifold", "question_id": qid, "pair_id": f"p{qid}",
+                        "bet": {"outcome": outcome, "stake": stake, "dry_run": False}},
+            ))
+        return journal
+
+    def test_sells_spent_winners_and_frees_their_mana(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # spent: price ran to 0.78 against our 0.80 forecast -> ~2.6% left, under the bar.
+        # live: market moved against us (0.40 vs 0.80) -> 100% left, must be untouched.
+        journal = self._journal(tmp_path, [("spent", "YES", 120.0, 0.80),
+                                           ("live", "YES", 90.0, 0.80)])
+        prices = {"spent": 0.78, "live": 0.40}
+        sold: list[tuple[str, str]] = []
+        monkeypatch.setattr(
+            run_manifold, "sell_position",
+            lambda key, mid, outcome=None, shares=None: sold.append((mid, outcome)) or {},
+        )
+        freed = run_manifold.harvest_spent_positions(
+            journal.all(), journal, api_key="k",
+            state_lookup=lambda q: {"resolved": False, "probability": prices[q]},
+        )
+        assert sold == [("spent", "YES")]  # the live position was never sent to Manifold
+        assert freed == 120.0
+        exits = {(r.source["question_id"]): (r.source["bet"].get("exit") or {}).get("reason")
+                 for r in journal.all()}
+        assert exits == {"spent": "harvest", "live": None}
+        # The freed position no longer counts against the cap; the live one still does.
+        assert run_manifold.open_exposure(journal.all()) == 90.0
+
+    def test_caps_sells_per_run_worst_first(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # Three spent positions, cap of 2: the two with the LEAST remaining return go first.
+        journal = self._journal(tmp_path, [("a", "YES", 10.0, 0.80), ("b", "YES", 10.0, 0.80),
+                                           ("c", "YES", 10.0, 0.80)])
+        prices = {"a": 0.795, "b": 0.75, "c": 0.79}  # remaining: a ~0.6%, c ~1.3%, b ~6.7%
+        monkeypatch.setattr(
+            run_manifold, "sell_position", lambda *a, **k: {"betId": "x"},
+        )
+        run_manifold.harvest_spent_positions(
+            journal.all(), journal, api_key="k",
+            state_lookup=lambda q: {"resolved": False, "probability": prices[q]},
+            max_sells=2,
+        )
+        harvested = {r.source["question_id"] for r in journal.all()
+                     if (r.source["bet"].get("exit") or {}).get("reason") == "harvest"}
+        assert harvested == {"a", "c"}
+
+    def test_unreadable_market_keeps_its_capital(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        journal = self._journal(tmp_path, [("x", "YES", 50.0, 0.80)])
+        monkeypatch.setattr(run_manifold, "sell_position", lambda *a, **k: {"betId": "x"})
+
+        def boom(_qid: str) -> dict[str, Any]:
+            raise RuntimeError("api down")
+
+        assert run_manifold.harvest_spent_positions(
+            journal.all(), journal, api_key="k", state_lookup=boom) == 0.0
+        assert (journal.all()[0].source["bet"].get("exit")) is None
+
+
 def test_expected_return_is_asymmetric_at_the_bounds() -> None:
     # The same 4-point gap: cheap side near a bound pays ~10x the expensive side.
     out, ret = run_manifold.expected_return(0.14, 0.10)

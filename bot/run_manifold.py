@@ -171,6 +171,9 @@ MIN_EXPECTED_RETURN = 0.08      # phase-2 entry: expected return per mana on the
 #                               EDGE_PRICE_MAX] selection band still keeps us out of the true
 #                               extremes where our tails are documented-overconfident (#10).
 CONVERGENCE_BAND = 0.03         # sell when the price comes within this of our forecast
+HARVEST_MAX_PER_RUN = 3         # cap capital-recycling sells per run: each sell pays CPMM
+#                               slippage, so a cap-bound run trims its worst few holdings
+#                               rather than churning the whole book in one tick.
 REFORECAST_ADVERSE = 0.10       # re-forecast a position the market moved this far against us
 ADOPTION_BANKROLL = 2200.0      # only used to size phase-2 would-be bets in an offline dry-run
 
@@ -935,6 +938,83 @@ def moved_against(p_us: float, p_0: float, p_now: float) -> float:
     return -_toward(p_us, p_0, p_now)
 
 
+def holding_return(p_us: float, p_now: float, outcome: str) -> float | None:
+    """Expected return per mana of CONTINUING to hold ``outcome`` at price ``p_now``.
+
+    Same arithmetic as ``expected_return``, but the side is fixed by what we already hold
+    rather than chosen by the divergence. A YES share is worth ``p_now`` now and pays 1 with
+    probability ``p_us`` -> p_us/p_now - 1; NO mirrors at 1-p. Returns None at a degenerate
+    price (nothing to sell into)."""
+    if outcome == "YES":
+        return p_us / p_now - 1.0 if 0.0 < p_now < 1.0 else None
+    return (1.0 - p_us) / (1.0 - p_now) - 1.0 if 0.0 < p_now < 1.0 else None
+
+
+def harvest_spent_positions(
+    records: list[Any], journal: Journal, *, api_key: str, state_lookup: Any,
+    min_return: float = MIN_EXPECTED_RETURN, max_sells: int = HARVEST_MAX_PER_RUN,
+) -> float:
+    """Capital recycling: sell holdings whose remaining edge no longer earns their mana.
+
+    Called ONLY when the exposure cap binds, and that condition is the whole justification.
+    Unconstrained, holding a played-out winner costs nothing and the tight convergence band
+    is right. Constrained, mana has an opportunity cost: a position with 2% of edge left is
+    occupying budget that a 20% entry wants, so the bar for HOLDING becomes the bar for
+    ENTERING (``MIN_EXPECTED_RETURN``) — if we would not open it today, we should not be
+    financing it today. This subsumes the convergence exit (a fully converged position has
+    ~zero remaining return) and covers the case it misses: the winner that ran 80% of the way
+    to our forecast, still outside the 3-point band, quietly earning almost nothing.
+
+    Sells worst-first, at most ``max_sells`` per run, and returns the mana freed. A position
+    the market moved AGAINST us has a HIGH remaining return and is never harvested here — it
+    is the re-forecast path's business, not this one."""
+    candidates: list[tuple[float, Any, dict[str, Any], str]] = []
+    for record in records:
+        src = record.source or {}
+        bet = src.get("bet")
+        if (src.get("platform") != "manifold" or record.blind or not bet
+                or not is_open_position(bet)
+                or record.status in ("resolved", "annulled")):
+            continue
+        qid = str(src.get("question_id"))
+        outcome = str(bet.get("outcome") or "")
+        p_us = record.probability
+        if p_us is None or outcome not in ("YES", "NO"):
+            continue
+        try:
+            state = state_lookup(qid)
+        except Exception:  # noqa: BLE001 — an unreadable market keeps its capital, fail closed
+            continue
+        if state.get("resolved"):
+            continue
+        p_now = state.get("probability")
+        if p_now is None:
+            continue
+        ret = holding_return(float(p_us), float(p_now), outcome)
+        if ret is None or ret >= min_return:
+            continue
+        candidates.append((ret, record, bet, qid))
+
+    freed = 0.0
+    for ret, record, bet, qid in sorted(candidates, key=lambda c: c[0])[:max_sells]:
+        stake = float(bet.get("stake") or 0.0)
+        try:
+            sell_position(api_key, qid, bet.get("outcome"))
+        except Exception as exc:  # noqa: BLE001 — a failed sell must not abort the run
+            if is_missing_position_error(exc):
+                record_position_exit(journal, record.id, "no-position", bet=bet)
+                freed += stake
+                print(f"  HARVEST: {qid} already closed on Manifold — journal stamped")
+            else:
+                print(f"SELL-FAILED: {qid} ({_http_error_detail(exc)})")
+            continue
+        record_position_exit(journal, record.id, "harvest", bet=bet)
+        freed += stake
+        print(f"  HARVEST: sold {qid} — {ret * 100:+.0f}% remaining return is under the "
+              f"{min_return:.0%} entry bar; {stake:.0f} mana recycled")
+    return freed
+
+
 def should_converge_exit(p_us: float, p_now: float, band: float = CONVERGENCE_BAND) -> bool:
     """Phase-2 convergence exit: the price has come within ``band`` of our forecast."""
     return abs(p_now - p_us) <= band
@@ -1454,11 +1534,25 @@ def run(args: argparse.Namespace) -> int:
     new_market_slots = True
     if can_post and balance is not None:
         headroom = EXPOSURE_CAP_FRAC * balance - exposure
+        if headroom < KELLY_STAKE_FLOOR and phase == 2 and not killed:
+            # Capital recycling BEFORE giving up on the run [ADDED 2026-08-20]: a cap-bound
+            # bot that only waits for resolution can sit idle for weeks financing holdings
+            # whose edge is spent. Harvest first, then re-test the cap with the freed mana —
+            # so the same tick can trade again instead of losing an hour.
+            print(f"exposure {exposure:.0f} of {EXPOSURE_CAP_FRAC:.0%}*{balance:.0f} leaves "
+                  f"headroom {headroom:.0f} < the {KELLY_STAKE_FLOOR:.0f}-mana stake floor — "
+                  "harvesting spent positions")
+            freed = harvest_spent_positions(
+                records_before, journal, api_key=api_key, state_lookup=live_state,
+            ) if can_post else 0.0
+            if freed:
+                exposure -= freed
+                headroom = EXPOSURE_CAP_FRAC * balance - exposure
+                print(f"harvest freed {freed:.0f} mana — headroom now {headroom:.0f}")
         if headroom < KELLY_STAKE_FLOOR:
             # Not an error state (BETTING-DISABLED stays reserved for degradations): position
             # management below still runs, and convergence exits are what free headroom.
-            print(f"exposure {exposure:.0f} of {EXPOSURE_CAP_FRAC:.0%}*{balance:.0f} leaves "
-                  f"headroom {headroom:.0f} < the {KELLY_STAKE_FLOOR:.0f}-mana stake floor — "
+            print(f"headroom {headroom:.0f} < the {KELLY_STAKE_FLOOR:.0f}-mana stake floor — "
                   "managing positions only, no new-market forecasts this run")
             new_market_slots = False
 
