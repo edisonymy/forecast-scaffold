@@ -171,6 +171,18 @@ MIN_EXPECTED_RETURN = 0.08      # phase-2 entry: expected return per mana on the
 #                               reaches longshots where issue #10 documents our tails as
 #                               overconfident; Kelly sizing and the balance floor bound it.
 CONVERGENCE_BAND = 0.03         # sell when the price comes within this of our forecast
+MAX_PRICE_IMPACT = 0.04         # refuse a bet that would move the price more than this.
+#                               EV-at-fill already prices impact economically, but a trade
+#                               that is a large fraction of the book carries market-structure
+#                               risk the EV number does not express: the position is then
+#                               marked against a price we ourselves set, and exiting pays the
+#                               impact again in the other direction.
+SIZING_ROUNDS = 6               # dry-run iterations to converge stake on its own fill price.
+#                               Kelly depends on the price, the price depends on the size, so
+#                               the honest size is a fixed point. Each round re-sizes at the
+#                               fill just observed; the sequence is non-increasing (a bigger
+#                               order never fills better), so it converges downward fast.
+SIZING_TOLERANCE = 0.02         # stop when a round moves the stake by less than 2%.
 HARVEST_MIN_RETURN = 0.04       # phase-2 EXIT bar, deliberately BELOW the entry bar.
 #                               [AMENDED 2026-08-21] It was equal to MIN_EXPECTED_RETURN,
 #                               which made every marginal entry born harvestable: a position
@@ -327,11 +339,20 @@ def is_missing_position_error(exc: Exception) -> bool:
     return bool(_NO_POSITION_RE.search(_http_error_detail(exc)))
 
 
-def place_bet(api_key: str, market_id: str, outcome: str, amount: float) -> dict[str, Any]:
-    """POST /v0/bet. outcome is "YES" or "NO"; amount is mana. Live betting only."""
-    body = json.dumps(
-        {"contractId": market_id, "outcome": outcome, "amount": float(amount)}
-    ).encode("utf-8")
+def place_bet(
+    api_key: str, market_id: str, outcome: str, amount: float, *, dry_run: bool = False,
+) -> dict[str, Any]:
+    """POST /v0/bet. outcome is "YES" or "NO"; amount is mana.
+
+    ``dry_run=True`` sends Manifold's documented ``dryRun`` flag: the bet is NOT placed and
+    the response is a simulated fill. That is how we learn our own price impact BEFORE
+    committing mana — see ``simulate_fill``."""
+    payload: dict[str, Any] = {
+        "contractId": market_id, "outcome": outcome, "amount": float(amount),
+    }
+    if dry_run:
+        payload["dryRun"] = True
+    body = json.dumps(payload).encode("utf-8")
     request = urllib.request.Request(
         f"{MANIFOLD_API}/bet", data=body, method="POST",
         headers={**UA, "Authorization": f"Key {api_key}", "Content-Type": "application/json"},
@@ -770,6 +791,42 @@ def forecast_market(
 # --------------------------------------------------------------------------- betting
 
 
+def fill_price(fill: dict[str, Any]) -> float | None:
+    """Average mana paid per share in a (simulated or real) fill: amount / shares.
+
+    This is the price we ACTUALLY trade at. The quoted market probability is only the price
+    of the first infinitesimal share; on a CPMM the rest of the order walks up the curve, so
+    quote-based EV systematically overstates the edge by roughly half the impact."""
+    shares = fill.get("shares")
+    amount = fill.get("amount", fill.get("orderAmount"))
+    if not isinstance(shares, int | float) or not isinstance(amount, int | float):
+        return None
+    if shares <= 0 or amount <= 0:
+        return None
+    return float(amount) / float(shares)
+
+
+def fill_expected_return(p_us: float, fill: dict[str, Any], outcome: str) -> float | None:
+    """Expected return per mana at the REALISED average fill price.
+
+    A share pays 1 if its side resolves, and costs ``fill_price``. So the return per mana is
+    P(side wins) / price - 1. Compare with ``expected_return``, which asks the same question
+    of the quoted price and therefore of a size we are not actually trading."""
+    price = fill_price(fill)
+    if price is None:
+        return None
+    p_win = p_us if outcome == "YES" else 1.0 - p_us
+    return p_win / price - 1.0
+
+
+def price_impact(fill: dict[str, Any]) -> float | None:
+    """How far our own order would move the market: |probAfter - probBefore|."""
+    before, after = fill.get("probBefore"), fill.get("probAfter")
+    if not isinstance(before, int | float) or not isinstance(after, int | float):
+        return None
+    return abs(float(after) - float(before))
+
+
 def expected_return(p_sighted: float, p_market: float) -> tuple[str, float]:
     """(outcome, expected return per mana) for the side our forecast says is underpriced.
 
@@ -780,6 +837,92 @@ def expected_return(p_sighted: float, p_market: float) -> tuple[str, float]:
     if outcome == "YES":
         return outcome, p_sighted / p_market - 1.0
     return outcome, (1.0 - p_sighted) / (1.0 - p_market) - 1.0
+
+
+def size_against_book(
+    api_key: str, market_id: str, outcome: str, stake: float, p_us: float, balance: float, *,
+    min_return: float = MIN_EXPECTED_RETURN, max_impact: float = MAX_PRICE_IMPACT,
+    rounds: int = SIZING_ROUNDS, tolerance: float = SIZING_TOLERANCE, simulate: Any = None,
+) -> tuple[float, dict[str, Any]] | None:
+    """Dry-run the bet against the real book and return the largest size worth trading.
+
+    [ADDED 2026-08-21] Until now the bot sized purely against its own bankroll (quarter-Kelly,
+    capped at 5% of balance) and judged edge at the QUOTED price — nothing anywhere asked how
+    far our own order would move the market. On a CPMM that is not a rounding error: the quote
+    is the price of the first share, and a stake large relative to the book walks the rest of
+    the order up the curve until the edge we measured is the edge we destroyed.
+
+    Manifold answers this exactly, for free: ``POST /v0/bet`` with ``dryRun`` returns the fill
+    that WOULD happen — probBefore/probAfter and the shares bought — without placing anything
+    or costing model credit.
+
+    So sizing is a FIXED POINT, not a veto bolted onto a quote-based number: Kelly depends on
+    the price, the price depends on the size. Each round dry-runs the current candidate, reads
+    the average fill it would get, and re-sizes Kelly at THAT price; a bigger order never
+    fills better, so the sequence is non-increasing and settles in a couple of rounds. The
+    impact cap and the return bar are then judged on the fill of the size we would actually
+    send. Returns ``(stake, simulated_fill)``, or None when no size qualifies.
+
+    Fails CLOSED: a simulation error skips the market this run rather than betting blind. The
+    next tick is an hour away and the edge is rarely that perishable."""
+    simulate = simulate or (
+        lambda amount: place_bet(api_key, market_id, outcome, amount, dry_run=True)
+    )
+    candidate = stake
+    for _ in range(rounds):
+        if candidate < KELLY_STAKE_FLOOR:
+            # Only reachable from a caller-supplied seed under the floor; the search itself
+            # clamps at the floor and evaluates there rather than walking past it.
+            return None
+        try:
+            fill = simulate(candidate)
+        except Exception as exc:  # noqa: BLE001 — never bet blind on a failed simulation
+            print(f"SIMULATE-FAILED: {market_id} ({_http_error_detail(exc)}) — skipping")
+            return None
+        price = fill_price(fill)
+        ret = fill_expected_return(p_us, fill, outcome)
+        impact = price_impact(fill)
+        if price is None or ret is None or impact is None:
+            print(f"  simulate returned no usable fill for {market_id} — skipping")
+            return None
+        # Re-size at the price this order would actually pay. Never size UP: the quote-based
+        # seed is already the most flattering number, and a larger order fills worse still.
+        target = min(candidate, kelly_stake_at_price(p_us, price, outcome, balance))
+        ask = target
+        if impact > max_impact:
+            # Independent of edge: too large a share of the book is market-structure risk,
+            # and exiting would pay the impact again.
+            ask = min(ask, candidate / 2.0)
+        # Never shrink by more than half in one round. Kelly measured at a WILDLY oversized
+        # order collapses to zero — that says the fill at THIS size is hopeless, not that no
+        # size works, and jumping to zero would abandon a book that supports a smaller trade.
+        # Halving walks down instead, so the search ends on a real answer either way.
+        #
+        # ...and the last probe is the FLOOR itself, never something under it [AMENDED
+        # 2026-08-21]. The halving grid can otherwise step straight over the viable window:
+        # on the press-secretary book it went 14 -> 7 and gave up, when 10 mana filled at
+        # 3.7pts of impact for +15% — a trade that passes every gate we set. Declining it
+        # because the sequence happened to skip it is a search artifact, not caution. If the
+        # minimum size we are willing to send clears the bar and the cap, send it.
+        nxt = max(ask, candidate / 2.0, KELLY_STAKE_FLOOR)
+        if nxt < candidate * (1.0 - tolerance):
+            print(f"  {candidate:.0f} mana fills at {price:.3f} ({impact * 100:.1f}pts "
+                  f"impact) — resizing to {nxt:.0f}")
+            candidate = nxt
+            continue
+        if impact > max_impact:
+            print(f"  {impact * 100:.1f}pts of impact exceeds the {max_impact * 100:.0f}pt "
+                  f"cap and the size will not shrink further — no trade")
+            return None
+        if ret < min_return:
+            # Converged, inside the impact cap, and still short of the bar: the edge was in
+            # the quote, not in the price we can get.
+            print(f"  {candidate:.0f} mana fills at {price:.3f} for {ret * 100:+.0f}% "
+                  f"(bar {min_return:.0%}) — no trade")
+            return None
+        return candidate, fill
+    print(f"  sizing did not converge in {rounds} rounds for {market_id} — skipping")
+    return None
 
 
 def decide_bet(
@@ -925,17 +1068,37 @@ def open_exposure(records: list[Any], state_lookup: Any = None) -> float:
     return total
 
 
-def kelly_stake(p_us: float, p_market: float, balance: float) -> float:
-    """Quarter-Kelly stake, capped at 5% of balance and floored at 10 mana (phase 2).
+def kelly_stake_at_price(
+    p_us: float, price: float, outcome: str, balance: float
+) -> float:
+    """Quarter-Kelly for shares bought at ``price`` mana each, capped at 5% of balance.
 
-    Kelly fraction for YES at market m with our p is (p-m)/(1-m); NO mirrors it as (m-p)/m.
-    Quarter because our p is noisy and CPMM slippage shrinks realized edge."""
-    m = p_market
-    kelly = (p_us - m) / (1.0 - m) if p_us > m else (m - p_us) / m
-    kelly = max(kelly, 0.0)
+    One share costs ``price`` and pays 1 if its side resolves, so with win probability w the
+    Kelly fraction is (w - price) / (1 - price) — the same expression for both sides once the
+    side is folded into w and the cost into price.
+
+    [ADDED 2026-08-21] The price that belongs here is the AVERAGE FILL, not the quote. Kelly
+    is a function of the odds you actually get; sizing off the quote makes the bet bigger
+    exactly when the book is thin enough that the quote is least achievable, which is the
+    wrong direction. Callers get the fill price from a dry run (see ``size_against_book``)."""
+    w = p_us if outcome == "YES" else 1.0 - p_us
+    if not 0.0 < price < 1.0:
+        return 0.0
+    kelly = max((w - price) / (1.0 - price), 0.0)
     raw = KELLY_FRACTION * kelly * balance
-    capped = min(raw, KELLY_STAKE_CAP_FRAC * balance)
-    return max(capped, KELLY_STAKE_FLOOR)
+    return min(raw, KELLY_STAKE_CAP_FRAC * balance)
+
+
+def kelly_stake(p_us: float, p_market: float, balance: float) -> float:
+    """Quarter-Kelly at the QUOTED price — the opening guess only.
+
+    Kept because it needs no network call, so it seeds the dry-run search and still sizes the
+    offline/dry paths where there is no book to ask. The live path refines this against the
+    real fill in ``size_against_book``; the quote systematically flatters the trade."""
+    outcome = "YES" if p_us > p_market else "NO"
+    price = p_market if outcome == "YES" else 1.0 - p_market
+    stake = kelly_stake_at_price(p_us, price, outcome, balance)
+    return max(stake, KELLY_STAKE_FLOOR)
 
 
 def _toward(p_us: float, p_0: float, p_now: float) -> float:
@@ -1366,6 +1529,11 @@ def build_record(
         # `fill` on its first outing [ADDED 2026-08-21].
         if bet.get("fill"):
             source["bet"]["fill"] = bet["fill"]
+        # The pre-trade dry run that sized this bet. Journalled next to the realised fill so
+        # predicted and actual impact can be compared — that comparison is what tells us
+        # whether the simulation can be trusted for sizing.
+        if bet.get("simulated"):
+            source["bet"]["simulated"] = bet["simulated"]
     criterion = criteria_text(market) or (
         f"(no creator description) Resolves per the plain reading of: "
         f"{market.get('question', '')}"
@@ -1707,6 +1875,31 @@ def run(args: argparse.Namespace) -> int:
             # against the phase machine's movement test, not to maximize return.
             min_expected_return=MIN_EXPECTED_RETURN if phase == 2 else 0.0,
         )
+        # Book check (live only) [ADDED 2026-08-21]: decide_bet judged the edge at the QUOTED
+        # price. Before committing mana, dry-run the order to see the fill we would actually
+        # get and how far we would move the price, and shrink the size until both are
+        # acceptable. Dry runs cost nothing, so this is a strictly better number than the
+        # quote — and it is the check that was missing when the bot "moved the market too
+        # much". Offline/dry paths keep the quote-based size: there is no book to ask.
+        if bet is not None and can_post:
+            sized = size_against_book(
+                api_key, market_id, bet["outcome"], bet["stake"], p_sighted,
+                balance if balance is not None else ADOPTION_BANKROLL,
+                min_return=MIN_EXPECTED_RETURN if phase == 2 else 0.0,
+            )
+            if sized is None:
+                print("  no size clears the book check — skipping this market")
+                bet = None
+            else:
+                amount, sim = sized
+                if amount < bet["stake"]:
+                    print(f"  sized down {bet['stake']:.0f} -> {amount:.0f} mana on the book")
+                bet["stake"] = amount
+                bet["simulated"] = {
+                    k: sim[k] for k in ("probBefore", "probAfter", "shares")
+                    if isinstance(sim.get(k), int | float) and not isinstance(sim.get(k), bool)
+                }
+
         # Exposure cap (live only): total open exposure must stay <= 30% of balance.
         if (bet is not None and can_post and balance is not None
                 and exposure + bet["stake"] > EXPOSURE_CAP_FRAC * balance):
