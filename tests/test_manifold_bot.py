@@ -348,6 +348,150 @@ def test_holding_return_is_side_fixed_not_divergence_picked() -> None:
     assert run_manifold.holding_return(0.5, 1.0, "NO") is None
 
 
+class TestSizeAgainstBook:
+    """Ask the book before trading: dry-run the order, price the real fill, cap the impact."""
+
+    @staticmethod
+    def _sim(depth: float, avg_price: float = 0.31, before: float = 0.30) -> Any:
+        def simulate(amount: float) -> dict[str, Any]:
+            return {"probBefore": before, "probAfter": before + amount / depth,
+                    "shares": amount / avg_price, "amount": amount}
+        return simulate
+
+    def test_fill_price_beats_the_quote_as_the_ev_basis(self) -> None:
+        # 100 mana buying 250 shares averages 0.40/share, whatever the quote said.
+        fill = {"amount": 100.0, "shares": 250.0}
+        assert run_manifold.fill_price(fill) == pytest.approx(0.40)
+        # YES at an average 0.40 with our p at 0.50 returns 25%, not the quote-based number.
+        assert run_manifold.fill_expected_return(0.50, fill, "YES") == pytest.approx(0.25)
+        # NO pays out on 1 - p_us.
+        assert run_manifold.fill_expected_return(0.50, fill, "NO") == pytest.approx(0.25)
+        assert run_manifold.fill_price({"amount": 10.0, "shares": 0}) is None
+        assert run_manifold.fill_expected_return(0.5, {"shares": 1.0}, "YES") is None
+
+    def test_price_impact_reads_the_simulated_move(self) -> None:
+        assert run_manifold.price_impact(
+            {"probBefore": 0.30, "probAfter": 0.34}) == pytest.approx(0.04)
+        assert run_manifold.price_impact({"probBefore": 0.30}) is None
+
+    def test_kelly_is_taken_at_the_fill_price_not_the_quote(self) -> None:
+        # Same forecast, two prices: paying more per share must size smaller. Sizing off the
+        # quote would give the thin-book bet the LARGER stake, which is backwards.
+        at_quote = run_manifold.kelly_stake_at_price(0.60, 0.40, "YES", 1000.0)
+        at_fill = run_manifold.kelly_stake_at_price(0.60, 0.50, "YES", 1000.0)
+        assert at_fill < at_quote
+        # No edge left at the fill price -> no stake at all.
+        assert run_manifold.kelly_stake_at_price(0.60, 0.60, "YES", 1000.0) == 0.0
+        # NO folds the side into the win probability: our 0.40 means NO wins with 0.60.
+        assert run_manifold.kelly_stake_at_price(
+            0.40, 0.40, "NO", 1000.0) == pytest.approx(at_quote)
+        assert run_manifold.kelly_stake_at_price(0.6, 0.0, "YES", 1000.0) == 0.0
+
+    def test_deep_book_keeps_full_size(self) -> None:
+        # Fill ~= quote, so the fixed point does not move the Kelly-seeded stake.
+        got = run_manifold.size_against_book(
+            "k", "m", "YES", 100.0, 0.90, 5000.0, simulate=self._sim(depth=50_000.0))
+        assert got is not None and got[0] == 100.0
+
+    def test_thin_book_converges_to_a_smaller_stake(self) -> None:
+        got = run_manifold.size_against_book(
+            "k", "m", "YES", 100.0, 0.90, 5000.0, simulate=self._sim(depth=1000.0))
+        assert got is not None
+        stake, fill = got
+        # Sized down, still worth trading, and inside the impact cap at the size we send.
+        assert run_manifold.KELLY_STAKE_FLOOR <= stake < 100.0
+        assert run_manifold.price_impact(fill) <= run_manifold.MAX_PRICE_IMPACT
+        assert run_manifold.fill_expected_return(0.90, fill, "YES") >= (
+            run_manifold.MIN_EXPECTED_RETURN)
+
+    def test_no_size_qualifies_returns_none(self) -> None:
+        # Every candidate moves the price too far, so there is no size worth trading.
+        assert run_manifold.size_against_book(
+            "k", "m", "YES", 100.0, 0.90, 5000.0, simulate=self._sim(depth=100.0)) is None
+
+    def test_edge_that_only_exists_at_the_quote_is_rejected(self) -> None:
+        # Our p is 0.32 and the quote 0.30 — but the fill averages 0.31, so the real return
+        # is ~3%, under the 8% bar. Quote-based EV would have called this a trade.
+        assert run_manifold.size_against_book(
+            "k", "m", "YES", 100.0, 0.32, 5000.0, simulate=self._sim(depth=1e9)) is None
+
+    def test_simulation_failure_never_bets_blind(self) -> None:
+        def boom(amount: float) -> dict[str, Any]:
+            raise RuntimeError("api down")
+        assert run_manifold.size_against_book(
+            "k", "m", "YES", 100.0, 0.90, 5000.0, simulate=boom) is None
+
+    def test_never_simulates_below_the_stake_floor(self) -> None:
+        calls: list[float] = []
+
+        def simulate(amount: float) -> dict[str, Any]:
+            calls.append(amount)
+            return self._sim(depth=1.0)(amount)  # always over the impact cap
+
+        assert run_manifold.size_against_book(
+            "k", "m", "YES", 20.0, 0.90, 5000.0, simulate=simulate) is None
+        assert all(a >= run_manifold.KELLY_STAKE_FLOOR for a in calls)
+
+    @staticmethod
+    def _book(liquidity: float, p0: float = 0.40, seen: list[float] | None = None) -> Any:
+        """Constant-product NO-side fill for a book of the given liquidity."""
+        def simulate(amount: float) -> dict[str, Any]:
+            if seen is not None:
+                seen.append(amount)
+            n = liquidity / ((1 - p0) / p0) ** 0.5
+            y = n * (1 - p0) / p0
+            y2, n2 = y + amount, n + amount
+            shares = n2 - (y * n) / y2
+            return {"probBefore": p0, "probAfter": (n2 - shares) / (y2 + n2 - shares),
+                    "shares": shares, "amount": amount}
+        return simulate
+
+    def test_press_secretary_replay_sizes_down_to_the_floor(self) -> None:
+        """The real losing trade: 115 mana of NO into an M100 book, our p 0.29 vs a 0.40
+        quote. It filled at ~0.744 for 25pts of impact — about -5% EV where the bot recorded
+        +18%, and it lost 16 mana. The rebuilt path must walk down and land on a size that
+        actually passes both gates rather than either sending it or giving up."""
+        seen: list[float] = []
+        got = run_manifold.size_against_book(
+            "k", "presssec", "NO", 115.0, 0.29, 2458.0, simulate=self._book(100.0, seen=seen))
+        assert got is not None
+        stake, fill = got
+        assert stake == run_manifold.KELLY_STAKE_FLOOR
+        assert run_manifold.price_impact(fill) <= run_manifold.MAX_PRICE_IMPACT
+        assert run_manifold.fill_expected_return(0.29, fill, "NO") >= (
+            run_manifold.MIN_EXPECTED_RETURN)
+        # Stepped down rather than jumping, and never probed under the floor. Each step is
+        # at least a halving EXCEPT the last, which clamps to the floor instead of stepping
+        # past it — that clamp is what turns this from "no trade" into a 10-mana trade.
+        assert len(seen) > 1
+        assert all(a >= run_manifold.KELLY_STAKE_FLOOR for a in seen)
+        assert all(
+            b <= a / 2 * 1.001 or b == run_manifold.KELLY_STAKE_FLOOR
+            for a, b in zip(seen, seen[1:], strict=False)
+        )
+        assert seen[-1] == run_manifold.KELLY_STAKE_FLOOR
+        assert seen == sorted(seen, reverse=True)
+
+    def test_book_too_thin_even_at_the_floor_is_refused(self) -> None:
+        # The floor being the last probe is not a licence to always trade: a book that cannot
+        # absorb even 10 mana inside the impact cap still gets nothing.
+        assert run_manifold.size_against_book(
+            "k", "x", "NO", 115.0, 0.29, 2458.0, simulate=self._book(20.0)) is None
+
+    def test_sizing_sequence_is_non_increasing(self) -> None:
+        # The invariant that makes the fixed point terminate: a bigger order never fills
+        # better, so each round may only shrink the candidate.
+        seen: list[float] = []
+
+        def simulate(amount: float) -> dict[str, Any]:
+            seen.append(amount)
+            return self._sim(depth=2000.0)(amount)
+
+        run_manifold.size_against_book(
+            "k", "m", "YES", 200.0, 0.75, 5000.0, simulate=simulate)
+        assert seen == sorted(seen, reverse=True)
+
+
 def test_exit_bar_sits_below_the_entry_bar_by_the_switching_cost() -> None:
     # The gap between entering (+8%) and exiting (<4%) is the round-trip transaction cost,
     # not a free parameter. Equal bars made every marginal entry born harvestable, which is
@@ -599,13 +743,32 @@ class CostAgent(ScriptedAgent):
 class BetSpy:
     def __init__(self) -> None:
         self.calls: list[tuple[str, str, str, float]] = []
+        self.simulations: list[tuple[str, str, float]] = []
 
-    def __call__(self, api_key: str, market_id: str, outcome: str, amount: float) -> dict:
+    #: mana of stake per 1 probability point of impact — bigger book, smaller impact.
+    depth: float = 5000.0
+    avg_price: float = 0.31
+
+    def _fill(self, amount: float) -> dict:
+        """Shaped like Manifold's real POST /v0/bet response. Impact scales with size, which
+        is the property the sizing logic exists to react to."""
+        impact = amount / self.depth
+        return {
+            "probBefore": 0.30, "probAfter": round(0.30 + impact, 6),
+            "shares": amount / self.avg_price, "amount": amount, "isFilled": True,
+        }
+
+    def __call__(
+        self, api_key: str, market_id: str, outcome: str, amount: float,
+        *, dry_run: bool = False,
+    ) -> dict:
+        # A dry run must never count as a placed bet: `calls` stays the record of real POSTs
+        # so every existing assertion about betting behaviour keeps its meaning.
+        if dry_run:
+            self.simulations.append((market_id, outcome, amount))
+            return self._fill(amount)
         self.calls.append((api_key, market_id, outcome, amount))
-        # Shaped like Manifold's real POST /v0/bet response: the fill fields are what make
-        # realised slippage measurable (probBefore -> probAfter is the price we moved).
-        return {"betId": "x", "probBefore": 0.30, "probAfter": 0.34,
-                "shares": 71.4, "amount": amount, "isFilled": True}
+        return {"betId": "x", **self._fill(amount)}
 
 
 def make_args(tmp_path: Path, **over: Any) -> argparse.Namespace:
@@ -922,8 +1085,11 @@ def test_run_live_posts_and_respects_max_bets(
     # the dict through — it rebuilds source["bet"] key by key, which silently dropped `fill`
     # the first time round.
     fill = with_bet[0]["source"]["bet"]["fill"]
-    assert fill["probBefore"] == 0.30 and fill["probAfter"] == 0.34
-    assert fill["shares"] == 71.4 and "isFilled" not in fill
+    staked = with_bet[0]["source"]["bet"]["stake"]
+    assert fill["probBefore"] == 0.30
+    assert fill["probAfter"] == pytest.approx(0.30 + staked / spy.depth)
+    assert fill["shares"] == pytest.approx(staked / spy.avg_price)
+    assert "isFilled" not in fill
     assert all(r["dry_run"] is False for r in rows)  # live provenance
 
 
@@ -1011,7 +1177,16 @@ def test_bet_post_failure_journals_unknown_and_guards(
     monkeypatch.setattr(score_manifold, "fetch_market_state", lambda mid: dict(OPEN_STATE))
     monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
 
-    def boom(api_key: str, market_id: str, outcome: str, amount: float) -> dict:
+    sizer = BetSpy()
+
+    def boom(
+        api_key: str, market_id: str, outcome: str, amount: float,
+        *, dry_run: bool = False,
+    ) -> dict:
+        # The pre-trade dry run succeeds (that is how the size was chosen); the real POST is
+        # what times out. Failing both would exercise the simulate-failed skip instead.
+        if dry_run:
+            return sizer(api_key, market_id, outcome, amount, dry_run=True)
         raise RuntimeError("timeout after send")
 
     monkeypatch.setattr(run_manifold, "place_bet", boom)
@@ -1046,7 +1221,12 @@ def test_bet_response_without_id_treated_as_unknown(
     monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
     monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90))
     monkeypatch.setattr(run_manifold, "get_balance", lambda key: 5000.0)
-    monkeypatch.setattr(run_manifold, "place_bet", lambda *a: {})
+    sizer = BetSpy()
+    monkeypatch.setattr(
+        run_manifold, "place_bet",
+        # Sizing dry-runs fine; the real POST returns a 2xx body with no bet id.
+        lambda *a, dry_run=False, **k: sizer(*a, dry_run=True) if dry_run else {},
+    )
     monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
 
     seed_phase(tmp_path, phase=1)
