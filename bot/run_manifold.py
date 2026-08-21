@@ -1112,6 +1112,11 @@ def moved_against(p_us: float, p_0: float, p_now: float) -> float:
     return -_toward(p_us, p_0, p_now)
 
 
+def max_impact_note() -> str:
+    """The impact cap as a human string, so log lines cannot drift from the constant."""
+    return f"{MAX_PRICE_IMPACT:.0%}"
+
+
 def holding_return(p_us: float, p_now: float, outcome: str) -> float | None:
     """Expected return per mana of CONTINUING to hold ``outcome`` at price ``p_now``.
 
@@ -1145,10 +1150,53 @@ def latest_sighted_probability(
     return best
 
 
+def exit_is_affordable(
+    api_key: str, market_id: str, outcome: str, stake: float, *,
+    max_impact: float = MAX_PRICE_IMPACT, simulate: Any = None,
+) -> bool:
+    """Can we get OUT of this position without paying more than the impact cap?
+
+    [ADDED 2026-08-21] Harvest treated selling as free. It is not: unwinding a position walks
+    the CPMM curve exactly like entering it, and on a thin book that cost dwarfs the few
+    points of edge the sale is meant to recycle.
+
+    The real sequence that motivated this: 115 mana of NO bought into an M100 book, harvested
+    the next day for 98 mana (154 shares at an average 0.636, dragging the price 25% -> 40%),
+    then — on a legitimately updated forecast — re-bought two days later for 107 mana (128
+    shares at 0.836, dragging it 24% -> 11%). We sold cheap and bought back dear, three times
+    paying impact on a book too small to absorb us, and the round trip cost more than the edge
+    that justified any leg of it.
+
+    Manifold's sell endpoint has no documented dry run, so we ask the question the other way:
+    dry-run a BUY of the same size on the same side. If an order that size cannot enter within
+    the impact cap, an order that size cannot leave within it either — the curve is the same
+    curve. Cheaper to keep holding a low-edge position than to pay that twice.
+
+    Sizing the probe at the original stake rather than the position's current value errs
+    toward holding when a position has fallen — which is the safe side, since a position
+    worth less than we paid is exactly the one whose recycled edge least justifies churn.
+
+    Fails CLOSED (returns False, i.e. do not sell) when the simulation is unreadable: an
+    unknown exit cost is not a licence to churn."""
+    simulate = simulate or (
+        lambda amount: place_bet(api_key, market_id, outcome, amount, dry_run=True)
+    )
+    try:
+        fill = simulate(stake)
+    except Exception as exc:  # noqa: BLE001 — an unmeasurable exit is not sold
+        print(f"  cannot price the exit for {market_id} ({_http_error_detail(exc)}) — holding")
+        return False
+    impact = price_impact(fill)
+    if impact is None:
+        return False
+    return impact <= max_impact
+
+
 def harvest_spent_positions(
     records: list[Any], journal: Journal, *, api_key: str, state_lookup: Any,
     min_return: float = HARVEST_MIN_RETURN, max_sells: int = HARVEST_MAX_PER_RUN,
     max_age_days: float = HARVEST_MAX_FORECAST_AGE_DAYS, now: datetime | None = None,
+    exit_check: Any = None,
 ) -> tuple[float, list[str]]:
     """Capital recycling: sell holdings whose remaining edge no longer earns their mana.
 
@@ -1209,8 +1257,17 @@ def harvest_spent_positions(
         candidates.append((ret, record, bet, qid))
 
     freed = 0.0
+    affordable = exit_check or (
+        lambda qid, outcome, stake: exit_is_affordable(api_key, qid, outcome, stake)
+    )
     for ret, record, bet, qid in sorted(candidates, key=lambda c: c[0])[:max_sells]:
         stake = float(bet.get("stake") or 0.0)
+        # Recycling capital is only worth it if the capital can actually get out.
+        if not affordable(qid, str(bet.get("outcome") or ""), stake):
+            print(f"  HOLD: {qid} is spent ({ret * 100:+.0f}%) but unwinding {stake:.0f} mana "
+                  f"would breach the {max_impact_note()} impact cap — churn costs more than "
+                  f"the edge recycled")
+            continue
         try:
             sell_position(api_key, qid, bet.get("outcome"))
         except Exception as exc:  # noqa: BLE001 — a failed sell must not abort the run

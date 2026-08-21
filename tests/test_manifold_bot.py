@@ -508,6 +508,35 @@ def test_exit_bar_sits_below_the_entry_bar_by_the_switching_cost() -> None:
     assert just_bought is not None and just_bought >= run_manifold.HARVEST_MIN_RETURN
 
 
+class TestExitIsAffordable:
+    """Selling is not free: unwinding walks the same curve entering does."""
+
+    @staticmethod
+    def _book(liquidity: float, p0: float = 0.25) -> Any:
+        def simulate(amount: float) -> dict[str, Any]:
+            n = liquidity / ((1 - p0) / p0) ** 0.5
+            y = n * (1 - p0) / p0
+            y2, n2 = y + amount, n + amount
+            shares = n2 - (y * n) / y2
+            return {"probBefore": p0, "probAfter": (n2 - shares) / (y2 + n2 - shares),
+                    "shares": shares, "amount": amount}
+        return simulate
+
+    def test_deep_book_exit_is_affordable(self) -> None:
+        assert run_manifold.exit_is_affordable(
+            "k", "m", "NO", 100.0, simulate=self._book(50_000.0))
+
+    def test_thin_book_exit_is_not(self) -> None:
+        # The press-secretary case: ~100 mana of position in an M100 book.
+        assert not run_manifold.exit_is_affordable(
+            "k", "presssec", "NO", 100.0, simulate=self._book(100.0))
+
+    def test_unpriceable_exit_is_not_sold(self) -> None:
+        def boom(amount: float) -> dict[str, Any]:
+            raise RuntimeError("api down")
+        assert not run_manifold.exit_is_affordable("k", "m", "NO", 100.0, simulate=boom)
+
+
 class TestHarvestSpentPositions:
     """Capital recycling when the exposure cap binds: hold to the same bar we enter at."""
 
@@ -559,6 +588,7 @@ class TestHarvestSpentPositions:
         freed, stale = run_manifold.harvest_spent_positions(
             journal.all(), journal, api_key="k",
             state_lookup=lambda q: {"resolved": False, "probability": prices[q]},
+            exit_check=lambda *a: True,
         )
         assert sold == [("spent", "YES")]  # the live position was never sent to Manifold
         assert stale == []
@@ -582,7 +612,7 @@ class TestHarvestSpentPositions:
         run_manifold.harvest_spent_positions(
             journal.all(), journal, api_key="k",
             state_lookup=lambda q: {"resolved": False, "probability": prices[q]},
-            max_sells=2,
+            max_sells=2, exit_check=lambda *a: True,
         )
         harvested = {r.source["question_id"] for r in journal.all()
                      if ((r.source.get("bet") or {}).get("exit") or {})
@@ -617,6 +647,7 @@ class TestHarvestSpentPositions:
         freed, stale = run_manifold.harvest_spent_positions(
             journal.all(), journal, api_key="k",
             state_lookup=lambda q: {"resolved": False, "probability": 0.78},
+            exit_check=lambda *a: True,
         )
         assert (freed, stale, sold) == (0.0, ["spent"], [])
         assert (journal.all()[0].source["bet"].get("exit")) is None
@@ -632,6 +663,7 @@ class TestHarvestSpentPositions:
         freed, _ = run_manifold.harvest_spent_positions(
             journal.all(), journal, api_key="k",
             state_lookup=lambda q: {"resolved": False, "probability": 0.78},
+            exit_check=lambda *a: True,
         )
         assert freed == 120.0
 
