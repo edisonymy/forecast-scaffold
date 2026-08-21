@@ -918,7 +918,9 @@ def test_run_live_posts_and_respects_max_bets(
     assert with_bet[0]["source"]["bet"]["status"] == "placed"
     # The fill is journalled [ADDED 2026-08-21]: probBefore->probAfter is the price our own
     # order moved, i.e. our realised slippage — the quantity the exit bar is set from. Only
-    # numeric fields are kept, so isFilled (a bool) is not carried into the journal.
+    # named fields are kept (isFilled is not in the allowlist), and build_record must pass
+    # the dict through — it rebuilds source["bet"] key by key, which silently dropped `fill`
+    # the first time round.
     fill = with_bet[0]["source"]["bet"]["fill"]
     assert fill["probBefore"] == 0.30 and fill["probAfter"] == 0.34
     assert fill["shares"] == 71.4 and "isFilled" not in fill

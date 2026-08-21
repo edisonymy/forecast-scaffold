@@ -1360,6 +1360,12 @@ def build_record(
         # and pre-status journal records carry no status; absent reads as "placed".
         if bet.get("status"):
             source["bet"]["status"] = bet["status"]
+        # Realised fill (probBefore/probAfter/shares) when Manifold returned one. This dict is
+        # rebuilt field by field rather than copied, so a new key must be named here or it is
+        # silently dropped between the bet and the journal — which is exactly what happened to
+        # `fill` on its first outing [ADDED 2026-08-21].
+        if bet.get("fill"):
+            source["bet"]["fill"] = bet["fill"]
     criterion = criteria_text(market) or (
         f"(no creator description) Resolves per the plain reading of: "
         f"{market.get('question', '')}"
@@ -1722,9 +1728,14 @@ def run(args: argparse.Namespace) -> int:
                     # slippage measurable, and slippage is exactly the gap between the entry
                     # and exit bars. Defensive: fields are recorded when present, never
                     # required — a thin response must not fail a placed bet.
-                    fill = {k: placed[k] for k in
-                            ("probBefore", "probAfter", "shares", "amount", "limitProb")
-                            if isinstance(placed.get(k), int | float)}
+                    fill = {
+                        k: placed[k]
+                        for k in ("probBefore", "probAfter", "shares", "amount", "limitProb")
+                        # bool subclasses int, so exclude it explicitly: a truthy flag must
+                        # never be journalled as if it were a price.
+                        if isinstance(placed.get(k), int | float)
+                        and not isinstance(placed.get(k), bool)
+                    }
                     if fill:
                         bet["fill"] = fill
                     print(f"  BET {bet['outcome']} {bet['stake']:.0f} mana "
