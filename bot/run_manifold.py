@@ -171,6 +171,23 @@ MIN_EXPECTED_RETURN = 0.08      # phase-2 entry: expected return per mana on the
 #                               reaches longshots where issue #10 documents our tails as
 #                               overconfident; Kelly sizing and the balance floor bound it.
 CONVERGENCE_BAND = 0.03         # sell when the price comes within this of our forecast
+HARVEST_MIN_RETURN = 0.04       # phase-2 EXIT bar, deliberately BELOW the entry bar.
+#                               [AMENDED 2026-08-21] It was equal to MIN_EXPECTED_RETURN,
+#                               which made every marginal entry born harvestable: a position
+#                               opened at +10% sat 2 points above its own sell trigger and one
+#                               small favourable drift sold it (Wisconsin Governor: bought
+#                               11:44, harvested 42 minutes later, paying slippage twice).
+#                               The gap is not arbitrary — it IS the round-trip transaction
+#                               cost. Exiting is not "the position went bad", it is "this mana
+#                               earns more elsewhere", so the rule is: sell when
+#                               remaining < entry_bar - round_trip_cost. 0.04 implies ~4 points
+#                               of CPMM cost and is a PLACEHOLDER: no bet before 2026-08-21
+#                               journalled a fill price, so our real slippage is unmeasured.
+#                               Once `bet.fill` has data, set this from it instead of guessing.
+#                               NOTE this is the EXIT bar, not the mirror of the entry bar. The
+#                               true mirror of buying at +8% is REVERSING at about -8% (the
+#                               opposite side then clears +8%), which this bot does not do at
+#                               all — it only holds or exits to cash.
 HARVEST_MAX_PER_RUN = 3         # cap capital-recycling sells per run: each sell pays CPMM
 #                               slippage, so a cap-bound run trims its worst few holdings
 #                               rather than churning the whole book in one tick.
@@ -967,7 +984,7 @@ def latest_sighted_probability(
 
 def harvest_spent_positions(
     records: list[Any], journal: Journal, *, api_key: str, state_lookup: Any,
-    min_return: float = MIN_EXPECTED_RETURN, max_sells: int = HARVEST_MAX_PER_RUN,
+    min_return: float = HARVEST_MIN_RETURN, max_sells: int = HARVEST_MAX_PER_RUN,
     max_age_days: float = HARVEST_MAX_FORECAST_AGE_DAYS, now: datetime | None = None,
 ) -> tuple[float, list[str]]:
     """Capital recycling: sell holdings whose remaining edge no longer earns their mana.
@@ -976,8 +993,9 @@ def harvest_spent_positions(
     Unconstrained, holding a played-out winner costs nothing and the tight convergence band
     is right. Constrained, mana has an opportunity cost: a position with 2% of edge left is
     occupying budget that a 20% entry wants, so the bar for HOLDING becomes the bar for
-    ENTERING (``MIN_EXPECTED_RETURN``) — if we would not open it today, we should not be
-    financing it today. This subsumes the convergence exit (a fully converged position has
+    ENTERING, less the round-trip cost of switching (``HARVEST_MIN_RETURN``) — if we would
+    not open it today AND the switch pays for itself, we should not be financing it today.
+    This subsumes the convergence exit (a fully converged position has
     ~zero remaining return) and covers the case it misses: the winner that ran 80% of the way
     to our forecast, still outside the 3-point band, quietly earning almost nothing.
 
@@ -1043,7 +1061,7 @@ def harvest_spent_positions(
         record_position_exit(journal, record.id, "harvest", bet=bet)
         freed += stake
         print(f"  HARVEST: sold {qid} — {ret * 100:+.0f}% remaining return is under the "
-              f"{min_return:.0%} entry bar; {stake:.0f} mana recycled")
+              f"{min_return:.0%} exit bar; {stake:.0f} mana recycled")
     stale_ids = [qid for _, qid in sorted(stale, key=lambda c: c[0])[:max_sells]]
     for qid in stale_ids:
         print(f"  HARVEST: {qid} screens as spent but our view is older than "
@@ -1699,6 +1717,16 @@ def run(args: argparse.Namespace) -> int:
                             and (placed.get("betId") or placed.get("id"))):
                         raise RuntimeError(f"bet response has no id: {str(placed)[:200]}")
                     bet["status"] = "placed"
+                    # Capture whatever the fill tells us [ADDED 2026-08-21]. Manifold returns
+                    # the created bet; probBefore/probAfter/shares are what make realised
+                    # slippage measurable, and slippage is exactly the gap between the entry
+                    # and exit bars. Defensive: fields are recorded when present, never
+                    # required — a thin response must not fail a placed bet.
+                    fill = {k: placed[k] for k in
+                            ("probBefore", "probAfter", "shares", "amount", "limitProb")
+                            if isinstance(placed.get(k), int | float)}
+                    if fill:
+                        bet["fill"] = fill
                     print(f"  BET {bet['outcome']} {bet['stake']:.0f} mana "
                           f"(p_us={p_sighted:.2f} vs market {p_market:.2f}, "
                           f"read={market_read})")

@@ -348,6 +348,22 @@ def test_holding_return_is_side_fixed_not_divergence_picked() -> None:
     assert run_manifold.holding_return(0.5, 1.0, "NO") is None
 
 
+def test_exit_bar_sits_below_the_entry_bar_by_the_switching_cost() -> None:
+    # The gap between entering (+8%) and exiting (<4%) is the round-trip transaction cost,
+    # not a free parameter. Equal bars made every marginal entry born harvestable, which is
+    # what churned the Wisconsin position 42 minutes after buying it.
+    assert run_manifold.HARVEST_MIN_RETURN < run_manifold.MIN_EXPECTED_RETURN
+    kw = dict(balance=1000.0, already_positioned=False,
+              divergence_threshold=run_manifold.PHASE2_ENTRY_DIVERGENCE,
+              min_expected_return=run_manifold.MIN_EXPECTED_RETURN)
+    # A position entered at the entry bar must NOT be immediately harvestable: its remaining
+    # return has to fall through the whole gap first.
+    entered = run_manifold.decide_bet(0.54, 0.50, 25, **kw)
+    assert entered == {"outcome": "YES", "stake": 25.0}
+    just_bought = run_manifold.holding_return(0.54, 0.50, "YES")
+    assert just_bought is not None and just_bought >= run_manifold.HARVEST_MIN_RETURN
+
+
 class TestHarvestSpentPositions:
     """Capital recycling when the exposure cap binds: hold to the same bar we enter at."""
 
@@ -586,7 +602,10 @@ class BetSpy:
 
     def __call__(self, api_key: str, market_id: str, outcome: str, amount: float) -> dict:
         self.calls.append((api_key, market_id, outcome, amount))
-        return {"betId": "x"}
+        # Shaped like Manifold's real POST /v0/bet response: the fill fields are what make
+        # realised slippage measurable (probBefore -> probAfter is the price we moved).
+        return {"betId": "x", "probBefore": 0.30, "probAfter": 0.34,
+                "shares": 71.4, "amount": amount, "isFilled": True}
 
 
 def make_args(tmp_path: Path, **over: Any) -> argparse.Namespace:
@@ -897,6 +916,12 @@ def test_run_live_posts_and_respects_max_bets(
     assert with_bet[0]["source"]["bet"]["dry_run"] is False
     # The stub response carried a betId, so the POST is provably filled.
     assert with_bet[0]["source"]["bet"]["status"] == "placed"
+    # The fill is journalled [ADDED 2026-08-21]: probBefore->probAfter is the price our own
+    # order moved, i.e. our realised slippage — the quantity the exit bar is set from. Only
+    # numeric fields are kept, so isFilled (a bool) is not carried into the journal.
+    fill = with_bet[0]["source"]["bet"]["fill"]
+    assert fill["probBefore"] == 0.30 and fill["probAfter"] == 0.34
+    assert fill["shares"] == 71.4 and "isFilled" not in fill
     assert all(r["dry_run"] is False for r in rows)  # live provenance
 
 
