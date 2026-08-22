@@ -1948,6 +1948,120 @@ def test_exposure_cap_blocks_a_bet_over_30pct(
     assert spy.calls == []  # the exposure cap refused the bet
 
 
+# ------------------------------------------------------------------ transient GET retry
+
+
+class TestTransientGetRetry:
+    """A 503 on an idempotent read must cost a moment, not an hourly cycle."""
+
+    @pytest.fixture(autouse=True)
+    def _no_real_sleeping(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setattr(run_manifold.time, "sleep", lambda _s: None)
+
+    @staticmethod
+    def _http_error(code: int) -> urllib.error.HTTPError:
+        return urllib.error.HTTPError("http://x", code, "boom", {}, None)  # type: ignore[arg-type]
+
+    def test_retries_a_503_and_then_succeeds(self) -> None:
+        calls = []
+
+        def flaky() -> str:
+            calls.append(1)
+            if len(calls) < 3:
+                raise self._http_error(503)
+            return "ok"
+
+        assert run_manifold._get_json(flaky, "balance read") == "ok"
+        assert len(calls) == 3
+
+    @pytest.mark.parametrize("code", [429, 500, 502, 503, 504])
+    def test_every_transient_code_is_retried(self, code: int) -> None:
+        calls = []
+
+        def flaky() -> str:
+            calls.append(1)
+            if len(calls) < 2:
+                raise self._http_error(code)
+            return "ok"
+
+        assert run_manifold._get_json(flaky, "read") == "ok"
+        assert len(calls) == 2
+
+    @pytest.mark.parametrize("code", [400, 401, 403, 404])
+    def test_permanent_errors_raise_immediately(self, code: int) -> None:
+        # A 4xx says the request is wrong; repeating it wastes the run's deadline and would
+        # hammer the API on, say, a revoked key.
+        calls = []
+
+        def broken() -> str:
+            calls.append(1)
+            raise self._http_error(code)
+
+        with pytest.raises(urllib.error.HTTPError):
+            run_manifold._get_json(broken, "read")
+        assert len(calls) == 1
+
+    def test_network_errors_are_retried(self) -> None:
+        calls = []
+
+        def flaky() -> str:
+            calls.append(1)
+            if len(calls) < 2:
+                raise urllib.error.URLError("connection reset")
+            return "ok"
+
+        assert run_manifold._get_json(flaky, "read") == "ok"
+
+    def test_gives_up_after_the_attempt_budget(self) -> None:
+        calls = []
+
+        def always_503() -> str:
+            calls.append(1)
+            raise self._http_error(503)
+
+        with pytest.raises(urllib.error.HTTPError):
+            run_manifold._get_json(always_503, "read")
+        assert len(calls) == run_manifold.GET_ATTEMPTS
+
+    def test_a_transient_balance_blip_no_longer_disables_betting(
+        self, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    ) -> None:
+        # The live 2026-08-22T18:17Z failure, end to end: one 503 then a good response.
+        opened = []
+
+        class _Resp:
+            def read(self) -> bytes:
+                return b'{"balance": 1944}'
+
+            def __enter__(self) -> _Resp:
+                return self
+
+            def __exit__(self, *a: object) -> None:
+                return None
+
+        def urlopen(request: Any, timeout: int = 30) -> Any:
+            opened.append(request)
+            if len(opened) == 1:
+                raise self._http_error(503)
+            return _Resp()
+
+        monkeypatch.setattr(run_manifold.urllib.request, "urlopen", urlopen)
+        assert run_manifold.get_balance("k") == pytest.approx(1944.0)
+        assert len(opened) == 2
+        assert "retrying" in capsys.readouterr().out
+
+
+def test_order_posts_are_never_retried() -> None:
+    # The safety property that scopes this change: a retried POST could place the order twice.
+    # place_bet and sell must not route through _get_json.
+    src = Path(run_manifold.__file__).read_text()
+    for fn in ("def place_bet(", "def sell_position("):
+        if fn not in src:
+            continue
+        body = src.split(fn, 1)[1].split("\ndef ", 1)[0]
+        assert "_get_json" not in body, f"{fn} must not retry: POSTs are not idempotent"
+
+
 # ------------------------------------------------------------------ capital allocation
 
 

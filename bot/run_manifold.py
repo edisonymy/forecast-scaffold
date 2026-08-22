@@ -295,10 +295,53 @@ SIGHTED_MARKET_SECTION = (
 # --------------------------------------------------------------------------- API helpers
 
 
+# Transient upstream failures [ADDED 2026-08-22]. Manifold answered GET /v0/me with a 503 at
+# 2026-08-22T18:17Z; with no retry the run disabled betting and skipped selection entirely, so
+# one blip cost a whole hourly cycle. The same failure opened issue #31 on 2026-08-21, and
+# because the workflow suppresses the alert while that issue stays open, the true rate is
+# unknown — repeats are invisible. These codes are the server saying "not now": worth asking
+# again a moment later, unlike a 4xx, which says the request itself is wrong and will stay
+# wrong however many times we send it.
+RETRY_STATUSES = frozenset({429, 500, 502, 503, 504})
+GET_ATTEMPTS = 3
+GET_BACKOFF_S = 1.5             # doubled per attempt: ~4.5s of waiting in the worst case
+
+
+def _get_json(open_call: Any, what: str) -> Any:
+    """Run an idempotent GET, retrying transient upstream failures.
+
+    ONLY for reads. ``place_bet`` and the sell endpoint are POSTs and are deliberately NOT
+    routed through here: neither is idempotent, and a "failure" that actually reached Manifold
+    would place the order twice on retry. A read costs nothing to repeat; an order does.
+    """
+    for attempt in range(GET_ATTEMPTS):
+        last = attempt == GET_ATTEMPTS - 1
+        try:
+            return open_call()
+        except urllib.error.HTTPError as exc:
+            # HTTPError subclasses URLError subclasses OSError, so it must be caught first or
+            # a permanent 4xx would be retried by the broader handler below.
+            if exc.code not in RETRY_STATUSES or last:
+                raise
+            reason = f"HTTP {exc.code}"
+        except (urllib.error.URLError, TimeoutError, OSError) as exc:
+            if last:
+                raise
+            reason = type(exc).__name__
+        wait = GET_BACKOFF_S * (2 ** attempt)
+        print(f"  {what} failed ({reason}); retrying in {wait:.1f}s "
+              f"({attempt + 2}/{GET_ATTEMPTS})")
+        time.sleep(wait)
+    raise AssertionError("unreachable: the final attempt either returns or raises")
+
+
 def _get(url: str, timeout: int = 60) -> Any:
-    request = urllib.request.Request(url, headers=UA)
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        return json.loads(response.read().decode("utf-8"))
+    def call() -> Any:
+        request = urllib.request.Request(url, headers=UA)
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            return json.loads(response.read().decode("utf-8"))
+
+    return _get_json(call, f"GET {url.split('?')[0]}")
 
 
 def _now_ms() -> int:
@@ -327,11 +370,14 @@ def market_detail(market_id: str) -> dict[str, Any]:
 
 def get_balance(api_key: str) -> float:
     """The bot account's mana balance via GET /v0/me (needs the key)."""
-    request = urllib.request.Request(
-        f"{MANIFOLD_API}/me", headers={**UA, "Authorization": f"Key {api_key}"}
-    )
-    with urllib.request.urlopen(request, timeout=30) as response:
-        me = json.loads(response.read().decode("utf-8"))
+    def call() -> Any:
+        request = urllib.request.Request(
+            f"{MANIFOLD_API}/me", headers={**UA, "Authorization": f"Key {api_key}"}
+        )
+        with urllib.request.urlopen(request, timeout=30) as response:
+            return json.loads(response.read().decode("utf-8"))
+
+    me = _get_json(call, "balance read")
     return float(me.get("balance") or 0.0)
 
 
