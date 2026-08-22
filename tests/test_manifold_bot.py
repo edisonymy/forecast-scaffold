@@ -1884,6 +1884,18 @@ def test_live_selection_excludes_markets_already_held(
     assert "held" in captured["exclude"]
 
 
+def _seed_for_headroom(balance: float, headroom: float) -> float:
+    """Open stake leaving exactly ``headroom`` under the equity-based exposure cap.
+
+    The cap is a fraction F of EQUITY (cash + open stake), not of cash, so the headroom a
+    given seed leaves is F*(balance + E) - E. Inverting keeps these tests derived from the
+    constants rather than from a hand-computed number, which is what lets EXPOSURE_CAP_FRAC
+    be retuned without editing them.
+    """
+    f = run_manifold.EXPOSURE_CAP_FRAC
+    return (f * balance - headroom) / (1.0 - f)
+
+
 def test_no_headroom_skips_new_market_spend(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
@@ -1900,9 +1912,9 @@ def test_no_headroom_skips_new_market_spend(
     monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
     for name in run_manifold.METERED_AUTH_ENV:  # a dev shell's gateway vars must not trip
         monkeypatch.delenv(name, raising=False)  # the subscription-auth guard
-    cap = run_manifold.EXPOSURE_CAP_FRAC * 1200.0
     journal = Journal(str(tmp_path / "manifold.jsonl"))
-    journal.append(_positioned_record(qid="big", stake=cap - 1))  # headroom 1 < stake floor
+    # headroom 1 mana < the stake floor, so no new-market forecast could ever be bought
+    journal.append(_positioned_record(qid="big", stake=_seed_for_headroom(1200.0, 1.0)))
     seed_phase(tmp_path, phase=1)
     assert run_manifold.run(make_args(tmp_path, live=True)) == 0
 
@@ -1923,8 +1935,7 @@ def test_exposure_cap_blocks_a_bet_over_30pct(
     # above the stake floor (so the pre-spend gate still selects markets) but below the
     # 25-mana stake: the in-loop cap must block the bet. Derived from the constants so
     # tuning EXPOSURE_CAP_FRAC does not need a test edit.
-    cap = run_manifold.EXPOSURE_CAP_FRAC * 1200.0
-    seed = cap - run_manifold.KELLY_STAKE_FLOOR  # headroom == stake floor: gate passes
+    seed = _seed_for_headroom(1200.0, run_manifold.KELLY_STAKE_FLOOR)
     journal = Journal(str(tmp_path / "manifold.jsonl"))
     journal.append(ForecastRecord(
         question="prior open bet", question_type="binary", probability=0.9,
@@ -1935,6 +1946,145 @@ def test_exposure_cap_blocks_a_bet_over_30pct(
     args = make_args(tmp_path, live=True)
     assert run_manifold.run(args) == 0
     assert spy.calls == []  # the exposure cap refused the bet
+
+
+# ------------------------------------------------------------------ capital allocation
+
+
+def _seed_for_cluster_cap(balance: float) -> float:
+    """Open stake in one theme that exactly fills that theme's cap.
+
+    Self-referential, because the seed is itself part of the equity the cap is measured
+    against: held = F*(balance + held)  =>  held = F*balance / (1 - F).
+    """
+    f = run_manifold.CLUSTER_CAP_FRAC
+    return f * balance / (1.0 - f)
+
+
+def _tagged_record(qid: str, stake: float, tag: str) -> ForecastRecord:
+    return ForecastRecord(
+        question=f"held {qid}", question_type="binary", probability=0.9,
+        source={"platform": "manifold", "question_id": qid, "pair_id": f"p-{qid}",
+                "bet": {"outcome": "YES", "stake": stake, "dry_run": False, "tag": tag}},
+    )
+
+
+class TestEquityDenominator:
+    """The cap binds against cash + open stake, not against cash alone."""
+
+    def test_equity_adds_open_stake_to_cash(self) -> None:
+        assert run_manifold.equity(1200.0, 800.0) == 2000.0
+
+    def test_cap_does_not_tighten_as_the_book_fills(self) -> None:
+        # The bug this replaced: against CASH, deploying mana shrinks the cap that governs
+        # the next bet, so the book ratchets toward paralysis. Against equity the ceiling is
+        # a stable target weight — moving mana from cash into stake leaves it unchanged.
+        f = run_manifold.EXPOSURE_CAP_FRAC
+        start_cash, moved = 2000.0, 600.0
+        empty = f * run_manifold.equity(start_cash, 0.0)
+        filled = f * run_manifold.equity(start_cash - moved, moved)
+        assert empty == pytest.approx(filled)
+        # ...whereas the old cash-only rule would have fallen by the amount deployed.
+        assert f * (start_cash - moved) < empty
+
+
+class TestClusterExposure:
+    def test_sums_only_the_matching_tag(self, tmp_path: Path) -> None:
+        records = [_tagged_record("a", 100.0, "ai"), _tagged_record("b", 50.0, "ai"),
+                   _tagged_record("c", 70.0, "politics")]
+        assert run_manifold.cluster_exposure(records, "ai") == pytest.approx(150.0)
+        assert run_manifold.cluster_exposure(records, "politics") == pytest.approx(70.0)
+        assert run_manifold.cluster_exposure(records, "sports") == 0.0
+
+    def test_untagged_positions_join_no_cluster(self, tmp_path: Path) -> None:
+        records = [_positioned_record(qid="u", stake=500.0)]  # no tag stamped
+        assert run_manifold.cluster_exposure(records, "ai") == 0.0
+        assert run_manifold.cluster_exposure(records, "") == 0.0
+
+    def test_resolved_positions_drop_out(self) -> None:
+        records = [_tagged_record("a", 100.0, "ai"), _tagged_record("b", 50.0, "ai")]
+        assert run_manifold.cluster_exposure(
+            records, "ai", state_lookup=lambda qid: {"resolved": qid == "b"},
+        ) == pytest.approx(100.0)
+
+    def test_unreadable_market_stays_counted(self) -> None:
+        # Fail closed, exactly as open_exposure does: an API blip must not uncap a theme.
+        def boom(qid: str) -> dict[str, Any]:
+            raise RuntimeError("market unreadable")
+
+        records = [_tagged_record("a", 100.0, "ai")]
+        assert run_manifold.cluster_exposure(
+            records, "ai", state_lookup=boom
+        ) == pytest.approx(100.0)
+
+
+def test_cluster_cap_blocks_a_correlated_bet(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # The motivating case: three near-duplicate GPT-6 questions held 3.1x the per-bet cap
+    # because nothing totalled a theme across runs. A fourth may not be added.
+    market = mk("gpt6d", probability=0.30, groupSlugs=["ai"])
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
+    monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90))
+    monkeypatch.setattr(run_manifold, "get_balance", lambda key: 1200.0)
+    monkeypatch.setattr(score_manifold, "fetch_market_state", lambda mid: dict(OPEN_STATE))
+    spy = BetSpy()
+    monkeypatch.setattr(run_manifold, "place_bet", spy)
+    monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
+
+    # One theme already at its cap, while GLOBAL headroom is plentiful — so only the cluster
+    # cap can be what refuses this bet.
+    journal = Journal(str(tmp_path / "manifold.jsonl"))
+    held = _seed_for_cluster_cap(1200.0)
+    journal.append(_tagged_record("gpt6a", held, "ai"))
+    seed_phase(tmp_path, phase=1)
+    assert run_manifold.run(make_args(tmp_path, live=True)) == 0
+    assert spy.calls == []
+    assert "cluster cap" in capsys.readouterr().out
+
+
+def test_a_different_theme_still_trades(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # The cap must bite per theme, not globally: an unrelated market is still tradable while
+    # one theme sits full. Otherwise this is just the old blunt cap wearing a new name.
+    market = mk("weather", probability=0.30, groupSlugs=["climate"])
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
+    monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90))
+    monkeypatch.setattr(run_manifold, "get_balance", lambda key: 1200.0)
+    monkeypatch.setattr(score_manifold, "fetch_market_state", lambda mid: dict(OPEN_STATE))
+    spy = BetSpy()
+    monkeypatch.setattr(run_manifold, "place_bet", spy)
+    monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
+
+    journal = Journal(str(tmp_path / "manifold.jsonl"))
+    held = _seed_for_cluster_cap(1200.0)
+    journal.append(_tagged_record("gpt6a", held, "ai"))
+    seed_phase(tmp_path, phase=1)
+    assert run_manifold.run(make_args(tmp_path, live=True)) == 0
+    assert spy.calls, "a market in an unfilled theme must still trade"
+
+
+def test_bet_tag_reaches_the_journal(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # build_record rebuilds source["bet"] from an allowlist, so an unnamed key is dropped
+    # silently — which is exactly how `fill` was lost. Without the tag every future run
+    # computes zero cluster exposure and the cap never binds.
+    market = mk("tagged", probability=0.30, groupSlugs=["ai", "tech"])
+    monkeypatch.setattr(run_manifold, "gather_markets", lambda limit, **k: [market])
+    monkeypatch.setattr(run_bot, "run_agent", ScriptedAgent(0.90))
+    monkeypatch.setattr(run_manifold, "get_balance", lambda key: 1200.0)
+    monkeypatch.setattr(score_manifold, "fetch_market_state", lambda mid: dict(OPEN_STATE))
+    monkeypatch.setattr(run_manifold, "place_bet", BetSpy())
+    monkeypatch.setenv("MANIFOLD_API_KEY", "test-key")
+    seed_phase(tmp_path, phase=1)
+    assert run_manifold.run(make_args(tmp_path, live=True)) == 0
+
+    records = Journal(str(tmp_path / "manifold.jsonl")).all()
+    bets = [r.source["bet"] for r in records if (r.source or {}).get("bet")]
+    assert bets, "expected a journaled bet"
+    assert bets[-1].get("tag") == "ai"  # groupSlugs[0], matching top_tag
 
 
 # ------------------------------------------------------------------ degradation markers

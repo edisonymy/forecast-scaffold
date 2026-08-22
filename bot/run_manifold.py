@@ -137,7 +137,36 @@ MARKET_READS = ("informed", "herding", "thin", "stale")
 # ---- phase-machine policy (docs/manifold-policy.md; transitions are AUTOMATIC + journaled) --
 DEFAULT_PHASE_FILE = ROOT / "bot" / "journal" / "manifold-phase.json"
 PHASE1_BALANCE_FLOOR = 1100.0   # refuse ALL betting below 50% of the 2,200 adoption bankroll
-EXPOSURE_CAP_FRAC = 0.50        # total open exposure <= this fraction of live balance
+# Capital allocation [REWORKED 2026-08-22]. The old rule was "open stake <= 50% of BALANCE",
+# and both halves of that were wrong.
+#
+# Wrong denominator: GET /v0/me returns CASH mana, not equity — open positions are not in it.
+# So the cap tightened as it filled: deploy mana, cash falls, the cap falls with it while
+# exposure does not. A ratchet that converges on paralysis rather than on a target weight.
+# Against equity (cash + stake at cost) the fixed point is stable: hold (1-FRAC) of equity in
+# cash, whatever the book is doing.
+#
+# Wrong instrument: a cash reserve is what protects a LEVERED book from ruin, and this book
+# has no leverage. Max loss on a Manifold position is the stake; there is no margin call and
+# no forced liquidation, so no sequence of losses can compound into ruin. Holding half the
+# bankroll idle bought no safety — it just declined every edge above the waterline.
+#
+# What the 50% was crudely proxying is real, though: CORRELATION. Quarter-Kelly at 5% a bet
+# assumes bets are independent, and ours are not. Measured on the open book 2026-08-22:
+# 9 election positions held 6.5x the per-bet cap, and three near-duplicate GPT-6 questions
+# (by Aug 31 / by Sep 15 / by end of Oct) held 3.1x. Being wrong once would have lost on all
+# of them — one bet at many times the size Kelly sized it for, which is the exact failure
+# Kelly exists to prevent. DIVERSITY_CAP bounds this WITHIN a run's batch and does nothing
+# across the accumulated portfolio.
+#
+# So: one blunt cap becomes two sharp ones — a high global ceiling, and a per-theme limit
+# that binds where the risk actually is.
+EXPOSURE_CAP_FRAC = 0.80        # total open stake <= this fraction of EQUITY (cash + stake)
+CLUSTER_CAP_FRAC = 0.15         # ...and <= this per groupSlug theme: 3x the per-bet cap, so a
+#                                 theme may hold a few imperfectly-correlated questions but
+#                                 never becomes one oversized undiversified position.
+#                                 Untagged markets are exempt (they share no theme), matching
+#                                 how DIVERSITY_CAP already treats them.
 #                               [AMENDED 2026-08-19: was 0.30. Bankruptcy is prevented by
 #                               PHASE1_BALANCE_FLOOR (all betting refused below 1,100 mana)
 #                               and the 5% per-bet Kelly stake cap; this cap only bounds
@@ -1068,6 +1097,56 @@ def open_exposure(records: list[Any], state_lookup: Any = None) -> float:
     return total
 
 
+def equity(balance: float, exposure: float) -> float:
+    """Cash plus open stake at cost — the base the exposure cap binds against.
+
+    [ADDED 2026-08-22] ``get_balance`` reads GET /v0/me, which is CASH: mana already committed
+    to open positions is not in it. Capping exposure as a fraction of cash therefore tightens
+    the cap every time it is used, and the book grinds to a halt short of any intended weight.
+    Against equity the same fraction is a stable target weight instead of a ratchet.
+
+    Cost basis, not mark-to-market: it needs no extra API call, and it is the conservative
+    side — a position that has moved our way stops flattering the cap it is measured by."""
+    return balance + exposure
+
+
+def cluster_exposure(
+    records: list[Any], tag: str, state_lookup: Any = None
+) -> float:
+    """Open stake across positions sharing ``tag`` (the market's top groupSlug).
+
+    [ADDED 2026-08-22] The per-bet Kelly cap assumes independence between bets. Questions
+    inside one theme are not independent — "GPT-6 by Aug 31", "by Sep 15" and "by end of Oct"
+    are one view wearing three hats, and on 2026-08-22 they jointly held 3.1x the per-bet cap.
+    Summing by tag is what lets the caller size the THEME, not just each question in it.
+
+    Same open/resolved bookkeeping as ``open_exposure``, and the same fail-closed rule: a
+    market we cannot read stays counted.
+
+    An empty ``tag`` matches nothing. Untagged positions journal no tag, so without this guard
+    they would all collide on "" and be summed as though they were one theme — the opposite of
+    the rule that untagged markets share no theme and are exempt."""
+    if not tag:
+        return 0.0
+    total = 0.0
+    for record in records:
+        src = record.source or {}
+        bet = src.get("bet")
+        if not (src.get("platform") == "manifold" and bet and is_open_position(bet)
+                and record.status not in ("resolved", "annulled")):
+            continue
+        if str(bet.get("tag") or "") != tag:
+            continue
+        if state_lookup is not None:
+            try:
+                if state_lookup(str(src.get("question_id"))).get("resolved"):
+                    continue
+            except Exception:  # noqa: BLE001 — fail closed, as in open_exposure
+                pass
+        total += float(bet.get("stake") or 0.0)
+    return total
+
+
 def kelly_stake_at_price(
     p_us: float, price: float, outcome: str, balance: float
 ) -> float:
@@ -1591,6 +1670,11 @@ def build_record(
         # whether the simulation can be trusted for sizing.
         if bet.get("simulated"):
             source["bet"]["simulated"] = bet["simulated"]
+        # The market's top groupSlug at bet time, so per-theme exposure is computable from the
+        # journal alone — no re-fetch, and it stays correct even if the market is later
+        # retagged. Named here for the same reason as `fill` above: this dict is an allowlist.
+        if bet.get("tag"):
+            source["bet"]["tag"] = bet["tag"]
     criterion = criteria_text(market) or (
         f"(no creator description) Resolves per the plain reading of: "
         f"{market.get('question', '')}"
@@ -1822,13 +1906,14 @@ def run(args: argparse.Namespace) -> int:
     new_market_slots = True
     harvest_stale: list[str] = []
     if can_post and balance is not None:
-        headroom = EXPOSURE_CAP_FRAC * balance - exposure
+        headroom = EXPOSURE_CAP_FRAC * equity(balance, exposure) - exposure
         if headroom < KELLY_STAKE_FLOOR and phase == 2 and not killed:
             # Capital recycling BEFORE giving up on the run [ADDED 2026-08-20]: a cap-bound
             # bot that only waits for resolution can sit idle for weeks financing holdings
             # whose edge is spent. Harvest first, then re-test the cap with the freed mana —
             # so the same tick can trade again instead of losing an hour.
-            print(f"exposure {exposure:.0f} of {EXPOSURE_CAP_FRAC:.0%}*{balance:.0f} leaves "
+            print(f"exposure {exposure:.0f} of {EXPOSURE_CAP_FRAC:.0%}*"
+                  f"{equity(balance, exposure):.0f} equity leaves "
                   f"headroom {headroom:.0f} < the {KELLY_STAKE_FLOOR:.0f}-mana stake floor — "
                   "harvesting spent positions")
             freed, harvest_stale = harvest_spent_positions(
@@ -1836,7 +1921,7 @@ def run(args: argparse.Namespace) -> int:
             ) if can_post else (0.0, [])
             if freed:
                 exposure -= freed
-                headroom = EXPOSURE_CAP_FRAC * balance - exposure
+                headroom = EXPOSURE_CAP_FRAC * equity(balance, exposure) - exposure
                 print(f"harvest freed {freed:.0f} mana — headroom now {headroom:.0f}")
         if headroom < KELLY_STAKE_FLOOR:
             # Not an error state (BETTING-DISABLED stays reserved for degradations): position
@@ -1932,6 +2017,12 @@ def run(args: argparse.Namespace) -> int:
             # against the phase machine's movement test, not to maximize return.
             min_expected_return=MIN_EXPECTED_RETURN if phase == 2 else 0.0,
         )
+        # Stamp the theme on the bet so the cluster cap below (and every later run reading the
+        # journal) can total exposure per theme without re-fetching the market.
+        if bet is not None:
+            theme = top_tag(market)
+            if theme:
+                bet["tag"] = theme
         # Book check (live only) [ADDED 2026-08-21]: decide_bet judged the edge at the QUOTED
         # price. Before committing mana, dry-run the order to see the fill we would actually
         # get and how far we would move the price, and shrink the size until both are
@@ -1957,12 +2048,24 @@ def run(args: argparse.Namespace) -> int:
                     if isinstance(sim.get(k), int | float) and not isinstance(sim.get(k), bool)
                 }
 
-        # Exposure cap (live only): total open exposure must stay <= 30% of balance.
+        # Global cap (live only): open stake stays under a fraction of EQUITY, not of cash.
         if (bet is not None and can_post and balance is not None
-                and exposure + bet["stake"] > EXPOSURE_CAP_FRAC * balance):
+                and exposure + bet["stake"] > EXPOSURE_CAP_FRAC * equity(balance, exposure)):
             print(f"  exposure cap: {exposure:.0f}+{bet['stake']:.0f} mana exceeds "
-                  f"{EXPOSURE_CAP_FRAC:.0%} of {balance:.0f} — skipping bet")
+                  f"{EXPOSURE_CAP_FRAC:.0%} of {equity(balance, exposure):.0f} equity "
+                  "— skipping bet")
             bet = None
+        # Per-theme cap (live only): the global ceiling is deliberately high, so this is the
+        # control that actually bounds risk. Untagged markets share no theme and are exempt.
+        if bet is not None and can_post and balance is not None and bet.get("tag"):
+            tag = str(bet["tag"])
+            held = cluster_exposure(records_before, tag, state_lookup=live_state)
+            if held + bet["stake"] > CLUSTER_CAP_FRAC * equity(balance, exposure):
+                print(f"  cluster cap: {tag!r} already holds {held:.0f} mana; "
+                      f"+{bet['stake']:.0f} would exceed {CLUSTER_CAP_FRAC:.0%} of "
+                      f"{equity(balance, exposure):.0f} equity — skipping bet "
+                      "(correlated positions are one bet, not many)")
+                bet = None
         if bet is not None:
             if can_post:
                 try:
