@@ -1,5 +1,49 @@
 # HANDOVER — continuation state as of 2026-07-16
 
+## 2026-08-23: wave-3 readout (rank 16, +390.6); v0.4.25 pchip CDFs shipped
+
+Wave 3 (minibench-2026-08-10, 57 q, we forecast all 57): total spot peer +390.55, rank
+16; binaries +253/26, discrete +294/14, NUMERICS -157/12 — the entire loss is five
+price/level questions where the outcome landed just past p90 or at p10 (Parana
+Corrientes -142, LMT -50, crypto mcap -49, BTC -31, XRP -16) plus the correlated
+BTC>$70k binary at p=0.15 (-24). Community comparison (browser scrape, logged in as the
+bot; API hides CP): our 25-75 interval NARROWER than the crowd's on 24/25 numerics,
+median width ratio 0.67 (July's 0.62 signature, fully intact), median placement
+UNBIASED vs crowd (+0.01 IQR). Escape-mass (v0.4.23) is in heavy use (73 declarations)
+and won where it was bold (Foro Penal 8% below) — but the crypto declarations were
+timid (0.4-0.8% vs crowd ~4.5%).
+
+**Pending scores (verified 2026-08-23): expect roughly +120..+165 more.** F9-count
+q45328 resolved 97 ~ our median (baseline +44.1, score not yet posted); Nino-3.4 q45299
+near-certain above the 2.45 range top (live CPC wksst9120: 2.6 on Aug 5, 2.7 on Aug 12;
+resolves ~Aug 24) where we declared 45% above => baseline +109.9, peer ~+100..+130;
+turbulence q45352 likely NO (AvHerald clean through Aug 22) at our p=0.167. Hurricane
+q45354 and PAHO q45309 were ANNULLED (criteria wiped, resolution null). Net ~510-555
+=> top 3-5 territory (cutoffs will move; everyone scores the same pendings). Caveat:
+q45299 names the FROZEN wksst8110.for file as source — resolver will presumably use
+the live table; worst case annulment, we cannot lose points on it.
+
+**v0.4.25 SHIPPED (live for the 2026-08-24 wave): pchip CDF construction.** The
+operator's "our PDFs don't look smooth" observation turned out to be worth points:
+piecewise-linear CDF => staircase PDF that starves near misses just past p90/p10.
+`percentiles_to_cdf(..., interpolation="pchip")` (monotone cubic through the same
+anchors, quantiles preserved, escape-mass/halving/cap/min-step all compose) backtests
++2.8/q over the 69 resolved numerics of waves 1-3, paired CI90 [+0.3, +5.3], positive
+in each wave separately (+88/+25/+78) — the only transform in three waves of testing
+whose CI excludes zero. Library default stays linear (historical rebuild fidelity);
+run_bot passes pchip explicitly and journals it in `scaling.interpolation`; `fsj cdf`
+CLI defaults to pchip. Frozen: minibench-smooth-cdf-readout-2026-08-23.txt, harness
+minibench_smooth_cdf.py, 3-wave tails readout minibench-numeric-tails-3wave-2026-08-23.txt.
+Validated platform-legal against all 133 historical continuous forecasts (cdf_size
+6..201, log scaling, escape masses).
+
+**PREREGISTERED for the 2026-08-24 wave readout (decide by the same CI-excludes-zero
+rule, n>=90 pooled): global widen w=1.15 ON TOP of pchip** (backtest +5.6/q, CI90
+[+0.7, +11.6], but w grid-picked post hoc and widening has one preregistered negative
+on file — do NOT ship early). Also standing: escape-mass timidity on volatile price
+questions (crypto declared 0.4-0.8% vs crowd ~4.5% out-of-range) — candidate
+elicitation change, measure first; tips-style injection remains killed.
+
 ## 2026-08-09: two-wave review; v0.4.23 + v0.4.24 shipped; AskNews armed; tips killed
 
 Full review of MiniBench 2026-07-13 (final: 584.2, rank 12, $57) and 2026-07-27

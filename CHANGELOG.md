@@ -4,6 +4,42 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.25] - 2026-08-23
+
+### Changed
+- `percentiles_to_cdf` gains `interpolation="linear"|"pchip"`: pchip runs a monotone cubic
+  Hermite (Fritsch-Carlson) through the SAME anchor set the linear construction uses, so
+  the submitted PDF is continuous — peaked in the interior, decaying into the tails —
+  instead of the historical staircase (flat slab between adjacent percentiles, flat thin
+  slabs from p10/p90 all the way to the bounds). Declared quantiles are preserved exactly
+  and everything composes unchanged (open-bound halving, v0.4.23 declared escape mass,
+  min-step and per-bin-cap standardization, discrete cdf_size, log scaling).
+- Production submits pchip: `bot/run_bot.py` passes it explicitly and journals it inside
+  the record's `scaling` dict (`"interpolation": "pchip"`), and the `fsj cdf` CLI defaults
+  to `--interpolation pchip`. The LIBRARY default stays `"linear"` so rebuilding any
+  historical journal row still reproduces the CDF that was actually submitted; rows whose
+  scaling lacks the key predate this change and were linear.
+- Evidence (exploratory backtest, not preregistered — the motivating observation, the
+  operator noticing our submitted PDFs render as staircases, predates seeing the scores):
+  over the 69 resolved numerics of the three MiniBench waves (2026-07-13, -07-27,
+  -08-10), rebuilding every submission with pchip scores +191 total leaderboard-equivalent
+  points, +2.8/question, paired-bootstrap CI90 [+0.3, +5.3] — the only transform tested
+  across three waves whose CI excludes zero — and is positive in each wave separately
+  (+88/+25/+78). Mechanism: our misses cluster just past p10/p90 (PIT 0.90-0.96), where a
+  decaying tail holds substantially more density than a to-the-bound flat slab. Frozen
+  readout: `bench/analysis/minibench-smooth-cdf-readout-2026-08-23.txt`; harness:
+  `bench/analysis/minibench_smooth_cdf.py`.
+- NOT shipped alongside, deliberately: percentile widening (`w=1.15` on top of pchip was
+  +5.6/q, CI90 [+0.7, +11.6], but w was grid-picked post hoc and global widening already
+  has one preregistered negative on file) and kernel smoothing (redundant with pchip).
+  Widening on top of pchip is the preregistered candidate for the 2026-08-24 wave readout.
+
+### Fixed
+- `bench/analysis/minibench_numeric_tails.py` counterfactual rebuilds now honor the
+  journal row's v0.4.23 declared escape masses and the journaled interpolation; before,
+  transform rows for escape-declaring forecasts silently rebuilt as if nothing had been
+  declared.
+
 ## [0.4.24] - 2026-08-09
 
 ### Added

@@ -350,3 +350,122 @@ def test_cdf_cli_reports_declared_tail_mass(capsys: pytest.CaptureFixture[str]) 
     # ...and the closed-bound rejection reaches the CLI as an error exit, not a traceback.
     assert main(["cdf", "--percentiles", "10:5,25:8,50:12,75:20,90:35",
                  "--min", "0", "--max", "100", "--p-above-upper", "0.08"]) == 2
+
+
+# ------------------------------------------------------------- pchip interpolation (v0.4.25)
+# Production submits interpolation="pchip": a monotone-cubic CDF through the same anchors,
+# i.e. a continuous PDF instead of the linear construction's staircase. Backtested over the
+# 69 resolved MiniBench numerics of 2026-07-13/-27/-08-10 at +2.8 pts/question, CI90
+# [+0.3, +5.3], positive in every wave (bench/analysis/minibench_smooth_cdf.py). The
+# library DEFAULT stays "linear" so historical journal rows rebuild bit-for-bit.
+#
+# WIDE's percentile values equal their fractions, so its anchors are collinear and pchip
+# degenerates to exactly the linear construction — shape assertions need a real bell.
+BELL = {"10": 30.0, "25": 40.0, "50": 50.0, "75": 60.0, "90": 70.0}
+
+
+@pytest.mark.parametrize("lower_open", [False, True])
+@pytest.mark.parametrize("upper_open", [False, True])
+@pytest.mark.parametrize("declared", [WIDE, NARROW])
+def test_pchip_cdf_meets_all_platform_constraints(
+    lower_open: bool, upper_open: bool, declared: dict[str, float]
+) -> None:
+    cdf = percentiles_to_cdf(
+        declared, 0.0, 100.0, lower_open=lower_open, upper_open=upper_open,
+        interpolation="pchip",
+    )
+    assert len(cdf) == DEFAULT_CDF_SIZE
+    assert validate_cdf(cdf, lower_open=lower_open, upper_open=upper_open) == []
+    assert all(step >= MIN_CDF_STEP - 1e-12 for step in pmf(cdf))
+    assert all(step <= MAX_PMF_VALUE + 1e-9 for step in pmf(cdf))
+
+
+def test_default_interpolation_is_still_linear() -> None:
+    """Bit-for-bit reproduction of history is the default; pchip is opt-in."""
+    assert percentiles_to_cdf(WIDE, 0.0, 100.0) == percentiles_to_cdf(
+        WIDE, 0.0, 100.0, interpolation="linear"
+    )
+    assert percentiles_to_cdf(BELL, 0.0, 100.0) != percentiles_to_cdf(
+        BELL, 0.0, 100.0, interpolation="pchip"
+    )
+
+
+def test_pchip_preserves_the_declared_quantiles() -> None:
+    """PCHIP interpolates THROUGH the anchors: at each declared percentile's location the
+    CDF still reads (0.99 * fraction + 0.01 * location) exactly as the linear one does."""
+    cdf = percentiles_to_cdf(BELL, 0.0, 100.0, interpolation="pchip")
+    for frac, value in ((0.10, 30.0), (0.25, 40.0), (0.50, 50.0), (0.75, 60.0), (0.90, 70.0)):
+        idx = round(value / 100.0 * (DEFAULT_CDF_SIZE - 1))
+        assert cdf[idx] == pytest.approx(0.99 * frac + 0.01 * (value / 100.0), abs=1e-9)
+
+
+def test_pchip_pdf_is_smooth_not_a_staircase() -> None:
+    """The linear construction's PDF jumps discontinuously at every declared percentile;
+    the pchip PDF must not. Measured as the largest bin-to-bin PMF jump away from bounds."""
+    linear = percentiles_to_cdf(BELL, 0.0, 100.0, interpolation="linear")
+    smooth = percentiles_to_cdf(BELL, 0.0, 100.0, interpolation="pchip")
+
+    def max_jump(cdf: list[float]) -> float:
+        steps = pmf(cdf)
+        return max(abs(b - a) for a, b in zip(steps[1:-1], steps[2:-1], strict=False))
+
+    assert max_jump(smooth) < max_jump(linear) / 5
+
+
+def test_pchip_peaks_at_the_median_and_decays_into_the_tails() -> None:
+    """Mechanism check: for symmetric declared percentiles the pchip PDF is highest near
+    the median and gives a near miss just past p90 more density than the flat slab of the
+    linear tail gives it."""
+    linear = percentiles_to_cdf(BELL, 0.0, 100.0, lower_open=True, upper_open=True,
+                                interpolation="linear")
+    smooth = percentiles_to_cdf(BELL, 0.0, 100.0, lower_open=True, upper_open=True,
+                                interpolation="pchip")
+    steps_l, steps_s = pmf(linear), pmf(smooth)
+    mid = DEFAULT_CDF_SIZE // 2
+    assert steps_s[mid] > steps_l[mid]                     # peaked where the belief is
+    near_miss = round(0.73 * (DEFAULT_CDF_SIZE - 1))       # value 73, just past p90=70
+    assert steps_s[near_miss] > steps_l[near_miss]         # decaying tail beats flat slab
+
+
+def test_pchip_composes_with_declared_escape_mass() -> None:
+    cdf = percentiles_to_cdf(
+        WIDE, 0.0, 100.0, lower_open=True, upper_open=True,
+        p_below_lower=0.20, p_above_upper=0.10, interpolation="pchip",
+    )
+    assert validate_cdf(cdf, lower_open=True, upper_open=True) == []
+    assert cdf[0] == pytest.approx(0.20, abs=1e-9)
+    assert 1.0 - cdf[-1] == pytest.approx(0.10, abs=1e-9)
+    assert cdf[100] == pytest.approx(0.20 + 0.5 * 0.70, abs=0.01)
+
+
+def test_pchip_matches_the_backtest_construction() -> None:
+    """core's pchip must equal the construction the 3-wave backtest scored (the evidence
+    that justified shipping it), on the BMEX fixture with and without escape mass."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "bench" / "analysis"))
+    import minibench_smooth_cdf as smooth
+
+    scaling = dict(BMEX_SCALING)
+    for pb in (None, 0.13):
+        expected = smooth.build_cdf(
+            BMEX_PERCENTILES, scaling, p_below=pb, p_above=None, interp="pchip",
+        )
+        got = build_bmex(interpolation="pchip", **({"p_below_lower": pb} if pb else {}))
+        assert got == pytest.approx(expected, abs=1e-9)
+
+
+def test_interpolation_argument_is_validated() -> None:
+    with pytest.raises(ValueError, match="interpolation"):
+        percentiles_to_cdf(WIDE, 0.0, 100.0, interpolation="spline")
+
+
+def test_cdf_cli_defaults_to_pchip_and_accepts_linear(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    args = ["cdf", "--percentiles", "10:10,25:25,50:50,75:75,90:90",
+            "--min", "0", "--max", "100"]
+    assert main(args) == 0
+    default_out = json.loads(capsys.readouterr().out)
+    assert main([*args, "--interpolation", "linear"]) == 0
+    linear_out = json.loads(capsys.readouterr().out)
+    assert default_out == percentiles_to_cdf(WIDE, 0.0, 100.0, interpolation="pchip")
+    assert linear_out == percentiles_to_cdf(WIDE, 0.0, 100.0, interpolation="linear")

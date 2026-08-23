@@ -764,6 +764,9 @@ class TestLiveSubmission:
         assert record["scaling"] == {
             "range_min": 0.0, "range_max": 100.0, "zero_point": None,
             "lower_open": False, "upper_open": True, "cdf_size": 201,
+            # v0.4.25: the interpolation that shipped is journaled so post-hoc rebuilds
+            # reconstruct the exact submitted object (pre-0.4.25 rows lack the key = linear).
+            "interpolation": "pchip",
         }
 
     def test_binary_record_has_no_cdf_or_scaling(

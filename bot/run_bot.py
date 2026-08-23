@@ -1573,6 +1573,11 @@ def forecast_question(
             "lower_open": bool(question.get("open_lower_bound")),
             "upper_open": bool(question.get("open_upper_bound")),
             "cdf_size": int(outcome_count) + 1 if outcome_count else 201,
+            # v0.4.25: production submits the SMOOTH monotone-cubic construction (journaled
+            # here so post-hoc rebuilds use the interpolation that actually shipped; rows
+            # without this key were piecewise-linear). Evidence: +2.8 pts/question, CI90
+            # [+0.3, +5.3], positive in each of 3 waves — bench/analysis/minibench_smooth_cdf.py.
+            "interpolation": "pchip",
         }
         p_below_lower = _as_float(payload.get("p_below_lower"))
         p_above_upper = _as_float(payload.get("p_above_upper"))
@@ -1586,6 +1591,7 @@ def forecast_question(
             cdf_size=cdf_scaling["cdf_size"],
             p_below_lower=p_below_lower,
             p_above_upper=p_above_upper,
+            interpolation=cdf_scaling["interpolation"],
         )
         if p_below_lower is not None or p_above_upper is not None:
             print(f"  declared escape mass: below {submitted_cdf[0]:.3f}, "

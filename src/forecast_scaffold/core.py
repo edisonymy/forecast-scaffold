@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.4.24"
+SCAFFOLD_VERSION = "0.4.25"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -1092,6 +1092,63 @@ CDF_UNIFORM_MIX = 0.01
 MIN_OPEN_TAIL = 0.001
 
 
+def _pchip_slopes(xs: list[float], ys: list[float]) -> list[float]:
+    """Fritsch-Carlson monotone tangents at each knot of an increasing-x point set.
+
+    Interior tangents are the weighted harmonic mean of adjacent secant slopes (zero at a
+    local flat/extremum), endpoint tangents the one-sided three-point estimate clamped the
+    way SciPy's PCHIP clamps it. With monotone ys the resulting cubic Hermite interpolant
+    is monotone — which is what lets ``percentiles_to_cdf`` use it on a CDF.
+    """
+    n = len(xs)
+    h = [xs[i + 1] - xs[i] for i in range(n - 1)]
+    delta = [(ys[i + 1] - ys[i]) / h[i] for i in range(n - 1)]
+    m = [0.0] * n
+    for i in range(1, n - 1):
+        if delta[i - 1] * delta[i] <= 0:
+            m[i] = 0.0
+        else:
+            w1 = 2 * h[i] + h[i - 1]
+            w2 = h[i] + 2 * h[i - 1]
+            m[i] = (w1 + w2) / (w1 / delta[i - 1] + w2 / delta[i])
+
+    def endpoint(h0: float, h1: float, d0: float, d1: float) -> float:
+        d = ((2 * h0 + h1) * d0 - h0 * d1) / (h0 + h1)
+        if d * d0 <= 0:
+            return 0.0
+        if d1 * d0 <= 0 and abs(d) > 3 * abs(d0):
+            return 3 * d0
+        return d
+
+    if n == 2:
+        m[0] = m[1] = delta[0]
+    else:
+        m[0] = endpoint(h[0], h[1], delta[0], delta[1])
+        m[-1] = endpoint(h[-2], h[-3] if n > 3 else h[-2], delta[-1], delta[-2])
+    return m
+
+
+def _pchip_eval(xs: list[float], ys: list[float], grid: list[float]) -> list[float]:
+    """Values of the monotone cubic Hermite (PCHIP) interpolant at ``grid`` locations,
+    which must lie within [xs[0], xs[-1]]. Pure stdlib; ~exact match to SciPy PchipInterpolator."""
+    m = _pchip_slopes(xs, ys)
+    out: list[float] = []
+    seg = 0
+    for x in grid:
+        while seg < len(xs) - 2 and xs[seg + 1] < x:
+            seg += 1
+        h = xs[seg + 1] - xs[seg]
+        t = (x - xs[seg]) / h
+        h00 = (1 + 2 * t) * (1 - t) ** 2
+        h10 = t * (1 - t) ** 2
+        h01 = t * t * (3 - 2 * t)
+        h11 = t * t * (t - 1)
+        out.append(
+            h00 * ys[seg] + h10 * h * m[seg] + h01 * ys[seg + 1] + h11 * h * m[seg + 1]
+        )
+    return out
+
+
 def percentiles_to_cdf(
     percentiles: dict[str, float],
     range_min: float,
@@ -1103,9 +1160,23 @@ def percentiles_to_cdf(
     cdf_size: int = DEFAULT_CDF_SIZE,
     p_below_lower: float | None = None,
     p_above_upper: float | None = None,
+    interpolation: str = "linear",
 ) -> list[float]:
     """Declared percentiles -> a platform-valid CDF evaluated at ``cdf_size`` equally spaced
     locations: monotone, min step, capped per-bin mass, correct open/closed-bound tails.
+
+    ``interpolation`` (v0.4.25) selects how the cumulative fraction is interpolated between
+    the anchors: ``"linear"`` (default — bit-for-bit the historical construction, whose PDF
+    is a staircase: flat slab between adjacent percentiles and flat thin slabs from p10/p90
+    to the bounds) or ``"pchip"`` (monotone cubic Hermite through the SAME anchors — a C1
+    CDF, i.e. a continuous PDF, peaked in the interior with tails that decay toward the
+    bound anchors; declared quantiles are preserved exactly). Production submits pchip:
+    backtested on the 69 resolved MiniBench numerics of the 2026-07-13/-27/-08-10 waves it
+    scored +2.8/question over linear (paired CI90 [+0.3, +5.3], positive in every wave;
+    ``bench/analysis/minibench_smooth_cdf.py``), mostly by no longer starving "near miss"
+    outcomes just past p90/p10 of density the way a to-the-bound flat slab does. The
+    library default stays ``"linear"`` so that rebuilding a historical journal row
+    reproduces the CDF that was actually submitted.
 
     Declared values must be strictly increasing and strictly inside (range_min, range_max);
     a log-scaled question's ``zero_point`` must lie outside [range_min, range_max].
@@ -1148,6 +1219,8 @@ def percentiles_to_cdf(
         raise ValueError("range_min must be < range_max")
     if cdf_size < 3:
         raise ValueError("cdf_size must be >= 3")
+    if interpolation not in ("linear", "pchip"):
+        raise ValueError(f'interpolation must be "linear" or "pchip", got {interpolation!r}')
     if zero_point is not None and range_min <= zero_point <= range_max:
         raise ValueError(
             f"zero_point ({zero_point}) must lie outside [range_min, range_max] — "
@@ -1183,15 +1256,19 @@ def percentiles_to_cdf(
         if loc_a >= loc_b:
             raise ValueError("scaled percentile locations must be strictly increasing")
 
-    # Piecewise-linear interpolation of the cumulative fraction at each evaluation location.
+    # Interpolate the cumulative fraction at each evaluation location: piecewise-linear
+    # (historical), or monotone cubic through the same anchors (smooth PDF, v0.4.25).
     locations = [i / (cdf_size - 1) for i in range(cdf_size)]
-    raw: list[float] = []
-    seg = 0
-    for x in locations:
-        while seg < len(anchors) - 2 and anchors[seg + 1][0] < x:
-            seg += 1
-        (x0, y0), (x1, y1) = anchors[seg], anchors[seg + 1]
-        raw.append(y0 + (y1 - y0) * (x - x0) / (x1 - x0))
+    if interpolation == "pchip":
+        raw = _pchip_eval([a[0] for a in anchors], [a[1] for a in anchors], locations)
+    else:
+        raw = []
+        seg = 0
+        for x in locations:
+            while seg < len(anchors) - 2 and anchors[seg + 1][0] < x:
+                seg += 1
+            (x0, y0), (x1, y1) = anchors[seg], anchors[seg + 1]
+            raw.append(y0 + (y1 - y0) * (x - x0) / (x1 - x0))
 
     # Standardize: rescale to [0,1], then mix in the location term that enforces the minimum
     # step, plus the 0.001 tail offset for each open bound.
@@ -1622,6 +1699,7 @@ def _cmd_cdf(args: argparse.Namespace) -> int:
             cdf_size=args.size,
             p_below_lower=args.p_below_lower,
             p_above_upper=args.p_above_upper,
+            interpolation=args.interpolation,
         )
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
@@ -1770,6 +1848,12 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--p-above-upper", dest="p_above_upper", type=float,
         help="P(outcome escapes above range_max); open upper bound only",
+    )
+    p.add_argument(
+        "--interpolation", choices=("pchip", "linear"), default="pchip",
+        help="CDF interpolation between the declared percentiles. Default pchip (smooth "
+             "monotone-cubic PDF, +2.8 pts/question over linear on 69 backtested MiniBench "
+             "numerics); linear reproduces the pre-v0.4.25 staircase construction exactly",
     )
     p.set_defaults(func=_cmd_cdf)
 
