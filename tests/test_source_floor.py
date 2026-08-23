@@ -120,6 +120,9 @@ NUMERIC_Q = {
 RESEARCHED_NUMERIC = {
     "percentiles": {"10": 10, "25": 20, "50": 30, "75": 40, "90": 50},
     "reasoning": "researched", "reference_class": "past quarters", "base_rate": 30,
+    # v0.4.26 dispersion contract: research runs on continuous types must state the
+    # analysis-implied 10-90 width and its basis; declared 40 >= 0.75*45 passes the check.
+    "dispersion_90_10": 45, "dispersion_basis": "SD of quarterly changes 17.6 x 2.56",
     "sources": ["https://s/1", "https://s/2", "https://s/3"],
 }
 
@@ -424,3 +427,103 @@ class TestDefaults:
     def test_floor_never_exceeds_the_search_budget(self) -> None:
         for tier, params in DEFAULTS["tiers"].items():
             assert params["min_sources"] <= params["searches"], tier
+
+
+class TestDispersionFloor:
+    """v0.4.26: research runs on continuous types must state dispersion_90_10 (the 10-90
+    width their own analysis implies) with a named basis, and validate_payload refuses a
+    percentile set materially narrower than it. Motivated by the 2026-08-10 Parana miss
+    (q45325, -142.4): the run's reasoning stated an 11-day SD of 0.5 m and its declared
+    10-90 implied 0.34 — the prose held the right dispersion, the numbers clipped it."""
+
+    def test_numeric_missing_dispersion_repairs(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        no_disp = {"percentiles": {"10": 10, "25": 20, "50": 30, "75": 40, "90": 50},
+                   "reasoning": "researched", "reference_class": "past quarters",
+                   "sources": ["https://s/1", "https://s/2", "https://s/3"]}
+        agent, record, ok = run(monkeypatch, tmp_path,
+                                [fenced(no_disp), fenced(RESEARCHED_NUMERIC)],
+                                tiers(min_sources=3), NUMERIC_Q)
+        assert ok and record is not None
+        assert "dispersion_90_10" in agent.calls[1]["prompt"]
+        assert record["dispersion_90_10"] == 45
+        assert record["dispersion_basis"].startswith("SD of quarterly")
+
+    def test_dispersion_without_basis_repairs(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        no_basis = {**RESEARCHED_NUMERIC}
+        del no_basis["dispersion_basis"]
+        agent, record, ok = run(monkeypatch, tmp_path,
+                                [fenced(no_basis), fenced(RESEARCHED_NUMERIC)],
+                                tiers(min_sources=3), NUMERIC_Q)
+        assert ok and record is not None
+        assert "dispersion_basis" in agent.calls[1]["prompt"]
+
+    def test_percentiles_narrower_than_own_dispersion_repair_keeps_pre_guard(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        # Declared 10-90 width 8 against self-stated 45: the Parana failure shape. The
+        # repair widens; the record must keep the pre-guard percentiles for paired scoring.
+        narrow = {**RESEARCHED_NUMERIC,
+                  "percentiles": {"10": 26, "25": 28, "50": 30, "75": 32, "90": 34}}
+        agent, record, ok = run(monkeypatch, tmp_path,
+                                [fenced(narrow), fenced(RESEARCHED_NUMERIC)],
+                                tiers(min_sources=3), NUMERIC_Q)
+        assert ok and record is not None
+        retry = agent.calls[1]["prompt"]
+        assert "narrower than 0.75x your own stated dispersion_90_10" in retry
+        assert record["percentiles"]["90"] == 50.0
+        assert record["percentiles_pre_guard"] == {
+            "10": 26.0, "25": 28.0, "50": 30.0, "75": 32.0, "90": 34.0}
+
+    def test_consistent_tight_forecast_passes_untouched(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        # A pegged-FX-style question: tight percentiles WITH a tight self-stated dispersion
+        # pass on the first attempt — the guard enforces consistency, not width.
+        tight = {**RESEARCHED_NUMERIC,
+                 "percentiles": {"10": 29, "25": 29.5, "50": 30, "75": 30.5, "90": 31},
+                 "dispersion_90_10": 2.2,
+                 "dispersion_basis": "central-bank band, daily SD 0.85 x 2.56"}
+        agent, record, ok = run(monkeypatch, tmp_path, [fenced(tight)],
+                                tiers(min_sources=3), NUMERIC_Q)
+        assert ok and record is not None and len(agent.calls) == 1
+        assert record.get("percentiles_pre_guard") is None
+
+    def test_large_declared_escape_mass_skips_the_width_check(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        # With >5% declared escape the percentiles are conditional-on-inside and may be
+        # legitimately narrower than the unconditional dispersion (the Nino q45299 shape).
+        q = {**NUMERIC_Q, "open_upper_bound": True}
+        conditional = {**RESEARCHED_NUMERIC,
+                       "percentiles": {"10": 26, "25": 28, "50": 30, "75": 32, "90": 34},
+                       "p_above_upper": 0.45}
+        agent, record, ok = run(monkeypatch, tmp_path, [fenced(conditional)],
+                                tiers(min_sources=3), q)
+        assert ok and record is not None and len(agent.calls) == 1
+
+    def test_min_sources_zero_does_not_require_dispersion(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        no_disp = {"percentiles": {"10": 10, "25": 20, "50": 30, "75": 40, "90": 50},
+                   "reasoning": "from dossier", "sources": []}
+        agent, record, ok = run(monkeypatch, tmp_path, [fenced(no_disp)],
+                                tiers(min_sources=0), NUMERIC_Q)
+        assert ok and record is not None and len(agent.calls) == 1
+
+    def test_binary_research_run_needs_no_dispersion(
+            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+        payload = {"probability": 0.4, "reasoning": "researched",
+                   "sources": ["https://s/1", "https://s/2", "https://s/3"]}
+        agent, record, ok = run(monkeypatch, tmp_path, [fenced(payload)],
+                                tiers(min_sources=3), BINARY_Q)
+        assert ok and record is not None and len(agent.calls) == 1
+
+    def test_nonsense_dispersion_is_repairable_feedback(self) -> None:
+        pcts = {"percentiles": {"10": 10.0, "25": 20.0, "50": 30.0, "75": 40.0, "90": 50.0}}
+        q = {**NUMERIC_Q, "scaling": {"range_min": 0.0, "range_max": 100.0}}
+        errors = run_bot.validate_payload({**pcts, "dispersion_90_10": "wide"}, q)
+        assert errors == ["dispersion_90_10 must be a number, got 'wide'"]
+        errors = run_bot.validate_payload({**pcts, "dispersion_90_10": -3}, q)
+        assert errors and "must be > 0" in errors[0]
+
+    def test_contract_offers_the_dispersion_fields(self) -> None:
+        assert "dispersion_90_10" in run_bot.CONTRACT
+        assert "dispersion_basis" in run_bot.CONTRACT

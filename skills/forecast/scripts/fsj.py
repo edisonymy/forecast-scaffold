@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.4.25"
+SCAFFOLD_VERSION = "0.4.26"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -214,6 +214,20 @@ class ForecastRecord:
     # nothing journals byte-identically to before this field existed.
     p_below_lower: float | None = None  # numeric/discrete/date: P(outcome < range_min)
     p_above_upper: float | None = None  # numeric/discrete/date: P(outcome > range_max)
+    # Self-stated dispersion contract (v0.4.26): the 10-90 width in question units that the
+    # run's OWN dispersion analysis implies, stated before the percentiles were tuned, and
+    # the named computation behind it. The bot's validate/repair loop refuses a percentile
+    # set materially narrower than this number (bot/run_bot.py, DISPERSION_WIDTH_FLOOR) —
+    # motivated by the 2026-08-10 Parana miss (q45325, -142.4), whose reasoning stated an
+    # 11-day SD of 0.5 m and whose declared 10-90 implied 0.34: the prose held the right
+    # dispersion and the percentiles quietly clipped it. All three fields default None and
+    # are omitted from the serialized record, so prior records are byte-identical.
+    dispersion_90_10: float | None = None
+    dispersion_basis: str | None = None  # e.g. "SD of 11-day changes 0.5 m x 2.56"
+    # Attempt-0 percentiles from a run whose first payload the dispersion-width guard
+    # rejected (kept ONLY in that case), so resolution can score the guard's effect paired
+    # against the run's own pre-guard answer — no A/B arm needed.
+    percentiles_pre_guard: dict[str, float] | None = None
     # Continuous-question submission provenance (v0.4.13): the exact CDF submitted to the
     # platform and the scaling it was built against. Percentiles alone can't be reconstructed
     # into the ~201-point object the platform scored (open/closed bounds, log scaling, and the

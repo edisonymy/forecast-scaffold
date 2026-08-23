@@ -4,6 +4,33 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.26] - 2026-08-23
+
+### Added
+- Dispersion contract for continuous questions — the third instance of the
+  announce-in-prompt + enforce-in-the-validate/repair-loop pattern (after the source and
+  reference-class floors). A research run must state `dispersion_90_10` (the 10-90 width,
+  in question units, its OWN dispersion analysis implies — reference-class SD x 2.56,
+  realized vol scaled to the horizon) with the computation named in `dispersion_basis`,
+  BEFORE tuning percentiles; `validate_payload` then rejects, with repairable feedback
+  quoting both numbers, any percentile set whose p90-p10 is under 0.75x the run's own
+  stated width (`DISPERSION_WIDTH_FLOOR`). Skipped when declared escape mass exceeds 5%
+  (conditional-on-inside percentiles are legitimately narrower — the Nino q45299 shape).
+- Motivation: the 2026-08-10 wave's worst numeric (Parana Corrientes q45325, -142.4 spot
+  peer) declared p10 at the shallowest edge of its own stated recession-rate floor and a
+  10-90 width 0.69x its own stated reference-class SD; BTC q45335 wrote "widened slightly
+  for fat tails" while declaring exactly its unwidened sigma. The prose repeatedly holds
+  the right dispersion and the percentiles clip it — a self-consistency failure, which is
+  mechanically checkable. This is NOT width-pushing: a tight forecast passes by stating a
+  tight dispersion (blanket widening remains killed, wave 2), and the fix for genuine
+  tightness is restating the basis, never clipping quietly.
+- Measurement designed in: when the width guard fires and the repair changes the numbers,
+  the attempt-0 percentiles are journaled as `percentiles_pre_guard`, so the wave readout
+  scores the guard's effect PAIRED against the run's own first answer on exactly the
+  questions it fired on — no A/B arm needed. `ForecastRecord` gains `dispersion_90_10`,
+  `dispersion_basis`, `percentiles_pre_guard` (all optional, omitted when absent; prior
+  records serialize byte-identically).
+
 ## [0.4.25] - 2026-08-23
 
 ### Changed

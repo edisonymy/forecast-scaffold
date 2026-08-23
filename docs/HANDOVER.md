@@ -37,6 +37,18 @@ minibench_smooth_cdf.py, 3-wave tails readout minibench-numeric-tails-3wave-2026
 Validated platform-legal against all 133 historical continuous forecasts (cdf_size
 6..201, log scaling, escape masses).
 
+**v0.4.26 SHIPPED same day (also live for 2026-08-24): the dispersion contract.**
+Operator pushback on the pchip framing was correct — the cliff's LOCATION was a percentile
+error, not geometry: Parana's own reasoning stated an 11-day SD of 0.5 m (=> 1.28 m 10-90)
+then declared 0.88 m with p10 at its own stated recession floor; BTC wrote "widened for
+fat tails" and declared its unwidened sigma exactly. New floor: research runs on continuous
+questions must state `dispersion_90_10` + `dispersion_basis` first, and the harness rejects
+p90-p10 < 0.75x the self-stated width (skipped when declared escape >5%). When the guard
+fires, attempt-0 percentiles are journaled as `percentiles_pre_guard` — score the guard
+PAIRED at wave-4 resolution alongside the preregistered pchip-widen test. Known limit: it
+catches the numbers-narrower-than-own-analysis class, NOT the thin-tails-despite-stated-
+fat-tails class (that is what pchip + the preregistered widen address).
+
 **PREREGISTERED for the 2026-08-24 wave readout (decide by the same CI-excludes-zero
 rule, n>=90 pooled): global widen w=1.15 ON TOP of pchip** (backtest +5.6/q, CI90
 [+0.7, +11.6], but w grid-picked post hoc and widening has one preregistered negative

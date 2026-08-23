@@ -162,10 +162,19 @@ questions the values are unix timestamps in seconds, matching the bounds given).
 include "expected_value" (your mean/EV point estimate, same units), and — only where the
 Bounds section says that bound is OPEN, and only when you can name the mechanism — the
 escape masses "p_below_lower" and/or "p_above_upper" (omit the one you are not declaring;
-the example shows an upper escape priced at 8%, see the Bounds section for how to price it):
+the example shows an upper escape priced at 8%, see the Bounds section for how to price it).
+On a research run, state "dispersion_90_10" BEFORE you tune percentiles: the 10-90 width,
+in question units, that your OWN dispersion analysis implies (reference-class SD x 2.56,
+realized vol scaled to the horizon, the historical spread of the quantity) — and name that
+computation in "dispersion_basis". Your declared p90-p10 must not come out materially
+narrower than this number: the harness rejects the payload if it does. If after reflection
+you believe the distribution really is tighter than the reference class, the fix is to
+restate dispersion_90_10 with a basis that says why — never to quietly clip the percentiles:
 ```json
 {"percentiles": {"10": 1.0, "25": 2.0, "50": 3.0, "75": 4.0, "90": 5.0},
- "expected_value": 3.2, "p_above_upper": 0.08, "reasoning": "...",
+ "expected_value": 3.2, "p_above_upper": 0.08,
+ "dispersion_90_10": 4.1, "dispersion_basis": "SD of 11-day changes in this regime 1.6 x 2.56",
+ "reasoning": "...",
  "reference_class": "...", "base_rate": <number in question units, e.g. the historical median>,
  "sources": ["<url or dataset you actually consulted>", "..."]}
 ```
@@ -791,6 +800,12 @@ def distinct_source_count(payload: dict[str, Any]) -> int:
     return len({str(s).strip() for s in raw if str(s).strip()})
 
 
+#: Reject a numeric payload whose declared p90-p10 is below this fraction of the run's own
+#: stated ``dispersion_90_10``. 0.75 leaves honest room for mild, argued tightening while
+#: firing on the observed failure (Parana q45325 declared 0.69x its own stated width).
+DISPERSION_WIDTH_FLOOR = 0.75
+
+
 def validate_payload(payload: dict[str, Any], question: dict[str, Any]) -> list[str]:
     qtype = question.get("type", "binary")
     if qtype == "binary":
@@ -859,6 +874,45 @@ def validate_payload(payload: dict[str, Any], question: dict[str, Any]) -> list[
                 upper_open=bool(question.get("open_upper_bound")),
             )
         )
+        # Dispersion consistency (v0.4.26). The 2026-08-10 Parana miss (q45325, -142.4
+        # spot peer): the run's own reasoning stated an 11-day reference-class SD of
+        # 0.5 m — a 1.28 m 10-90 width — and then declared a 0.88 m one, with p10 pinned
+        # at the shallowest edge of its own stated recession-rate floor. The prose
+        # contained the right dispersion; the percentiles quietly clipped it. So the
+        # contract asks for the analysis-implied 10-90 width as a NUMBER beside its named
+        # basis, and this check refuses a percentile set materially narrower than the
+        # run's own stated math — repairable feedback quoting both numbers, the same
+        # earliest-point pattern as the source and reference-class floors. A genuinely
+        # tight question (a pegged FX rate) passes by stating a tight dispersion: nothing
+        # here pushes width in any direction, it only forbids numbers that contradict the
+        # run's own analysis (blanket widening was tested and killed, wave 2). Skipped
+        # when declared escape mass exceeds 5%: the percentiles are then CONDITIONAL on
+        # landing inside the range and legitimately narrower than the unconditional
+        # dispersion (e.g. q45299, 45% above-bound).
+        disp_raw = payload.get("dispersion_90_10")
+        if disp_raw is not None:
+            disp: float | None
+            try:
+                disp = float(disp_raw)
+            except (TypeError, ValueError):
+                errors.append(f"dispersion_90_10 must be a number, got {disp_raw!r}")
+                disp = None
+            if disp is not None and disp <= 0:
+                errors.append(f"dispersion_90_10 must be > 0, got {disp}")
+                disp = None
+            total_escape = (escape["p_below_lower"] or 0.0) + (escape["p_above_upper"] or 0.0)
+            if (disp is not None and total_escape <= 0.05
+                    and "10" in values and "90" in values):
+                declared_width = values["90"] - values["10"]
+                if declared_width < DISPERSION_WIDTH_FLOOR * disp:
+                    errors.append(
+                        f"your declared 10-90 interval (p90-p10 = {declared_width:g}) is "
+                        f"narrower than {DISPERSION_WIDTH_FLOOR}x your own stated "
+                        f"dispersion_90_10 ({disp:g}) — the percentiles contradict your "
+                        f"dispersion analysis. Either widen the percentiles to match it, or "
+                        f'restate dispersion_90_10 with a "dispersion_basis" that actually '
+                        f"implies the tighter width"
+                    )
         return errors
     return [f"unsupported question type {qtype!r}"]
 
@@ -1157,6 +1211,12 @@ def forecast_question(
         nonlocal run_cost, agent_responded
         errors: list[str] = []
         first_error: str | None = None
+        candidate: dict[str, Any] | None = None
+        # Attempt-0 percentiles kept ONLY when the dispersion-width guard was among the
+        # rejection reasons, journaled as percentiles_pre_guard so resolution can score
+        # the guard's effect PAIRED on exactly the questions it fired on (no A/B arm
+        # needed — the counterfactual is the run's own first answer).
+        pre_guard_percentiles: dict[str, Any] | None = None
         for attempt in range(2):
             if attempt and deadline is not None and time.monotonic() > deadline:
                 # The repair retry can add a whole agent-call to a run already past the
@@ -1173,6 +1233,11 @@ def forecast_question(
                 # success below can say what was repaired instead of looking identical
                 # to a clean first attempt.
                 first_error = errors[0] if errors else None
+                if (isinstance(candidate, dict)
+                        and isinstance(candidate.get("percentiles"), dict)
+                        and any("dispersion_90_10" in e and "narrower" in e
+                                for e in errors)):
+                    pre_guard_percentiles = dict(candidate["percentiles"])
             try:
                 call_cmd = metered_cmd(cmd)
                 if call_cmd is None:
@@ -1231,6 +1296,26 @@ def forecast_question(
                         'from it before adjusting on news; an even spread you cannot trace to a '
                         'reference class is the known failure mode'
                     )
+                # Dispersion floor (v0.4.26), continuous only: the research run must state
+                # the width its own analysis implies BEFORE the percentiles are accepted,
+                # so the consistency check in validate_payload() has a number to hold the
+                # percentiles against. Same reject-before-accept point as the source floor;
+                # motivation on the check itself (Parana q45325).
+                if qtype in CONTINUOUS:
+                    if candidate.get("dispersion_90_10") is None:
+                        errors.append(
+                            'research run must state "dispersion_90_10" — the 10-90 width '
+                            "in question units your OWN dispersion analysis implies "
+                            "(reference-class SD x 2.56, realized vol scaled to the "
+                            "horizon, historical spread) — computed BEFORE tuning the "
+                            'percentiles, with the computation named in "dispersion_basis"'
+                        )
+                    elif not str(candidate.get("dispersion_basis") or "").strip():
+                        errors.append(
+                            '"dispersion_basis" must name the computation behind '
+                            'dispersion_90_10 (e.g. "SD of 11-day changes 0.5 x 2.56") '
+                            "as a non-empty string"
+                        )
                 base_rate = candidate.get("base_rate")
                 if qtype == "multiple_choice" and isinstance(base_rate, dict):
                     options = [str(o) for o in question.get("options") or []]
@@ -1257,6 +1342,8 @@ def forecast_question(
                         f"  repaired on retry: {question.get('id')} "
                         f"({(first_error or '')[:200]})"
                     )
+                    if pre_guard_percentiles is not None:
+                        candidate["percentiles_pre_guard"] = pre_guard_percentiles
                 return candidate, model, []
         return None, "", errors
 
@@ -1622,6 +1709,15 @@ def forecast_question(
         ),
         p_below_lower=p_below_lower,
         p_above_upper=p_above_upper,
+        dispersion_90_10=_as_float(payload.get("dispersion_90_10")),
+        dispersion_basis=(
+            str(payload["dispersion_basis"]).strip() or None
+            if payload.get("dispersion_basis") is not None else None
+        ),
+        percentiles_pre_guard=(
+            {str(k): float(v) for k, v in payload["percentiles_pre_guard"].items()}
+            if isinstance(payload.get("percentiles_pre_guard"), dict) else None
+        ),
         submitted_cdf=submitted_cdf,
         scaling=cdf_scaling,
         expected_value=_as_float(payload.get("expected_value")),
