@@ -49,7 +49,6 @@ from __future__ import annotations
 
 import argparse
 import math
-import random
 import statistics as st
 import sys
 from pathlib import Path
@@ -66,7 +65,6 @@ from forecast_scaffold.core import (  # noqa: E402
 )
 from bench.analysis.minibench_counterfactuals import (  # noqa: E402
     JOURNAL,
-    QUANTILES,
     WAVE_KEY,
     load_resolutions,
     load_wave,
@@ -78,7 +76,6 @@ from bench.analysis.minibench_numeric_tails import (  # noqa: E402
     cdf_at,
     clamp01,
     location_of,
-    open_bounds_of,
     score_row,
     widen,
 )
@@ -321,7 +318,7 @@ def main() -> None:
           f"{'in 10-90':>9}  per-wave totals")
     print(f"{'submitted (identity)':<24} {base_total:>8.0f} {0:>+8.0f} "
           f"{st.mean(base_scores):>+8.1f} {min(base_scores):>+8.1f} "
-          f"{sum(1 for r, _ in zip(rows, base_scores) if 0.10 <= cdf_at(r['submitted_cdf'], location_of(resolutions[r['source']['question_id']], r['scaling'])) <= 0.90):>6}/{n}")
+          f"{sum(1 for r, _ in zip(rows, base_scores, strict=True) if 0.10 <= cdf_at(r['submitted_cdf'], location_of(resolutions[r['source']['question_id']], r['scaling'])) <= 0.90):>6}/{n}")
 
     deltas_by_variant: dict[str, list[float]] = {}
     for name, spec in variants:
