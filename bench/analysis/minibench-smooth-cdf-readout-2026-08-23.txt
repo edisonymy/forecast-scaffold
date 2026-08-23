@@ -1,0 +1,34 @@
+skipped 4 non-numeric resolution(s) (multiple-choice labels): [45021, 45007, 45003, 44983]
+resolved numerics with a submitted CDF: 69 (wave 1: 21, wave 2: 21, wave 3: 27)
+
+variant                     total   vs sub   mean/q    worst  in 10-90  per-wave totals
+submitted (identity)         1422       +0    +20.6   -195.6     53/69
+rebuilt linear (sanity)      1430       +9    +20.7   -195.6     53/69  wave 1: +9  wave 2: +0  wave 3: +0
+pchip                        1612     +191    +23.4   -195.6     52/69  wave 1: +88  wave 2: +25  wave 3: +78
+linear w=1.15                1691     +270    +24.5   -195.6     55/69  wave 1: +123  wave 2: +30  wave 3: +116
+pchip  w=1.15                1810     +388    +26.2   -195.6     54/69  wave 1: +179  wave 2: +5  wave 3: +204
+linear w=1.3                 1682     +260    +24.4   -195.6     59/69  wave 1: +96  wave 2: -16  wave 3: +180
+pchip  w=1.3                 1721     +299    +24.9   -195.6     58/69  wave 1: +139  wave 2: -67  wave 3: +227
+linear nohalve               1416       -6    +20.5   -195.6     56/69  wave 1: +43  wave 2: -69  wave 3: +20
+pchip  nohalve               1631     +210    +23.6   -195.6     55/69  wave 1: +144  wave 2: -31  wave 3: +97
+pchip  nohalve w=1.15        1717     +296    +24.9   -195.6     58/69  wave 1: +170  wave 2: -66  wave 3: +192
+pchip  nohalve w=1.3         1596     +175    +23.1   -195.6     61/69  wave 1: +105  wave 2: -144  wave 3: +213
+linear kernel c=0.25         1728     +306    +25.0   -195.6     55/69  wave 1: +122  wave 2: +27  wave 3: +157
+linear kernel c=0.5          1663     +241    +24.1   -195.6     57/69  wave 1: +102  wave 2: -26  wave 3: +166
+pchip  kernel c=0.25         1803     +381    +26.1   -195.6     54/69  wave 1: +128  wave 2: +52  wave 3: +201
+
+rebuild fidelity: mean |delta| 0.20 pts, max |delta| 9.17 pts
+
+paired bootstrap vs submitted (90% CI, 10k draws, seed 7), n=69:
+  pchip                    mean   +2.76/q  CI90 [   +0.32,    +5.28]  helps on 46/67 changed
+  linear w=1.15            mean   +3.91/q  CI90 [   -1.75,   +10.74]  helps on 21/67 changed
+  pchip  w=1.15            mean   +5.63/q  CI90 [   +0.71,   +11.56]  helps on 25/67 changed
+  linear w=1.3             mean   +3.77/q  CI90 [   -2.59,   +11.09]  helps on 22/67 changed
+  pchip  w=1.3             mean   +4.34/q  CI90 [   -1.80,   +11.51]  helps on 23/67 changed
+  linear nohalve           mean   -0.08/q  CI90 [   -1.50,    +1.55]  helps on 9/41 changed
+  pchip  nohalve           mean   +3.04/q  CI90 [   -0.04,    +6.50]  helps on 32/67 changed
+  pchip  nohalve w=1.15    mean   +4.29/q  CI90 [   -0.83,   +10.37]  helps on 20/67 changed
+  pchip  nohalve w=1.3     mean   +2.53/q  CI90 [   -3.75,    +9.71]  helps on 20/67 changed
+  linear kernel c=0.25     mean   +4.44/q  CI90 [   -0.25,   +10.14]  helps on 26/65 changed
+  linear kernel c=0.5      mean   +3.50/q  CI90 [   -1.92,    +9.82]  helps on 22/67 changed
+  pchip  kernel c=0.25     mean   +5.53/q  CI90 [   +1.02,   +11.03]  helps on 42/67 changed

@@ -184,8 +184,12 @@ def shift(pcts: dict[str, float], d: float) -> dict[str, float]:
     return {k: v + step for k, v in pcts.items()}
 
 
-def rebuild(pcts: dict[str, float], scaling: dict) -> list[float] | None:
-    """percentiles -> platform CDF, or None if the widened values leave the range."""
+def rebuild(pcts: dict[str, float], scaling: dict,
+            row: dict | None = None) -> list[float] | None:
+    """percentiles -> platform CDF, or None if the widened values leave the range.
+
+    ``row`` (2026-08-23) carries the journal row so the rebuild honors the v0.4.23
+    declared escape masses; without it those rows silently rebuilt as if undeclared."""
     lo, hi = float(scaling["range_min"]), float(scaling["range_max"])
     eps = (hi - lo) * 1e-4
     clipped = {k: min(max(v, lo + eps), hi - eps) for k, v in pcts.items()}
@@ -196,6 +200,11 @@ def rebuild(pcts: dict[str, float], scaling: dict) -> list[float] | None:
             upper_open=bool(scaling.get("upper_open")),
             zero_point=scaling.get("zero_point"),
             cdf_size=int(scaling.get("cdf_size") or 201),
+            # v0.4.25 journals the interpolation that actually shipped inside the scaling
+            # dict; rows without the key predate it and were piecewise-linear.
+            interpolation=scaling.get("interpolation") or "linear",
+            p_below_lower=(row or {}).get("p_below_lower"),
+            p_above_upper=(row or {}).get("p_above_upper"),
         )
     except ValueError:
         return None
@@ -314,11 +323,11 @@ def analyze(rows: list[dict], resolutions: dict[int, float], label: str,
     report("submitted (identity)", [r["submitted_cdf"] for r in rows])
     for w in GLOBAL_WIDENS:
         report(f"global widen w={w}",
-               [rebuild(widen(r["percentiles"], w), r["scaling"]) for r in rows])
+               [rebuild(widen(r["percentiles"], w), r["scaling"], r) for r in rows])
     tail_scores: dict[float, list[float]] = {}
     for t in TAIL_WIDENS:
         got = report(f"tail-only widen t={t}",
-                     [rebuild(widen(r["percentiles"], t, tails_only=True), r["scaling"])
+                     [rebuild(widen(r["percentiles"], t, tails_only=True), r["scaling"], r)
                       for r in rows])
         if got:
             tail_scores[t] = got
@@ -334,13 +343,13 @@ def analyze(rows: list[dict], resolutions: dict[int, float], label: str,
     right_scores: dict[float, list[float]] = {}
     for r_ in RIGHT_WIDENS:
         got = report(f"right-tail only r={r_}",
-                     [rebuild(right_widen(r["percentiles"], r_), r["scaling"]) for r in rows])
+                     [rebuild(right_widen(r["percentiles"], r_), r["scaling"], r) for r in rows])
         if got:
             right_scores[r_] = got
     shift_scores: dict[float, list[float]] = {}
     for d in SHIFTS:
         got = report(f"shift up d={d}",
-                     [rebuild(shift(r["percentiles"], d), r["scaling"]) for r in rows])
+                     [rebuild(shift(r["percentiles"], d), r["scaling"], r) for r in rows])
         if got:
             shift_scores[d] = got
 
