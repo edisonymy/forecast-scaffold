@@ -1,10 +1,24 @@
 # HANDOVER — continuation state as of 2026-07-16
 
-## 2026-09-03 (evening): branch feat/parallel-research — IN FLIGHT, read before resuming
+## 2026-09-04 00:20 UTC+1: v0.4.28 MERGED to main (89eeb3a) — parallel research + reconciler live
 
-State: main is at 153bd0b (v0.4.27 + a sync-script fix). Branch `feat/parallel-research`
-(commit 7b9aeee + uncommitted agent work) carries the architecture change the operator
-decided today. NOT merged. Merge criteria the operator set: no clear regression on live test
+The architecture change below is now production: from the next 10-minute tick the bot runs
+three independent research runs (medium) / four (high), pools them, and submits the
+reconciler's number; traces land in `bot/journal/traces/`. Per-tick budget is 24 (was 12).
+FIRST THING NEXT SESSION: read the newest bot.yml run log (`gh run list --workflow=bot.yml`)
+for "angle P" / "supervisor (" lines and a trace file, then `python ab/compare.py` in the
+scratchpad once batch 3 finishes, then sync the overlay after Sep 5-7 and score both arms
+(`bench/analysis/phase_pools.py`, `pooled_vs_single.py`, scratchpad `ab/compare.py`).
+Merge criteria the operator set (no clear regression on live test questions, reasoning
+traces sensible, cost under ~2x) were met on 12 paired questions: numbers within 0.03 on
+6/7 binaries and within 0.1% on every numeric; traces sound; cost ratio 1.21x (binaries,
+research only), 1.64x pooled interim, ≈1.5-2x with the reconciler. Branch history follows.
+
+## 2026-09-03 (evening): branch feat/parallel-research (now merged — kept for context)
+
+State at the time: main was at 153bd0b (v0.4.27 + a sync-script fix). Branch
+`feat/parallel-research` carried the architecture change the operator decided that day.
+Merge criteria the operator set: no clear regression on live test
 questions, reasoning traces available and sensible on a vibe check, cost under ~2x the old
 design; then merge without a full preregistered A/B.
 
