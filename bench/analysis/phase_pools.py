@@ -22,16 +22,31 @@ does.
 ===============================================================================
 DECISION RULES (fixed 2026-09-03, before any data — do not renegotiate after a readout)
 ===============================================================================
-PHASE 2 (shared evidence) is KEPT only if BOTH hold:
+PHASE 2 (shared evidence) is KEPT only if ALL THREE hold:
   (a) its paired delta vs PHASE 1 is >= 0 (mean, in that question type's score); AND
-  (b) the herding check passes: it is NOT the case that mean(spread_phase2 /
+  (b) that delta's CI90 lower bound is > 0 — the same evidential bar the supervisor faces;
+      AND
+  (c) the herding check passes: it is NOT the case that THIS FAMILY's mean(spread_phase2 /
       spread_phase1) < 0.5 while the paired delta is <= 0.
-Clause (b) is the whole reason the spreads are journaled. Circulating other forecasters'
+Clause (c) is the whole reason the spreads are journaled. Circulating other forecasters'
 material is the documented way to collapse a group's variance WITHOUT improving its mean
 accuracy (Lorenz et al. 2011, PNAS 108(22):9020 — N=144, "remarkably little" social
 influence needed). A variant that halves the ensemble's disagreement and buys nothing has
 reproduced that failure in-bot, and it will LOOK like agreement, so it has to be ruled out
 by a number fixed in advance rather than by reading the readout.
+
+RULE CHANGE 2026-09-03 (still before any phase-2 row has resolved — share_evidence is OFF in
+production, so this tightens a rule on an EMPTY sample, not on a readout). Two corrections
+found in review:
+  * clause (b) is NEW. As written, phase 2 was KEPT on a mean delta of +0.0001 at n=3 while
+    the supervisor — the arm with published supporting evidence — needed a CI90 excluding
+    zero. The weaker arm must not have the easier gate, so phase 2 now mirrors
+    supervisor_verdict's bound. The supervisor's separate sample-size gate is NOT copied
+    across: it is calibrated to the reconciler's own cost, and the CI does the work here.
+  * clause (c) is now computed PER FAMILY. The spread of a binary pool is a difference of
+    probabilities and the spread of a continuous pool is a difference of medians in question
+    units; averaging their ratios into one number let a handful of continuous rows decide the
+    binary verdict (and vice versa). Each family's verdict now uses its own ratio.
 
 THE SUPERVISOR is KEPT only if its paired delta VS THE PHASE IT CONSUMED (phase 2 where
 that ran, else phase 1) has a CI90 excluding zero on the POSITIVE side, after two MiniBench
@@ -283,7 +298,9 @@ def herding_line(scored: list[dict[str, Any]]) -> float | None:
     return st.mean(ratios)
 
 
-def phase2_verdict(delta_mean: float, ratio: float | None, n: int) -> str:
+def phase2_verdict(delta_mean: float, lo: float, ratio: float | None, n: int) -> str:
+    """``ratio`` is THIS family's mean spread ratio and ``lo`` this family's CI90 lower
+    bound on the paired delta (see the RULE CHANGE note in the header)."""
     if n == 0:
         return "no phase-2 rows have resolved yet"
     if math.isnan(delta_mean):
@@ -293,9 +310,14 @@ def phase2_verdict(delta_mean: float, ratio: float | None, n: int) -> str:
     if ratio is not None and ratio < HERDING_RATIO and delta_mean <= 0:
         return (f"DROP phase 2 — HERDING: spread ratio {ratio:.2f} < {HERDING_RATIO} with a "
                 f"non-positive delta (n={n})")
-    return (f"KEEP phase 2 so far — paired delta {delta_mean:+.4f} >= 0"
-            + (f", spread ratio {ratio:.2f}" if ratio is not None else "")
-            + f" (n={n})")
+    spread_note = f", spread ratio {ratio:.2f}" if ratio is not None else ""
+    if math.isnan(lo):
+        return f"EXTEND — CI unavailable at n={n} (mean {delta_mean:+.4f}{spread_note})"
+    if lo <= 0:
+        return (f"EXTEND phase 2 — mean {delta_mean:+.4f} >= 0 but its CI90 lower bound "
+                f"{lo:+.4f} does not exclude zero{spread_note} (n={n})")
+    return (f"KEEP phase 2 so far — paired delta {delta_mean:+.4f}, CI90 lower bound "
+            f"{lo:+.4f} excludes zero on the positive side{spread_note} (n={n})")
 
 
 def supervisor_verdict(mean: float, lo: float, n: int, n_binary: int, n_mixed: int) -> str:
@@ -369,7 +391,13 @@ def report_family(label: str, scored: list[dict[str, Any]], unit: str) -> dict[s
               f"{modes.count('reasoning')} reasoning "
               f"(the spread gate decided each one)")
     d21 = paired(scored, "phase2", "phase1")
-    mean21, _, _ = report_pair("PHASE 2 - PHASE 1", d21, unit)
+    mean21, lo21, _ = report_pair("PHASE 2 - PHASE 1", d21, unit)
+    # This family's own herding ratio: binary spreads are probability differences and
+    # continuous spreads are medians in question units, so the two never share a number.
+    ratio = herding_line(scored)
+    if ratio is not None:
+        print(f"  {'spread ratio (phase2/phase1)':<34} {ratio:.3f}   "
+              f"(< {HERDING_RATIO} means this family's disagreement more than halved)")
     consumed_deltas = [
         row["scores"]["supervisor"] - row["scores"][row["consumed"]]
         for row in scored
@@ -381,6 +409,8 @@ def report_family(label: str, scored: list[dict[str, Any]], unit: str) -> dict[s
     return {
         "n": len(scored),
         "phase2_delta": mean21,
+        "phase2_lo": lo21,
+        "phase2_ratio": ratio,
         "phase2_n": len(d21),
         "supervisor_delta": mean_s,
         "supervisor_lo": lo_s,
@@ -416,18 +446,22 @@ def main(argv: list[str] | None = None) -> int:
         print(f"\n{len(mc)} multiple-choice row(s) carry the same fields and are NOT scored "
               f"here — the platform scores MC with a different formula (see the header).")
 
-    # --- the herding check, binaries only: a proper score bounded on [0,1] keeps the
-    # "delta <= 0" clause from being decided by a single confident miss.
+    # --- the herding check. The ratio is reported (and applied) PER FAMILY: a binary spread
+    # is a difference of probabilities, a continuous spread a difference of medians in
+    # question units, so one pooled mean of the two ratios is not a quantity. The Brier term
+    # stays binaries-only — a proper score bounded on [0,1] keeps the "delta <= 0" clause
+    # from being decided by a single confident miss.
     print(f"\n{'=' * 78}\n=== HERDING CHECK (phase 2) ===")
-    ratio = herding_line(binary_scored + continuous_scored)
     brier_deltas = [row["brier"]["phase1"] - row["brier"]["phase2"]
                     for row in binary_scored
                     if "phase2" in row.get("brier", {}) and "phase1" in row.get("brier", {})]
-    if ratio is None:
+    if binary_out.get("phase2_ratio") is None and continuous_out.get("phase2_ratio") is None:
         print("  no row has both spreads — phase 2 has not run on a resolved question")
-    else:
-        print(f"  mean spread_phase2 / spread_phase1 = {ratio:.3f}  "
-              f"(< {HERDING_RATIO} means the ensemble's disagreement more than halved)")
+    for label, out in (("binary", binary_out), ("continuous", continuous_out)):
+        if out.get("phase2_ratio") is not None:
+            print(f"  {label}: mean spread_phase2 / spread_phase1 = "
+                  f"{out['phase2_ratio']:.3f}  "
+                  f"(< {HERDING_RATIO} means that family's disagreement more than halved)")
     if brier_deltas:
         mean_b = st.mean(brier_deltas)
         lo_b, hi_b = boot_ci(brier_deltas) if len(brier_deltas) > 1 else (
@@ -442,13 +476,16 @@ def main(argv: list[str] | None = None) -> int:
     phase2_means = [m for m in (binary_out.get("phase2_delta"),
                                 continuous_out.get("phase2_delta"))
                     if m is not None and not math.isnan(m)]
-    # Scores are in different units per family, so the phase-2 clause is applied per family
-    # and the joint verdict is the strictest of them.
+    # Scores AND spreads are in different units per family, so the phase-2 clause is applied
+    # per family — each with its own delta, its own CI90 lower bound and its own spread ratio
+    # — and the joint verdict is the strictest of them.
     print("  phase 2:")
     for label, out in (("binary", binary_out), ("continuous", continuous_out)):
         if out.get("phase2_n"):
-            print(f"    {label}: "
-                  f"{phase2_verdict(out['phase2_delta'], ratio, out['phase2_n'])}")
+            print(f"    {label}: " + phase2_verdict(
+                out["phase2_delta"], out["phase2_lo"], out["phase2_ratio"],
+                out["phase2_n"],
+            ))
     if not phase2_means or not phase2_n:
         print("    no phase-2 rows have resolved yet "
               "(share_evidence is off in production by operator decision)")

@@ -9,7 +9,12 @@ any model call, and puts the candidates in the brief as RECORD-ONLY facts: venue
 price, volume, close date, URL. Contract equivalence stays the forecaster's judgment — a
 near-miss contract is evidence, not an anchor — and nothing here says which way to move.
 
-Venues (public, unauthenticated, fail-open, 8 s timeouts):
+Latency is bounded because this lookup sits in front of every sighted brief and the
+tournament tick has a hard wall clock: 5 s per HTTP request, at most 2 queries per venue,
+and the whole lookup is SKIPPED when the caller says fewer than MIN_REMAINING_SECONDS
+remain before its deadline (a market section is worth a few seconds, never a forecast).
+
+Venues (public, unauthenticated, fail-open, 5 s timeouts):
   - Polymarket  gamma-api.polymarket.com/public-search   (events -> markets, Yes price)
   - Manifold    api.manifold.markets/v0/search-markets   (open binary markets, probability)
   - Kalshi has no keyword search on its public API; a candidate cannot be found cheaply
@@ -33,10 +38,14 @@ from typing import Any
 import priors
 
 USER_AGENT = "forecast-scaffold-bot/0.1 (+https://github.com/edisonymy/forecast-scaffold)"
-TIMEOUT = 8.0
+TIMEOUT = 5.0
 MIN_SIMILARITY = 0.2
 MAX_CANDIDATES = 6
 MAX_TERMS = 8
+#: At most this many search calls per venue (the distinctive query, then the plain one).
+MAX_QUERIES_PER_VENUE = 2
+#: Below this much wall clock left before the caller's deadline, do not look up at all.
+MIN_REMAINING_SECONDS = 120.0
 
 
 def _get_json(url: str) -> Any:
@@ -174,12 +183,17 @@ def candidate_markets(
     tokens = tokens_of(title)
     if not tokens:
         return []
-    # Venue search boxes behave like AND queries: try the 3 most distinctive words, then 2,
-    # then the plain first-4 content words; stop at the first query that returns anything.
+    # Venue search boxes behave like AND queries, so the distinctive 3 words find markets
+    # that eight words never will; the plain first-4 content words are the fallback. Capped
+    # at MAX_QUERIES_PER_VENUE requests per venue (was 3, incl. a 2-word query): this runs
+    # in front of every sighted brief, so its worst case has to be bounded, and the dropped
+    # 2-word query was the least selective of the three. Stop at the first query that
+    # returns anything.
     queries: list[str] = []
-    for q in (distinctive_terms(title, 3), distinctive_terms(title, 2), search_terms(title, 4)):
+    for q in (distinctive_terms(title, 3), search_terms(title, 4)):
         if q and q not in queries:
             queries.append(q)
+    queries = queries[:MAX_QUERIES_PER_VENUE]
     found: list[dict[str, Any]] = []
     for search in searchers:
         try:
@@ -222,13 +236,26 @@ def format_market_facts(candidates: list[dict[str, Any]]) -> str:
         price = "n/a" if m.get("price") is None else f"{float(m['price']):.2f}"
         vol = "" if m.get("volume") is None else f", volume {float(m['volume']):,.0f}"
         close = f", closes {m['close']}" if m.get("close") else ""
-        lines.append(f"- {m['venue']}: \"{m['title'][:110]}\" — Yes price {price}{vol}{close}"
+        # priors.safe_title: a venue title is stranger-written text going straight into our
+        # prompt — one line, no leading markdown, capped, so it cannot open a section.
+        lines.append(f"- {m['venue']}: \"{priors.safe_title(m.get('title'))}\" "
+                     f"— Yes price {price}{vol}{close}"
                      f"{' — ' + m['url'] if m.get('url') else ''}")
     return "\n".join(lines) + "\n"
 
 
-def market_facts_section(title: str) -> str:
-    """Convenience: lookup + format, never raises."""
+def market_facts_section(title: str, *, remaining_seconds: float | None = None) -> str:
+    """Convenience: lookup + format, never raises.
+
+    ``remaining_seconds`` is the caller's wall clock before its own deadline (None = no
+    deadline). With less than MIN_REMAINING_SECONDS left the lookup is skipped entirely and
+    "" is returned — the brief simply carries no market section, which is strictly better
+    than spending the last two minutes of a tick on venue HTTP.
+    """
+    if remaining_seconds is not None and remaining_seconds < MIN_REMAINING_SECONDS:
+        print(f"  market lookup skipped: {remaining_seconds:.0f}s left before the deadline "
+              f"(needs {MIN_REMAINING_SECONDS:.0f}s)")
+        return ""
     try:
         return format_market_facts(candidate_markets(title))
     except Exception as exc:  # noqa: BLE001

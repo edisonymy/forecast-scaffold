@@ -149,7 +149,9 @@ jobs:
           LEAK_PATTERNS: ${{ secrets.LEAK_PATTERNS }}
           METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          # AskNews: competition-licensed research source; absent secret = section silently off
+          # This step runs no bot: every secret here exists ONLY so the value scan below can
+          # look for it in the journal about to be published. AskNews was previously listed
+          # with the run steps' "section silently off" comment, exposed but unscanned.
           ASKNEWS_API_KEY: ${{ secrets.ASKNEWS_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
@@ -168,7 +170,7 @@ jobs:
           # The pattern list cannot know credential VALUES — but a prompt-injected agent's
           # visible output (sources, reasoning) lands in exactly the files this step is
           # about to publish. Check for the values themselves, fail-closed.
-          for secret in "$METACULUS_TOKEN" "$CLAUDE_CODE_OAUTH_TOKEN" "$OPENROUTER_API_KEY"; do
+          for secret in "$METACULUS_TOKEN" "$CLAUDE_CODE_OAUTH_TOKEN" "$OPENROUTER_API_KEY" "$ASKNEWS_API_KEY"; do
             if [ -n "$secret" ] && grep -rqF -- "$secret" bot/journal/; then
               echo "::error::a credential value appears in the journal — not publishing"; exit 3
             fi

@@ -13,6 +13,7 @@ import argparse
 import json
 import shlex
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -114,12 +115,13 @@ def config_with_angles(angles: list[str], min_sources: int = 1) -> dict[str, Any
 def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
         config: dict[str, Any], effort: str = "high", blind: bool = False,
         client: Any = None, question: dict[str, Any] | None = None,
-        budget: float = 0.0) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
+        budget: float = 0.0, deadline: float | None = None,
+        timeout: int = 60) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
     agent = ScriptedAgent(outputs)
     monkeypatch.setattr(run_bot, "run_agent", agent)
     monkeypatch.setattr(run_bot, "verify_dossier", lambda *a, **k: ("", 0.0))
     args = argparse.Namespace(
-        blind=blind, effort=effort, provider="subscription", timeout=60,
+        blind=blind, effort=effort, provider="subscription", timeout=timeout,
         dry_run=True, comment=False, budget=budget,
         agent_cmd=("claude -p --model claude-sonnet-5 --output-format json "
                    "--allowed-tools Read,Glob,Grep,WebSearch,WebFetch"),
@@ -129,7 +131,7 @@ def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
     spent = {"usd": 0.0}
     ok = run_bot.forecast_question(
         client or StubClient(), POST, question or QUESTION, args, config, journal, spent,
-        None,
+        deadline,
     )
     agent.final_spent = spent["usd"]
     record = None
@@ -683,6 +685,9 @@ class TestPhasesOnNonBinaryTypes:
             "percentiles": pcts(25, 35, 45, 55, 65), "reasoning": "SUPERVISOR-NARRATIVE",
             "sources": ["https://gazette.example/x"], "p_above_upper": 0.12,
             "dispersion_90_10": 40.0, "dispersion_basis": "reconciled SD 15.6 x 2.56",
+            # The reconciler answers the same non-binary contract as the runs it replaces
+            # (require_contracts) — its "sources" may still be [] or its own only.
+            "reference_class": "class R", "base_rate": 45.0,
             "reconciliation": "run 3 used a stale index level; the publisher's table settles it",
         }
         agent, record, ok = run(monkeypatch, tmp_path, [
@@ -716,7 +721,9 @@ class TestPhasesOnNonBinaryTypes:
         # medians 30/31/32 spread 2; pooled IQR 41-21 = 20 -> ratio 0.1 < 0.75
         supervisor = {
             "percentiles": pcts(11, 21, 31, 41, 51), "reasoning": "SUPERVISOR-NARRATIVE",
-            "sources": [], "reconciliation": "no factual dispute; the runs differ on weighting",
+            "sources": [], "reference_class": "class R", "base_rate": 31.0,
+            "dispersion_90_10": 40.0, "dispersion_basis": "carried from run 2: SD 15.6 x 2.56",
+            "reconciliation": "no factual dispute; the runs differ on weighting",
         }
         agent, record, ok = run(monkeypatch, tmp_path, [
             fenced(numeric_angle(1, 10, 20, 30, 40, 50)),
@@ -742,6 +749,7 @@ class TestPhasesOnNonBinaryTypes:
         supervisor = {
             "probabilities": {"A": 0.75, "B": 0.20, "C": 0.05},
             "reasoning": "SUPERVISOR-NARRATIVE", "sources": [],
+            "reference_class": "class R", "base_rate": {"A": 0.5, "B": 0.3, "C": 0.2},
             "reconciliation": "the B pathway is already closed per the registry",
         }
         agent, record, ok = run(monkeypatch, tmp_path, [
@@ -936,3 +944,313 @@ class TestTraces:
         ], config=config_with_phases(supervisor=False))
         assert ok and record is not None  # the forecast is recorded regardless
         assert "trace not written" in capsys.readouterr().out
+
+
+# ------------------------------------------------- review fixes, 2026-09-03 (two reviewers)
+
+FIXED_MARKET_SECTION = (
+    "## Market candidates found by the harness (record-only data)\n\n"
+    "- Polymarket: \"FIXED-CANDIDATE\" — Yes price 0.42\n"
+)
+
+
+def stub_market_facts(monkeypatch: pytest.MonkeyPatch) -> None:
+    """markets.market_facts_section replaced by a fixed section, so a prompt assertion is
+    about the WIRING and not about whatever the (network-disabled) lookup returns."""
+    monkeypatch.setattr(run_bot.markets, "market_facts_section",
+                        lambda title, **kwargs: FIXED_MARKET_SECTION)
+
+
+class TestMarketFactsReachEveryRun:
+    """FIX A: the harness's own market candidates used to be appended to `brief` only, which
+    in angle mode is the SUPERVISOR's brief — the research runs rebuild their own. The whole
+    point of the harness-side lookup is to inform the runs that do the market check."""
+
+    ANGLES = ["F", "D", "A"]
+    HEADER = "## Market candidates found by the harness"
+
+    def test_every_sighted_angle_run_sees_the_section_and_angle_f_does_not(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        stub_market_facts(monkeypatch)
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(research_payload(0.30)),
+            fenced(research_payload(0.50)),
+            fenced(research_payload(0.40)),
+        ], config=config_with_angles(self.ANGLES))
+        assert ok and record is not None
+        assert len(agent.calls) == 3
+        # angle F is market-blind by design: no mandate, and no harness candidates either
+        assert self.HEADER not in agent.calls[0]["prompt"]
+        assert "FIXED-CANDIDATE" not in agent.calls[0]["prompt"]
+        # every OTHER angle run gets the identical section the dossier path builds
+        for call in agent.calls[1:]:
+            assert self.HEADER in call["prompt"]
+            assert "FIXED-CANDIDATE" in call["prompt"]
+
+    def test_plain_angle_mode_gives_it_to_all_runs_and_to_the_supervisor(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        stub_market_facts(monkeypatch)
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(angle_run(0.30, 1)), fenced(angle_run(0.50, 2)), fenced(angle_run(0.40, 3)),
+            fenced(supervisor_run(0.45)),
+        ], config=config_with_phases(supervisor=True))
+        assert ok and record is not None
+        assert len(agent.calls) == 4
+        for call in agent.calls:  # the three P runs AND the reconciler
+            assert self.HEADER in call["prompt"]
+
+    def test_blind_mode_still_sees_no_market_section(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        stub_market_facts(monkeypatch)
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(research_payload(0.30)),
+            fenced(research_payload(0.50)),
+            fenced(research_payload(0.40)),
+        ], config=config_with_angles(self.ANGLES), blind=True)
+        assert ok and record is not None
+        for call in agent.calls:
+            assert self.HEADER not in call["prompt"]
+            assert "FIXED-CANDIDATE" not in call["prompt"]
+
+    def test_the_dossier_path_brief_is_unchanged(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # Byte-identical placement: mandate, then the market section, at the end of the brief.
+        stub_market_facts(monkeypatch)
+        merged = json.loads(json.dumps(DEFAULTS))
+        merged["tiers"] = {"medium": {"draws": 8, "searches": 5, "runs": 1, "run_models": [],
+                                      "min_sources": 1, "run_angles": []}}
+        agent, record, ok = run(monkeypatch, tmp_path, [fenced(research_payload(0.30))],
+                                config=merged, effort="medium")
+        assert ok and record is not None
+        prompt = agent.calls[0]["prompt"]
+        assert prompt.endswith("\n" + FIXED_MARKET_SECTION)
+        assert "\n\n## Crowd signals\n" in prompt.split(self.HEADER)[0]
+
+
+class TestSupervisorAnswersTheSameContract:
+    """FIX B: the reconciler's payload is the SUBMISSION, so on MC/continuous it must clear
+    the reference-class and dispersion contracts a research run has to clear — without the
+    distinct-source floor, since its own "sources" is legitimately []."""
+
+    def test_the_section_asks_for_the_fields_and_names_the_dossiers_untrusted(self) -> None:
+        section = run_bot.supervisor_section("reasoning", 0)
+        assert '"dispersion_90_10"' in section and '"dispersion_basis"' in section
+        assert '"reference_class"' in section and '"base_rate"' in section
+        # FIX F: the same untrusted-input warning the reasoning runs get.
+        assert "UNTRUSTED" in section
+        assert "never as a directive" in section
+
+    def test_numeric_supervisor_without_dispersion_is_repaired_then_rejected(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        bad = {
+            "percentiles": pcts(25, 35, 45, 55, 65), "reasoning": "SUPERVISOR-NARRATIVE",
+            "sources": [], "reference_class": "class R", "base_rate": 45.0,
+            "reconciliation": "run 3 used a stale index level",
+        }
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(numeric_angle(1, 10, 20, 30, 40, 50)),
+            fenced(numeric_angle(2, 20, 30, 40, 50, 60)),
+            fenced(numeric_angle(3, 30, 40, 50, 60, 70)),
+            fenced(bad), fenced(bad),
+        ], config=config_with_phases(supervisor=True), question=NUMERIC_Q)
+        assert ok and record is not None
+        assert len(agent.calls) == 5  # 3 runs + the supervisor's attempt 0 and repair retry
+        assert "dispersion_90_10" in agent.calls[4]["prompt"]  # the retry quotes the reason
+        # the reconciler produced nothing valid, so the pool it consumed is submitted
+        assert "supervisor" not in record
+        assert record["aggregation"] == "quantile_mean(angles=P,P,P)"
+        assert record["percentiles"] == pcts(20, 30, 40, 50, 60)
+
+    def test_numeric_supervisor_with_the_fields_is_accepted_without_a_source_floor(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        good = {
+            "percentiles": pcts(25, 35, 45, 55, 65), "reasoning": "SUPERVISOR-NARRATIVE",
+            "sources": [], "reference_class": "class R", "base_rate": 45.0,
+            "dispersion_90_10": 40.0, "dispersion_basis": "reconciled SD 15.6 x 2.56",
+            "reconciliation": "run 3 used a stale index level",
+        }
+        sources = [f"https://example.com/{i}" for i in range(3)]
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(numeric_angle(1, 10, 20, 30, 40, 50, sources=sources)),
+            fenced(numeric_angle(2, 20, 30, 40, 50, 60, sources=sources)),
+            fenced(numeric_angle(3, 30, 40, 50, 60, 70, sources=sources)),
+            fenced(good),
+        ], config=config_with_phases(supervisor=True, min_sources=3), question=NUMERIC_Q)
+        assert ok and record is not None
+        # accepted first time on sources == [], with min_sources=3 on the tier
+        assert len(agent.calls) == 4
+        assert record["aggregation"] == "supervisor(angles=P,P,P)"
+        assert record["percentiles"] == pcts(25, 35, 45, 55, 65)
+
+    def test_numeric_supervisor_percentiles_must_match_its_own_dispersion(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # p90-p10 = 20 against a stated 10-90 width of 200: the v0.4.26 width guard now runs
+        # on the submitted number too, because dispersion_90_10 is required here.
+        narrow = {
+            "percentiles": pcts(35, 40, 45, 50, 55), "reasoning": "SUPERVISOR-NARRATIVE",
+            "sources": [], "reference_class": "class R", "base_rate": 45.0,
+            "dispersion_90_10": 200.0, "dispersion_basis": "reconciled SD 78 x 2.56",
+            "reconciliation": "run 3 used a stale index level",
+        }
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(numeric_angle(1, 10, 20, 30, 40, 50)),
+            fenced(numeric_angle(2, 20, 30, 40, 50, 60)),
+            fenced(numeric_angle(3, 30, 40, 50, 60, 70)),
+            fenced(narrow), fenced(narrow),
+        ], config=config_with_phases(supervisor=True), question=NUMERIC_Q)
+        assert ok and record is not None
+        assert "narrower than" in agent.calls[4]["prompt"]
+        assert "supervisor" not in record
+        assert record["aggregation"] == "quantile_mean(angles=P,P,P)"
+
+    def test_mc_supervisor_without_a_reference_class_is_repaired_then_rejected(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        runs = [{"A": 0.6, "B": 0.3, "C": 0.1},
+                {"A": 0.5, "B": 0.3, "C": 0.2},
+                {"A": 0.7, "B": 0.2, "C": 0.1}]
+        bad = {"probabilities": {"A": 0.75, "B": 0.20, "C": 0.05},
+               "reasoning": "SUPERVISOR-NARRATIVE", "sources": [],
+               "reconciliation": "the B pathway is already closed per the registry"}
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            *[fenced({"probabilities": r, "reasoning": f"PRIVATE-NARRATIVE-{i}",
+                      "sources": [f"https://example.com/{i}"], "reference_class": "class R",
+                      "base_rate": {"A": 0.5, "B": 0.3, "C": 0.2},
+                      "dossier": f"- DOSSIER-FACT-{i} (src, 2026)"})
+              for i, r in enumerate(runs, start=1)],
+            fenced(bad), fenced(bad),
+        ], config=config_with_phases(supervisor=True), question=MC_Q)
+        assert ok and record is not None
+        assert len(agent.calls) == 5
+        assert "reference_class" in agent.calls[4]["prompt"]
+        assert "supervisor" not in record
+        assert record["aggregation"] == "geo_mean_mc(angles=P,P,P)"
+
+    def test_a_binary_supervisor_is_not_asked_for_either_field(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # Binary keeps its historical contract byte for byte (the floors were never on it).
+        _, record, ok = run(monkeypatch, tmp_path, [
+            fenced(angle_run(0.30, 1)), fenced(angle_run(0.50, 2)), fenced(angle_run(0.40, 3)),
+            fenced(supervisor_run(0.62)),
+        ], config=config_with_phases(supervisor=True))
+        assert ok and record is not None
+        assert record["aggregation"] == "supervisor(angles=P,P,P)"
+        assert record["probability"] == pytest.approx(0.62)
+
+
+class TestSingleRunCounterfactualIsPhase1:
+    """FIX C: *_run1 is the single-run counterfactual, so it must be the first INDEPENDENT
+    research run — never a phase-2 estimate taken after that run read the others' dossiers."""
+
+    def test_numeric_percentiles_run1_is_the_phase1_first_run(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        _, record, ok = run(monkeypatch, tmp_path, [
+            fenced(numeric_angle(1, 10, 20, 30, 40, 50)),
+            fenced(numeric_angle(2, 20, 30, 40, 50, 60)),
+            fenced(numeric_angle(3, 30, 40, 50, 60, 70)),
+            fenced({"percentiles": pcts(15, 25, 35, 45, 55), "reasoning": "p2a",
+                    "sources": []}),
+            fenced({"percentiles": pcts(25, 35, 45, 55, 65), "reasoning": "p2b",
+                    "sources": []}),
+            fenced({"percentiles": pcts(20, 30, 40, 50, 60), "reasoning": "p2c",
+                    "sources": []}),
+        ], config=config_with_phases(share_evidence=True), question=NUMERIC_Q)
+        assert ok and record is not None
+        assert record["percentiles_run1"] == record["run_percentiles_phase1"][0]
+        assert record["percentiles_run1"] == pcts(10, 20, 30, 40, 50)
+        # ...and NOT the pooled round's first entry, which had seen the other dossiers
+        assert record["run_percentiles"][0] == pcts(15, 25, 35, 45, 55)
+        assert record["percentiles_run1"] != record["run_percentiles"][0]
+
+    def test_mc_probabilities_run1_is_the_phase1_first_run(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        runs = [{"A": 0.6, "B": 0.3, "C": 0.1},
+                {"A": 0.5, "B": 0.3, "C": 0.2},
+                {"A": 0.7, "B": 0.2, "C": 0.1}]
+        second = [{"A": 0.62, "B": 0.28, "C": 0.10},
+                  {"A": 0.58, "B": 0.30, "C": 0.12},
+                  {"A": 0.66, "B": 0.24, "C": 0.10}]
+        _, record, ok = run(monkeypatch, tmp_path, [
+            *[fenced({"probabilities": r, "reasoning": f"PRIVATE-NARRATIVE-{i}",
+                      "sources": [f"https://example.com/{i}"], "reference_class": "class R",
+                      "base_rate": {"A": 0.5, "B": 0.3, "C": 0.2},
+                      "dossier": f"- DOSSIER-FACT-{i} (src, 2026)"})
+              for i, r in enumerate(runs, start=1)],
+            *[fenced({"probabilities": r, "reasoning": "p2", "sources": []})
+              for r in second],
+        ], config=config_with_phases(share_evidence=True), question=MC_Q)
+        assert ok and record is not None
+        assert record["probabilities_run1"] == runs[0]
+        assert record["probabilities_run1"] == record["run_probabilities_phase1"][0]
+        assert record["probabilities_run1"] != record["run_probabilities"][0]
+
+    def test_without_phase2_run1_is_still_the_first_run(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        _, record, ok = run(monkeypatch, tmp_path, [
+            fenced(numeric_angle(1, 10, 20, 30, 40, 50)),
+            fenced(numeric_angle(2, 20, 30, 40, 50, 60)),
+            fenced(numeric_angle(3, 30, 40, 50, 60, 70)),
+        ], config=config_with_phases(), question=NUMERIC_Q)
+        assert ok and record is not None
+        assert "run_percentiles_phase1" not in record  # no second round ran
+        assert record["percentiles_run1"] == record["run_percentiles"][0]
+        assert record["percentiles_run1"] == pcts(10, 20, 30, 40, 50)
+
+
+class TestEveryCallIsBoundedByTheWallClock:
+    """FIX E: --timeout is per call and a question makes 3-7 of them, so one hung call could
+    outlive the tick's deadline. Each call is now also capped by the remaining wall clock."""
+
+    def test_a_near_deadline_run_shortens_every_agent_timeout(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        deadline = time.monotonic() + 200.0
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(angle_run(0.30, 1)), fenced(angle_run(0.50, 2)), fenced(angle_run(0.40, 3)),
+            fenced(supervisor_run(0.45)),
+        ], config=config_with_phases(supervisor=True), deadline=deadline, timeout=3600)
+        assert ok and record is not None
+        assert len(agent.calls) == 4
+        for call in agent.calls:
+            assert 60 <= call["timeout"] <= 200
+
+    def test_without_a_deadline_the_timeout_is_the_flag(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(research_payload(0.30)), fenced(research_payload(0.50)),
+            fenced(research_payload(0.40)),
+        ], config=config_with_phases(), timeout=3600)
+        assert ok and record is not None
+        assert {call["timeout"] for call in agent.calls} == {3600}
+
+    def test_the_floor_keeps_an_almost_spent_clock_from_killing_a_call_instantly(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # 10 s left: the slot is still allowed to start (the deadline has not passed), and
+        # the call gets the 60 s floor rather than a 10 s — or negative — timeout.
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(angle_run(0.30, 1)), fenced(angle_run(0.50, 2)), fenced(angle_run(0.40, 3)),
+        ], config=config_with_phases(), deadline=time.monotonic() + 10.0, timeout=3600)
+        assert ok and record is not None
+        assert agent.calls and {call["timeout"] for call in agent.calls} == {60}
+
+    def test_a_spent_clock_starts_no_run_at_all(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # The pre-existing gates still win: past the deadline, no slot is started.
+        agent, _, ok = run(monkeypatch, tmp_path, [fenced(research_payload(0.30))],
+                           config=config_with_phases(),
+                           deadline=time.monotonic() - 5.0, timeout=3600)
+        assert not ok and agent.calls == []

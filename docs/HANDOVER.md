@@ -31,10 +31,34 @@ on 6/7; batch 3 running — 16 questions/arm (mostly wave-4 numerics resolving S
 `ab/compare.py` builds the table; outcomes come from bench/sync_resolutions.py once the
 wave resolves (~Sep 5-10). Killed batch 2 (ran from the wrong dir).
 
-Pending: (1) agent finishing supervisor + share_evidence + trace files + tier equalization
-on the branch; (2) tests + supervisor dogfood + adversarial review; (3) bump to v0.4.28,
-merge to main, push, watch CI; (4) market-lookup module (bot/markets.py) + wiring into
-run_bot sighted brief and run_manifold; (5) score the A/B at resolution.
+Branch state at 905b52b (2026-09-03 23:30 UTC+1): everything below is IMPLEMENTED and
+committed on the branch, 879 tests green, vendor sync green — supervisor (conditional
+research mode via `supervisor_search_spread` / `_iqr`), `share_evidence` (off), per-question
+trace files `bot/journal/traces/<record_id>.json` + `trace_path` on the record, uniform
+research depth (searches 5 / min_sources 3 at every tier), `bot/markets.py` harness-side
+Polymarket/Manifold candidate lookup wired into run_bot's sighted brief and
+run_manifold's sighted brief (tests/conftest.py forces the lookup offline in tests),
+`bench/analysis/phase_pools.py` scorer. CHANGELOG has two `[Unreleased]` blocks tagged
+v0.4.28 — merge = bump SCAFFOLD_VERSION/pyproject/plugin.json/marketplace.json to 0.4.28,
+vendor_sync, fold the Unreleased blocks under `## [0.4.28]`.
+
+Reviews DONE (2026-09-03 23:50): red-team verdict "merge with fixes"; correctness review
+found 3 majors. A fix agent is applying all of: market facts must reach angle runs (were
+supervisor-only); supervisor payload must satisfy the reference-class + dispersion
+contracts (was bypassing v0.4.26 guards); percentiles_run1 must come from the phase-1 list
+when share_evidence ran; market lookup latency bound (5 s, 2 queries/venue, skipped when
+<120 s to deadline); every agent call bounded by the remaining deadline; supervisor prompt
+untrusted-data sentence; third-party titles sanitized (priors.safe_title); ASKNEWS_API_KEY
+out of the journal-commit step env and into its credential scan; phase_pools per-family
+herding ratio + CI bar for phase 2. Supervisor dogfood (ab/sup.jsonl, ab/traces/): ETF
+binary runs 0.08/0.08/0.18 -> pool 0.106 -> supervisor 0.12 (reasoning mode, $4.61 total);
+BTC numeric medians 81.0k/81.15k/81.05k -> supervisor 81.15k ($3.55). Both traces read as
+sound: factual disputes identified and settled, near-miss markets dismissed, no averaging.
+
+Pending: (1) fix agent reporting — then full suite, commit on the branch; (2) supervisor dogfood running (scratchpad ab/sup.log,
+ab/sup.jsonl, traces under ab/traces/) — read the reconciliation text and the trace file;
+(3) batch-3 live A/B (16 q/arm) finishing — `python ab/compare.py`; (4) merge to main, push,
+watch CI, dispatch nothing else; (5) score the A/B at resolution (sync overlay ~Sep 5-10).
 
 ## 2026-09-03: Fall-season prep — v0.4.27 (overlay, priors, checklist, discovery, alarm)
 

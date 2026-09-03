@@ -300,3 +300,21 @@ def test_workflows_use_content_free_scanner_and_tournament_publish_safely() -> N
     assert "forecast-bot-kicker" in bot
     assert manifold.count("scripts/journal_leak_guard.py") == 2
     assert "--redact-model-output" in manifold
+
+
+def test_bot_commit_step_scans_every_secret_it_is_handed() -> None:
+    """FIX G (2026-09-03 review): the Commit journal step runs no bot, so any secret in its
+    env exists only to be searched for in the journal it is about to publish. ASKNEWS_API_KEY
+    was exposed there and NOT scanned — the one combination with cost and no benefit."""
+    bot = (ROOT / ".github" / "workflows" / "bot.yml").read_text(encoding="utf-8")
+    step = bot.split("- name: Commit journal (pre-registration)")[1].split("- name:")[0]
+    exposed = {
+        line.split(":")[0].strip()
+        for line in step.split("run: |")[0].splitlines()
+        if ": ${{ secrets." in line
+    }
+    scan = next(line for line in step.splitlines() if line.strip().startswith("for secret in"))
+    scanned = {name.strip('";$ ') for name in scan.split()[3:] if name.startswith('"$')}
+    # LEAK_PATTERNS is the deny-list itself (a pattern file, not a credential value).
+    assert exposed - {"LEAK_PATTERNS"} == scanned
+    assert "ASKNEWS_API_KEY" in scanned
