@@ -179,23 +179,27 @@ def sync(journal: Path, overlay: Path, *, sleep: float, limit: int, verbose: boo
     print(f"journal questions: {len(rows)}; final in overlay: {final}; to fetch: {len(todo)}")
     client = MetaculusClient()
     written = 0
+    tally = collections.Counter()
     with overlay.open("a", encoding="utf-8") as out:
         for n, (qid, row) in enumerate(todo, 1):
             post_id = post_id_of(row)
             if post_id is None:
+                tally["no post id"] += 1
                 continue
             try:
                 post = fetch_with_backoff(client, post_id)
             except Exception as exc:  # noqa: BLE001 — one question must not stop the sync
-                print(f"  {qid}: fetch failed ({exc})")
+                print(f"  {qid}: fetch failed ({exc})", flush=True)
+                tally["fetch failed"] += 1
                 continue
             question = None
-            for q in MetaculusClient.questions_of(post):
+            for q in MetaculusClient.questions_of(post or {}):
                 if int(q.get("id", -1)) == qid:
                     question = q
                     break
             if question is None:
-                print(f"  {qid}: not found in post {post_id}")
+                print(f"  {qid}: not found in post {post_id}", flush=True)
+                tally["not found"] += 1
                 continue
             qtype = str(question.get("type") or row.get("question_type") or "")
             outcome, annulled = normalize_outcome(qtype, question.get("resolution"))
@@ -236,16 +240,21 @@ def sync(journal: Path, overlay: Path, *, sleep: float, limit: int, verbose: boo
                 prev.get(k) == entry[k]
                 for k in ("status", "resolution_raw", "spot_peer_score", "spot_baseline_score")
             ):
+                tally["unchanged"] += 1
+                if verbose:
+                    print(f"  [{n}/{len(todo)}] {qid} unchanged ({status})", flush=True)
                 time.sleep(sleep)
                 continue
             out.write(json.dumps(entry, ensure_ascii=False) + "\n")
             out.flush()
             written += 1
+            tally["written"] += 1
             if verbose or n % 25 == 0:
                 print(f"  [{n}/{len(todo)}] {qid} {qtype} {status} -> "
-                      f"{question.get('resolution')!r}")
+                      f"{question.get('resolution')!r}", flush=True)
             time.sleep(sleep)
-    print(f"wrote {written} overlay row(s) to {overlay}")
+    summary = ", ".join(f"{k}: {v}" for k, v in sorted(tally.items())) or "nothing to do"
+    print(f"wrote {written} overlay row(s) to {overlay} ({summary})", flush=True)
     return written
 
 

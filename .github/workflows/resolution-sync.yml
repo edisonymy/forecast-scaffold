@@ -30,7 +30,7 @@ jobs:
       - name: Sync resolutions
         env:
           METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
-        run: python bench/sync_resolutions.py --sleep 2.0
+        run: python bench/sync_resolutions.py --sleep 2.0 --verbose
 
       - name: Commit resolutions journal (no-op if unchanged)
         run: |
