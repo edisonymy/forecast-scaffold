@@ -586,6 +586,11 @@ def build_manifold_brief(market: dict[str, Any], sighted: bool) -> str:
             vol=market.get("volume24Hours"),
             bettors=market.get("uniqueBettorCount"),
         )
+        # Cross-venue candidates [ADDED 2026-09-03, operator]: bets were found that a real
+        # read of Polymarket would have stopped. The harness searches Polymarket and
+        # Manifold by title and hands the candidates over as record-only data; the sighted
+        # run still owns the contract-equivalence judgment. Never on the blind pass.
+        brief += "\n" + run_bot.markets.market_facts_section(str(market.get("question", "")))
     return brief
 
 

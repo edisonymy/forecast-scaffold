@@ -47,13 +47,53 @@ max = 0.98
 #               RESEARCH — "P" is a plain replicate (full research, no lens); medium runs three,
 #               high four. [] = the dossier fallback. All question types pool (binary: geo-mean
 #               odds; continuous: per-percentile mean; MC: per-option geometric mean).
+# share_evidence = angle mode only, PHASE 2. Every angle run also writes the estimate-free
+#               dossier; once they have all finished, each run gets ONE reasoning-only call
+#               carrying its own dossier plus the other runs' dossiers — evidence, never their
+#               numbers or reasoning — and those second estimates are pooled instead. Shared
+#               evidence, independent judgment (the "blackboard" row of
+#               docs/research-notes-multiagent-forecasting-2026-09-03.md). OFF at every tier
+#               (operator, 2026-09-03): an experiment switch, not production. It adds ~$1.3 a
+#               question at medium, and circulating others' views is the documented way to
+#               collapse ensemble variance WITHOUT improving accuracy (Lorenz et al. 2011) —
+#               bench/analysis/phase_pools.py scores both pools and checks for exactly that.
+# supervisor  = angle mode only, PHASE 3. One reconciler call receives every dossier and every
+#               run's estimate WITH its reasoning, lists the disagreements, classifies each
+#               FACTUAL or JUDGMENT, settles the factual ones, and issues the final number in
+#               the question's own contract. It is told NOT to average or split the difference:
+#               the pools are the averaging arm, they are journaled beside it, and the paired
+#               comparison decides. The one interactive design with forecasting-specific
+#               quantitative evidence (AIA Forecaster: 0.1182 mean-of-10 -> 0.1125 reconciled).
+# supervisor_search_spread / supervisor_search_spread_iqr = when the reconciler gets web tools.
+#               Runs that already agree have no factual dispute worth searching, so below the
+#               threshold the reconciler runs REASONING-ONLY (cheap, no web); at or above it it
+#               runs research-capable with up to `searches` targeted searches (~$1.0-1.5 more,
+#               only on the questions that disagree). The first threshold is on a probability
+#               scale (binary: max-min of the run probabilities; MC: max-min of the pooled
+#               leader's probability). The second is for continuous questions and is in IQR
+#               units: max-min of the run medians divided by the pooled p75-p25, so 1.0 means
+#               "the medians differ by a full interquartile range". Unused where supervisor is
+#               false (kept on every tier so flipping the switch needs no other edit).
+#
+# RESEARCH DEPTH IS UNIFORM ACROSS TIERS (operator, 2026-09-03): searches = 5 and
+# min_sources = 3 at every tier. A tier says how much INDEPENDENT JUDGMENT a question gets —
+# how many runs, and what synthesizes them (runs / run_angles / supervisor) — never how
+# carefully a single run reads the world. The old ladder (1/5/12 searches, 1/3/5 sources)
+# made a low-tier run research badly on purpose, and that is the one economy the survey
+# evidence contradicts outright: "research sources used" is the strongest measured
+# correlate of bot performance (r = +0.42, p = .006, Fall 2025 FutureEval survey, winners
+# averaging 1.75 sources vs 1.00), while aggregation counts were not significant.
 [tiers.low]
 draws = 1
-searches = 1
+searches = 5
 runs = 1
 run_models = []
-min_sources = 1
+min_sources = 3
 run_angles = []
+share_evidence = false
+supervisor = false
+supervisor_search_spread = 0.10
+supervisor_search_spread_iqr = 0.75
 
 [tiers.medium]
 draws = 5
@@ -62,6 +102,10 @@ runs = 3
 run_models = []
 min_sources = 3
 run_angles = ["P", "P", "P"]
+share_evidence = false
+supervisor = true
+supervisor_search_spread = 0.10
+supervisor_search_spread_iqr = 0.75
 
 # Candidate future high-tier upgrade (NOT implemented): disjoint-retrieval runs — each run
 # researches its own sources instead of sharing one dossier. Half-validated externally
@@ -69,11 +113,15 @@ run_angles = ["P", "P", "P"]
 # becomes legitimate; gated on the issue #9 evidence-elasticity result before any build.
 [tiers.high]
 draws = 12
-searches = 12
+searches = 5
 runs = 4
 run_models = []
-min_sources = 5
+min_sources = 3
 run_angles = ["P", "P", "P", "P"]
+share_evidence = false
+supervisor = true
+supervisor_search_spread = 0.08
+supervisor_search_spread_iqr = 0.5
 
 [blend]
 # Weight on the crowd/market number when one exists — used by the chat/CLI aggregate

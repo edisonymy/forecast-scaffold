@@ -53,6 +53,36 @@ The prior architecture — research once, write a dossier, fan out reasoning-onl
 lenses — remains the FALLBACK for surfaces where k research passes are unaffordable, and its
 steps follow. Either way, pool exactly as in step 3 below.
 
+**Then reconcile, don't just average (the default final step when you have subagents).** Pool
+the k runs and keep that number — then spawn ONE more subagent as a **reconciler**, giving it
+every run's evidence *and* every run's estimate with the reasoning behind it (it is the only
+context allowed to see other runs' numbers). Its job, in order: (1) list the disagreements and
+classify each **FACTUAL** — a checkable claim about the world: a date, a count, a published
+figure, which instrument actually resolves the question — or **JUDGMENT**; (2) settle the
+factual ones with targeted searches aimed at exactly those claims, nothing else; (3) issue its
+own final number plus a written *reconciliation* of what was in dispute and what settled it.
+Tell it explicitly **not to average, split the difference, or hedge toward 0.5 or the widest
+member**: you already have the pool, so a number that re-derives it adds nothing, and a
+compromise between two claims about the world is not itself a claim about the world. Landing
+between the members is right only when the reconciled evidence puts it there; landing outside
+them is right when the evidence does. Record **both** the pool and the reconciled number so the
+track record can tell you which to keep. This is the one interactive design with
+forecasting-specific quantitative evidence behind it (a supervisor over independent agents
+moved a mean-of-10 Brier 0.1140 → 0.1125); free-form peer debate has none, one tournament
+winner reported it as a failure, and the general literature documents confidently-wrong agents
+pulling correct ones into agreement. If the runs already agree closely, skip the searches and
+let the reconciler work from what it has — there is no factual dispute to settle.
+
+**Optional (experimental): circulate evidence, never numbers.** Between the runs and the
+reconciler you may add one round where each run is re-asked with the *other* runs' dossiers —
+their facts, with no probability, no lean and no reasoning attached — and pool those second
+estimates instead. Sharing facts is nearly free; seeing another forecaster's estimate is the
+correlation that kills an ensemble. **This is off by default in the harness and should stay an
+experiment until measured**, because the failure mode is invisible from the inside: showing a
+group each other's views reliably shrinks its disagreement *without* improving its accuracy
+(Lorenz et al. 2011, PNAS). If you run it, record both pools and both spreads, and treat a
+collapse in spread with no accuracy gain as evidence against the round, not for it.
+
 1. **Write the dossier** from your Step 2 research: 5–15 terse evidence bullets each with source
    and date, the status-quo outcome, base rates found (with source **and the class each is
    computed over** — when a conditioning variable is already known, carry the conditional or

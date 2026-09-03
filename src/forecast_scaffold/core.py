@@ -83,12 +83,53 @@ DEFAULTS: dict[str, Any] = {
         #              three, high four, matching `runs`. [] = the dossier fallback.
         #              All question types pool (binary: geo_mean_odds; continuous: per-
         #              percentile mean; MC: per-option geometric mean, renormalized).
-        "low": {"draws": 1, "searches": 1, "runs": 1, "run_models": [], "min_sources": 1,
-                "run_angles": []},
+        # share_evidence = angle mode only, PHASE 2. Every angle run also writes the
+        #              estimate-free dossier; after they all finish, each run gets one
+        #              reasoning-only call carrying its own dossier plus the OTHER runs'
+        #              dossiers (evidence, never numbers or reasoning), and those second
+        #              estimates are pooled instead. The blackboard design from
+        #              docs/research-notes-multiagent-forecasting-2026-09-03 §4: shared
+        #              evidence, independent judgment. OFF at every tier by operator
+        #              decision (2026-09-03) — it is an experiment switch, not production:
+        #              it adds ~$1.3/question at medium and the herding risk (Lorenz 2011:
+        #              circulating others' views collapses variance without improving
+        #              accuracy) is exactly what bench/analysis/phase_pools.py measures.
+        # supervisor = angle mode only, PHASE 3. One reconciler call sees every dossier and
+        #              every run's estimate WITH its reasoning, classifies the disagreements
+        #              FACTUAL vs JUDGMENT, settles the factual ones, and issues the final
+        #              number — the only interactive design with forecasting-specific
+        #              quantitative evidence (AIA Forecaster 0.1182 -> 0.1125; Cassi). It
+        #              never averages: the pools are already the averaging arm, and both
+        #              are journaled so the reconciler is scored against them.
+        # supervisor_search_spread / supervisor_search_spread_iqr = the disagreement
+        #              thresholds that decide whether the reconciler gets web tools. Runs
+        #              that already agree have no factual dispute to settle, so a cheap
+        #              REASONING-ONLY reconciliation is enough; only genuine disagreement
+        #              buys the research-capable call (~$1.0-1.5 more). The first threshold
+        #              is on a probability scale (binary: max-min probability; MC: max-min
+        #              of the top option); the second is for continuous questions and is
+        #              measured in IQR units (max-min of the run medians divided by the
+        #              pooled p75-p25, so 1.0 means "the medians differ by a full IQR").
+        #              Unused where supervisor is false.
+        # RESEARCH DEPTH IS NOW UNIFORM ACROSS TIERS (operator, 2026-09-03): searches=5 and
+        # min_sources=3 everywhere. A tier is a statement about how much INDEPENDENT
+        # judgment a question gets — the run count and what synthesizes it — not about how
+        # carefully any one run reads the world. The old ladder (1/5/12 searches, 1/3/5
+        # sources) made a low-tier run research badly on purpose, which is the one economy
+        # the survey evidence contradicts outright: "research sources used" is the single
+        # strongest measured correlate of bot performance (r=+0.42, p=.006, Fall 2025
+        # FutureEval survey), while aggregation counts were not significant.
+        "low": {"draws": 1, "searches": 5, "runs": 1, "run_models": [], "min_sources": 3,
+                "run_angles": [], "share_evidence": False, "supervisor": False,
+                "supervisor_search_spread": 0.10, "supervisor_search_spread_iqr": 0.75},
         "medium": {"draws": 5, "searches": 5, "runs": 3, "run_models": [], "min_sources": 3,
-                   "run_angles": ["P", "P", "P"]},
-        "high": {"draws": 12, "searches": 12, "runs": 4, "run_models": [], "min_sources": 5,
-                 "run_angles": ["P", "P", "P", "P"]},
+                   "run_angles": ["P", "P", "P"], "share_evidence": False,
+                   "supervisor": True, "supervisor_search_spread": 0.10,
+                   "supervisor_search_spread_iqr": 0.75},
+        "high": {"draws": 12, "searches": 5, "runs": 4, "run_models": [], "min_sources": 3,
+                 "run_angles": ["P", "P", "P", "P"], "share_evidence": False,
+                 "supervisor": True, "supervisor_search_spread": 0.08,
+                 "supervisor_search_spread_iqr": 0.5},
     },
     # 0.8 = Halawi et al.'s validated optimum ("4x weight for the crowd", NeurIPS 2024)
     # for blending with the SAME question's human crowd/market — the chat/CLI use where a
@@ -243,6 +284,31 @@ class ForecastRecord:
     percentiles_run1: dict[str, float] | None = None  # continuous: the research run's own
     run_probabilities: list[dict[str, float]] | None = None  # MC: {option: p} per run
     probabilities_run1: dict[str, float] | None = None  # MC: the research run's own
+    # Phased angle mode (v0.4.28). Phase 1 = the independent research runs. Phase 2
+    # (tier ``share_evidence``, off by default) re-asks each run for an estimate after
+    # circulating the OTHER runs' estimate-free dossiers; when it runs, the per-run fields
+    # above hold the PHASE-2 numbers and these hold phase 1, so both pools stay scorable.
+    # Phase 3 (tier ``supervisor``) reconciles the runs and its number is what was
+    # submitted. ``pool_phase1``/``pool_phase2`` are the pooled values in the question
+    # type's own shape (binary: float; continuous: the five percentiles; MC: {option: p});
+    # ``spread_phase1``/``spread_phase2`` are that phase's disagreement (binary: max-min
+    # probability; continuous: max-min of the run medians in question units; MC: max-min of
+    # the pooled leader's probability) — the herding check in
+    # bench/analysis/phase_pools.py needs the spreads, not just the scores, because
+    # variance collapse without an accuracy gain is the documented failure of circulating
+    # forecasts (Lorenz et al. 2011). All default None and are dropped from the serialized
+    # record, so a plain pooled forecast journals byte-identically to before.
+    raw_draws_phase1: list[float] | None = None  # binary: the phase-1 per-run probabilities
+    run_percentiles_phase1: list[dict[str, float]] | None = None  # continuous, per run
+    run_escapes_phase1: list[list[float | None]] | None = None  # continuous, parallel
+    run_probabilities_phase1: list[dict[str, float]] | None = None  # MC, per run
+    pool_phase1: float | dict[str, float] | None = None
+    pool_phase2: float | dict[str, float] | None = None
+    spread_phase1: float | None = None
+    spread_phase2: float | None = None
+    # {"estimate", "reconciliation", "sources", "mode", "spread", "cost_usd"} — the
+    # reconciler's own output, kept whether or not its number was the one submitted.
+    supervisor: dict[str, Any] | None = None
     # Continuous-question submission provenance (v0.4.13): the exact CDF submitted to the
     # platform and the scaling it was built against. Percentiles alone can't be reconstructed
     # into the ~201-point object the platform scored (open/closed bounds, log scaling, and the
@@ -262,6 +328,14 @@ class ForecastRecord:
     blind: bool | None = None
     crowd: dict[str, Any] | None = None  # {"value", "source", "at"} captured at forecast time
     cost_usd: float | None = None  # what producing this forecast cost (all agent calls)
+    # Path, RELATIVE TO THE JOURNAL FILE'S DIRECTORY, of the per-question trace: one JSON
+    # object per agent call (phase, run index, model, cost, seconds, that run's own
+    # estimate, its reasoning, its sources, its dossier) plus the pools and what was
+    # submitted. The journal answers "what did it forecast"; the trace answers "what did
+    # each run actually think", which is the thing a reviewer cannot reconstruct from a
+    # pooled number. Written after the record, best-effort: a trace that fails to write
+    # prints and never blocks a forecast, so this can be absent on any row.
+    trace_path: str | None = None
     reasoning: str = ""
     what_would_change_my_mind: list[str] = field(default_factory=list)
     research: dict[str, Any] | None = None  # {"n_searches", "sources": [...]}

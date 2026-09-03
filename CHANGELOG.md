@@ -42,7 +42,88 @@ under a different version.
   is negative; otherwise extend one more wave. MC is explicitly out of scope (the platform
   scores it with a different formula and the sample cannot power a rule).
 
+- **Two phases on top of parallel research, each behind a tier flag** (`share_evidence`,
+  `supervisor` in `core.DEFAULTS` + `config/forecast.toml`; wired in `bot/run_bot.py`).
+  Angle mode already ran k independent full-research runs and pooled them (phase 1).
+  **Phase 2 — shared evidence, independent judgment:** every angle run also writes the
+  estimate-free dossier, and once they have all finished each run gets ONE reasoning-only
+  call carrying its own dossier plus the other runs' dossiers — evidence, never their
+  numbers, their reasoning or their identities — and the second round is pooled instead.
+  **Phase 3 — supervisor:** one reconciler receives every dossier and every estimate WITH
+  its reasoning, lists the disagreements, classifies each FACTUAL (checkable) or JUDGMENT,
+  settles the factual ones, and issues the final number in the question's own contract plus
+  a `reconciliation` audit string. It is told explicitly not to average, split the
+  difference, or hedge toward 0.5 or the widest member: the harness already computes and
+  journals the pool, so a number that re-derives it adds nothing. Both phases obey the same
+  budget/deadline stops as a run slot (skip the phase, print why, fall back one level), and
+  a supervisor payload that fails validation twice falls back to the pool it consumed.
+- **The supervisor's research budget is conditional on disagreement** (tier
+  `supervisor_search_spread`, probability scale; `supervisor_search_spread_iqr`, continuous,
+  in IQR units). Below the threshold the reconciler runs REASONING-ONLY — `WebSearch` and
+  `WebFetch` denied at the CLI, not merely discouraged in the prompt — because runs that
+  already agree have no factual dispute to settle; at or above it, research-capable with up
+  to the tier's `searches` targeted checks. The spread decides once, before the call, so a
+  question's cost is predictable from numbers the harness already has. `supervisor.mode` and
+  `supervisor.spread` journal which path ran and the number that chose it.
+- **Every phase's pool is journaled beside the number submitted** (`pool_phase1`,
+  `pool_phase2`, `spread_phase1`, `spread_phase2`, `raw_draws_phase1`,
+  `run_percentiles_phase1`, `run_escapes_phase1`, `run_probabilities_phase1`, `supervisor`
+  on `ForecastRecord`; see docs/schema.md). The spreads are journaled deliberately: a
+  variant that halves the ensemble's disagreement without improving accuracy has reproduced
+  Lorenz et al.'s herding result in-bot, and that failure looks like agreement unless a
+  number fixed in advance rules it out.
+- **Preregistered scorer** `bench/analysis/phase_pools.py`: scores PHASE 1 vs PHASE 2 vs
+  SUPERVISOR paired on the same question — log score for binaries, the platform's continuous
+  baseline formula (pchip `percentiles_to_cdf` + `minibench_numeric_tails.score_row`) for
+  numerics, each arm rebuilt with the tails that arm declared — with a bootstrap CI90 on
+  every paired delta, plus the herding check (mean `spread_phase2` / `spread_phase1` beside
+  the paired Brier delta). **Decision rules, fixed before any data:** phase 2 is kept only if
+  its paired delta vs phase 1 is >= 0 AND the spread ratio is not < 0.5 with a non-positive
+  delta; the supervisor is kept only if its paired delta vs the phase it consumed has a CI90
+  excluding zero on the positive side after two MiniBench waves (n >= 40 binaries, or 60
+  mixed). MC is out of scope, as in `pooled_vs_single.py`.
+
+- **Per-question traces** (`bot/journal/traces/<record_id>.json`; `trace_path` on
+  `ForecastRecord`). The journal says what the bot forecast; the trace says what each RUN
+  thought — one object per agent call carrying phase/stage/run index/angle, mode, model,
+  cost, seconds, that run's own estimate, its reasoning, its sources, its dossier, the
+  reconciler's `reconciliation` and `disagreements`, and the first attempt's validation
+  errors when a repair retry happened — plus each phase's pool, the spreads, and what was
+  submitted. At three-to-seven calls a question, the pooled number is the one thing that
+  cannot be reverse-engineered into the reasoning behind it. The dossier (non-angle) path is
+  traced identically, so old-design runs stay readable. Text fields cap at 6 KB and the file
+  at ~60 KB (these are committed hourly); the write happens AFTER the journal append and is
+  fail-open — a trace that cannot be written prints a warning and never costs a forecast.
+  `bot.yml` already stages `bot/journal/` wholesale, so traces are committed with the
+  journal and scanned by the same fail-closed leak guard.
+
 ### Changed
+- **Research depth is now uniform across tiers** (operator, 2026-09-03): `searches = 5` and
+  `min_sources = 3` at low, medium and high (was 1/5/12 searches and 1/3/5 sources). A tier
+  states how much independent JUDGMENT a question gets — the run count and what synthesizes
+  it — never how carefully any single run reads the world. The old ladder made a low-tier run
+  research badly on purpose, and that is the one economy the survey evidence contradicts
+  outright: "research sources used" is the strongest measured correlate of bot performance
+  (r = +0.42, p = .006, Fall 2025 FutureEval survey; winners averaged 1.75 sources vs 1.00),
+  while "aggregates multiple forecasts" was not significant. `runs` (1/3/4), `run_angles`
+  ([] / P,P,P / P,P,P,P) and `supervisor` (off/on/on) still ladder.
+- **Cost of a medium question, at opus-5.** Parallel research alone is ~$4.0/question
+  (three independent research runs), against ~$2.2 before parallel research. The supervisor
+  adds ~$0.4 in its reasoning-only mode — ~$4.4 all-in for the shipped default — and
+  ~$1.0-1.5 more only on the questions whose runs actually disagree enough to buy the
+  research-capable call. Phase 2, were it enabled, would add ~$1.3.
+- **`share_evidence` ships OFF at every tier** (operator decision, 2026-09-03): an
+  experiment switch, not production. It is the design with no clean forecasting evidence
+  either way (no published RCT isolates the shared-evidence-pool condition) and a documented
+  failure mode (Lorenz et al. 2011: circulating others' estimates converged a 144-person
+  group and shrank its variance without improving mean accuracy). `supervisor` ships ON at
+  medium/high — the one interactive design with forecasting-specific quantitative evidence
+  (AIA Forecaster: mean-of-10 Brier 0.1140 -> 0.1125 reconciled; Cassi AI uses the pattern),
+  and the design docs/research-notes-multiagent-forecasting-2026-09-03.md recommends testing
+  first.
+- Angle runs write the estimate-free dossier whenever a later phase will consume their
+  evidence (either flag on), so the reconciler has something to reconcile beyond five lines
+  of reasoning apiece. With both flags off the angle runs are byte-for-byte unchanged.
 - **Angle mode is no longer binary-only.** `run_angles` flips the flow to N independent
   full-research runs on every question type; the angle briefs steer where a run looks,
   which is type-agnostic, and each type now has a pool. Angle runs are research runs, so

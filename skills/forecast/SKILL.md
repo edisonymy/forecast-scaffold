@@ -56,9 +56,9 @@ Tier parameters (number of draws, searches) come from config; the stages each ti
 | Stage | low | medium | high |
 |---|---|---|---|
 | Operationalize (Step 1) | inline checklist | + `references/question-hygiene.md` | same, + adversarial re-read |
-| Research (Step 2) | 1 search (the already-resolved check), reference class from knowledge | `references/research.md` | same, + historical/current two-pass |
+| Research (Step 2) | `references/research.md` — research depth does **not** ladder | same | same, + historical/current two-pass |
 | Reason (Step 3) | short scratchpad | full `references/reasoning.md` spine | same, + premortem + second private estimate |
-| Draws & aggregate (Step 4) | 1 draw, clamp | subagent fan-out on a shared dossier (`runs`), crowd blend | same with more runs (cross-model if available), + consistency checks |
+| Draws & aggregate (Step 4) | 1 run, clamp | k parallel independent runs (`runs`), pooled, then a reconciler; crowd blend | same with more runs (cross-model if available), + consistency checks |
 | Record (Step 5) | always | always | always |
 
 ## Step 1 — Operationalize the question
@@ -75,12 +75,16 @@ tier, work through `references/question-hygiene.md`.
 
 ## Step 2 — Research
 
-Low tier: name a reference class and its base rate from what you know; one search only to confirm
-the question is not already resolved. Medium+: follow `references/research.md` — hunt the evidence
-that would most change the estimate, use at least two independent sources, primary sources first,
-red-team your own draft answer. Never invent a base rate; search for published data, and if none
-exists, construct one from counted instances and say so. Capture `{n_searches, sources}` for the
-record.
+**Research depth does not ladder with the tier** — every tier follows `references/research.md`
+and config ships the same `searches` and `min_sources` at low, medium and high. A tier says how
+much independent *judgment* a question gets (Step 4's run count and what synthesizes it), never
+how carefully one pass reads the world: sources consulted is the strongest measured correlate of
+forecasting-bot performance, while aggregation counts are not. So at every tier: hunt the evidence
+that would most change the estimate, check first whether the question is already resolved, use at
+least two independent sources, primary sources first, red-team your own draft answer. Never invent
+a base rate; search for published data, and if none exists, construct one from counted instances
+and say so. Capture `{n_searches, sources}` for the record. What low tier buys you is *fewer
+runs*, not a shallower one.
 
 ## Step 3 — Reason
 
@@ -104,9 +108,12 @@ searches, its own reference class, its own probability — never seeing each oth
 numbers — and pool. Research and reasoning both happen independently k times; that is where the
 disagreement worth pooling comes from. Where k research passes are unaffordable, the fallback is
 one research pass written up as an estimate-free dossier and k reasoning-only subagents under
-lenses. Both protocols, the lens list, and the no-numbers-in-the-dossier rule (load-bearing for
-the fallback) are in `references/aggregate.md`. Then pool with the tool, which applies the
-configured clamp:
+lenses. After pooling, the default final step is one more subagent as a **reconciler** — it
+sees every run's evidence and number, classifies the disagreements factual vs judgment, settles
+the factual ones by targeted search, and issues its own number without averaging (keep the pool
+too). Both protocols, the reconciler brief, the lens list, and the no-numbers-in-the-dossier
+rule (load-bearing for the fallback) are in `references/aggregate.md`. Then pool with the tool,
+which applies the configured clamp:
 
 ```
 python fsj.py aggregate --draws 0.52,0.58,0.56,0.61,0.66 --method geo_mean_odds --crowd 0.60

@@ -73,6 +73,85 @@ A/B split and no question is spent on a control arm;
 platform's own continuous formula, and carries the preregistered decision rule (KEEP
 pooling only if the paired CI90 excludes zero on the positive side at n >= 60).
 
+## The three phases of a medium/high question (v0.4.28)
+
+Angle mode runs `run_angles` **independent full-research runs** — production is Angle P, a
+plain replicate, three at medium and four at high. Two further phases sit on top of it, each
+behind a tier flag, and every phase's pool is journaled beside the number actually
+submitted, so which architecture wins is a measurement rather than an argument.
+
+| Phase | Flag | What it is | Default | What it adds per question (opus-5, medium) |
+|---|---|---|---|---|
+| 1 — parallel research | `run_angles` | k independent research runs, pooled | **on** (3 / 4 runs) | ≈ **$4.0** total |
+| 2 — shared evidence | `share_evidence` | every run also writes the estimate-free dossier; each is then re-asked once with the OTHER runs' dossiers — evidence, never their numbers or reasoning — and the second round is pooled instead | **off, every tier** | ≈ **+$1.3** |
+| 3 — supervisor | `supervisor` | one reconciler sees every dossier and every estimate **with** its reasoning, lists the disagreements, classifies each FACTUAL or JUDGMENT, settles the factual ones, and issues the final number | **on** at medium/high | ≈ **+$0.4** reasoning-only (**$4.4** all-in), **+$1.0–1.5** on the questions that disagree |
+
+**Phase 2 is off by design** (operator decision, 2026-09-03): it is an experiment switch,
+not production. Circulating other forecasters' material is the documented way to collapse a
+group's variance *without* improving its mean accuracy (Lorenz et al. 2011, PNAS — N=144,
+"remarkably little" social influence needed), which is why the harness journals
+`spread_phase1` / `spread_phase2` and the scorer refuses to keep the phase on a variance
+collapse with no accuracy gain.
+
+**The supervisor's research budget is conditional on disagreement.** Runs that already agree
+have no factual dispute worth searching, so the harness measures the spread of the phase the
+reconciler consumes and compares it with the tier's threshold:
+`supervisor_search_spread` on a probability scale (binary: max−min probability; MC: max−min
+of the pooled leader) and `supervisor_search_spread_iqr` in IQR units for continuous
+questions (max−min of the run medians ÷ the pooled p75−p25, so 1.0 = "a full interquartile
+range apart"). Below it, the reconciler runs **reasoning-only** — web tools denied at the CLI,
+not merely discouraged in the prompt — and reconciles on the evidence in front of it. At or
+above it, it runs **research-capable** with up to the tier's `searches` targeted checks. The
+spread decides once, before the call; a factual conflict the reconciler notices afterwards
+cannot re-arm the tools, which keeps a question's cost predictable. `supervisor.mode` and
+`supervisor.spread` journal which path was taken and the number that chose it.
+
+The reconciler is explicitly told **not to average**: the pool is already computed and
+journaled beside it, so a number that merely re-derives it adds nothing, and a compromise
+between two claims about the world is not itself a claim about the world. Its own number is
+submitted only when it validates; otherwise the pool it consumed is, and `aggregation` says
+which (`supervisor(angles=P,P,P)` vs `geo_mean_odds(angles=P,P,P)`). Both phases obey the
+same budget and deadline stops as a run slot: an exhausted budget skips the phase, prints
+why, and falls back one level.
+
+Research depth does **not** vary by tier (operator, 2026-09-03): `searches = 5` and
+`min_sources = 3` at low, medium and high. A tier says how much independent *judgment* a
+question gets — how many runs, and what synthesizes them — never how carefully one run reads
+the world. The old ladder made a low-tier run research badly on purpose, and "research
+sources used" is the strongest measured correlate of bot performance in the Fall 2025
+FutureEval survey (r = +0.42, p = .006), while aggregation counts were not significant.
+
+## Traces: what each run actually thought
+
+The journal records what the bot forecast; the **trace** records what each run thought. Once
+a question is three-to-seven agent calls deep, the submitted number is the one thing that
+cannot be reverse-engineered back into its reasoning, and "the pool moved because run 2
+found X" is exactly the review question. Every record therefore names a
+`trace_path` — `traces/<record_id>.json`, relative to the journal directory — holding one
+object per agent call:
+
+```
+phase / stage / run_index / angle / mode / model / cost_usd / seconds / ok
+estimate (the run's OWN number, type-shaped) / reasoning / sources / dossier
+reconciliation + disagreements (supervisor) / searches_used (when reported)
+validation_errors_first_attempt (only when a repair retry happened)
+```
+
+plus each phase's pool, the spreads, and what was finally submitted. The dossier (non-angle)
+path is traced the same way, so old-design runs stay readable. Text fields are capped at
+6 KB and the whole file at ~60 KB — these are committed on every hourly run, so an unbounded
+dossier would bloat the repo forever. Writing happens **after** the journal append and is
+fail-open: a trace that cannot be written prints a warning and never costs a forecast. Since
+`bot.yml` stages `bot/journal/` wholesale, traces are committed with the journal and pass
+through the same leak guard (which is fail-closed on any line, trace lines included).
+
+`bench/analysis/phase_pools.py` scores all three arms paired at resolution — log score for
+binaries, the platform's continuous formula for numerics, bootstrap CI90 on each delta —
+plus the herding check. **Preregistered rules:** phase 2 is kept only if its paired delta vs
+phase 1 is ≥ 0 *and* the spread ratio is not below 0.5 alongside a non-positive delta; the
+supervisor is kept only if its paired delta vs the phase it consumed has a CI90 excluding
+zero on the positive side after two MiniBench waves (n ≥ 40 binaries, or 60 mixed).
+
 ## Workflows
 
 - `.github/workflows/bot-test.yml` — manual dispatch, defaults to a dry run; use for the

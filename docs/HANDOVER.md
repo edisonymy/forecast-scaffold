@@ -1,5 +1,41 @@
 # HANDOVER — continuation state as of 2026-07-16
 
+## 2026-09-03 (evening): branch feat/parallel-research — IN FLIGHT, read before resuming
+
+State: main is at 153bd0b (v0.4.27 + a sync-script fix). Branch `feat/parallel-research`
+(commit 7b9aeee + uncommitted agent work) carries the architecture change the operator
+decided today. NOT merged. Merge criteria the operator set: no clear regression on live test
+questions, reasoning traces available and sensible on a vibe check, cost under ~2x the old
+design; then merge without a full preregistered A/B.
+
+Operator decisions today (also in memory/operator-design-preferences.md):
+- Parallel independent research is THE design: medium = 3 plain research runs (Angle P),
+  high = 4, low = 1; tiers differ only in run count and synthesis. Research depth equal at
+  every tier (searches 5 / min_sources 3 everywhere — the agent is applying this).
+- Reconciler ("supervisor") over independent runs: sees every dossier + every estimate with
+  reasoning, classifies disagreements factual/judgment, settles factual ones by targeted
+  search ONLY when runs disagree beyond a spread threshold (else reasoning-only, cheap),
+  never averages. Submitted number = supervisor; pools journaled as counterfactuals.
+- Evidence sharing between runs (no numbers) built but OFF by default (cost; Lorenz herding).
+- Same-template prior facts: OFF by default, data-only (operator: overfits MiniBench).
+- Community numbers are indicative only. Test runs must not read Metaculus.
+- Keep opus-5. Three phases too expensive; target ≈ $4.4/q at medium (old ≈ $2.2).
+- Manifold bot observation: it does not check other prediction markets enough — build a
+  harness-side market lookup (Polymarket/Manifold public search, Kalshi if feasible) that
+  hands candidate markets to every sighted research run as record-only facts.
+
+Live test in progress (scratchpad …/scratchpad/ab/, worktrees fs-main = old design at
+origin/main with Metaculus fetches banned, fs-branch = branch at 7b9aeee likewise):
+batch 1 done — 7 paired binaries, old $2.36/q vs new $2.86/q (1.21x), numbers within 0.03
+on 6/7; batch 3 running — 16 questions/arm (mostly wave-4 numerics resolving Sep 4-7).
+`ab/compare.py` builds the table; outcomes come from bench/sync_resolutions.py once the
+wave resolves (~Sep 5-10). Killed batch 2 (ran from the wrong dir).
+
+Pending: (1) agent finishing supervisor + share_evidence + trace files + tier equalization
+on the branch; (2) tests + supervisor dogfood + adversarial review; (3) bump to v0.4.28,
+merge to main, push, watch CI; (4) market-lookup module (bot/markets.py) + wiring into
+run_bot sighted brief and run_manifold; (5) score the A/B at resolution.
+
 ## 2026-09-03: Fall-season prep — v0.4.27 (overlay, priors, checklist, discovery, alarm)
 
 Review: `docs/review-2026-09-03-fall-season-prep.md` (plain summary at the top). Season

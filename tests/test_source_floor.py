@@ -428,10 +428,12 @@ class TestResearchChecklist:
 
 
 class TestDefaults:
-    def test_every_tier_ships_a_floor(self) -> None:
-        assert DEFAULTS["tiers"]["low"]["min_sources"] == 1
-        assert DEFAULTS["tiers"]["medium"]["min_sources"] == 3
-        assert DEFAULTS["tiers"]["high"]["min_sources"] == 5
+    def test_every_tier_ships_the_same_floor(self) -> None:
+        # Uniform since the 2026-09-03 operator decision (was 1/3/5): a tier sets how much
+        # independent judgment a question gets, never how carefully one run reads the world.
+        for tier in ("low", "medium", "high"):
+            assert DEFAULTS["tiers"][tier]["min_sources"] == 3
+            assert DEFAULTS["tiers"][tier]["searches"] == 5
 
     def test_floor_never_exceeds_the_search_budget(self) -> None:
         for tier, params in DEFAULTS["tiers"].items():

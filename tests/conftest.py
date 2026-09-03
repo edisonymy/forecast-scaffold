@@ -41,3 +41,21 @@ def _no_inherited_metered_auth(monkeypatch: pytest.MonkeyPatch) -> None:
     works — this only stops the AMBIENT shell from deciding what the suite covers."""
     for name in run_manifold.METERED_AUTH_ENV:
         monkeypatch.delenv(name, raising=False)
+
+
+@pytest.fixture(autouse=True)
+def _no_live_market_lookup(monkeypatch):
+    """bot/markets.py searches Polymarket/Manifold on every sighted brief; tests must never
+    reach the network. Failing the transport makes the lookup fail-open to its 'none found'
+    section, which is exactly the production behaviour when a venue is down."""
+    import sys
+    from pathlib import Path as _P
+    bot_dir = str(_P(__file__).resolve().parents[1] / "bot")
+    if bot_dir not in sys.path:
+        sys.path.insert(0, bot_dir)
+    import markets
+
+    def _offline(url):
+        raise OSError("network disabled in tests")
+
+    monkeypatch.setattr(markets, "_get_json", _offline)
