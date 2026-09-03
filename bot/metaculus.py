@@ -113,6 +113,19 @@ class MetaculusClient:
                 break
         return results[:limit]
 
+    def tournaments(self, *, limit: int = 300) -> list[dict[str, Any]]:
+        """All tournament projects Metaculus currently lists (public, no auth needed).
+
+        Used to auto-discover the current seasonal FutureEval Bot Tournament slug,
+        which doesn't exist until Metaculus creates it each Jan/May/Sept — a hardcoded
+        roster slug is stale by construction for the first days of every season. The
+        endpoint returns a bare JSON list; the dict-with-``results`` fallback matches
+        this file's usual defensiveness in case that ever changes."""
+        page = self._request("GET", "/projects/tournaments/", params={"limit": limit})
+        if isinstance(page, list):
+            return page
+        return (page or {}).get("results", [])
+
     def post_detail(self, post_id: int) -> dict[str, Any]:
         detail: dict[str, Any] = self._request(
             "GET", f"/posts/{post_id}/", params={"with_cp": "true"}

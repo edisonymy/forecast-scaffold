@@ -330,6 +330,15 @@ class TestResearchChecklist:
         "regime-break candidate in each direction, and whether simple continuation exits the "
         "range by the deadline.",
         "Named resolution source: when it next updates relative to the deadline.",
+        # [ADDED 2026-09-03] the two measured-width items: the empirical h-step spread of a
+        # series, and the empirical frequency of an event in same-length windows. Record-only
+        # like the rest — the fact is written down; the number is the forecaster's.
+        "Series questions (a level, price, index, count or poll with a history): the observed "
+        "spread of past changes over windows the same length as the remaining horizon — its "
+        "10th-90th range over the last one to two years, naming the series and the window.",
+        "Event-in-window questions (will X happen between two dates): out of the same-length "
+        "windows in the last one to two years, how many contained an X — the count, the "
+        "windows checked, and the source.",
     )
     MARKET_ITEM_SKILL = (
         "Any relevant market: price, venue, liquidity/volume, timestamp of the last meaningful "

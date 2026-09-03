@@ -4,6 +4,60 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.27] - 2026-09-03
+
+Fall-season prep (docs/review-2026-09-03-fall-season-prep.md is the review behind it).
+Production prompt change is record-only; everything numeric stays preregistered.
+
+### Added
+- **Resolutions overlay + season readout** (`bench/sync_resolutions.py`): the journal never
+  learned how a question resolved (all 444 rows were `status: open`), so the calibration
+  layer and any reference-class lookup had nothing to read. The sync writes an append-only
+  overlay `bot/journal/resolutions.jsonl` (platform status/resolution, normalized outcome,
+  our own spot peer / baseline scores — which the API DOES return for our own forecasts —
+  and the PIT of the outcome under our submitted CDF) without ever rewriting the journal,
+  so it cannot race the 10-minute CI commits. `--readout` prints the per-type / tier /
+  model / version / month tables, binary buckets and continuous PIT coverage.
+- **Same-template prior facts** (`bot/priors.py`, wired into the RESEARCH run's brief
+  only): for a question whose stripped title matches an earlier resolved question of the
+  same type (Jaccard >= 0.6 — MiniBench regenerates the same templates every wave), the
+  research run receives the platform outcome, our earlier median/quartiles and the PIT as
+  record-only data. Never blocks a run; reasoning runs do not see it. Motivation: the
+  Spring 2026 bot-maker survey's strongest research correlate was "checks similar
+  questions" (r=+0.34) and "looks up similar resolved questions" split Fall-2025 winners
+  from non-winners 34% vs 0%.
+- **Research checklist, two record-only items** (bot prompt + references/research.md,
+  surface-pinned by tests): the empirical spread of a series' past changes over windows
+  the same length as the remaining horizon, and the empirical count of same-length
+  windows containing an event. Both address the measured width signature (our 25-75
+  interval 0.62-0.67x the crowd's across four waves; 10-90 coverage 70-76%) and the
+  low-bucket binary under-call, without any directional wording.
+- **Seasonal slug auto-discovery** (`--discover`, default on): `MetaculusClient.
+  tournaments()` + `discover_seasonal_slugs()` add any active "FutureEval Bot Tournament"
+  / "AI Forecasting Benchmark Tournament" project to the configured roster, so the Fall
+  season is covered from its first tick without a variable edit. Configured slugs are
+  never removed; discovery failure falls back to the configured list.
+- **Journal alarm** (`scripts/journal_alarm.py`, `.github/workflows/journal-alarm.yml`,
+  hourly): opens one deduplicated issue when no successful bot run exists for 2 h, or
+  when open questions exist and the journal has been silent for 6 h. The 2026-08-01
+  silent day (6 questions missed) had no tripwire.
+- **Platt activation gate on the live record** (`bench/analysis/platt_gate.py`): fit on
+  forecasts before a cutoff, score after, plus 5-fold CV; writes `recalibration.json`
+  only when both help. On the full overlay (130 resolved binaries): temporal test delta
+  +0.006 (cutoff 2026-08-01) / -0.0002 (2026-08-10), 5-fold CV -0.0007 — recalibration
+  STAYS INERT (`bench/analysis/platt-gate-2026-09-03.txt`).
+- **Kernel-smoothed pchip, preregistered** (`bench/analysis/minibench_kernel_vs_pchip.py`):
+  the operator's cusp-and-corners observation is a real pchip artifact (1.56x
+  trough-to-peak swing inside the IQR on the TrendForce DDR5 question). Paired vs plain
+  pchip on 97 resolved continuous rows: +2.20/q, CI90 [-0.11, +4.95], helps on 35/90
+  changed — NOT promotable; decision deferred to the 2026-08-24 wave readout under the
+  rule in the file header (CI excludes zero AND helps on >= 55% AND anchor drift < 0.02).
+
+### Changed
+- `docs/review-2026-09-03-fall-season-prep.md` records the season standing (rank 44 of
+  267, +4.2/q vs leaders' +18/q; continuous questions -399 over 29 q; July -5.6/q vs
+  August +24.8/q) and the ordered proposals with their decision rules.
+
 ## [0.4.26] - 2026-08-23
 
 ### Added

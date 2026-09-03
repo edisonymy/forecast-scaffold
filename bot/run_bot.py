@@ -38,6 +38,7 @@ sys.path.insert(0, str(ROOT / "bot"))  # so sibling bot modules (asknews) import
 
 # ruff: noqa: E402  (imports follow the sys.path bootstrap above)
 import asknews  # optional AskNews research source (dark by default; no key -> no-op)
+import priors  # same-template prior outcomes from the resolutions overlay (record-only)
 from metaculus import MetaculusClient
 
 from forecast_scaffold.core import (
@@ -244,6 +245,12 @@ Record what applies — each item says what to WRITE DOWN, never which way to mo
   regime-break candidate in each direction, and whether simple continuation exits the range
   by the deadline.
 - Named resolution source: when it next updates relative to the deadline.
+- Series questions (a level, price, index, count or poll with a history): the observed
+  spread of past changes over windows the same length as the remaining horizon — its
+  10th-90th range over the last one to two years, naming the series and the window.
+- Event-in-window questions (will X happen between two dates): out of the same-length
+  windows in the last one to two years, how many contained an X — the count, the windows
+  checked, and the source.
 """
 # The checklist's fourth item (market metadata) deliberately does NOT appear above: this
 # constant reaches blind runs and the market-blind angle F, where a "record the market price"
@@ -1064,6 +1071,85 @@ def collect_open_posts(
     return posts
 
 
+# Seasonal tournament names as Metaculus has spelled them (July 2026): the FutureEval
+# branding ("Spring/Summer/Fall <year> FutureEval Bot Tournament") and the older "AI
+# Forecasting Benchmark Tournament" naming both recur every Jan/May/Sept. Case-
+# insensitive since capitalization has drifted between seasons.
+SEASONAL_TOURNAMENT_RE = re.compile(
+    r"(?i)(futureeval bot tournament|ai forecasting benchmark tournament)"
+)
+# A warmup/practice/testing round can carry the same naming ahead of the real season —
+# never auto-add one of those (this bot has nothing to gain from forecasting on it).
+SEASONAL_EXCLUDE_RE = re.compile(r"(?i)(warmup|practice|testing)")
+
+
+def _parse_iso_z(value: Any) -> datetime | None:
+    """Parse a Metaculus timestamp (ISO-8601, optionally with a trailing 'Z')."""
+    if not value:
+        return None
+    text = str(value)
+    if text.endswith("Z"):
+        text = text[:-1] + "+00:00"
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo is not None else parsed.replace(tzinfo=UTC)
+
+
+def discover_seasonal_slugs(projects: list[dict[str, Any]], now: datetime) -> list[str]:
+    """Slugs of the seasonal FutureEval/benchmark tournaments that are active at `now`.
+
+    [ADDED 2026-09-03] Metaculus starts a new seasonal tournament every January, May
+    and September under a slug that does not exist until they create it, so a --tournament
+    roster edited after the fact means zero coverage for the first days of every season.
+    This scans the public `/projects/tournaments/` list (see MetaculusClient.tournaments)
+    for the seasonal naming and returns only the ones currently running, so the roster can
+    treat discovery as the primary path and its own config as a trailing safety net.
+
+    "Active" means: start_date <= now when start_date is present (no lower bound
+    otherwise), and the later of forecasting_end_date / close_date is > now — a project
+    with neither end field is excluded outright (an undated tournament could be an
+    all-time evergreen project, not a season). Sorted by start_date descending so the
+    newest season leads when more than one project ever qualifies at once."""
+    active: list[tuple[datetime, str]] = []
+    for project in projects:
+        name = str(project.get("name") or "")
+        slug = project.get("slug")
+        if not slug or not SEASONAL_TOURNAMENT_RE.search(name):
+            continue
+        if SEASONAL_EXCLUDE_RE.search(name):
+            continue
+        start = _parse_iso_z(project.get("start_date"))
+        if start is not None and start > now:
+            continue
+        ends = [d for d in (
+            _parse_iso_z(project.get("forecasting_end_date")),
+            _parse_iso_z(project.get("close_date")),
+        ) if d is not None]
+        if not ends or max(ends) <= now:
+            continue
+        active.append((start or datetime.min.replace(tzinfo=UTC), str(slug)))
+    active.sort(key=lambda pair: pair[0], reverse=True)
+    return [slug for _, slug in active]
+
+
+def merged_tournament_slugs(configured: str, discovered: list[str]) -> str:
+    """Union configured and discovered tournament slugs: configured first, deduped.
+
+    Discovery only ever ADDS coverage — it must never drop a slug the operator put in
+    config, so configured slugs always win the front of the order and every slug
+    (configured or discovered) appears exactly once."""
+    seen: set[str] = set()
+    merged: list[str] = []
+    configured_slugs = [s.strip() for s in str(configured or "").split(",") if s.strip()]
+    for slug in (*configured_slugs, *discovered):
+        if slug not in seen:
+            seen.add(slug)
+            merged.append(slug)
+    return ",".join(merged)
+
+
 def forecast_question(
     client: MetaculusClient,
     post: dict[str, Any],
@@ -1146,6 +1232,24 @@ def forecast_question(
     )
     # Ambient brief (unchanged for the dossier path): sighted mode carries the mandate.
     brief = base_brief + ("" if args.blind else crowd_signals)
+    # Same-template prior facts [ADDED 2026-09-03]: the platform outcomes of earlier
+    # questions with this template and our own submission on each, read from the
+    # resolutions overlay next to the journal (bench/sync_resolutions.py writes it). MiniBench
+    # regenerates templates every wave, so this is the cheapest reference class there is.
+    # Record-only data for the RESEARCH run only (reasoning runs work from its dossier);
+    # any failure to read it costs nothing but the section.
+    try:
+        prior_facts = priors.prior_facts_section(
+            str(question.get("title") or post.get("title") or ""), qtype,
+            overlay_path=Path(journal.path).parent / "resolutions.jsonl",
+            journal_path=Path(journal.path),
+            exclude_question_id=int(question.get("id") or 0) or None,
+        )
+    except Exception as exc:  # noqa: BLE001 — prior facts must never block a forecast
+        print(f"  prior facts unavailable ({exc})")
+        prior_facts = ""
+    if prior_facts:
+        print(f"  prior same-template facts: {prior_facts.count(chr(10) + '- ')} row(s)")
     base_cmd = (
         openrouter_model_cmd(args.agent_cmd)
         if args.provider == "openrouter" else args.agent_cmd
@@ -1414,7 +1518,7 @@ def forecast_question(
                 + angle_brief_section(letter, angle_sections[letter])
             )
             candidate, model, errors = one_run(
-                run_cmd, run_brief + news, run_system, False, args.timeout,
+                run_cmd, run_brief + prior_facts + news, run_system, False, args.timeout,
                 min_sources=min_sources,
             )
             if candidate is None:
@@ -1459,7 +1563,7 @@ def forecast_question(
                 + (FAST_PROXY_SECTION if slow_question else "")
             )
             candidate, model, errors = one_run(
-                agent_cmd, brief + news, full_system, need_dossier, args.timeout,
+                agent_cmd, brief + prior_facts + news, full_system, need_dossier, args.timeout,
                 min_sources=min_sources,
             )
             if candidate is None:
@@ -1867,6 +1971,14 @@ def main(argv: list[str] | None = None) -> int:
                              "dollar budget is blind to hung calls — a timeout costs $0 — "
                              "so CI jobs need this to finish inside their own timeout "
                              "with room for the journal commit (0 = no cap)")
+    parser.add_argument(
+        "--discover", action=argparse.BooleanOptionalAction, default=True,
+        help="auto-discover the active seasonal FutureEval/benchmark tournament(s) from "
+             "Metaculus's public tournament list and union their slugs with --tournament "
+             "(default: on). Best-effort: any discovery failure falls back to the "
+             "configured list unchanged, and discovery can only ADD slugs, never remove "
+             "a configured one. Always skipped in --post backtest mode."
+    )
     args = parser.parse_args(argv)
     if not math.isfinite(args.budget) or args.budget < 0:
         parser.error("--budget must be finite and non-negative")
@@ -1907,6 +2019,23 @@ def main(argv: list[str] | None = None) -> int:
         posts = [client.post_detail(args.post)]
         print(f"backtest: post {args.post} (dry-run, filters bypassed)")
     else:
+        if args.discover:
+            # Seasonal auto-discovery [ADDED 2026-09-03]: see discover_seasonal_slugs.
+            # Best-effort only — any failure here (network, shape change on Metaculus's
+            # side) must fall back to the configured --tournament list unchanged, never
+            # block the run.
+            try:
+                projects = client.tournaments()
+            except Exception as exc:  # noqa: BLE001 - discovery must never block a run
+                print(f"tournament discovery unavailable ({exc}) — using configured list only")
+                projects = []
+            discovered = discover_seasonal_slugs(projects, datetime.now(UTC))
+            args.tournament = merged_tournament_slugs(args.tournament or "", discovered)
+            if discovered:
+                print(f"discovered seasonal tournament(s): {', '.join(discovered)}")
+            else:
+                print(f"no active seasonal tournament discovered (configured: "
+                      f"{args.tournament})")
         posts = collect_open_posts(client, args.tournament, args.limit)
     ledger = failures_path(args.journal)
     failure_counts = recent_failure_counts(ledger)

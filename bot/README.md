@@ -68,6 +68,15 @@ optional private comment with the reasoning (`--comment`).
   unioned with the workflow's own `EXTRA_TOURNAMENTS` env, the in-repo way to enter a
   round via pull request (the variable stays the master roster and kill switch).
 
+`--tournament` is backstopped by `--discover` (on by default): before fetching questions,
+the bot calls Metaculus's public `/projects/tournaments/` endpoint and unions in the slug
+of any currently-active "FutureEval Bot Tournament" / "AI Forecasting Benchmark Tournament"
+season, which closes the gap between Metaculus creating a new one (every January, May and
+September) and someone remembering to update `TOURNAMENT_ID`. It only ever *adds* slugs —
+a configured tournament is never dropped — and fails open: any API hiccup or shape change
+prints a one-line warning and falls back to the configured list unchanged. `--no-discover`
+restores the old byte-for-byte behavior, and `--post` backtests skip discovery entirely.
+
 ## Reading the human crowd (public questions)
 
 Metaculus deliberately hides the human community prediction from **bot accounts** on all
@@ -78,6 +87,25 @@ analysis, `bot/crowd.py` reads it with a **personal-account** token in
 `METACULUS_CP_TOKEN` — measurement only, by design never imported by `run_bot` and never
 visible to the agent. For crowd-labeled benchmark questions that need no Metaculus access
 at all, see `bench/` (ForecastBench freeze values + live Manifold/Polymarket prices).
+
+## Outage alarm
+
+`bot.yml`'s own "Alert on trouble" step only fires when a *step* fails — it can't see a
+run that reports success while quietly doing nothing (on 2026-08-01 the bot went silent
+for a day and missed 6 questions, unnoticed). `.github/workflows/journal-alarm.yml` is an
+independent hourly tripwire for exactly that failure mode: `scripts/journal_alarm.py`
+checks that the tournament workflow has had a recent *successful* run (via `gh run list`)
+and, when there are open tournament questions, that `bot/journal/forecasts.jsonl` has a
+recent Metaculus row — alarming (exit 1) if either check fails, which opens one
+deduplicated "Bot alarm: journal silence" issue rather than paging on every tick.
+
+## Resolutions overlay
+
+`bench/sync_resolutions.py` writes `bot/journal/resolutions.jsonl` (append-only;
+platform resolution, normalized outcome, our own spot peer / baseline scores, PIT under
+our submitted CDF); the research run reads it for same-template prior facts
+(`bot/priors.py`, record-only); `.github/workflows/resolution-sync.yml` runs it every 6
+hours; `--readout` prints the season tables.
 
 ## Honesty rules
 

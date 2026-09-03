@@ -46,6 +46,12 @@ write down, never which way it should move the number — a wrong item costs tok
   move — after checking the contract actually matches the question's resolution terms
   (threshold, deadline, source, fine print); a near-miss contract is evidence, not an anchor.
 - **Named resolution source**: when it next updates relative to the deadline.
+- **Series questions** (a level, price, index, count or poll with a history): the observed
+  spread of past changes over windows the same length as the remaining horizon — its 10th-90th
+  range over the last one to two years, naming the series and the window.
+- **Event-in-window questions** (will X happen between two dates): out of the same-length
+  windows in the last one to two years, how many contained an X — the count, the windows
+  checked, and the source.
 
 ## Red-team your own draft
 

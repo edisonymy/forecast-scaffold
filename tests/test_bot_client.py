@@ -157,3 +157,49 @@ class TestTransientRetry:
         client = MetaculusClient(token="t")
         assert client._request("GET", "/posts/") == {}
         assert attempts["n"] == 2
+
+
+class TestTournaments:
+    """MetaculusClient.tournaments() backs seasonal slug auto-discovery in run_bot."""
+
+    def test_hits_the_public_tournaments_endpoint(self) -> None:
+        client = MetaculusClient(token="t")
+        calls: list[dict[str, Any]] = []
+
+        def fake_request(method: str, path: str, *, params: Any = None,
+                         body: Any = None) -> Any:
+            calls.append({"method": method, "path": path, "params": params})
+            return [{"id": 1, "slug": "summer-futureeval-2026"}]
+
+        client._request = fake_request  # type: ignore[method-assign]
+        result = client.tournaments()
+        assert result == [{"id": 1, "slug": "summer-futureeval-2026"}]
+        assert calls == [
+            {"method": "GET", "path": "/projects/tournaments/", "params": {"limit": 300}}
+        ]
+
+    def test_custom_limit_is_forwarded(self) -> None:
+        client = MetaculusClient(token="t")
+        seen: dict[str, Any] = {}
+
+        def fake_request(method: str, path: str, *, params: Any = None,
+                         body: Any = None) -> Any:
+            seen.update(params or {})
+            return []
+
+        client._request = fake_request  # type: ignore[method-assign]
+        client.tournaments(limit=50)
+        assert seen == {"limit": 50}
+
+    def test_tolerates_a_paginated_dict_response(self) -> None:
+        # The endpoint returns a bare list today; read defensively in case that shifts.
+        client = MetaculusClient(token="t")
+        client._request = (  # type: ignore[method-assign]
+            lambda *a, **k: {"results": [{"id": 2}]}
+        )
+        assert client.tournaments() == [{"id": 2}]
+
+    def test_none_response_is_an_empty_list(self) -> None:
+        client = MetaculusClient(token="t")
+        client._request = lambda *a, **k: None  # type: ignore[method-assign]
+        assert client.tournaments() == []

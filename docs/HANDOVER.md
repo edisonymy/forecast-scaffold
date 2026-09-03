@@ -1,5 +1,54 @@
 # HANDOVER — continuation state as of 2026-07-16
 
+## 2026-09-03: Fall-season prep — v0.4.27 (overlay, priors, checklist, discovery, alarm)
+
+Review: `docs/review-2026-09-03-fall-season-prep.md` (plain summary at the top). Season
+standing pulled live: summer rank 44/267, +336.7 over 81 scored (+4.2/q; leaders +18/q;
+prize line 479). Continuous questions are the whole deficit (-399 over 29 q; the three
+-195.6-floor blowups all pre-v0.4.23). July -5.6/q, August +24.8/q (n=26). Our own per-
+question scores ARE available from the API with the bot token (`my_forecasts.score_data`);
+only the community aggregate is hidden — the old "browser-only" note was too broad.
+
+Shipped in v0.4.27 (all tests green, 807): `bench/sync_resolutions.py` writes the
+append-only overlay `bot/journal/resolutions.jsonl` (resolution, outcome, our scores, PIT)
+— run it before any calibration work (`--readout` for the season tables); `bot/priors.py`
+feeds same-template resolved outcomes to the RESEARCH run as record-only data (needs the
+overlay committed; reasoning runs never see it); two record-only checklist items (series
+h-step spread; event-in-window count) on both surfaces; `--discover` seasonal slug
+auto-discovery (live check returned `summer-futureeval-2026`); hourly journal-alarm
+workflow. Fall slug: NOT in the API as of 2026-09-03 — discovery will pick it up; the
+`TOURNAMENT_ID` variable no longer has to be edited first.
+
+Full overlay readout (`season-readout-2026-09-03.txt`, 260 scored questions across summer
++ MiniBench): +7.15/q overall; binary +9.3 (n=130, Brier 0.164, base rate 35% yes; the
+0-0.1 bucket resolves YES 10% at mean p 0.06, the 0.1-0.2 bucket 24% at p 0.14); discrete
++8.0; numeric -9.1 (n=41); MC +20.6. opus-5 +9.6/q vs sonnet-5 +2.8/q. July +3.7/q,
+August +14.1/q (n=87). Continuous PIT (n=100): 25-75 coverage 47%, 10-90 72%, 17 above
+p90 vs 11 below p10 — the upper-tail asymmetry persists. Same-template prior facts match
+18 of the 65 wave-4 rows (threshold 0.4, numeric/discrete pooled as one family).
+
+Verdicts (frozen in bench/analysis, 2026-09-03): Platt gate STAY INERT on the full
+overlay (`platt-gate-2026-09-03.txt`, n=130: temporal test delta +0.006 at cutoff 08-01
+and -0.0002 at 08-10, 5-fold CV -0.0007 — a global shrink does not generalize even though
+the in-sample slope is 0.77; rerun at n>=200); kernel-smoothed pchip
++2.20/q vs pchip, CI90 [-0.11, +4.95], helps 35/90 — PREREGISTERED for the 2026-08-24 wave
+readout (`minibench_kernel_vs_pchip.py` header has the rule), not shipped; the standing
+pchip+widen w=1.15 preregistration is untouched (pooled-with-summer +4.92/q, CI90 [+1.06,
++9.40], helps 34/91 — concentrated, wait for wave 4 as preregistered). Harness check: the
+submitted CDF reproduces the declared quartiles (TrendForce 25-75 width 2.17 vs 2.10
+declared) and makes tails slightly FATTER — the narrowness is elicited, not a harness
+artifact; the cusp/corners shape IS a pchip artifact (1.56x trough-to-peak inside the IQR).
+
+Operator decisions this session: keep opus-5 (no Fable test); no cheap-fallback forecast;
+no testing-area dry run (MiniBench is the test bed); record-only before any floor.
+
+Next: (1) `python bench/sync_resolutions.py` after wave 4 resolves (~Sep 10), then
+`minibench_kernel_vs_pchip.py` + `minibench_smooth_cdf.py` with the wave-4 resolutions
+file and decide BOTH preregistrations; (2) `platt_gate.py --cutoff 2026-08-10` at n>=120;
+(3) numeric/MC multi-run pooling (P1a in the review) as the next paired MiniBench test;
+(4) Market Pulse refresh cadence 24h; (5) keep the overlay synced (manual until a sync
+workflow exists — see bot/README.md).
+
 ## 2026-08-23: wave-3 readout (rank 16, +390.6); v0.4.25 pchip CDFs shipped
 
 Wave 3 (minibench-2026-08-10, 57 q, we forecast all 57): total spot peer +390.55, rank
