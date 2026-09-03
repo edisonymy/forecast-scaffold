@@ -40,6 +40,15 @@ independence caveats, complements for disjunctions). Then sanity-check the recom
 number against the simple base rate: if they differ by more than 2x in odds, say which
 you trust and why.
 
+## Angle P — plain replicate (independent research, no lens)
+
+No angle. Run the full research brief exactly as a standalone forecaster would — the
+same source-class enumeration, the same record-only checklist, your own search path from
+scratch. Do not look for a different framing; your value to the pool is an independently
+DISCOVERED evidence set (different queries, different pages, different dates found), not a
+different lens on shared evidence. Two plain replicates disagree only where the world's
+evidence is genuinely ambiguous, which is the disagreement pooling exists to harvest.
+
 ## Angle A — anomaly hunt (what would change the obvious answer?)
 
 Start by stating the naive answer (base rate + status quo) in one line. Then spend the

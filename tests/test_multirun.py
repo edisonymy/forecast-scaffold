@@ -23,7 +23,13 @@ sys.path.insert(0, str(ROOT / "bot"))
 
 import run_bot  # noqa: E402
 
-from forecast_scaffold.core import DEFAULTS, Journal, geo_mean_odds  # noqa: E402
+from forecast_scaffold.core import (  # noqa: E402
+    DEFAULTS,
+    Journal,
+    geo_mean_odds,
+    percentiles_to_cdf,
+    pool_mc,
+)
 
 
 def config_with_tiers(tiers: dict[str, Any]) -> dict[str, Any]:
@@ -577,15 +583,26 @@ class TestShapes:
         assert record.get("raw_draws") is None
         assert record.get("aggregation") is None
 
-    def test_multiple_choice_is_forced_single_run(self, monkeypatch: pytest.MonkeyPatch,
-                                                  tmp_path: Path) -> None:
+    def test_multiple_choice_follows_the_tier_like_every_other_type(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # v0.4.28: the old `n_runs = 1 if qtype != "binary"` rule is gone — a medium-tier MC
+        # question runs the tier's 3 runs and asks its research run for a dossier, exactly
+        # like a binary. What each run must EMIT is type-specific (reasoning_section).
         mc_question = {**QUESTION, "type": "multiple_choice", "options": ["A", "B"]}
         agent, record, ok = run(monkeypatch, tmp_path, [
-            fenced({"probabilities": {"A": 0.6, "B": 0.4}, "reasoning": "x", "sources": []}),
+            fenced({"probabilities": {"A": 0.6, "B": 0.4}, "reasoning": "x", "sources": [],
+                    "dossier": "- fact A (src, 2026)"}),
+            fenced({"probabilities": {"A": 0.5, "B": 0.5}, "reasoning": "x", "sources": []}),
+            fenced({"probabilities": {"A": 0.7, "B": 0.3}, "reasoning": "x", "sources": []}),
         ], question=mc_question)
         assert ok and record is not None
-        assert len(agent.calls) == 1
-        assert "Dossier (multi-run mode" not in (agent.calls[0]["system"] or "")
+        assert len(agent.calls) == 3
+        assert "Dossier (multi-run mode" in (agent.calls[0]["system"] or "")
+        reasoning_system = agent.calls[1]["system"] or ""
+        assert "produce ONE set of option probabilities" in reasoning_system
+        # the binary-only named-scenario contract is not imposed on an MC reasoning run
+        assert "Additionally include \"named_scenarios\"" not in reasoning_system
 
     def test_verification_verdicts_reach_reasoning_prompts(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
@@ -667,6 +684,224 @@ class TestShapes:
         assert ok and record is not None
         assert record["probability"] == 0.30
         assert record["aggregation"] == "single_run(of 3 intended)"
+
+
+class TestNonBinaryPooling:
+    """v0.4.28: continuous and MC questions pool independent runs the way binaries always
+    have, and journal the single-run counterfactual (`percentiles_run1` /
+    `probabilities_run1` — the research run's own answer, which is exactly what the old
+    forced-single-run harness would have submitted) so the change is scored PAIRED at
+    resolution by bench/analysis/pooled_vs_single.py."""
+
+    NUMERIC_Q = {
+        **QUESTION, "type": "numeric",
+        "scaling": {"range_min": 0.0, "range_max": 200.0, "zero_point": None},
+        "open_lower_bound": False, "open_upper_bound": True,
+    }
+    LOG_Q = {
+        **QUESTION, "type": "numeric",
+        "scaling": {"range_min": 10.0, "range_max": 10000.0, "zero_point": 0.0},
+        "open_lower_bound": False, "open_upper_bound": False,
+    }
+    MC_Q = {**QUESTION, "type": "multiple_choice", "options": ["A", "B", "C"]}
+    KEYS = ("10", "25", "50", "75", "90")
+
+    @classmethod
+    def pcts(cls, *values: float) -> dict[str, float]:
+        return dict(zip(cls.KEYS, [float(v) for v in values], strict=True))
+
+    @classmethod
+    def numeric(cls, *values: float, **extra: Any) -> dict[str, Any]:
+        return {"percentiles": cls.pcts(*values), "reasoning": "x", "sources": [], **extra}
+
+    def test_three_numeric_runs_pool_by_quantile_mean(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(self.numeric(10, 20, 30, 40, 50, dossier="- fact A (src, 2026)",
+                                p_above_upper=0.1, reasoning="researched")),
+            fenced(self.numeric(20, 30, 40, 50, 60)),
+            fenced(self.numeric(30, 40, 50, 60, 70, p_above_upper=0.2)),
+        ], question=self.NUMERIC_Q)
+        assert ok and record is not None
+        assert len(agent.calls) == 3
+        # per-key arithmetic mean of the three runs
+        assert record["percentiles"] == self.pcts(20, 30, 40, 50, 60)
+        # the single-run counterfactual is the RESEARCH run's own set, journaled verbatim
+        assert record["percentiles_run1"] == self.pcts(10, 20, 30, 40, 50)
+        assert record["run_percentiles"] == [
+            self.pcts(10, 20, 30, 40, 50),
+            self.pcts(20, 30, 40, 50, 60),
+            self.pcts(30, 40, 50, 60, 70),
+        ]
+        # escape mass averages over the runs that DECLARED one (silence is not a zero)
+        assert record["run_escapes"] == [[None, 0.1], [None, None], [None, 0.2]]
+        assert record["p_above_upper"] == pytest.approx(0.15)
+        assert record["aggregation"] == "quantile_mean(runs=3)"
+        assert record["reasoning"].splitlines()[0] == (
+            "[pooled 3 independent runs: medians 30/40/50 -> 40; the narrative below is "
+            "the research run's own view]"
+        )
+        assert record["reasoning"].splitlines()[1] == "researched"
+        # the CDF that would be submitted is built from the POOLED percentiles
+        assert record["submitted_cdf"] == percentiles_to_cdf(
+            self.pcts(20, 30, 40, 50, 60), 0.0, 200.0,
+            lower_open=False, upper_open=True, zero_point=None, cdf_size=201,
+            p_below_lower=None, p_above_upper=record["p_above_upper"],
+            interpolation="pchip",
+        )
+
+    def test_log_scaled_question_pools_in_log_space(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(self.numeric(20, 50, 100, 200, 500, dossier="- fact A (src, 2026)")),
+            fenced(self.numeric(200, 500, 1000, 2000, 5000)),
+            "AGENT_FAILURE", "AGENT_FAILURE",
+        ], question=self.LOG_Q)
+        assert ok and record is not None
+        # geometric, not arithmetic: sqrt(100 * 1000) = 316.2, not the linear mean 550
+        assert record["percentiles"]["50"] == pytest.approx(316.2277, rel=1e-4)
+        assert record["percentiles"]["10"] == pytest.approx(63.2455, rel=1e-4)
+        assert record["aggregation"] == "quantile_mean(runs=2)"
+        assert record["percentiles_run1"] == self.pcts(20, 50, 100, 200, 500)
+
+    def test_mc_runs_pool_by_geometric_mean(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        runs = [{"A": 0.6, "B": 0.3, "C": 0.1},
+                {"A": 0.5, "B": 0.3, "C": 0.2},
+                {"A": 0.7, "B": 0.2, "C": 0.1}]
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced({"probabilities": runs[0], "reasoning": "x", "sources": [],
+                    "dossier": "- fact A (src, 2026)"}),
+            fenced({"probabilities": runs[1], "reasoning": "x", "sources": []}),
+            fenced({"probabilities": runs[2], "reasoning": "x", "sources": []}),
+        ], question=self.MC_Q)
+        assert ok and record is not None
+        expected = pool_mc(runs)
+        assert record["probabilities"] == [pytest.approx(expected[o]) for o in "ABC"]
+        assert sum(record["probabilities"]) == pytest.approx(1.0)
+        assert record["probabilities_run1"] == runs[0]
+        assert record["run_probabilities"] == runs
+        assert record["aggregation"] == "geo_mean_mc(runs=3)"
+        assert record["reasoning"].startswith("[pooled 3 independent runs: 'A' ")
+
+    def test_a_run_that_fails_validation_is_dropped_from_the_pool(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # The middle run answers with non-monotone percentiles on BOTH attempts: it never
+        # enters the pool, and the other two pool without it (never a failed question).
+        broken = {"percentiles": {"10": 90.0, "25": 20.0, "50": 30.0, "75": 40.0,
+                                  "90": 50.0}, "reasoning": "x", "sources": []}
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(self.numeric(10, 20, 30, 40, 50, dossier="- fact A (src, 2026)")),
+            fenced(broken), fenced(broken),
+            fenced(self.numeric(30, 40, 50, 60, 70)),
+        ], question=self.NUMERIC_Q)
+        assert ok and record is not None
+        assert len(record["run_percentiles"]) == 2
+        assert record["percentiles"] == self.pcts(20, 30, 40, 50, 60)
+        assert record["aggregation"] == "quantile_mean(runs=2)"
+
+    def test_collapsed_continuous_ensemble_is_marked_single_run(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(self.numeric(10, 20, 30, 40, 50, dossier="- fact A (src, 2026)")),
+            "AGENT_FAILURE", "AGENT_FAILURE", "AGENT_FAILURE", "AGENT_FAILURE",
+        ], question=self.NUMERIC_Q)
+        assert ok and record is not None
+        assert record["aggregation"] == "single_run(of 3 intended)"
+        # nothing was pooled, so no pooling provenance is journaled at all
+        assert record["percentiles"] == self.pcts(10, 20, 30, 40, 50)
+        assert "percentiles_run1" not in record
+        assert "run_percentiles" not in record and "run_escapes" not in record
+
+    def test_single_run_tier_journals_no_pooling_fields(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        _, record, ok = run(
+            monkeypatch, tmp_path, [fenced(self.numeric(10, 20, 30, 40, 50))],
+            config=config_with_tiers({"low": {"draws": 1, "searches": 1, "runs": 1}}),
+            effort="low", question=self.NUMERIC_Q,
+        )
+        assert ok and record is not None
+        assert record.get("aggregation") is None
+        assert "percentiles_run1" not in record and "run_percentiles" not in record
+
+
+class TestAngleModeNonBinary:
+    """Angle mode (independent full-research runs, one per angle) is no longer binary-only:
+    production runs Angle P replicates on every type and pools them with the same
+    functions the dossier path uses."""
+
+    ANGLES = config_with_tiers(
+        {"medium": {"draws": 5, "searches": 5, "runs": 3, "run_angles": ["P", "P", "P"]}}
+    )
+
+    def test_numeric_angle_runs_pool_and_name_their_angles(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        numeric = TestNonBinaryPooling.numeric
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(numeric(10, 20, 30, 40, 50, reasoning="angle P one")),
+            fenced(numeric(20, 30, 40, 50, 60)),
+            fenced(numeric(30, 40, 50, 60, 70)),
+        ], config=self.ANGLES, question=TestNonBinaryPooling.NUMERIC_Q)
+        assert ok and record is not None
+        assert len(agent.calls) == 3
+        # every angle run is a full-research run: no dossier is asked of any of them
+        assert all("Dossier (multi-run mode" not in (c["system"] or "") for c in agent.calls)
+        assert all("## Angle P" in (c["system"] or "") for c in agent.calls)
+        # the multi-run tier line asks for the shape THIS type can actually produce
+        assert "produce ONE final percentile set" in (agent.calls[0]["system"] or "")
+        assert record["percentiles"] == TestNonBinaryPooling.pcts(20, 30, 40, 50, 60)
+        assert record["percentiles_run1"] == TestNonBinaryPooling.pcts(10, 20, 30, 40, 50)
+        assert record["aggregation"] == "quantile_mean(angles=P,P,P)"
+        assert record["reasoning"].splitlines()[0] == (
+            "[pooled 3 independent research runs (angles P,P,P): medians 30/40/50 -> 40; "
+            "the narrative below is the P-angle run's own view]"
+        )
+
+    def test_mc_angle_runs_pool_by_option(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        runs = [{"A": 0.6, "B": 0.3, "C": 0.1},
+                {"A": 0.5, "B": 0.3, "C": 0.2},
+                {"A": 0.7, "B": 0.2, "C": 0.1}]
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced({"probabilities": r, "reasoning": "x", "sources": []}) for r in runs
+        ], config=self.ANGLES, question=TestNonBinaryPooling.MC_Q)
+        assert ok and record is not None
+        expected = pool_mc(runs)
+        assert record["probabilities"] == [pytest.approx(expected[o]) for o in "ABC"]
+        assert record["probabilities_run1"] == runs[0]
+        assert record["aggregation"] == "geo_mean_mc(angles=P,P,P)"
+
+    def test_angle_research_runs_get_the_reference_class_floor(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # min_sources > 0 makes an angle run a gated research run on non-binary types —
+        # the announced contract must match the mechanical gate in one_run.
+        config = config_with_tiers({"medium": {
+            "draws": 5, "searches": 5, "runs": 3, "min_sources": 1,
+            "run_angles": ["P", "P"],
+        }})
+        payload = {
+            "percentiles": TestNonBinaryPooling.pcts(10, 20, 30, 40, 50),
+            "reasoning": "x", "sources": ["https://example.com/a"],
+            "reference_class": "class R", "base_rate": 30.0,
+            "dispersion_90_10": 40.0, "dispersion_basis": "SD 15.6 x 2.56",
+        }
+        agent, record, ok = run(monkeypatch, tmp_path, [fenced(payload), fenced(payload)],
+                                config=config, question=TestNonBinaryPooling.NUMERIC_Q)
+        assert ok and record is not None
+        assert "Reference-class floor" in (agent.calls[0]["system"] or "")
+        assert "Research floor" in (agent.calls[0]["system"] or "")
+        # the dispersion fields journaled stay the research (first) run's own
+        assert record["dispersion_90_10"] == 40.0
+        assert record["aggregation"] == "quantile_mean(angles=P,P)"
 
 
 class TestLiveSubmission:

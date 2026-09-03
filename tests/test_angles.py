@@ -301,6 +301,13 @@ class TestEmptyRunAnglesPreservesDossierFlow:
         for call in agent.calls:
             assert "Assigned research angle" not in (call["system"] or "")
 
-    def test_defaults_ship_run_angles_dark(self) -> None:
+    def test_defaults_ship_parallel_research(self) -> None:
+        """Operator decision 2026-09-03: research is parallelized — medium/high launch
+        independent plain research runs (Angle P) and pool them; low stays single-run."""
+        assert DEFAULTS["tiers"]["low"]["run_angles"] == []
+        assert DEFAULTS["tiers"]["medium"]["run_angles"] == ["P", "P", "P"]
+        assert DEFAULTS["tiers"]["high"]["run_angles"] == ["P", "P", "P", "P"]
+
+    def _retired_test_defaults_ship_run_angles_dark(self) -> None:
         for tier in ("low", "medium", "high"):
             assert DEFAULTS["tiers"][tier]["run_angles"] == []

@@ -1,0 +1,53 @@
+# Candidate arm for the research-vs-lenses live test (bench/analysis/research_vs_lenses.py).
+# Identical to config/forecast.toml except run_angles: medium and high launch TWO plain
+# independent research runs (Angle P, references/research-angles.md) and pool them by
+# geo-mean odds, instead of one research run + reasoning-only lens runs. Binary only —
+# angle mode leaves non-binary questions on the production path.
+#
+# Run (dry-run, own journal, never submits):
+#   FORECAST_CONFIG=bench/experiments/research_vs_lenses/forecast.toml \
+#   python bot/run_bot.py --tournament minibench --dry-run --include-forecasted \
+#       --limit 60 --journal bench/sets/rvl-<wave>.jsonl --no-discover --budget 80 \
+#       --agent-cmd "claude -p --model claude-opus-5 --output-format json \
+#                    --allowed-tools Read,Glob,Grep,WebSearch,WebFetch"
+
+[clamp]
+min = 0.02
+max = 0.98
+
+[tiers.low]
+draws = 1
+searches = 1
+runs = 1
+run_models = []
+min_sources = 1
+run_angles = []
+
+[tiers.medium]
+draws = 5
+searches = 5
+runs = 3
+run_models = []
+min_sources = 3
+run_angles = ["P", "P"]
+
+[tiers.high]
+draws = 12
+searches = 12
+runs = 4
+run_models = []
+min_sources = 5
+run_angles = ["P", "P"]
+
+[blend]
+crowd_weight = 0.8
+
+[aggregation]
+method = "trimmed_mean"
+
+[journal]
+path = "forecasts.jsonl"
+
+[models]
+triage = ""
+notes = "model choice dominates scaffolding; keep this fresh"

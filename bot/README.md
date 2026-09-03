@@ -55,6 +55,24 @@ payload (`core` validators; one repair retry with the errors quoted) → record 
 renormalized MC / percentiles built into a platform-valid CDF by `percentiles_to_cdf`) →
 optional private comment with the reasoning (`--comment`).
 
+## Pooling independent runs (every question type)
+
+The tier's `runs` count is how many genuinely independent agent processes forecast one
+question, and since v0.4.28 it applies to **all** types, not just binaries. Binaries pool
+with `geo_mean_odds`; numeric/discrete/date quantile-average their five percentiles (in log
+space when the question has a `zero_point`), averaging the declared escape masses over the
+runs that declared one; multiple choice takes a per-option geometric mean, renormalized.
+Quantile averaging is shape-preserving — it recentres on the runs' consensus and averages
+their widths — so it is the ensemble lever, not by itself a fix for the measured
+under-dispersion. Because that is a live question, every pooled record journals the
+**single-run counterfactual**: `percentiles_run1` / `probabilities_run1` (the research
+run's own answer, which is exactly what a one-run harness would have submitted) alongside
+the per-run values in `run_percentiles` / `run_escapes` / `run_probabilities`. Nothing is
+A/B split and no question is spent on a control arm;
+`bench/analysis/pooled_vs_single.py` rebuilds both arms at resolution, scores them with the
+platform's own continuous formula, and carries the preregistered decision rule (KEEP
+pooling only if the paired CI90 excludes zero on the positive side at n >= 60).
+
 ## Workflows
 
 - `.github/workflows/bot-test.yml` — manual dispatch, defaults to a dry run; use for the

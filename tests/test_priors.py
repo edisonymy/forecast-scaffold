@@ -107,8 +107,9 @@ class TestWording:
         )
         text = priors.format_prior_facts(priors.similar_resolved(BTC_A, "numeric", history))
         text += priors.format_prior_facts(priors.similar_resolved(STARLINK, "binary", history))
-        assert "resolved 76,500" in text and "0.61 point" in text
-        assert "resolved yes" in text and "0.40" in text
+        assert "resolved 76,500" in text and "resolved yes" in text
+        # data-only: no trace of our own earlier submission or its PIT
+        assert "0.61" not in text and "0.40" not in text and "submitted" not in text
         banned = ("should", "likely", "unlikely", "widen", "narrow", "increase", "decrease",
                   "raise", "lower ", "shade", "treat as", "at least", "at most")
         for word in banned:

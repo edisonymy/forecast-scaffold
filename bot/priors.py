@@ -171,33 +171,24 @@ def format_prior_facts(matches: list[tuple[float, dict[str, Any]]]) -> str:
     """Record-only section. Empty string when there is nothing to report."""
     if not matches:
         return ""
+    # DATA-ONLY (operator, 2026-09-03): prior OUTCOMES only. Our own earlier submission
+    # and where the outcome fell in it were removed — a one-sample "lesson" about our last
+    # miss is self-correction bait, not a reference class.
     lines = [
         "## Prior resolved questions of the same template (record-only data)",
         "",
-        "These are the platform outcomes of earlier questions with the same template and our",
-        "own earlier submission on each. They are data about the template — facts to write",
-        "down beside the rest of the research — never a directive about this question.",
+        "These are the platform outcomes of earlier questions with the same template. They",
+        "are data about the template — facts to write down beside the rest of the research",
+        "— never a directive about this question.",
     ]
     for _sim, item in matches:
         head = f"- {item['resolved_at'] or 'resolved'}: \"{item['title'][:110]}\""
         outcome = item.get("outcome")
         if item["question_type"] == "binary":
-            ours = item.get("probability")
-            ours_s = f"{float(ours):.2f}" if isinstance(ours, (int, float)) else "n/a"
             res_s = "yes" if outcome is True else "no" if outcome is False else str(outcome)
-            lines.append(f"{head} -> resolved {res_s}; our submitted value was {ours_s}.")
-        elif item.get("percentiles"):
-            pct = item["percentiles"]
-            q = {k: pct.get(k) for k in QUANTILE_KEYS}
-            pit = item.get("pit")
-            pit_s = f"; outcome sat at the {float(pit):.2f} point of our submitted CDF" \
-                if isinstance(pit, (int, float)) else ""
-            lines.append(
-                f"{head} -> resolved {_fmt_num(outcome)}; our submitted median was "
-                f"{_fmt_num(q.get('50'))} with 25-75 [{_fmt_num(q.get('25'))}, "
-                f"{_fmt_num(q.get('75'))}] and 10-90 [{_fmt_num(q.get('10'))}, "
-                f"{_fmt_num(q.get('90'))}]{pit_s}."
-            )
+            lines.append(f"{head} -> resolved {res_s}.")
+        elif isinstance(outcome, (int, float)):
+            lines.append(f"{head} -> resolved {_fmt_num(outcome)}.")
         else:
             lines.append(f"{head} -> resolved {outcome!r}.")
     return "\n".join(lines) + "\n"

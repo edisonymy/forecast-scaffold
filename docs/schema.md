@@ -48,7 +48,12 @@ Only `question` is required. Serialization drops `null` fields; absent = null.
 | `submitted_cdf` | list? | numeric/date: the exact CDF (~201 points) submitted to the platform — a preregistration record of the object actually scored, since `percentiles` alone can't be rebuilt into it |
 | `scaling` | obj? | numeric/date: `{range_min, range_max, zero_point, lower_open, upper_open, cdf_size}` the CDF was built against — needed to interpret `submitted_cdf` |
 | `raw_draws` | list? | the individual ensemble draws (audit trail) |
-| `aggregation` | str? | e.g. `"trimmed_mean(n=5)"`, incl. any crowd blend and clamp |
+| `aggregation` | str? | how the number was pooled: `"trimmed_mean(n=5)"`, `"geo_mean_odds(runs=3)"` (binary), `"quantile_mean(runs=3)"` (continuous), `"geo_mean_mc(runs=3)"` (multiple_choice), `angles=P,P,P` in place of `runs=N` in angle mode, `"single_run(of N intended)"` when the ensemble collapsed; incl. any crowd blend and clamp |
+| `run_percentiles` | list? | v0.4.28, continuous: the per-run percentile dicts the pool was built from, **research run first**. Present only when more than one run pooled |
+| `run_escapes` | list? | v0.4.28, continuous: parallel to `run_percentiles` — `[p_below_lower, p_above_upper]` as each run declared them, `null` where a run declared nothing |
+| `percentiles_run1` | obj? | v0.4.28, continuous: `run_percentiles[0]` — the research run's own set, i.e. the **single-run counterfactual** (what a one-run harness would have submitted). Makes pooling scorable paired at resolution. Note for the dispersion-guard analysis: on a pooled row, `percentiles_pre_guard` is the *research run's* attempt-0, so its paired comparison is against `percentiles_run1`, not against the pooled `percentiles` |
+| `run_probabilities` | list? | v0.4.28, multiple_choice: per-run `{option: p}` dicts, research run first. Present only when more than one run pooled |
+| `probabilities_run1` | obj? | v0.4.28, multiple_choice: `run_probabilities[0]`, keyed by option label (not the parallel-list shape of `probabilities`) — the single-run counterfactual |
 | `effort` | str? | `low`/`medium`/`high`, with `(auto)` when auto-triaged |
 | `model` | str | free string naming the model(s) used |
 | `provider` | str? | billing/routing path that produced it, e.g. `subscription` / `openrouter` |

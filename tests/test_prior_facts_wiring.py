@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from tests.test_multirun import RESEARCH, fenced, reasoning_payload, run
+from tests.test_multirun import RESEARCH, fenced, reasoning_payload, run, run_bot
 
 HEADER = "## Prior resolved questions of the same template"
 
@@ -26,10 +26,24 @@ def _seed(tmp_path: Path) -> None:
 
 
 class TestPriorFactsWiring:
+    def test_off_by_default_even_with_a_matching_overlay(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        _seed(tmp_path)
+        assert run_bot.PRIOR_FACTS_DEFAULT is False
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20, reasoning="lens1")),
+            fenced(reasoning_payload(0.40, reasoning="lens2")),
+        ])
+        assert ok and record is not None
+        assert all(HEADER not in call["prompt"] for call in agent.calls)
+
     def test_research_run_sees_prior_facts_reasoning_runs_do_not(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
         _seed(tmp_path)
+        monkeypatch.setattr(run_bot, "PRIOR_FACTS_DEFAULT", True)
         agent, record, ok = run(monkeypatch, tmp_path, [
             fenced(RESEARCH),
             fenced(reasoning_payload(0.20, reasoning="lens1")),
@@ -37,13 +51,15 @@ class TestPriorFactsWiring:
         ])
         assert ok and record is not None
         assert HEADER in agent.calls[0]["prompt"]
-        assert "resolved yes; our submitted value was 0.40" in agent.calls[0]["prompt"]
+        assert "-> resolved yes." in agent.calls[0]["prompt"]
+        assert "submitted" not in agent.calls[0]["prompt"].split(HEADER)[1]
         assert HEADER not in agent.calls[1]["prompt"]
         assert HEADER not in agent.calls[2]["prompt"]
 
     def test_no_overlay_means_no_section_and_no_failure(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
+        monkeypatch.setattr(run_bot, "PRIOR_FACTS_DEFAULT", True)
         agent, record, ok = run(monkeypatch, tmp_path, [
             fenced(RESEARCH),
             fenced(reasoning_payload(0.20, reasoning="lens1")),
@@ -56,6 +72,7 @@ class TestPriorFactsWiring:
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
         _seed(tmp_path)
+        monkeypatch.setattr(run_bot, "PRIOR_FACTS_DEFAULT", True)
         # The seeded prior has question_id 9; the question under test has id 1 — give the
         # overlay a resolved row for id 1 too and check it is not fed back to itself.
         with (tmp_path / "resolutions.jsonl").open("a", encoding="utf-8") as fh:
@@ -76,6 +93,6 @@ class TestPriorFactsWiring:
             fenced(reasoning_payload(0.40, reasoning="lens2")),
         ])
         assert ok
-        prompt = agent.calls[0]["prompt"]
-        assert "our submitted value was 0.40" in prompt
-        assert "our submitted value was 0.70" not in prompt
+        section = agent.calls[0]["prompt"].split(HEADER)[1]
+        assert "-> resolved yes." in section       # the prior instance (qid 9)
+        assert "-> resolved no." not in section    # the question's own row (qid 1)

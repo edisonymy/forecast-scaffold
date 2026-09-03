@@ -39,10 +39,19 @@ numbers you hand it regardless of provenance.
 
 **The fan-out protocol (any surface with subagents — Claude Code, Cowork, harnesses).** This is
 the primary mechanism, not a fallback; in-context draws are the degraded mode. Audited runs show
-in-context draws collapse to one estimate ± noise (2–5 point spreads) while separate contexts on
-the same evidence swing 2–3× wider. Research is done ONCE — the best published pipelines share
-one retrieval across all reasoning calls; duplicated research buys correlated facts, not
-independent judgment. The steps:
+in-context draws collapse to one estimate ± noise (2–5 point spreads) while separate contexts
+swing 2–3× wider.
+
+**Parallel independent research is the default (2026-09).** Spawn k subagents (k = config's
+`runs` for the tier), each given only the question, the verbatim criterion, the resolve-by date
+and the full Step 2 + Step 3 brief — each does its OWN research from scratch (its own queries,
+its own pages, its own dates), names its own reference class, reasons to its own probability,
+and never sees another subagent's evidence or number. Runs that share one dossier correlate
+~0.97 (members disagree by ~0.03), so a shared-research pool costs k× for the member average;
+disagreement born from independently discovered evidence is the only kind pooling can harvest.
+The prior architecture — research once, write a dossier, fan out reasoning-only draws under
+lenses — remains the FALLBACK for surfaces where k research passes are unaffordable, and its
+steps follow. Either way, pool exactly as in step 3 below.
 
 1. **Write the dossier** from your Step 2 research: 5–15 terse evidence bullets each with source
    and date, the status-quo outcome, base rates found (with source **and the class each is

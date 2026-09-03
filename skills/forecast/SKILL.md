@@ -98,11 +98,14 @@ explicit update).
 ## Step 4 — Draws and aggregation
 
 **If your surface has subagents (Claude Code, Cowork, any Task-capable host), fan-out is the
-default at medium+ tier, not an upgrade**: write an estimate-free research dossier from Step 2,
-spawn the tier's `runs` as parallel subagents — each gets the dossier plus one suggested lens (a
-diversity device it may swap for a better angle), never each other's numbers — and pool. Research
-happens once; reasoning happens independently k times. The full protocol, the lens list, and the no-numbers-in-the-dossier rule (it is
-load-bearing) are in `references/aggregate.md`. Then pool with the tool, which applies the
+default at medium+ tier, not an upgrade**: spawn the tier's `runs` as parallel subagents, each
+doing its OWN Step 2 research and Step 3 reasoning from the operationalized question — its own
+searches, its own reference class, its own probability — never seeing each other's evidence or
+numbers — and pool. Research and reasoning both happen independently k times; that is where the
+disagreement worth pooling comes from. Where k research passes are unaffordable, the fallback is
+one research pass written up as an estimate-free dossier and k reasoning-only subagents under
+lenses. Both protocols, the lens list, and the no-numbers-in-the-dossier rule (load-bearing for
+the fallback) are in `references/aggregate.md`. Then pool with the tool, which applies the
 configured clamp:
 
 ```

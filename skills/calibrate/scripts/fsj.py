@@ -71,22 +71,24 @@ DEFAULTS: dict[str, Any] = {
         #              the first live batch put its most crowd-divergent calls on its
         #              thinnest research (q44381 MC: 0 sources; q44382/q44511: 2) —
         #              exactly the paths the dossier contract never covered.
-        # run_angles = engineered evidence diversity — SHIPS DARK (empty everywhere until
-        #              benched). [] = the dossier architecture above, unchanged. Non-empty
-        #              (e.g. ["F","D","A"]) FLIPS the bot flow: instead of one shared-dossier
-        #              research run + reasoning-only runs, it launches one INDEPENDENT
-        #              full-research run per angle (operator briefs in
-        #              skills/forecast/references/research-angles.md), each on a deliberately
-        #              different information diet, then pools them. Measured why: runs that
-        #              share one dossier correlate ~0.97 (members disagree ~0.03), so the pool
-        #              equals the member average at N times the cost — evidence diversity is
-        #              the pooling prerequisite. Binary only, like runs (geo_mean_odds pool).
+        # run_angles = engineered evidence diversity. Non-empty FLIPS the bot flow: instead of
+        #              one shared-dossier research run + reasoning-only runs, it launches one
+        #              INDEPENDENT full-research run per angle letter (operator briefs in
+        #              skills/forecast/references/research-angles.md), then pools them.
+        #              Measured why: runs that share one dossier correlate ~0.97 (members
+        #              disagree ~0.03), so the pool equals the member average at N times the
+        #              cost — evidence diversity is the pooling prerequisite.
+        #              DEFAULT since 2026-09-03 (operator decision): PARALLEL RESEARCH —
+        #              "P" = plain replicate, a full research run with no lens; medium runs
+        #              three, high four, matching `runs`. [] = the dossier fallback.
+        #              All question types pool (binary: geo_mean_odds; continuous: per-
+        #              percentile mean; MC: per-option geometric mean, renormalized).
         "low": {"draws": 1, "searches": 1, "runs": 1, "run_models": [], "min_sources": 1,
                 "run_angles": []},
         "medium": {"draws": 5, "searches": 5, "runs": 3, "run_models": [], "min_sources": 3,
-                   "run_angles": []},
+                   "run_angles": ["P", "P", "P"]},
         "high": {"draws": 12, "searches": 12, "runs": 4, "run_models": [], "min_sources": 5,
-                 "run_angles": []},
+                 "run_angles": ["P", "P", "P", "P"]},
     },
     # 0.8 = Halawi et al.'s validated optimum ("4x weight for the crowd", NeurIPS 2024)
     # for blending with the SAME question's human crowd/market — the chat/CLI use where a
@@ -228,6 +230,19 @@ class ForecastRecord:
     # rejected (kept ONLY in that case), so resolution can score the guard's effect paired
     # against the run's own pre-guard answer — no A/B arm needed.
     percentiles_pre_guard: dict[str, float] | None = None
+    # Multi-run provenance for the non-binary types (v0.4.28), the analogue of ``raw_draws``
+    # on binaries: the per-run values the pool was built from, research run FIRST, plus that
+    # research run's own answer kept separately as the single-run COUNTERFACTUAL. Journaling
+    # both is what makes pooling scorable paired at resolution (run 1 is exactly what the
+    # old forced-single-run harness would have submitted) with no A/B arm and no lost
+    # question, the same trick as ``percentiles_pre_guard``. All five default None and are
+    # dropped from the serialized record, so a single-run forecast journals byte-identically
+    # to before these fields existed.
+    run_percentiles: list[dict[str, float]] | None = None  # continuous: one dict per run
+    run_escapes: list[list[float | None]] | None = None  # continuous: [below, above] per run
+    percentiles_run1: dict[str, float] | None = None  # continuous: the research run's own
+    run_probabilities: list[dict[str, float]] | None = None  # MC: {option: p} per run
+    probabilities_run1: dict[str, float] | None = None  # MC: the research run's own
     # Continuous-question submission provenance (v0.4.13): the exact CDF submitted to the
     # platform and the scaling it was built against. Percentiles alone can't be reconstructed
     # into the ~201-point object the platform scored (open/closed bounds, log scaling, and the
@@ -866,6 +881,122 @@ def aggregate_binary(
     if clamped != pooled:
         desc += f" clamped to [{lo}, {hi}]"
     return clamped, desc
+
+
+# ------------------------------------------------------- pooling: non-binary question types
+
+#: The percentile keys pooling is defined over. ``validate_percentiles`` requires exactly
+#: these five in every continuous payload, so they are the only keys guaranteed present in
+#: EVERY run; a run's extra keys (e.g. "5") are dropped by the pool rather than averaged
+#: against runs that never declared them.
+POOL_PERCENTILE_KEYS = ("10", "25", "50", "75", "90")
+
+
+def pool_percentiles(
+    runs: list[dict[str, float]], *, zero_point: float | None = None
+) -> dict[str, float]:
+    """Quantile-average ("Vincentize") several independent runs' percentiles into one set.
+
+    Per-key arithmetic mean across runs. This is the SHAPE-PRESERVING pool: the result's
+    interval is the average of the members' intervals, recentred on their average location,
+    so three unimodal runs pool to one unimodal distribution. Be precise about what it does
+    and does not do — three runs that differ only in LOCATION pool to the same width they
+    each declared, not a wider one; only members with genuinely different spreads (or
+    different escape masses) move the width. The alternative, averaging the CDFs vertically
+    (a linear opinion pool), does add the between-run variance to the width, at the cost of
+    a lumpy multi-modal mixture. Vincentization is what the harness preregistered; every
+    pooled record journals the research run's own percentiles as the single-run
+    counterfactual, so which one is right becomes a measurement rather than an argument.
+
+    ``zero_point`` mirrors the question's scaling (``_scale_location``): when it is set the
+    question's own axis is logarithmic, so the mean is taken over ``log|x - zero_point|`` and
+    mapped back. Averaging 10 and 1000 linearly gives 505 — a decade from the geometric
+    center the platform's scale implies — so a linear mean on a log question would move the
+    pool almost as far as the disagreement it is pooling. Every value must sit strictly on
+    ONE side of the zero point (the platform guarantees this: a valid zero_point lies outside
+    the question's range).
+
+    The result is strictly increasing: the mean of strictly increasing sequences is strictly
+    increasing in exact arithmetic, so any inversion here is float noise — repaired by
+    sorting the pooled values ascending and nudging ties apart, never by raising.
+    """
+    if not runs:
+        raise ValueError("runs must be non-empty")
+    values: dict[str, list[float]] = {}
+    for i, run in enumerate(runs):
+        for key in POOL_PERCENTILE_KEYS:
+            if key not in run:
+                raise ValueError(f"run {i} is missing percentile key {key!r}")
+            values.setdefault(key, []).append(float(run[key]))
+
+    def mean_of(key: str) -> float:
+        column = values[key]
+        if zero_point is None:
+            return sum(column) / len(column)
+        shifted = [v - zero_point for v in column]
+        if all(d > 0 for d in shifted):
+            sign = 1.0
+        elif all(d < 0 for d in shifted):
+            sign = -1.0
+        else:
+            raise ValueError(
+                f"percentile p{key} straddles zero_point={zero_point}; a log-scaled "
+                "question's zero point must lie outside every declared value"
+            )
+        logs = [math.log(abs(d)) for d in shifted]
+        return zero_point + sign * math.exp(sum(logs) / len(logs))
+
+    pooled = [mean_of(key) for key in POOL_PERCENTILE_KEYS]
+    if any(a >= b for a, b in zip(pooled, pooled[1:], strict=False)):
+        pooled.sort()
+        for i in range(1, len(pooled)):
+            if pooled[i] <= pooled[i - 1]:
+                pooled[i] = math.nextafter(pooled[i - 1], math.inf)
+    return dict(zip(POOL_PERCENTILE_KEYS, pooled, strict=True))
+
+
+def pool_escape_mass(values: list[float | None]) -> float | None:
+    """Arithmetic mean of the declared out-of-bound masses, ignoring the runs that declared
+    nothing; ``None`` when no run declared any.
+
+    Not a mean over ALL runs on purpose: a run that omits the field has said nothing about
+    the tail (the contract asks for it only when the run can name a mechanism), not that the
+    tail is zero — averaging a silence in as a 0 would let one silent run halve a declared
+    escape and reintroduce exactly the undeclared-tail failure the field exists to fix."""
+    present = [float(v) for v in values if v is not None]
+    if not present:
+        return None
+    return sum(present) / len(present)
+
+
+def pool_mc(runs: list[dict[str, float]]) -> dict[str, float]:
+    """Per-option geometric mean over runs, renormalized to sum to 1.
+
+    The multiple-choice analogue of ``geo_mean_odds`` for independent forecasters: it pools
+    in log space, so an option one run has all but ruled out cannot be dragged up by a
+    single confident dissenter the way an arithmetic mean would. Options are the keys of the
+    first run; every run must offer the same option set (a run that renamed a label is a
+    contract violation, not something to silently pool over)."""
+    if not runs:
+        raise ValueError("runs must be non-empty")
+    options = list(runs[0])
+    if not options:
+        raise ValueError("runs must carry at least one option")
+    for i, run in enumerate(runs[1:], start=1):
+        if set(run) != set(options):
+            raise ValueError(
+                f"run {i} has options {sorted(run)}, expected {sorted(options)} — "
+                "every run must use the same exact option labels"
+            )
+    eps = 1e-6  # keeps log finite on an option a run priced at exactly 0
+    pooled = {
+        option: math.exp(
+            sum(math.log(max(float(run[option]), eps)) for run in runs) / len(runs)
+        )
+        for option in options
+    }
+    total = sum(pooled.values())
+    return {option: value / total for option, value in pooled.items()}
 
 
 # --------------------------------------------------------------------------- validation

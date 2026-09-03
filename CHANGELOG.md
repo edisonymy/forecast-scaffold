@@ -4,6 +4,54 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [Unreleased]
+
+Code comments and docs written with this change tag it `v0.4.28`; renumber them if it ships
+under a different version.
+
+### Added
+- **Pooling for continuous and multiple-choice questions** (`core.pool_percentiles`,
+  `core.pool_escape_mass`, `core.pool_mc`; wired in `bot/run_bot.py`). The harness forced
+  `n_runs = 1` for every non-binary type because no pooling rule was preregistered for
+  them, so the measured deficit — continuous questions, 10-90 coverage 70-76% and widths
+  0.62-0.67x the crowd's across four waves — was also the only path that never ensembled.
+  `n_runs` now follows the tier for all types: numeric/discrete/date quantile-average
+  ("Vincentize") their five percentiles across runs, in LOG space when the question carries
+  a `zero_point`, with the declared escape masses averaged over the runs that declared one
+  (a run that omitted the field said nothing about the tail, not that it is zero); MC takes
+  a per-option geometric mean, renormalized (on two options that is exactly
+  `geo_mean_odds`). Be precise about the mechanism: quantile averaging is SHAPE-PRESERVING
+  — it recentres on the runs' consensus and averages their widths — so it is the ensemble
+  lever, not by itself a widening transform. `REASONING_SECTION` is now type-aware
+  (`reasoning_section(qtype)`); the binary text is byte-identical, and non-binary reasoning
+  runs are never asked for `named_scenarios` (the coherence arithmetic behind it is defined
+  only for a single probability).
+- **The single-run counterfactual, journaled** (`run_percentiles`, `run_escapes`,
+  `percentiles_run1`, `run_probabilities`, `probabilities_run1` on `ForecastRecord`; see
+  docs/schema.md). Every pooled record carries the research run's own answer — exactly what
+  the pre-change harness would have submitted — so pooling is scored PAIRED at resolution
+  with no A/B arm and no question spent on a control, the same trick as
+  `percentiles_pre_guard`. Written only when a pool actually happened, so a single-run
+  forecast journals byte-identically to before.
+- **Preregistered scorer** `bench/analysis/pooled_vs_single.py`: rebuilds both arms through
+  the production `percentiles_to_cdf` (pchip, each row's own `cdf_size` and bounds; RUN-1
+  gets `run_escapes[0]`), scores them with the platform's continuous baseline formula, and
+  prints per-wave and pooled paired deltas with a 90% bootstrap CI. **Decision rule, fixed
+  before any data:** after two MiniBench waves (n >= 60 scored continuous rows), KEEP
+  pooling if the paired delta CI90 excludes zero on the positive side; REVERT if the mean
+  is negative; otherwise extend one more wave. MC is explicitly out of scope (the platform
+  scores it with a different formula and the sample cannot power a rule).
+
+### Changed
+- **Angle mode is no longer binary-only.** `run_angles` flips the flow to N independent
+  full-research runs on every question type; the angle briefs steer where a run looks,
+  which is type-agnostic, and each type now has a pool. Angle runs are research runs, so
+  MC/continuous ones get the reference-class floor announced in their prompt to match the
+  gate `one_run` already enforced. The aggregation tag names the angles
+  (`quantile_mean(angles=P,P,P)` / `geo_mean_mc(angles=P,P,P)`).
+- `single_run(of N intended)` and the budget/deadline "stopping after N run(s)" line now
+  count runs in each question type's own currency instead of only binary probabilities.
+
 ## [0.4.27] - 2026-09-03
 
 Fall-season prep (docs/review-2026-09-03-fall-season-prep.md is the review behind it).
