@@ -4,10 +4,25 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
-## [Unreleased]
+## [0.4.28] - 2026-09-04
 
-Code comments and docs written with this change tag it `v0.4.28`; renumber them if it ships
-under a different version.
+**Architecture change (operator decision, 2026-09-03): parallel independent research is the
+design.** Medium tier = three full research runs (Angle P, no lens), high = four, low = one;
+research depth is identical at every tier (searches 5, min_sources 3); tiers differ only in
+run count and synthesis. A reconciler ("supervisor") sees every dossier and estimate,
+classifies disagreements factual/judgment, searches only when the runs disagree beyond a
+spread threshold, and issues the submitted number; every pool is journaled beside it so the
+paired counterfactual scores at resolution. Evidence sharing between runs exists but ships
+off. The shared-dossier + lens architecture remains the fallback (`run_angles = []`).
+
+Merge criteria the operator set were met on a live paired test (scratchpad `ab/`, 7 binaries
++ numerics in flight, both arms opus-5 at medium, Metaculus fetches banned in the test
+checkouts): no clear regression (pooled numbers within 0.03 on 6/7 binaries; wider within-arm
+spread where the world was genuinely ambiguous), reasoning traces available (new trace files)
+and sound on review, cost ratio 1.21x for research-only and ≈1.5x-2x with the reconciler
+(binary questions $2.36 → $2.86 → ≈$3.4; numeric single-run $1.4 → ≈$3.5). Two independent
+reviews (correctness; red-team) were applied before merge — see the Review fixes entry.
+`bot.yml` per-tick budget raised 12 → 24 to keep coverage at the higher per-question cost.
 
 ### Added
 - **Pooling for continuous and multiple-choice questions** (`core.pool_percentiles`,
