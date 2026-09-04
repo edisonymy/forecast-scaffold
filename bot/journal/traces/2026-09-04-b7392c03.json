@@ -1,0 +1,219 @@
+{
+ "record_id": "2026-09-04-b7392c03",
+ "question": "What will be the ending value of the ICE BofA US High Yield Option-Adjusted Spread for these biweekly periods of Q3 2026? (Sep 7 - Sep 18)",
+ "question_id": 44670,
+ "url": "https://www.metaculus.com/questions/44530/",
+ "question_type": "discrete",
+ "forecast_at": "2026-09-04T17:39:06+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.3062,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 2.563333333333333,
+    "25": 2.6166666666666667,
+    "50": 2.67,
+    "75": 2.7433333333333336,
+    "90": 2.8733333333333335
+   },
+   "p_above_upper": 0.015
+  },
+  "phase1": {
+   "10": 2.563333333333333,
+   "25": 2.6166666666666667,
+   "50": 2.67,
+   "75": 2.7433333333333336,
+   "90": 2.8733333333333335
+  },
+  "phase2": null,
+  "spread_phase1": 0.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 2.56,
+   "25": 2.61,
+   "50": 2.66,
+   "75": 2.72,
+   "90": 2.86
+  },
+  "p_above_upper": 0.015
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.8679,
+   "seconds": 282.7,
+   "estimate": {
+    "percentiles": {
+     "10": 2.57,
+     "25": 2.62,
+     "50": 2.67,
+     "75": 2.74,
+     "90": 2.87
+    },
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Random-walk anchor is spot: 2.65 on 2026-09-03, with the median 10-trading-day change in this series ~0. I shade the median a tick wider to 2.67 for three reasons: 2.60-2.65 is the tightest zone since 2007 so the change distribution is right-skewed; post-Labor-Day HY supply plus September seasonality is a mild widening technical; and the Sep 15-16 FOMC sits inside the window with ~66% odds of a 25bp HIKE, an unusual hawkish configuration under Warsh with inflation above target. Offsetting: credit has ignored the hawkish repricing entirely (2.87 on Jul 29 to 2.60 on Aug 28 as hike odds doubled), issuance is refinancing-dominated (a positive technical), and a hike is largely priced so only a hawkish surprise bites. OAS is a spread over Treasuries, so a hike per se is not mechanically widening. Dispersion dominates the call: two weeks of a slow-moving index quoted to 0.01. Upper escape (>3.505 = +86bp in ~10 sessions) priced at 1.5% via the Apr-2025/Mar-2020 gap mechanism; lower escape omitted as 1.745 is 59bp below the 2007 all-time low. No prediction market prices this contract.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2 (FRED series BAMLH0A0HYM2, daily, pulled for 2024-09-01 to 2026-09-03)",
+    "https://fred.stlouisfed.org/series/BAMLH0A0HYM2",
+    "https://www.cnbc.com/2026/08/31/markets-see-warsh-endorsing-a-rate-hike-in-september.html",
+    "https://www.chase.com/personal/investments/learning-and-insights/article/september-2026-rate-hike-now-expected-amid-energy-shocks",
+    "https://www.bittime.com/en/blog/fomc-meeting-september-2026",
+    "https://seekingalpha.com/article/4943068-calamos-convertible-and-high-income-fund-q2-2026-commentary",
+    "https://de.investing.com/news/stock-market-news/europaische-aktien-was-eine-fedzinserhohung-im-september-bedeuten-wurde-3650226",
+    "https://www.troweprice.com/institutional/ca/en/insights/articles/2026/q3/looking-beyond-tight-credit-spreads-the-opportunity-in-high-yield-bonds-na.html",
+    "https://www.nuveen.com/en-us/insights/fixed-income/fixed-income-weekly-commentary",
+    "https://convextrade.com/metrics/bamlh0a0hym2 (HTTP 403, not readable)"
+   ],
+   "dossier": "INSTRUMENT / RESOLUTION\n- Quantity: ICE BofA US High Yield Index Option-Adjusted Spread, FRED series BAMLH0A0HYM2, quoted in percentage points to two decimals. Resolves off the FRED/ICE daily index print for the period-ending date, NOT off an ETF price, a yield, or an IG/CCC sub-index.\n- FRED publishes this series with roughly a one-business-day lag; the value dated Sep 18 typically posts Sep 21. Whether the resolver reads the Sep 18-dated print or the latest print available at the Sep 18 20:00Z timestamp (which would be Sep 17-dated) is not specified in the criteria text and is worth flagging.\n- Event window: 2026-09-07 -> 2026-09-18 per the criteria; as of Now (2026-09-04T17:25Z) 0% elapsed - the window has not yet begun and opens in ~3 days. Sep 7 is Labor Day (US markets closed), so the window contains 9 trading sessions, Sep 8-18.\n\nOBSERVED LEVELS (FRED BAMLH0A0HYM2, retrieved 2026-09-04)\n- Last print: 2.65 on 2026-09-03. Preceding: 2.66 (Sep 2), 2.65 (Sep 1), 2.63 (Aug 31), 2.60 (Aug 28), 2.63 (Aug 27), 2.67 (Aug 26).\n- Local high this quarter: 2.87 on 2026-07-29. Local low: 2.60 on 2026-08-28.\n- 2026 year-to-date range: 2.60 (Aug 28) to 3.46 (Mar 30). Early January opened near 2.83, reached 2.64 on Jan 22, then widened through March before retracing.\n- 2025 range: 2.59 (Jan 22) to 4.61 (Apr 7, tariff shock; the index went 2.62 on Apr 2 to 4.45 on Apr 8, i.e. +183bp in four sessions). 2025 month-ends: Jun 2.96, Jul 2.86, Aug 2.84, Sep 2.80, Oct 2.94, Nov 2.92, Dec 2.81.\n- Series all-time low since inception (1996) is 2.33, set June 2007.\n\nSERIES DISPERSION (computed from the FRED daily file, 2024-09 to 2026-09)\n- Reference class A - all rolling 10-trading-day changes, trailing 12 months: standard deviation approximately 0.12pp.\n- Reference class B - same, but conditional on the recent low-volatility regime (trailing 60 sessions): daily sd approximately 0.033pp, which square-root-of-10 scales to approximately 0.10pp over the horizon.\n- Reference class C - all rolling 10-day changes since 1996: roughly 1 to 1.5 percent of windows contained a widening of +86bp or more, concentrated in 2008, Aug 2011, 2015-16, Dec 2018, Mar 2020 and Apr 2025.\n- Realized 10-day changes within the Jul 20 - Sep 3 sample specifically ranged from -0.18 to +0.09 (overlapping windows, so understated).\n\nSTATUS QUO\n- Absent a shock, the index has been oscillating in a 2.60-2.87 band since mid-July, with the last six sessions in 2.60-2.67. The status-quo outcome is a print in the low-to-mid 2.6s.\n\nEVENTS INSIDE THE WINDOW\n- August CPI release expected approximately Sep 10-11, 2026.\n- FOMC meeting Sep 15-16, 2026; statement and decision Wednesday Sep 16, two sessions before the window closes (confirmed schedule, multiple outlets, Aug-Sep 2026).\n- CME FedWatch odds of a 25bp HIKE at the September meeting rose from roughly 33% to roughly 66% after Fed Chair Kevin Warsh's Jackson Hole remarks that inflation had not meaningfully improved (CNBC, 2026-08-31; Marketplace, 2026-08-31).\n- Bank of America's published baseline is 75bp of total hikes for 2026 in 25bp increments, versus market pricing of roughly 15bp for September and roughly 40bp below their forecast for December; BofA also flags AI-investment disappointment, weak US labour growth and a US-Iran energy disruption as risk-premium-raising scenarios (Investing.com Deutsch, 2026-09-04).\n- Counter-view in the same coverage: softer July employment and retail sales support a hold, and some economists expect no consensus to hike (Marketplace / Chase, Aug 2026). Chase coverage frames the shift as driven by energy shocks.\n\nEVIDENCE POINTING TOWARD WIDENING\n- Level is in the tightest 5% of readings over the past 25 years; HY spreads cited around 260bp and IG around 78bp in recent buy-side commentary (Nuveen fixed income weekly; T. Rowe Price Q3 2026 piece). Tight starting points mechanically leave more room to widen than to tighten.\n- September is seasonally the heaviest post-Labor-Day HY new-issue calendar and historically the weakest month for risk assets.\n- Long-end rate pressure: 30-year Treasury yield briefly reached its highest level since 2007 on persistent inflation, fiscal deficits and heavy issuance; year-end 2026 10-year forecast range cited at 4.25-4.50% (Schwab / Nuveen, mid-2026).\n- Named risks flagged by sell-side: instability in non-bank/private lending and growth of liability management exercises (AllianzGI 2026 HY outlook).\n\nEVIDENCE POINTING TOWARD FLAT OR TIGHTER\n- The index tightened 27bp between Jul 29 and Aug 28 while September hike odds doubled - credit has so far absorbed the hawkish repricing without widening.\n- Buy-side commentary describes credit fundamentals as broadly supportive and notes spreads tightening despite rate volatility; HY returned +0.27% in the most recent weekly period cited (Nuveen).\n- Majority of expected HY issuance is refinancing rather than net new leverage, described as a positive technical (AllianzGI).\n- Carry is attractive in absolute terms: the ICE BofA US High Yield Index yield was 6.99% as of the Q2 2026 Calamos commentary (Seeking Alpha, 2026-09-04), supporting demand.\n- OAS is a spread over duration-matched Treasuries, so a policy rate hike does not mechanically widen it; only a change in default/risk premium does.\n\nMARKETS\n- Harness title search of Polymarket and Manifold: no candidate market. My own search of Kalshi and bookmakers: no contract found on HY OAS levels - only data-tracking pages. Treat as 'no market found'.\n\nSEARCHED FOR BUT NOT FOUND\n- Any prediction-market or dealer forecast distribution for HY OAS at a two-week horizon.\n- A confirmed exact BLS release date for the August 2026 CPI (the ~Sep 10-11 estimate is inferred from the usual mid-month cadence, not confirmed from bls.gov this run).\n- Daily FRED prints for 2026-09-04 (today's session had not posted at retrieval time) and for Jan-Apr 2026 individually (only the range and extrema were retrievable).\n- convextrade.com's HY OAS page returned HTTP",
+   "reference_class": "10-trading-day-ahead values of the ICE BofA US High Yield OAS (FRED BAMLH0A0HYM2) conditional on the current level, over rolling windows 2024-09 to 2026-09 (with 1996-2026 used only to price the tail escape)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.6028,
+   "seconds": 220.6,
+   "estimate": {
+    "percentiles": {
+     "10": 2.55,
+     "25": 2.61,
+     "50": 2.67,
+     "75": 2.75,
+     "90": 2.9
+    },
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Random walk is the right central model for a daily OAS series over ~10 business days, so the median sits at the last print (2.65 on 2026-09-03) plus a hair of upward drift. Two things push the center up marginally rather than down: the index is only ~5bp off its 52-week low (2.60 on Aug 28) and within ~30bp of post-2007 record tights, so mean reversion at the tight end is mildly upward; and the window contains a Sep 15-16 FOMC with a dot plot where a hike is roughly coin-flip priced (~57% after Warsh), amid a global bond selloff. Against that, the last two Septembers both saw the index tighten across the same calendar stretch (2024: 3.31 to 3.21; 2025: 2.88 to 2.71), demand for HY paper is absorbing a heavy post-Labor-Day calendar, and the stress so far is in yields not spreads. Dispersion: 10bd changes have run SD ~0.13 over the past year, but only ~0.08 in the calm last quarter; I used the higher, event-uplifted figure. The distribution is right-skewed - the 2.60 area has acted as a floor for 19 months and the all-time low is 2.33, while +50-100bp two-week widenings from tight levels are a real if rare occurrence (Apr 2025, Mar 2020, Aug 2011). Escape above 3.505 needs +85bp in ten sessions, which has happened roughly 1% of two-week windows over 20 years; priced at 1.5% for the live FOMC and energy-shock tail. Escape below 1.745 has no mechanism (60bp below the all-time low) and is omitted.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2 (full daily history through 2026-09-03)",
+    "https://www.junkbondinvestor.com/p/credit-weekly-spreads-are-now-a-reason (2026-08-31)",
+    "https://fedratecalc.com/fomc-meeting-schedule/september-2026/",
+    "https://za.investing.com/news/stock-market-news/global-macro-outlook-hormuz-fed-hike-odds-and-the-bond-rout--week-of-september-4-2026-93CH-4454968",
+    "https://de.investing.com/news/stock-market-news/europaische-aktien-was-eine-fedzinserhohung-im-september-bedeuten-wurde-3650226",
+    "https://govspending.org/series/BAMLH0A0HYM2/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the ICE BofA US High Yield Index Option-Adjusted Spread (FRED series BAMLH0A0HYM2), a percentage-point figure reported to 2 decimals, NOT off a fund yield, a BB/B/CCC sub-index, or an IG spread. FRED publishes this series with a roughly one-business-day lag, so a reading taken at 20:00 UTC on Sep 18 may in practice be the Sep 17 observation.\n\nEVENT WINDOW: Sep 7 -> Sep 18 per the criteria; as of Now (2026-09-04T17:25Z) 0% elapsed - the window has not yet opened. Sep 7 2026 is Labor Day (US markets closed). From the last published print (Sep 3) to Sep 18 is 10 business days; to Sep 17, 9.\n\nEVIDENCE:\n- BAMLH0A0HYM2 last published value 2.65 on 2026-09-03 (FRED, retrieved 2026-09-04).\n- Path into the window: 2.87 on Jul 29; 2.70 Aug 7; 2.75 Aug 20; 2.60 Aug 28 (52-week low); then 2.63 / 2.65 / 2.66 / 2.65 for Aug 31, Sep 1, Sep 2, Sep 3 (FRED).\n- 2026 year-to-date range for the series: low 2.60 (Aug 28), high 3.46 (Mar 30). 2025 range: low 2.59 (Jan 22), high 4.61 (Apr 7). All-time series low is 2.33 (June 2007); the index has not printed below 2.59 at any point since 2007 (FRED history).\n- Junk Bond Investor \"Credit Weekly\" dated 2026-08-31 reports the HY index at 260bp, 10bp above its 52-week low; BB at 146bp and B at 250bp both AT 52-week lows; CCC spreads at the 97th percentile of their range - i.e. the tightness is concentrated in higher-quality tiers while the tail is not participating.\n- Same source: 2026 returns have come from yields rather than spreads (\"yields have done most of the work in 2026 while spreads have mostly sat still\"), so all-in borrowing costs have risen even as spreads compressed.\n- FOMC meets Sep 15-16 2026, decision 2pm ET Wednesday Sep 16 with Summary of Economic Projections and dot plot, press conference 2:30pm ET (fedratecalc.com, cambridgecurrencies.com). This falls inside the event window.\n- Market-implied odds of a September HIKE rose to about 57% following Chair Warsh's Jackson Hole remarks (Junk Bond Investor, 2026-08-31). Separately, BofA strategists (Investing.com Deutsch, 2026-09-04) put their house call at 75bp of hikes for the year in 25bp increments and note market pricing for September was only ~15bp at the time of writing - the two sources disagree on the level of pricing, which is itself unresolved.\n- August Employment Situation released 2026-09-04; CPI due approximately Sep 10-11. Both land inside or immediately before the window.\n- Macro backdrop as of week of 2026-09-04 (Investing.com; Bloomberg 2026-09-01): a global sovereign bond selloff has spread to emerging markets on Fed hike expectations, alongside a Hormuz-related energy disruption theme and synchronized global central-bank tightening. Nuveen fixed-income commentary from approximately 2026-08-31 states credit fundamentals remain broadly supportive with spreads tightening despite rate volatility, and HY returning +0.27% on the week.\n- IG spreads reported at 78bp with syndicate desks bracing for a heavy September primary calendar and demand described as strong enough to absorb high-end issuance estimates (search-surfaced commentary, early Sep 2026).\n\nBASE RATES (with the class each is computed over):\n- Over ALL overlapping 10-business-day windows in BAMLH0A0HYM2, Sep 2024 - Sep 2026: mean change approximately -0.01pp, SD approximately 0.13pp. Largest single 10bd move in that sample: -0.44 (Mar 31 -> Apr 14 2026).\n- Over the SAME class EXCLUDING that one outlier: SD approximately 0.117pp.\n- Over 10bd windows in the last three months only (Jun-Sep 2026, a low-volatility stretch): observed changes were +0.09, -0.04, -0.06, +0.07, -0.06, +0.04, -0.10; SD approximately 0.08pp.\n- Conditional on the starting level being within 10bp of the trailing 52-week LOW (the condition that holds now): the sample is small, but the two prior instances in this data - Jan 2025 (2.59 -> 2.68 ten days later) and Aug 2025 (2.75 -> 2.84) - both moved wider by roughly 9bp.\n- Same-calendar-window base rate, Sep 3 -> Sep 18 in prior years: 2024, 3.31 -> 3.21 (-0.10); 2025, 2.88 -> 2.71 (-0.17). Both tightened.\n- Event-in-window class, two-week widenings of +85bp or more (the move required to exit the stated upper bound from the current level): approximately 5 episodes in roughly 520 two-week windows over the last 20 years (Aug 2007, Sep 2008, Aug 2011, Feb-Mar 2020, Apr 2025), i.e. on the order of 1% of windows unconditionally.\n- Two-week moves taking the index BELOW 1.745 from any starting point: zero occurrences in the entire series history (1996-2026).\n\nMARKET CHECK: no Polymarket or Manifold candidate market found by title search; an independent check found no Kalshi contract on HY OAS or credit spreads (Kalshi's rates complex covers Treasury yields and Fed decisions, not this index). No bookmaker line found. Nothing prices this resolution source.\n\nSEARCHED FOR BUT COULD NOT FIND: any intraday or post-Sep-3 print of the index; sell-side end-Q3-2026 HY spread targets; the actual Aug payrolls result released Sep 4; a consistent read on September FOMC hike pricing (two sources give ~57% and ~15bp respectively); the size of the September HY primary calendar in dollar terms.",
+   "reference_class": "10-business-day-ahead changes in the ICE BofA US High Yield Index Option-Adjusted Spread (FRED BAMLH0A0HYM2), daily observations Sep 2024 - Sep 2026, conditioned on a starting level within 10bp of the trailing 52-week low"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.5757,
+   "seconds": 228.8,
+   "estimate": {
+    "percentiles": {
+     "10": 2.57,
+     "25": 2.62,
+     "50": 2.67,
+     "75": 2.74,
+     "90": 2.85
+    },
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Reference class is 10-business-day-ahead changes in the same series during 2026: median -0.02, mean -0.01, SD ~0.11 — a near-random-walk, so the status-quo outcome (last print 2.65 on Sep 3, ~2.65-2.66 after today's payrolls) dominates. I nudged the median 1-2bp above spot rather than following the slightly negative empirical median because the level sits in the richest decile of its history (all-time low ~2.33 in Jun 2007; 2026 low 2.60 on Aug 28), which caps tightening room, and because the window is unusually event-dense: CPI ~Sep 10-11 and an FOMC on Sep 15-16 that markets price as a live 25bp HIKE (~57-66%) after Warsh's hawkish Jackson Hole remarks, plus a heavy September new-issue calendar demanding concessions. Pushing the other way: 162k August payrolls with u-rate steady at 4.1% is credit-supportive, defaults are contained, HY total returns are positive and carry demand is absorbing supply — a strong economy plus a priced-in hike is a tightening, not widening, mix. I used full-2026 dispersion rather than the calmer Jul-Aug regime given the catalysts, and skewed the distribution right because spread distributions widen fast and tighten slowly and the downside is floored near record tights. No prediction market prices this quantity (checked Polymarket/Manifold via harness, Kalshi and bookmakers myself: none found); the Kalshi Fed-decision contract is a different question and was not used as an anchor. Escape mass of 1.5% above 3.505 requires an Apr-2025-tariff-shock-magnitude repricing (+85bp in ~10 sessions); no mechanism exists for the 1.745 lower bound, which is 60bp below the 2007 record low.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2 (FRED series BAMLH0A0HYM2, daily, full 2026 history)",
+    "https://www.cnbc.com/2026/09/04/jobs-report-august-2026.html",
+    "https://www.cnbc.com/2026/08/28/-september-fed-decision-now-a-coin-flip-as-rate-hike-odds-increase.html",
+    "https://kalshi.com/markets/kxfeddecision/fed-meeting/kxfeddecision-26sep",
+    "https://convextrade.com/metrics/bamlh0a0hym2",
+    "https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-sept-04-2026",
+    "https://de.investing.com/news/stock-market-news/europaische-aktien-was-eine-fedzinserhohung-im-september-bedeuten-wurde-3650226"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the ICE BofA US High Yield Index Option-Adjusted Spread, FRED series BAMLH0A0HYM2 (percent, e.g. 2.65 = 265bp) — not the BB sub-index (BAMLH0A1HYBB), not the CCC sub-index (BAMLH0A3HYC), not an IG spread, not a yield. FRED posts this series with roughly a one-business-day lag: as of 2026-09-04T17:25Z the latest available observation is dated 2026-09-03, so a reading captured at the scheduled resolution time (2026-09-18T20:00Z = 16:00 ET Friday) may be the Sep 17 or the Sep 18 value depending on posting time.\n\nEVENT WINDOW: Sep 7 -> Sep 18 per the criteria; as of 2026-09-04T17:25Z, 0% elapsed (the window opens in ~2.6 days). Sep 7 is Labor Day (US bond market closed), so the window contains 9 trading sessions: Sep 8, 9, 10, 11, 14, 15, 16, 17, 18.\n\nSTATUS-QUO OUTCOME: the level is unchanged from the last observation, 2.65 (2026-09-03).\n\nEVIDENCE (source, date):\n- FRED BAMLH0A0HYM2 daily, retrieved 2026-09-04: last five prints 2.63 (8/28... see next bullet), 2.63 (8/31), 2.65 (9/1), 2.66 (9/2), 2.65 (9/3). The 2026-09-04 value is not yet published.\n- FRED, Aug 2026 path: 2.78 (8/3), 2.70 (8/7), 2.71 (8/13), 2.67 (8/14), 2.75 (8/18 and 8/20), 2.70 (8/21), 2.67 (8/26), 2.63 (8/27), 2.60 (8/28) — 2.60 is the lowest print of 2026.\n- FRED, 2026 full range: high 3.46 (2026-03-30), low 2.60 (2026-08-28). The Feb-Mar widening ran 2.86 (2/20) -> 3.46 (3/30), ~+60bp over ~six weeks, and fully retraced to 2.83 by 4/17.\n- BLS/CNBC, 2026-09-04: August nonfarm payrolls +162,000 vs consensus ~53,000; unemployment rate steady at 4.1%. Leisure/hospitality led; information-sector jobs fell. Equity reaction the same morning was modest and mixed (S&P -0.05%, Dow -0.16%, Nasdaq +0.09% per one wrap; another wrap headlined Dow -300).\n- CNBC, 2026-08-28: Fed Chair Kevin Warsh's Jackson Hole keynote was read as hawkish ('underlying trends have not meaningfully improved', the Fed has 'work to do'); CME FedWatch odds of a 25bp HIKE at the Sep 15-16 FOMC jumped from ~35% to ~58% in a day, and were reported ~60-66% after the Sep 4 payrolls print. The Fed is in a potential HIKING posture, not an easing one.\n- Investing.com / BofA strategists, 2026-09-04: BofA's baseline is 75bp of total hikes in 2026 in 25bp steps; they note market pricing for September is only ~15bp and December pricing ~40bp below their forecast. They flag AI-capex disappointment, weak US labor growth, and US-Iran energy disruption as risk-premium upside risks, and also a possible modest yield decline on cooling inflation/weak consumer data.\n- FOMC calendar: the September 2026 meeting is Sep 15-16, i.e. inside the window, with the decision landing two sessions before the Sep 18 endpoint. August CPI is scheduled for the week of Sep 7-11 and is being described as the swing input for that decision.\n- Market-structure note (Convex/commentary, ~2026-08-20): HY index OAS is in the richest decile of its own history against a long-run median near 450bp; IG ~78-81bp, BBB ~100bp, HY/IG ratio ~3.5x (near its long-run average); MOVE ~74.7 (dormant rate vol); 2s10s ~+35bp; defaults contained. Note this source quotes 281bp for 2026-08-20 while FRED prints 2.75 for that date — a vintage/definition discrepancy; FRED is the resolution instrument.\n- Supply, Sept 2026: syndicate desks are braced for a heavy September calendar; commentary reports demand strong enough to absorb high-end issuance estimates, with IG spreads having tightened through a late-summer primary lull. HY returned +0.27% in the most recent reported week.\n- Historical floor: the all-time low for this series is ~2.33 (May-June 2007); the post-2010 lows are ~2.4-2.6, with 2.60 (Aug 2026) and ~2.59 (Jan 2025) the recent troughs.\n- Historical shock precedent: in April 2025 this series repriced from ~3.4 to ~4.6 within days on the tariff announcement — a ~+120bp move inside a two-week window. That is the only move of that magnitude in the last two years of the series.\n\nBASE RATES (with the class each is computed over):\n- Over ALL overlapping 10-business-day windows in 2026 (n~35, source: FRED daily): median change -0.02, mean -0.01, SD ~0.11, 10th pct -0.15, 90th pct +0.12. Largest observed: -0.31 and +0.29.\n- Over the SUBSET of 2026 windows since 2026-07-01 (the current low-vol carry regime, n~15): changes fall roughly within -0.12 to +0.12, i.e. materially narrower than the full-2026 class.\n- Over the SUBSET of 2026 windows inside the Feb-Mar widening episode (n~10): changes ran +0.06 to +0.29, i.e. one-directional and roughly double the calm-regime magnitude.\n- Event-in-window count, for windows CONTAINING an FOMC decision: 2026 had FOMC meetings in late Jan, mid Mar, late Apr, mid Jun, late Jul. In the 10-session windows spanning those dates the series changed by roughly +0.15 (Jan), +0.20 (Mar), -0.10 (Apr), -0.05 (Jun), +0.12 (Jul) — FOMC-containing windows show larger absolute moves than the unconditional class, in both directions.\n- Frequency of a >= +0.85 move in any 10-session window over the last two years: one clustered episode (April 2025), i.e. on the order of 2-3% of windows.\n\nWHAT I SEARCHED FOR AND COULD NOT FIND:\n- Any prediction market or bookmaker pricing the HY OAS level: Polymarket, Manifold (harness title search), Kalshi and bookmakers (my own search) — none found. Kalshi lists a Sept-2026 Fed-decision market (kxfeddecision-26sep), which is a different resolution source and threshold and does not price this quantity.\n- The 2026-09-04 value of the series (not yet published at the time of research).\n- Any sell-side published point forecast for HY OAS at a mid-September 2026 date.\n- The exact scheduled release date/time of the August 2026 CPI report (described in commentary only as 'next week's inflation numbers').",
+   "reference_class": "10-business-day-ahead changes in the ICE BofA US High Yield OAS (BAMLH0A0HYM2) during 2026, applied to the last observed level"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2216,
+   "seconds": 75.3,
+   "estimate": {
+    "percentiles": {
+     "10": 2.56,
+     "25": 2.61,
+     "50": 2.66,
+     "75": 2.72,
+     "90": 2.86
+    },
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Last print 2.65 (2026-09-03); the series is a near-random walk over ten sessions (2026 median 10bd change -0.02, mean -0.01, SD ~0.11). The window holds 9 sessions (Sep 7 is Labor Day), containing August CPI (~Sep 10-11) and the Sep 15-16 FOMC, where a 25bp HIKE is ~60% priced after Warsh's hawkish Jackson Hole remarks. I place the median at 2.66, essentially spot and below all three runs, because their common upward nudge double-counts: the 2026 empirical drift is slightly negative, both prior Sep 3->18 windows tightened (-10bp, -17bp), and if the distribution is right-skewed the widening belongs in the tail, not in the median. The skew itself is well supported - 2.60 has floored the series for 19 months and the all-time low is 2.33, while spreads widen fast from rich levels - so mean (2.685) sits above median. Credit has absorbed the hawkish repricing so far (2.87 on Jul 29 -> 2.60 on Aug 28 as hike odds doubled), OAS is a spread over duration-matched Treasuries so a hike is not mechanically widening, and September refinancing-dominated supply is a benign technical. No market prices this quantity.",
+   "sources": [],
+   "reconciliation": "Four disputes. (1) FACTUAL, settled: the '~57-66% FedWatch' and BofA's '~15bp priced for September' figures are not in conflict - 15/25 = 0.6 - so all three dossiers describe the same live-but-priced hike. (2) FACTUAL, unsettled but immaterial: Run 3 alone has Aug payrolls at +162k vs ~53k consensus; Runs 1-2 could not retrieve it and I have no web access this run, so I carry it as plausible-unverified. It cuts both ways (growth-supportive, hike-supportive) and does not move the center. (3) JUDGMENT, and where I depart from all three runs: every run shifted the median to 2.67 AND right-skewed the tail. That double-counts widening. Run 2's own same-calendar base rate (2024 -10bp, 2025 -17bp) and 2026's -0.02 median drift argue against upward drift; the near-52wk-low conditional supporting it is n=2. I keep the skew, return the median to 2.66, and let the mean (2.685) carry the widening case. (4) FACTUAL, settleable from the dossiers: Run 3's FOMC-window changes (+0.15/+0.20/-0.10/-0.05/+0.12) are comparable to, not larger than, the unconditional SD of 0.11, so Run 2's 0.34 width is unsupported and Run 3's 0.28 ignores the event premium; I take 0.30. Also unresolved and stated as such: whether resolution reads the Sep 17 or Sep 18-dated FRED print, given the ~1-business-day publication lag - worth ~3bp, absorbed by the dispersion. Escape mass of 1.5% above 3.505 (+86bp in 9 sessions, ~1% of 20-year two-week windows, mechanism = Apr-2025/Mar-2020-style gap) carried forward unchanged; no lower escape, as 1.745 is 60bp below the 1996-2026 all-time low.",
+   "disagreements": [
+    {
+     "claim": "September FOMC hike pricing is ~57-66% (FedWatch) vs BofA's '~15bp priced'",
+     "kind": "factual",
+     "verdict": "Not a conflict - 15bp against a 25bp increment implies ~60%. Both describe a live, roughly-coin-flip-to-60% hike inside the window."
+    },
+    {
+     "claim": "August payrolls printed +162k vs ~53k consensus, u-rate 4.1% (Run 3 only)",
+     "kind": "factual",
+     "verdict": "Could not be verified - no web access this run and Runs 1-2 explicitly failed to retrieve it. Carried as plausible-unverified; directionally ambiguous for OAS, so it does not shift the center."
+    },
+    {
+     "claim": "The median should be nudged above spot to 2.67 on tight-end asymmetry and event density",
+     "kind": "judgment",
+     "verdict": "Partly rejected. Combining an upward median shift with a right-skewed tail double-counts widening; 2026 drift is -0.02 and both prior Sep 3->18 windows tightened. Median set to 2.66 (below all three runs), skew retained, mean 2.685."
+    },
+    {
+     "claim": "Correct 10-90 width is 0.28 vs 0.30 vs 0.34",
+     "kind": "factual",
+     "verdict": "Settled at 0.30. Full-2026 SD 0.11 x 2.56 = 0.28; FOMC-containing 2026 windows moved ~0.05-0.20, i.e. not larger than unconditional, so 0.34 is unsupported - 0.30 adds a modest event premium to the 0.28 anchor."
+    },
+    {
+     "claim": "Resolution reads the Sep 18-dated FRED print vs the Sep 17-dated one available at 20:00Z",
+     "kind": "factual",
+     "verdict": "Unsettleable from the criteria text, which is silent. Worth ~3bp of extra noise; left inside the stated dispersion rather than resolved by fiat."
+    },
+    {
+     "claim": "No human prediction market prices HY OAS at this horizon",
+     "kind": "factual",
+     "verdict": "Confirmed - three independent checks of Polymarket, Manifold, Kalshi and bookmakers all returned nothing; the Kalshi Sept Fed-decision contract is a different resolution source and was correctly not used as an anchor."
+    }
+   ],
+   "reference_class": "Overlapping 10-business-day-ahead changes in ICE BofA US HY OAS (FRED BAMLH0A0HYM2) during 2026, with the FOMC-containing subset checked separately; cross-checked against the Sep 3 -> Sep 18 calendar window in 2024 and 2025"
+  }
+ ]
+}
