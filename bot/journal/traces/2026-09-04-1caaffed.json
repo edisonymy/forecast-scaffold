@@ -1,0 +1,240 @@
+{
+ "record_id": "2026-09-04-1caaffed",
+ "question": "How much will Nvidia's stock price returns exceed Microsoft's in these biweekly periods of Q3 2026? (Sep 7 - Sep 18)",
+ "question_id": 44695,
+ "url": "https://www.metaculus.com/questions/44536/",
+ "question_type": "numeric",
+ "forecast_at": "2026-09-04T16:40:31+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.9185,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -7.266666666666667,
+    "25": -3.4333333333333336,
+    "50": 0.20000000000000004,
+    "75": 3.966666666666667,
+    "90": 7.533333333333334
+   },
+   "p_below_lower": 0.023333333333333334,
+   "p_above_upper": 0.022333333333333334
+  },
+  "phase1": {
+   "10": -7.266666666666667,
+   "25": -3.4333333333333336,
+   "50": 0.20000000000000004,
+   "75": 3.966666666666667,
+   "90": 7.533333333333334
+  },
+  "phase2": null,
+  "spread_phase1": 0.8,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -7.5,
+   "25": -3.4,
+   "50": 0.2,
+   "75": 3.9,
+   "90": 7.2
+  },
+  "p_below_lower": 0.025,
+  "p_above_upper": 0.02
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.3008,
+   "seconds": 315.0,
+   "estimate": {
+    "percentiles": {
+     "10": -8.0,
+     "25": -3.8,
+     "50": 0.5,
+     "75": 5.0,
+     "90": 9.0
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.025
+   },
+   "reasoning": "Reference class: rolling ~9-10-trading-day NVDA-minus-MSFT price-return spreads through 2025-26, whose 2026 mean runs about +1.5pp per window (NVDA up modestly-to-+20% YTD vs MSFT roughly -20%) with very large dispersion. I anchor the center well below that drift: two-week cross-sectional momentum has near-zero predictive power, NVDA has run +10.2% in 7 sessions into its 52-week high of 236.54 (short-term reversal risk), MSFT is deeply de-rated with its own building catalysts (first standalone Azure revenue disclosure, 42% growth, backlog, analyst target hikes), and NVDA goes ex-dividend Sep 10 (-0.11pp on price return). The dominant feature is width, not direction: I computed the spread SD directly from Aug 4-Sep 4 closes at 2.75%/day ex-earnings, driven by a striking -0.29 realized correlation (AI-hardware/AI-software rotation); blending that noisy correlation toward +0.1 still leaves ~7 pp of SD over 9 sessions. A live coin-flip FOMC hike decision on Sep 16 (Kalshi ~48%, futures 56-66%) sits inside the window and cuts both ways with more force on the higher-beta leg. Escape mass is real but small: NVDA alone moved +8.7% in one session on Aug 27 while MSFT moved +1.8%, and DeepSeek-type AI-capex shocks have produced >15pp single-day spreads before; I price 2.5% above +15 (China Blackwell/H200 export opening or an AI melt-up plus an MSFT capex/yield de-rating) and 2.0% below -15 (AI-capex scare, hawkish Fed hit to high-multiple hardware, memory/gross-margin shock). Evidence is genuinely two-sided and I stay close to the reference class.",
+   "sources": [
+    "https://finance.yahoo.com/quote/NVDA/history/",
+    "https://www.investing.com/equities/microsoft-corp-historical-data",
+    "https://www.benzinga.com/markets/equities/26/09/61594124/nvidia-8-percent-sp-500-grip-jensen-huang-making-history-commentator",
+    "https://www.cnbc.com/2026/09/03/nvidia-agrees-to-buy-hugging-face-for-almost-13-billion-ai-expansion.html",
+    "https://www.cnbc.com/2026/08/28/-september-fed-decision-now-a-coin-flip-as-rate-hike-odds-increase.html",
+    "https://themarketperiodical.com/2026/08/31/nvidia-stock-forecast-for-september-top-catalysts-to-watch/",
+    "https://www.alphaquery.com/stock/NVDA/volatility-option-statistics/30-day/iv-call",
+    "https://finance.yahoo.com/markets/stocks/articles/microsoft-stock-drops-41-billion-174447308.html",
+    "https://manifold.markets/elf/will-a-big-tech-stock-meta-apple-am",
+    "https://polymarket.com/predictions/nvidia"
+   ],
+   "dossier": "SUBJECT: NVDA price return minus MSFT price return over the Sep 7 - Sep 18, 2026 window.\n\nEVENT WINDOW: Sep 7 -> Sep 18, 2026 per the question title; as of Now = 2026-09-04T16:20Z, 0% elapsed (window has not begun). Sep 7 2026 is Labor Day (US markets closed), so the window contains 9 trading sessions: Sep 8, 9, 10, 11, 14, 15, 16, 17, 18. Sep 18 is a quarterly quad-witching / S&P rebalance date.\n\nRESOLUTION-INSTRUMENT NOTE: The question text supplies NO verbatim resolution criteria, fine print, or background. It resolves off the difference of two equity price returns over the stated dates, in percentage points, not off any index, total-return series, or market quote. The exact base close (Sep 4 close vs Sep 8 open) is not specified in the source text; it shifts the answer by roughly one day of spread.\n\nPRICE STATE (source: Yahoo Finance NVDA history and Investing.com MSFT historical data, both retrieved 2026-09-04):\n- NVDA closes: Jul 29 190.01; Aug 26 209.66; Aug 27 227.98; Aug 28 217.55; Aug 31 220.78; Sep 1 217.44; Sep 2 224.41; Sep 3 228.45; Sep 4 231.14. 52-week range 164.07-236.54.\n- MSFT closes: Aug 17 480.35; Aug 26 496.37; Aug 27 505.06; Aug 28 513.53; Aug 31 507.29; Sep 1 501.02; Sep 2 496.82; Sep 3 510.12; Sep 4 500.83. 52-week range 349.20-553.72.\n- NVDA has risen from 209.66 (Aug 26) to 231.14 (Sep 4), 7 sessions. MSFT is ~7% off its 52-week high; NVDA ~2% off its.\n\nSTATUS-QUO OUTCOME: absent a shock, the two-week spread is a random walk around a small drift; 2026 to date has run in NVDA's favor.\n\nDISPERSION / BASE RATES (computed from the closes above, Aug 4 - Sep 4, 2026, 23 sessions):\n- Class 'all sessions in the month': NVDA-MSFT daily spread SD 3.29%.\n- Class 'sessions excluding the two NVDA-earnings-reaction days (Aug 27, Aug 28)': spread SD 2.75%/day. Components: NVDA daily SD 1.95% (annualized ~31%), MSFT daily SD 1.45% (annualized ~23%), realized correlation -0.29.\n- Largest single-day spreads observed in the month: +6.99pp (Aug 27, NVDA earnings reaction, NVDA +8.7% vs MSFT +1.8%) and -6.25pp (Aug 28). Largest non-earnings single-day spreads: +5.29pp (Aug 12), -4.08pp (Aug 10), +4.52pp (Aug 5), -3.75pp (Aug 24).\n- Class 'YTD 2026': vendors report NVDA between +4.2% and +20.9% YTD and MSFT between -20.3% and +2.9% YTD (dispersion across vendors reflects different as-of dates and price vs total return). Multiple outlets describe MSFT as the weakest Magnificent Seven name in 2026 and note MSFT fell ~10% on its January earnings.\n- Options: NVDA 30-day implied volatility 32.7% as of 2026-09-04, at the 8th percentile of its own trailing 1-year range (post-earnings vol crush). Source: alphaquery/web search, 2026-09-04. MSFT current 30-day IV not retrieved; historical prints found were 27.7% (2026-05-04, mean) and 43.0% (2026-07-07, puts).\n\nSCHEDULED EVENTS INSIDE THE WINDOW:\n- FOMC meeting Sep 15-16, 2026, decision Sep 16. Pricing for a 25bp HIKE (not a cut): Kalshi 48%, fed funds futures 56%-66% across sources dated Aug 28 - Sep 1, 2026. Follows Chair Kevin Warsh's Jackson Hole keynote flagging 3.7% inflation; the July meeting was a hold. Sources: CNBC 2026-08-28, Chase, cryptobriefing, Kalshi.\n- CPI and other inflation/labor prints land in the week of Sep 8 ahead of the FOMC.\n- NVDA ex-dividend date Sep 10, 2026, $0.25/share (0.11% of the Sep 4 price). MSFT's quarterly ex-dividend does not fall in this window (its cadence puts the next one in November).\n- Neither company reports earnings in the window. NVDA reported fiscal Q2 on Aug 26 (revenue $96.22B vs $92.11B consensus; Q3 guidance $106-108B). MSFT reported fiscal Q4 on Jul 29.\n- Searched for, not found: any NVDA developer conference, product launch event, or analyst day scheduled Sep 8-18, 2026 (GTC cadence puts events in March and October). Searched for, not found: any MSFT event in the window (Ignite is November).\n\nNVDA-SIDE EVIDENCE:\n- Sep 3, 2026: NVDA confirmed acquisition of Hugging Face for $12.93B ($11.9B to stockholders plus ~$1.0B retention equity); expected to close H1 2027 subject to regulatory approval; second-largest NVDA purchase after ~$20B for Groq assets. Sources: NVDA 8-K filed 2026-09-02, TechCrunch 2026-09-03, CNBC 2026-09-03.\n- NVDA market cap ~$5.41T, ~8% of S&P 500 total market cap, exceeding the combined cap of five S&P sectors; ~16.3% of US GDP; above Apple's $4.74T. Source: Kobeissi Letter via Benzinga, 2026-09-03. NVDA is 22.11% of SMH and 14.47% of XLK, so index and ETF flows amplify its moves.\n- Open NVDA-specific policy variable: US export policy on China. BIS moved H200 to case-by-case review Jan 15, 2026 (25% tariff, 50% volume cap); Commerce told Congress on Jul 14, 2026 that actual H200 shipments remain 'trivial' despite ~$10B in approved licenses; NVDA halted China-configured H200 production in March 2026 and its guidance assumes zero China datacenter compute revenue. Blackwell remains barred from Chinese firms. Any change here is unpriced in guidance. Sources: BIS, Bloomberg 2026-02-26, TechTimes 2026-07-15.\n- Cited NVDA risk factors for September: Vera Rubin platform transition execution, gross-margin compression, memory supply, Treasury yields. Source: The Market Periodical, 2026-08-31.\n\nMSFT-SIDE EVIDENCE:\n- MSFT began disclosing standalone quarterly Azure revenue for the first time: $29.42B for the quarter ended June 2026, +42% y/y; Azure passed $100B for FY2026 at +43%. FQ4 EPS $4.74 vs $4.24 consensus (+11.8% surprise). Backlog surged. Sources: Microsoft IR / news.microsoft.com 2026-07-29, ad-hoc-news, Investing.com analysis.\n- MSFT deployed $41B of capex in FQ4 including $5.6B of finance leases. Shares fell ~0.9% to $502.59 on Sep 1, 2026 attributed to the 10-year Treasury yield approaching 4.8% raising the hurdle rate on that capex. Source: Yahoo Finance, Sep 2026.\n- The 2026 OpenAI restructure ended MSFT's revenue-share payments to OpenAI, locked IP rights through 2032, and freed OpenAI to serve customers on any cloud; MSFT expects ~$6B from OpenAI in 2026 vs ~$4B prev",
+   "reference_class": "Rolling ~9-10-trading-day windows in 2025-2026, measuring NVDA price return minus MSFT price return over the same window"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0896,
+   "seconds": 365.5,
+   "estimate": {
+    "percentiles": {
+     "10": -6.2,
+     "25": -2.7,
+     "50": 0.4,
+     "75": 3.7,
+     "90": 7.2
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Reference class: two-week windows containing no earnings report for either name. Over Jun 26 - Sep 4 2026 the 23 clean overlapping 10-day NVDA-minus-MSFT spreads had median +0.6pp, mean +0.7pp, SD 4.7pp; the parametric estimate from ex-earnings daily vols (NVDA 2.3pp, MSFT 1.45pp, corr ~0.5) is 5.2pp for a 9-session window, so I center on ~5.2pp SD. Sep 7 is Labor Day, leaving 9 sessions; both earnings sit outside the window (NVDA Aug 26, MSFT Oct 27), which strips out the dominant historical driver - MSFT's Jul 30 +15.5% gap by itself produced 10-day spreads of -18 to -26pp. Median set marginally positive (+0.4) rather than zero: NVDA beta 2.22 vs MSFT 1.11 against positive drift, plus post-earnings-drift and NVDA near its 52-week high, offset by short-horizon reversal (NVDA already +7.5% vs MSFT +3.6% over the trailing 10 sessions) and September/high-beta seasonality. NVDA 30-day IV at 32.7% (1-yr percentile ~8) says the current regime is calm, but FOMC Sep 15-16 and Sep 18 quad-witching are inside the window. No human market matches these terms - the only nearby Manifold contract (Big Tech vs Bitcoin, closes 2030) shares no threshold, deadline or source, so it is not an anchor. Tails: I price ~3% escape each side rather than the ~0.3% a normal gives, because NVDA has a demonstrated capacity for idiosyncratic 8-17% single-session moves (Aug 27 2026 +8.7%; Jan 2025 DeepSeek -17% while MSFT fell ~2%) and H200/China-licensing headlines hit NVDA without touching MSFT in either direction. Evidence is decent on vol and calendar, thin on any directional edge, so I stay close to the reference class.",
+   "sources": [
+    "https://stockanalysis.com/stocks/nvda/history/",
+    "https://stockanalysis.com/stocks/msft/history/",
+    "https://stockanalysis.com/stocks/nvda/",
+    "https://stockanalysis.com/stocks/msft/",
+    "https://www.alphaquery.com/stock/NVDA/volatility-option-statistics/30-day/iv-call",
+    "https://www.cnbc.com/2026/08/26/nvidia-nvda-earnings-report-q2-2027-live-updates.html",
+    "https://www.tipranks.com/stocks/msft/earnings",
+    "https://fedratecalc.com/fomc-meeting-schedule/september-2026/",
+    "https://www.benzinga.com/markets/equities/26/09/61594124/nvidia-8-percent-sp-500-grip-jensen-huang-making-history-commentator",
+    "https://www.cnbc.com/2026/08/19/china-ai-nvidia-chips-us-export-controls.html",
+    "https://api.manifold.markets/v0/search-markets?term=Nvidia%20Microsoft%20outperform"
+   ],
+   "dossier": "QUANTITY: NVDA simple close-to-close price return minus MSFT simple close-to-close price return, in percentage points, over the stated window. Bounds -15/+15, both OPEN.\n\nRESOLUTION-INSTRUMENT NOTE: resolves off closing prices of the two stocks, not intraday prints and not total return. Dividends are immaterial and neither name has an ex-dividend date inside the window (MSFT quarterly yield ~0.15%, NVDA ~0.005%).\n\nEVENT WINDOW: Sep 7 2026 -> Sep 18 2026 20:00 UTC per the criteria; as of Now (2026-09-04T16:20Z) 0% elapsed - the window has not opened, it begins in ~2.7 days. Sep 7 2026 is Labor Day and US equity markets are closed, so the window contains 9 trading sessions: Sep 8, 9, 10, 11, 14, 15, 16, 17, 18.\n\nSTATUS-QUO OUTCOME: absent a company-specific or macro shock, the two-week spread lands within a few percentage points of zero - the modal no-news outcome for a mega-cap pair, and well inside the stated range.\n\nPRICE / LEVEL FACTS (stockanalysis.com daily history, retrieved 2026-09-04):\n- NVDA close Sep 4 2026: 230.88 (+1.06% on the day). 52-week range 164.07-236.54, so it sits near the top of that range. Beta 2.22.\n- MSFT close Sep 4 2026: 500.75 (-1.84% on the day). 52-week range 349.20-553.72. Beta 1.11.\n- Trailing 10 sessions to Sep 4: NVDA +7.5%, MSFT +3.6%.\n- NVDA daily moves Aug 24 - Sep 4: -2.91, +2.19, -1.59, +8.74, -4.57, +1.48, -1.51, +3.21, +1.80, +1.06.\n- MSFT daily moves Aug 24 - Sep 4: +0.84, +0.90, +0.95, +1.75, +1.68, -1.22, -1.24, -0.84, +2.68, -1.84.\n\nEARNINGS CALENDAR (searched and confirmed): NVDA reported fiscal Q2 2027 on Aug 26 2026 (revenue $96.22B vs ~$92.11B consensus; stock +8.74% on Aug 27) - CNBC 2026-08-26. MSFT reports fiscal Q1 2027 on Oct 27 2026 after close (TipRanks, confirmed). NEITHER company reports inside the event window.\n\nOTHER CALENDAR ITEMS INSIDE THE WINDOW: FOMC meets Sep 15-16 2026 with the decision, Summary of Economic Projections and dot plot released Sep 16 at 18:00 UTC (fedratecalc.com FOMC schedule). Sep 18 2026 is the third Friday of September - quarterly quad-witching expiry and S&P index rebalance effective date.\n\nVOLATILITY / DISPERSION (the series question):\n- NVDA 30-day implied volatility 32.7% as of 2026-09-04, 1-year IV percentile ~8 (AlphaQuery/aggregated option data) - i.e. near the low end of its own past year, consistent with post-earnings IV crush.\n- Realized daily SD Jun 26 - Sep 4 2026, EXCLUDING the two earnings-reaction days: NVDA ~2.3pp, MSFT ~1.45pp. Including them: NVDA ~2.6pp, MSFT ~2.4pp.\n- Realized daily NVDA-MSFT correlation over the same sample is roughly 0.45-0.6; several recent sessions moved in opposite directions (Sep 2, Sep 4, Aug 28).\n\nBASE RATES for the spread, all computed from stockanalysis.com daily closes Jun 26 - Sep 4 2026 (n=40 overlapping 10-session windows). The conditioning variable - whether the window contains an earnings gap - is already KNOWN for this question (it does not), so both the conditional and the unconditional are given:\n- Over ALL 40 overlapping 10-session windows: SD ~11pp, range -26.1 to +10.4. This is dominated by MSFT's Jul 30 2026 earnings gap of +15.51% in a single session, which alone produced every window in the -17 to -26 cluster.\n- Over the 23 windows containing NO earnings gap for either name (the class this question falls in): median +0.6pp, mean +0.7pp, SD 4.7pp, range -9.3 to +10.4. Two of the 23 exceeded +10; none exceeded +11; none fell below -10.\n- Parametric cross-check for a 9-session window from ex-earnings daily vols and corr ~0.5: spread SD ~5.2pp.\n- Count of same-length windows in this sample that would have breached +/-15pp: 8 of 40 unconditionally, all 8 earnings-gap windows; 0 of 23 among no-earnings windows.\n\nEVIDENCE POINTING TOWARD NVDA-SIDE MOVEMENT (either sign, idiosyncratic to NVDA and not MSFT):\n- NVDA is ~8% of total S&P 500 market cap, market value ~$5.41T, exceeding the combined cap of five S&P sectors and equal to ~16.3% of US GDP (Kobeissi Letter via Benzinga, 2026-09-03). Extreme concentration cuts both ways: it amplifies flows into and out of the name.\n- China/H200 export licensing is unresolved and headline-driven: as of Jul 2026 a US trade official said H200 shipments to mainland China and Hong Kong remain minimal with very limited licenses; a restart is under discussion, and separately the US is weighing a crackdown on Chinese AI firms renting Nvidia compute offshore (CNBC 2026-08-19). Either direction is a NVDA-only headline.\n- Guidance of ~$108B revenue for the current quarter and a stated ~70% fiscal-2028 growth outlook (CNBC 2026-08-26) leaves the name priced on AI-capex expectations, which repriced violently on single headlines in Jan 2025 (NVDA -17% in one session while MSFT fell ~2%).\n- Hyperscaler capex commentary cited in the same coverage projects top-five capex rising toward $1.3T next year from ~$800B in 2026; AWS separately committed to 2 million Nvidia GPUs.\n- Oracle, a widely watched AI-capex bellwether, reports in the Sep 8-11 stretch in most years; its print has moved semiconductor names sharply in the past.\n\nEVIDENCE POINTING TOWARD MSFT-SIDE MOVEMENT:\n- MSFT fell -1.84% on Sep 4 2026 on no single identified catalyst, after +2.68% on Sep 3 - the name is not quiet.\n- MSFT's 2026 path has been unusually gappy: it was reportedly down more than 20% year-to-date before its late-July fiscal-Q4 report, then gapped +15.51% on Jul 30 and added +3.02%/+4.93% over the next two sessions. Whatever repriced it is recent and unseasoned.\n- MSFT sits ~10% below its 52-week high of 553.72 while NVDA sits ~2% below its own, so the two names have different amounts of overhead supply.\n\nCONTEXT ON 2026 RELATIVE PERFORMANCE (sources disagree, flagged): one mid-August source put NVDA YTD total return at ~20.7%; a July source described NVDA as up only ~4% YTD while semiconductor peers rose far more; another described NVDA as down 7.6% YTD as of late August. These are irreconcilable from search snippets alone and should be treated as unve",
+   "reference_class": "Two-week (9-10 trading session) windows containing no scheduled earnings report for either company, measuring NVDA minus MSFT simple close-to-close price return in percentage points; computed over daily closes Jun 26 - Sep 4 2026 (23 clean overlapping windows)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.2057,
+   "seconds": 390.7,
+   "estimate": {
+    "percentiles": {
+     "10": -7.6,
+     "25": -3.8,
+     "50": -0.3,
+     "75": 3.2,
+     "90": 6.4
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.012
+   },
+   "reasoning": "Reference class: 9-10 trading-day (NVDA - MSFT) price-return spreads, excluding windows containing an earnings gap, over the last year; median ~0, SD ~5.2-5.3 pp by both realized and option-implied routes. No earnings for either name in Sep 8-18 (NVDA reported late Aug, MSFT Jul 29), so the earnings-gap windows that dominate the raw sample (MSFT +15.5% on Jul 30) are excluded from the anchor. Median set at -0.3: NVDA's $0.25 ex-div on Sep 10 costs ~0.11 pp of price return with no MSFT ex-date in the window, and NVDA is extended (+6.2% in three sessions on the $12.93B Hugging Face deal, near the $236.54 52-week high) against MSFT's stronger 2-month trend (+28% off the late-July re-rating) - offset partly by NVDA's higher expected drift in a rising tape. Main structural asymmetry is beta (2.22 vs 1.11) into an FOMC on Sep 16 where a HIKE is ~68% priced: a hawkish dot plot unwinds high-beta harder, while a hold would be a dovish surprise favoring NVDA - roughly two-sided, with mild left skew inherited from market returns and AI-capex-doubt risk concentrating in NVDA. No prediction market prices this spread (checked Kalshi, Polymarket, Manifold); the only relevant market input is the IV pair, used for dispersion not direction. Open-bound escapes priced above the normal implication (0.3%) at 2.0%/1.2% to respect fat tails: a 15 pp two-week divergence between two megacaps with no earnings needs a shock (China export action, a hyperscaler capex cut, an AI melt-up, or an MSFT-specific antitrust/OpenAI headline).",
+   "sources": [
+    "https://stockanalysis.com/stocks/nvda/history/",
+    "https://stockanalysis.com/stocks/msft/history/",
+    "https://stockanalysis.com/stocks/nvda/",
+    "https://stockanalysis.com/stocks/msft/",
+    "https://www.alphaquery.com/stock/MSFT/volatility-option-statistics/30-day/iv-mean",
+    "https://www.tradingview.com/symbols/NASDAQ-NVDA/options-volatility/",
+    "https://fedratecalc.com/next-fomc-meeting/",
+    "https://investor.nvidia.com/events-and-presentations/events-and-presentations/event-details/2026/Goldman-Sachs-Communacopia--Technology-Conference-2026-dNGa4j3cy5/default.aspx",
+    "https://news.microsoft.com/source/2026/06/10/microsoft-announces-quarterly-dividend-29/",
+    "https://polymarket.com/predictions/nvda",
+    "https://www.benzinga.com/markets/equities/26/09/61594124/nvidia-8-percent-sp-500-grip-jensen-huang-making-history-commentator",
+    "https://www.cnbc.com/2026/09/01/stock-market-today-live-updates.html"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the difference in PRICE returns (NVDA minus MSFT, percentage points) over the stated calendar period - not total return, not market-cap change, not a ratio. Sign convention: positive = NVDA outperformed.\n\nEVENT WINDOW: Sep 7 -> Sep 18, 2026 per the criteria text; as of 2026-09-04T16:20:40Z, 0% elapsed (window has not begun). Sep 7, 2026 is Labor Day (US equity markets closed), so the window spans 9 NYSE/Nasdaq sessions: Sep 8, 9, 10, 11, 14, 15, 16, 17, 18.\n\nPRICE LEVELS\n- NVDA close Sep 4, 2026: $230.88 (prev close $228.45). 52-week range $164.07-$236.54. Beta 2.22. Market cap ~$5.58T. Source: stockanalysis.com, Sep 4 2026.\n- MSFT close Sep 4, 2026: $500.75 (Sep 3 close $510.12). 52-week range $349.20-$553.72. Beta 1.11. Market cap ~$3.72T. Source: stockanalysis.com, Sep 4 2026.\n- Trailing 40 sessions (Jul 13 -> Sep 4): NVDA $203.53 -> $230.88; MSFT $390.99 -> $500.75. Source: stockanalysis.com history pages.\n- Trailing 3 sessions (Sep 1 -> Sep 4): NVDA $217.44 -> $230.88; MSFT $501.02 -> $500.75.\n\nBASE RATES (each with the class it is computed over)\n- Over ALL overlapping 9-session (NVDA-MSFT) spreads in the last 40 sessions (n=31): SD ~7.5 pp, range approximately -26 to +8. This unconditional figure is contaminated by earnings gaps - see next bullet.\n- Over 9-session windows CONTAINING NO earnings report for either name (n=13-22 depending on cut): mean ~0 to +1 pp, SD ~5.2 pp, observed range approximately -10 to +9. This is the conditional class matching Sep 8-18. Computed from stockanalysis.com daily closes.\n- Over 9-session windows CONTAINING MSFT's Jul 30 earnings gap (+15.5% in one session): spreads ran -14 to -26 pp. Windows containing NVDA's Aug 27 gap (+8.7%, then -4.6% next session): -10 to +8 pp.\n- Option-implied, as of Sep 3-4 2026: NVDA 30-day IV 32.7% (stated 1-year IV percentile 8, i.e. a low-IV regime for NVDA; its typical range is cited as 30-80%). MSFT 30-day IV 23.9% (alphaquery, 2026-09-03). At a NVDA-MSFT daily return correlation of 0.5-0.6 these imply a 9-session spread SD of roughly 5.0-6.0 pp.\n- Daily return SD in the trailing 40 sessions, earnings days removed: NVDA ~2.3%, MSFT ~1.6%.\n\nSCHEDULED IN-WINDOW EVENTS\n- FOMC meets Sep 15-16, 2026; decision Wed Sep 16 2:00pm ET with Summary of Economic Projections and dot plot, press conference 2:30pm ET. Current target range 3.50-3.75%, held since Dec 2025. Source: federalreserve.gov / fedratecalc.com.\n- Market-implied odds of a 25bp HIKE at that meeting: Kalshi ~48% immediately after Jackson Hole, CME FedWatch ~68% more recently. Sources: CNBC market wraps, Benzinga, late Aug / early Sep 2026.\n- Goldman Sachs Communacopia + Technology Conference, San Francisco, begins Sep 8. NVDA presents Thu Sep 10, 8:50am PT (webcast at investor.nvidia.com); topics flagged in coverage are Blackwell, China, and AI demand durability. Microsoft maintains an IR event page for the same FY26 conference; its exact slot was not confirmed in searching.\n- NVDA ex-dividend date Sep 10, 2026, $0.25/share (~0.11% of the Sep 4 price). MSFT's most recent ex-date was Aug 20, 2026 ($0.91, paid Sep 10); next projected ex-date Nov 19, 2026. So one name goes ex-dividend inside the window and the other does not. Sources: nvidia dividend announcement, news.microsoft.com Jun 10 2026, dividendhistory.net.\n- Sep 18, 2026 is the third Friday of the month: quarterly options expiration / quad witching and index rebalance, historically an elevated-volume session.\n- No earnings report from either company falls in the window. NVDA reported fiscal Q2 in late Aug 2026 ($96.22B rev vs $92.11B consensus; Q3 guide $108B, ~+89% y/y). MSFT reported FY26 Q4 on Jul 29, 2026; CFO Amy Hood guided FY27 capex to grow y/y on \"demand signals across our portfolio.\"\n\nEVIDENCE POINTING BOTH WAYS\n- For NVDA-relative strength: Nvidia announced a definitive agreement to acquire Hugging Face for $12.93B (early Sep 2026), on which shares rose ~1.8-3.2%; it is ~8% of S&P 500 market cap and ~16.3% of US GDP per The Kobeissi Letter (Sep 3 2026); trailing P/E cited at 28.4; sell-side consensus \"Strong Buy\" with a $325.99 mean target; momentum score 75th percentile, growth 98th percentile (Benzinga, Sep 3 2026).\n- For MSFT-relative strength: MSFT re-rated from ~$390 to ~$510 between Jul 29 and Sep 3 on its FY26 Q4 report and FY27 capex commentary, and remains below its $553.72 52-week high; its beta is half NVDA's, which matters mechanically for any market-wide move; MSFT's revenue base is more diversified than a single AI-hardware cycle.\n- Ambient risk cited in coverage: equities have been pressured by elevated Treasury yields and rising oil prices feeding inflation worry; the Sep 16 decision is described as potentially having \"a major impact on technology-stock valuations.\" On Sep 2 the S&P 500 rose 0.46% to 7,666.60 and the Nasdaq 0.45% as yields paused. One published piece notes September has historically been a down month for NVDA.\n\nPREDICTION MARKETS\n- No contract was found on any venue that prices the relative return of NVDA versus MSFT over a fixed two-week window. What exists: Kalshi/Polymarket single-name daily NVDA up/down contracts (one Sep 1, 2026 contract carried ~$7K volume) and Kalshi Nvidia GPU-compute-price markets (~$4.4M cumulative volume vs ~$285K on Polymarket). A Manifold contract on Big Tech versus Bitcoin over the 2020s closes 2030-01-17. None of these share this question's underlying, comparator, horizon, or resolution source.\n\nSEARCHED FOR BUT NOT FOUND\n- The verbatim resolution criteria text (the question ships with empty criteria/fine print), so the exact base price - Sep 4 close versus Sep 8 open - and whether returns are price-only or total-return is inferred, not confirmed.\n- Microsoft's specific Communacopia presentation date/time in 2026.\n- A current MSFT 30-day IV reading dated Sep 4 (the Sep 3 value was the freshest available without a paid data subscription).\n- Any scheduled Nvidia product launch, GTC-type keynote, or",
+   "reference_class": "Overlapping 9-10 trading-day windows of (NVDA price return minus MSFT price return), 2025-2026, restricted to windows containing no earnings report for either company"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1081,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2826,
+   "seconds": 106.2,
+   "estimate": {
+    "percentiles": {
+     "10": -7.5,
+     "25": -3.4,
+     "50": 0.2,
+     "75": 3.9,
+     "90": 7.2
+    },
+    "p_below_lower": 0.025,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Nine sessions (Sep 7 is Labor Day), no earnings for either name - NVDA reported Aug 26, MSFT reports Oct 27 - which strips out the driver that dominates the raw sample (MSFT's +15.5% Jul 30 gap produced 10-day spreads of -18 to -26pp). The clean reference class centers near zero with SD ~5pp. I set the median at +0.2: the beta differential (2.22 vs 1.11) against positive drift is worth ~+0.3pp, offset by NVDA's -0.11pp Sep 10 ex-div and short-horizon reversal after +7.5% in ten sessions into a 52-week high. I do not carry Run 1's 2026 NVDA-drift adjustment - the YTD figures behind it are contradictory across vendors and two-week cross-sectional momentum has no predictive power. Width is the real question and I land at 5.7pp SD, below Run 1's 7pp (its -0.29 correlation is a 23-session artifact contradicted by two 40-session samples AND by the option-implied cross-check) but above the naive ex-earnings 5.2pp, because the correlation parameter is genuinely unpinned and a live FOMC, quad-witching, and an NVDA-only conference slot all sit inside the window. No human market prices this spread: checked Polymarket, Kalshi, Manifold - Kalshi/Polymarket Nvidia contracts are GPU rental prices, and the harness-supplied Manifold market (Big Tech vs Bitcoin, 0.84, ~$2.9k volume, closes 2030) matches on no term that matters, so no blend.",
+   "sources": [],
+   "reconciliation": "Six factual disputes and one judgment call. (1) The decisive one was daily NVDA-MSFT correlation: Run 1's -0.29 over 23 sessions implied a 7pp spread SD and a 17-point width; Runs 2 and 3 independently got +0.45-0.6 over 40 sessions implying 5.0-5.3pp. I settled it against Run 1 - larger sample, two independent agreeing computations, Run 1's own admission that its sample is noisy and that the historical correlation is positive, and an independent option-implied check (32.7%/23.9% IVs) that reproduces 5.0-5.5pp and not 7pp. But because the estimate genuinely spans -0.29 to +0.6, I priced the parameter uncertainty rather than collapsing to 5.2, landing at 5.7pp SD / 14.6 width - inside Runs 2 and 3, well below Run 1. (2) NVDA's Sep 10 $0.25 ex-dividend: Runs 1 and 3 give the same date and amount, Run 2 denies it citing a yield figure that looks stale; two-to-one, accepted, worth -0.11pp. (3) Run 3 found NVDA presenting at Goldman Communacopia Sep 10 while Runs 1 and 2 searched and found nothing - a specific positive finding beats failed searches, so I count it as an NVDA-only headline vector that widens without directing. (4) MSFT 30d IV of 23.9% accepted from Run 3 as the only retrieved value and consistent with beta 1.11 and no earnings. (5) FOMC hike odds (Kalshi 48% vs FedWatch 68%) could NOT be settled from the dossiers - different venues, different dates - and I let it stand as two-sided variance on the higher-beta leg, not a direction. (6) 2026 YTD relative performance is irreconcilable across vendor snippets and I declined to build any drift on it. (7) The median sign is pure judgment with no evidence breaking the tie; I take the bet Runs 1 and 2 take (positive) at roughly half their magnitude, since the reversal and ex-div arguments Run 3 raises are real but small. I carried Run 2's reference class forward - it is the right conditioning set, since whether the window contains earnings is KNOWN here, not uncertain. No sources retrieved on this run.",
+   "disagreements": [
+    {
+     "claim": "Realized daily NVDA-MSFT correlation is negative (-0.29, Run 1) vs positive (+0.45-0.6, Runs 2/3), setting 9-session spread SD at 7pp vs 5.0-5.3pp",
+     "kind": "factual",
+     "verdict": "Settled toward positive: 40-session sample beats 23-session, two runs agree independently, Run 1 concedes its sample is noisy and the historical correlation positive, and the option-implied cross-check (NVDA IV 32.7%, MSFT 23.9%) reproduces 5.0-5.5pp. Residual spread in the estimate priced as extra width: SD 5.7, not 5.2 and not 7."
+    },
+    {
+     "claim": "NVDA goes ex-dividend $0.25 on Sep 10, inside the window (Runs 1, 3) vs no ex-date for either name (Run 2)",
+     "kind": "factual",
+     "verdict": "Resolved in favor of Runs 1 and 3 - same date and same amount from two independent runs; Run 2's 0.005% yield reads as a stale pre-raise figure. Effect is -0.11pp on the spread, immaterial to the percentiles."
+    },
+    {
+     "claim": "A scheduled NVDA event falls inside the window (Run 3: Goldman Communacopia, Sep 10 8:50am PT) vs no event found (Runs 1, 2)",
+     "kind": "factual",
+     "verdict": "Resolved for Run 3 - a specific date/time/webcast finding outweighs two unsuccessful searches. Treated as an NVDA-idiosyncratic headline vector (China/Blackwell commentary) that adds dispersion, not direction."
+    },
+    {
+     "claim": "MSFT 30-day implied volatility as of early Sep 2026 is 23.9% (Run 3) vs not retrievable (Runs 1, 2)",
+     "kind": "factual",
+     "verdict": "Accepted as the only retrieved value; consistent with MSFT beta 1.11 and no earnings in the window. Used in the implied-vol dispersion cross-check."
+    },
+    {
+     "claim": "Probability of a 25bp hike at the Sep 16 FOMC: ~48% (Kalshi) vs ~68% (CME FedWatch)",
+     "kind": "factual",
+     "verdict": "COULD NOT BE SETTLED from the dossiers - different venues sampled on different dates. Carried as genuine uncertainty: the meeting is a live two-sided event that raises dispersion on the higher-beta leg, with no directional read either way."
+    },
+    {
+     "claim": "NVDA has a positive 2026 drift versus MSFT worth ~+1.5pp per two-week window (Run 1)",
+     "kind": "factual",
+     "verdict": "COULD NOT BE SETTLED - the underlying YTD figures span NVDA +4% to +21% and MSFT -20% to +3% across vendors, and both other dossiers flag them as irreconcilable. Discounted entirely; two-week cross-sectional momentum has near-zero predictive power regardless."
+    },
+    {
+     "claim": "Median spread is slightly positive (+0.4/+0.5, Runs 1-2) vs slightly negative (-0.3, Run 3)",
+     "kind": "judgment",
+     "verdict": "No evidence breaks this tie. The beta differential against positive drift (~+0.3pp) is a real mechanism; the ex-div drag (-0.11pp) and reversal after +7.5% into a 52-week high are also real but smaller. I take the positive side at half the magnitude: +0.2."
+    }
+   ],
+   "reference_class": "Rolling 9-10 trading-session NVDA-minus-MSFT price-return spreads containing no earnings report for either name (Jun 26 - Sep 4 2026 daily closes, n=23 clean overlapping windows)"
+  }
+ ]
+}
