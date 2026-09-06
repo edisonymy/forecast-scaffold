@@ -1,4 +1,65 @@
-# HANDOVER — continuation state as of 2026-09-06 (evening)
+# HANDOVER — continuation state as of 2026-09-06 (late evening)
+
+## 2026-09-06 late: PR #40 verified against the live Smarkets venue (local session)
+
+Branch `claude/monetize-forecaster-02dx6t`, head = the commit after `8a7ef8b` ("exchanges:
+verify the Smarkets client against the live venue"). 981 tests pass, ruff and mypy clean,
+pushed. The five UNVERIFIED items below were checked from a networked machine:
+
+1. **Events filter** (`state=&type_domain=`): CORRECT — 213 politics + current-affairs
+   events. But the listing is id-ascending and paged by 100, and the client stopped at one
+   page, so it saw only the oldest container events (UK, Rest of World, ...) and none of
+   the recent by-elections. Fixed: every page is walked (348 -> 601 contracts, 139 eligible).
+2. **Quantity unit**: WRONG. The OpenAPI spec (api.smarkets.com/v0/control/openapi/) says
+   quote `quantity` is the resting order's TOTAL POT (backer stake + layer liability) in
+   1/10000 GBP; the backer stake — Betfair's `size` convention, what `size_gbp` carries — is
+   `quantity x price / 1e8`. Depth had been overstated ~2x at evens and ~20x on a 5% runner.
+   Fixed in `smarkets_normalise`.
+3. **Settlement**: WRONG. Contracts carry `state_or_outcome` (new / open / live / halted /
+   winner / loser / deadheat / reduced / voided / unavailable) and markets `state` (... /
+   settled / voided); the guessed `contract.state` / `.outcome` fields do not exist, so no
+   Smarkets bet would ever have settled. Fixed and confirmed live: `--ids
+   smarkets:150170446:417059135` (Clacton by-election, Reform UK) -> status=closed,
+   outcome=true; Labour -> false. Quotes / volumes / last prices answer EMPTY after
+   settlement — by-id quoting tolerates that. Dead heat = closed with outcome None.
+   Also fixed: markets have no `volume` or `close_time` fields — matched volume comes from
+   `/volumes/` (whole GBP) and the last executed price from `/last_executed_prices/` (a
+   PERCENT string), both now fetched per chunk; close_time is the event `start_datetime`.
+4. **Betfair**: STILL UNVERIFIED — needs the operator's delayed app key + login in the
+   environment (`BETFAIR_APP_KEY`, `BETFAIR_USERNAME`, `BETFAIR_PASSWORD`); the session had
+   none. Run `python bot/exchanges.py --probe --venue betfair` and `--ids betfair:<closed
+   market>:<selection>` once the secrets exist, and save the two payloads as fixtures.
+5. **Fixtures**: `tests/fixtures/smarkets_open_raw.json` (Senate-control market, two
+   runners) and `smarkets_settled_raw.json` (Clacton winner), with normalisation tests
+   over them (`test_smarkets_real_*`) plus a paging test.
+
+Local forecast tick (Smarkets-only, `--limit 2 --tier medium`, journals in the temp dir):
+selected the two deepest eligible contracts (Brazil presidential, GBP 134k matched) —
+Lula blind 0.48 / sighted 0.58 / proxy 0.54 vs mid 0.5765; Flavio Bolsonaro 0.40 / 0.43 /
+0.02 vs 0.4101. `market_read=informed` on both; the sighted reasoning cites the Smarkets
+book and the harness market lookup (Polymarket 0.57 on $9.8M). No paper bet (sighted
+numbers inside the spread after commission — correct). Credit $2.00 for the tick
+(~$0.87 per pair + ~$0.13 per proxy, sonnet-5 at medium). Note the preflight rejects a
+machine with `ANTHROPIC_BASE_URL` set: run it with `env -u ANTHROPIC_BASE_URL`. The
+exchange runner does not write trace files (that is run_bot's feature); the reasoning is
+in the journal record.
+
+Manifold edge (`python bot/score_manifold.py`, 2026-09-06, needs `PYTHONIOENCODING=utf-8`
+on Windows): resolution Brier BLIND 0.114 vs SIGHTED 0.096 (n=371 resolved pairs);
+movement-toward-us blind +0.033 (n=764), sighted +0.059 (n=479). The scorer's
+"+6430 mana mark-to-market over 193 bets" is NOT a usable P&L: it is a slippage-free
+share model that pays e.g. +754 on a 10-mana NO at 0.987 (the real fill bought 413
+shares, not 769), and it includes the 92 dry-run bets. Recomputed on the 101 LIVE bets
+with actual fill shares where journaled (54 of 101) and exit prices where exited:
+realised (35 resolved) +1559 on 1498 staked — but 29 of those 35 lack fill data and
+are share-model estimates dominated by two near-certain NO wins; exited (19) +199 on
+1075; unrealised (46) -20 on 2537. The app ledger (+775 mana as of the previous
+handover) remains the number to trust; the journal cannot reproduce it without fills.
+The 78%-invested vs 30%-cap check was not done (needs the account key).
+
+Next: operator merges PR #40, adds the Betfair secrets, dispatches `exchange-paper.yml`
+once with `mode=forecast`, confirms the journal commit and two hourly snapshot ticks;
+then item 4 above.
 
 ## 2026-09-06 evening: exchange PAPER bot on PR #40 — handover to a LOCAL session
 
