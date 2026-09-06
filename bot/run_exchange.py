@@ -58,7 +58,7 @@ DEFAULT_AGENT_CMD = run_manifold.DEFAULT_AGENT_CMD
 
 # ---- venue economics (docs/exchange-paper-policy.md) -----------------------------------
 #: Commission on NET WINNINGS per market. Smarkets standard tier 2%; Betfair 6% base since
-#: June 2026 (the Expert Fee above £25k/yr of winnings is ignored at paper scale).
+#: June 2026 (the Expert Fee above GBP 25k/yr of winnings is ignored at paper scale).
 COMMISSION = {"smarkets": 0.02, "betfair": 0.06}
 PAPER_BANKROLL_GBP = 10_000.0     # notional; sizing and the CLV test are scale-free anyway
 
@@ -75,7 +75,7 @@ REFORECAST_DEDUPE_DAYS = 3  # a contract forecast this recently is not re-foreca
 
 # ---- paper-bet policy ------------------------------------------------------------------
 DIVERGENCE_THRESHOLD = 0.03   # |p_sighted - mid| must clear this (hysteresis, as Manifold)
-MIN_EXPECTED_RETURN_NET = 0.05  # EV per £ at risk, NET of commission, on the chosen side.
+MIN_EXPECTED_RETURN_NET = 0.05  # EV per GBP at risk, NET of commission, on the chosen side.
 #                               Manifold's gate is 0.08 gross with no commission; 0.05 net
 #                               at 2-6% commission is the same bar expressed honestly.
 KELLY_FRACTION = 0.25
@@ -92,9 +92,9 @@ BLIND_EXTRA_DISALLOWED = (
 
 SIGHTED_BOOK_SECTION = (
     "\n\n## Market signals ({venue} exchange, real money)\n"
-    "Best price to BACK (buy YES): {back_prob} (odds {back_odds}), £{back_size} available\n"
-    "Best price to LAY (sell YES): {lay_prob} (odds {lay_odds}), £{lay_size} available\n"
-    "Mid: {mid}   Last traded: {last}   Matched so far: £{matched}\n"
+    "Best price to BACK (buy YES): {back_prob} (odds {back_odds}), GBP {back_size} available\n"
+    "Best price to LAY (sell YES): {lay_prob} (odds {lay_odds}), GBP {lay_size} available\n"
+    "Mid: {mid}   Last traded: {last}   Matched so far: GBP {matched}\n"
     "Commission on net winnings: {commission:.0%}\n\n"
     "This book prices the SAME contract you are forecasting: the settlement rules above ARE "
     "this market's terms, so there is no cross-platform mismatch to adjudicate. Reading this "
@@ -247,10 +247,10 @@ def build_exchange_brief(contract: dict[str, Any], sighted: bool) -> str:
 def side_economics(p_us: float, contract: dict[str, Any], side: str) -> dict[str, float] | None:
     """Price paid, net odds, win probability and capacity for one side at the touch.
 
-    YES buys at the best offer (``back.prob`` per £1 payout). NO is a lay at the best bid:
+    YES buys at the best offer (``back.prob`` per GBP 1 payout). NO is a lay at the best bid:
     laying odds o against a backer's stake S carries liability S*(o-1), so our capital at
-    risk per £1 of NO-payout is (1 - lay.prob) and the resting size S supports a liability
-    of S*(1-lay.prob)/lay.prob. Both sides are expressed as "stake £X to win b*X" so Kelly
+    risk per GBP 1 of NO-payout is (1 - lay.prob) and the resting size S supports a liability
+    of S*(1-lay.prob)/lay.prob. Both sides are expressed as "stake GBPX to win b*X" so Kelly
     and the EV gate are one formula. ``b`` is NET of the venue's commission on winnings."""
     c = COMMISSION.get(str(contract.get("venue")), 0.0)
     book = contract.get("back" if side == "YES" else "lay")
@@ -490,7 +490,7 @@ def run(args: argparse.Namespace) -> int:
             break
         cid = contract["contract_id"]
         print(f"- {question_title(contract)[:90]!r} (mid={contract.get('mid')}, "
-              f"matched=£{contract.get('matched_gbp')})")
+              f"matched=GBP {contract.get('matched_gbp')})")
         blind_fc = run_manifold.forecast_market(
             contract, "blind", args.tier, args, config, budget_state, deadline,
             brief_builder=build_exchange_brief, extra_blind_disallowed=BLIND_EXTRA_DISALLOWED,
@@ -519,7 +519,7 @@ def run(args: argparse.Namespace) -> int:
         if bet is not None:
             bets += 1
             positioned.add(cid)
-            print(f"  PAPER-BET {bet['outcome']} £{bet['stake_gbp']:.2f} at {bet['price']:.3f} "
+            print(f"  PAPER-BET {bet['outcome']} GBP {bet['stake_gbp']:.2f} at {bet['price']:.3f} "
                   f"(p_us={p_sighted:.2f} vs mid {contract['mid']:.3f}, EV net "
                   f"{bet['expected_return_net']:+.2%}, capped by {bet['capped_by']}, "
                   f"read={sighted_fc.get('market_read')})")

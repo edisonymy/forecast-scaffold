@@ -17,7 +17,7 @@ and mirror `.claude-plugin/plugin.json`.
   reuses `run_manifold.forecast_market` (new keyword-only `brief_builder` /
   `extra_blind_disallowed` hooks; Manifold callers are byte-identical) for the blind/sighted
   pair, then journals the paper bet the sighted number implies at the EXECUTABLE side of the
-  book — quarter-Kelly on a notional £10k, net of venue commission (2% / 6%), capped by the
+  book — quarter-Kelly on a notional GBP 10k, net of venue commission (2% / 6%), capped by the
   size resting at the touch — into `bot/journal/exchange.jsonl`, and snapshots every tracked
   contract's book into `bot/journal/exchange-prices.jsonl` each tick. The scorer computes
   closing-line value, settled P&L net of commission, and a three-way Brier (blind / sighted

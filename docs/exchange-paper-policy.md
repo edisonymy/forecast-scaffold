@@ -35,7 +35,7 @@ DELAYED app key for Betfair (prices lag 1-180 s; irrelevant at 2-week-plus horiz
    (`bot/exchanges.py`, read-only by construction — there is no order code path).
 2. **Snapshot** the book of every contract the journal already tracks into
    `bot/journal/exchange-prices.jsonl` (closing line + settlement, scored offline later).
-3. **Select** fresh contracts: open, two-sided, at least £10 at the touch on both sides,
+3. **Select** fresh contracts: open, two-sided, at least GBP 10 at the touch on both sides,
    spread at most 8 points, mid within [0.02, 0.98], closing 3-180 days out, at most two
    runners per market and three per event, not forecast in the last 3 days. Ranked by
    matched volume (deepest books first: the prices most worth testing against).
@@ -45,8 +45,8 @@ DELAYED app key for Betfair (prices lag 1-180 s; irrelevant at 2-week-plus horiz
    `market_read` judgment). Sonnet-5 at medium tier, as Manifold.
 5. **Paper bet** on the sighted number: side by divergence from the mid (>= 3 points),
    priced at the executable side, EV per pound at risk net of commission >= 5%, sized
-   quarter-Kelly on a notional £10,000 bankroll, capped at 5% of bankroll and at the depth
-   resting at the touch, floor £2 (Betfair's minimum). Journaled with the whole book at
+   quarter-Kelly on a notional GBP 10,000 bankroll, capped at 5% of bankroll and at the depth
+   resting at the touch, floor GBP 2 (Betfair's minimum). Journaled with the whole book at
    entry. Nothing is ever sent to a venue.
 
 ## Preregistered decision rule (computed by `bot/score_exchange.py verdict`)
@@ -70,7 +70,7 @@ continues forecast-only as a public benchmark, and no live phase is opened.
 
 **HOLD** otherwise. No live betting, no sizing decisions, no "it looks good so far".
 
-A GO-LIVE-CANDIDATE verdict authorises only the *proposal* of a live phase 1 (flat £5
+A GO-LIVE-CANDIDATE verdict authorises only the *proposal* of a live phase 1 (flat GBP 5
 stakes, Smarkets first at 2% commission, Betfair Expert Fee irrelevant at that scale) under
 a separate policy document; it does not authorise a trade.
 

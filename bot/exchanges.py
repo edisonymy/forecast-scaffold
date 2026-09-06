@@ -72,7 +72,7 @@ SMARKETS_TYPE_DOMAINS = ("politics", "current_affairs")
 SMARKETS_STATES = ("upcoming", "live")
 #: Quote ``price`` is basis points of probability: 4386 -> 0.4386.
 SMARKETS_PRICE_SCALE = 10_000.0
-#: Quote ``quantity`` in units of 1/SMARKETS_QUANTITY_SCALE GBP (10000 -> £1.00). VERIFY
+#: Quote ``quantity`` in units of 1/SMARKETS_QUANTITY_SCALE GBP (10000 -> GBP 1.00). VERIFY
 #: with ``--probe`` on first use; if the printed sizes look 100x off, this is the knob.
 SMARKETS_QUANTITY_SCALE = 10_000.0
 SMARKETS_MAX_IDS_PER_CALL = 20

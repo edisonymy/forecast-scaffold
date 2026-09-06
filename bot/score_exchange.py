@@ -276,7 +276,7 @@ def _f(value: Any, spec: str = ".3f") -> str:
 def render(result: dict[str, Any]) -> str:
     lines = ["EXCHANGE PAPER SCOREBOARD", ""]
     header = (f"{'venue':<10}{'pairs':>6}{'res':>5}{'bets':>6}{'clv_n':>6}{'meanCLV':>9}"
-              f"{'CI90':>18}{'hit':>6}{'settled':>8}{'P&L£':>9}{'ROI':>7}{'Bs':>7}{'Bb':>7}"
+              f"{'CI90':>18}{'hit':>6}{'settled':>8}{'P&L GBP':>9}{'ROI':>7}{'Bs':>7}{'Bb':>7}"
               f"{'Bmid':>7}")
     lines.append(header)
     for venue, agg in list(result["by_venue"].items()) + [("POOLED", result["pooled"])]:

@@ -227,7 +227,7 @@ def test_venue_module_has_no_order_code_path() -> None:
 def test_selection_filters_and_ranks_by_matched_volume() -> None:
     picked = run_exchange.select_contracts(fixture_contracts(), 10, now=NOW)
     ids = [c["contract_id"] for c in picked]
-    # Thin special (£4 at the touch, 15-point spread) is excluded; deepest book first.
+    # Thin special (GBP 4 at the touch, 15-point spread) is excluded; deepest book first.
     assert "smarkets:901:7" not in ids
     assert ids[0].startswith("betfair:1.2345") and "smarkets:900:1" in ids
     # The two-runner Betfair market contributes ONE contract: its runners are one bet.
@@ -285,7 +285,8 @@ def test_blind_brief_hides_the_book_and_sighted_shows_it() -> None:
     sighted = run_exchange.build_exchange_brief(c, sighted=True)
     assert "Market signals (Smarkets exchange, real money)" in sighted
     assert "BACK (buy YES): 0.300" in sighted and "LAY (sell YES): 0.280" in sighted
-    assert "£420" in sighted and "£350" in sighted and "Commission on net winnings: 2%" in sighted
+    assert "GBP 420" in sighted and "GBP 350" in sighted
+    assert "Commission on net winnings: 2%" in sighted
     assert '"market_read"' in sighted and "REQUIRED" in sighted
 
 
@@ -324,10 +325,10 @@ def test_yes_side_prices_at_the_back_offer_net_of_commission() -> None:
 
 
 def test_no_side_is_a_lay_at_the_bid_with_liability_capacity() -> None:
-    c = fixture_contracts()[0]  # lay 0.28 with £350 of backer stake resting
+    c = fixture_contracts()[0]  # lay 0.28 with GBP 350 of backer stake resting
     econ = run_exchange.side_economics(0.20, c, "NO")
     assert econ["price"] == pytest.approx(0.72) and econ["win_p"] == pytest.approx(0.80)
-    # Laying £350 at odds 1/0.28 carries liability 350 * (1-0.28)/0.28 = £900.
+    # Laying GBP 350 at odds 1/0.28 carries liability 350 * (1-0.28)/0.28 = GBP 900.
     assert econ["capacity_gbp"] == pytest.approx(350.0 * 0.72 / 0.28)
 
 
@@ -339,14 +340,14 @@ def test_paper_bet_gates_and_sizing() -> None:
     bet = run_exchange.paper_bet(0.45, c, bank)
     assert bet is not None and bet["outcome"] == "YES" and bet["price"] == 0.30
     assert bet["dry_run"] is True and bet["commission"] == 0.02
-    # Quarter-Kelly on £10k for p=0.45 at 0.30 (net odds 2.29) is £524: above the 5% cap
-    # (£500), which is itself above the £420 resting at the touch, so depth binds.
+    # Quarter-Kelly on GBP 10k for p=0.45 at 0.30 (net odds 2.29) is GBP 524: above the 5% cap
+    # (GBP 500), which is itself above the GBP 420 resting at the touch, so depth binds.
     assert bet["kelly_raw_gbp"] == pytest.approx(523.7, abs=1.0)
     assert bet["stake_gbp"] == 420.0 and bet["capped_by"] == "depth"
     # A smaller divergence is Kelly-bound and well under both caps.
     small = run_exchange.paper_bet(0.345, c, bank)
     assert small is not None and small["capped_by"] == "kelly" and small["stake_gbp"] < 420.0
-    # NO side: p=0.20 vs mid 0.29 -> lay; capacity £900 > cap £500 -> cap binds.
+    # NO side: p=0.20 vs mid 0.29 -> lay; capacity GBP 900 > cap GBP 500 -> cap binds.
     no = run_exchange.paper_bet(0.20, c, bank)
     assert no is not None and no["outcome"] == "NO" and no["capped_by"] == "cap"
     assert no["stake_gbp"] == 500.0
@@ -358,7 +359,7 @@ def test_paper_bet_rejects_low_ev_and_sub_floor_stakes() -> None:
     econ = run_exchange.side_economics(0.93, c, "YES")
     assert econ["ev_net"] < run_exchange.MIN_EXPECTED_RETURN_NET
     assert run_exchange.paper_bet(0.93, c, 10_000.0) is None
-    # A tiny bankroll sizes below Betfair's £2 minimum -> no bet.
+    # A tiny bankroll sizes below Betfair's GBP 2 minimum -> no bet.
     assert run_exchange.paper_bet(0.40, fixture_contracts()[0], 20.0) is None
 
 
