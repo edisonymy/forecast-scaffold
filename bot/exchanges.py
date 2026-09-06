@@ -48,6 +48,7 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import math
 import os
 import re
 import ssl
@@ -434,13 +435,143 @@ def load_contracts(*, venues: Iterable[str] = ("smarkets", "betfair"),
     return out
 
 
-def quote_contracts(contract_ids: Iterable[str], **kw: Any) -> dict[str, dict[str, Any]]:
-    """Current state for the given contract ids (a full venue pull, filtered) — used by the
-    snapshot step. Contracts that vanished from the venue listing are simply absent."""
+def smarkets_quote_by_market_ids(market_ids: Iterable[str],
+                                 get: Callable[[str], Any] | None = None, *,
+                                 pace: float = SMARKETS_PACE_SECONDS) -> dict[str, dict[str, Any]]:
+    """contract_id -> normalised contract for the given Smarkets MARKET ids, by id (not via
+    the events listing, which only returns upcoming/live events and so never shows a
+    settlement). Names come from the market/contract objects; event fields are blank."""
+    get = get or _get_json
+    out: dict[str, dict[str, Any]] = {}
+    for ids in _chunks(sorted(set(str(m) for m in market_ids)), SMARKETS_MAX_IDS_PER_CALL):
+        joined = ",".join(ids)
+        markets = {str(m.get("id")): m for m in (get(f"{SMARKETS_API}/markets/{joined}/")
+                                                 .get("markets") or []) if isinstance(m, dict)}
+        time.sleep(pace)
+        contracts = [c for c in (get(f"{SMARKETS_API}/markets/{joined}/contracts/")
+                                 .get("contracts") or []) if isinstance(c, dict)]
+        time.sleep(pace)
+        quotes = get(f"{SMARKETS_API}/markets/{joined}/quotes/") or {}
+        time.sleep(pace)
+        runners: dict[str, list[str]] = {}
+        for c in contracts:
+            runners.setdefault(str(c.get("market_id")), []).append(str(c.get("name", "")))
+        for c in contracts:
+            mid = str(c.get("market_id"))
+            row = smarkets_normalise(c, markets.get(mid, {"id": mid}), {},
+                                     quotes.get(str(c.get("id"))) or {}, runners.get(mid, []))
+            out[row["contract_id"]] = row
+    return out
+
+
+def betfair_books_by_market_ids(market_ids: Iterable[str], app_key: str, token: str,
+                                post: Callable[..., Any] | None = None,
+                                ) -> dict[str, dict[str, Any]]:
+    """contract_id -> normalised contract from listMarketBook by MARKET id. Unlike the
+    catalogue, the book endpoint still answers for CLOSED markets (for a window after
+    settlement) with runner status WINNER/LOSER — this is where outcomes come from."""
+    headers = betfair_headers(app_key, token)
+    post = post or (lambda url, body: _post_json(url, body, headers))
+    out: dict[str, dict[str, Any]] = {}
+    for ids in _chunks(sorted(set(str(m) for m in market_ids)), BETFAIR_MAX_BOOKS_PER_CALL):
+        page = post(f"{BETFAIR_API}/listMarketBook/", {
+            "marketIds": ids, "priceProjection": {"priceData": ["EX_BEST_OFFERS"]},
+        })
+        for book in page or []:
+            if not (isinstance(book, dict) and book.get("marketId")):
+                continue
+            # Book-only catalogue stub: runner names are unknown here (the journal already
+            # holds them); selection ids are what the contract_id is built from.
+            stub = {"marketId": book["marketId"],
+                    "runners": [{"selectionId": r.get("selectionId"), "runnerName": ""}
+                                for r in (book.get("runners") or []) if isinstance(r, dict)]}
+            for row in betfair_normalise(stub, book):
+                out[row["contract_id"]] = row
+    return out
+
+
+def quote_contracts(contract_ids: Iterable[str], *,
+                    smarkets_get: Callable[[str], Any] | None = None,
+                    betfair_post: Callable[..., Any] | None = None,
+                    betfair_session: tuple[str, str] | None = None,
+                    fixture: str | None = None) -> dict[str, dict[str, Any]]:
+    """Current state of the given contract ids, quoted BY ID per venue so settled and
+    closed markets still answer. Fail-open per venue. ``fixture`` (normalised contracts)
+    replaces the network. Ids whose venue is unavailable are simply absent."""
     wanted = set(contract_ids)
-    venues = {cid.split(":", 1)[0] for cid in wanted}
-    return {c["contract_id"]: c for c in load_contracts(venues=venues, **kw)
-            if c["contract_id"] in wanted}
+    if fixture:
+        return {c["contract_id"]: c for c in load_contracts(fixture=fixture)
+                if c["contract_id"] in wanted}
+    by_venue: dict[str, set[str]] = {}
+    for cid in wanted:
+        parts = cid.split(":")
+        if len(parts) >= 3:
+            by_venue.setdefault(parts[0], set()).add(parts[1])
+    out: dict[str, dict[str, Any]] = {}
+    if by_venue.get("smarkets"):
+        try:
+            out.update(smarkets_quote_by_market_ids(by_venue["smarkets"], smarkets_get))
+        except Exception as exc:  # noqa: BLE001
+            print(f"smarkets: quote-by-id failed ({type(exc).__name__}: {str(exc)[:160]})")
+    if by_venue.get("betfair"):
+        session = betfair_session
+        if session is None:
+            try:
+                session = betfair_session_from_env()
+            except Exception as exc:  # noqa: BLE001
+                print(f"betfair: login failed ({type(exc).__name__}: {str(exc)[:160]})")
+        if session is not None:
+            try:
+                out.update(betfair_books_by_market_ids(by_venue["betfair"], session[0],
+                                                       session[1], betfair_post))
+            except Exception as exc:  # noqa: BLE001
+                print(f"betfair: quote-by-id failed ({type(exc).__name__}: {str(exc)[:160]})")
+    return {cid: c for cid, c in out.items() if cid in wanted}
+
+
+# --------------------------------------------------------------------------- odds ladder
+
+#: Betfair's price ladder: (upper bound of the band, tick in decimal odds). Smarkets uses a
+#: similar ladder; the paper maker arm applies this one to both, which is conservative on
+#: Smarkets (its finer ticks would let a maker order improve by less).
+ODDS_LADDER = ((2.0, 0.01), (3.0, 0.02), (4.0, 0.05), (6.0, 0.1), (10.0, 0.2), (20.0, 0.5),
+               (30.0, 1.0), (50.0, 2.0), (100.0, 5.0), (1000.0, 10.0))
+
+
+def odds_tick(odds: float) -> float:
+    for upper, tick in ODDS_LADDER:
+        if odds < upper + 1e-9:
+            return tick
+    return 10.0
+
+
+def snap_odds(odds: float, direction: str) -> float:
+    """Snap decimal odds to the ladder: ``direction`` "down" (shorter odds = higher
+    probability) or "up" (longer odds)."""
+    tick = odds_tick(odds)
+    steps = odds / tick
+    snapped = (math.floor(steps + 1e-9) if direction == "down" else math.ceil(steps - 1e-9)) * tick
+    return round(max(1.01, snapped), 4)
+
+
+def snap_nearest(odds: float) -> float:
+    """Nearest ladder price. Odds derived as 1/probability (1.1111 for 0.90) are rarely on
+    the ladder; the venue's actual touch is the nearest rung."""
+    tick = odds_tick(odds)
+    return round(max(1.01, round(odds / tick) * tick), 4)
+
+
+def ticks_between(odds_lo: float, odds_hi: float) -> int:
+    """Whole ladder ticks between two prices, each snapped to its nearest rung first
+    (0 when they coincide or cross)."""
+    lo, hi = snap_nearest(odds_lo), snap_nearest(odds_hi)
+    if hi <= lo:
+        return 0
+    n, x = 0, lo
+    while x < hi - 1e-9 and n < 10_000:
+        x = round(x + odds_tick(x), 6)
+        n += 1
+    return n
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -530,42 +661,6 @@ def match_contracts(contracts: list[dict[str, Any]], *,
                 best_id, best_sim = o["contract_id"], sim
             if best_id:
                 out.setdefault(c["contract_id"], []).append(best_id)
-    return out
-
-
-def market_overround(runners: list[dict[str, Any]], commission: float = 0.0) -> dict[str, Any]:
-    """Book totals for one market's runners at the touch.
-
-    ``back_sum`` is the sum over runners of the best back price (as probability): below 1
-    the book UNDER-rounds and backing every runner in proportion locks a profit before
-    commission; ``lay_sum`` above 1 means laying every runner locks one. ``lock_back`` /
-    ``lock_lay`` are the locked return per GBP staked AFTER commission on the winning leg
-    (commission is charged on net market profit, so it scales the lock, not the stake),
-    and ``size_gbp`` the smallest stake any leg can absorb at the touch — the binding size.
-    Requires a price on EVERY runner; a runner with a missing side returns no lock."""
-    backs = [r.get("back") for r in runners]
-    lays = [r.get("lay") for r in runners]
-    out: dict[str, Any] = {"n_runners": len(runners), "back_sum": None, "lay_sum": None,
-                           "lock_back": None, "lock_lay": None, "size_back_gbp": None,
-                           "size_lay_gbp": None}
-    if runners and all(backs):
-        back_sum = sum(b["prob"] for b in backs)
-        out["back_sum"] = round(back_sum, 6)
-        if 0.0 < back_sum < 1.0:
-            # Stake s_i = prob_i / back_sum per GBP; whichever wins pays 1/back_sum.
-            out["lock_back"] = round((1.0 / back_sum - 1.0) * (1.0 - commission), 6)
-            out["size_back_gbp"] = round(min(b["size_gbp"] * back_sum / b["prob"]
-                                             for b in backs), 2)
-    if runners and all(lays):
-        lay_sum = sum(lay["prob"] for lay in lays)
-        out["lay_sum"] = round(lay_sum, 6)
-        if lay_sum > 1.0:
-            # Laying every runner for liability proportional to its price: the one that
-            # wins costs 1, the losers pay their stakes; net return per GBP of total
-            # liability is (lay_sum - 1) / lay_sum before commission.
-            out["lock_lay"] = round((lay_sum - 1.0) / lay_sum * (1.0 - commission), 6)
-            out["size_lay_gbp"] = round(min(lay["size_gbp"] * (1.0 - lay["prob"]) / lay["prob"]
-                                            for lay in lays), 2)
     return out
 
 

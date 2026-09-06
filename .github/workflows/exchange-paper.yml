@@ -2,12 +2,18 @@ name: Exchange paper bot
 
 # UK betting-exchange PAPER trader (docs/exchange-paper-policy.md). Nothing here can place an
 # order: bot/exchanges.py is read-only by construction and bot/run_exchange.py journals what
-# it would have done at the touch price. Six-hourly: politics books move slowly and the
-# closing-line test needs a book snapshot per tick more than it needs fresh forecasts.
+# it would have done at the touch price. HOURLY: every tick quotes the tracked contracts by
+# id (closing line + settlement) and records cross-venue locks at zero model credit; only
+# the ticks on hours divisible by six also forecast fresh contracts. The snapshot cadence is
+# what makes closing-line value and the maker-fill lower bound scorable at all.
 on:
   schedule:
-    - cron: "23 */6 * * *"
+    - cron: "23 * * * *"
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "forecast | snapshot"
+        default: "forecast"
 
 concurrency:
   group: ${{ github.workflow }}
@@ -41,10 +47,23 @@ jobs:
           pip install -e .
           npm install -g @anthropic-ai/claude-code@2.1.201
 
+      - name: Decide tick mode
+        id: mode
+        # Forecast on hours divisible by six (00, 06, 12, 18 UTC); snapshot-only otherwise.
+        # A manual dispatch can force either.
+        run: |
+          mode="${{ github.event.inputs.mode }}"
+          if [ -z "$mode" ]; then
+            if [ $(( 10#$(date -u +%H) % 6 )) -eq 0 ]; then mode=forecast; else mode=snapshot; fi
+          fi
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          echo "tick mode: $mode"
+
       - name: Run exchange paper bot
         # Subscription-only, hard-capped, deadline-bounded — the Manifold contract. Betfair
         # credentials are OPTIONAL: without them the run is Smarkets-only (public reads).
         # The Betfair app key should be the free DELAYED key; a live key is never needed.
+        # Snapshot ticks make no model call and need no Claude credential.
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           BETFAIR_APP_KEY: ${{ secrets.BETFAIR_APP_KEY }}
@@ -53,8 +72,12 @@ jobs:
           LEAK_PATTERNS: ${{ secrets.LEAK_PATTERNS }}
         run: |
           set -o pipefail
-          : "${CLAUDE_CODE_OAUTH_TOKEN:?set the subscription setup-token secret}"
           : "${LEAK_PATTERNS:?set the publication deny-list secret}"
+          if [ "${{ steps.mode.outputs.mode }}" = "snapshot" ]; then
+            python bot/run_exchange.py --snapshot-only | tee "$RUNNER_TEMP/exchange.log"
+            exit 0
+          fi
+          : "${CLAUDE_CODE_OAUTH_TOKEN:?set the subscription setup-token secret}"
           python bot/run_exchange.py --limit 6 --tier medium --provider subscription \
             --budget 6 --deadline-minutes 45 --timeout 900 --require-subscription-auth \
             --agent-cmd "claude -p --model claude-sonnet-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch" \
@@ -68,7 +91,7 @@ jobs:
             echo "### Exchange paper digest"
             echo
             echo '```'
-            grep -hiE "pulled|snapshot|selected|PAPER-BET|journaled pair|skip|credit|DEFER|failed" \
+            grep -hiE "pulled|snapshot|lock ledger|selected|PAPER-BET|REFORECAST|journaled|proxy|skip|credit|DEFER|failed" \
               "$RUNNER_TEMP/exchange.log" || true
             echo
             python bot/score_exchange.py || true
@@ -86,7 +109,7 @@ jobs:
           BETFAIR_PASSWORD: ${{ secrets.BETFAIR_PASSWORD }}
         run: |
           : "${LEAK_PATTERNS:?set the LEAK_PATTERNS secret before the bot can publish}"
-          FILES="bot/journal/exchange.jsonl bot/journal/exchange-prices.jsonl"
+          FILES="bot/journal/exchange.jsonl bot/journal/exchange-prices.jsonl bot/journal/exchange-arbs.jsonl"
           EXISTING=""
           for f in $FILES; do if [ -f "$f" ]; then EXISTING="$EXISTING $f"; fi; done
           if [ -z "$EXISTING" ]; then echo "no journal files yet — nothing to publish"; exit 0; fi
@@ -123,9 +146,10 @@ jobs:
           path: |
             bot/journal/exchange.jsonl
             bot/journal/exchange-prices.jsonl
+            bot/journal/exchange-arbs.jsonl
           retention-days: 30
 
-      - name: Alert on job failure (one open issue, never six-hourly spam)
+      - name: Alert on job failure (one open issue, never hourly spam)
         if: ${{ failure() || cancelled() }}
         env:
           GH_TOKEN: ${{ github.token }}
@@ -134,7 +158,7 @@ jobs:
           existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')
           if [ -n "$existing" ]; then echo "alert issue #$existing already open"; exit 0; fi
           {
-            echo "Automated alert from the six-hourly exchange paper workflow: the job did not complete."
+            echo "Automated alert from the hourly exchange paper workflow: the job did not complete."
             echo
             echo "Journaled-but-unpublished rows (if any) are attached to the run as the"
             echo "unpublished-exchange-journal artifact. Common causes: leak-guard block, journal"

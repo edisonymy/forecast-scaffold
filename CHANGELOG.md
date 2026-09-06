@@ -23,9 +23,29 @@ and mirror `.claude-plugin/plugin.json`.
   closing-line value, settled P&L net of commission, and a three-way Brier (blind / sighted
   / book mid) offline, and evaluates the preregistered GO-LIVE / HOLD / KILL rule
   (n ≥ 200 scored bets, CLV CI90 lower bound > 0, ≥ 100 settled, ROI > 0, sighted Brier
-  beats the mid by ≥ 0.01). No code path can place an order. Six-hourly workflow,
-  subscription-only, $6/tick cap, leak-guarded journal commit (`smarkets` / `betfair` added
-  to the guard's public platforms).
+  beats the mid by ≥ 0.01). No code path can place an order. Hourly workflow (snapshot
+  ticks at zero credit; forecasts at 00/06/12/18 UTC), subscription-only, $6/tick cap,
+  leak-guarded journal commit (`smarkets` / `betfair` added to the guard's public platforms).
+- **Profit-strategy layer for the exchange paper bot** (same files; two red-team passes,
+  operator request 2026-09-06 — "optimised for benchmarking, not profit"). Kept after review:
+  cross-venue contract matching with the paper bet ROUTED to the venue with the larger
+  pound-EV (EV per pound × the stake the book absorbs), the twin venue's book and rules in
+  the sighted brief so a routed bet rests on rules the run read; gates in POUNDS (net EV
+  ≥ 1.5% per pound AND ≥ GBP 2 expected profit) instead of a fixed divergence in points,
+  which admits judgment lays of dead outsiders (Betfair only, aggregate liability ≤ 10%);
+  a MAKER quote one ladder tick inside the touch journaled beside every taker fill, scored
+  as a lower bound (filled only when a later last-traded price printed strictly through it);
+  an exit-past-fair-value counterfactual; re-forecasts only when BOTH touches move ≥ 10
+  points against an open position, with the stop-loss counterfactual; a cross-venue lock
+  ledger (`bot/journal/exchange-arbs.jsonl`) as a settlement-rule-mismatch detector; a
+  shadow reasoning-only proxy per contract (`source.mode = "proxy"`) that never touches
+  selection; supply-widening filters (GBP 5 at the touch, 10-point spread); by-id quoting
+  of tracked contracts (listings only return open markets, so the first version could never
+  observe a settlement); the gate moved to absolute CLV points on the taker/hold/full
+  population only. Dropped after review: the LLM screening funnel and its exploration arm
+  (compute is not binding; a cheap proxy screens for its own noise), within-market
+  overround arbs (cross-matching), the EV-per-day hurdle, mid-triggered exits and
+  re-forecasts. `docs/exchange-paper-policy.md` records each verdict.
 
 ## [0.4.28] - 2026-09-04
 
