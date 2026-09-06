@@ -26,6 +26,19 @@ and mirror `.claude-plugin/plugin.json`.
   beats the mid by ≥ 0.01). No code path can place an order. Hourly workflow (snapshot
   ticks at zero credit; forecasts at 00/06/12/18 UTC), subscription-only, $6/tick cap,
   leak-guarded journal commit (`smarkets` / `betfair` added to the guard's public platforms).
+- **Smarkets client verified against the live venue** (2026-09-06, from a networked
+  machine; the sandbox that wrote the client could not reach it). Fixed: quote `quantity`
+  is the resting order's total pot in 1/10000 GBP, so `size_gbp` is now the backer stake
+  `quantity x price / 1e8` (was the pot — depth overstated ~2x at evens, ~20x on a 5%
+  runner); the id-ascending events listing is walked through every page (one page held
+  only the oldest container events: 348 -> 601 contracts, 139 eligible); settlement reads
+  `contract.state_or_outcome` (winner / loser / deadheat / voided / reduced) and market
+  `state == "settled"` — the guessed `contract.state` / `.outcome` fields do not exist, so
+  no Smarkets bet would ever have settled; matched volume (`/volumes/`, whole GBP) and the
+  last executed price (`/last_executed_prices/`, percent string) come from their own
+  endpoints, so depth ranking and the maker-fill test now have data. Real open and settled
+  payloads saved as `tests/fixtures/smarkets_open_raw.json` / `smarkets_settled_raw.json`
+  with normalisation tests over them.
 - **Profit-strategy layer for the exchange paper bot** (same files; two red-team passes,
   operator request 2026-09-06 — "optimised for benchmarking, not profit"). Kept after review:
   cross-venue contract matching with the paper bet ROUTED to the venue with the larger

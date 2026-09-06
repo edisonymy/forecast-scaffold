@@ -7,10 +7,16 @@ bot/score_exchange.py grades it later against the closing line and the settlemen
 
 Venues
   - Smarkets  api.smarkets.com/v3  — public, unauthenticated reads (events, markets,
-    contracts, quotes). Politics + current-affairs event domains. Prices are basis points of
-    probability (4386 = 43.86%), quantities in SMARKETS_QUANTITY_SCALE units of GBP.
+    contracts, quotes, volumes, last executed prices). Politics + current-affairs event
+    domains. Prices are basis points of probability (4386 = 43.86%). A quote ``quantity``
+    is the TOTAL POT of the resting order (backer stake + layer liability) in 1/10000 GBP;
+    the backer stake it represents is ``quantity x price / 1e8`` (docs.smarkets.com,
+    verified live 2026-09-06), which is the unit ``size_gbp`` carries on both venues.
     In Smarkets' order-book naming a resting *offer* is what you BACK into (someone is
-    selling YES at that price) and a resting *bid* is what you LAY into.
+    selling YES at that price) and a resting *bid* is what you LAY into. Markets carry no
+    close time (the event's ``start_datetime`` is used) and no volume (a separate
+    ``/volumes/`` call, whole GBP); settlement is ``contract.state_or_outcome`` in
+    winner / loser / deadheat / voided with market ``state == "settled"``.
   - Betfair   api.betfair.com/exchange/betting/rest/v1.0 — needs an app key (the free
     DELAYED key is fine for paper: prices lag 1-180 s, which is irrelevant at our horizon)
     and a session token from identitysso. Politics eventTypeId 2378961. Odds are decimal;
@@ -38,9 +44,10 @@ Normalised contract (one binary "will this selection win" per runner):
 average. A one-sided book leaves the missing side None and ``mid`` None — the selection
 filter drops it.
 
-Units that could not be verified offline when this was written (2026-09-06) are the
-SMARKETS_*_SCALE constants; ``python bot/exchanges.py --probe`` prints raw and scaled quotes
-side by side so the first live run checks them in one glance.
+The Smarkets units and field names were verified against the live API and its OpenAPI
+spec on 2026-09-06 (real payloads under tests/fixtures/smarkets_*_raw.json); ``python
+bot/exchanges.py --probe`` still prints raw and scaled quotes side by side. The Betfair
+delayed-key catalogue / closed-market book remain to be seen live.
 """
 
 from __future__ import annotations
@@ -73,10 +80,16 @@ SMARKETS_TYPE_DOMAINS = ("politics", "current_affairs")
 SMARKETS_STATES = ("upcoming", "live")
 #: Quote ``price`` is basis points of probability: 4386 -> 0.4386.
 SMARKETS_PRICE_SCALE = 10_000.0
-#: Quote ``quantity`` in units of 1/SMARKETS_QUANTITY_SCALE GBP (10000 -> GBP 1.00). VERIFY
-#: with ``--probe`` on first use; if the printed sizes look 100x off, this is the knob.
+#: Quote ``quantity`` is the resting order's TOTAL POT (backer stake + layer liability) in
+#: 1/SMARKETS_QUANTITY_SCALE GBP (10000 -> GBP 1.00). Verified against the OpenAPI spec and
+#: live quotes on 2026-09-06: backer stake = quantity x price / (PRICE_SCALE x QUANTITY_SCALE).
 SMARKETS_QUANTITY_SCALE = 10_000.0
+#: ``last_executed_price`` (own endpoint, not the quote) is a PERCENT string: "51.81".
+SMARKETS_LAST_PRICE_SCALE = 100.0
 SMARKETS_MAX_IDS_PER_CALL = 20
+#: Politics + current affairs list ~200 events; walk every page (100 per page).
+SMARKETS_MAX_EVENTS = 2_000
+SMARKETS_MAX_EVENT_PAGES = 50
 #: Quotes are rate-limited (50/min documented, ~20/min observed by users); pace calls.
 SMARKETS_PACE_SECONDS = 1.5
 
@@ -167,19 +180,58 @@ def _finish(contract: dict[str, Any]) -> dict[str, Any]:
 
 
 def _smarkets_events(get: Callable[[str], Any], *, limit: int) -> list[dict[str, Any]]:
+    """Every upcoming/live politics + current-affairs event. The listing is sorted by id
+    ASCENDING and paged 100 at a time, so stopping at one page would return the oldest
+    container events (UK, Rest of World, ...) and drop every recent by-election: walk all
+    pages. ``next_page`` is a relative query string (``?state=...&pagination_last_id=``)."""
     events: list[dict[str, Any]] = []
     query = [("state", s) for s in SMARKETS_STATES]
     query += [("type_domain", d) for d in SMARKETS_TYPE_DOMAINS]
     query += [("sort", "id"), ("limit", str(min(limit, 100)))]
     url = f"{SMARKETS_API}/events/?" + urllib.parse.urlencode(query)
-    for _ in range(10):  # pagination guard
+    for _ in range(SMARKETS_MAX_EVENT_PAGES):
         page = get(url)
         events.extend(e for e in (page.get("events") or []) if isinstance(e, dict))
         next_page = (page.get("pagination") or {}).get("next_page")
         if not next_page or len(events) >= limit:
             break
-        url = next_page if str(next_page).startswith("http") else SMARKETS_API + str(next_page)
+        next_page = str(next_page)
+        if next_page.startswith("http"):
+            url = next_page
+        elif next_page.startswith("?"):
+            url = f"{SMARKETS_API}/events/{next_page}"
+        else:
+            url = SMARKETS_API + next_page
     return events[:limit]
+
+
+def _smarkets_market_extras(get: Callable[[str], Any], joined: str, pace: float,
+                            ) -> tuple[dict[str, float], dict[str, float]]:
+    """(market_id -> matched GBP, contract_id -> last executed probability) for a chunk of
+    market ids. Both live on their own endpoints; neither is on the market or quote object.
+    Fail-open: a missing endpoint leaves the fields None rather than losing the chunk."""
+    volumes: dict[str, float] = {}
+    last: dict[str, float] = {}
+    try:
+        for row in (get(f"{SMARKETS_API}/markets/{joined}/volumes/") or {}).get("volumes") or []:
+            if isinstance(row, dict) and (v := _num(row.get("volume"))) is not None:
+                volumes[str(row.get("market_id"))] = v
+    except Exception as exc:  # noqa: BLE001 — descriptive field only
+        print(f"smarkets: volumes unavailable ({type(exc).__name__})")
+    time.sleep(pace)
+    try:
+        payload = get(f"{SMARKETS_API}/markets/{joined}/last_executed_prices/") or {}
+        for rows in (payload.get("last_executed_prices") or {}).values():
+            for row in rows or []:
+                if not isinstance(row, dict):
+                    continue
+                p = _num(row.get("last_executed_price"))
+                if p:  # "0" means never traded
+                    last[str(row.get("contract_id"))] = p / SMARKETS_LAST_PRICE_SCALE
+    except Exception as exc:  # noqa: BLE001
+        print(f"smarkets: last executed prices unavailable ({type(exc).__name__})")
+    time.sleep(pace)
+    return volumes, last
 
 
 def _chunks(items: list[Any], size: int) -> Iterable[list[Any]]:
@@ -187,7 +239,8 @@ def _chunks(items: list[Any], size: int) -> Iterable[list[Any]]:
         yield items[i:i + size]
 
 
-def smarkets_contracts(get: Callable[[str], Any] | None = None, *, limit: int = 100,
+def smarkets_contracts(get: Callable[[str], Any] | None = None, *,
+                       limit: int = SMARKETS_MAX_EVENTS,
                        pace: float = SMARKETS_PACE_SECONDS) -> list[dict[str, Any]]:
     """Every open binary contract in Smarkets politics/current-affairs events, quoted."""
     get = get or _get_json
@@ -208,24 +261,30 @@ def smarkets_contracts(get: Callable[[str], Any] | None = None, *, limit: int = 
         time.sleep(pace)
         quotes = get(f"{SMARKETS_API}/markets/{joined}/quotes/")
         time.sleep(pace)
+        volumes, last = _smarkets_market_extras(get, joined, pace)
         runners_by_market: dict[str, list[str]] = {}
         rows = [c for c in (contracts.get("contracts") or []) if isinstance(c, dict)]
         for c in rows:
             runners_by_market.setdefault(str(c.get("market_id")), []).append(str(c.get("name", "")))
         for c in rows:
+            mid = str(c.get("market_id"))
+            market = by_market.get(mid, {})
             out.append(smarkets_normalise(
-                c, by_market.get(str(c.get("market_id")), {}),
-                by_event.get(str(by_market.get(str(c.get("market_id")), {}).get("event_id")), {}),
+                c, market, by_event.get(str(market.get("event_id")), {}),
                 (quotes or {}).get(str(c.get("id"))) or {},
-                runners_by_market.get(str(c.get("market_id")), []),
+                runners_by_market.get(mid, []),
+                matched_gbp=volumes.get(mid), last=last.get(str(c.get("id"))),
             ))
     return out
 
 
 def smarkets_normalise(contract: dict[str, Any], market: dict[str, Any],
                        event: dict[str, Any], quote: dict[str, Any],
-                       runners: list[str]) -> dict[str, Any]:
-    """Pure: one Smarkets contract + its market/event/quote -> the normalised shape."""
+                       runners: list[str], *, matched_gbp: float | None = None,
+                       last: float | None = None) -> dict[str, Any]:
+    """Pure: one Smarkets contract + its market/event/quote -> the normalised shape.
+    ``matched_gbp`` and ``last`` come from their own endpoints (see
+    ``_smarkets_market_extras``); ``last`` is already a probability."""
     def best(entries: Any, pick: Callable[[list[float]], float]) -> tuple[float | None, float]:
         rows = [(p, q) for e in (entries or []) if isinstance(e, dict)
                 if (p := _num(e.get("price"))) is not None
@@ -233,27 +292,34 @@ def smarkets_normalise(contract: dict[str, Any], market: dict[str, Any],
         if not rows:
             return None, 0.0
         target = pick([p for p, _ in rows])
-        size = sum(q for p, q in rows if p == target)
-        return target / SMARKETS_PRICE_SCALE, size / SMARKETS_QUANTITY_SCALE
+        pot = sum(q for p, q in rows if p == target)
+        prob = target / SMARKETS_PRICE_SCALE
+        # quantity is the total pot (back stake + lay liability); size_gbp is the BACKER
+        # STAKE it represents, which is what Betfair's ``size`` reports on both sides too.
+        return prob, pot / SMARKETS_QUANTITY_SCALE * prob
 
     # Offers are sellers of YES: the LOWEST offer is the cheapest back. Bids are buyers:
     # the HIGHEST bid is the best lay.
     back_prob, back_size = best(quote.get("offers"), min)
     lay_prob, lay_size = best(quote.get("bids"), max)
-    last = _num(quote.get("last_executed_price"))
-    state = str(contract.get("state") or market.get("state") or "open").lower()
+    # Settlement lives on the contract: state_or_outcome in new / open / live / halted /
+    # winner / loser / deadheat / reduced / voided / unavailable. The market's state is
+    # new / open / live / halted / settled / voided / unavailable. (Spec + live, 2026-09-06.)
+    contract_state = str(contract.get("state_or_outcome") or contract.get("state") or "").lower()
+    market_state = str(market.get("state") or "").lower()
     outcome: bool | None = None
-    result = str(contract.get("outcome") or contract.get("result") or "").lower()
-    if state in ("settled", "closed", "resolved") or result:
-        if result in ("winner", "won", "yes", "true", "1"):
-            outcome = True
-        elif result in ("loser", "lost", "no", "false", "0"):
-            outcome = False
-    if state in ("cancelled", "voided", "void"):
+    if contract_state == "winner":
+        outcome = True
+    elif contract_state == "loser":
+        outcome = False
+    if contract_state in ("voided", "reduced") or market_state in ("voided", "cancelled"):
         status = "voided"
-    elif state in ("settled", "closed", "resolved"):
+    elif contract_state in ("winner", "loser", "deadheat") or market_state == "settled":
+        # A dead heat settles at a reduced payout; the paper journal has no outcome for it
+        # (outcome stays None) and the scorer treats it as unsettled rather than guessing.
         status = "closed"
-    elif state in ("suspended", "halted"):
+    elif contract_state in ("halted", "unavailable", "new") or market_state in (
+            "halted", "unavailable", "new", "suspended"):
         status = "suspended"
     else:
         status = "open"
@@ -273,8 +339,8 @@ def smarkets_normalise(contract: dict[str, Any], market: dict[str, Any],
         "url": SMARKETS_SITE + slug if slug else "",
         "back": _side(back_prob, back_size),
         "lay": _side(lay_prob, lay_size),
-        "last": (last / SMARKETS_PRICE_SCALE) if last else None,
-        "matched_gbp": _num(market.get("volume")),
+        "last": last if last and 0.0 < last < 1.0 else None,
+        "matched_gbp": matched_gbp if matched_gbp is not None else _num(market.get("volume")),
         "status": status,
         "outcome": outcome,
     })
@@ -468,13 +534,15 @@ def smarkets_quote_by_market_ids(market_ids: Iterable[str],
         time.sleep(pace)
         quotes = get(f"{SMARKETS_API}/markets/{joined}/quotes/") or {}
         time.sleep(pace)
+        volumes, last = _smarkets_market_extras(get, joined, pace)
         runners: dict[str, list[str]] = {}
         for c in contracts:
             runners.setdefault(str(c.get("market_id")), []).append(str(c.get("name", "")))
         for c in contracts:
             mid = str(c.get("market_id"))
             row = smarkets_normalise(c, markets.get(mid, {"id": mid}), {},
-                                     quotes.get(str(c.get("id"))) or {}, runners.get(mid, []))
+                                     quotes.get(str(c.get("id"))) or {}, runners.get(mid, []),
+                                     matched_gbp=volumes.get(mid), last=last.get(str(c.get("id"))))
             out[row["contract_id"]] = row
 
     # One dead id (deleted or voided market) must not blank its whole chunk forever: on a
@@ -633,10 +701,11 @@ def main(argv: list[str] | None = None) -> int:
                                             "matched_gbp", "status")}, ensure_ascii=False))
     if args.probe:
         print("\nCheck by eye: a liquid political favourite should show back.size_gbp in the "
-              "tens-to-thousands of pounds and back.prob a few points above lay.prob. If "
-              "Smarkets sizes look 100x off, adjust SMARKETS_QUANTITY_SCALE. Then quote a "
-              "market you know has SETTLED with --ids <venue:market:selection> and confirm "
-              "status=closed and outcome=true/false: the journal cannot settle otherwise.")
+              "tens-to-thousands of pounds (backer stake at the touch) and back.prob a few "
+              "points above lay.prob. Smarkets units were verified 2026-09-06 (pot x price). "
+              "Then quote a market you know has SETTLED with --ids <venue:market:selection> "
+              "and confirm status=closed and outcome=true/false: the journal cannot settle "
+              "otherwise (Smarkets: tests/fixtures/smarkets_settled_raw.json).")
     return 0
 
 

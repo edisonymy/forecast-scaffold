@@ -40,8 +40,11 @@ journals the blind/sighted pair and the paper bet the sighted number implies at 
 executable touch price (quarter-Kelly on a notional GBP 10k, net of commission, capped by
 resting size), and `bot/score_exchange.py` grades closing-line value, settled P&L and a
 three-way Brier offline from the committed snapshots. The go-live rule is preregistered in
-[docs/exchange-paper-policy.md](../docs/exchange-paper-policy.md). First live step:
-`python bot/exchanges.py --probe` to eyeball the unit constants.
+[docs/exchange-paper-policy.md](../docs/exchange-paper-policy.md). Smarkets units and
+settlement fields were verified live 2026-09-06 (`tests/fixtures/smarkets_*_raw.json`);
+`python bot/exchanges.py --probe` prints raw + scaled quotes, `--ids` quotes a settled
+market by id. Betfair needs `BETFAIR_APP_KEY` (delayed) + `BETFAIR_USERNAME` /
+`BETFAIR_PASSWORD` in the environment; without them the bot runs Smarkets-only.
 
 ## The ladder (do not skip steps)
 

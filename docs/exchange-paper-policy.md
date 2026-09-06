@@ -143,10 +143,20 @@ books carry GBP 1k-10k at the touch) is the time to raise `--limit`.
 
 ## Known limits, stated up front
 
-- The Smarkets quote quantity unit and the exact events filter could not be verified from
-  the sandbox that wrote this; `python bot/exchanges.py --probe` prints raw and scaled
-  quotes so the first live run checks both in one glance. If sizes look 100x off, the knob
-  is `SMARKETS_QUANTITY_SCALE`.
+- Smarkets units and fields were verified live on 2026-09-06 against the venue's OpenAPI
+  spec (real payloads in `tests/fixtures/smarkets_open_raw.json` / `smarkets_settled_raw.json`).
+  What the sandbox had guessed wrong, now fixed: a quote `quantity` is the resting order's
+  TOTAL POT in 1/10000 GBP, so the backer stake at the touch is `quantity x price / 1e8`
+  (the first version overstated depth about 2x at evens and 20x on a 5% runner); the
+  events listing is id-ascending and paged by 100, so one page returned only the oldest
+  container events and none of the recent by-elections (all pages are walked now: 213
+  events, 601 contracts, 139 eligible); settlement is `contract.state_or_outcome`
+  (winner / loser / deadheat / voided / reduced) with market `state == "settled"`, and the
+  quote, volume and last-price endpoints answer empty after settlement; matched volume and
+  the last executed price are separate endpoints (`/volumes/` in whole GBP,
+  `/last_executed_prices/` as a percent string), not fields of the market or quote.
+  A dead heat is journaled as closed with no outcome. The Betfair delayed-key catalogue and
+  closed-market book are still unverified live (the key is the operator's).
 - CLV is measured against hourly snapshots, not tick data. The closing line is "the last
   open snapshot", slightly stale on markets that move in their final hour. This biases CLV
   toward zero, i.e. against us, which is the right direction for a gate.

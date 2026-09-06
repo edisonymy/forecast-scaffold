@@ -79,15 +79,22 @@ SMK_EVENT = {"id": "500", "name": "Next UK Prime Minister", "state": "upcoming",
              "start_datetime": "2027-06-30T12:00:00Z", "full_slug": "/politics/uk/next-pm"}
 SMK_MARKET = {"id": "900", "event_id": "500", "name": "Next Prime Minister", "state": "open",
               "description": "<p>Settled on the person <b>appointed</b>.</p>"}
-SMK_CONTRACT = {"id": "1", "market_id": "900", "name": "Wes Streeting", "state": "open"}
-SMK_QUOTE = {"bids": [{"price": 2800, "quantity": 3_500_000}, {"price": 2700, "quantity": 100}],
-             "offers": [{"price": 3000, "quantity": 4_200_000}, {"price": 3100, "quantity": 50}],
-             "last_executed_price": 2900}
+SMK_CONTRACT = {"id": "1", "market_id": "900", "name": "Wes Streeting",
+                "state_or_outcome": "open", "outcome_timestamp": None}
+# quantity = total pot in 1/10000 GBP; backer stake = pot x price. Offer at 30% with pot
+# GBP 1,400 -> GBP 420 of stake to back into; bid at 28% with pot GBP 1,250 -> GBP 350.
+SMK_QUOTE = {"bids": [{"price": 2800, "quantity": 12_500_000}, {"price": 2700, "quantity": 100}],
+             "offers": [{"price": 3000, "quantity": 14_000_000}, {"price": 3100, "quantity": 50}]}
+SMK_VOLUMES = {"volumes": [{"double_stake_volume": 996, "market_id": "900", "volume": 2351}]}
+SMK_LAST = {"last_executed_prices": {"900": [
+    {"contract_id": "1", "last_executed_price": "29.00", "timestamp": "2026-09-02T17:25:16Z"},
+    {"contract_id": "2", "last_executed_price": "0", "timestamp": "2026-03-27T11:58:19Z"}]}}
 
 
 def test_smarkets_normalise_maps_offers_to_back_and_bids_to_lay() -> None:
     c = exchanges.smarkets_normalise(SMK_CONTRACT, SMK_MARKET, SMK_EVENT, SMK_QUOTE,
-                                     ["Wes Streeting", "Angela Rayner"])
+                                     ["Wes Streeting", "Angela Rayner"],
+                                     matched_gbp=2351.0, last=0.29)
     assert c["contract_id"] == "smarkets:900:1" and c["venue"] == "smarkets"
     # Lowest offer is the cheapest YES; highest bid is the best lay. Basis points -> prob.
     assert c["back"]["prob"] == 0.30 and c["lay"]["prob"] == 0.28
@@ -101,13 +108,119 @@ def test_smarkets_normalise_maps_offers_to_back_and_bids_to_lay() -> None:
 
 
 def test_smarkets_normalise_settlement_and_one_sided_book() -> None:
+    settled_market = {**SMK_MARKET, "state": "settled"}
     settled = exchanges.smarkets_normalise(
-        {**SMK_CONTRACT, "state": "settled", "outcome": "winner"}, SMK_MARKET, SMK_EVENT, {}, [])
+        {**SMK_CONTRACT, "state_or_outcome": "winner"}, settled_market, SMK_EVENT, {}, [])
     assert settled["status"] == "closed" and settled["outcome"] is True
     assert settled["back"] is None and settled["lay"] is None and settled["mid"] is None
     loser = exchanges.smarkets_normalise(
-        {**SMK_CONTRACT, "state": "settled", "outcome": "loser"}, SMK_MARKET, SMK_EVENT, {}, [])
+        {**SMK_CONTRACT, "state_or_outcome": "loser"}, settled_market, SMK_EVENT, {}, [])
     assert loser["outcome"] is False
+    # Every non-settling state the spec lists, mapped so the journal never mis-settles.
+    dead_heat = exchanges.smarkets_normalise(
+        {**SMK_CONTRACT, "state_or_outcome": "deadheat"}, settled_market, SMK_EVENT, {}, [])
+    assert dead_heat["status"] == "closed" and dead_heat["outcome"] is None
+    for state in ("voided", "reduced"):
+        v = exchanges.smarkets_normalise(
+            {**SMK_CONTRACT, "state_or_outcome": state}, SMK_MARKET, SMK_EVENT, {}, [])
+        assert v["status"] == "voided" and v["outcome"] is None, state
+    voided_market = exchanges.smarkets_normalise(
+        SMK_CONTRACT, {**SMK_MARKET, "state": "voided"}, SMK_EVENT, {}, [])
+    assert voided_market["status"] == "voided"
+    for state in ("halted", "unavailable", "new"):
+        h = exchanges.smarkets_normalise(
+            {**SMK_CONTRACT, "state_or_outcome": state}, SMK_MARKET, SMK_EVENT, SMK_QUOTE, [])
+        assert h["status"] == "suspended" and h["outcome"] is None, state
+    halted_market = exchanges.smarkets_normalise(
+        SMK_CONTRACT, {**SMK_MARKET, "state": "halted"}, SMK_EVENT, SMK_QUOTE, [])
+    assert halted_market["status"] == "suspended"
+    live = exchanges.smarkets_normalise(
+        {**SMK_CONTRACT, "state_or_outcome": "live"}, {**SMK_MARKET, "state": "live"},
+        SMK_EVENT, SMK_QUOTE, [])
+    assert live["status"] == "open"
+    # The pre-verification field names (contract.state / .outcome) no longer settle anything.
+    legacy = exchanges.smarkets_normalise(
+        {**SMK_CONTRACT, "state": "settled", "outcome": "winner"}, SMK_MARKET, SMK_EVENT, {}, [])
+    assert legacy["outcome"] is None
+
+
+SMK_OPEN_RAW = ROOT / "tests" / "fixtures" / "smarkets_open_raw.json"
+SMK_SETTLED_RAW = ROOT / "tests" / "fixtures" / "smarkets_settled_raw.json"
+
+
+def _smarkets_get_from_raw(raw: dict[str, Any]) -> Any:
+    """A ``get`` that answers every Smarkets endpoint from one saved raw bundle."""
+    event = raw["event"]["events"][0]
+    market = raw["markets"]["markets"][0]
+
+    def get(url: str) -> Any:
+        if "/events/?" in url:
+            return {"events": [event], "pagination": {"next_page": None}}
+        if url.endswith(f"/events/{event['id']}/markets/"):
+            return raw["markets"]
+        if url.endswith(f"/markets/{market['id']}/"):
+            return raw["markets"]
+        if url.endswith(f"/markets/{market['id']}/contracts/"):
+            return raw["contracts"]
+        if url.endswith(f"/markets/{market['id']}/quotes/"):
+            return raw["quotes"]
+        if url.endswith(f"/markets/{market['id']}/volumes/"):
+            return raw["volumes"]
+        if url.endswith(f"/markets/{market['id']}/last_executed_prices/"):
+            return raw["last_executed_prices"]
+        raise AssertionError(url)
+    return get
+
+
+def test_smarkets_real_open_payload_normalises(monkeypatch) -> None:
+    """Real payload (api.smarkets.com, 2026-09-06): the Senate-control market. Units and
+    field names as the venue actually sends them, not as the sandbox guessed."""
+    raw = json.loads(SMK_OPEN_RAW.read_text(encoding="utf-8"))
+    monkeypatch.setattr(exchanges.time, "sleep", lambda s: None)
+    got = exchanges.smarkets_contracts(_smarkets_get_from_raw(raw))
+    by_name = {c["name"]: c for c in got}
+    assert set(by_name) == {"Democratic Party", "Republican Party"}
+    dem = by_name["Democratic Party"]
+    assert dem["contract_id"] == "smarkets:123220809:346075786"
+    assert dem["status"] == "open" and dem["outcome"] is None
+    # offers: lowest 5051 with pot 17,083,223 -> prob 0.5051, backer stake 1708.32 x 0.5051
+    assert dem["back"]["prob"] == 0.5051
+    assert dem["back"]["size_gbp"] == pytest.approx(1708.3223 * 0.5051, abs=0.01)
+    # bids: highest 4902 with pot 739,493 -> prob 0.4902, stake 73.95 x 0.4902
+    assert dem["lay"]["prob"] == 0.4902
+    assert dem["lay"]["size_gbp"] == pytest.approx(73.9493 * 0.4902, abs=0.01)
+    assert dem["back"]["prob"] >= dem["lay"]["prob"]
+    assert dem["mid"] == pytest.approx((0.5051 + 0.4902) / 2)
+    # last executed price is a percent string on its own endpoint; volume is whole GBP.
+    assert dem["last"] == pytest.approx(0.5181)
+    assert by_name["Republican Party"]["last"] == pytest.approx(0.5025)
+    assert dem["matched_gbp"] == 10469.0
+    # markets carry no close time: the event's start_datetime stands in.
+    assert dem["close_time"] == "2026-11-03T12:00:00Z"
+    assert dem["url"].startswith("https://smarkets.com/politics/")
+    assert dem["runners"] == ["Democratic Party", "Republican Party"]
+    # The sizes are within an order of magnitude of what a liquid political book shows.
+    assert 100 < dem["back"]["size_gbp"] < 10_000 and 5 < dem["lay"]["size_gbp"] < 10_000
+
+
+def test_smarkets_real_settled_payload_settles_by_id(monkeypatch) -> None:
+    """Real payload: Clacton by-election winner, settled 2026-08-14 (Reform UK). Quotes,
+    volumes and last prices are empty after settlement; the outcome is on the contract."""
+    raw = json.loads(SMK_SETTLED_RAW.read_text(encoding="utf-8"))
+    assert raw["quotes"] == {} and raw["volumes"] == {"volumes": []}
+    monkeypatch.setattr(exchanges.time, "sleep", lambda s: None)
+    quoted = exchanges.smarkets_quote_by_market_ids(["150170446"], _smarkets_get_from_raw(raw))
+    assert len(quoted) == 7
+    reform = quoted["smarkets:150170446:417059135"]
+    assert reform["name"] == "Reform UK" and reform["status"] == "closed"
+    assert reform["outcome"] is True
+    assert reform["back"] is None and reform["lay"] is None and reform["mid"] is None
+    assert reform["last"] is None and reform["matched_gbp"] is None
+    losers = [c for cid, c in quoted.items() if cid != "smarkets:150170446:417059135"]
+    assert all(c["status"] == "closed" and c["outcome"] is False for c in losers)
+    # The listing (upcoming/live only) would never have shown this: settlement is by id only.
+    listed = exchanges.smarkets_contracts(_smarkets_get_from_raw(raw))
+    assert all(c["status"] == "closed" for c in listed)
 
 
 def test_smarkets_contracts_walks_events_markets_contracts_quotes(monkeypatch) -> None:
@@ -125,6 +238,10 @@ def test_smarkets_contracts_walks_events_markets_contracts_quotes(monkeypatch) -
             return {"contracts": [SMK_CONTRACT, {**SMK_CONTRACT, "id": "2", "name": "Rayner"}]}
         if url.endswith("/markets/900/quotes/"):
             return {"1": SMK_QUOTE, "2": {"bids": [], "offers": []}}
+        if url.endswith("/markets/900/volumes/"):
+            return SMK_VOLUMES
+        if url.endswith("/markets/900/last_executed_prices/"):
+            return SMK_LAST
         raise AssertionError(url)
 
     monkeypatch.setattr(exchanges.time, "sleep", lambda s: None)
@@ -132,7 +249,33 @@ def test_smarkets_contracts_walks_events_markets_contracts_quotes(monkeypatch) -
     assert [c["name"] for c in got] == ["Wes Streeting", "Rayner"]
     assert got[0]["runners"] == ["Wes Streeting", "Rayner"]
     assert got[1]["mid"] is None  # unquoted runner survives normalisation, fails selection
-    assert len(calls) == 4
+    assert got[0]["matched_gbp"] == 2351.0 and got[0]["last"] == 0.29
+    assert got[1]["last"] is None  # "0" = never traded
+    assert len(calls) == 6
+
+
+def test_smarkets_events_walk_every_page(monkeypatch) -> None:
+    """The listing is id-ascending and paged by 100: one page would be the oldest container
+    events only (live check 2026-09-06: 213 events, the recent by-elections on page 3)."""
+    calls: list[str] = []
+
+    def get(url: str) -> Any:
+        calls.append(url)
+        if "pagination_last_id=200" in url:
+            return {"events": [{"id": str(i), "type": "politics"} for i in range(201, 214)],
+                    "pagination": {"next_page": None}}
+        if "pagination_last_id=100" in url:
+            return {"events": [{"id": str(i), "type": "politics"} for i in range(101, 201)],
+                    "pagination": {"next_page": "?state=live&state=upcoming&sort=id&limit=100"
+                                                "&pagination_last_id=200"}}
+        assert "/events/?" in url and "pagination_last_id" not in url
+        return {"events": [{"id": str(i), "type": "generic"} for i in range(1, 101)],
+                "pagination": {"next_page": "?state=live&state=upcoming&sort=id&limit=100"
+                                            "&pagination_last_id=100"}}
+
+    events = exchanges._smarkets_events(get, limit=exchanges.SMARKETS_MAX_EVENTS)
+    assert len(events) == 213 and events[-1]["id"] == "213"
+    assert len(calls) == 3 and calls[1].startswith(exchanges.SMARKETS_API + "/events/?")
 
 
 BF_MARKET = {"marketId": "1.2345", "marketName": "Trump to leave office before end of 2026?",
@@ -217,9 +360,13 @@ def test_quote_by_id_reaches_settled_markets_on_both_venues() -> None:
         if url.endswith("/markets/900/"):
             return {"markets": [{**SMK_MARKET, "state": "settled"}]}
         if url.endswith("/markets/900/contracts/"):
-            return {"contracts": [{**SMK_CONTRACT, "state": "settled", "outcome": "winner"}]}
+            return {"contracts": [{**SMK_CONTRACT, "state_or_outcome": "winner"}]}
         if url.endswith("/markets/900/quotes/"):
             return {}
+        if url.endswith("/markets/900/volumes/"):
+            return {"volumes": []}
+        if url.endswith("/markets/900/last_executed_prices/"):
+            return {"last_executed_prices": {}}
         raise AssertionError(url)
     import time as _t
     got = exchanges.smarkets_quote_by_market_ids(["900"], get, pace=0.0)
@@ -733,8 +880,8 @@ def test_voided_and_unavailable_contracts_are_retired() -> None:
     by = {r["name"]: r for r in exchanges.betfair_normalise(BF_MARKET, book)}
     assert by["No"]["status"] == "voided" and by["No"]["outcome"] is None
     assert by["Yes"]["outcome"] is True
-    smk = exchanges.smarkets_normalise({**SMK_CONTRACT, "state": "cancelled"}, SMK_MARKET,
-                                       SMK_EVENT, {}, [])
+    smk = exchanges.smarkets_normalise({**SMK_CONTRACT, "state_or_outcome": "voided"},
+                                       SMK_MARKET, SMK_EVENT, {}, [])
     assert smk["status"] == "voided"
 
 
