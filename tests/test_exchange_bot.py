@@ -530,9 +530,10 @@ def test_run_journals_pair_proxy_paper_bet_and_snapshots(monkeypatch, tmp_path: 
     # blind call denied the venues only; the sighted call denied neither.
     blind_cmd, sighted_cmd, proxy_cmd = (
         c["cmd"].split("--disallowed-tools", 1)[1] for c in agent.calls)
-    assert "WebSearch,WebFetch" in proxy_cmd and "smarkets.com" in proxy_cmd
-    assert "smarkets.com" in blind_cmd and "WebSearch,WebFetch" not in blind_cmd
-    assert "smarkets.com" not in sighted_cmd and "Market signals" in agent.calls[1]["prompt"]
+    venue_block = "WebFetch(domain:smarkets.com)"  # the exact deny-list token
+    assert "WebSearch,WebFetch" in proxy_cmd and venue_block in proxy_cmd
+    assert venue_block in blind_cmd and "WebSearch,WebFetch" not in blind_cmd
+    assert venue_block not in sighted_cmd and "Market signals" in agent.calls[1]["prompt"]
     sighted = by_mode["sighted"]
     assert sighted["source"]["platform"] == "betfair"  # deepest book selected first
     book = sighted["source"]["book"]
