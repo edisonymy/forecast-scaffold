@@ -467,3 +467,141 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+# --------------------------------------------------------------------------- book analytics
+# Pure functions over normalised contracts. Nothing here trades; these feed the paper
+# runner's selection and its arbitrage LEDGER (a record of locks that existed, never an order).
+
+#: Same contract on two venues: event+market+runner tokens this similar, closes this close.
+MATCH_MIN_SIMILARITY = 0.6
+MATCH_MAX_CLOSE_GAP_DAYS = 3.0
+
+
+def _match_tokens(contract: dict[str, Any]) -> frozenset[str]:
+    import priors  # sibling module (bot/priors.py); keep exchanges importable on its own
+    text = " ".join(str(contract.get(k, "")) for k in ("event", "market", "name"))
+    return frozenset(priors.normalize_title(text))
+
+
+def _close_gap_days(a: dict[str, Any], b: dict[str, Any]) -> float | None:
+    ta, tb = a.get("close_time"), b.get("close_time")
+    if not (ta and tb):
+        return None
+    try:
+        da = datetime.fromisoformat(str(ta).replace("Z", "+00:00"))
+        db = datetime.fromisoformat(str(tb).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return abs((da - db).total_seconds()) / 86_400.0
+
+
+def match_contracts(contracts: list[dict[str, Any]], *,
+                    min_similarity: float = MATCH_MIN_SIMILARITY,
+                    max_close_gap_days: float = MATCH_MAX_CLOSE_GAP_DAYS,
+                    ) -> dict[str, list[str]]:
+    """contract_id -> ids of the same contract on OTHER venues (best match per venue).
+
+    Matching is title-token Jaccard over event + market + runner plus a close-time gap
+    bound; it is a CANDIDATE relation, not proof of identical settlement terms — the
+    sighted forecast still adjudicates the fine print, and the arbitrage ledger records
+    both venues' rules so a human can check before any live use."""
+    import priors
+    by_venue: dict[str, list[dict[str, Any]]] = {}
+    for c in contracts:
+        by_venue.setdefault(str(c.get("venue")), []).append(c)
+    tokens = {c["contract_id"]: _match_tokens(c) for c in contracts}
+    out: dict[str, list[str]] = {}
+    for c in contracts:
+        mine = tokens[c["contract_id"]]
+        if not mine:
+            continue
+        for venue, others in by_venue.items():
+            if venue == c.get("venue"):
+                continue
+            best_id, best_sim = None, 0.0
+            for o in others:
+                sim = priors.jaccard(mine, tokens[o["contract_id"]])
+                if sim < min_similarity or sim <= best_sim:
+                    continue
+                gap = _close_gap_days(c, o)
+                if gap is not None and gap > max_close_gap_days:
+                    continue
+                best_id, best_sim = o["contract_id"], sim
+            if best_id:
+                out.setdefault(c["contract_id"], []).append(best_id)
+    return out
+
+
+def market_overround(runners: list[dict[str, Any]], commission: float = 0.0) -> dict[str, Any]:
+    """Book totals for one market's runners at the touch.
+
+    ``back_sum`` is the sum over runners of the best back price (as probability): below 1
+    the book UNDER-rounds and backing every runner in proportion locks a profit before
+    commission; ``lay_sum`` above 1 means laying every runner locks one. ``lock_back`` /
+    ``lock_lay`` are the locked return per GBP staked AFTER commission on the winning leg
+    (commission is charged on net market profit, so it scales the lock, not the stake),
+    and ``size_gbp`` the smallest stake any leg can absorb at the touch — the binding size.
+    Requires a price on EVERY runner; a runner with a missing side returns no lock."""
+    backs = [r.get("back") for r in runners]
+    lays = [r.get("lay") for r in runners]
+    out: dict[str, Any] = {"n_runners": len(runners), "back_sum": None, "lay_sum": None,
+                           "lock_back": None, "lock_lay": None, "size_back_gbp": None,
+                           "size_lay_gbp": None}
+    if runners and all(backs):
+        back_sum = sum(b["prob"] for b in backs)
+        out["back_sum"] = round(back_sum, 6)
+        if 0.0 < back_sum < 1.0:
+            # Stake s_i = prob_i / back_sum per GBP; whichever wins pays 1/back_sum.
+            out["lock_back"] = round((1.0 / back_sum - 1.0) * (1.0 - commission), 6)
+            out["size_back_gbp"] = round(min(b["size_gbp"] * back_sum / b["prob"]
+                                             for b in backs), 2)
+    if runners and all(lays):
+        lay_sum = sum(lay["prob"] for lay in lays)
+        out["lay_sum"] = round(lay_sum, 6)
+        if lay_sum > 1.0:
+            # Laying every runner for liability proportional to its price: the one that
+            # wins costs 1, the losers pay their stakes; net return per GBP of total
+            # liability is (lay_sum - 1) / lay_sum before commission.
+            out["lock_lay"] = round((lay_sum - 1.0) / lay_sum * (1.0 - commission), 6)
+            out["size_lay_gbp"] = round(min(lay["size_gbp"] * (1.0 - lay["prob"]) / lay["prob"]
+                                            for lay in lays), 2)
+    return out
+
+
+def cross_venue_lock(a: dict[str, Any], b: dict[str, Any],
+                     commission: dict[str, float]) -> dict[str, Any] | None:
+    """Back on one venue, lay the same contract on the other: a lock exists when the back
+    price (prob) is below the lay price after both commissions. Returns the better of the
+    two directions or None. Sizes are the binding leg at the touch."""
+    best = None
+    for back_side, lay_side in ((a, b), (b, a)):
+        back, lay = back_side.get("back"), lay_side.get("lay")
+        if not (back and lay):
+            continue
+        cb = commission.get(str(back_side.get("venue")), 0.0)
+        cl = commission.get(str(lay_side.get("venue")), 0.0)
+        q_back, q_lay = back["prob"], lay["prob"]
+        if not (0.0 < q_back < 1.0 and 0.0 < q_lay < 1.0):
+            continue
+        # Back GBP 1 at q_back (wins (1/q_back - 1)(1-cb)); lay to receive a backer's stake
+        # of L = q_lay/q_back... simplest exact form: per GBP 1 of YES-payout hedged both
+        # ways, profit if YES = (1-q_back)(1-cb) - (1-q_lay); if NO = q_lay(1-cl) - q_back.
+        pnl_yes = (1.0 - q_back) * (1.0 - cb) - (1.0 - q_lay)
+        pnl_no = q_lay * (1.0 - cl) - q_back
+        lock = min(pnl_yes, pnl_no)
+        if lock <= 0:
+            continue
+        # Capital per GBP of payout: the back stake q_back plus the lay liability (1-q_lay).
+        capital = q_back + (1.0 - q_lay)
+        # Payout units each leg can absorb at the touch: a back stake B buys B/q_back units;
+        # a resting backer stake L on the lay side hedges L/q_lay units.
+        size = min(back["size_gbp"] / q_back, lay["size_gbp"] / q_lay)
+        cand = {"back_venue": back_side.get("venue"), "back_id": back_side.get("contract_id"),
+                "lay_venue": lay_side.get("venue"), "lay_id": lay_side.get("contract_id"),
+                "q_back": q_back, "q_lay": q_lay, "lock_per_payout_gbp": round(lock, 6),
+                "lock_return_on_capital": round(lock / capital, 6),
+                "payout_units_gbp": round(size, 2)}
+        if best is None or cand["lock_return_on_capital"] > best["lock_return_on_capital"]:
+            best = cand
+    return best

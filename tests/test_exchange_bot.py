@@ -572,3 +572,57 @@ def test_policy_doc_and_scorer_agree_on_the_gate() -> None:
     assert f"n >= {score_exchange.GATE_MIN_SETTLED}" in doc
     assert f"<= -{score_exchange.GATE_BRIER_MARGIN}" in doc
     assert "GO-LIVE-CANDIDATE" in doc and "KILL" in doc and "HOLD" in doc
+
+
+# --------------------------------------------------------------------------- book analytics
+
+
+def test_match_contracts_pairs_same_contract_across_venues_only() -> None:
+    a = fixture_contracts()[0]
+    twin = dict(a, venue="betfair", contract_id="betfair:77:1",
+                close_time="2027-02-01T12:00:00Z")
+    far = dict(twin, contract_id="betfair:77:2", close_time="2027-06-01T12:00:00Z")
+    other = dict(twin, contract_id="betfair:77:3", name="Andy Burnham")
+    matches = exchanges.match_contracts([a, twin, far, other])
+    assert matches["smarkets:900:1"] == ["betfair:77:1"]  # same runner, close within 3 days
+    assert matches["betfair:77:1"] == ["smarkets:900:1"]
+    assert "betfair:77:3" not in matches  # different runner
+    # Same-venue duplicates never match each other.
+    assert exchanges.match_contracts([a, dict(a, contract_id="smarkets:900:9")]) == {}
+
+
+def test_market_overround_locks_and_binding_sizes() -> None:
+    no, yes = fixture_contracts()[1], fixture_contracts()[2]
+    fair = exchanges.market_overround([no, yes], commission=0.06)
+    assert fair["back_sum"] == pytest.approx(1.01) and fair["lock_back"] is None
+    assert fair["lay_sum"] == pytest.approx(0.99) and fair["lock_lay"] is None
+    cheap_yes = dict(yes, back={"prob": 0.08, "odds": 12.5, "size_gbp": 100.0})
+    under = exchanges.market_overround([no, cheap_yes], commission=0.06)
+    assert under["back_sum"] == pytest.approx(0.98)
+    assert under["lock_back"] == pytest.approx((1 / 0.98 - 1) * 0.94, abs=1e-6)
+    # The binding leg is the one whose resting size supports the fewest proportional stakes.
+    assert under["size_back_gbp"] == pytest.approx(
+        min(2500 * 0.98 / 0.90, 100 * 0.98 / 0.08), abs=0.01)
+    rich_no = dict(no, lay={"prob": 0.93, "odds": 1.075, "size_gbp": 1000.0})
+    over = exchanges.market_overround([rich_no, yes], commission=0.0)
+    assert over["lay_sum"] == pytest.approx(1.03)
+    assert over["lock_lay"] == pytest.approx(0.03 / 1.03, abs=1e-6)
+    assert exchanges.market_overround([no, dict(yes, back=None)])["lock_back"] is None
+    assert exchanges.market_overround([])["back_sum"] is None
+
+
+def test_cross_venue_lock_direction_commission_and_size() -> None:
+    a = fixture_contracts()[0]  # smarkets back 0.30
+    b = dict(a, venue="betfair", contract_id="betfair:x:y",
+             lay={"prob": 0.33, "odds": 3.03, "size_gbp": 200.0})
+    lock = exchanges.cross_venue_lock(a, b, {"smarkets": 0.02, "betfair": 0.06})
+    assert lock["back_venue"] == "smarkets" and lock["lay_venue"] == "betfair"
+    # YES: back wins 0.70*0.98 = 0.686, lay loses 0.67 -> +0.016; NO: lay wins 0.33*0.94 =
+    # 0.3102, back loses 0.30 -> +0.0102. The lock is the worse case.
+    assert lock["lock_per_payout_gbp"] == pytest.approx(0.0102, abs=1e-6)
+    assert lock["payout_units_gbp"] == pytest.approx(min(420 / 0.30, 200 / 0.33), abs=0.01)
+    # Commission can erase it: at 6% on both legs the NO case goes negative.
+    assert exchanges.cross_venue_lock(a, b, {"smarkets": 0.06, "betfair": 0.06}) is None
+    # No lock when the lay price sits below the back price.
+    assert exchanges.cross_venue_lock(a, dict(b, lay={"prob": 0.29, "odds": 3.45,
+                                                      "size_gbp": 200.0}), {}) is None
