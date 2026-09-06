@@ -106,10 +106,11 @@ With n ≈ 200 nothing else is powered, and sixteen sub-populations under a one-
 would be a 30-55% family-wise false-GO rate. So these are reported, never gated on:
 
 - **Maker vs taker**, paired within bet. A maker order counts as FILLED only when a later
-  snapshot's last-traded price printed *strictly through* our price within a 2-day TTL — a
-  touch that merely crossed it, or a print exactly at it, is not a fill (most top-of-book
-  moves in politics books are pulls, not trades). This is a lower bound; an honest fill
-  model needs traded-volume ladders, which the delayed Betfair key withholds.
+  snapshot shows a NEW last-traded price (changed since the previous observation) that
+  printed *strictly through* our price within a 2-day TTL — a touch that merely crossed it,
+  a print exactly at it, or an unchanged stale print is not a fill (most top-of-book moves
+  in politics books are pulls, not trades). This is a lower bound; an honest fill model
+  needs traded-volume ladders, which the delayed Betfair key withholds.
 - **Exit past fair value vs hold**: close the position at the first snapshot where the
   executable exit side sits at or past our own fair value. Exiting earlier pays the spread
   again to free capital that is idle anyway.
@@ -154,5 +155,11 @@ books carry GBP 1k-10k at the touch) is the time to raise `--limit`.
   CI90 as roughly a CI85 until a clustered bootstrap is added.
 - The maker fill test is a lower bound (above). The odds ladder applied is Betfair's;
   Smarkets' finer ticks make its maker arm slightly conservative.
+- A contract and its cross-venue twin are one bet: dedupe and position guards close over
+  twins, the entry snapshot carries the pair's own timestamp and is never a closing line,
+  a routed bet is scored only against its own venue's snapshots, voided contracts
+  (withdrawn runners, cancelled markets) and ids a venue stops returning are retired from
+  tracking — each of these was a defect the code red team reproduced in the first version.
 - Betfair's API terms are for personal use; reading delayed prices for a private paper
-  test is within them, and no commercial use is made of the data.
+  test is within them, and no commercial use is made of the data. The venue login is
+  hidden from the agent subprocess like every other credential.

@@ -60,6 +60,7 @@ GATE_MIN_SETTLED = 100       # settled paper bets for the P&L and Brier legs
 GATE_BRIER_MARGIN = 0.01     # sighted Brier must beat the book mid by at least this
 GATE_CI = 0.90               # bootstrap interval on mean CLV POINTS must exclude zero
 MOVEMENT_AGE_DAYS = 7.0
+ENTRY_GRACE_SECONDS = 60.0   # snapshots this close to entry are the entry book, not a close
 BOOTSTRAP_DRAWS = 10_000
 BOOTSTRAP_SEED = 7
 
@@ -157,8 +158,8 @@ def closing_snapshot(snaps: list[dict[str, Any]],
     best = None
     for s in snaps:
         at = _parse(s.get("at"))
-        if entry_at and at and at <= entry_at:
-            continue
+        if entry_at and at and (at - entry_at).total_seconds() < ENTRY_GRACE_SECONDS:
+            continue  # the entry book itself (or a same-tick re-quote) is not a closing line
         if s.get("status") == "open" and s.get("mid") is not None:
             best = s
     return best
@@ -218,16 +219,21 @@ def score_pair(pair: dict[str, Any], snaps: list[dict[str, Any]],
         # A routed bet lives on its own contract (the twin venue): score it against THAT
         # contract's snapshots, which the runner writes alongside the forecast contract's.
         bet_cid = str(bet.get("contract_id") or pair["contract_id"])
-        bet_snaps = all_snaps.get(bet_cid, snaps) if all_snaps else snaps
-        bet_close = closing_snapshot(bet_snaps, entry_at) if bet_cid != pair["contract_id"] \
-            else close
-        bet_outcome = settlement(bet_snaps) if bet_cid != pair["contract_id"] else outcome
+        routed = bet_cid != pair["contract_id"]
+        if routed:
+            # A routed bet is scored ONLY against its own venue's snapshots; with none it
+            # gets no closing line rather than the other venue's.
+            bet_snaps = (all_snaps or {}).get(bet_cid, [])
+            bet_close = closing_snapshot(bet_snaps, entry_at)
+            bet_outcome = settlement(bet_snaps)
+        else:
+            bet_snaps, bet_close, bet_outcome = snaps, close, outcome
         side = str(bet["outcome"])
         scored: dict[str, Any] = {"outcome": side, "stake_gbp": bet["stake_gbp"],
                                   "price": bet["price"], "capped_by": bet.get("capped_by"),
                                   "venue": bet.get("venue") or pair["venue"],
                                   "longshot": bool(bet.get("longshot")),
-                                  "routed": bool(bet.get("route"))}
+                                  "routed": routed}
         if bet_close is not None:
             scored["clv"] = clv(float(bet["price"]), float(bet_close["mid"]), side)
             scored["clv_points"] = (side_price(float(bet_close["mid"]), side)
@@ -236,7 +242,8 @@ def score_pair(pair: dict[str, Any], snaps: list[dict[str, Any]],
             scored["pnl_gbp"] = paper_pnl(bet, bet_outcome)
             scored["won"] = scored["pnl_gbp"] > 0
         # Descriptive arms (never in the gate): maker fill, exit-past-fair-value.
-        maker = maker_fill(bet, bet_snaps, entry_at)
+        entry_book = bet.get("book") or src.get("book") or {}
+        maker = maker_fill(bet, bet_snaps, entry_at, entry_last=entry_book.get("last"))
         if maker is not None:
             scored["maker"] = maker
             if maker.get("filled") and bet_close is not None:
@@ -256,11 +263,14 @@ def score_pair(pair: dict[str, Any], snaps: list[dict[str, Any]],
 
 
 def maker_fill(bet: dict[str, Any], snaps: list[dict[str, Any]],
-               entry_at: datetime | None) -> dict[str, Any] | None:
-    """Lower-bound fill test for the maker quote: FILLED only when a later snapshot's last
-    traded price printed STRICTLY through our resting price within the TTL. A touch that
-    merely crossed our price is not a fill (most top-of-book moves in politics books are
-    pulls, not trades), and a print exactly at our price is not either (queue ahead)."""
+               entry_at: datetime | None, entry_last: float | None = None,
+               ) -> dict[str, Any] | None:
+    """Lower-bound fill test for the maker quote: FILLED only when a later snapshot shows a
+    NEW last-traded price (different from the previous observation) that printed STRICTLY
+    through our resting price within the TTL. A touch that merely crossed our price is not
+    a fill (most top-of-book moves in politics books are pulls, not trades), a print exactly
+    at our price is not either (queue ahead), and an unchanged ``last`` is a stale print
+    from before entry, not a trade."""
     maker = bet.get("maker")
     if not isinstance(maker, dict) or maker.get("prob") is None:
         return None
@@ -272,6 +282,7 @@ def maker_fill(bet: dict[str, Any], snaps: list[dict[str, Any]],
     result: dict[str, Any] = {"price": price, "prob": q, "improved": bool(maker.get("improved")),
                               "filled": False,
                               "net_odds_b": round((1.0 / price - 1.0) * (1.0 - commission), 4)}
+    prev_last = entry_last
     for snap in snaps:
         at = _parse(snap.get("at"))
         if entry_at and at and at <= entry_at:
@@ -281,6 +292,9 @@ def maker_fill(bet: dict[str, Any], snaps: list[dict[str, Any]],
         last = snap.get("last")
         if last is None:
             continue
+        if prev_last is not None and abs(float(last) - float(prev_last)) < 1e-9:
+            continue  # same print as before: no evidence of a trade
+        prev_last = float(last)
         through = float(last) < q - 1e-9 if side == "YES" else float(last) > q + 1e-9
         if through:
             result["filled"] = True

@@ -97,7 +97,10 @@ FAILURE_WINDOW_HOURS = 24.0
 # as ANTHROPIC_AUTH_TOKEN (the CLI's own credential), never as the raw variable.
 _SECRETS_TO_HIDE = frozenset(
     {"METACULUS_TOKEN", "METACULUS_CP_TOKEN", "LEAK_PATTERNS", "GITHUB_TOKEN",
-     "ASKNEWS_API_KEY", "MANIFOLD_API_KEY", "OPENROUTER_API_KEY"}
+     "ASKNEWS_API_KEY", "MANIFOLD_API_KEY", "OPENROUTER_API_KEY",
+     # The exchange paper bot's venue login: the agent never needs it, and it is a real
+     # betting-account password. Read(//proc/**) is denied too, but that is one belt.
+     "BETFAIR_APP_KEY", "BETFAIR_USERNAME", "BETFAIR_PASSWORD", "BETFAIR_SESSION_TOKEN"}
 )
 # OpenRouter's Anthropic-compatible endpoint ("Anthropic skin"): Claude Code speaks its
 # native protocol to it directly, billed to OpenRouter credits instead of the subscription.

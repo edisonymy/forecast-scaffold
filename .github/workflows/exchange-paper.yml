@@ -49,12 +49,33 @@ jobs:
 
       - name: Decide tick mode
         id: mode
-        # Forecast on hours divisible by six (00, 06, 12, 18 UTC); snapshot-only otherwise.
-        # A manual dispatch can force either.
+        # Forecast when the newest journaled forecast is older than 5.5 hours (about four
+        # forecast ticks a day), snapshot-only otherwise. Keyed on the journal rather than
+        # the wall clock so a delayed cron tick (GitHub schedules can slip by 30+ minutes)
+        # cannot silently turn a forecast tick into a snapshot. A manual dispatch can force
+        # either.
         run: |
           mode="${{ github.event.inputs.mode }}"
           if [ -z "$mode" ]; then
-            if [ $(( 10#$(date -u +%H) % 6 )) -eq 0 ]; then mode=forecast; else mode=snapshot; fi
+            mode=$(python - <<'PY'
+          import json, pathlib
+          from datetime import UTC, datetime
+          newest = None
+          p = pathlib.Path("bot/journal/exchange.jsonl")
+          if p.exists():
+              for line in p.read_text(encoding="utf-8").splitlines():
+                  if not line.strip():
+                      continue
+                  row = json.loads(line)
+                  at = row.get("forecast_at") or row.get("created")
+                  if at and (newest is None or at > newest):
+                      newest = at
+          if newest is None:
+              print("forecast"); raise SystemExit
+          age_h = (datetime.now(UTC) - datetime.fromisoformat(newest.replace("Z", "+00:00"))).total_seconds() / 3600
+          print("forecast" if age_h >= 5.5 else "snapshot")
+          PY
+            )
           fi
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
           echo "tick mode: $mode"
@@ -106,6 +127,7 @@ jobs:
           LEAK_PATTERNS: ${{ secrets.LEAK_PATTERNS }}
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           BETFAIR_APP_KEY: ${{ secrets.BETFAIR_APP_KEY }}
+          BETFAIR_USERNAME: ${{ secrets.BETFAIR_USERNAME }}
           BETFAIR_PASSWORD: ${{ secrets.BETFAIR_PASSWORD }}
         run: |
           : "${LEAK_PATTERNS:?set the LEAK_PATTERNS secret before the bot can publish}"
@@ -121,7 +143,7 @@ jobs:
           if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
           # A prompt-injected agent's visible output lands in exactly these files — scan for
           # the credential VALUES themselves, fail-closed.
-          for secret in "$CLAUDE_CODE_OAUTH_TOKEN" "$BETFAIR_APP_KEY" "$BETFAIR_PASSWORD"; do
+          for secret in "$CLAUDE_CODE_OAUTH_TOKEN" "$BETFAIR_APP_KEY" "$BETFAIR_USERNAME" "$BETFAIR_PASSWORD"; do
             if [ -n "$secret" ] && grep -rqF -- "$secret" $EXISTING 2>/dev/null; then
               echo "::error::a credential value appears in the journal — not publishing"; exit 3
             fi

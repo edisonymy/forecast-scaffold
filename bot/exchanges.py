@@ -249,8 +249,14 @@ def smarkets_normalise(contract: dict[str, Any], market: dict[str, Any],
             outcome = True
         elif result in ("loser", "lost", "no", "false", "0"):
             outcome = False
-    status = "closed" if state in ("settled", "closed", "resolved", "cancelled", "voided") else (
-        "suspended" if state in ("suspended", "halted") else "open")
+    if state in ("cancelled", "voided", "void"):
+        status = "voided"
+    elif state in ("settled", "closed", "resolved"):
+        status = "closed"
+    elif state in ("suspended", "halted"):
+        status = "suspended"
+    else:
+        status = "open"
     slug = str(event.get("full_slug") or "")
     return _finish({
         "venue": "smarkets",
@@ -373,6 +379,14 @@ def betfair_normalise(market: dict[str, Any], book: dict[str, Any]) -> list[dict
         lay = min(atl, key=lambda x: x[0]) if atl else None
         runner_status = str(runner.get("status") or "ACTIVE").upper()
         outcome = {"WINNER": True, "LOSER": False}.get(runner_status)
+        # A REMOVED runner (withdrawn) never settles as WINNER/LOSER: mark it voided so the
+        # journal can retire it instead of tracking it forever.
+        if runner_status in ("REMOVED", "REMOVED_VACANT", "HIDDEN"):
+            status_for_runner = "voided"
+        elif runner_status in ("ACTIVE", "WINNER", "LOSER"):
+            status_for_runner = status
+        else:
+            status_for_runner = "closed"
         last = _num(runner.get("lastPriceTraded"))
         out.append(_finish({
             "venue": "betfair",
@@ -390,7 +404,7 @@ def betfair_normalise(market: dict[str, Any], book: dict[str, Any]) -> list[dict
             "lay": _side(1.0 / lay[0], lay[1]) if lay else None,
             "last": (1.0 / last) if last and last > 1.0 else None,
             "matched_gbp": _num(book.get("totalMatched", market.get("totalMatched"))),
-            "status": status if runner_status in ("ACTIVE", "WINNER", "LOSER") else "closed",
+            "status": status_for_runner,
             "outcome": outcome,
         }))
     return out
@@ -443,7 +457,8 @@ def smarkets_quote_by_market_ids(market_ids: Iterable[str],
     settlement). Names come from the market/contract objects; event fields are blank."""
     get = get or _get_json
     out: dict[str, dict[str, Any]] = {}
-    for ids in _chunks(sorted(set(str(m) for m in market_ids)), SMARKETS_MAX_IDS_PER_CALL):
+
+    def pull(ids: list[str]) -> None:
         joined = ",".join(ids)
         markets = {str(m.get("id")): m for m in (get(f"{SMARKETS_API}/markets/{joined}/")
                                                  .get("markets") or []) if isinstance(m, dict)}
@@ -461,6 +476,19 @@ def smarkets_quote_by_market_ids(market_ids: Iterable[str],
             row = smarkets_normalise(c, markets.get(mid, {"id": mid}), {},
                                      quotes.get(str(c.get("id"))) or {}, runners.get(mid, []))
             out[row["contract_id"]] = row
+
+    # One dead id (deleted or voided market) must not blank its whole chunk forever: on a
+    # chunk failure fall back to one id at a time and let only the dead one go unquoted.
+    for ids in _chunks(sorted(set(str(m) for m in market_ids)), SMARKETS_MAX_IDS_PER_CALL):
+        try:
+            pull(ids)
+        except Exception as exc:  # noqa: BLE001
+            print(f"smarkets: chunk of {len(ids)} failed ({type(exc).__name__}); retrying singly")
+            for one in ids:
+                try:
+                    pull([one])
+                except Exception as exc_one:  # noqa: BLE001
+                    print(f"smarkets: market {one} unavailable ({type(exc_one).__name__})")
     return out
 
 
@@ -582,7 +610,21 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--venue", action="append", choices=["smarkets", "betfair"],
                         help="restrict to a venue (repeatable; default both)")
     parser.add_argument("--limit", type=int, default=15)
+    parser.add_argument("--ids", default="",
+                        help="comma-separated contract ids to quote BY ID (e.g. a market you "
+                             "know has settled): prints status/outcome so the settlement "
+                             "field mapping can be checked before the journal depends on it")
     args = parser.parse_args(argv)
+    if args.ids:
+        wanted = [x.strip() for x in args.ids.split(",") if x.strip()]
+        quoted = quote_contracts(wanted)
+        for _cid, c in sorted(quoted.items()):
+            print(json.dumps({k: c.get(k) for k in ("contract_id", "name", "status", "outcome",
+                                                    "back", "lay", "last")}, ensure_ascii=False))
+        missing = sorted(set(wanted) - set(quoted))
+        if missing:
+            print(f"not returned by the venue: {missing}")
+        return 0
     contracts = load_contracts(venues=tuple(args.venue or ("smarkets", "betfair")))
     print(f"{len(contracts)} contract(s)")
     for c in contracts[: args.limit]:
@@ -592,7 +634,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.probe:
         print("\nCheck by eye: a liquid political favourite should show back.size_gbp in the "
               "tens-to-thousands of pounds and back.prob a few points above lay.prob. If "
-              "Smarkets sizes look 100x off, adjust SMARKETS_QUANTITY_SCALE.")
+              "Smarkets sizes look 100x off, adjust SMARKETS_QUANTITY_SCALE. Then quote a "
+              "market you know has SETTLED with --ids <venue:market:selection> and confirm "
+              "status=closed and outcome=true/false: the journal cannot settle otherwise.")
     return 0
 
 

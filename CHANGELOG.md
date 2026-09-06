@@ -45,7 +45,13 @@ and mirror `.claude-plugin/plugin.json`.
   population only. Dropped after review: the LLM screening funnel and its exploration arm
   (compute is not binding; a cheap proxy screens for its own noise), within-market
   overround arbs (cross-matching), the EV-per-day hurdle, mid-triggered exits and
-  re-forecasts. `docs/exchange-paper-policy.md` records each verdict.
+  re-forecasts. `docs/exchange-paper-policy.md` records each verdict. A third (code)
+  red-team pass then fixed: twins re-forecast and double-positioned on the next tick
+  (guards now close over twins); maker fills counted on a stale last-traded print; the
+  entry snapshot mistaken for a closing line; a routed bet scored against the wrong venue;
+  Betfair credentials reaching the agent subprocess; one dead Smarkets id blanking its
+  whole by-id chunk; voided runners tracked forever; the forecast-tick decision keyed on
+  the wall clock instead of journal age (cron slips).
 
 ## [0.4.28] - 2026-09-04
 

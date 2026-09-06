@@ -359,10 +359,10 @@ def maker_quote(contract: dict[str, Any], side: str) -> dict[str, Any] | None:
     improve = ticks >= MAKER_MIN_SPREAD_TICKS
     if side == "YES":
         touch = exchanges.snap_nearest(back["odds"])
-        odds = exchanges.snap_nearest(touch + exchanges.odds_tick(touch)) if improve else touch
+        odds = exchanges.snap_odds(touch + exchanges.odds_tick(touch), "up") if improve else touch
     else:
         touch = exchanges.snap_nearest(lay["odds"])
-        odds = (exchanges.snap_nearest(touch - exchanges.odds_tick(touch - 1e-9))
+        odds = (exchanges.snap_odds(touch - exchanges.odds_tick(touch - 1e-9), "down")
                 if improve else touch)
     prob = 1.0 / odds
     return {"odds": round(odds, 4), "prob": round(prob, 6), "improved": improve,
@@ -450,7 +450,7 @@ def route_bet(p_us: float, candidates: list[dict[str, Any]], bankroll: float, *,
 
 def build_record(contract: dict[str, Any], forecast: dict[str, Any], pair_id: str, *,
                  bet: dict[str, Any] | None = None, bet_contract: dict[str, Any] | None = None,
-                 reforecast_of: str | None = None) -> ForecastRecord:
+                 reforecast_of: str | None = None, at: str | None = None) -> ForecastRecord:
     """One journal record per mode. ``dry_run`` is ALWAYS True here: this bot never trades.
     The book at forecast time rides in ``source.book`` and the mid in ``crowd``. A routed
     bet carries the venue it was priced on in ``source.paper_bet.venue``."""
@@ -480,11 +480,12 @@ def build_record(contract: dict[str, Any], forecast: dict[str, Any], pair_id: st
             bet["book"] = {k: target.get(k) for k in ("back", "lay", "mid", "last", "matched_gbp")}
         source["paper_bet"] = bet
     mid = contract.get("mid")
+    at = at or _utc_now()
     return ForecastRecord(
         question=question_title(contract)[:500],
         question_type="binary",
         resolution_criterion=criteria_text(contract)[:2000],
-        forecast_at=_utc_now(),
+        forecast_at=at,
         resolve_by=(contract.get("close_time") or "")[:10] or None,
         source=source,
         reference_class=forecast["reference_class"],
@@ -499,7 +500,7 @@ def build_record(contract: dict[str, Any], forecast: dict[str, Any], pair_id: st
         cost_usd=forecast["cost_usd"] or None,
         crowd={
             "value": mid, "source": f"{contract['venue']} exchange mid",
-            "at": _utc_now(), "shown_to_agent": not forecast["blind"],
+            "at": at, "shown_to_agent": not forecast["blind"],
         } if mid is not None else None,
         reasoning=forecast["reasoning"],
         what_would_change_my_mind=forecast["what_would_change_my_mind"],
@@ -556,8 +557,22 @@ def recently_forecast_ids(rows: list[dict[str, Any]], now: datetime | None = Non
     for r in rows:
         src = r.get("source") or {}
         at = _parse_iso(r.get("forecast_at") or r.get("created"))
-        if src.get("question_id") and at and (now - at) <= timedelta(days=days):
+        if not (at and (now - at) <= timedelta(days=days)):
+            continue
+        if src.get("question_id"):
             out.add(str(src["question_id"]))
+        bet = src.get("paper_bet")
+        if isinstance(bet, dict) and bet.get("contract_id"):
+            out.add(str(bet["contract_id"]))
+    return out
+
+
+def close_over_twins(ids: set[str], twins: dict[str, list[str]]) -> set[str]:
+    """ids plus every cross-venue twin of each id: a contract and its twin are one bet, so
+    dedupe and position guards must treat them as one (red team 2026-09-06, high)."""
+    out = set(ids)
+    for cid in list(ids):
+        out.update(twins.get(cid, []))
     return out
 
 
@@ -578,8 +593,24 @@ def snapshot_rows(contracts: dict[str, dict[str, Any]],
 
 
 def settled_ids(prices_path: str | Path) -> set[str]:
+    """Contracts with an outcome, or voided (withdrawn runner, cancelled market): either
+    way there is nothing left to quote."""
     return {str(r["contract_id"]) for r in journal_rows(prices_path)
-            if r.get("outcome") is not None}
+            if r.get("outcome") is not None or r.get("status") == "voided"}
+
+
+UNAVAILABLE_RETIRE_TICKS = 24  # a contract no venue returns for this many ticks is retired
+
+
+def retired_ids(prices_path: str | Path, ticks: int = UNAVAILABLE_RETIRE_TICKS) -> set[str]:
+    """Contracts whose last ``ticks`` snapshot rows were all "unavailable" (the venue no
+    longer returns the id): stop asking, or one dead id is a network call every hour
+    forever. The scorer already ignores non-open rows."""
+    history: dict[str, list[str]] = {}
+    for r in journal_rows(prices_path):
+        history.setdefault(str(r.get("contract_id")), []).append(str(r.get("status")))
+    return {cid for cid, statuses in history.items()
+            if len(statuses) >= ticks and all(x == "unavailable" for x in statuses[-ticks:])}
 
 
 def append_jsonl(path: str | Path, rows: list[dict[str, Any]]) -> None:
@@ -691,12 +722,25 @@ def _forecast_pair(contract: dict[str, Any], twin: dict[str, Any] | None,
     return blind_fc, sighted_fc
 
 
+PROXY_SECTION = (
+    "\n\n## Proxy run (reasoning-only)\n"
+    "This is a SHADOW estimate, not the research forecast: web search and fetch tools are "
+    "unavailable in this run and there is no research floor. Do not attempt searches. "
+    "Estimate from the reference class and what you already know, state the base rate you "
+    "start from, and return the same json contract (\"sources\" may be empty)."
+)
+
+
+def build_proxy_brief(contract: dict[str, Any], sighted: bool) -> str:
+    return build_exchange_brief(contract, sighted=False) + PROXY_SECTION
+
+
 def _forecast_proxy(contract: dict[str, Any], args: argparse.Namespace,
                     config: dict[str, Any], budget_state: dict[str, Any],
                     deadline: float | None) -> dict[str, Any] | None:
     fc = run_manifold.forecast_market(
         contract, "blind", PROXY_TIER, args, config, budget_state, deadline,
-        brief_builder=build_exchange_brief,
+        brief_builder=build_proxy_brief,
         extra_blind_disallowed=BLIND_EXTRA_DISALLOWED + "," + run_bot.NO_WEB_DISALLOWED)
     if fc is not None:
         fc.update({"tier": PROXY_TIER, "provider": args.provider, "record_mode": PROXY_MODE})
@@ -756,19 +800,25 @@ def run(args: argparse.Namespace) -> int:
     print(f"pulled {len(contracts)} quoted contract(s) from {', '.join(venues)}; "
           f"{sum(len(v) for v in twins.values()) // 2} cross-venue twin pair(s)")
 
-    settled = settled_ids(prices_path)
+    settled = settled_ids(prices_path) | retired_ids(prices_path)
     tracked = tracked_contract_ids(rows_before, settled)
     quotes = exchanges.quote_contracts(tracked, fixture=fixture) if tracked else {}
     # A fresh listing quote beats a by-id one when both exist (it carries names/rules).
     for cid in list(quotes):
         if cid in by_id:
             quotes[cid] = by_id[cid]
-    snaps = snapshot_rows(quotes)
-    append_jsonl(prices_path, snaps)
-    newly_settled = sorted(s["contract_id"] for s in snaps if s.get("outcome") is not None)
+    tick_at = _utc_now()
+    snaps = snapshot_rows(quotes, at=tick_at)
     missing = sorted(cid for cid in tracked if cid not in quotes)
-    print(f"snapshot: {len(snaps)} tracked contract(s) quoted"
-          + (f", {len(newly_settled)} settled" if newly_settled else "")
+    # An unavailable contract gets a row too, so a dead id can be retired after a run of
+    # them instead of being asked for every hour forever.
+    snaps += [{"at": tick_at, "contract_id": cid, "venue": cid.split(":", 1)[0],
+               "status": "unavailable", "outcome": None} for cid in missing]
+    append_jsonl(prices_path, snaps)
+    newly_settled = sorted(s["contract_id"] for s in snaps
+                           if s.get("outcome") is not None or s.get("status") == "voided")
+    print(f"snapshot: {len(quotes)} tracked contract(s) quoted"
+          + (f", {len(newly_settled)} settled/voided" if newly_settled else "")
           + (f", {len(missing)} unavailable" if missing else ""))
     locks = lock_rows(contracts, twins)
     append_jsonl(arbs_path, locks)
@@ -794,15 +844,19 @@ def run(args: argparse.Namespace) -> int:
         if blind_fc is None or sighted_fc is None:
             continue
         pair_id = f"{_utc_now()[:10]}-{uuid4().hex[:8]}"
+        at = _utc_now()
         for fc in (blind_fc, sighted_fc):
-            journal.append(build_record(contract, fc, pair_id, reforecast_of=hit["pair_id"]))
+            journal.append(build_record(contract, fc, pair_id, reforecast_of=hit["pair_id"],
+                                        at=at))
         reforecasts += 1
         print(f"  journaled re-forecast pair {pair_id} (blind {blind_fc['probability']:.2f} / "
               f"sighted {sighted_fc['probability']:.2f}); stop-loss counterfactual scored offline")
 
     # ---- 3. fresh contracts: forecast once, route the bet ------------------------------
-    fresh = recently_forecast_ids(rows_before, now)
-    positioned = positioned_contract_ids(rows_before)
+    # A contract and its cross-venue twin are ONE bet: dedupe and position guards close
+    # over twins, or the twin is re-forecast next tick and the bet is taken twice.
+    fresh = close_over_twins(recently_forecast_ids(rows_before, now), twins)
+    positioned = close_over_twins(positioned_contract_ids(rows_before), twins)
     longshot_open = open_longshot_liability(rows_before, settled)
     selected = select_contracts(contracts, args.limit, exclude=fresh, now=now, twins=twins)
     print(f"selected {len(selected)} contract(s)")
@@ -825,22 +879,25 @@ def run(args: argparse.Namespace) -> int:
         if blind_fc is None or sighted_fc is None:
             continue
         pair_id = f"{_utc_now()[:10]}-{uuid4().hex[:8]}"
-        journal.append(build_record(contract, blind_fc, pair_id))
+        at = _utc_now()  # one timestamp for the pair's records AND the entry snapshot
+        journal.append(build_record(contract, blind_fc, pair_id, at=at))
         if getattr(args, "proxy", True):
             proxy_fc = _forecast_proxy(contract, args, config, budget_state, deadline)
             if proxy_fc is not None:
-                journal.append(build_record(contract, proxy_fc, pair_id))
+                journal.append(build_record(contract, proxy_fc, pair_id, at=at))
                 print(f"  proxy {proxy_fc['probability']:.2f} (reasoning-only, descriptive)")
 
         p_sighted = sighted_fc["probability"]
         candidates = [contract] + ([twin] if twin is not None else [])
+        blocked = set(positioned)
+        if bets >= args.max_bets:
+            blocked |= {c["contract_id"] for c in candidates}
         chosen, bet, _alts = route_bet(
-            p_sighted, candidates, float(args.bankroll),
-            positioned=positioned if bets < args.max_bets else set(positioned) | {cid},
+            p_sighted, candidates, float(args.bankroll), positioned=blocked,
             longshot_liability_open=longshot_open)
         if bet is not None and chosen is not None:
             bets += 1
-            positioned.add(chosen["contract_id"])
+            positioned.update(c["contract_id"] for c in candidates)
             if bet.get("longshot"):
                 longshot_open += bet["stake_gbp"]
             maker = bet["maker"]["prob"] if bet.get("maker") else "n/a"
@@ -848,14 +905,16 @@ def run(args: argparse.Namespace) -> int:
                   f" on {chosen['venue']} (p_us={p_sighted:.2f} vs mid {chosen['mid']:.3f}, "
                   f"EV GBP {bet['ev_gbp']:.2f} = {bet['expected_return_net']:+.1%} net, capped "
                   f"by {bet['capped_by']}, maker {maker}, read={sighted_fc.get('market_read')})")
-        journal.append(build_record(contract, sighted_fc, pair_id, bet=bet, bet_contract=chosen))
+        journal.append(build_record(contract, sighted_fc, pair_id, bet=bet, bet_contract=chosen,
+                                    at=at))
         print(f"  journaled pair {pair_id} (blind {blind_fc['probability']:.2f} / "
               f"sighted {p_sighted:.2f})")
-        # Entry snapshots: the books the bet was priced against, in the price file too.
+        # Entry snapshots: the books the bet was priced against, stamped with the pair's
+        # own timestamp so the scorer never mistakes them for a later closing line.
         entry = {cid: contract}
         if twin is not None:
             entry[twin["contract_id"]] = twin
-        append_jsonl(prices_path, snapshot_rows(entry))
+        append_jsonl(prices_path, snapshot_rows(entry, at=at))
 
     print(f"done (paper): {len(selected)} contract(s), {bets} paper bet(s), "
           f"{reforecasts} re-forecast(s)")

@@ -444,6 +444,15 @@ def test_maker_quote_improves_one_tick_when_the_spread_allows() -> None:
     tight = fixture_contracts()[1]  # 1.1111 / 1.1236 -> rungs 1.11 / 1.12: join the touch
     joined = run_exchange.maker_quote(tight, "YES")
     assert not joined["improved"] and joined["odds"] == 1.11
+    # At a ladder band boundary the improvement must land on the NEXT rung, not snap back.
+    edge = exchanges._finish(dict(c, back={"prob": 0.5, "odds": 2.0, "size_gbp": 100.0},
+                                  lay={"prob": 0.47, "odds": 2.1277, "size_gbp": 100.0}))
+    at_edge = run_exchange.maker_quote(edge, "YES")
+    assert at_edge["improved"] and at_edge["odds"] == 2.02
+    no_edge = run_exchange.maker_quote(exchanges._finish(dict(
+        c, back={"prob": 0.35, "odds": 2.857, "size_gbp": 100.0},
+        lay={"prob": 0.3333, "odds": 3.0, "size_gbp": 100.0})), "NO")
+    assert no_edge["improved"] and no_edge["odds"] == 2.98
 
 
 def test_route_bet_takes_the_larger_pound_ev_and_journals_alternatives() -> None:
@@ -641,10 +650,50 @@ def test_run_routes_to_the_twin_and_reforecasts_on_adverse_move(
     ref = [r for r in rows if r["source"].get("reforecast_of")]
     assert len(ref) == 2 and ref[0]["source"]["reforecast_of"] == sighted["source"]["pair_id"]
     assert all("paper_bet" not in r["source"] for r in ref)
-    # A third tick does not re-forecast the same position again.
+    # A third tick does not re-forecast the same position again, and neither the twin nor
+    # the original is treated as a fresh contract: no new pair, no second position.
     n_calls = len(agent.calls)
     assert run_exchange.run(args) == 0
     assert len(agent.calls) == n_calls
+    assert len(run_exchange.journal_rows(args.journal)) == 5
+    bets = [r["source"]["paper_bet"] for r in run_exchange.journal_rows(args.journal)
+            if r["source"].get("paper_bet")]
+    assert len(bets) == 1
+
+
+def test_twin_closure_dedupes_next_tick_without_any_price_move(monkeypatch, tmp_path: Path) -> None:
+    a = fixture_contracts()[0]
+    twin = exchanges._finish(dict(a, venue="betfair", contract_id="betfair:77:1",
+                                  close_time="2027-02-01T12:00:00Z",
+                                  back={"prob": 0.30, "odds": 3.3333, "size_gbp": 3000.0},
+                                  lay={"prob": 0.28, "odds": 3.5714, "size_gbp": 2500.0}))
+    fx = tmp_path / "pair.json"
+    fx.write_text(json.dumps([a, twin]), encoding="utf-8")
+    agent = ScriptedAgent(0.45)
+    monkeypatch.setattr(run_bot, "run_agent", agent)
+    args = make_args(tmp_path, limit=5, fixture=str(fx))
+    assert run_exchange.run(args) == 0
+    assert run_exchange.run(args) == 0  # nothing moved: the twin must NOT be re-forecast
+    rows = run_exchange.journal_rows(args.journal)
+    assert len(rows) == 3 and len(agent.calls) == 3
+    assert run_exchange.close_over_twins({a["contract_id"]}, {a["contract_id"]: ["x"]}) == {
+        a["contract_id"], "x"}
+
+
+def test_max_bets_blocks_the_twin_too(monkeypatch, tmp_path: Path) -> None:
+    a = fixture_contracts()[0]
+    twin = exchanges._finish(dict(a, venue="betfair", contract_id="betfair:77:1",
+                                  close_time="2027-02-01T12:00:00Z"))
+    b = fixture_contracts()[1]
+    fx = tmp_path / "three.json"
+    fx.write_text(json.dumps([b, a, twin]), encoding="utf-8")
+    agent = ScriptedAgent(0.45)
+    monkeypatch.setattr(run_bot, "run_agent", agent)
+    args = make_args(tmp_path, limit=5, fixture=str(fx), max_bets=1)
+    assert run_exchange.run(args) == 0
+    bets = [r["source"]["paper_bet"] for r in run_exchange.journal_rows(args.journal)
+            if r["source"].get("paper_bet")]
+    assert len(bets) == 1
 
 
 # --------------------------------------------------------------------------- scorer
@@ -664,6 +713,42 @@ def _journal_pair(pid: str, cid: str, venue: str, p_sighted: float, p_blind: flo
 def _snap(cid: str, at: str, mid: float | None, outcome: bool | None = None,
           status: str = "open") -> dict[str, Any]:
     return {"at": at, "contract_id": cid, "mid": mid, "status": status, "outcome": outcome}
+
+
+def test_entry_snapshot_is_never_the_closing_line() -> None:
+    bet = {"outcome": "YES", "stake_gbp": 100.0, "price": 0.30, "net_odds_b": 2.2867}
+    journal = _journal_pair("p1", "c1", "smarkets", 0.40, 0.35, 0.29, bet,
+                            at="2026-09-01T00:00:00Z")
+    entry_only = [_snap("c1", "2026-09-01T00:00:10Z", 0.29)]  # written seconds after entry
+    result = score_exchange.score(journal, entry_only, now=datetime(2026, 9, 2, tzinfo=UTC))
+    assert "clv_points" not in result["rows"][0]["bet"]
+    later = entry_only + [_snap("c1", "2026-09-01T06:00:00Z", 0.33)]
+    result = score_exchange.score(journal, later, now=datetime(2026, 9, 2, tzinfo=UTC))
+    assert result["rows"][0]["bet"]["clv_points"] == pytest.approx(0.03)
+
+
+def test_voided_and_unavailable_contracts_are_retired() -> None:
+    book = {**BF_BOOK, "status": "CLOSED", "runners": [
+        {"selectionId": 11, "status": "REMOVED"}, {"selectionId": 12, "status": "WINNER"}]}
+    by = {r["name"]: r for r in exchanges.betfair_normalise(BF_MARKET, book)}
+    assert by["No"]["status"] == "voided" and by["No"]["outcome"] is None
+    assert by["Yes"]["outcome"] is True
+    smk = exchanges.smarkets_normalise({**SMK_CONTRACT, "state": "cancelled"}, SMK_MARKET,
+                                       SMK_EVENT, {}, [])
+    assert smk["status"] == "voided"
+
+
+def test_settled_and_retired_ids_from_the_price_file(tmp_path: Path) -> None:
+    p = tmp_path / "prices.jsonl"
+    rows = [{"at": "t1", "contract_id": "v", "status": "voided", "outcome": None},
+            {"at": "t1", "contract_id": "s", "status": "closed", "outcome": True}]
+    rows += [{"at": f"t{i}", "contract_id": "dead", "status": "unavailable", "outcome": None}
+             for i in range(run_exchange.UNAVAILABLE_RETIRE_TICKS)]
+    rows += [{"at": f"t{i}", "contract_id": "flaky", "status": "unavailable", "outcome": None}
+             for i in range(3)]
+    run_exchange.append_jsonl(p, rows)
+    assert run_exchange.settled_ids(p) == {"v", "s"}
+    assert run_exchange.retired_ids(p) == {"dead"}
 
 
 def test_scorer_clv_pnl_and_three_way_brier() -> None:
@@ -755,6 +840,13 @@ def test_maker_fill_is_a_lower_bound_on_prints_through_the_price() -> None:
     printed = [dict(_snap("c", "2026-09-01T12:00:00Z", 0.28), last=0.285)]
     got = score_exchange.maker_fill(bet, printed, entry)
     assert got["filled"] is True and got["filled_at"] == "2026-09-01T12:00:00Z"
+    # The same print as at entry is stale, not a trade: no fill.
+    stale = score_exchange.maker_fill(bet, printed, entry, entry_last=0.285)
+    assert stale["filled"] is False
+    # An unchanged last across two later snapshots counts once at most (here: never).
+    twice = [dict(_snap("c", "2026-09-01T06:00:00Z", 0.30), last=0.30),
+             dict(_snap("c", "2026-09-01T12:00:00Z", 0.30), last=0.30)]
+    assert score_exchange.maker_fill(bet, twice, entry, entry_last=0.30)["filled"] is False
     # After the TTL nothing counts.
     late = [dict(_snap("c", "2026-09-05T12:00:00Z", 0.20), last=0.20)]
     assert score_exchange.maker_fill(bet, late, entry)["filled"] is False
@@ -807,6 +899,16 @@ def test_scorer_scores_routed_bets_on_their_own_contract_and_stop_losses() -> No
     result = score_exchange.score(journal, prices, now=datetime(2026, 9, 13, tzinfo=UTC))
     row = result["rows"][0]
     assert row["bet"]["routed"] and row["bet"]["venue"] == "betfair"
+    # With no snapshots on the routed contract there is no closing line at all — the
+    # forecast contract's mid is never borrowed.
+    bare = score_exchange.score(journal, [_snap("c1", "2026-09-10T00:00:00Z", 0.36)],
+                                now=datetime(2026, 9, 13, tzinfo=UTC))
+    assert "clv_points" not in bare["rows"][0]["bet"]
+    # A bet that stayed home despite a twin existing is not "routed".
+    home = {**bet, "contract_id": "c1", "venue": "smarkets"}
+    stayed = score_exchange.score(_journal_pair("p9", "c1", "smarkets", 0.45, 0.4, 0.29, home),
+                                  [], now=datetime(2026, 9, 13, tzinfo=UTC))
+    assert stayed["rows"][0]["bet"]["routed"] is False
     assert row["bet"]["clv_points"] == pytest.approx(0.36 - 0.30)
     assert row["bet"]["won"] is True
     assert result["pooled"]["n_routed"] == 1 and result["pooled"]["n_reforecast"] == 1
@@ -846,7 +948,9 @@ def test_workflow_is_hourly_snapshot_six_hourly_forecast_capped_and_leak_guarded
     wf = (ROOT / ".github" / "workflows" / "exchange-paper.yml").read_text(encoding="utf-8")
     lower = wf.lower()
     assert '"23 * * * *"' in wf and "workflow_dispatch:" in wf
-    assert "% 6 ))" in wf and "--snapshot-only" in wf
+    # Forecast ticks are keyed on journal age (cron slips), not the wall clock.
+    assert "age_h >= 5.5" in wf and "--snapshot-only" in wf
+    assert '"$BETFAIR_USERNAME"' in wf  # the credential-value grep covers the username too
     assert "--provider subscription" in wf and "--require-subscription-auth" in wf
     budget = re.search(r"--budget (\d+(?:\.\d+)?)", wf)
     assert budget is not None and 0 < float(budget.group(1)) <= 10
