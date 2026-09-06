@@ -4,6 +4,29 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [Unreleased]
+
+### Added
+- **UK betting-exchange PAPER-trading bot** (`bot/exchanges.py`, `bot/run_exchange.py`,
+  `bot/score_exchange.py`, `.github/workflows/exchange-paper.yml`,
+  `docs/exchange-paper-policy.md`). Measures whether the Manifold edge (≈19% mark-to-market
+  in eight weeks on play money) survives real-money prices BEFORE any capital is risked.
+  Read-only venue clients for Smarkets (public API, politics + current affairs) and Betfair
+  (free delayed app key, politics event type); every runner becomes one binary contract with
+  the best back/lay price and resting size, normalised so `back.prob >= lay.prob`. The runner
+  reuses `run_manifold.forecast_market` (new keyword-only `brief_builder` /
+  `extra_blind_disallowed` hooks; Manifold callers are byte-identical) for the blind/sighted
+  pair, then journals the paper bet the sighted number implies at the EXECUTABLE side of the
+  book — quarter-Kelly on a notional £10k, net of venue commission (2% / 6%), capped by the
+  size resting at the touch — into `bot/journal/exchange.jsonl`, and snapshots every tracked
+  contract's book into `bot/journal/exchange-prices.jsonl` each tick. The scorer computes
+  closing-line value, settled P&L net of commission, and a three-way Brier (blind / sighted
+  / book mid) offline, and evaluates the preregistered GO-LIVE / HOLD / KILL rule
+  (n ≥ 200 scored bets, CLV CI90 lower bound > 0, ≥ 100 settled, ROI > 0, sighted Brier
+  beats the mid by ≥ 0.01). No code path can place an order. Six-hourly workflow,
+  subscription-only, $6/tick cap, leak-guarded journal commit (`smarkets` / `betfair` added
+  to the guard's public platforms).
+
 ## [0.4.28] - 2026-09-04
 
 **Architecture change (operator decision, 2026-09-03): parallel independent research is the

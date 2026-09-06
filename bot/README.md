@@ -32,6 +32,17 @@ tamper-evident track record).
 4. Install the package once: `pip install -e .` from the repo root (the bot imports
    `forecast_scaffold.core` for the journal, validators, and CDF construction).
 
+## Sibling: the exchange PAPER bot (`run_exchange.py`)
+
+Same skill, same `forecast_market` loop, real-money prices, no money: `bot/exchanges.py`
+reads Smarkets (public) and Betfair (free delayed key) politics books, `bot/run_exchange.py`
+journals the blind/sighted pair and the paper bet the sighted number implies at the
+executable touch price (quarter-Kelly on a notional £10k, net of commission, capped by
+resting size), and `bot/score_exchange.py` grades closing-line value, settled P&L and a
+three-way Brier offline from the committed snapshots. The go-live rule is preregistered in
+[docs/exchange-paper-policy.md](../docs/exchange-paper-policy.md). First live step:
+`python bot/exchanges.py --probe` to eyeball the unit constants.
+
 ## The ladder (do not skip steps)
 
 1. **Offline dry-run** — fetch real questions, run the skill, validate, record — no submission:
