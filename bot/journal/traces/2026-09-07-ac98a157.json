@@ -1,0 +1,199 @@
+{
+ "record_id": "2026-09-07-ac98a157",
+ "question": "If Anthropic files a public IPO prospectus by September 17, 2026, which U.S. exchange will it name as its intended listing venue?",
+ "question_id": 45730,
+ "url": "https://www.metaculus.com/questions/45539/",
+ "question_type": "multiple_choice",
+ "forecast_at": "2026-09-07T12:39:57+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.1034,
+ "pools": {
+  "pooled_runs": {
+   "Nasdaq": 0.07002609397082789,
+   "New York Stock Exchange (NYSE)": 0.030979306569021002,
+   "No public S-1 filed yet": 0.8959782314680335,
+   "Other outcome": 0.0030163679921176617
+  },
+  "phase1": {
+   "Nasdaq": 0.07002609397082789,
+   "New York Stock Exchange (NYSE)": 0.030979306569021002,
+   "No public S-1 filed yet": 0.8959782314680335,
+   "Other outcome": 0.0030163679921176617
+  },
+  "phase2": null,
+  "spread_phase1": 0.075,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probabilities": {
+   "Nasdaq": 0.068,
+   "New York Stock Exchange (NYSE)": 0.03,
+   "No public S-1 filed yet": 0.9,
+   "Other outcome": 0.002
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.675,
+   "seconds": 169.9,
+   "estimate": {
+    "Nasdaq": 0.102,
+    "New York Stock Exchange (NYSE)": 0.045,
+    "No public S-1 filed yet": 0.85,
+    "Other outcome": 0.003
+   },
+   "reasoning": "Two-stage question: P(public S-1 on EDGAR by Sep 17 23:59 ET) x P(venue | filed). Stage 1 dominates. EDGAR full-text and company search both return nothing for Anthropic as of Now; the freshest primary reporting (Reuters via CNBC, Sep 4-5) explicitly moved prospectus publication to 'late September' and the roadshow to mid-October, superseding the Aug 27/Sep 2 'after Labor Day' reporting in the Background. Sep 17 is mid-September, i.e. before the window the latest report names, so a filing by the deadline requires the schedule to accelerate again after just slipping. Direct-match Manifold buckets imply ~21-23% by Sep 18 but the book is 3 holders/26 trades and appears to predate the slip; deep Polymarket listing-date pricing (Oct 15 listing 12%, Oct 31 64%) back-solves to a public flip in late Sep/early Oct. I land at ~15% for a filing by the deadline. Stage 2: no primary source names an exchange; the 'Nasdaq' consensus is aggregator/tracker boilerplate (TradingView placeholder), while the honest large-tech IPO split is near even and NYSE has won several recent marquee names (Figma, Circle, Klarna, Reddit). Nasdaq still leans favorite on mega-cap AI/semis precedent and Anthropic's existing Nasdaq Private Market secondary relationship: ~68/30/2 Nasdaq/NYSE/other conditional. Main counterargument: an unannounced mid-September investor day would normally require the public prospectus out first, and hot deals do flip fast; that is what keeps the filed branch at 15% rather than 8%.",
+   "sources": [
+    "https://www.cnbc.com/2026/09/05/anthropic-ipo-launch-shifts-toward-mid-october-reuters.html",
+    "https://crypto.news/anthropic-ipo-marketing-reportedly-moves-mid-october/",
+    "https://efts.sec.gov/LATEST/search-index?q=%22Anthropic%22&forms=S-1",
+    "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=anthropic&type=S-1&dateb=&owner=include&count=40",
+    "https://polymarket.com/event/anthropic-ipo-by",
+    "https://manifold.markets/AlexMiller3a5e/when-will-anthropics-public-s1-come",
+    "https://www.cnbc.com/2026/06/01/anthropic-ipo-s1-prospectus.html",
+    "https://www.anthropic.com/news/confidential-draft-s1-sec",
+    "https://uk.investing.com/news/company-news/anthropic-delays-ipo-launch-to-midoctober-at-earliest-reuters-reports-4859337",
+    "https://www.nasdaqprivatemarket.com/company/anthropic/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the presence on SEC EDGAR of a PUBLIC Form S-1 (or a public amendment making the prospectus visible) by Anthropic, PBC, and the exchange named on that prospectus COVER PAGE — not off press reporting, not off an exchange press release, not off a confidential draft submission, and not off whether the IPO actually prices or trades. A confidential draft that stays non-public does not count.\n\nEVENT WINDOW: June 1, 2026 (confidential draft submission, the fact that started the clock) -> September 17, 2026 23:59 US Eastern, per the criteria text = 108 days; as of Now (2026-09-07T12:30Z) ~91% elapsed. Framed as remaining runway: ~10.5 days left in the window. The Sep 18, 2026 00:00Z scheduled-resolution timestamp is administrative and is NOT the window.\n\nSTATUS-QUO OUTCOME: No public S-1 exists. Absent an affirmative filing action in the next ~10 days, the question resolves 'No public S-1 filed yet'.\n\nEVIDENCE — TIMELINE:\n- Anthropic, PBC publicly announced a CONFIDENTIAL draft Form S-1 submission on 2026-06-01 (anthropic.com/news/confidential-draft-s1-sec; CNBC 2026-06-01). No exchange, ticker, share count, size or price range disclosed.\n- EDGAR full-text search (efts.sec.gov, forms=S-1, q=\"Anthropic\") checked 2026-09-07: no Anthropic filings returned. EDGAR company browse for company=anthropic, type=S-1 returns 'No matching companies.' A third-party check reported the same absence on 2026-08-31.\n- Reuters, 2026-08-27 (via Background) and Forbes 2026-09-02 citing The Information: prospectus to be unveiled after Labor Day (Sep 7), investor day around mid-September, listing late September or early October.\n- Reuters, 2026-09-04/05 (carried by CNBC 2026-09-05, Investing.com, crypto.news 2026-09-05, citing people familiar): timeline PUSHED BACK — prospectus publication now expected in LATE SEPTEMBER; IPO marketing/roadshow now mid-October at the earliest; listing could land days before the November US midterms. Articles state 'the timetable remains subject to change.' This is the most recent primary reporting and it supersedes the Aug 27 / Sep 2 accounts.\n- Reported underwriters: Goldman Sachs, JPMorgan, Morgan Stanley (Citi also named in some accounts). Counsel: Wilson Sonsini.\n- Reported target valuation range in press: ~$1.5T-$2T, potentially >$60B raised; would be the largest IPO on record. Anthropic's May 2026 Series H-1 was at $965B post-money; revenue run-rate reported at $30B (Apr 2026) rising to ~$47B in later accounts.\n- Structural wrinkles reported: Anthropic weighing direct selling by existing holders and lockups longer than the standard 180 days — non-standard features that historically add legal/SEC review time to a first public flip.\n\nEVIDENCE — VENUE:\n- No primary outlet (Reuters, CNBC, WSJ, Bloomberg) has reported a confirmed exchange. Anthropic has not confirmed one. Neither Nasdaq nor NYSE has issued a release.\n- 'Nasdaq expected' appears widely but only in secondary IPO-tracker/aggregator content: BitMEX IPO guide, gradually.ai, IG, decodethefuture.org, startuphub.ai, techstackipo. TradingView carries a placeholder symbol page under a NASDAQ prefix with the literal string 'ANTHROPIC' as ticker — a tracker placeholder, not a disclosure.\n- Some earlier commentary floated NYSE. No sourced reporting behind either.\n- Anthropic has an existing relationship with Nasdaq Private Market (nasdaqprivatemarket.com hosts an Anthropic pre-IPO secondary page).\n\nBASE RATES (with the class each is computed over):\n- Venue split, over ALL US technology IPOs raising >$1B, 2019-2026: roughly even. Nasdaq side includes Airbnb, Arm, Instacart, CoreWeave, Chime, Affirm, Astera Labs, Robinhood, ServiceTitan, Tempus, Lyft; NYSE side includes Snowflake, DoorDash, Palantir, Roblox, Unity, Reddit, Rubrik, Klaviyo, Ibotta, Figma, Circle, Klarna, Uber, Pinterest.\n- Venue split CONDITIONAL on the subclass 'mega-cap AI / semiconductor / infrastructure-compute issuers': tilts to Nasdaq (Arm, CoreWeave, Astera Labs), and every US mega-cap tech incumbent by market cap (Nvidia, Microsoft, Apple, Alphabet, Meta, Amazon, Tesla, Broadcom) trades on Nasdaq.\n- Venue split CONDITIONAL on 'largest US IPOs by proceeds, 2020-2026': mixed, with NYSE taking several of the biggest recent consumer/fintech names.\n- Timing, over the class 'US IPO issuers whose public S-1 flip date was reported by wire services within ~2 weeks of the event': slippage is the modal outcome; schedules more often move later than earlier, and the June 2026 -> September 2026 gap here already reflects one slip, with a second slip reported on Sep 4-5.\n- 'Other outcome' component: a US operating-company IPO prospectus cover page that names neither NYSE nor Nasdaq (e.g. NYSE American, CBOE BZX, or 'no exchange yet designated') is rare for issuers of this size — essentially confined to small-cap and blank-check issuers.\n\nSEQUENCING MECHANICS (useful for back-solving): standard US IPO practice is public S-1 flip -> ~15 days minimum before the roadshow can launch -> roadshow ~1-2 weeks -> pricing/first trade. So public S-1 typically precedes first trade by ~3-4 weeks; a mid-October roadshow start implies a public flip in late September, and a first trade before mid-October would require a flip on or around mid-September.\n\nMARKETS CHECKED (prices deliberately withheld from this dossier per instruction): Polymarket runs a deep multi-date 'Anthropic IPO by __?' market keyed on LISTING/trading date, not on the S-1 filing — a near-miss contract on this question's terms (different trigger event, different dates). Manifold runs 'When will Anthropic's public S-1 come out?' with date buckets that DO key on the public S-1, but its final bucket edge is Sep 18, one day past this question's Sep 17 23:59 ET deadline, and the book is extremely thin (26 trades, 3 holders). Kalshi has Anthropic IPO-announcement contracts (resolving on S-1 effectiveness, official price, or ticker assignment) — again a different trigger than a public S-1 flip. ",
+   "reference_class": "Large (>$1B) US IPOs that confidentially submitted a draft S-1, where press reporting within ~2 weeks of a candidate date placed the public prospectus flip AFTER that date — fraction that nonetheless flipped public by the earlier date; combined with the Nasdaq-vs-NYSE venue split among US technology"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.6074,
+   "seconds": 168.3,
+   "estimate": {
+    "Nasdaq": 0.072,
+    "New York Stock Exchange (NYSE)": 0.025,
+    "No public S-1 filed yet": 0.9,
+    "Other outcome": 0.003
+   },
+   "reasoning": "EDGAR company search returns no Anthropic S-1 as of 2026-09-07 12:30Z, so the status quo outcome is 'No public S-1 filed yet' with ~10.5 days left. The decisive update is Reuters' Sep 4 exclusive: launch shifted to mid-October at the earliest and the prospectus now expected 'late September', pushed back from 'as early as this week' — plus a reported mid-September analyst/investor day, which by convention precedes the public filing by a couple of weeks. Timing guidance has slipped twice already (late August -> post-Labor Day -> late September), and slippage is autocorrelated. Against that: SEC review has run since June 1, underwriters are engaged, the pre-midterm listing target creates schedule pressure, and a compressed analyst-day-to-filing gap is explicitly floated, so an early-filing surprise is live but not the modal path. Manifold's matched-terms market (~23% by Sep 18, 3 holders) is thin and appears to predate the Reuters shift; Polymarket's $2.6M listing-date book implies ~1% IPO-by-Sep-30 and 64% by Oct-31, consistent with a late-Sep/early-Oct prospectus. Conditional on a filing, I split venue ~73/25/2 Nasdaq/NYSE/other: multiple secondary trackers say Nasdaq and mega-cap AI/semis skew Nasdaq, but there is no primary-source confirmation and the recent large-tech record is near even, so I do not go higher.",
+   "sources": [
+    "https://www.investing.com/news/stock-market-news/exclusiveanthropic-ipo-launch-shifts-toward-midoctober-sources-say-4890091",
+    "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=anthropic&type=S-1&dateb=&owner=include&count=40",
+    "https://polymarket.com/event/anthropic-ipo-by",
+    "https://manifold.markets/AlexMiller3a5e/when-will-anthropics-public-s1-come",
+    "https://www.startuphub.ai/ai-news/ipo-watch/2026/anthropic-ipo-roadshow-investor-meetings-2026-07-21",
+    "https://www.cnbc.com/2026/09/05/anthropic-ipo-launch-shifts-toward-mid-october-reuters.html",
+    "https://www.anthropic.com/news/confidential-draft-s1-sec",
+    "https://www.tradingview.com/news/reuters.com,2026:newsml_L4N44O1S2:0-anthropic-plans-to-publicly-unveil-ipo-prospectus-after-labor-day-the-information-reports/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the public EDGAR record for Anthropic, PBC — a publicly filed Form S-1 (or a public amendment whose prospectus is visible), and the exchange named on that prospectus cover page. NOT off press reports of intent, NOT off the confidential June 1 draft submission, NOT off the actual listing/first-trade date. A confidential DRS that stays non-public does not count.\n\nEVENT WINDOW: 2026-06-01 (confidential draft submission, the start of the observable process per the Background) -> 2026-09-17 23:59 US Eastern (= 2026-09-18 03:59Z) per the criteria. Total 108.7 days; as of Now (2026-09-07 12:30Z) ~90.4% elapsed, ~10.5 days remain.\n\nSTATUS-QUO OUTCOME: no public S-1 on EDGAR, therefore 'No public S-1 filed yet'.\n\nEVIDENCE — TIMING:\n- EDGAR company search (action=getcompany, company=anthropic, type=S-1), checked 2026-09-07 12:30Z: 'No matching companies'. EDGAR full-text S-1 search likewise surfaces no Anthropic prospectus. [SEC EDGAR, 2026-09-07]\n- Anthropic's own newsroom confirms only a CONFIDENTIAL draft S-1 submitted 2026-06-01; no public filing announced since. [anthropic.com/news/confidential-draft-s1-sec, 2026-06-01]\n- Reuters exclusive: IPO launch 'shifts toward mid-October'; the prospectus, previously expected 'as early as next week', is now expected 'in late September'; marketing/roadshow 'mid-October at the earliest'. Cited reason: finalizing a $15B revolving credit facility. Listing targeted to close before the November US midterms. [Reuters via Investing.com and CNBC, 2026-09-04/05]\n- The Information (via Reuters/TradingView/Motley Fool): plan was to unveil the prospectus after Labor Day (Sep 7), investor day mid-September, listing late September or early October. [2026-09-02/03]\n- Earlier guidance in the same process said the public S-1 was expected 'as early as late August 2026'. The published expectation has moved at least twice: late Aug -> post-Labor Day -> late Sep. [StartupHub summary of Yahoo Finance, Aug 2026]\n- Sequencing convention noted in the Reuters piece: 'Companies typically leave a few weeks between analyst meetings and making the IPO prospectus public,' with the caveat that Anthropic could compress this because analysts already know the company. A mid-September analyst/investor day therefore sits BEFORE, not after, the public filing under the normal ordering.\n- Standard US IPO mechanics: public S-1 -> minimum 15-day wait -> roadshow launch with price range -> pricing ~8-10 business days later. Working backwards from a mid-October roadshow gives a public filing anywhere from mid-September to early October.\n- Underwriters named: Morgan Stanley, Goldman Sachs, JPMorgan, Citi. Pre-IPO/analyst investor meetings were being scheduled from ~2026-07-15. [StartupHub, 2026-07-16/21]\n- Reported deal parameters: >$60B raise, $1.5T-$2T target valuation, prior private mark $965B (Series H, May 2026); Q2 2026 revenue ~$10.9B and first operating profit ~$559M; considering lockups longer than 180 days. No share count, price range, or ticker disclosed.\n\nEVIDENCE — VENUE:\n- No primary-source or company confirmation of an exchange exists. Anthropic has not stated one; the Reuters mid-October story does not mention a venue at all.\n- Multiple secondary IPO trackers/analyst write-ups state Nasdaq is the target, e.g. 'the filing targets an October 2026 Nasdaq listing' and 'Reports from multiple outlets have pointed to the Nasdaq as Anthropic's target exchange'. These appear to trace back to a small number of originating reports rather than independent confirmations. [StartupHub 2026-07-21; KuCoin, BitMEX, Capital.com explainers, Jul-Sep 2026]\n- TradingView maintains a placeholder page under a NASDAQ- prefix for Anthropic; Nasdaq Private Market hosts an Anthropic pre-IPO secondary page. Both are venue-operator/vendor artifacts, not filings.\n- At least one explainer hedges: 'a public listing on the Nasdaq or NYSE is expected as early as October 2026' — i.e. NYSE not ruled out.\n- Recent large US tech/AI listing split, for the class prior: Arm, Instacart, CoreWeave, Astera Labs, Chime -> Nasdaq; Reddit, Figma, Klaviyo, Rubrik, Snowflake, Circle -> NYSE.\n\nMARKETS (contract-fit notes, prices withheld from this digest): Polymarket runs a multi-date 'Anthropic IPO by ___' event with ~$2.6M cumulative volume across Sep-15 through Dec-31 tranches; it resolves on the IPO/listing, NOT on the public S-1 filing, so it is a near-miss contract. Manifold runs 'When will Anthropic's public S-1 come out?' with buckets by-Sep-9, Sep-10-11, Sep-12-18, after-Sep-18, resolving off 'the official publication date of Anthropic, PBC's public Form S-1 on EDGAR' — terms match this question closely except its bucket edge is Sep 18 vs this question's Sep 17 23:59 ET cutoff; liquidity is very thin (3 holders, 26 trades) and its description references the pre-Reuters post-Labor-Day framing. No Kalshi or bookmaker contract on either the S-1 date or the listing venue was found.\n\nSEARCHED FOR BUT COULD NOT FIND: any SEC filing, exchange listing notice, or reserved-ticker record naming Anthropic; any on-the-record Anthropic or underwriter statement naming Nasdaq or NYSE; a confirmed date for the mid-September investor/analyst day; any news dated 2026-09-06 or 2026-09-07 updating the Sep 4 Reuters timeline; any market pricing the exchange choice itself.\n\nCOUNTERWEIGHTS TO CARRY BOTH WAYS: pushing later — Reuters' late-September prospectus guidance, the unfinished $15B revolver, two prior slips, and the normal analyst-day-then-file ordering. Pushing earlier — SEC review has run three-plus months, the pre-midterm listing deadline compresses everything, Reuters explicitly flags that Anthropic may shorten the analyst-meeting-to-filing gap, and mega-deals sometimes file publicly well ahead of the roadshow to give the market extra digestion time.",
+   "reference_class": "US mega-IPOs (>$10B raise) that submitted a confidential draft S-1: (a) the chance the public prospectus lands inside a specific ~11-day window given the latest sourced press guidance points after that window, and (b) the listing-venue split among large US tech IPOs of the last decade (Arm, Instacar"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.5628,
+   "seconds": 163.9,
+   "estimate": {
+    "Nasdaq": 0.046,
+    "New York Stock Exchange (NYSE)": 0.026,
+    "No public S-1 filed yet": 0.925,
+    "Other outcome": 0.003
+   },
+   "reasoning": "Two-stage question, and stage one dominates. Direct check of EDGAR company search returns 'No matching companies' for Anthropic, and full-text S-1 search surfaces only third parties (SpaceX, Cerebras, etc.) mentioning Anthropic — no Anthropic-filed registration statement exists as of 2026-09-07. Reuters (Sep 5, via CNBC and Value Add Pulse) reported the public prospectus, previously expected 'as early as next week' (i.e. the week of Sep 7-11), is now not expected until LATE September, with the roadshow slipping to mid-October at the earliest and the listing pushed toward days before the November midterms; a $15B revolving credit facility must close before analyst meetings. That report specifically vacates the Sep 8-17 window this question asks about, and IPO timelines that have just slipped rarely re-accelerate within ten days. Polymarket's 'Anthropic IPO by' book ($2.6M total volume) prices Sep 15 at ~0.1c and Sep 30 at ~0.8c, with Oct 31 at ~64c — that contract resolves on the LISTING, not the public S-1, so it is corroborating evidence rather than a matched anchor, but a ~1% chance of listing by Sep 30 is incompatible with a prospectus landing in the next ten days under normal ~3-4 week prospectus-to-pricing sequencing. No market prices the S-1-filing-date or the exchange choice. Conditional on a filing squeaking in by Sep 17, secondary trackers and analyst write-ups lean Nasdaq (BitMEX, KuCoin, gradually.ai, IG all say 'targeting a Nasdaq listing'), but none cite a primary source and Anthropic has confirmed nothing; the 2020-2026 mega-tech reference class is close to even, so I take roughly 62/35/3 Nasdaq/NYSE/Other conditional. 'Other' is thin because an S-1 cover page for a company at this stage essentially always names the intended venue.",
+   "sources": [
+    "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&company=anthropic&type=S-1&dateb=&owner=include&count=40",
+    "https://efts.sec.gov/LATEST/search-index?q=%22Anthropic%22&forms=S-1",
+    "https://valueaddvc.com/pulse/anthropic-ipo-timeline-shifts-mid-october-2026",
+    "https://www.cnbc.com/2026/09/05/anthropic-ipo-launch-shifts-toward-mid-october-reuters.html",
+    "https://polymarket.com/event/anthropic-ipo-by",
+    "https://www.fool.com/investing/2026/09/03/anthropic-planning-unveil-ipo-details-labor-day/",
+    "https://www.bitmex.com/blog/anthropic-ipo-guide",
+    "https://www.kucoin.com/blog/anthropic-ipo-2026-plans-september-or-early-otcober-listing-amid-965-billion-valuation-talks"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off a PUBLIC Form S-1 (or public amendment making the prospectus visible) on SEC EDGAR under Anthropic, PBC — not off news reports of an IPO, not off the confidential June 1 draft, not off a listing or trading debut. If such a filing exists by the deadline, the outcome is read from the exchange named on the prospectus COVER PAGE (primary venue controls if multiple).\n\nEVENT WINDOW: the criteria's operative window runs from the June 1, 2026 confidential submission to 2026-09-17 23:59 US Eastern (= 2026-09-18 03:59 UTC). As of Now (2026-09-07T12:30Z), ~90% elapsed; ~10.6 days remain.\n\nSTATUS-QUO OUTCOME (what obtains if nothing changes): no public S-1 on EDGAR, so the question resolves 'No public S-1 filed yet'.\n\nEVIDENCE:\n- EDGAR company search for 'anthropic' + form type S-1, checked 2026-09-07, returns 'No matching companies'. No Anthropic registrant page exists.\n- EDGAR full-text search for \"Anthropic\" restricted to S-1 forms returns ~51 filings, all by third parties (Elements Ventures, RPM Interactive, Space Exploration Technologies, Cerebras Systems) mentioning Anthropic in their own documents. None is filed by Anthropic. Checked 2026-09-07.\n- Anthropic publicly announced a CONFIDENTIAL draft S-1 submission on 2026-06-01 (CNBC, Jun 1, 2026). Confidential drafts are not visible on EDGAR.\n- Reuters, reported 2026-09-05 (carried by CNBC and Value Add Pulse): the IPO prospectus 'had been expected to be made public as early as next week' but 'is now not expected until late September'; formal marketing/roadshow shifts to 'mid-October at the earliest'; listing contemplated days before the November U.S. midterm elections.\n- Reuters, 2026-09-05: Anthropic is working to finalize a $15 billion revolving credit facility before analyst meetings begin — a balance-sheet step reported as needing to close ahead of, not during, the roadshow.\n- Earlier reporting (Reuters Aug 27, 2026; The Information via Forbes Sep 2; Motley Fool Sep 3; Venture Atlas Sep 3): prospectus to be unveiled after Labor Day (Sep 7), investor day mid-September, listing late September or early October. This is the PRIOR plan that the Sep 5 report revised.\n- CFO Krishna Rao has run informal investor briefings since mid-August 2026 (Reuters/startuphub.ai); bank-led pre-IPO investor meetings began July 2026.\n- Lead underwriters reported as Morgan Stanley, Goldman Sachs, JPMorgan, with Citi also assisting (Reuters, Sep 2026).\n- Financials in circulation: annualized run-rate reported above $47B (Aug) and above $65B at end-July per later reports; Series H of $65B at $965B post-money; targeted IPO valuation reported at roughly $1.5T-$2T.\n- EXCHANGE — no primary source. Anthropic has never confirmed a venue and no exchange-listing agreement has been reported. Secondary IPO trackers and explainer sites (BitMEX guide, KuCoin, gradually.ai, IG UK, decodethefuture.org) state Anthropic is 'targeting a Nasdaq listing'; none cites a named source or document. Some earlier commentary floated NYSE. Nasdaq Private Market hosts Anthropic secondary-share data, which is a data-vendor relationship, not a listing commitment.\n- EXCHANGE BASE RATES BY CLASS, US tech/AI IPOs 2020-2026: over ALL large tech listings the Nasdaq/NYSE split is close to even. Over the sub-class of AI-infrastructure/semiconductor listings (Arm 2023, Astera Labs 2024, CoreWeave 2025, Cerebras 2026) Nasdaq predominates. Over the sub-class of consumer/software platform listings (Snowflake, Palantir, Roblox, Reddit, Figma, Circle, Rubrik, Klaviyo) NYSE predominates. Anthropic sits between these sub-classes.\n- TIMING BASE RATE BY CLASS: over all confidentially-filed US IPOs, the gap from confidential draft to public S-1 for a company of this scale is commonly cited at three to six months (June 1 + 3 months = Sep 1; + 4 months = Oct 1). Conditional on the most recent wire reporting having just pushed the public-filing date PAST a cutoff, the historical pattern is that IPO calendars slip further rather than pull forward.\n- MARKET PRICING (contract mismatch noted): Polymarket's 'Anthropic IPO by ___' series resolves on the IPO/listing itself, NOT on the public S-1 filing, and uses different dates than Sep 17 — near-dated contracts (Sep 15, Sep 30) trade at a small fraction of a cent-scale probability while late-October and year-end contracts carry the bulk of the ~$2.6M volume, with the largest books on Oct 31 and Dec 31. Kalshi and Polymarket also run Anthropic/OpenAI IPO-order and valuation markets. No market anywhere prices the S-1 FILING date or the EXCHANGE choice.\n- Standard IPO sequencing: the public S-1 typically precedes the roadshow launch by roughly two to four weeks; the price-range amendment (S-1/A) lands at roadshow launch; pricing follows ~1-2 weeks later.\n\nSEARCHED FOR BUT COULD NOT FIND: (a) any primary confirmation of Nasdaq vs NYSE — no listing agreement, no exchange press release, no underwriter statement, no quoted Anthropic spokesperson; (b) any reported ticker symbol (ANTH and CLDE are trader speculation only); (c) any prediction market on either the S-1 filing date or the exchange; (d) a specific calendar date for the reported mid-September investor day; (e) any news dated Sep 6-7, 2026 updating or contradicting the Sep 5 Reuters timeline; (f) confirmation of whether the $15B revolver has closed.\n\nMANIPULATION/BIAS NOTE: much of the exchange-venue claim traces to SEO-driven IPO-tracker and broker-marketing pages whose business is pre-IPO share access; they repeat each other and none sources the claim. Treat as weak, correlated evidence.",
+   "reference_class": "US mega-cap tech IPO candidates that have confidentially submitted a draft S-1 — specifically, the sub-class where the latest wire reporting places the public prospectus AFTER a given cutoff date: how often the public S-1 nonetheless lands before that cutoff (IPO calendars slip far more often than t"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.075,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2201,
+   "seconds": 67.2,
+   "estimate": {
+    "Nasdaq": 0.068,
+    "New York Stock Exchange (NYSE)": 0.03,
+    "No public S-1 filed yet": 0.9,
+    "Other outcome": 0.002
+   },
+   "reasoning": "Two-stage: P(public S-1 on EDGAR by Sep 17 23:59 ET) x P(venue | filed), and stage one dominates. All three runs independently checked EDGAR company search and full-text search on 2026-09-07 and found no Anthropic registrant or filing — only third parties (SpaceX, Cerebras) mentioning Anthropic. The status quo therefore resolves 'No public S-1 filed yet' with ~10.5 days left. The freshest primary reporting (Reuters, Sep 4-5, carried by CNBC) explicitly moved prospectus publication from 'as early as next week' to 'late September' and the roadshow to mid-October, superseding the Aug 27 / Sep 2 post-Labor-Day framing in the Background; a $15B revolver must close before analyst meetings, and the reported mid-September investor day sits BEFORE the flip under normal ordering. Timing has slipped twice already (late Aug -> post-Labor Day -> late Sep) and slippage is autocorrelated. The only matched-terms market (Manifold, S-1 date) is stale and 3-holder-thin; Polymarket's $2.6M listing book (~1% by Sep 30, ~12% by Oct 15) back-solves to a late-Sep/early-Oct flip. I put the filed branch at 10%. Conditional on filing, no primary source names a venue — the 'Nasdaq' consensus is unsourced tracker/SEO boilerplate — but mega-cap AI/semi precedent (Arm, CoreWeave, Astera Labs, Cerebras) and Anthropic's Nasdaq Private Market secondary relationship justify a lean: 68/30/2 Nasdaq/NYSE/other. 'Other' stays thin because an S-1 cover at this scale essentially always names a venue.",
+   "sources": [],
+   "reconciliation": "Runs split 0.85 / 0.90 / 0.925 on the 'no S-1' branch and 62-73 / 25-35 on the conditional venue. Disputes: (1) whether Reuters Sep 4-5 vacates the Sep 8-17 window — FACTUAL, all three dossiers report the same quotes ('late September' prospectus, 'mid-October at the earliest' roadshow, $15B revolver to close before analyst meetings); settled YES, the reporting names a window that starts after the cutoff. (2) Whether Manifold's ~21-23%-by-Sep-18 read is an anchor — FACTUAL; two dossiers note its bucket edge is Sep 18 (one day past this question's Sep 17 23:59 ET cutoff, so a Sep-18 filing counts there and not here), its description predates the Reuters shift, and the book is 26 trades / 3 holders. Settled: stale near-miss, cannot support Run 1's 15% filed branch. (3) Whether Polymarket constrains the filing date — the listing book is a different trigger, but under the 3-4 week flip-to-trade sequencing every dossier states, a Sep-17 flip implies a first trade ~Oct 5-15, and the Oct-15 tranche at ~12% is a soft CEILING on the filed branch; that is corroboration, not an anchor. (4) Analyst-day ordering — FACTUAL convention, agreed by all three: analyst meetings precede the public flip, so a mid-September investor day pushes rather than pulls. These three settlements move me off Run 1's 15% and toward 10%, but I do not go to Run 3's 7.5%: Reuters itself flags Anthropic may compress the analyst-meeting-to-filing gap, SEC review has run over three months, and the pre-midterm listing target creates real schedule pressure, so a fast flip is a live minority path. (5) Conditional venue split — pure JUDGMENT, and the dossiers cannot break it: no listing agreement, no exchange release, no underwriter or company statement exists, and the 'Nasdaq' claim traces to a small set of mutually-copying IPO-tracker and pre-IPO-broker marketing pages (one dossier flags this as correlated, incentive-laden evidence). The TradingView NASDAQ-prefixed placeholder is a vendor artifact, not a disclosure. I take 68/30 — a genuine but modest lean, since the honest large-tech split is near even and NYSE has taken several recent marquee names (Figma, Circle, Klarna, Reddit). I retrieved nothing myself this run; every factual claim above is cross-run corroborated rather than re-verified.",
+   "disagreements": [
+    {
+     "claim": "The Sep 4-5 Reuters report moves the public prospectus to 'late September', past this question's Sep 17 cutoff.",
+     "kind": "factual",
+     "verdict": "Settled YES — all three dossiers independently report the same quotes and the same $15B-revolver precondition; it supersedes the Aug 27 / Sep 2 post-Labor-Day reporting in the Background."
+    },
+    {
+     "claim": "Manifold's S-1-date market implies ~21-23% by Sep 18 and is close enough in terms to anchor the filed branch.",
+     "kind": "factual",
+     "verdict": "Settled NO — bucket edge is Sep 18 vs this question's Sep 17 23:59 ET, the description predates the Reuters slip, and the book is 26 trades / 3 holders. Near-miss and stale; downweighted."
+    },
+    {
+     "claim": "Polymarket's listing-date pricing constrains P(public S-1 by Sep 17).",
+     "kind": "factual",
+     "verdict": "Partially settled — different trigger (listing, not filing), but under the agreed 3-4 week flip-to-trade sequencing the ~12% Oct-15 tranche acts as a soft ceiling near 10-12%, consistent across Runs 1 and 3's reported prices."
+    },
+    {
+     "claim": "A mid-September investor/analyst day would require the prospectus to be public first.",
+     "kind": "factual",
+     "verdict": "Settled AGAINST Run 1 — standard ordering (and the Reuters piece itself) puts analyst meetings BEFORE the public flip, so the investor day supports a late-September filing rather than an imminent one."
+    },
+    {
+     "claim": "P(filed by deadline) is 15% (Run 1) vs 10% (Run 2) vs 7.5% (Run 3).",
+     "kind": "judgment",
+     "verdict": "Landed at 10%. The Manifold and analyst-day settlements strip Run 1's upside; Reuters' own note that Anthropic may compress the analyst-to-filing gap, plus 3+ months of SEC review and pre-midterm pressure, keeps it above Run 3."
+    },
+    {
+     "claim": "Conditional venue split: 62/35 vs 68/30 vs 73/25 Nasdaq/NYSE.",
+     "kind": "judgment",
+     "verdict": "Could not be settled from evidence — zero primary sources name a venue and the Nasdaq consensus is correlated SEO/broker content. Took 68/30/2: a real lean from mega-cap AI/semi precedent and the Nasdaq Private Market relationship, but not the high end given a near-even large-tech split and recent NYSE marquee wins."
+    }
+   ],
+   "reference_class": "Two nested classes: (a) TIMING — large US issuers ~3.5 months past a confidential DRS whose most recent wire reporting places the public flip AFTER the cutoff date in question; (b) VENUE — US technology/AI IPOs raising >$1B, 2019-2026, sub-weighted toward the AI-infrastructure/semiconductor cohort."
+  }
+ ]
+}
