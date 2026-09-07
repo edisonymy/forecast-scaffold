@@ -1,0 +1,230 @@
+{
+ "record_id": "2026-09-07-263def66",
+ "question": "What will U.S. spot Ethereum ETFs report as their total net flow for September 17, 2026?",
+ "question_id": 45716,
+ "url": "https://www.metaculus.com/questions/45525/",
+ "question_type": "numeric",
+ "forecast_at": "2026-09-07T05:34:18+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.6658,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -78.33333333333333,
+    "25": -15.333333333333334,
+    "50": 20.333333333333332,
+    "75": 74.66666666666667,
+    "90": 151.0
+   },
+   "p_below_lower": 0.015666666666666666,
+   "p_above_upper": 0.023333333333333334
+  },
+  "phase1": {
+   "10": -78.33333333333333,
+   "25": -15.333333333333334,
+   "50": 20.333333333333332,
+   "75": 74.66666666666667,
+   "90": 151.0
+  },
+  "phase2": null,
+  "spread_phase1": 7.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -82.0,
+   "25": -14.0,
+   "50": 15.0,
+   "75": 68.0,
+   "90": 145.0
+  },
+  "p_below_lower": 0.015,
+  "p_above_upper": 0.025
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.8405,
+   "seconds": 236.4,
+   "estimate": {
+    "percentiles": {
+     "10": -85.0,
+     "25": -18.0,
+     "50": 25.0,
+     "75": 80.0,
+     "90": 155.0
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Reference class is single-day total net flow of US spot ETH ETFs across 2026 trading days; median ~+12 $M with heavy dispersion. Conditioning on the current Aug-Sep 2026 inflow regime (12-day positive streak through Sep 1, BlackRock ETHA/ETHB absorbing ~100% of net creations) shifts the center positive, but the regime is visibly cooling: week ending Sep 4 was +215M vs +816M the week before, and Sep 2 already printed -48M. Ten calendar days out, regime persistence is only moderate. The FOMC decision on Sep 16 (25bp hike priced ~51-58%) sits directly in front of the resolution day, so Sep 17 flows read as a reaction print: a hike likely mutes or reverses creations, a hold likely produces a relief inflow day. That widens the spread and pushes meaningful mass negative (P(neg) ~35%) without moving the median far from the recent regime average. Tails are thin relative to the bounds: 2026's largest inflow day was +226M and its largest outflow day found was ~-129M, so both +300 and -200 require a record-setting print, priced at 2% and 1.5%. Evidence is one-sided in the sense that no liquid market prices this quantity at all - the Polymarket daily sign markets carry <$100 volume - so I stayed close to the regime-adjusted base rate.",
+   "sources": [
+    "https://crypto.news/bitcoin-ethereum-etfs-draw-1-2b-in-weekly-inflows/",
+    "https://www.kucoin.com/news/flash/ethereum-spot-etfs-record-10-95m-net-inflow-on-sept-1-marking-12th-consecutive-day-of-inflows",
+    "https://www.kucoin.com/news/flash/ethereum-spot-etf-sees-220-8m-net-inflow-highest-since-2026",
+    "https://gamma-api.polymarket.com/events?slug=ethereum-etf-flows-on-september-4-2026",
+    "https://polymarket.com/event/ethereum-etf-flows-on-september-8-2026",
+    "https://www.datawallet.com/ethereum-etf-tracker",
+    "https://www.coinglass.com/etf/ethereum",
+    "https://www.blockadvisor.ai/blog/ethereum-etf-17-day-record-outflow-streak-2026/",
+    "https://coindcx.com/blog/crypto-news-global/bitcoin-and-ethereum-biggest-etf-outflows-since-2022/",
+    "https://kalshi.com/markets/kxfeddecision/fed-meeting/kxfeddecision-26sep",
+    "https://www.chase.com/personal/investments/learning-and-insights/article/september-2026-rate-hike-now-expected-amid-energy-shocks"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the SoSoValue US spot ETH ETF dashboard 'Total Net Inflow' for the trading day of Sept 17, 2026, as displayed at EOD Sept 18 ET - not off Farside, not off CoinGlass, though a Farside/Block figure is the fallback if SoSoValue is permanently unavailable. SoSoValue and Farside daily totals for the same day differ by ~0.5-1 $M in observed cases (Sept 4 reported as both 26.46 and 25.9; Sept 2 as both -48.1 and -48.2). SoSoValue posts the day's figure the same evening ET and may revise shortly after.\n\nEVENT WINDOW: a single regular US trading session, Sept 17 2026 (Thursday) -> Sept 17 2026 per the criteria; as of Now (2026-09-07T05:20Z) 0% elapsed, 8 trading sessions ahead (Sep 8, 9, 10, 11, 14, 15, 16, 17). Sept 17 is not a US market holiday and is the day before September triple-witching expiry; annulment would require an unscheduled closure.\n\nOBSERVED DAILY VALUES ($M, SoSoValue/Farside):\n- Aug 20 2026: approx +220 (KuCoin flash)\n- Aug 25 2026: +179.8, ETHA +146.44, FETH +25.75, ETHB +7.61 (KuCoin flash)\n- Aug 27 2026: +225.8, described as the strongest single day since Oct 28 2025 (KuCoin flash / question background)\n- Aug 31 2026: +87.68, ETHA +59.94, Grayscale Mini +13.50; 11th straight positive day (SoSoValue via newsBTC, Sep 1)\n- Sep 1 2026: +10.95 (Farside variant +8.6); 12th straight positive day; reported as momentum 'noticeably declined' (KuCoin flash / crypto.news, Sep 2-5)\n- Sep 2 2026: -48.2 (crypto.news, Sep 5) - streak broken\n- Sep 3 2026: +141.4; ETHA +72.07, FETH +65.11, ETHE -6.07 (WorldNL/crypto.news, Sep 5)\n- Sep 4 2026: +25.9 to +26.46 (crypto.news / WorldNL, Sep 5)\n- No data exists yet for Sep 7 onward as of Now.\n\nWEEKLY AGGREGATES: week ending Sep 4 2026 = +215.3 (some reports +218.41), a 73.6% decline from the prior week's +815.7 to +824.0 (Farside via Stocks24/crypto.news/GroveX, Sep 5). Aug 17-28 streak of 9-10 sessions totalled +1.42B, of which BlackRock ETHA was ~1.02B (~72%) (crypto.news). August 2026 was the highest monthly ETH ETF net inflow since August 2025 (cryptobriefing).\n\nBASE RATES AND CLASSES:\n- Over ALL 2026 trading days: days exceeding +200 $M occurred roughly 2 times in well over 100 sessions (~2%); 2026's maximum single-day inflow is approx +225.8 (question background, SoSoValue-derived).\n- Over ALL 2026 trading days, outflow side: largest single-day redemptions located are -129 (Feb 11), -113 (Feb 12), -90.9 (Mar 5), -90.1 (Jun 2, day 16 of the record streak). No 2026 day below -200 was found in any source searched.\n- Over the MAY-JUNE 2026 outflow regime specifically: a record 17 consecutive negative sessions drained ~708 $M, i.e. an average of about -42 $M/day, with the single worst day only -90.1.\n- Over the AUG 17 - SEP 4 2026 inflow regime specifically: 15 sessions, 14 positive, arithmetic average approx +100 $M/day; over the most recent 5 sessions (Aug 31 - Sep 4) the average is approx +43 $M/day with one negative day.\n- Over ALL 2026: cumulative net inflow now approx 13.17-13.19B, AUM approx 15.6-15.92B, ~5.2% of ETH market cap. Feb 2026 was among the heaviest ETF outflow months since launch, coinciding with ETH falling from ~3,000 (end-2025) to below 1,800; July 2026 broke an 8-week outflow streak.\n- SERIES SPREAD, single-session horizon: the sampled 2026 daily prints span roughly -129 to +226; the bulk of ordinary sessions fall between about -50 and +150, with the extremes clustered at regime turns.\n\nSTATUS-QUO OUTCOME: absent a shock, the day prints another figure in the current regime's range - i.e. a modest positive number of the same order as Sep 1 / Sep 4, driven almost entirely by BlackRock ETHA plus staked ETHB, partially offset by ongoing Grayscale ETHE redemptions (ETHE -37 for the week ending Sep 4; Grayscale Mini +17.1 same week).\n\nDECIDING-BODY / MACRO CALENDAR (record-only): FOMC meets Sept 15-16 2026, decision 2:00pm ET Wed Sept 16, i.e. the session immediately before the resolution day. Market-implied odds of a 25bp HIKE to 3.75-4.00% were 51-58% as of Sep 6-7 across Kalshi, Polymarket and CME-derived trackers; the complement is a hold at 3.50-3.75%. Inputs cited for the hawkish case: August payrolls +162k, unemployment 4.1%, inflation above target, hawkish commentary from Chair Kevin Warsh; inputs cited for the dovish case: dovish Sept 3 remarks by Governor Waller, which coincided with the +141.4 flow day and ETH clearing 2,500. August CPI releases Sept 11, six days before the resolution day, and is described as capable of shifting the FOMC pricing sharply.\n\nPRICE CONTEXT: ETH approx 2,458-2,500 in the first week of September, down ~2.8% on the week; BTC approx 79,664-81,000. ETH ETF flows have historically co-moved with same-week ETH price direction.\n\nMARKETS SEARCHED: Polymarket lists daily binary 'Ethereum ETF Flows on <date>?' markets (Positive vs Negative, resolution source Farside 'ETF Flow' tab). These differ from this question on THREE terms that matter: binary sign rather than a numeric level, Farside rather than SoSoValue, and no fine-print revision cutoff. They are also effectively unliquid - the Sept 4 market showed $72.09 total volume and $4.96 liquidity; the Sept 8 market showed $0 volume at a 50/50 default. No Sept 17 market has been created as of Now. Kalshi lists ETH price-level and Fed-decision markets but no ETF-flow market. No bookmaker or Manifold market on ETH ETF flows was located.\n\nSEARCHED FOR BUT COULD NOT FIND: the SoSoValue dashboard itself (HTTP 403), Farside's raw daily table (HTTP 403), and CoinGlass's numeric table (rendered client-side) - so no complete day-by-day 2026 series was retrievable; the daily values above are assembled from news reports and are therefore biased toward large/notable prints. Also not found: any 2026 session below -200 $M or above +226 $M; any announced large block creation, new-fund launch, or in-kind conversion scheduled around Sept 17; any 2026 ETH ETF fee change or delisting. One source (Datawallet) claims a '+727 $M single-day",
+   "reference_class": "Single-day total net flow of U.S. spot Ethereum ETFs across all 2026 trading days, with the Aug-Sep 2026 positive-inflow-regime subset as the conditional refinement"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.8246,
+   "seconds": 279.5,
+   "estimate": {
+    "percentiles": {
+     "10": -80.0,
+     "25": -20.0,
+     "50": 18.0,
+     "75": 72.0,
+     "90": 150.0
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Reference class is all 2026 US spot ETH ETF trading days: the year alternated multi-week regimes (19-day inflow streak early 2026, a 17-day/$1.2B outflow stretch May-June that took net assets from ~$14B to $9.96B, an 8-week outflow streak broken in July, then +$1.85B in August), cumulative flows now ~$13.2B on ~$15.6B assets. That unconditional class implies a daily median only slightly positive (~+10). Conditioning on the current state moves it up: 13 of the last 14 sessions were positive, ETH is ~$2,458 (+63% off its yearly low) and ETHB (iShares staked, launched March 2026) is a structural new bid. But the streak is visibly decaying - Aug 17-28 averaged ~+158/day, August ~+88/day, Sep 1-4 ~+33/day - and Sept 17 is 7 trading sessions out, long enough for regime-flip risk. I land on a median of +18 with P(positive) ~62%. The main variance driver is that Sept 17 is the reaction session to the Sept 16 FOMC, where markets price ~58% odds of a 25bp HIKE (J.P. Morgan expects the hike, Goldman calls it 'very unlikely'); a hike is largely priced so it is a mild negative surprise, while a hold would be the bigger surprise - this fattens both tails rather than moving the center. Evidence is thin on the exact daily distribution (Farside, SoSoValue and CoinGlass all blocked or returned unrendered tables), so I stay close to the reference-class dispersion rather than tightening. Escape mass: >+300 needs a record day ~33% above 2026's max (+226) - plausible on a dovish-hold melt-up or a large single allocation, priced 3%; <-200 needs an outflow more than 2x 2026's worst single day (-90) on a hawkish-hike shock, priced 2%.",
+   "sources": [
+    "https://polymarket.com/predictions/etf",
+    "https://www.datawallet.com/ethereum-etf-tracker",
+    "https://www.newsbtc.com/news/ethereum-etfs-positive-inflows-september-trading-opens/",
+    "https://www.kucoin.com/news/flash/u-s-ethereum-spot-etfs-see-141m-net-inflow-on-sept-3",
+    "https://cryptobriefing.com/eth-etf-record-monthly-inflows-august-2026/",
+    "https://www.blockadvisor.ai/blog/ethereum-etf-17-day-record-outflow-streak-2026/",
+    "https://www.chase.com/personal/investments/learning-and-insights/article/september-2026-rate-hike-now-expected-amid-energy-shocks",
+    "https://www.kucoin.com/news/flash/ethereum-spot-etfs-see-192m-net-inflow-on-august-26-eighth-consecutive-day-of-inflows",
+    "https://en.bloomingbit.io/feed/news/119730",
+    "https://x.com/GroveXchange/status/2096455924068106730"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the SoSoValue 'Total Net Inflow' figure for the single US trading day of 2026-09-17 (dashboard sosovalue.com/assets/etf/us-eth-spot), read as displayed end-of-day 2026-09-18 ET, in $ millions, sign-preserving. It is the aggregate one-day creation/redemption net across ALL listed U.S. spot ETH ETFs (ETHA, ETHB, FETH, ETHE, ETH mini, QETH, others) - NOT a weekly figure, NOT AUM change, NOT a price-driven asset move, and NOT Bitcoin ETF flows (news wires routinely report the two together; the BTC number is typically several times larger). Annulled if SoSoValue publishes no value for that day. NOTE: SoSoValue may revise the figure shortly after publication; the Sept-18-EOD reading governs.\n\nEVENT WINDOW: 2026-09-17 regular US session (09:30-16:00 ET) -> single day; per the criteria the figure is fixed by 2026-09-18 21:00 UTC. As of Now (2026-09-07T05:20Z), 0% of the event window has elapsed; 7 US trading sessions separate the last settled data point from the target day (Sep 8, 9, 10, 11, 14, 15, 16, 17 - Sept 7 is Labor Day, US markets closed, so the most recent settled session is Fri Sept 4).\n\nSTATUS-QUO OUTCOME: the series is in a net-inflow regime. Absent a regime change, Sept 17 prints another day drawn from that regime's distribution.\n\nEVIDENCE (both directions):\n- Sept 1 2026: +10.95M, described as the 12th consecutive positive session (KuCoin flash / SoSoValue data).\n- Sept 2 2026: -48.1M, breaking the streak; same day US spot BTC ETFs took +101M (KuCoin flash).\n- Sept 3 2026: +141.39M; ETHA +72.07M, FETH +65.11M, QETH +5.39M, ETH mini +3.6M, ETHB +1.29M, ETHE -6.07M (Bloomingbit / KuCoin, SoSoValue-sourced). Same day BTC ETFs took +731M, their largest since 2026-01-14.\n- Sept 4 2026: +26.46M (WorldNL, SoSoValue-sourced); BTC +175M same day.\n- Week Mon Aug 31 - Fri Sep 4: ETH ETFs +218.4M total (Farside via Stocks24, corroborated by GroveX). Prior week: +815.7M. ETHA+ETHB contributed +218.2M for the week while ETHE bled -37M.\n- Aug 31 2026: +87.68M, 11th consecutive positive session.\n- Aug 20 2026: ~+220M. Aug 25: +179.8M (ETHA +146.44M, FETH +25.75M). Aug 26: +192M (8th straight positive). Aug 27: +225.8M, reported as the strongest single day since 2025-10-28.\n- Aug 17-28 2026 (9 sessions): +1.42B cumulative, with BlackRock funds absorbing essentially all of it (crypto.news).\n- August 2026 full month: +1.85B, the largest monthly net inflow since August 2025 (CryptoBriefing, SoSoValue data). ~21 trading sessions.\n- Countervailing: 2026 also contained a 17-session outflow stretch beginning 2026-05-09, exceeding $1.2B cumulative, whose deepest single day was -90.14M on June 2; net assets fell to $9.96B from a >$14B February 2026 peak (BlockAdvisor). A separate 8-week outflow streak was broken in July 2026 (Phemex).\n- Structural bid: iShares Staked Ethereum Trust (ETHB) launched March 2026, now the 5th-largest ETH fund with >$980M accumulated; SEC cleared staking structures for ETH ETFs in early 2026 (Benzinga, Datawallet). One source (Datawallet) references a single-day spike of ~$727M 'in March' - this conflicts with multiple wire reports calling Aug 27's +225.8M the largest since Oct 2025, and is unverified; treat as contested.\n- State as of Sept 4-5: ETH ~$2,458-2,508 (up >63% from its 2026 low), BTC ~$79,700-81,000. ETH ETF cumulative net inflow ~$13.17-13.19B, total net assets ~$15.57-15.92B, ~5.2% of ETH market cap.\n- Macro calendar inside the gap: US CPI on 2026-09-11; FOMC two-day meeting 2026-09-15/16 with the decision and statement at 14:00 ET on Sept 16 - i.e. the trading day IMMEDIATELY BEFORE the target day. Market-implied odds of a 25bp HIKE from 3.50-3.75%: ~58% (centralbank.watch/Chase, early Sept). J.P. Morgan Wealth Management expects a hike; Goldman Sachs calls a September hike 'very unlikely' and expects holds through end-2026. Drivers cited: energy costs elevated by the ongoing Iran conflict, inflation above 2%, offset by softer July employment and retail sales.\n- Sentiment catalyst already spent: Fed Governor Waller's dovish remarks drove the Sept 3 risk-on session.\n- Unrelated risk event: a Blockstream Liquid Network security breach saw ~$319M withdrawn on 2026-09-07, pausing the sidechain (ETH-adjacent sentiment only, not an ETH protocol event).\n- Sept 18 2026 is a quad-witching Friday; the target day Sept 17 is the Thursday before.\n\nBASE RATES FOUND, with the class each is computed over:\n- Over ALL 2026 US spot ETH ETF trading sessions (~170): cumulative 2026 net flow is modestly positive, but the year is composed of alternating multi-week regimes (a 19-session inflow streak early 2026, the May-June 17-session outflow stretch, an 8-week outflow streak into July, the Aug 17-Sep 1 12-session inflow streak). Sessions exceeding +200M: roughly 2 of well over 100 (per the question background). Deepest single-session outflow observed in 2026: -90.14M.\n- Over AUGUST 2026 sessions only (inflow regime, ~21 sessions): mean ~+88M/session.\n- Over the Aug 17-28 streak peak (9 sessions): mean ~+158M/session.\n- Over SEPTEMBER 2026 sessions to date (4 sessions: Sep 1-4): mean ~+32.7M, median ~+18.7M, sample SD ~79.\n- Over the 9 individually-known sessions Aug 20 - Sep 4: sample SD ~100 in question units.\n- Streak/persistence conditional: 13 of the last 14 settled sessions were positive; the two 2026 outflow regimes each ran 17+ sessions once begun.\n\nHUMAN MARKETS: Polymarket lists daily binary 'Ethereum ETF Flows on <date>?' (Positive/Negative) contracts. As of 2026-09-07 only Sept 8 and Sept 9 were listed, each with $0 volume and $2 liquidity. No contract for Sept 17 exists. These are sign-only, not magnitude. No Kalshi or bookmaker contract on ETH ETF daily flows was located.\n\nSEARCHED FOR BUT COULD NOT FIND: the full daily flow table - farside.co.uk/eth returned HTTP 403, sosovalue.com/assets/etf/us-eth-spot returned HTTP 403, and coinglass.com/etf/ethereum, coinmarketcap.com/etf/ethereum and askclash both returned unrendered/empty tables. ",
+   "reference_class": "Daily total net flow of U.S. spot Ethereum ETFs across all 2026 trading days (~170 sessions), sub-conditioned on the current August-September 2026 net-inflow regime"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.7397,
+   "seconds": 233.3,
+   "estimate": {
+    "percentiles": {
+     "10": -70.0,
+     "25": -8.0,
+     "50": 18.0,
+     "75": 72.0,
+     "90": 148.0
+    },
+    "p_below_lower": 0.012,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Reference class is 2026 regular-session daily total net flow for US spot ETH ETFs. Unconditional 2026 median sits near zero (H1 was outflow-dominated, incl. a 17-session -$1.2B streak May 9-Jun 4); conditional on the current inflow regime the Sep 1-4 median is ~+$19M, so I center at +18. Key constraint on the left tail: even during the worst 2026 outflow streak no single day breached -$91M (Jun 2 -90.1, Mar 5 -90.9), so a sub -200 day would be roughly 2x anything 2026 has produced. Right tail is longer (+225.8M record on the late-Aug ETH rally), so the distribution is right-skewed. Sep 17 follows the Sep 16 FOMC (CME ~58% for a 25bp hike, ~42% hold), which raises variance both ways but is largely priced; flows cooled 73.6% w/w in the week ending Sep 4 with ETH stalling near $2,450 under $2,550 resistance. Evidence is thin: Farside/SoSoValue/CoinGlass all blocked direct fetch, so dispersion rests on ~15 news-reported days, and I stay close to the base rate accordingly. No usable market anchor: Polymarket's daily ETH-ETF-flow binaries are sign-only, resolve off Farside not SoSoValue, and carried $87 of volume; no Sep 17 market existed; no Kalshi contract found.",
+   "sources": [
+    "https://www.blockadvisor.ai/blog/ethereum-etf-17-day-record-outflow-streak-2026/",
+    "https://crypto.news/ethereum-etf-blackrock-1-42-billion-nine-day-streak/",
+    "https://www.kucoin.com/news/flash/ethereum-spot-etfs-record-48-08m-net-outflow-on-sept-2-first-in-12-days",
+    "https://www.kucoin.com/news/flash/ethereum-spot-etfs-see-192m-net-inflow-on-august-26-eighth-consecutive-day-of-inflows",
+    "https://polymarket.com/event/ethereum-etf-flows-on-september-2-2026",
+    "https://coingape.com/fomc-meeting-sept-2026-date-schedule-expectations-and-how-to-watch/",
+    "https://www.theblock.co/data/etfs/ethereum-etfs/spot-ethereum-etf-total-net-flows"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the SoSoValue 'Total Net Inflow' figure for the single US trading day Sep 17 2026 (https://sosovalue.com/assets/etf/us-eth-spot), as displayed at end of day Sep 18 2026 ET — not Farside, not The Block, not a weekly or cumulative number. SoSoValue may revise intraday-published figures; the Sep 18 EOD snapshot governs. Annulled if no value is published for that day (e.g. market closure). Units: USD millions, signed.\n\nEVENT WINDOW: the regular US session of Sep 17 2026 (09:30-16:00 ET) -> a single day; per the criteria the window opens 2026-09-17 and closes 2026-09-17. As of Now (2026-09-07T05:20Z) 0% elapsed; the window begins in ~10.4 days.\n\nSTATUS QUO OUTCOME: a small net inflow in the low tens of millions — the Sep 1-4 2026 sessions printed +11.0, -48.1, +141.4, +26.5 (median +18.7, mean +32.7) [KuCoin/SoSoValue flashes; WorldNL 2026-09-05].\n\nBASE RATES:\n- Over ALL 2026 regular sessions: median daily net flow near zero. H1 2026 was outflow-dominated (an 8-week outflow streak broken in July 2026; a 17-consecutive-session outflow streak May 9 - Jun 4 2026 totalling >$1.2B, avg ~-$71M/day) while Jul-Aug 2026 was inflow-dominated [blockadvisor.ai; phemex.com].\n- Over 2026 sessions GIVEN the current (post-Aug-rally) inflow regime: Aug 17-28 was 9 consecutive inflow sessions totalling $1.42B, avg ~+$158M/day; the week Aug 17-21 was ~+$697M (avg +139) and Aug 24-28 ~$824M (avg +165); the following week Aug 31-Sep 4 was +$215.3M (avg ~+54), a 73.6% w/w decline [crypto.news 2026; PrimeXBT; Stocks24 2026-09-05].\n- Over 2026 sessions GIVEN an outflow regime: the single worst day of the 17-session May-June streak was -$90.14M (Jun 2); Mar 5 2026 was -$90.94M. No 2026 session below roughly -$91M has been reported [blockadvisor.ai].\n- Tail frequency: sessions above +$200M number roughly 2 out of well over 100 2026 trading days; the 2026 maximum is +$225.8M (Aug 27/28, described as the strongest since Oct 2025) [KuCoin; cryptobriefing].\n\nSERIES SPREAD (same-length windows, 1-day): reported 2026 daily values span roughly -$91M to +$226M. In the current Aug-Sep regime the observed daily prints are -48.1, +11.0, +26.5, +87.7, +141.4, +192, +220, +225.8 (sample SD ~80 USDm).\n\nCONCENTRATION: BlackRock ETHA took $1.02B of the $1.42B Aug 17-28 total (72%); on Sep 3 ETHA +$72.07M and Fidelity FETH +$65.11M against Grayscale ETHE -$6.07M; ETHE ran -$37M for the week ending Sep 4. A single issuer's creation basket can dominate a day's total [crypto.news; WorldNL 2026-09-05].\n\nCALENDAR / CATALYSTS: FOMC convenes Sep 15-16 2026 with the policy statement at 2:00pm ET Wed Sep 16; the target range stands at 3.50%-3.75% after the July hold. CME FedWatch as of early Sep prices ~58.4% for a 25bp HIKE and ~41.6% for a hold; Iran-related energy supply shocks and above-target inflation support the hike case, while softer July employment and retail sales support the hold case [coingape.com; ATFX; Chase]. August CPI releases Sep 11. Sep 18 is a quarterly triple-witching Friday; Sep 17 is the session before it. US markets are open Sep 17 (no holiday).\n\nPRICE CONTEXT (both directions): ETH rallied $1,908 (Aug 18) to $2,525 (Aug 21), then settled to ~$2,452-2,458 by Sep 4, down 2.8% on the week; technicians cite $2,550 as repeatedly-rejected resistance above and $2,438/$2,000 as support levels below. BTC ~ $79,664 after topping $81,000 on Sep 3. Fed Governor Waller's dovish remarks were cited as the Sep 3 risk-on catalyst. Cumulative ETH ETF net inflows ~$13.17-13.19B; total net assets ~$15.6-15.9B, ~5.2% of ETH market cap [Stocks24; WorldNL; cryptorank].\n\nMARKET INSTRUMENTS: Polymarket runs a recurring daily 'Ethereum ETF Flows on [date]?' series, but those contracts are SIGN-ONLY (Positive vs Negative, 50-50 on exactly zero) and resolve off the Farside Investors ETF Flow 'Total' column at https://farside.co.uk/eth/ — a different instrument from this question's SoSoValue figure — with negligible liquidity (the Sep 2 2026 market traded $87 total). No Sep 17 2026 contract existed as of 2026-09-07. No Kalshi or bookmaker contract on ETH ETF daily flows was found.\n\nSEARCHED FOR BUT COULD NOT FIND: a complete machine-readable daily series — farside.co.uk/eth and sosovalue.com both returned HTTP 403, and The Block's and CoinGlass's flow dashboards render values client-side, so no full 2026 daily table was retrievable; the daily values above come from news reports of individual sessions and are therefore biased toward newsworthy extremes. Also not found: any itemised day-by-day breakdown of the May-June outflow streak beyond its peak day; any announced ETH ETF launch, fee change, staking-approval or index-rebalance event dated on or near Sep 17 2026; any historical study of ETH ETF flows on the session after an FOMC decision.",
+   "reference_class": "Daily aggregate net flow of U.S. spot Ethereum ETFs on regular trading days during 2026, as reported by SoSoValue/Farside"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0778,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2255,
+   "seconds": 73.1,
+   "estimate": {
+    "percentiles": {
+     "10": -82.0,
+     "25": -14.0,
+     "50": 15.0,
+     "75": 68.0,
+     "90": 145.0
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.025
+   },
+   "reasoning": "Unconditional 2026 daily median sits near +10 (a year of alternating regimes: early-2026 19-day inflow streak, a 17-session/-1.2B May-June outflow stretch, an 8-week outflow streak broken in July, then +1.85B in August). Conditioning on the current inflow regime lifts that, but the regime is decaying monotonically: Aug 17-28 ~+158/day, August ~+88/day, Aug 31-Sep 4 ~+44/day, and Sep 2 already printed -48. Nine sessions separate the last settled data point from the target day - enough for further mean-reversion - so I center at +15, below all three runs, using the Sep 1-4 median (+18.7) rather than its mean (+32.7) since the series is right-skewed. Sept 17 is the reaction session to the Sept 16 FOMC (~55% priced for a 25bp hike): a hike is largely discounted and mildly negative, a hold is the bigger surprise and risk-on - this fattens both tails without moving the center. Right skew is real (2026 max +226 on the late-August rally, driven ~72% by BlackRock ETHA whose single creation basket can dominate a day); left tail is deeper than Runs 2/3 allowed because Run 1's February prints (-129, -113) survive scrutiny. P(negative) ~ 42%.",
+   "sources": [],
+   "reconciliation": "Four disputes. (1) FACTUAL, deepest 2026 outflow day: Run 1 had -129 (Feb 11) and -113 (Feb 12); Runs 2 and 3 asserted nothing below -91. Unverifiable without web, but Runs 2/3 only ever retrieved daily detail for the May-June streak and never sourced February dailies, while all three independently record February 2026 as among the heaviest outflow months since launch (ETH 3,000 -> sub-1,800). Run 1's claim extends rather than contradicts their evidence, so I adopt -129 as the 2026 left-record and set p10 at -82, deeper than Runs 2/3 and near Run 1. (2) FACTUAL, Datawallet's '+727M March spike': contradicted by multiple wires calling Aug 27's +225.8 the largest single day since Oct 2025; all three runs flagged it unverified. Rejected; it does not extend the right tail. Likewise Run 1's '-165M on August 29 2026' is a Saturday and therefore a garbled date - discarded. (3) FACTUAL, FOMC hike odds 51-58% vs ~58%: same trackers read on different days, reconciled to ~55%, which is variance not direction. (4) JUDGMENT, the center: no evidence breaks this tie, so I take the reading I would bet on - with a right-skewed series the median print (+18.7), not the mean (+32.7), is the correct anchor for a median percentile, and three consecutive steps of regime decay plus nine intervening sessions pull it toward the unconditional +10. Hence +15, outside and below all three runs. Reference class and dispersion basis are carried forward from the runs' shared framing (I agree with them); I widened nothing and tightened nothing, because the underlying sample is news-sourced and extreme-biased. Escape mass: >+300 needs a print 33% above 2026's max - a dovish-hold melt-up or one outsized allocation - at 2.5%; <-200 needs an outflow ~1.55x the reconciled 2026 worst (-129) on a hawkish-hike shock, at 1.5%. Market check on my own: no liquid contract matches this instrument; Polymarket's daily binaries are sign-only, Farside-sourced, and effectively zero-volume, so no anchor and no blend.",
+   "disagreements": [
+    {
+     "claim": "Deepest 2026 single-day outflow is about -129 (Feb 11) rather than about -91 (Jun 2 / Mar 5)",
+     "kind": "factual",
+     "verdict": "Not directly verifiable without web access, but resolved in favor of -129: Runs 2 and 3 never retrieved February daily figures while all three agree February 2026 was a top outflow month, so their -91 ceiling reflects a coverage gap, not a contradiction. Left tail set deeper accordingly."
+    },
+    {
+     "claim": "A single-day inflow of about +727M occurred in March 2026 (Datawallet)",
+     "kind": "factual",
+     "verdict": "Rejected - irreconcilable with multiple independent wires identifying Aug 27's +225.8M as the largest single day since Oct 2025. All three runs flagged it unverified. Right tail not extended."
+    },
+    {
+     "claim": "One source reports a -165M outflow on 'August 29 2026'",
+     "kind": "factual",
+     "verdict": "Rejected - Aug 29 2026 is a Saturday, so the date is garbled and the figure cannot be attached to a session."
+    },
+    {
+     "claim": "Market-implied probability of a 25bp hike at the Sept 16 FOMC is 51-58% vs ~58%",
+     "kind": "factual",
+     "verdict": "Reconciled to ~55% - same trackers sampled on different days. Affects tail width, not the center, since a hike is largely priced and a hold is the larger surprise."
+    },
+    {
+     "claim": "Median should be +25 (Sep 1-4 mean) vs +18 (Sep 1-4 median)",
+     "kind": "judgment",
+     "verdict": "No evidence breaks the tie. Taken as the median anchor because the series is right-skewed, then pulled further down for three documented steps of regime decay and nine intervening sessions of mean-reversion risk. Final +15, below all three runs."
+    },
+    {
+     "claim": "Whether any human market anchors this quantity",
+     "kind": "factual",
+     "verdict": "Settled and unanimous across runs: none. Polymarket's daily ETH-ETF-flow binaries differ on three terms that matter (sign-only vs numeric level, Farside vs SoSoValue, no revision cutoff) and carried $0-$87 volume; no Sept 17 contract existed; no Kalshi or bookmaker contract found. No blend applied."
+    }
+   ],
+   "reference_class": "Total daily net flow of US spot Ethereum ETFs across all 2026 regular trading sessions (~170), conditioned on the Aug-Sep 2026 inflow regime"
+  }
+ ]
+}
