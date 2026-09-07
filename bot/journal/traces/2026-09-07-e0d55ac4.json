@@ -1,0 +1,220 @@
+{
+ "record_id": "2026-09-07-e0d55ac4",
+ "question": "What will Bitcoin dominance be on September 17, 2026?",
+ "question_id": 45714,
+ "url": "https://www.metaculus.com/questions/45523/",
+ "question_type": "discrete",
+ "forecast_at": "2026-09-07T04:34:04+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.3859,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 58.300000000000004,
+    "25": 58.78666666666667,
+    "50": 59.23333333333333,
+    "75": 59.71666666666666,
+    "90": 60.17666666666667
+   },
+   "p_below_lower": 0.004,
+   "p_above_upper": 0.006500000000000001
+  },
+  "phase1": {
+   "10": 58.300000000000004,
+   "25": 58.78666666666667,
+   "50": 59.23333333333333,
+   "75": 59.71666666666666,
+   "90": 60.17666666666667
+  },
+  "phase2": null,
+  "spread_phase1": 0.15,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 58.15,
+   "25": 58.73,
+   "50": 59.15,
+   "75": 59.53,
+   "90": 59.95
+  },
+  "p_above_upper": 0.004
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0366,
+   "seconds": 351.0,
+   "estimate": {
+    "percentiles": {
+     "10": 58.2,
+     "25": 58.73,
+     "50": 59.15,
+     "75": 59.55,
+     "90": 59.93
+    }
+   },
+   "reasoning": "Pulled the actual CoinMarketCap daily dominance series via CMC's chart API: 2026-09-07 (intraday) 59.16, 09-06 59.29, 09-05 59.64, 09-04 59.86 (local peak), 30-day mean 59.23, trailing-12m range 56.69 (2025-09-13) to 60.63 (2026-05-05). Reference class = the distribution of 10-day-ahead readings given today's level over the past 12 months, which has essentially zero drift (mean +0.05pp per 10 days), so the status-quo anchor is the current ~59.2 rather than any trend extrapolation. Two-sided evidence: multi-week momentum is UP (57.66 on 2026-07-01 to 59.86 on 09-04, +2.2pp) and a hawkish repricing after the strong August NFP is BTC-defensive; against that, the last three days have fallen 0.70pp off a rejection at 60, alts outside the top 10 are up >10% month-to-date and ETH is showing relative strength (AMBCrypto, tv-hub, Sept 2026). Those roughly cancel, so I sit a hair below spot at 59.15. Dispersion, not the center, is the real work here: 10-day SD is only ~0.56pp, but the tail is asymmetric - the June 2026 episode delivered -2.63pp in ten days - and the 2026-09-16 FOMC falls one day before the reading, so I widened to a 1.73pp 10-90 band with a slightly heavier left side. Bounds at 53.95/64.05 are ~5pp away; nothing short of a CMC methodology redefinition reaches them in ten days, so no escape mass declared.",
+   "sources": [
+    "https://api.coinmarketcap.com/data-api/v3/global-metrics/quotes/historical (CMC global-metrics daily btcDominance series, 2025-09-04 to 2026-09-07)",
+    "https://coinmarketcap.com/charts/bitcoin-dominance/",
+    "https://api.coingecko.com/api/v3/global",
+    "https://www.coingecko.com/en/charts/bitcoin-dominance",
+    "https://www.tv-hub.org/guide/bitcoin-dominance",
+    "https://www.dostor.org/5692905",
+    "https://www.diariobitcoin.com/analisis/bitcoin-cae-bajo-usd-80-000-tras-reporte-de-empleo-y-tensiona-el-mercado/",
+    "https://ambcrypto.com/is-the-2026-altcoin-season-here-this-hurdle-could-decide-it/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the CoinMarketCap Bitcoin Dominance chart's daily figure for 2026-09-17 UTC - NOT TradingView BTC.D, NOT CoinGecko's web-page dominance figure. This matters: TradingView's BTC.D printed ~64.4% in early Sept 2026 and CoinGecko's public chart page showed 57.53%, while CMC and the CoinGecko /global API both showed ~59.2% - the providers differ by several points on coin inclusion and stablecoin handling. Fine print: provider differences do not affect resolution; annulled only if CMC permanently discontinues the metric.\n\nEVENT WINDOW: per the criteria this is a single-day point reading on 2026-09-17 (UTC), not a max/min or average over any window; as of 2026-09-07T04:20Z the reading has not occurred - 0% elapsed, 10 days remain.\n\nSTATUS-QUO OUTCOME: the metric prints on 2026-09-17 within a few tenths of a point of where it stands now, with no methodology change.\n\nEVIDENCE (CMC chart API, daily btcDominance, retrieved 2026-09-07):\n- 2026-09-07 (intraday, 04:20Z) 59.16; 09-06 59.29; 09-05 59.64; 09-04 59.86 (local high); 09-03 59.58; 09-02 59.62; 09-01 59.71.\n- Trailing-30-day mean 59.23; trailing-10-day mean 59.58; 2026-08-08 reading 59.03; 2026-08-17 reading 58.39 (the month's local low).\n- Trailing-12-month extremes: low 56.69 on 2025-09-13, high 60.63 on 2026-05-05.\n- Path over 2026: 57.9 (Mar 1) -> 58.0 (Apr 2) -> 60.6 (May 5) -> 57.47 (Jun 4, sharp trough) -> 57.66 (Jul 1) -> 58.80 (Jul 31) -> 59.86 (Sep 4).\n- 2025 same-calendar leg for reference: 2025-09-07 57.80 -> 2025-09-17 57.43 (that year's mid-September trough was 56.69 on 09-13, followed by recovery to 58.4 by 09-30).\n- Total crypto market cap ~$2.70-2.71T; BTC ~$1.60T at ~$79,800; ETH ~11.2% share at ~$2,494 (Dostor, 2026-09-06; CoinGecko /global API, 2026-09-07).\n- BTC fell below $80,000 on 2026-09-05 after a stronger-than-expected August US Non-Farm Payrolls print raised expectations of a more restrictive Fed; spot-BTC-ETF inflows fell 76% in a single day; 30-day BTC return +24.4%, 52-week -27.9% (DiarioBitcoin, 2026-09-05).\n- FOMC decision scheduled 2026-09-16 - one day before the resolution reading (Sitios Argentina, 2026-09-06).\n- Altcoins outside the top 10 have added >10% in aggregate market cap since the month's start; commentary frames dominance as having been rejected at the 60% level; Altcoin Season Index reported around 55, i.e. below the conventional altseason threshold; commentators say a sustained hold below ~55% dominance would be needed to confirm broad rotation (AMBCrypto / bitcoinfoundation.org / tv-hub, Sept 2026).\n- Counter-direction: risk-off crypto episodes historically raise dominance because altcoin betas exceed BTC's; the current macro impulse (hawkish repricing) is of that type, while the ETF-flow collapse is BTC-specific weakness pulling the other way.\n\nBASE RATES (computed from the CMC daily series above):\n- Over ALL 10-day windows in the trailing 12 months (36 non-overlapping): mean change +0.05pp, SD 0.56pp, 10th/90th percentile -0.80/+0.76pp, most extreme fall -2.63pp (2026-05-25 -> 06-04), most extreme rise +1.40pp (2025-10-01 -> 10-11). The distribution is close to zero-mean with a fatter left than right tail.\n- Over 10-day windows CONDITIONAL on the prior 3 days having fallen >=0.5pp (today's condition): the two clearest 12-month analogues are 2025-09-04 (fell to a 09-13 trough then recovered to 57.43 by 09-17, net -0.37 over the 10 days) and 2026-05-27 (continued down to 57.47 by 06-04 before bouncing to 58.08 by 06-10, net large negative). Small n; both directions occur.\n- Level base rates: trailing-12-month median daily reading ~58.7; trailing-3-month ~58.6; trailing-30-day ~59.2. Share of trailing-12-month days spent above 59.0: roughly one third, concentrated in Nov 2025, Apr-May 2026 and late Aug-Sep 2026.\n- Event-in-window check: in the trailing 12 months, 10-day windows whose endpoint moved the level by more than 1.5pp in either direction: 1 of 36 non-overlapping windows (the June 2026 episode), all on the downside.\n\nHUMAN MARKETS: no prediction market prices CMC Bitcoin dominance on a September-2026 horizon. The nearest contracts are Polymarket 'Bitcoin Dominance hit 70% before 2027' (~$29k volume, closes 2027-01-01) and three Manifold 70%/80%-by-2030/2040 contracts (<$1k each); none matches this question's threshold, deadline, or resolution source, and the Polymarket contract most likely references a TradingView-style series that reads several points higher than CMC's.\n\nSEARCHED FOR BUT COULD NOT FIND: any CMC statement on changes to the dominance methodology or coin-inclusion rules for September 2026; any scheduled CMC index/listing revision in the window; a dedicated prediction market on CMC dominance; an explicit dominance forecast from a named desk with a September-2026 target.",
+   "reference_class": "CMC daily Bitcoin-dominance readings 10 days ahead of any given day, over the trailing 12 months (2025-09-04 to 2026-09-07), i.e. the empirical 10-day-change distribution applied to today's level"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.5157,
+   "seconds": 175.7,
+   "estimate": {
+    "percentiles": {
+     "10": 58.4,
+     "25": 58.85,
+     "50": 59.3,
+     "75": 59.8,
+     "90": 60.25
+    },
+    "p_above_upper": 0.005
+   },
+   "reasoning": "Status quo dominates a 10-day horizon: CMC reads ~59.2-59.3% as of Sep 7 and the median 10-day change in this series is ~0. I anchor on persistence of the current level, then apply two small adjustments. Down-tilt: dominance was rejected at 60% and has slid ~0.85pp since Aug 25, with ETH ETF inflows (~$697M weekly) and alts-ex-top-10 up ~10% MTD. Up-tilt offsetting it: Altcoin Season Index in the low-30s (Bitcoin season), strong BTC ETF flows, and the standard crash asymmetry where a risk-off leg lifts dominance faster than a rally lowers it - relevant with FOMC on Sep 16, one day before measurement, after a hot payrolls print. Net median stays at 59.3. Provider divergence is the key hazard, not the direction: CoinGecko reads 57.53% the same day, so anyone anchoring off the wrong chart is ~1.7pp off; I use CMC only. No prediction market prices this contract - Polymarket's 70%-before-2027 (0.14) and the Manifold 70%/80% markets differ on threshold, deadline and source, so they inform tail shape at most. Escape past 64.05 requires a ~4.75pp jump in 10 days (~6.5 SD), plausible only via a CMC methodology change (e.g. excluding stablecoins) or a mass stablecoin/alt collapse - priced at 0.5%; no comparable downside mechanism on this horizon.",
+   "sources": [
+    "https://coinmarketcap.com/charts/bitcoin-dominance/",
+    "https://www.coingecko.com/en/charts/bitcoin-dominance",
+    "https://www.tv-hub.org/guide/bitcoin-dominance",
+    "https://finance.yahoo.com/markets/crypto/articles/altcoin-season-starting-september-two-154722584.html",
+    "https://polymarket.com/market/will-bitcoin-dominance-hit-70-before-2027",
+    "https://www.dostor.org/5692905",
+    "https://www.diariobitcoin.com/analisis/bitcoin-cae-bajo-usd-80-000-tras-reporte-de-empleo-y-tensiona-el-mercado/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the CoinMarketCap Bitcoin Dominance chart (coinmarketcap.com/charts/bitcoin-dominance) daily figure for 2026-09-17 UTC - NOT CoinGecko, NOT TradingView BTC.D. Provider spread is material, not cosmetic: on 2026-09-07 CMC's own page returned 59.1% while CoinGecko's dominance page returned 57.53% (CoinGecko also shows ETH 10.94%, stablecoins 10.39%). Third-party pages quoting 56-57.5% for 'BTC dominance' in Jul-Sep 2026 are generally on the CoinGecko/TradingView basis.\n\nEVENT WINDOW: measurement is a single dated reading, 2026-09-17, per the criteria; from Now (2026-09-07T04:20Z) that is 10 days ahead, 0% of the forecast horizon elapsed. Forecasting close does not define the window.\n\nSTATUS-QUO OUTCOME: the CMC reading stays near its current level of roughly 59.1-59.3%.\n\nLEVELS AND RECENT PATH (CMC basis unless noted):\n- 2026-09-07: CMC chart page returns 59.1% (fetched direct from coinmarketcap.com/charts/bitcoin-dominance).\n- 2026-09-06: 59.2%, total crypto mcap $2.71T, BTC mcap $1.60T at $79,835 (+2.25% d/d), ETH 11.2% at $2,493.85 (Dostor, 2026-09-06).\n- 2026-09-05: dominance ~59.6% with BTC at ~$79,762 after breaking below $80,000 (DiarioBitcoin, 2026-09-05).\n- Question background snapshots: ~1 day prior 59.9%, ~1 week prior 59.6%, ~1 month prior 58.8%.\n- 2026-08-25: weekly close 60.15%, described as clearing a descending trendline from the June 2025 high with next resistance at 60.50% (Yahoo Finance/Beincrypto syndication, 2026-08-25). A separate BeInCrypto piece cites a 60.66% weekly close breaking out of an Aug-2025-to-Apr-2026 range.\n- Trailing-12-month CMC band: low 56.7% (2025-09-13), high 60.6% (2026-05-04). Prior cycle peak ~65-66% in June 2025.\n\nBASE RATES / DISPERSION:\n- Over all trailing-12-month CMC readings: level confined to 56.7-60.6 (3.9pp band); median 10-day change in the series is approximately 0.0pp.\n- Conditional on the last ~6 weeks (post-June-2025-downtrend, 58-60.5 regime): observed 10-13 day moves include -0.85pp (Aug 25 60.15 -> Sep 7 ~59.3), -0.3pp over 6 days (Sep 1 59.6 -> Sep 7 59.3), +0.5pp over 31 days (Aug 7 58.8 -> Sep 7 59.3).\n- Mechanical decomposition: d(ln D) = 0.41*r_BTC - 0.30*r_alt at the current 59% BTC / ~30% non-stable-alt / ~11% stablecoin split; with 2.5%/3.5% daily vols and ~0.9 correlation this implies ~0.28pp/day, ~0.9pp over 10 days undamped.\n- Conditional on a 12-month window: annualising the daily figure would give a far wider band than the realised 3.9pp, i.e. the series exhibits mean reversion at horizons beyond a few weeks.\n\nEVIDENCE POINTING TOWARD LOWER DOMINANCE:\n- ETH gained >20% on the latest weekly move; US spot ETH ETFs took ~$189M in one day and ~$697M weekly.\n- Total market cap of altcoins outside the top 10 up >10% since the start of September.\n- ETH/BTC ratio rose from the June low 0.02525 to a peak near 0.0334 (7-month high), ~+32%; ratio near 0.0313 as of late August.\n- Zcash +15.69% on 2026-09-06; Solana +2.62%; several analysts flag rotation into ETH/SOL/XRP.\n- Dominance was rejected at the 60% level and has opened September lower.\n\nEVIDENCE POINTING TOWARD HIGHER DOMINANCE:\n- Altcoin Season Index reads in the low-to-mid 30s (33-39 reported Aug-Sep 2026); 75 is the altseason threshold.\n- Spot BTC ETF inflows resumed: BlackRock IBIT ~$454M on 2026-09-03 and ~$117M on 2026-09-04.\n- BTC recovered from ~$58,000 in late June to ~$80,000, a BTC-led move rather than a broad alt rally.\n- ETH ETFs saw outflows in most months of 2026 (worst ~-$541M in May); summer inflows largely skipped ETH.\n- BTC dominance has not been below 50% since September 2023; ~11% of total market cap is stablecoins, whose zero volatility damps downside moves in the ratio.\n\nCALENDAR / CATALYSTS INSIDE THE WINDOW:\n- FOMC decision scheduled 2026-09-16, one day before the measurement date. The August non-farm payrolls print came in stronger than expected on 2026-09-05, raising expectations of a more restrictive Fed; spot BTC ETF inflows fell 76% in a single day on that news (StoneX, via DiarioBitcoin).\n- CoinMarketCap's chart updates continuously; no scheduled methodology change was found.\n\nHUMAN MARKETS: no prediction-market contract was found that matches this question's threshold, deadline or resolution source. The closest are Polymarket 'Will Bitcoin Dominance hit 70% before 2027?' (closes 2027-01-01, ~29k volume) and three low-volume Manifold markets on 70%/80% thresholds by 2029/2039. All differ on threshold (70/80 vs a dated point value), horizon (months-to-years vs 10 days) and named source. No Kalshi contract on dominance was found.\n\nSEARCHED FOR BUT NOT FOUND: a downloadable CMC daily dominance time series to compute the empirical 10-day-change distribution directly (values above are reconstructed from dated snapshots); any Sep-2026 analyst forecast of a specific dominance level for mid-September; confirmation of whether CMC's daily chart figure is a UTC close or a snapshot; the BeInCrypto 60.66% article body (HTTP 403). No prompt-injection or manipulation attempts were observed in the fetched pages.",
+   "reference_class": "CoinMarketCap daily Bitcoin-dominance readings 10 days after an arbitrary date, over the trailing 12 months (Sep 2025-Sep 2026): level band 56.7-60.6, median 10-day change ~0.0pp, 10-90 spread of 10-day changes ~+/-0.9pp"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.5604,
+   "seconds": 202.8,
+   "estimate": {
+    "percentiles": {
+     "10": 58.3,
+     "25": 58.78,
+     "50": 59.25,
+     "75": 59.8,
+     "90": 60.35
+    },
+    "p_below_lower": 0.004,
+    "p_above_upper": 0.008
+   },
+   "reasoning": "Reference class first: 10-day-ahead readings of CMC BTC dominance conditional on the starting level are near-random-walk with strong persistence, so the class median is the current level, ~59.2. Fetched CMC directly (footer 59.1%), cross-checked tv-hub (59.2% on 2026-09-06) and the Dostor report (59.2%, $2.71T total cap). Horizon is only ~10.0 days from 2026-09-07T04:20Z, and this metric moves in tenths of a point per week: realized 7-day move -0.4pp, 30-day +0.4pp, trailing-year span just 3.9pp (56.7 to 60.6). Two-sided evidence: BTC led the 30-day +24% bounce and dominance rose over the month (up-side), but the last week went the other way and ETH/ZEC/AAVE have had outperformance bursts with the Altcoin Season Index climbing off its lows (down-side); the FOMC on 2026-09-16 lands one day before the reading, adding vol without a clear sign. I centered on the status quo with a whisper of right skew, since a risk-off shock (ETF inflows already collapsed 76% on 2026-09-05, BTC under $80k) lifts dominance faster than a relief rally cuts it. No human market matches the resolution terms - Polymarket's 70%-before-2027 book (0.14, $29k) differs on threshold, deadline and likely the dominance definition itself, so I used it as evidence, not an anchor. Escape mass is tiny and mechanism-specific: reaching 64.05 in 10 days essentially requires a CMC methodology change (e.g. excluding stablecoins from total cap, which is roughly where TradingView's BTC.D already sits); reaching below 53.95 requires an altseason 5pp faster than anything the current regime supports.",
+   "sources": [
+    "https://coinmarketcap.com/charts/bitcoin-dominance/",
+    "https://www.tv-hub.org/guide/bitcoin-dominance",
+    "https://www.coingecko.com/en/charts/bitcoin-dominance",
+    "https://www.tradingview.com/symbols/BTC.D/",
+    "https://www.dostor.org/5692905",
+    "https://www.diariobitcoin.com/analisis/bitcoin-cae-bajo-usd-80-000-tras-reporte-de-empleo-y-tensiona-el-mercado/",
+    "https://polymarket.com/market/will-bitcoin-dominance-hit-70-before-2027",
+    "https://bitcoinfoundation.org/news/altcoins/understanding-altcoin-season-in-2026-what-are-altcoin-market-cycles/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the CoinMarketCap Bitcoin Dominance chart's daily figure for 2026-09-17 (UTC), NOT TradingView's BTC.D and NOT CoinGecko. Provider spread is large, not cosmetic: on 2026-09-07 CoinGecko's chart read 57.53% and TradingView's BTC.D has traded in the mid-60s (weekly close cited at 60.66% by one outlet, another citing 64.38%), while CMC read ~59.1-59.2%. Any figure quoted in commentary must be traced to its provider before use.\n\nEVENT WINDOW: The criteria define a single point observation on 2026-09-17, not a multi-day window; the interval from Now (2026-09-07T04:20:24Z) to the reading is ~10.0 days, of which 0% has elapsed as of Now. Scheduled resolution timestamp is 2026-09-18T00:00:00Z.\n\nCURRENT LEVEL (multiple reads, all retrieved 2026-09-06/07):\n- CoinMarketCap site footer: BTC dominance 59.1% (fetched 2026-09-07).\n- tv-hub.org BTC.D guide: reports the figure at 59.2% as of 2026-09-06 UTC.\n- Dostor (2026-09-06): BTC share 59.2%, BTC cap $1.60T, total crypto cap $2.71T, 24h volume $59.80B; ETH share 11.2% at $2,493.85; BTC $79,835 (+2.25%), SOL +2.62%, ZEC +15.69%.\n- DiarioBitcoin (2026-09-05): BTC fell below $80,000 to ~$79,761 (-1.61% 24h), dominance cited ~59.6% (TradingView-sourced); spot BTC ETF inflows collapsed 76% in one day per StoneX; BTC 30-day return +24.41%, 52-week return -27.86%; day's volume $18.01B, 38.94% below the 30-day average.\n- Background snapshots attributed to the CMC chart: yesterday 59.9%, last week 59.6%, last month 58.8%. Note these disagree with the news reads by up to ~0.7pp, indicating meaningful intraday/snapshot noise in what gets quoted.\n\nSTATUS-QUO OUTCOME: The reading on 2026-09-17 equals roughly today's level, ~59.1-59.3, unchanged.\n\nBASE RATES AND DISPERSION (class stated for each):\n- Over the trailing 12 months, CMC BTC dominance spanned 56.7% (2025-09-13 low) to 60.6% (2026-05-04 high) - a 3.9pp total annual span. Class: all daily readings over the last year.\n- Over 10-day windows specifically (class: recent same-length windows in this regime, from the observed series): the last 7 days moved about -0.4pp (59.6 -> 59.2); the last 30 days moved about +0.4pp (58.8 -> 59.2); the last 6 days moved about -0.4pp (59.6 on 2026-08-31 -> 59.2). TradingView BTC.D relative changes read 1-week -0.66%, 1-month +0.54%, 6-month +0.87%, 1-year +1.74% (retrieved 2026-09-07), which at its index level converts to roughly -0.4pp / +0.35pp.\n- Conditional class, drawdown regimes: BTC's 52-week return is -27.86% while its 30-day return is +24.41%, i.e. a sharp bounce inside a longer bear. Historical dominance behaviour differs sharply between these two conditions - it grinds up through alt-heavier drawdowns and falls during alt-led bounces - so an unconditional annual rate understates how much the current mixed regime can pull either way.\n- Historical altseason thresholds (class: past cycle turns): the January 2018 altseason began near 38% BTC.D and the 2021 run began below 45%; BTC.D has not printed below 50% since September 2023, the longest such stretch since 2017.\n\nEVIDENCE POINTING TOWARD HIGHER DOMINANCE:\n- BTC led the last 30 days (+24.41%) and CMC dominance rose over that month (58.8 -> ~59.2).\n- Altcoin Season Index sits well below the 75 altseason threshold: readings of 37 (early September 2026), below 40 (August 2026), mid-40s in a late-August read, 47 (2026-03-17). Class: the index's own 0-100 scale over the top 100 alts on 90-day lookback.\n- One outlet (BeInCrypto) framed a weekly BTC.D close at 60.66% as breaking out of an accumulation range that held from August 2025 to April 2026.\n- Cited structural bid: $56.9B of cumulative spot BTC ETF inflows since January 2024.\n\nEVIDENCE POINTING TOWARD LOWER DOMINANCE:\n- ETH outpaced BTC over the seven days to 2026-08-25 (+28.6% vs +22.6%); one framing calls this Phase 2 of the cycle.\n- Isolated large alt moves in the last week: ZEC +15.69% in a day (2026-09-06), with AAVE, PEPE and ZEC cited up 60-75% over a recent stretch.\n- The Altcoin Season Index rose from 33 to the mid-40s in a single week in late August 2026.\n- Sitios Argentina (2026-09-06) reports analysts watching for an altseason signal via falling dominance plus ETH strength; Dragonfly's managing partner publicly expects dominance to decline through end-2026.\n\nCALENDAR INSIDE THE WINDOW:\n- FOMC meeting scheduled 2026-09-16, one day before the resolution reading. The August non-farm payrolls print came in stronger than expected on 2026-09-05, which markets read as reducing the odds of a rate cut.\n- CoinMarketCap's dominance chart updates continuously; no publication-lag risk for a 2026-09-17 daily value.\n\nHUMAN PREDICTION MARKETS - what exists and how it differs: no contract was found anywhere (Polymarket, Kalshi, Manifold, bookmakers) on the level of Bitcoin dominance on a specific date, and none resolving off CoinMarketCap. The four candidates located are all barrier contracts at 70% or 80% with deadlines from 2027 to 2039 - different threshold, different deadline, different question shape, and their implied dominance definition is unstated and plausibly the TradingView-style series that currently sits several points above the CMC figure. Volumes range from ~$460 to ~$29,400.\n\nSEARCHED FOR BUT COULD NOT FIND: a downloadable daily CMC dominance series to compute the empirical 10-day change distribution directly (the chart loads dynamically and returned no values on fetch); any dated-level dominance prediction market; any CoinMarketCap announcement about changing its total-market-cap or dominance methodology; explicit consensus positioning into the 2026-09-16 FOMC for crypto specifically.",
+   "reference_class": "10-day-ahead readings of CoinMarketCap Bitcoin dominance conditional on the starting level, over the trailing ~24 months of the series (the near-random-walk persistence class)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1613,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2372,
+   "seconds": 83.3,
+   "estimate": {
+    "percentiles": {
+     "10": 58.15,
+     "25": 58.73,
+     "50": 59.15,
+     "75": 59.53,
+     "90": 59.95
+    },
+    "p_above_upper": 0.004
+   },
+   "reasoning": "Status quo dominates a 10-day horizon on a metric whose entire trailing-year range is 3.9pp (56.7-60.6) and whose 10-day drift is measurably zero. All three runs read CMC at 59.1-59.3 today; Run 1's direct chart-API pull is the authoritative series. Center 59.15, a hair under spot: the level sits above the 3-month (~58.6) and 12-month (~58.7) medians, dominance was rejected at 60 and has given back 0.70pp in three days, offset by up multi-week momentum (57.66 Jul 1 -> 59.86 Sep 4) and an Altcoin Season Index far below threshold. I break the runs' skew disagreement toward a slightly heavier LEFT tail: in this ETF-driven regime selloffs have been BTC-led and dominance-negative (June 2026: -2.63pp in ten days as BTC fell to $58k; and this week, BTC under $80k with dominance falling), so the classic risk-off-lifts-dominance asymmetry does not describe the current tape. FOMC on 2026-09-16 adds variance one day before the reading without a clear sign. No human market matches the contract - the closest books are 70%/80% barrier contracts on a likely TradingView-basis series, evidence only.",
+   "sources": [],
+   "reconciliation": "No web access on this run; reconciled on the dossiers. FACTUAL: (1) current level - Run 1's CMC chart-API series (09-07 59.16, 09-06 59.29, 09-04 59.86 local peak) and Runs 2/3's CMC footer read (59.1%) agree within noise; the background's 'yesterday 59.9%' is a lagged label matching Run 1's 09-04 print, not a conflicting read. Anchor 59.2. (2) dispersion - Run 1 measured 10-day changes empirically (SD 0.56pp, 10th/90th -0.80/+0.76); Run 2 derived ~0.9pp SD from a vol decomposition assuming rho=0.9 BTC/alt. The measured series governs because it is computed on the resolution instrument itself and short-horizon BTC/alt correlation exceeds 0.9, which is why the model overstates; I widened the empirical 1.56pp to 1.8pp for the in-window FOMC and the observed fat left tail rather than adopting either run's figure wholesale. (3) markets - all three runs independently found no contract on a dated CMC dominance level; the four barrier contracts differ on threshold, deadline, source, and probably the dominance definition. Confirmed as no-anchor. JUDGMENT: skew direction was the only real split and no run cited evidence for the textbook right-tilt beyond the general principle, while the dossiers contain two concrete counterexamples in the current regime (June 2026's -2.63pp and this week's -0.70pp, both dominance falling as BTC fell). I take Run 1's left tilt, slightly less pronounced. UNSETTLED: whether CMC's daily figure is a UTC close or a snapshot (Run 2 flagged this and could not confirm); it adds a few tenths of timing noise, which is inside the stated dispersion rather than shifting the center.",
+   "disagreements": [
+    {
+     "claim": "Current CMC dominance level (Run 1 chart-API series ~59.16-59.29 vs Runs 2/3 footer 59.1 vs background 'yesterday 59.9')",
+     "kind": "factual",
+     "verdict": "Settled at ~59.2. Run 1's dated series is the most granular read; the background's 59.9 corresponds to the 09-04 local peak, i.e. a lagged snapshot label, not a contradictory current value."
+    },
+    {
+     "claim": "10-day dispersion: empirical 1.56pp width (Run 1) vs vol-decomposition ~2.3pp (Run 2)",
+     "kind": "factual",
+     "verdict": "Empirical wins - it is measured on the resolution instrument; the decomposition's rho=0.9 assumption understates realized short-horizon BTC/alt correlation and therefore overstates the ratio's vol. Adopted 1.8pp after widening for the FOMC and the observed fat left tail."
+    },
+    {
+     "claim": "Whether any prediction market matches this contract",
+     "kind": "factual",
+     "verdict": "Confirmed none. All four candidates are 70%/80% barrier contracts with 2027-2039 deadlines and unstated (likely TradingView-basis) definitions; used as tail-shape evidence only, not blended."
+    },
+    {
+     "claim": "Tail skew: right (Runs 2/3, risk-off lifts dominance) vs left (Run 1, empirical tail is on the downside)",
+     "kind": "judgment",
+     "verdict": "Broken toward left. The dossiers' own conditional evidence - June 2026's -2.63pp during a BTC-led drawdown, and 09-04 to 09-07's -0.70pp as BTC broke $80k with ETF inflows down 76% - shows this regime's selloffs are dominance-negative, contradicting the general principle Runs 2/3 invoked."
+    },
+    {
+     "claim": "Whether CMC's daily figure is a UTC close or an intraday snapshot",
+     "kind": "factual",
+     "verdict": "Could not be settled from the dossiers (Run 2 searched and failed). Left as timing noise of a few tenths, absorbed by the stated dispersion; it does not favour either direction."
+    },
+    {
+     "claim": "Size and side of escape mass past the open bounds",
+     "kind": "judgment",
+     "verdict": "Only the upper bound has a named mechanism (a CMC redefinition excluding stablecoins, roughly TradingView's level). No run found any announcement of one; priced at 0.004. No downside mechanism reaches 53.95 in 10 days (~9 SD), so p_below_lower omitted rather than Run 3's token 0.004."
+    }
+   ],
+   "reference_class": "10-day-ahead readings of CMC BTC dominance conditional on the starting level, trailing 12 months (near-random-walk, mean change +0.05pp, SD 0.56pp)"
+  }
+ ]
+}
