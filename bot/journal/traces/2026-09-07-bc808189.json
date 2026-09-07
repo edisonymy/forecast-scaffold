@@ -1,0 +1,234 @@
+{
+ "record_id": "2026-09-07-bc808189",
+ "question": "What will the top score on the ARC Prize 2026 – ARC-AGI-3 Kaggle public leaderboard be on September 17, 2026?",
+ "question_id": 45723,
+ "url": "https://www.metaculus.com/questions/45532/",
+ "question_type": "numeric",
+ "forecast_at": "2026-09-07T09:48:46+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.543,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 8.783333333333333,
+    "25": 9.533333333333333,
+    "50": 10.866666666666667,
+    "75": 13.299999999999999,
+    "90": 17.366666666666667
+   },
+   "p_below_lower": 0.02,
+   "p_above_upper": 0.051666666666666666
+  },
+  "phase1": {
+   "10": 8.783333333333333,
+   "25": 9.533333333333333,
+   "50": 10.866666666666667,
+   "75": 13.299999999999999,
+   "90": 17.366666666666667
+  },
+  "phase2": null,
+  "spread_phase1": 5.5,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 11.1,
+   "25": 11.9,
+   "50": 13.8,
+   "75": 16.7,
+   "90": 19.8
+  },
+  "p_below_lower": 0.01,
+  "p_above_upper": 0.08
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.9565,
+   "seconds": 266.6,
+   "estimate": {
+    "percentiles": {
+     "10": 7.55,
+     "25": 8.0,
+     "50": 8.9,
+     "75": 10.6,
+     "90": 13.6
+    },
+    "p_above_upper": 0.025
+   },
+   "reasoning": "Kaggle public leaderboards are monotone non-decreasing (best submission per team is retained), so the floor is effectively today's 7.51 and the whole question is how much is added in 10 days. Reference class: ~10-day top-score changes in long-running ARC Prize Kaggle competitions mid-to-late in the run, where most windows are incremental and a minority contain discrete technique jumps; that decomposition puts the median near x1.10-1.20 (~8.3-9.0) with a right tail from a repeat of the August regime break that took 1.86 to 7.51 in six weeks. Two forces push down: each marginal point is harder at a higher absolute level, submissions are slow (long agent runtimes, daily caps), and Milestone #2 standings are measured Sept 30, giving strong teams a reason to hold their best entry back past Sept 17. Two push up: the top three are clustered at 7.51/6.66/6.43, which reads like a shared technique diffusing and invites leapfrogging, and the pre-milestone ramp is already underway. Evidence is thin — I could not read the live leaderboard directly and rely on secondhand confirmation of 7.51 — so I stay close to the base rate. No market prices this contract; the Manifold ARC-AGI-3 question resolves off the ARC Prize model-eval harness (GPT-6 Astra at 62.7%), not the offline compute-capped Kaggle LB, so it is evidence about the benchmark's headroom, not an anchor for this number. Downside escape below 6 has no mechanism (even deleting the leader leaves 6.43); upside escape past 25 needs a ~3.3x in 10 days, priced small but nonzero given August precedent.",
+   "sources": [
+    "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard",
+    "https://arcprize.org/competitions/2026/arc-agi-3",
+    "https://arcprize.org/leaderboard",
+    "https://arxiv.org/html/2601.10904v1",
+    "https://raw.githubusercontent.com/Reasonofmoon/kaggle-growth-lab/main/competitions/arc-prize-2026-arc-agi-3/README.md",
+    "https://tech-insider.org/arc-agi-3-above-human-odds-manifold-gpt-6-astra/",
+    "https://benchlm.ai/benchmarks/arcagi3"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the highest 'Score' in the top-ranked row of the Kaggle public leaderboard for competition 'arc-prize-2026-arc-agi-3', observed 23:59 UTC 2026-09-17 — NOT the private leaderboard (unpublished until close), NOT arcprize.org's model-evaluation leaderboard, NOT third-party trackers (BenchLM.ai, llm-stats.com) which score API models under a different harness. Kaggle public LB is computed on ~50% of test data. If Kaggle temporarily resets the board, fallback is the top score reported by ARC Prize or credible sources near that date; permanent discontinuation annuls.\n\nEVENT WINDOW: competition start 2026-03-25 -> observation 2026-09-17 per the criteria; as of 2026-09-07T09:30Z, ~94.5% elapsed (166 of 176 days). Ten days and ~14.5 hours remain between Now and the observation instant.\n\nSTATUS-QUO OUTCOME: no team submits an entry exceeding the current top public score, and the board reads the same figure on 2026-09-17 as it does today. Kaggle public leaderboards retain each team's best submission, so the displayed top score is monotone non-decreasing absent team removal or an administrative reset.\n\nEVIDENCE — LEVEL AND TRAJECTORY (all figures are the Kaggle public LB top score):\n- ~0.25 in March 2026 (competition opened 2026-03-25). Source: question background compiled from leaderboard observation.\n- 0.68 on 2026-05-07; 1.17 on 2026-05-22 — a ~15-day stretch with a large relative gain. Source: same.\n- 1.86 by 2026-07-23, with 2nd/3rd at 1.61/1.60 and Tufa Labs at 1.45 — i.e. roughly two months from 1.17 to 1.86, a comparatively flat stretch. Source: same.\n- Early September 2026: top row 7.51, second 6.66, third 6.43 — top three clustered within ~1.1 points after being spread near 1.5-1.9 in July. Source: same.\n- ARC Prize's own channel reports the current ARC-AGI-3 Kaggle high score as 7.51, attributed to team 'CSTL' (background attributes 7.51 to mostik.ai; the naming differs across sources, the figure does not). Retrieved via search 2026-09-07; the live Kaggle leaderboard page is JS-rendered and could not be read directly this run.\n\nEVIDENCE — CALENDAR AND INCENTIVES:\n- Competition timeline: start 2026-03-25; Milestone #1 2026-06-30; Milestone #2 2026-09-30; entry deadline 2026-10-26; final submission 2026-11-02; results 2026-12-04. Sources: arcprize.org/competitions/2026/arc-agi-3 and a third-party competition README (github.com/Reasonofmoon/kaggle-growth-lab), fetched 2026-09-07.\n- Milestone #2 pays 1st $25K / 2nd $10K / 3rd $2.5K on standings as of 2026-09-30 — 13 days AFTER the observation date. Milestone #1 used the identical structure on 2026-06-30. Source: arcprize.org, fetched 2026-09-07. Note both directions: a near-term prize date raises submission activity in September, and a prize scored on 09-30 standings gives teams a reason to withhold a best entry until after 09-17.\n- Submission mechanics: ARC Prize Kaggle entries are offline agent runs under Kaggle compute/runtime caps with a daily submission limit, so iteration cycles are hours-to-days, not minutes. Frontier API models are not usable inside the competition environment.\n\nEVIDENCE — SEPARATE INSTRUMENT (context only, does not resolve this question):\n- OpenAI released GPT-6 Astra 2026-09-03 claiming 99.9% on ARC-AGI-3; under the ARC Prize Foundation's standardized stateless harness it scored 62.7%. Third-party trackers list Astra 62.7 / Claude Opus 5 30.2 / GPT-5.6 Sol 7.8 as of 2026-09-04. Sources: benchlm.ai/benchmarks/arcagi3, Medium analyses dated 2026-09-05 and 2026-09-06. These are API-model evaluations under different rules and different compute, not Kaggle competition entries.\n- A Manifold market on 'ARC-AGI-3 above human in 2026' sat near 92% on 2026-09-04 following the Astra results. Its contract resolves off the ARC Prize model-eval leaderboard, not the Kaggle public LB. Source: tech-insider.org, 2026-09-04.\n\nBASE RATES FOUND:\n- Over the same ARC-AGI-3 2026 Kaggle series, unconditional: ~11-day multiplicative changes in the top score implied by the five observed datapoints are approximately x1.29 (Mar->May 7), x1.49 (May 7->May 22), x1.09 (May 22->Jul 23), x1.44 (Jul 23->early Sep); geometric mean ~x1.32 per 11 days. Class: all observed inter-observation intervals of this one series, rescaled to 11 days.\n- Conditional on being in a flat stretch (the May 22->Jul 23 regime): ~x1.09 per 11 days. Conditional on being in a burst stretch (May 7->May 22, Jul 23->early Sep): ~x1.44-1.49 per 11 days. Which regime September 2026 sits in is the open question; the last observed transition was into a burst.\n- Prior ARC Prize Kaggle competitions, ARC Prize 2025 (ARC-AGI-2, 2025-03-26 to 2025-11-03): 1,455 teams, 15,154 entries; final public LB top 27.64% (NVARC), final private 24.03%, 2nd ARChitects 16.53%, 3rd MindsAI 15.42%. Class: end-state of one prior ARC Prize Kaggle competition; shows the public LB running materially above the private figure and a wide top-to-third spread by close. Sources: NVIDIA developer blog and arcprize.org/blog/arc-prize-2025-results-analysis via search; arxiv.org/html/2601.10904v1 (ARC Prize 2025 Technical Report) fetched 2026-09-07.\n- ARC-AGI-3 scoring granularity: figures are reported to two decimals (7.51, 6.66, 6.43, 1.86, 1.61), indicating a near-continuous score rather than a coarse per-task count.\n\nSEARCHED FOR BUT COULD NOT FIND:\n- The live Kaggle leaderboard contents, any leaderboard snapshot dated between 2026-07-23 and 2026-09-07, or the exact date the 7.51 entry was posted — the Kaggle leaderboard and discussion pages return no extractable content to a plain fetcher, and no third-party mirror of the score history surfaced.\n- The exact top score as of Milestone #1 (2026-06-30).\n- Any Kaggle discussion thread identifying a public notebook or shared technique behind the July-to-September acceleration, and any statement from a top team about their September submission plans.\n- Any prediction market, on Polymarket, Kalshi, Manifold, or a bookmaker, whose contr",
+   "reference_class": "Top public-leaderboard score changes over ~10-day windows, measured mid-to-late in multi-month ARC Prize Kaggle competitions (ARC Prize 2024/2025/2026), where the leaderboard is monotone and progress arrives as a mix of flat stretches and discrete technique jumps"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0779,
+   "seconds": 357.5,
+   "estimate": {
+    "percentiles": {
+     "10": 11.1,
+     "25": 12.3,
+     "50": 14.4,
+     "75": 17.5,
+     "90": 22.0
+    },
+    "p_above_upper": 0.08
+   },
+   "reasoning": "Verified the live Kaggle public leaderboard via a text proxy: top is Tufa Labs 11.04, then 7.91 / 7.63 / 7.51, with the whole top-15 submitting within the last day. That 11.04 is a hard floor for Sept 17 (a running max cannot fall; even removing the top team leaves ~7.9, still inside the range), so the whole question is how much the max climbs in 10.6 days. Reference class: this competition's own ~11-day windows in 2026. Whole-run average log growth is 0.023/day (x1.27 over the horizon = 14.0), the Jul 23 -> Sep 7 burst is 0.033/day (x1.42 = 15.7), and the May 22 -> Jul 23 plateau was 0.008/day (x1.09 = 12.0). I centre near 14.4 -- the run-average rate, deliberately below the recent burst, because the max is driven by discrete leader jumps and Tufa's 11.04 is a fresh outlier 40% clear of #2, which historically buys a pause. Counter-argument for higher: 2,860 teams, Milestone #2 on Sept 30 with $25K/$10K/$2.5K, an open-source requirement that propagates leading solutions through public forks, no saturation constraint at 11%, and a public split of only ~50% of test data that rewards leaderboard tuning; the last 10 days alone ran roughly x1.8-2.5. Counter-argument for lower: ~12% weight that nobody clears 11.04 at all. Evidence is thin on August intra-month datapoints -- the Wayback proxy 403'd on every snapshot -- so the growth rate between Jul 23 and Sep 3 is interpolated, not observed, and I stayed nearer the base rate for it. 8% priced above 25 for a second Tufa-style step-change plus fast fork propagation; no p_below_lower because reaching 6 would require mass disqualification of the entire top four and permanent leaderboard discontinuation annuls rather than resolves.",
+   "sources": [
+    "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard (fetched via r.jina.ai text proxy, 2026-09-07)",
+    "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion (fetched via r.jina.ai text proxy, 2026-09-07)",
+    "https://arcprize.org/competitions/2026/arc-agi-3",
+    "https://arcprize.org/competitions/2026",
+    "https://llm-stats.com/benchmarks/arc-agi-3",
+    "https://benchlm.ai/benchmarks/arcagi3",
+    "https://api.manifold.markets/v0/search-markets?term=ARC-AGI-3",
+    "https://arxiv.org/html/2601.10904v1",
+    "http://archive.org/wayback/available?url=kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the highest Score in the top row of the Kaggle public leaderboard for 'ARC Prize 2026 - ARC-AGI-3' (kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard), observed 23:59 UTC 2026-09-17 -- NOT the arcprize.org / BenchLM.ai / llm-stats.com frontier-model ARC-AGI-3 leaderboard, and NOT the private leaderboard. Kaggle entrants run under competition compute limits with no internet access at evaluation and must open-source for prize eligibility; frontier API models are not entrants. Verified 2026-09-07 that BenchLM.ai and llm-stats.com list only vendor models (GPT-6 Astra 62.7% / 0.999, Claude Opus 5 0.302, GPT-5.6 Sol 0.078) and contain no Kaggle team rows.\nEVENT WINDOW: competition opened 2026-03-25; the measurement instant is 2026-09-17T23:59Z per the criteria. As of Now (2026-09-07T09:30Z), 166 of those 176 days have elapsed = 94.3%; 10.6 days remain to the observation.\nCURRENT STATE (Kaggle public leaderboard, read 2026-09-07 via text proxy): 1 Tufa Labs 11.04 (130 entries, last entry 12h ago); 2 Third Intelligence 7.91 (39 entries, 16h); 3 Daniel Franzen 7.63 (64, 10h); 4 mostik.ai 7.51 (47, 17h); 5 jinbo wang1 5.49 (11, 4d); 6 Fususu 5.43; 7 Dawid Kopiczko 5.33; 9 Youssef Nader @ Aurelic 5.05; 10 Lord Han Solo 4.99; 11 Kyutai 4.90; 12 Son Pham & Mark Barney 4.84; 13 Mark Slavin 4.82; 14 Shuhan Yang 4.74; 15 Ya Xu 4.57. ~2,860 participants. Public leaderboard is computed on roughly 50% of the test data.\nSTATUS-QUO OUTCOME: no team exceeds 11.04 before the observation instant and the question resolves 11.04. The quantity is a running maximum -- it cannot decrease absent team removal or a leaderboard reset.\nTIME SERIES OF THE TOP SCORE (source: question background for Mar-early Sep, direct read for Sep 7): ~0.25 at launch (2026-03-25); 0.68 (2026-05-07); 1.17 (2026-05-22); 1.86 (2026-07-23, with 2nd/3rd at 1.61/1.60 and Tufa Labs then 1.45); ~7.51 top with 6.66 and 6.43 behind it (early Sep, per the question background); 11.04 (2026-09-07). Implied log growth by segment: 0.023/day (Mar 25-May 7), 0.036/day (May 7-22), 0.008/day (May 22-Jul 23, a two-month plateau), 0.033/day (Jul 23-early Sep), and a faster few days into Sep 7. Whole-run average 0.023/day. BASE RATES OVER ~11-DAY WINDOWS, computed on this same series: median multiplier ~1.3x; conditional on being in a plateau regime (as May 22-Jul 23) ~1.09x; conditional on being in a burst regime (as Jul 23 onward) ~1.4x or more. The regime as of Now is the latter by the segment arithmetic above.\nPRIOR-YEAR REFERENCE (ARC Prize 2025, ARC-AGI-2 Kaggle, ran 2025-03-26 to 2025-11-03): final top private score 24.03% (NVARC), 2nd the ARChitects 16.53%, 3rd MindsAI 12.64%; 1,455 teams, 15,154 entries. The 2025 technical report (arxiv 2601.10904) gives only the end-state and publishes no dated intra-competition leaderboard series -- searched for, not found.\nINCENTIVES / CALENDAR: Milestone #2 falls 2026-09-30, 13 days after the observation instant, paying $25K/$10K/$2.5K for open-sourced submissions; Milestone #1 was 2026-06-30 and was won by Tufa Labs ('Duck Harness' / StochasticGoose, a CNN+RL approach), with Reki 2nd and Md Boktiar Mahbub Murad 3rd. Total purse $850K: $700K Grand Prize for a 100% score, $75K top-score awards ($40K/$15K/$10K/$5K/$5K), $75K across the two milestones. Entry deadline 2026-10-26; final submission 2026-11-02. Kaggle submission cadence is daily-limited per team (a pinned 'submission limits correction' thread exists).\nOPEN THREADS ON THE KAGGLE FORUM (read 2026-09-07): 'Mostik.AI - amazing results, but... 12 members out of 8 allowed?' (1 day old, 31 comments) -- an unresolved eligibility dispute over the team currently in 4th; 'The latest GPT Astra has killed the game?' (2 days old); 'MULTIMODAL_UPSCALE: the writeup says 4 is best, the popular forks all run 8' (1 day old) -- evidence that leading configurations are circulating as public forks; 'Fail fast or lose hours: guard cells that protect your GPU quota' (5 days old).\nEXTERNAL CONTEXT: OpenAI released GPT-6 Astra 2026-09-03 claiming 99.9% on ARC-AGI-3 under a proprietary harness; the ARC Prize Foundation's standardized stateless harness scored it 62.7% (Medium write-ups 2026-09-05/06). Kaggle entrants cannot call such APIs during evaluation. A Manifold market 'Above human scores on ARC-AGI-3 in 2026?' and one on '25% on ARC-AGI-3 by end of 2026' both trade in the 90s and both resolve off the ARC-verified model track, not this leaderboard.\nSEARCHED FOR BUT COULD NOT FIND: any dated August 2026 snapshot of this leaderboard (every Wayback Machine snapshot fetch returned 403 through available proxies, though snapshots dated 2026-08-07 and 2026-09-01 are confirmed to exist); any news article reporting the 11.04 figure; any prediction market, on Polymarket, Manifold, Kalshi or a bookmaker, whose contract resolves off this Kaggle public leaderboard (none found); any published month-by-month leaderboard series for the 2025 ARC-AGI-2 Kaggle competition; any statement from ARC Prize or a leading team about expected further gains before Sept 30.",
+   "reference_class": "Top score on the ARC Prize Kaggle competition public leaderboard, measured over ~11-day windows during the mid-to-late phase of the competition (ARC-AGI-3 2026 Mar-Sep windows; ARC Prize 2025 ARC-AGI-2 run as the prior-year analogue)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.9396,
+   "seconds": 322.7,
+   "estimate": {
+    "percentiles": {
+     "10": 7.7,
+     "25": 8.3,
+     "50": 9.3,
+     "75": 11.8,
+     "90": 16.5
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Kaggle public LB scores are monotone non-decreasing, so the ~7.51 current top is a hard floor inside the 6-25 range; the only question is the size of the 10.6-day increment. Prior from the reference class of ARC-Prize Kaggle top-score trajectories: whole-2026 growth of ~2.1%/day implies ~1.26x per 11 days (~9.5), the hotter Jul 23 - early Sep regime implies ~1.44x (~10.8), but long flat stretches (1.17 -> 1.86 over 62 days) mean a meaningful share of 11-day windows move barely at all; I carry ~20-25% mass on essentially no change, which sets P10 near the current value. Verified anchors: Milestone #1 winners scored 1.03 and 0.86 on the Kaggle board at Jun 30 (AlphaSignal), and ARC Prize 2025's ARC-AGI-2 track ended at 24.03%, so mid-20s is reachable by a season's end but not obviously by mid-September. Milestone #2 (Sep 30) falls after the observation instant, so its deadline squeeze mostly lands outside the window. Evidence is thin and one-sided in an important way: I could not load the live Kaggle leaderboard (JS-rendered; search results repeatedly returned the separate ARC Prize model leaderboard instead), so the 7.51 anchor is unverified and possibly several days stale - I shifted the effective current value slightly up to ~7.9 for that and otherwise stayed close to trend continuation. Right tail is fat because harness-configuration diffusion demonstrably produces ~3x step changes (OpenAI's 'two settings tripled our scores'), which is the named mechanism for the 5% escape above 25; the 2% below 6 requires mass disqualification or a reset, since permanent discontinuation annuls instead. No market prices this contract: the one Manifold market found ('above-human ARC-AGI-3 in 2026', 92% on Sep 4) resolves off the ARC Prize verified model harness, not the Kaggle board, so it is a near-miss, not an anchor.",
+   "sources": [
+    "https://alphasignal.ai/news/tufa-labs-wins-25k-beating-frontier-ai-on-the-world-s-hardest-benchmark",
+    "https://arcprize.org/blog/arc-prize-2026-milestone-1",
+    "https://arcprize.org/competitions/2026/arc-agi-3",
+    "https://arcprize.org/competitions/2026",
+    "https://arxiv.org/html/2601.10904v1",
+    "https://github.com/Reasonofmoon/kaggle-growth-lab/blob/main/competitions/arc-prize-2026-arc-agi-3/README.md",
+    "https://benchlm.ai/benchmarks/arcagi3",
+    "https://tech-insider.org/arc-agi-3-above-human-odds-manifold-gpt-6-astra/",
+    "https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard (attempted; JS-rendered, returned no leaderboard data)"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the Kaggle public leaderboard 'Score' of the top-ranked row at arc-prize-2026-arc-agi-3, read at a single instant 2026-09-17T23:59Z. It does NOT resolve off the ARC Prize verified model leaderboard (arcprize.org/leaderboard), BenchLM, or llm-stats -- those track API frontier models under the ARC Prize harness and are explicitly excluded by the fine print. Kaggle public LB is computed on ~50% of test data; private LB is not published until after close. Permanent discontinuation of the public LB = annulment; temporary removal/reset = fall back to ARC Prize team or credible-source reporting nearest the date.\n\nEVENT WINDOW: competition runs 2026-03-25 -> 2026-11-02 (final submission) per the competition timeline; the criteria specify a point-in-time observation at 2026-09-17T23:59Z. As of Now (2026-09-07T09:30Z), ~74% of the competition span has elapsed and the observation instant is 10.6 days ahead.\n\nMECHANICS: Kaggle public LB shows each team's best public score, so the top-of-board figure is monotone non-decreasing over time absent team removal, disqualification, or a platform-side reset. It is a code competition with offline execution -- no internet, so no frontier-API models; entries are self-contained agents under Kaggle's runtime/compute caps.\n\nOBSERVED TOP-OF-BOARD SERIES (per the question background, which I could not independently re-verify -- the live Kaggle leaderboard is JS-rendered and returned no data to any fetch tool this run): ~0.25 at 2026-03-25; 0.68 at 2026-05-07; 1.17 at 2026-05-22; 1.86 at 2026-07-23 (top three then 1.86 / 1.61 / 1.60, Tufa Labs 1.45); 7.51 at 'early September 2026' with Daniel Franzen 6.66 and Third Intelligence 6.43. The exact date behind 7.51 is not specified, so the figure may be up to ~a week stale relative to Now.\n\nVERIFIED DATA POINTS:\n- Milestone #1 (through 2026-06-30) went to Tufa Labs 'duck harness' with a Kaggle score of 1.03; 3rd place Md Boktiar Mahbub Murad scored 0.86; Reki placed 2nd (score not stated). Source: AlphaSignal writeup of the milestone, and arcprize.org/blog/arc-prize-2026-milestone-1. Note milestone eligibility required open-sourcing, so these are not necessarily the overall top of board at that date.\n- Winning Milestone #1 approaches: small open-source LLM + Python REPL (Tufa); vision-language model reading the board and emitting JSON actions (Reki); a configurable visual-action agent framework (Murad). ARC Prize's own writeup notes 'local public-game checks weren't a reliable leaderboard proxy'. Source: arcprize.org blog, 2026 milestone-1 post.\n- Milestone #2 deadline is 2026-09-30 ($25K/$10K/$2.5K, open-sourcing required), i.e. 13 days AFTER the observation instant. Milestone #1 was 2026-06-30. Source: arcprize.org/competitions/2026/arc-agi-3.\n- Full timeline: start 2026-03-25, entry deadline 2026-10-26, final submission 2026-11-02, papers 2026-11-08, results 2026-12-04. Source: competition timeline as reproduced in a third-party Kaggle prep repo (Reasonofmoon/kaggle-growth-lab), 2026.\n- As of 2026-03, frontier AI systems scored below 1% on ARC-AGI-3 while humans solve 100% of environments; preview-period figures cited were Anthropic Opus 0.50%, Gemini 3.1 Pro 0.40%, GPT-5.4 0.20%, Grok-4.20 0.10%. Source: AlphaSignal / ARC Prize, mid-2026.\n- Separate instrument, for contrast only: on the ARC Prize verified model leaderboard, GPT-6 Astra scored 62.7% under the standardized stateless harness as of 2026-09-04 (OpenAI's own launch chart claimed 99.9% using a proprietary harness that preserves reasoning chains); Claude Opus 5 30.2%, GPT-5.6 Sol 7.8%. Sources: BenchLM.ai Sept 2026 page; Medium analyses dated 2026-09-05 and 2026-09-06. These agents run with API compute and are not eligible in the offline Kaggle track.\n- OpenAI published a writeup titled 'How enabling two settings tripled our scores on the ARC-AGI-3 benchmark' -- documented evidence that harness/configuration choices, not model capability alone, can produce ~3x step changes on this benchmark, and that such findings propagate publicly.\n- Prior-season endpoint: ARC Prize 2025 (ARC-AGI-2 Kaggle track, 2025-03-26 to 2025-11-03) finished with a private-set state of the art of 24.03% by NVARC. Source: ARC Prize 2025 Technical Report, arXiv 2601.10904.\n\nBASE RATES / RATE ANALYSIS (class stated for each):\n- Over the full 2026 ARC-AGI-3 series (2026-03-25 to early Sep, 162 days, 0.25 -> 7.51): mean log-growth 0.021/day, i.e. a 1.26x multiplier per 11-day window.\n- Over the recent sub-period only (2026-07-23 to early Sep, 42 days, 1.86 -> 7.51): mean log-growth 0.033/day, i.e. a 1.44x multiplier per 11 days.\n- Over the flat sub-period (2026-05-22 to 2026-07-23, 62 days, 1.17 -> 1.86): 0.0075/day, i.e. a 1.085x multiplier per 11 days -- many individual 11-day windows in that stretch contained no change at all.\n- Segment-by-segment 11-day multipliers implied: 1.29 (Mar-May), 1.49 (May 7-22), 1.085 (May 22-Jul 23), 1.43 (Jul 23-Sep).\n- Conditional on being in an active-jump regime with 3+ teams within ~1.1 points of each other (7.51 / 6.66 / 6.43), the max is a max over several independent improvement streams, which raises tick-up frequency relative to the unconditional rate above.\n- Prior-season class (ARC Prize Kaggle tracks reaching competition end): 2025 ARC-AGI-2 ended at 24.03% after ~7 months.\n\nEVIDENCE POINTING TOWARD FASTER MOVEMENT: the board is in its steepest observed regime; three teams are clustered near the top; Milestone #2 open-source money on 2026-09-30 rewards being top-3 in September; documented 3x harness-setting effects exist and diffuse publicly; absolute scores remain far below the 100% human rate, so headroom is not the binding constraint.\nEVIDENCE POINTING TOWARD LITTLE MOVEMENT: the observation instant precedes the Milestone #2 deadline by 13 days, so the deadline crush largely falls outside it; a 62-day near-flat stretch occurred earlier this same season; the offline no-internet Kaggle environment blocks the f",
+   "reference_class": "Top-of-board public leaderboard scores on ARC Prize Kaggle competition tracks (ARC-AGI-1/2/3, 2024-2026) during the active mid-to-late competition phase, measured over ~11-day windows"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "research",
+   "run_index": 1,
+   "spread": 1.4602,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.5323,
+   "seconds": 144.7,
+   "estimate": {
+    "percentiles": {
+     "10": 11.1,
+     "25": 11.9,
+     "50": 13.8,
+     "75": 16.7,
+     "90": 19.8
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.08
+   },
+   "reasoning": "",
+   "sources": [
+    "https://r.jina.ai/https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/leaderboard",
+    "https://r.jina.ai/https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion",
+    "WebSearch: 'ARC-AGI-3 Kaggle leaderboard Tufa Labs 11.04 top score September 2026' (returned arcprize.org/blog/arc-prize-2026-milestone-1, tufalabs.ai/research/duck-harness/, alphasignal.ai Tufa Labs milestone writeup; no confirmation of 11.04)"
+   ],
+   "reconciliation": "Central dispute was FACTUAL: current top-of-board. Runs 1 and 3 could not load the JS-rendered Kaggle leaderboard and anchored on the background's stale 'early September 7.51'; Run 2 reported Tufa Labs 11.04. I fetched the live leaderboard myself through a text proxy and got Run 2's rows exactly (11.04 / 7.91 / 7.63 / 7.51 / 5.49 / 5.43 / 5.33), with the background's three named teams all still present and only higher - consistent with a real snapshot. I separately fetched the Kaggle discussion index and confirmed every forum thread Run 2 cited exists at the stated age, so its dossier is corroborated rather than confabulated. A web search for the 11.04 figure returned nothing (expected; no outlet reports Kaggle boards), and my attempt at a dated August Medium snapshot 403'd, so the Jul 23 -> Sep 7 velocity stays interpolated. Because a Kaggle public LB retains each team's best submission, 11.04 is a hard monotone floor and the entire question is the 10.6-day increment. On the JUDGMENT axis I do not follow Run 2 to the run-average rate: the trailing burst window terminates on a fresh record (selection bias), and extending 0.023/day to the Nov 2 close would finish near 40, far past the prior season's 27.64 public endpoint, so I apply ~1.25-1.30x and center at 13.8. I also reject the Runs 1/3 withholding-until-Milestone-2 argument on evidence: the live board shows the entire top 15 submitting within 4 days, most within 17h, and the leader at 130 entries. Zero-movement mass set to ~13% (below Runs 1/3's 20-25%) given an active leader and a chasing pack at 7.5-7.9. 8% above 25 because the last ~5 days alone delivered roughly the required 2.3x once, plus documented harness-config step changes propagating through public forks. 1% below 6 requires simultaneous removal of the top four (the mostik.ai 12-of-8-members eligibility thread is real but unresolved and mostik sits 4th, so it cannot lower the max); permanent LB discontinuation annuls rather than resolves. Market check: I found no Polymarket, Kalshi, Manifold or bookmaker contract resolving off this Kaggle public leaderboard - none found; all three runs agree, and the only nearby Manifold markets resolve off the ARC Prize verified-model harness (GPT-6 Astra 62.7%), a different instrument, different threshold and no Sep 17 date, so a near-miss and not an anchor.",
+   "disagreements": [
+    {
+     "claim": "Current top public leaderboard score is 7.51 (Runs 1, 3) vs 11.04 by Tufa Labs (Run 2)",
+     "kind": "factual",
+     "verdict": "Settled for Run 2. My own text-proxy fetch of the live leaderboard returned Tufa Labs 11.04 / Third Intelligence 7.91 / Daniel Franzen 7.63 / mostik.ai 7.51, matching Run 2 row-for-row. Runs 1 and 3 were anchored on stale background text."
+    },
+    {
+     "claim": "Run 2's leaderboard and forum detail might be confabulated, since no independent source reports 11.04",
+     "kind": "factual",
+     "verdict": "Refuted. The Kaggle discussion index independently shows the MULTIMODAL_UPSCALE fork thread, the GPT Astra thread, and the Mostik.AI 12-of-8-members thread at the stated ages. A web search for '11.04' returned nothing, but no outlet reports Kaggle board values, so that absence carries no weight."
+    },
+    {
+     "claim": "Top teams will withhold their best entry until the Sep 30 Milestone #2 standings, suppressing the Sep 17 reading",
+     "kind": "judgment",
+     "verdict": "Discounted on observed data: the entire top 15 has submitted within 4 days and most within ~17h, with the leader at 130 entries. Continuous submission, not withholding."
+    },
+    {
+     "claim": "Which growth regime applies over the next 10.6 days - plateau (~1.09x), run-average (~1.27x), or recent burst (~1.5x)",
+     "kind": "judgment",
+     "verdict": "No evidence broke this; the August datapoint that would have settled it was unreachable (Wayback and Medium both 403). I bet on ~1.25-1.30x: below the trailing burst because that window ends on a fresh record, and because sustaining the run-average to Nov 2 implies a ~40 finish versus the prior season's 27.64."
+    },
+    {
+     "claim": "Probability the max does not move at all in the window (Runs 1/3 carry 20-25%; Run 2 ~12%)",
+     "kind": "judgment",
+     "verdict": "I take ~13%. A fresh breakthrough leader submitting daily plus three chasers within 40% makes a fully dead 10.6 days unlikely, though a just-jumped max historically does buy a pause."
+    },
+    {
+     "claim": "The mostik.ai eligibility dispute could remove a top team and lower the reading",
+     "kind": "factual",
+     "verdict": "Thread confirmed live and unresolved, but mostik.ai ranks 4th at 7.51, so any removal leaves the max at 11.04 untouched. Contributes only to the 1% below-6 escape via an implausible top-four cascade."
+    },
+    {
+     "claim": "GPT-6 Astra's 62.7% on the ARC Prize verified-model harness bears on this number",
+     "kind": "factual",
+     "verdict": "Excluded by the fine print and by mechanics - Kaggle entries run offline with no API access. All three runs agreed; carried forward as headroom evidence only."
+    }
+   ],
+   "reference_class": "~11-day windows of the top-of-board score within this same ARC Prize 2026 ARC-AGI-3 Kaggle competition, conditional on an active-improvement regime; cross-checked against the ARC Prize 2025 ARC-AGI-2 Kaggle track's 27.64 final public score after ~7 months"
+  }
+ ]
+}
