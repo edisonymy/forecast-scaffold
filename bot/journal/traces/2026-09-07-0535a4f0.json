@@ -1,0 +1,229 @@
+{
+ "record_id": "2026-09-07-0535a4f0",
+ "question": "What will Lululemon's (LULU) closing stock price be on September 17, 2026?",
+ "question_id": 45736,
+ "url": "https://www.metaculus.com/questions/45545/",
+ "question_type": "numeric",
+ "forecast_at": "2026-09-07T14:38:05+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.1046,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 89.33333333333333,
+    "25": 94.66666666666667,
+    "50": 99.83333333333333,
+    "75": 105.13333333333333,
+    "90": 110.5
+   },
+   "p_below_lower": 0.005,
+   "p_above_upper": 0.006666666666666667
+  },
+  "phase1": {
+   "10": 89.33333333333333,
+   "25": 94.66666666666667,
+   "50": 99.83333333333333,
+   "75": 105.13333333333333,
+   "90": 110.5
+  },
+  "phase2": null,
+  "spread_phase1": 0.5,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 90.0,
+   "25": 94.6,
+   "50": 100.0,
+   "75": 105.7,
+   "90": 111.1
+  },
+  "p_below_lower": 0.005,
+  "p_above_upper": 0.006
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.658,
+   "seconds": 170.9,
+   "estimate": {
+    "percentiles": {
+     "10": 89.5,
+     "25": 95.0,
+     "50": 100.0,
+     "75": 105.3,
+     "90": 111.0
+    },
+    "p_below_lower": 0.006,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Anchor is the Sep 4 close of $100.61 (Sep 7 is Labor Day; 8 trading days remain: Sep 8-11, 14-17). Over a horizon this short, a stock price is close to a martingale, so the reference class is 8-trading-day forward closes conditional on a fresh >15% earnings/guidance-cut gap down, and the prior is the last close with dispersion set by option-implied vol. Post-earnings IV has already crushed to 40.8%, implying sigma ~7.5% over 8 sessions (~$7.5), so the bulk of the distribution sits roughly $90-$111. I set the median at $100.0, a whisker below spot: post-announcement drift after a fourth guidance cut of the year, four sell-side targets now at or below spot (Piper $80, JPM $95, Wells $95, Stifel $100) and a fresh 52-week low at $97.99 argue mildly down, while a ~10x P/E, a $115.6 consensus target, short-term reversal after an 18% single-day drop, and a new CEO taking over Sep 8 argue mildly up - these roughly offset and neither is large next to the vol. Escape mass: below $75 needs a ~-25% move (~3.5 sigma), plausible only via a broad market break or another company disaster, priced 0.6%; above $130 needs ~+29%, with the one concrete mechanism being a takeover/LBO approach at an $11B depressed-valuation cap, priced 1.0%. Market check: no Polymarket, Manifold or Kalshi contract on LULU's price exists, so there is no crowd anchor and no blending was done. Evidence is one-sided on fundamentals (deteriorating) but that is already in the price after a 17.4% repricing; I therefore stay near the random-walk base rate.",
+   "sources": [
+    "https://stockanalysis.com/stocks/lulu/",
+    "https://www.alphaquery.com/stock/LULU/volatility-option-statistics/30-day/iv-mean",
+    "https://www.cnbc.com/2026/09/03/lululemon-lulu-q2-2026-earnings.html",
+    "https://www.forbes.com/sites/fionariley/2026/09/04/lululemons-stock-sinks-18-after-q2-earnings-and-outlook-cut/",
+    "https://fedratecalc.com/fomc-meeting-schedule/",
+    "https://www.just-style.com/news/lululemon-athletica-ceo-appointment/",
+    "https://finance.yahoo.com/quote/LULU/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the Yahoo Finance historical-data 'Close' column for LULU for the row dated Sep 17 2026 - the Nasdaq regular-session close, NOT the after-hours or adjusted-close figure, and not an average.\n\nEVENT WINDOW: The quantity is fixed at a single instant - the Sep 17 2026 regular-session close (16:00 ET / 20:00 UTC). The price path runs from the last observed close (Sep 4 2026) to that instant. Sep 7 2026 is Labor Day, a US market holiday, so the market is shut as of Now (2026-09-07T14:27:57Z). Trading sessions remaining: Sep 8, 9, 10, 11, 14, 15, 16, 17 = 8 sessions. 0% of the price path from the last close has elapsed in market time as of Now.\n\nSTATUS-QUO OUTCOME: The price is unchanged from the last observed close of $100.61 (Sep 4 2026, stockanalysis.com / Yahoo Finance). Sep 4 intraday range $97.99-$103.16; after-hours Sep 4 print $100.44. 52-week range $97.99-$225.98; all-time-high close $511.29 (Dec 29 2023, Macrotrends). Market cap ~$11.14B; trailing P/E ~9.7 (fullratio, Sep 2 2026); beta 0.86.\n\nPRICE-PATH / DISPERSION DATA:\n- 30-day mean option-implied volatility, Sep 4 2026: 0.4077 (calls 0.4111, puts 0.4044) - AlphaQuery. This is the post-earnings, post-IV-crush level; there is no earnings event inside the remaining window.\n- Same date, close-to-close historical volatility 0.7566 and Parkinson historical volatility 0.3386 (AlphaQuery). The close-to-close figure is inflated by the single Sep 4 gap; Parkinson (range-based) is the cleaner read on non-gap sessions.\n- An earlier reading (pre-earnings/at-earnings) had IV at 65.15% with IV percentile 89 and IV rank 80 (Barchart/OptionCharts) - i.e. IV has fallen roughly 24 points through the event.\n- Class base rate for dispersion, computed over 8-trading-day windows rather than over event windows: sigma_8d = IV/sqrt(252)*sqrt(8). At IV 40.8% this is ~7.5% of spot (~$7.5); at the pre-event 65% level it would be ~11.6% (~$11.7). Unconditional LULU realized vol over the last year is high - the 52-week high/low ratio is 2.31 - but a large share of that came from four discrete guidance-cut gaps, not from typical sessions.\n\nEVIDENCE (each with source and date):\n- Sep 3 2026 (after close): Q2 FY2026 reported. EPS $2.92 vs ~$1.80 consensus, aided by ~$0.86/share of tariff refunds. Revenue $2.42B, a slight miss, down ~4% YoY. Comparable sales -9% to -10%. (CNBC, Sep 3 2026)\n- Sep 3-4 2026: FY2026 guidance cut to revenue $10.35-10.50B (-5% to -7%) and EPS $9.48-9.73, versus $13.26 prior year and versus June 2026 guidance of $10.95-11.15 EPS. Q3 revenue guided $2.29-2.32B (-10% to -11% YoY). Reported as the company's fourth guidance cut of 2026. (CNBC; ijr.com, Sep 3 2026)\n- Sep 4 2026: shares fell 17.38% to close $100.61 from $121.77; premarket indications were near -20%. (stockanalysis.com; Forbes, Sep 4 2026)\n- Sep 4 2026 analyst target revisions: Piper Sandler $110->$80; Wells Fargo $105->$95 (Equal Weight); JPMorgan $154->$95; Stifel $134->$100; UBS $120->$106 (Neutral); Bernstein $145->$115; Baird $140->$115; Bank of America $140->$122. Consensus as of Sep 7 2026: Hold, mean target $115.62. Separately reported analyst mix: 1 buy / 4 sell, overall Neutral; 12-month mean target $127.35 with high $280 and low $88 (Investing.com/TradingView aggregate, differing panel). (Yahoo Finance markets article; marketbeat/public.com, Sep 4-7 2026)\n- UBS commentary: product assortment is not resonating with consumers, traffic remains weak, core issues not expected to be resolved near-term. (Sep 4 2026)\n- Heidi O'Neill, former Nike executive, named CEO on Apr 22 2026 and starts Sep 8 2026 - i.e. day one of the remaining window - replacing Calvin McDonald. She also joins the board and will be based in Vancouver. Shares fell on the April announcement day. (just-style; CNBC Apr 22 2026; SEC 8-K exhibit lulu-20260421xex991.htm)\n- Valuation context: trailing P/E ~9.7 as of Sep 2 2026, described as ~76% below the stock's own historical average and ~51% below the consumer-cyclical sector average of 19.71. (fullratio)\n\nSCHEDULED CALENDAR INSIDE THE WINDOW (deciding-body / macro):\n- Sep 8 2026: new CEO's first day.\n- ~Sep 10-11 2026: August CPI release (BLS standard cadence; exact date searched for and not confirmed).\n- Sep 15-16 2026: FOMC meeting; rate decision Wed Sep 16 at 14:00 ET plus the Summary of Economic Projections / dot plot and a 14:30 ET press conference. This is one of the four SEP meetings of the year and lands one session before the resolution date. (FedRateCalc; multiple FOMC-calendar sources)\n- Sep 18 2026: quarterly triple-witching expiry - one session AFTER the resolution date, so gamma/pinning effects near standard monthly strikes could act on Sep 17 but the expiry itself is outside the window.\n- No Lululemon earnings, investor day, or scheduled company event falls inside Sep 8-17 2026 (searched; none found). Next earnings would be Q3, due early December 2026.\n\nMARKET / CROWD INSTRUMENTS: A harness title search of Polymarket and Manifold returned no candidate contract. An independent search covering Kalshi and bookmakers also returned no contract on LULU's share price. No human prediction-market price on this quantity exists; the only tradable forward-looking instrument is the LULU options chain (expirations Sep 11, Sep 18, Sep 25 2026 are listed - note Sep 18, not Sep 17, so no listed expiry coincides exactly with the resolution date).\n\nEVIDENCE POINTING DOWN: fourth guidance cut of the year; comps -9/-10%; Q3 guided to -10/-11% revenue; EPS guide down 26-29% YoY; several targets now at or below the last close ($80, $95, $95, $100); sell-side describing the product/traffic problem as unresolved near-term; the Sep 4 close sits $2.62 above the 52-week low, so a widely-watched support level is immediately below; post-announcement drift after large negative guidance surprises is a documented phenomenon.\nEVIDENCE POINTING UP: ~10x trailing P/E against a 19.7 sector average; consensus target $115.62 above the last clos",
+   "reference_class": "8-trading-day-ahead closing prices of large-cap US consumer-discretionary/apparel stocks immediately following a single-day earnings-and-guidance-cut gap down of more than 15% - i.e. a martingale anchored on the last close, with dispersion from that class's post-gap realized volatility and current o"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.5968,
+   "seconds": 178.5,
+   "estimate": {
+    "percentiles": {
+     "10": 88.5,
+     "25": 94.0,
+     "50": 99.5,
+     "75": 105.3,
+     "90": 111.0
+    },
+    "p_below_lower": 0.004,
+    "p_above_upper": 0.005
+   },
+   "reasoning": "Reference class first: large-cap US equities ~8 sessions after a >15% single-day earnings-gap decline show no reliable directional edge over that horizon - the post-gap price is the status quo anchor, so the prior median is the $100.61 Sep 4 close, with only a modest (~1%) negative post-earnings-announcement drift typical after guidance cuts. Adjusting on the news: the drop was a guidance event, not a solvency event (EPS $2.92 beat ~$1.80; FY26 EPS cut to $9.48-9.73 from $10.95-11.15), and sell-side targets straddle spot ($83 Morgan Stanley, $95 Wells Fargo, $100 Stifel, $106 UBS, ~$110-116 consensus), so analysts give no clean directional signal. Two-sided: downside from a fresh sub-$100 technical break (first time since 2018), a fourth consecutive guidance cut, and a CEO handoff on Sep 8 that adds strategy uncertainty; upside from an 8x P/E deep-value bid, short covering after a -17.4% gap, and the possibility a new CEO is read as a catalyst. FOMC on Sep 16 (hold at 3.50-3.75% vs a live 25bp hike) lands one day before resolution and widens the macro tail in both directions. I center essentially at spot with a whisker of negative drift and let the width - driven by ~48% annualized realized vol over 8 sessions - carry the forecast. No prediction market prices this contract, so there is no crowd anchor to blend toward.",
+   "sources": [
+    "https://stockanalysis.com/stocks/lulu/",
+    "https://stockanalysis.com/stocks/lulu/history/",
+    "https://www.alphaquery.com/stock/LULU/volatility-option-statistics/30-day/iv-mean",
+    "https://www.marketbeat.com/stocks/NASDAQ/LULU/",
+    "https://www.cnbc.com/2026/09/03/lululemon-lulu-q2-2026-earnings.html",
+    "https://fedratecalc.com/next-fomc-meeting/",
+    "https://polymarket.com/event/lululemon-lulu-up-or-down-after-earnings"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the Yahoo Finance historical-data 'Close' column for LULU dated Sep 17, 2026 (Nasdaq regular-session close), NOT the adjusted close, NOT after-hours, NOT an average. Fallback to Nasdaq or another credible provider only if Yahoo is unavailable.\n\nEVENT WINDOW: the criteria specify a single named trading day, Sep 17, 2026; the price path runs from the last observed close (Sep 4, 2026) to that date. As of Now (2026-09-07T14:27:57Z) 0 of the 8 remaining trading sessions have elapsed (0%). Sep 7, 2026 is Labor Day - US markets closed. Remaining sessions: Sep 8, 9, 10, 11, 14, 15, 16, 17. Sep 17 is a Thursday and a regular Nasdaq session; Sep 18 is quarterly triple-witching expiration.\n\nPRICE FACTS\n- Sep 4, 2026 close: $100.61, -$21.16 (-17.38%) on the day; intraday range $97.99-$103.16 (stockanalysis.com, MarketBeat, both retrieved 2026-09-07).\n- After-hours Sep 4, 7:59pm ET: $100.44 (-0.17%) (stockanalysis.com).\n- Prior closes: Sep 3 $121.77 (+1.42%), Sep 2 $120.07, Sep 1 $118.00, Aug 31 $120.26, Aug 28 $120.81 (+5.05%), Aug 27 $115.00, Aug 26 $116.35, Aug 25 $118.33 (-3.62%), Aug 24 $122.78, Aug 21 $121.07 (+4.65%), Aug 20 $115.69 (-3.15%), Aug 19 $119.45, Aug 18 $119.01 (+2.83%), Aug 17 $115.74 (-3.19%) (stockanalysis.com history).\n- 52-week range per stockanalysis.com: $97.99 - $225.98 (some vendors show a $96.26 low; the discrepancy is unreconciled). Sub-$100 is the first time since 2018. Down ~42% YTD 2026 entering the print. Market cap ~$11.9B, trailing P/E ~8.25. Beta 0.86.\n\nVOLATILITY (record-only)\n- 30-day mean option IV as of Sep 4, 2026: 40.77% (calls 41.11%, puts 40.44%); historical close-to-close vol 75.66% (contaminated by the gap), Parkinson 33.86% (AlphaQuery).\n- Pre-earnings the options market implied an 8.1-8.4% earnings move vs the stock's median 8-quarter move of 11.9%; realized move was ~18%, i.e. front-month IV was priced at roughly half the realized move (TipRanks / options commentary, Sep 3-4 2026). Post-event IV crush occurred.\n- Observed daily close-to-close SD over the 14 pre-earnings sessions listed above: ~2.8%/day (~44% annualized); mean absolute daily move ~2.4%.\n\nEVENTS INSIDE THE WINDOW\n- Sep 8, 2026: Heidi O'Neill (ex-Nike) formally becomes CEO, five days after the guidance cut.\n- Sep 15-16, 2026: FOMC meeting; decision + Summary of Economic Projections Wed Sep 16, 2:00pm ET. Current target range 3.50-3.75%, held since Dec 2025. Markets weigh a hold against a 25bp HIKE; softer July employment and retail sales support a hold, above-target inflation keeps the hike live (FedRateCalc, ATFX).\n- No LULU earnings, no scheduled company guidance update, and no scheduled investor day inside the window (searched; none found).\n\nFUNDAMENTALS BEHIND THE GAP (CNBC, Sep 3 2026)\n- Q2 FY2026: EPS $2.92 vs consensus ~$1.80 (beat); revenue $2.42B, slight miss, -4.3% YoY; comparable sales -9% to -10%; Americas (67% of sales) -8%.\n- Q3 guide: revenue $2.29-2.32B (-10% to -11% YoY). FY2026 guide: revenue $10.35-10.50B (-5% to -7%), EPS $9.48-9.73 vs $13.26 prior year (-26% to -29%). This was the FOURTH FY26 guidance cut, and deeper than the June 2026 guide of $10.95-11.15 EPS.\n\nANALYST TARGETS POST-PRINT (both directions represented)\n- Morgan Stanley $83 (Underweight); Wells Fargo $105 -> $95 (Equal Weight); Stifel -> $100; UBS $120 -> $106 (Neutral, citing assortment not resonating and weak traffic); Freedom Broker -> $115.\n- Aggregators disagree on the consensus level: Barchart cites 34 analysts, Hold, mean target $109.83; MarketBeat cites $116.46 (23 reports in 90 days). Ratings are largely Neutral/Hold.\n\nBASE RATES / REFERENCE CLASSES\n- Class: large-cap US equities ~8 trading sessions after a >15% single-day earnings-gap decline, no earnings inside the window - the post-gap close is the status quo level; academic post-earnings-announcement drift after negative guidance is negative but small over a 2-week horizon relative to noise, and 1-day overreaction reversal is weak for large caps. Both effects are an order of magnitude smaller than the volatility term.\n- Conditional narrowing (given this stock, this regime): 8-session dispersion computed from LULU's OWN pre-gap realized SD of 2.8%/day gives sigma ~7.9% of spot; computed from the pre-earnings 30-day option IV of 40.8% gives ~7.1%; post-gap regimes typically realize ABOVE the pre-gap baseline for one to two weeks. Note the pre-gap realized figure is measured over a stretch that already contained four daily moves of 3%+ and two of 4.6%+.\n- The unconditional 52-week range ($97.99-$225.98) is a poor guide here because the level regime shifted on Sep 4; use the 8-session change distribution, not the 12-month level distribution.\n\nSTATUS QUO OUTCOME: no further company news arrives, the stock diffuses from $100.61 with no drift, and the Sep 17 close prints near the last observed close.\n\nMARKETS: harness title-search found no Polymarket or Manifold candidate. Independent check found only a Polymarket 'Lululemon (LULU) Up or Down After Earnings' binary, which resolves on the first Nasdaq close after the earnings release - a different threshold, a different deadline, and already resolved by the Sep 4 print; it does not price the Sep 17 close. No Kalshi LULU price-range contract and no bookmaker line located.\n\nSEARCHED FOR BUT COULD NOT FIND: any LULU trade or quote dated after the Sep 4 close (Sep 7 is a market holiday, so none should exist, but note some aggregator pages carry a 'Sep 6' timestamp on a stale $100.46 quote and a $96.26 low that does not match the Sep 4 session range); a post-earnings (Sep 4+) options IV reading; short-interest data updated after the gap; any 13F/insider or buyback disclosure since Sep 3; any scheduled company event between Sep 8 and Sep 17.",
+   "reference_class": "Closing prices of large-cap US equities approximately 8 trading sessions after a >15% single-day earnings-gap decline (no scheduled earnings inside the window)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.5924,
+   "seconds": 185.5,
+   "estimate": {
+    "percentiles": {
+     "10": 90.0,
+     "25": 95.0,
+     "50": 100.0,
+     "75": 104.8,
+     "90": 109.5
+    },
+    "p_below_lower": 0.005,
+    "p_above_upper": 0.005
+   },
+   "reasoning": "Status quo is a random walk from the last observed close of $100.61 (2026-09-04); with Sep 7 a market holiday, zero price information has arrived since the gap-down. Reference class: large-cap US equities in the 8-trading-day window after a >15% single-day earnings/guidance gap-down — subsequent two-week mean return is near zero (post-earnings-announcement drift after a guidance cut pushes slightly negative; short-term reversal in extreme one-day losers pushes slightly positive), so I set the median at $100.0, a hair below last close. Dispersion, not direction, is where the work is: post-crush 30-day IV of 40.8% scaled to 8 sessions gives ~7.5% sigma, and realized vol typically runs at or above IV in the fortnight after a shock, so I did not tighten it. Confirmed catalysts in-window are thin: no LULU S&P 500 index deletion (announced Sep 4), no company events scheduled; FOMC Sep 15-16 and Sep-18 quarterly expiry sit at/just past the edge, adding vol but no directional signal. Analyst targets reset to a wide $82-$121 band (Truist $82, Wells Fargo $95, Deutsche Bank $98, UBS $106, Telsey $110), which straddles spot and provides no pull. Escape mass is small but named: ~0.5% below $75 requires a second shock (further pre-announcement or a broad-market break, -25% in 8 sessions); ~0.5% above $130 requires a takeover/going-private or activist-stake headline at an ~$11.6B market cap trading near 10x cut EPS (+29%). No human market prices this contract, so no crowd anchor was available to blend.",
+   "sources": [
+    "https://stockanalysis.com/stocks/lulu/",
+    "https://www.alphaquery.com/stock/LULU/volatility-option-statistics/30-day/iv-mean",
+    "https://press.spglobal.com/2026-09-04-Bloom-Energy,-Illumina,-and-Everpure-Set-to-Join-S-P-500-Others-to-Join-S-P-100,-S-P-MidCap-400,-and-S-P-SmallCap-600",
+    "https://www.fool.com/coverage/stock-market-today/2026/09/04/stock-market-today-sept-4-lululemon-plummets-17-after-slashing-guidance/",
+    "https://seekingalpha.com/news/4640229-lulu-stock-sinks-18-michael-burry-calls-lululemon-a-trickster-eyes-dip-buying-under-100",
+    "https://www.marketbeat.com/instant-alerts/price-lululemon-athletica-nasdaq-lulu-hits-new-1-year-low-following-analyst-downgrade-2026-09-04/",
+    "https://finance.yahoo.com/markets/stocks/articles/lululemon-lulu-struggles-analysts-cut-174243651.html",
+    "https://www.tikr.com/blog/lululemon-fell-10-this-week-heres-where-the-stock-could-go-in-2026"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the LULU regular-session Nasdaq CLOSE printed in the 'Close' column of the Yahoo Finance LULU historical page for the single date Sep 17, 2026 — NOT the adjusted close, NOT an intraday/after-hours print, NOT a weekly average. Fallback to Nasdaq or another credible provider only if Yahoo is unavailable. Sep 17, 2026 is a Thursday and a regular Nasdaq session.\n\nEVENT WINDOW: last observed close 2026-09-04 -> observation date 2026-09-17 per the criteria. As of Now (2026-09-07T14:27:57Z) 0% of the remaining sessions have elapsed: Sep 7 is US Labor Day and the Nasdaq is closed, Sep 5-6 was a weekend. Exactly 8 trading sessions remain — Sep 8, 9, 10, 11, 14, 15, 16, 17 (8/252 = 0.0317 of a trading year).\n\nSTATUS-QUO OUTCOME: the Sep 17 close equals the last observed close of $100.61 up to normal 8-session drift.\n\nEVIDENCE (source, date):\n- LULU closed $100.61 on 2026-09-04, -$21.16 / -17.38% on the day; intraday range $97.99-$103.16; the close sat mid-to-upper in that range (stockanalysis.com, 2026-09-04).\n- Prior close was $121.77 on 2026-09-03 (question background; stockanalysis.com).\n- 52-week range as of 2026-09-04: $97.99 - $225.98; the Sep 4 low was an eight-year low (stockanalysis.com; Motley Fool 2026-09-04).\n- Q2 FY26 reported 2026-09-03: EPS $2.92 vs ~$1.80 consensus (beat); revenue $2.42B vs ~$2.46B consensus (miss), -4% YoY; comparable sales -9% (-10% constant currency) (CNBC 2026-09-03; StockStory).\n- FY2026 guidance cut to revenue $10.35-10.50B (-5 to -7% YoY) and EPS $9.48-9.73, from prior $10.95-11.15 EPS; prior-year EPS was $13.26. Q3 revenue guided $2.29-2.32B (-10 to -11% YoY). This was the SECOND guidance cut of FY2026 (the first was in the March 2026 report) (CNBC; 24/7 Wall St 2026-09-04).\n- Analyst price targets reset after the print, all 12-month horizon, ratings largely Neutral/Hold/Equal-Weight: Truist $82 (from $94), Wells Fargo $95 (from $105), Deutsche Bank $98 (from $127), UBS $106 (from $120), Telsey $110 (from $122) (Yahoo Finance / MarketBeat / Benzinga, 2026-09-04). UBS cited assortment not resonating and weak traffic; Wells Fargo said it does not see a credible bull case.\n- Michael Burry publicly stated on Substack he still holds LULU, called it 'the trickster in my portfolio', and said he would add below $100 (Seeking Alpha / Benzinga / 24/7 Wall St, 2026-09-04). Ross Gerber also commented publicly. This is a named, publicly-telegraphed bid interest near the current level.\n- Valuation: at $100.61 against cut FY26 EPS guidance of $9.48-9.73, the forward P/E is roughly 10-11x; market cap is roughly $11-12B. PE was 9.72 on trailing EPS $12.35 at a $120.07 price on 2026-09-02 (fullratio.com).\n- Index events: S&P Dow Jones Indices announced the September rebalance on 2026-09-04, effective before the open 2026-09-21. S&P 500 additions: Bloom Energy, Illumina, Everpure. Deletions: Molson Coors, The Trade Desk, Builders FirstSource. LULU is NOT on either list (S&P Global press release, 2026-09-04). The effective date is also after the Sep 17 observation date.\n- Scheduled in-window macro: FOMC meeting Sep 15-16, 2026 (decision Sep 16, one session before the observation date). Sep 18, 2026 is quarterly options/futures expiry — the day AFTER the observation date, so expiry-day pinning does not apply to the resolving print, though gamma positioning builds into it.\n- Volatility: 30-day mean option-implied vol was 0.4077 on 2026-09-04 (calls 0.4111, puts 0.4044) — this is a POST-earnings-crush reading, the event risk having already passed (AlphaQuery, 2026-09-04). Pre-print, options implied only an ~8.1-9% earnings move versus the ~18% move realized; LULU's median move over the prior eight quarterly prints was 11.9% (TipRanks / Trader Central / optionstradingreport.com, Sep 2026). Beta 0.86 (stockanalysis.com).\n- Company-specific scheduled events between Sep 8 and Sep 17, 2026: searched, none found — no investor day, no scheduled guidance update, no lock-up or offering; next scheduled earnings is Q3 FY26 in December 2026.\n\nBASE RATES / DISPERSION ANCHORS (with the class each is computed over):\n- Over ALL large-cap US equities, unconditional 8-trading-day return: mean approximately +0.3%, essentially a random walk.\n- Over large-cap US equities CONDITIONAL on a >15% single-day earnings/guidance gap-down, subsequent 8-10 trading days: two opposing documented effects roughly offset — post-earnings-announcement drift after a negative guidance surprise runs on the order of -0.5% to -1.5% over two weeks, while short-term reversal in extreme one-day losers runs on the order of +0.5% to +1.5%. Net historical mean is close to zero with wide dispersion.\n- Over the SAME conditional class, realized volatility in the 2 weeks after the gap typically runs AT or ABOVE the post-crush implied vol, not below it.\n- LULU-specific series anchor: with 30-day IV at 40.8% and 8 sessions remaining, the implied one-sigma move is 0.408*sqrt(8/252) = 7.3% of spot (about $7.3); a 42-45% vol assumption gives 7.5-8.0% (about $7.5-8.1).\n- LULU's own 2026 history contains at least two large single-session guidance-driven gaps (late March 2026 around $146 after the first FY26 cut, and Sep 4 2026), i.e. the regime is one of repeated large idiosyncratic jumps rather than quiet drift.\n\nBOTH-DIRECTION EVIDENCE:\n- Downward-pointing: second guidance cut in one fiscal year, comps -9%, Q3 guided down 10-11% YoY, management cites assortment/traffic problems, Truist at $82 and Wells Fargo at $95 sit below spot, the stock made an eight-year low with no nearby chart support, further target cuts can still arrive.\n- Upward-pointing: EPS beat badly (guidance cut is the negative, not current earnings power), forward P/E near 10x on already-cut numbers, a publicly-stated buyer (Burry) at sub-$100, the close finished above the session low rather than at it, UBS/Telsey targets sit above spot, no index deletion materialized, and post-crush IV means options are no longer paying for downside a",
+   "reference_class": "Large-cap US equities over the 8-trading-day window following a >15% single-day earnings/guidance gap-down (near-zero-mean subsequent return, elevated realized volatility) — i.e. a random walk from the last close with post-shock vol"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0478,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2204,
+   "seconds": 64.8,
+   "estimate": {
+    "percentiles": {
+     "10": 90.0,
+     "25": 94.6,
+     "50": 100.0,
+     "75": 105.7,
+     "90": 111.1
+    },
+    "p_below_lower": 0.005,
+    "p_above_upper": 0.006
+   },
+   "reasoning": "Anchor is the Sep 4, 2026 close of $100.61; Sep 7 is Labor Day, so zero price information has arrived since the gap-down and 8 sessions remain (Sep 8-11, 14-17). Over that horizon the price is near a martingale: post-earnings-announcement drift after a guidance cut (mildly negative) and short-term reversal in extreme one-day losers (mildly positive) roughly cancel, and both are small next to the volatility term. Median $100.0 = the last close less the lognormal median drag and a whisker of drift; analyst targets straddle spot ($80-82 low, $122 high, consensus $110-116), giving no directional pull. Width, not direction, is the work: post-crush IV 40.8% marked to ~45% for post-gap realized-vol behavior gives a 10-90 span of ~$21. In-window catalysts are macro not company-specific (FOMC Sep 16, one session before; Sep 18 triple-witching just after), plus the new CEO's Sep 8 start, which adds uncertainty in both directions. Escape mass is small but named: below $75 needs ~-25% (a second shock or a broad-market break), above $130 needs ~+30% (takeover/LBO/activist at an ~$11B cap on ~10x cut EPS).",
+   "sources": [],
+   "reconciliation": "Runs 1-3 agreed on the resolving instrument (Yahoo 'Close' column, Sep 17 2026, Nasdaq regular session), the anchor ($100.61 on Sep 4), the session count (8), and that no human market prices this contract. Factual disputes: (a) whether this was the second or fourth FY2026 guidance cut — unsettleable without web access, and immaterial since no run draws drift from it; (b) a vendor $96.26 'low' conflicting with the $97.99 session low — all three flagged it as not a regular-session print, so it does not touch the anchor; (c) consensus target level, which differs only by analyst panel and straddles spot in every version; (d) Run 2's claim that a 25bp Fed hike is live on Sep 16, unverified, carried as two-sided tail width rather than direction. The one substantive JUDGMENT split was dispersion (19.5 / 20.5 / 22.3). I resolved it toward the wider readings: Runs 2 and 3 apply the correction that realized vol runs at-or-above post-crush IV in the two weeks after a large gap, which Run 1 omits; marking IV 40.8% up to ~45% gives sigma_8d ~8.2% and a 10-90 of ~$21. I carry forward the runs' shared reference class (post->15%-gap 8-session windows) because I agree with it. Center is set by the near-zero net of PEAD and reversal, not by averaging the runs.",
+   "disagreements": [
+    {
+     "claim": "This was the fourth FY2026 guidance cut (Runs 1,2) vs the second (Run 3)",
+     "kind": "factual",
+     "verdict": "Could not settle — no web access; both readings are consistent with the reported March and September cuts depending on whether intra-quarter revisions are counted. Immaterial: no run derives directional drift from the count, and the market has already repriced on the September cut itself."
+    },
+    {
+     "claim": "A $96.26 low exists 'as of Sep 6 2026', conflicting with the $97.99 Sep-4 session low",
+     "kind": "factual",
+     "verdict": "Unresolved but neutralized — Sep 5-6 was a weekend and Sep 7 is Labor Day, so no regular session could have produced it; all three runs treat it as an extended-hours or stale-vendor artifact. The resolving instrument is the regular-session close, so the $100.61 anchor is unaffected."
+    },
+    {
+     "claim": "Sell-side consensus target is $109.83 vs $115.62 vs $116.46",
+     "kind": "factual",
+     "verdict": "All three are real figures from different analyst panels (Barchart 34, MarketBeat 23, Yahoo). No reconciliation needed: every version straddles the spot price, so the signal is zero either way on an 8-session horizon."
+    },
+    {
+     "claim": "A 25bp rate HIKE is live at the Sep 15-16 FOMC (Run 2 only)",
+     "kind": "factual",
+     "verdict": "Unverified this run. Carried as added two-sided tail width one session before resolution, not as a directional term — an FOMC surprise cuts both ways for a beta-0.86 name."
+    },
+    {
+     "claim": "Michael Burry publicly said he would add LULU below $100 (Run 3 only)",
+     "kind": "factual",
+     "verdict": "Single-sourced and uncorroborated by the other two dossiers. Noted as mild support just beneath the anchor; not weighted enough to lift the median."
+    },
+    {
+     "claim": "Correct 8-session dispersion: ~19.5 vs ~20.5 vs ~22.3 (10-90 in dollars)",
+     "kind": "judgment",
+     "verdict": "Resolved toward the wider readings. Runs 2 and 3 apply the documented tendency for realized vol to run at-or-above post-crush IV after a large gap; Run 1 uses the crushed IV as-is. Marking 40.8% up to ~45% yields ~$21, and that is where I set the width."
+    },
+    {
+     "claim": "Direction of the median relative to the $100.61 anchor",
+     "kind": "judgment",
+     "verdict": "No evidence breaks the tie — PEAD after a guidance cut and one-day-loser reversal are both roughly 0.5-1.5% and offset. I take the reading I would bet on: median $100.0, i.e. the anchor less the lognormal median drag, with no meaningful directional tilt."
+    }
+   ],
+   "reference_class": "Large-cap US equities 8 trading sessions after a >15% single-day earnings/guidance gap-down, with no earnings or scheduled company event inside the window"
+  }
+ ]
+}
