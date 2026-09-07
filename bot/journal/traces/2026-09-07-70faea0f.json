@@ -1,0 +1,294 @@
+{
+ "record_id": "2026-09-07-70faea0f",
+ "question": "How many metric tons of net US soybean sales to China (2026/27 marketing year) will the USDA Weekly Export Sales report released September 17, 2026 show?",
+ "question_id": 45720,
+ "url": "https://www.metaculus.com/questions/45529/",
+ "question_type": "numeric",
+ "forecast_at": "2026-09-07T08:34:50+00:00",
+ "effort": "high (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P,P)",
+ "cost_usd": 5.4835,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 305000.0,
+    "25": 575000.0,
+    "50": 872500.0,
+    "75": 1242500.0,
+    "90": 1692500.0
+   },
+   "p_below_lower": 0.01,
+   "p_above_upper": 0.03375
+  },
+  "phase1": {
+   "10": 305000.0,
+   "25": 575000.0,
+   "50": 872500.0,
+   "75": 1242500.0,
+   "90": 1692500.0
+  },
+  "phase2": null,
+  "spread_phase1": 130000.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 340000.0,
+   "25": 610000.0,
+   "50": 880000.0,
+   "75": 1210000.0,
+   "90": 1610000.0
+  },
+  "p_below_lower": 0.01,
+  "p_above_upper": 0.03
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.2073,
+   "seconds": 334.7,
+   "estimate": {
+    "percentiles": {
+     "10": 250000.0,
+     "25": 500000.0,
+     "50": 820000.0,
+     "75": 1230000.0,
+     "90": 1720000.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Reference class: weekly FAS net soybean sales to China for the current MY in early-September reporting weeks of China-engaged years (2016-22, 2024), median ~1.0 MMT; the realized 2026/27 series (0.52-1.45 MMT, median ~0.97) sits just below that. I start at ~1.0 MMT and adjust down modestly to a ~0.82 MMT median: the Sep 4-10 window holds only ~4 business days (Labor Day Sep 7 falls inside it), the one day of the window already observed produced a 250.6k flash to *unknown* rather than China, the last three published weeks trend below the early-August peak, and Sep 11 WASDE plus an expected late-September Xi visit give buyers a reason to wait. Offsetting upside: September is the seasonal peak for US-origin business (Brazil out of stock), China is only ~7.8 MMT booked against a 25 MMT pledge, a 5.54 MMT unknown book is available to switch to China as loadings begin (switches enter the net-sales column), and reporting suggests pre-summit goodwill buying. Right tail is fatter than left: a bulk switch or a multi-cargo state tranche can print >2.5 MMT (priced 5%); a negative print below -300k needs a trade rupture with no current signal (1%). No prediction market prices this, and I could not reach fas.usda.gov directly (403), so all series values are secondhand from trade press - evidence on the target week itself is genuinely near-absent, which is why I stay close to the reference class rather than reading the early-September flash pace as signal.",
+   "sources": [
+    "https://www.brownfieldagnews.com/news/china-makes-up-most-of-weeks-soybean-export-sales/",
+    "https://www.brownfieldagnews.com/news/china-continues-to-drive-26-27-soybean-export-sales/",
+    "https://www.rfdtv.com/china-soybean-buying-lifts-new-crop-export-sales-sharply",
+    "https://www.admis.com/ag-market-view-for-sept-4-2026/",
+    "https://ukragroconsult.com/en/news/china-accounted-for-nearly-39-of-weekly-sales-of-new-crop-us-soybeans/",
+    "https://www.economies.com/commodities/soybeans-news/china-steps-up-purchases-of-us-soybeans-ahead-of-xi-jinpings-expected-visit-to-washington-49414",
+    "https://www.crisismonitor.gr/2026/09/07/i-kineziki-zitisi-krata-psila-tis-times-sti-sogia/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the single 'net sales' cell for destination 'China, Peoples Republic of', commodity soybeans, marketing year 2026/2027, in the USDA FAS Weekly Export Sales release of Thu 2026-09-17 08:30 ET. Not off daily 'flash' announcements, not off total commitments, not off sales to 'Unknown destinations', not off 2025/26. FAS net sales for a destination incorporate new sales minus cancellations AND destination changes, so reassignments out of the Unknown book appear as positive China net sales (offset by negative Unknown).\n\nEVENT WINDOW: FAS reporting weeks run Friday through Thursday, so the report covering 'week ending Thursday September 10, 2026' spans 2026-09-04 -> 2026-09-10. As of Now (2026-09-07T08:04Z) ~48% elapsed by calendar. By US business days: 1 of 4 elapsed (Fri Sep 4 done; Mon Sep 7 is Labor Day, USDA and CBOT closed; Sep 8, 9, 10 remain). Daily flash announcements lag one business day, so as of Now no flash announcement covering any sale made inside the window has been published except Sep 4's (see below); the Sep 1/2/3 announcements cover sales made Aug 31-Sep 2, i.e. the PRIOR reporting week (ending Sep 3), whose report publishes 2026-09-10.\n\nBASE RATES:\n- Over the realized 2026/27 weekly China series (source: Brownfield Ag News, RFD-TV, UkrAgroConsult weekly write-ups): wk ending Jul 23 = 519k t; Aug 6 = 1,446k t; Aug 13 = 1,131k t; Aug 20 = 712k t; Aug 27 = 972k t. One earlier July week reported China 1,056k t. Sample median ~0.97 MMT, min 0.52, max 1.45, SD ~0.34 MMT.\n- Over early-September reporting weeks in years when China was an active buyer of US origin (2016-2022, 2024), current-MY weekly China net sales have typically fallen in the ~0.3-2.5 MMT band with median near 1.0 MMT; 2020 produced multiple weeks above 2 MMT. In 2025, with China absent on tariffs, comparable weeks were near zero.\n- Over reporting weeks that contain a US federal holiday, the window has 4 rather than 5 business days.\n\nEVIDENCE (source, date):\n- ADM Investor Services, Ag Market View, 2026-09-04: week ending Aug 27 China new-crop purchases of 972k t took China 2026/27 commitments to 7.761 MMT; a further 5.54 MMT stands to unknown destinations, of which the analyst estimates 50-60% is China-bound.\n- ADM Investor Services, 2026-09-04: the only USDA daily flash reported that day was 250.6k t (9.2 mil bu) to an UNKNOWN buyer, not to China.\n- ADM Investor Services, 2026-09-04: analyst puts China's effective purchases near 12 MMT and expects the halfway point of the 25 MMT pledge to be passed before Xi's Washington visit, described as ~3 weeks out (i.e. ~late September, AFTER this report).\n- Economies.com / Reuters-derived, 2026-09-04: USDA confirmed 192k t to China 2026/27, following 202k t the prior day and 136k t on Tue Sep 1; total flashes to China announced since the start of September = 530k t. All three correspond to sales made Aug 31-Sep 2 (prior reporting week).\n- Crisis Monitor (Greek market wire), 2026-09-07: soybean futures above $13/bu, near highest since Dec 2023; cumulative 2025/26 exports 40.76 MMT; 2026/27 outstanding sales across all destinations 16.28 MMT; 2025/26 net sales fell 94.2k t in the week ending Aug 27.\n- USTR (Greer) via wire coverage, early Sep 2026: US and China expected to announce agriculture and non-tariff-barrier measures during Xi's Washington visit this month; traders watching for a cut in Chinese tariffs on US farm goods.\n- The Country Today, 2026-09-06: 2026/27 US soybean sales across all destinations total 11.85 MMT, double last year's pace and the largest start in four years.\n- Barchart headline, ~2026-09-04: 'Soybeans fall into the weekend as traders fade Chinese purchases' - i.e. the market treated the early-September China flashes as small relative to positioning.\n- Structural: private Chinese crushers face ~13% duty on US beans vs ~3% on Brazilian origin, so nearly all current US business is state-directed (COFCO, Sinograin) and arrives in policy-timed lumps rather than on a price-driven schedule.\n- Structural/seasonal: Brazilian old-crop supply is largely exhausted by September, making US origin the residual supplier for Sep-Jan; US harvest begins mid-September and vessel loadings to China ramp through October, which is when destination switches out of the Unknown book normally accelerate.\n- Calendar: USDA WASDE releases 2026-09-11, one day after the window closes. USDA offices closed Mon 2026-09-07 (Labor Day). FAS reporting deadline for exporters is 11:59 pm ET the Monday after the reporting week; FAS publishes Thursdays 08:30 ET.\n- Counter-direction: analysts through mid-2026 remained skeptical the 25 MMT/yr pledge would be met; USDA balance sheets assume closer to 15 MMT of Chinese buying for 2026/27.\n\nSTATUS QUO OUTCOME: absent a policy event, the report prints another week in the same band the 2026/27 series has occupied since July - a mid-to-high six-figure to low-seven-figure positive number, driven by state-directed cargo tranches plus any destination reassignments, with no mechanism currently pushing it negative.\n\nSEARCHED FOR BUT COULD NOT FIND: (a) any prediction market or bookmaker pricing this quantity - Polymarket and Manifold title searches returned nothing and no Kalshi contract on FAS weekly export sales surfaced; (b) the published week-ending-Sep-3 figure (not released until 2026-09-10); (c) any USDA daily flash announcement dated Sep 8 or later (none exist yet as of Now); (d) direct fas.usda.gov pages - the site returned HTTP 403 to every fetch attempt, so all series values here are secondhand from trade press; (e) a published trade-estimate range specifically for China's share of the Sep-10-week sales (only all-destination soybean ranges of 12-65 and 45-95 mil bu were quoted, and those attach to earlier reports); (f) a confirmed date for the Xi Washington visit.",
+   "reference_class": "Weekly USDA FAS net export sales of U.S. soybeans to China for the then-current marketing year, in the first-half-of-September reporting weeks of years when China was an active buyer of U.S. origin (2016-2022, 2024), combined with the realized 2026/27 weekly China series from July-August 2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.2448,
+   "seconds": 493.8,
+   "estimate": {
+    "percentiles": {
+     "10": 370000.0,
+     "25": 640000.0,
+     "50": 900000.0,
+     "75": 1220000.0,
+     "90": 1600000.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.04
+   },
+   "reasoning": "Reference class is the 2026/27 China weekly new-crop net-sales series under the state-directed buying program: median ~1.05 MMT, last four weeks 1,446/1,131/1,102/972 kt. I shade the median below that because (a) the four-week trend is a clean ~13%/week decay, (b) the window contains Labor Day, giving 4 business days not 5, (c) prices sit above $13/bu near 26-month highs, which historically stalls Chinese state buying, and (d) buyers may wait for the Sept 11 WASDE, one day after the window closes, and hold announcements for the Sept 24 Xi White House visit. Offsetting upside: the 2026/27 MY began Sept 1, so unknown-destination balances (669 kt added the week of Aug 27, 250.6 kt on Sept 3) begin switching to China as positive net sales, and China needs roughly 1 MMT/week to stay near the 25 MMT pledge. Crucially I observe nothing inside the target window - the widely-cited ~530 kt of early-September flashes were sales made Aug 31-Sep 2 and land in the prior reporting week - so dispersion stays near full reference-class width rather than being narrowed by within-window data. Upper escape priced for a pre-summit block purchase plus large unknown-to-China reassignment; lower escape requires net washouts beyond 300 kt, which nothing in the evidence supports.",
+   "sources": [
+    "https://www.brownfieldagnews.com/news/china-makes-up-most-of-weeks-soybean-export-sales/",
+    "https://www.brownfieldagnews.com/news/china-continues-to-drive-26-27-soybean-export-sales/",
+    "https://www.allagnews.com/china-soybean-buying-lifts-new-crop-export-sales-sharply/",
+    "https://www.brownfieldagnews.com/news/feed-demand-fuels-26-27-corn-soybean-meal-export-sales/",
+    "https://www.brownfieldagnews.com/news/china-drives-new-crop-u-s-soybean-export-sales/",
+    "https://www.brownfieldagnews.com/news/unknown-china-boost-new-crop-u-s-soybean-export-sales/",
+    "https://finance.yahoo.com/markets/commodities/articles/soybeans-correct-lower-long-weekend-215011695.html",
+    "https://www.optionstradingreport.com/2026/09/xi-is-bringing-ceos-to-washington-watch-what-gets-signed/",
+    "https://www.crisismonitor.gr/2026/09/07/i-kineziki-zitisi-krata-psila-tis-times-sti-sogia/",
+    "https://www.fas.usda.gov/data/export-sales"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the single 'net sales' cell for destination 'China, Peoples Republic of' in the 2026/2027 marketing-year column of the USDA FAS Weekly Export Sales report released Thu 2026-09-17 08:30 ET. NOT off daily 'flash' announcements, NOT off outstanding-sales or accumulated-export totals, NOT off sales to 'Unknown destinations', NOT off the 2025/26 column. Net sales = new sales minus cancellations minus reductions, PLUS destination reassignments into China (an unknown-to-China switch is a positive entry on the China line). Value entered as reported, negative allowed. Annulled only if the report is permanently discontinued.\n\nEVENT WINDOW: Fri 2026-09-04 -> Thu 2026-09-10 per the criteria (the report covers the reporting week ending Thursday Sept 10). As of Now 2026-09-07T08:04:12Z, ~48% of calendar time elapsed; in business-day terms 1 of 4 trading days complete, because Mon Sept 7 2026 is Labor Day, a US federal holiday. A normal FAS reporting week contains 5 business days; this one contains 4.\n\nTIMING MECHANICS (load-bearing): a sale is counted in the reporting week in which the CONTRACT was made, not the week it was announced. USDA daily-sale announcements (required for >=100,000 t of one commodity to one destination in one day) are published the next business day. Therefore sales contracted Sept 4 are announced Tue Sept 8 (Mon Sept 7 is the holiday), and sales contracted Thu Sept 10 are announced Fri Sept 11 - after the window closes but before the Sept 17 release. No daily announcement covering any part of this window had been published as of Now.\n\nEVIDENCE BULLETS:\n- FAS weekly report, week ending 2026-08-27 (released Sept 3): total 2026/27 soybean net sales 1,948,900 t; China 972,000 t; unknown destinations 669,000 t. Source: Brownfield Ag News, 2026-09-03.\n- Week ending 2026-08-20: 2026/27 total ~91 mbu; China ~40.5 mbu (~1,102,000 t); unknown ~38.4 mbu. Source: AllAgNews / RFD-TV, Aug 2026.\n- Week ending 2026-08-13: 2026/27 total 1,723,000 t; China 1,131,000 t; unknown 222,000 t. Source: Brownfield Ag News.\n- Week ending 2026-08-06: 2026/27 total 1,759,900 t; China 1,446,000 t; unknown 272,000 t. Source: Brownfield Ag News.\n- Week ending 2026-07-23: 2026/27 total ~1.33 MMT; China ~519,000 t (~39% of the week). Source: shipping/market monitor summary, Jul 2026.\n- Week ending 2026-07-09: 2026/27 total 1,769,600 t; China 1,056,000 t; unknown 624,600 t. Source: Brownfield Ag News.\n- Week ending 2026-06-18: 2026/27 total 902,200 t; unknown 529,000 t; China 200,000 t. Source: Brownfield Ag News.\n- Daily announcements to China, all 2026/27 MY: 136,000 t (announced Tue Sept 1), 202,000 t (Wed Sept 2), 192,000 t (Thu Sept 3) = 530,000 t. By the contract-date rule these sales were made Aug 31-Sept 2 and belong to the reporting week ending Sept 3, whose report publishes Sept 10 - one week BEFORE the report this question resolves on. Sources: USDA FAS newsroom via Reuters/AskNews, 2026-09-03/04.\n- A single 712,000 t (26.2 mbu) China daily sale was announced Fri 2026-08-21 (contract date Aug 20). Source: Farm Progress flash-sales tracker.\n- Friday 2026-09-04 market recap: a 250,600 t daily sale to unknown destinations was announced; total announced sales that week reached 939,600 t across unknown and China. 2026/27 soybean commitments (all destinations) stood at 16.28 MMT, more than double the prior year and 36% of USDA's full-year projection; 2025/26 old-crop commitments 41.86 MMT, down 18% y/y. Source: Barchart via Yahoo Finance, 2026-09-04.\n- 2025/26 (old-crop) soybean net sales for the week ending Aug 27 were NEGATIVE 94,200 t - relevant only as an excluded column, but shows negative weekly prints do occur in this report.\n- Policy backdrop: after the Oct-2025 Busan summit China pledged ~25 MMT of US soybeans annually 2026-2028; a May-2026 White House fact sheet adds a $17bn/yr agricultural commitment (prorated 2026). USDA balance sheets have been built on roughly 15 MMT of Chinese buying for 2026/27, i.e. materially below the pledge. Sources: White House fact sheet 2026-05; CNBC 2026-05-18.\n- Calendar: Xi Jinping is scheduled at the White House on 2026-09-24, with a state dinner; USTR has said agricultural and non-tariff-barrier measures are expected to be announced then. This falls AFTER the event window and after the Sept 17 release. Source: Options Trading Report, Sept 2026.\n- Calendar: USDA WASDE / crop production update is scheduled 2026-09-11 - one day AFTER the window closes, six days before the release. National soybean crop condition ratings are at a multi-year low with hot, dry near-term weather. Sources: Barchart 2026-09-04; CME/market previews.\n- Price backdrop: soybean futures held above $13.00/bu in early September, near the highest level since December 2023. Prior episodes in this series show Sinograin/COFCO stepping up specifically on price DIPS (e.g. the late-July cargo push was attributed to a drop in prices), and market commentary in early September described physical export sales as weak relative to the price level. Sources: Reuters/Trading Economics via AskNews 2026-09-07; Reuters exclusive on state-trader cargo buying, Jul 2026.\n- Structural: buying is state-directed. Private Chinese crushers face ~13% tariff on US origin vs ~3% on Brazilian, so volumes arrive in lumpy state-agency blocks (Sinograin auctioned ~504,000 t of stored imported beans to make room for incoming US cargoes), not smooth commercial flow. This makes the weekly series lumpy rather than mean-reverting week to week.\n- Structural: with the 2026/27 marketing year having begun 2026-09-01, previously-booked 'unknown destination' tonnage becomes eligible for reassignment to named destinations as vessels are nominated; such switches post as positive net sales on the China line. The outstanding unknown-destination 2026/27 balance built through Jun-Aug is large (669,000 t and 250,600 t added in the two most recent weeks alone).\n\nBASE RATES BY CLASS:\n- Over ALL observed 2026/27 C",
+   "reference_class": "Weekly USDA FAS net soybean export sales to China for the new (2026/27) marketing year during the June-August 2026 state-directed Chinese buying regime"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.2227,
+   "seconds": 377.1,
+   "estimate": {
+    "percentiles": {
+     "10": 420000.0,
+     "25": 680000.0,
+     "50": 950000.0,
+     "75": 1300000.0,
+     "90": 1720000.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.025
+   },
+   "reasoning": "Reference class: the six published weeks of 2026/27 China net soybean sales (Jul 9-Aug 27 2026), mean ~1.04 MMT, SD ~0.30 MMT, range 0.52-1.45 MMT. Status quo for a one-week-ahead print is continuation near 1 MMT. I shade the median slightly below the class mean to ~0.95 MMT: the window has only 4 business days (Labor Day Sept 7), the last four weeks trend down (1.446 -> 1.131 -> 1.101 -> 0.972), beans above $13 are the highest since Dec 2023, and 16.28 MMT of new-crop is already booked (36% of USDA's projection), so state buyers may hold deliverables for the Sept 24 Xi visit rather than book them in this window. Offsetting and holding the right tail fat: September is seasonally the heaviest booking month, pre-summit accumulation is documented, and switches out of a multi-MMT 'unknown' book now post as China net sales. Crucially, none of the widely-quoted 530k of early-September flashes fall in this window - they were transacted Aug 31-Sept 2 and belong to the week ending Sept 3 - and the only Sept 4 flash was 250,600 t to unknown, so I have no direct read on the target week and stay close to the base rate with wide bars. p_above_upper 0.025 prices a pre-summit mega-tender exceeding 2.5 MMT (no week in this regime has exceeded 1.45 MMT); p_below_lower 0.01 prices a trade rupture forcing >300k of net COFCO/Sinograin washouts inside one week. No human market prices this contract, so no blend.",
+   "sources": [
+    "https://www.brownfieldagnews.com/news/unknown-china-boost-new-crop-u-s-soybean-export-sales/",
+    "https://www.brownfieldagnews.com/news/china-drives-new-crop-u-s-soybean-export-sales/",
+    "https://www.brownfieldagnews.com/news/china-makes-up-most-of-weeks-soybean-export-sales/",
+    "https://www.brownfieldagnews.com/news/china-continues-to-drive-26-27-soybean-export-sales/",
+    "https://www.brownfieldagnews.com/news/new-crop-soybean-exports-soar-new-crop-corn-sales-solid/",
+    "https://www.brownfieldagnews.com/news/feed-demand-fuels-26-27-corn-soybean-meal-export-sales/",
+    "https://finance.yahoo.com/markets/commodities/articles/soybeans-correct-lower-long-weekend-215011695.html",
+    "https://public.axsmarine.com/blog/chinese-buying-builds-the-next-us-soybean-export-programme",
+    "https://www.crisismonitor.gr/2026/09/07/i-kineziki-zitisi-krata-psila-tis-times-sti-sogia/",
+    "USDA FAS Weekly Export Sales report series (fas.usda.gov/data/export-sales; direct fetch returned HTTP 403, figures taken from the trade-press summaries listed above)"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the single line 'Soybeans / China, Peoples Republic of / 2026-2027 net sales' in the USDA FAS Weekly Export Sales report released Thu 2026-09-17 08:30 ET. NOT off daily 'flash' announcements, NOT off sales to 'Unknown', NOT off 2025/26 old-crop, NOT off exports/shipments. Negative prints are entered as reported. FAS publishes weekly, Thursdays 08:30 ET; the release is 7 days after the window closes. No US government shutdown can affect this release (FY2027 begins Oct 1, after resolution).\n\nEVENT WINDOW: 2026-09-04 -> 2026-09-10 per the criteria (FAS reporting weeks run Friday through Thursday, ending on the stated Thursday). As of Now 2026-09-07T08:04Z, ~48% elapsed by calendar time but only 1 of 4 business days (Mon Sept 7 is Labor Day; CBOT closed). Derived from the criteria text, not from any forecasting-close time.\n\nSTATUS-QUO OUTCOME: the print continues the recent run of weekly 2026/27 China net sales observed through late August, adjusted for a 4-business-day week.\n\nBASE RATES / SERIES (USDA FAS weekly, 2026/27 net soybean sales to China, metric tons):\n- Over the six reported weeks of the 2026 forward-buying period (w/e Jul 9, Jul 23, Aug 6, Aug 13, Aug 20, Aug 27): 1,056,000 / ~519,000 / 1,446,000 / 1,131,000 / 1,101,000 / 972,000. Mean ~1,038,000; median ~1,079,000; SD ~301,000; min ~519,000; max 1,446,000. (Brownfield Ag News weekly recaps, Jul 16 / Aug 13 / Aug 20 / Aug 27 / Sep 3 2026; AXS Marine blog for w/e Jul 23.)\n- Over the earlier ramp-up weeks (conditional on 'before China's pace accelerated in July'): w/e Jun 18 2026 was 200,000 t out of 902,200 t total new-crop (Brownfield, Jun 25 2026).\n- Over the last four reported weeks only (conditional on 'the current buying regime'): 1,446,000 / 1,131,000 / 1,101,000 / 972,000 — a monotone decline.\n- China's share of total weekly 2026/27 sales across these weeks ranges ~22% (Jun 18) to ~82% (Aug 6); ~50% (Aug 27).\n\nEVIDENCE BULLETS (source + date):\n1. w/e Aug 27 2026 (report released Sep 3): 2026/27 soybean sales 1,948,900 t total — China 972,000 t, unknown 669,000 t, Egypt 207,000 t. Old-crop 2025/26 net sales were MINUS 94,181 t (normal end-of-year cancellations). [Brownfield Ag News, 2026-09-03; Barchart/Yahoo commentary 2026-09-04]\n2. Daily flash sales to China for 2026/27: 136,000 t announced Tue Sep 1; 202,000 t announced Wed Sep 2; 192,000 t announced Thu Sep 3 — 530,000 t total. Under FAS rules a flash announced on day D reflects a transaction on the prior business day, placing all three in the reporting week ending Sep 3, i.e. the Sep 10 release. [Reuters/Business Recorder and Crisis Monitor summaries, 2026-09-03 to 2026-09-07]\n3. Fri Sep 4 2026 flash: 250,600 t of 2026/27 soybeans to UNKNOWN destinations. No China flash was announced Sep 4. Cumulative flashes announced across that week totalled 939,600 t to China plus unknown combined. [Barchart 'Soybeans Correct Lower into the Long Weekend', 2026-09-04 17:50 EDT]\n4. Cumulative 2026/27 (new-crop) commitments all destinations: 16.28 MMT as of w/e Aug 27 — more than double the year-ago pace and ~36% of USDA's full-year export projection already booked before the marketing year began. Old-crop 2025/26 commitments 41.86 MMT, down 18% y/y, 101% of USDA's projection. [Barchart, 2026-09-04; Crisis Monitor, 2026-09-07]\n5. China's cumulative 2026/27 book is not published as a standalone weekly headline; implied from weekly China shares it is on the order of 8-10 MMT against the 25 MMT/yr pledge from the Oct-2025 Trump-Xi summit. USDA balance sheets are reported to assume closer to 15 MMT of Chinese buying for 2026/27; analysts are publicly skeptical of the 25 MMT figure. [StoneX 'China's US Soybean Pledge Faces a 10-Million-Ton Credibility Test'; question background]\n6. Xi Jinping is scheduled to visit the United States on Sept 24 2026 — two weeks AFTER this reporting window closes. USTR Greer has said agricultural and non-tariff-barrier measures are expected to be announced during the visit. Press reporting frames recent Chinese buying as occurring 'ahead of' that visit. [SCMP; Ukragroconsult; economies.com, Aug-Sep 2026]\n7. Tariff structure: private Chinese crushers face ~13% duty on US beans vs ~3% on Brazilian origin, so essentially all recent US purchases are state-directed (COFCO, Sinograin) and arrive in lumpy multi-cargo tenders rather than a smooth daily flow. [question background; consistent with trade press]\n8. Price context: CBOT soybeans above $13.00/bu in early September 2026, near the highest since December 2023, on Chinese demand plus crop-condition concerns. Futures corrected lower into the Sept 4-7 long weekend. [TradingEconomics; Barchart, 2026-09-04; Crisis Monitor, 2026-09-07]\n9. Physical flow lags paper: US-China soybean departures were running only ~11,000 t/day (7-day MA) in late July despite heavy forward booking, i.e. a large undelivered pipeline. [AXS Marine blog, 2026]\n10. A large 'unknown destinations' balance has accumulated through Jul-Sep (e.g. 1,046,000 t in w/e Aug 20; 669,000 t in w/e Aug 27; 250,600 t flashed Sep 4). Under FAS accounting, a destination change from Unknown to China is recorded as a positive net sale to China in the week the switch is reported.\n11. Structural change at the window: the 2026/27 marketing year became the CURRENT year on Sep 1 2026, so this line is no longer a 'new-crop' forward book but the active year, and both new sales and cancellations/switches post to it.\n12. Precedent for large single-day China buys in this regime: a 472,000 t single-day sale to China was reported in August 2026, described as the largest daily sale to China since November. [American Ag Network, 2026-08-11]\n13. Comparable-window count: of the six reported 2026/27 weekly China prints in Jul-Aug 2026, six of six were positive and none exceeded 1.5 MMT; the only 2025/26 negative print in the recent record is the -94,181 t old-crop figure in w/e Aug 27, which is end-of-marketing-year housekeeping rather than p",
+   "reference_class": "Weekly USDA FAS net US soybean export sales to China for the 2026/27 marketing year, over the six reported weeks of the 2026 forward-buying period (weeks ending July 9 through August 27, 2026)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 4,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.4477,
+   "seconds": 490.7,
+   "estimate": {
+    "percentiles": {
+     "10": 180000.0,
+     "25": 480000.0,
+     "50": 820000.0,
+     "75": 1220000.0,
+     "90": 1730000.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Reference class (Sept reporting weeks, active-buying years) medians near 0.9 MMT with a very wide tail. The 2026/27 series itself has printed 0.90-1.45 MMT for six consecutive weeks (w/e Aug 27: 972k), so persistence argues near 1.0 MMT. Two specific facts pull the center down: the Sept 4-10 window contains Labor Day, leaving four transaction days instead of five, and the early-September China flash pace (136k/202k/192k = 530k over three days) is well below August's 333k-713k blocks, with Sept 4's 250,600 t going to unknown destinations rather than China. Offsetting upside: the Sept 24 Xi-Washington summit gives COFCO/Sinograin an incentive to keep visible buying going, and the start of the shipping season lets unknown-destination cargoes switch to China, which posts as positive China net sales. No prediction market prices this print (Polymarket, Manifold, Kalshi, bookmakers all checked; none found), so no crowd anchor. I center near 820k with a wide right-skewed spread: a single state block or a switch wave can double the print, while a pre-summit pause could leave it near a few hundred thousand. Negative prints require net cancellations, plausible only on a trade blowup - priced thin.",
+   "sources": [
+    "https://www.brownfieldagnews.com/news/china-continues-to-drive-26-27-soybean-export-sales/",
+    "https://www.brownfieldagnews.com/news/china-makes-up-most-of-weeks-soybean-export-sales/",
+    "https://www.brownfieldagnews.com/news/china-drives-new-crop-u-s-soybean-export-sales/",
+    "https://www.brownfieldagnews.com/news/unknown-china-boost-new-crop-u-s-soybean-export-sales/",
+    "https://www.rfdtv.com/china-soybean-buying-lifts-new-crop-export-sales-sharply",
+    "https://www.riotimesonline.com/grains-soy-corn-latam-saturday-september-5-2026/",
+    "https://uafinances.com/news/commodities-and-futures-contracts/soybean-price-cbot-futures-chinese-export-demand-tariffs",
+    "https://www.usnews.com/news/world/articles/2026-09-04/exclusive-chinas-xi-to-bring-large-ceo-delegation-on-us-visit-sources-say",
+    "https://www.crisismonitor.gr/2026/09/07/i-kineziki-zitisi-krata-psila-tis-times-sti-sogia/",
+    "https://www.brownfieldagnews.com/market-news/soybeans-see-profit-taking-as-corn-wheat-close-mixed/",
+    "USDA FAS Weekly Export Sales / Export Sales Reporting Program (fas.usda.gov/data/export-sales - direct fetch returned HTTP 403; figures obtained via trade-press reporting of the releases)"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the USDA FAS Weekly Export Sales release of Thu 2026-09-17 08:30 ET, the 'China, Peoples Republic of' line for soybeans, 2026/2027 marketing year, NET sales (new sales minus cancellations, and inclusive of destination changes into/out of China). NOT the daily 'flash' announcements, NOT sales to 'Unknown', NOT 2025/26 old crop, NOT shipments/exports.\n\nEVENT WINDOW: 2026-09-04 -> 2026-09-10 (FAS reporting weeks run Friday through Thursday; derived from the criteria's 'reporting week ending Thursday, September 10, 2026'). As of Now 2026-09-07T08:04Z, ~48% of the calendar window elapsed. In transaction days: the window contains 4 U.S. business days (Sept 4, 8, 9, 10) because Mon Sept 7 is Labor Day; 1 of those 4 has occurred.\n\nSTATUS-QUO OUTCOME: continuation of the eight-week pattern of state-directed Chinese bookings of U.S. new-crop beans, adjusted for a four-business-day week.\n\nWEEKLY SERIES, net 2026/27 soybean sales to China as reported (source: Brownfield Ag News and RFD-TV writeups of each FAS release):\n- w/e 2026-06-18: 200,000 t China; 529,000 t unknown (pub. 2026-06-25)\n- w/e 2026-07-09: 1,056,000 t China, of 1,769,600 t total 2026/27 (pub. 2026-07-16)\n- w/e ~2026-07-30: ~904,000 t China\n- w/e 2026-08-06: 1,446,000 t China, of 1,759,900 t total; China >80% of the total (pub. 2026-08-13)\n- w/e 2026-08-13: 1,131,000 t China, of 1,723,000 t total; unknown 222,000 t (pub. 2026-08-20)\n- w/e 2026-08-20: ~40.5 mbu China (~1,102,000 t) of ~91 mbu total 2026/27; unknown 38.4 mbu (RFD-TV, pub. 2026-08-31)\n- w/e 2026-08-27: 972,000 t China, of 1.948 MMT total 2026/27; unknown 669,000 t; Egypt 207,000 t; old-crop 2025/26 a net reduction of 94,200 t (releases of 2026-09-03)\n- w/e 2026-09-03: NOT YET PUBLISHED; scheduled release 2026-09-10, i.e. one week before the resolving report.\n\nDAILY FLASH ANNOUNCEMENTS, 2026/27 delivery (USDA daily reporting; announcement date lags the transaction by roughly one business day):\n- Aug 28 + Aug 31 announcements: 567,000 t combined (China/unknown split not separately reported)\n- Sept 1: 136,000 t China; Sept 2: 202,000 t China; Sept 3: 192,000 t China (530,000 t over three days)\n- Sept 4: 250,600 t to UNKNOWN destinations, not China; this was described as the sixth consecutive business day with an announced sale to either unknown or China, running total 1,347,600 t\n- August comparison blocks announced to China: 238,000 t; 333,000 t; 488,000 t; 712,000 t; and 26.2 mbu (~713,000 t) announced Fri Aug 21.\n- No China flash announcement located for Sept 4-6; U.S. markets closed Mon Sept 7 (Labor Day).\n\nBASE RATES:\n- Over all USDA FAS weekly reporting weeks ending in September, current MY, in years China was actively buying U.S. beans (2014-2018, 2020-2024): median weekly net soybean sales to China roughly 0.9 MMT; realized range across those weeks spans roughly 0.1 MMT to over 2.5 MMT, with 2020 the top decile and trade-friction years the bottom.\n- Over the 2026/27 marketing-year weeks specifically (the seven observations above, June 18 to Aug 27): mean ~1.0 MMT, and over the last six weeks only, mean ~1.10 MMT with a realized range of 904,000 to 1,446,000 t.\n- Over September weeks that CONTAIN a U.S. federal holiday (Labor Day) rather than five full trading days: historically the lower of adjacent weeks, with the arithmetic four-of-five-days adjustment implying roughly a 20% mechanical haircut to a comparable full week.\n- Conditional on the September-to-date daily clip specifically (~177,000 t/day of China flash over Sept 1-3, vs. ~210,000 t/day implied by the recent five-day weekly averages), four transaction days imply a flash-only component in the 700,000-850,000 t region before non-flash sub-100,000 t sales and destination switches.\n\nPOLICY / DEMAND CONTEXT (both directions):\n- Busan/summit commitment: China to buy at least 25 MMT of U.S. soybeans annually 2026-2028; USDA balance sheets reportedly assume closer to 15 MMT of Chinese buying for 2026/27; analysts have publicly doubted the 25 MMT figure will be met.\n- A Trump-Xi summit in Washington is planned for Sept 24, 2026 (after the resolution window); Beijing had not formally confirmed as of early September. Xi is reported to be bringing a large CEO delegation (Reuters/US News, 2026-09-04). Both sides have signalled possible announcements on agriculture and non-tariff barriers, and Treasury discussion of tariff cuts on ~$30bn of non-strategic goods each way.\n- Private Chinese crushers still face a ~13% duty on U.S. beans vs ~3% on Brazilian origin, so essentially all current buying is state-directed (COFCO, Sinograin). Any tariff cut would enlarge the buyer pool but would land after the window.\n- Sinograin was scheduled to auction another 68,000 t of previously purchased beans on Sept 9, 2026 (reserve-release activity, which runs opposite to fresh import demand).\n- 2026/27 total outstanding sales, all destinations: 16.28 MMT as of the w/e Aug 27 release. Cumulative 2026/27 exports/commitments context: 2025/26 cumulative exports 40.76 MMT with 1.10 MMT outstanding.\n- Price/crop: November beans near 26-month highs above $13/bu; USDA national soybean condition rating at a multi-year low with hot, dry late-season weather; a WASDE lands Sept 11, 2026 (inside the window's tail, after most transaction days).\n- Mechanism note for the China line specifically: as the U.S. shipping season opens, cargoes previously booked to 'Unknown' get switched, and a switch to China posts as a POSITIVE net sale on the China line in the same weekly report. The unknown book has been large (669,000 t added w/e Aug 27; 250,600 t on Sept 4).\n- Opposite mechanism: net sales are net of cancellations and of switches OUT of China; Chinese washouts of prior purchases have occurred in prior trade-friction episodes.\n- Sentiment marker: a Sept 5, 2026 grains wrap attributed session weakness to 'weaker Chinese buying' and framed the coming sessions as a test of whether that is a pause or a shift.\n\nSEARCHED FO",
+   "reference_class": "USDA FAS weekly net soybean sales to China, Peoples Republic of, current marketing year, for reporting weeks ending in the first three weeks of September, in years when China was actively purchasing U.S. beans (2014-2018, 2020-2024)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1948,
+   "threshold": 0.5,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.3236,
+   "seconds": 132.6,
+   "estimate": {
+    "percentiles": {
+     "10": 340000.0,
+     "25": 610000.0,
+     "50": 880000.0,
+     "75": 1210000.0,
+     "90": 1610000.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Resolves off one cell: soybeans / China PRC / 2026-2027 net sales in the Sep 17 FAS release, covering Fri Sep 4 - Thu Sep 10. Reconciled fact that moves the number: NO flash announcement observed so far falls inside that window. The 530k of Sep 1-3 China flashes and the Sep 4 250.6k unknown-destination flash are all Aug 31 - Sep 3 transactions belonging to the Sep 10 release; two runs mistakenly read the Sep 4 announcement as within-window bearish evidence. So this is a near-pure base-rate call. The 2026/27 series has printed 200/519/904/972/1056/1102/1131/1446 kt (median ~1.01 MMT). I shade to 880k for four business days (Labor Day Sep 7), the softening late-August cadence, and beans above $13 near 26-month highs (state buyers historically step in on dips); I do not shade further because the Sep 1-3 flash clip times the observed 1.5-2x flash-to-net multiplier implies ~1.0 MMT, and Unknown-to-China destination switches now post as positive China net sales with the MY current from Sep 1. Right tail stays fat: a pre-summit state block or a switch wave can double the print. Negative prints need net washouts, for which nothing in the evidence argues.",
+   "sources": [],
+   "reconciliation": "The load-bearing correction was factual, not a weighing: two runs treated the Sep 4 flash announcement as an in-window observation, when the one-business-day announcement lag places that transaction on Sep 3, in the prior reporting week. Once that is removed, NO run holds any information about Sep 4-10, so the estimate must be the reference-class distribution for one more week of the state-directed program adjusted for a four-day week - not a reading of a soft early-September flash pace. I carried forward Run 3's reference class (the published 2026/27 China weekly prints) because all four converged on the same series and the same median near 1.0 MMT. I did not carry any run's dispersion: Run 2's 1.0 MMT is internally inconsistent with its own no-within-window-read finding, and Run 4's 1.55 MMT over-widens against six consecutive prints in a 0.9-1.45 MMT band; I recomputed from realized SD (~0.35 MMT) inflated for the observation gap and regime novelty. The 7.76 vs 12 MMT dispute over China's cumulative book could not be settled - fas.usda.gov was 403 to every run and no primary table was ever read, so every series value in every dossier is secondhand trade press, which is itself a reason to keep the bars wide. Median 880k sits just below the runs' 820-950k span midpoint by construction rather than by averaging: the holiday and price-level drags are real, but the flash-multiplier arithmetic (~710k flash-only x 1.5-2x) and live switch-eligibility keep it from falling into the low 800s. No web access on this run; sources is empty and correct.",
+   "disagreements": [
+    {
+     "claim": "The Sep 4 flash (250,600 t to Unknown) is evidence about the Sep 4-10 window",
+     "kind": "factual",
+     "verdict": "Settled against Runs 1 and 4: FAS announcements lag the transaction by one business day, so the Sep 4 announcement covers a Sep 3 sale, in the PRIOR reporting week. The target window has zero observed data as of now."
+    },
+    {
+     "claim": "The 530k of Sep 1-3 China flashes land in the Sep 17 report",
+     "kind": "factual",
+     "verdict": "No - transactions Aug 31 - Sep 2, week ending Sep 3, published Sep 10. All four runs agreed; the lag rule confirms it."
+    },
+    {
+     "claim": "The window contains 4 US business days, not 5",
+     "kind": "factual",
+     "verdict": "Confirmed. Sep 1 2026 was a Tuesday, so Sep 7 is the first Monday of September = Labor Day."
+    },
+    {
+     "claim": "China's cumulative 2026/27 book is 7.76 MMT vs ~8-10 MMT vs ~12 MMT effective",
+     "kind": "factual",
+     "verdict": "COULD NOT BE SETTLED - fas.usda.gov returned HTTP 403 on every run, so no primary table was read. Left carrying its uncertainty; it bears only weakly on this week's print."
+    },
+    {
+     "claim": "No prediction market or bookmaker prices this quantity",
+     "kind": "factual",
+     "verdict": "Converged across all four runs (Polymarket, Manifold, Kalshi, bookmakers). No crowd anchor; no blend applied."
+    },
+    {
+     "claim": "The holiday haircut is ~20% (arithmetic 4/5) vs 10-15%",
+     "kind": "judgment",
+     "verdict": "Took under 20%: lumpy state-directed tenders shift days rather than disappear."
+    },
+    {
+     "claim": "The last four weeks show a real ~13%/week decay",
+     "kind": "judgment",
+     "verdict": "Treated as mild softening, not an extrapolable trend - n=4 in a policy-timed lumpy series."
+    },
+    {
+     "claim": "Unknown-to-China switches materially lift THIS week's print",
+     "kind": "judgment",
+     "verdict": "Mechanism is real and newly live (MY current Sep 1) but concentrates with October loadings, and the unknown book was still growing on Sep 3. Counted as right-tail fattener plus small median support."
+    },
+    {
+     "claim": "Dispersion 90-10 should be 1.0 MMT (Run 2) or 1.55 MMT (Run 4)",
+     "kind": "judgment",
+     "verdict": "Landed at 1.27 MMT. Run 2's 1.0 contradicts its own finding of no within-window read; Run 4's 1.55 over-widens given six consecutive prints inside 0.9-1.45 MMT."
+    },
+    {
+     "claim": "p_above_upper is 5% (Run 1) or 2% (Run 4)",
+     "kind": "judgment",
+     "verdict": "3%. No week in this regime has exceeded 1.45 MMT, so 2.5 MMT needs a >70% jump; but a pre-summit block plus a switch wave is a named mechanism and 2020 precedent exists for >2 MMT weeks."
+    },
+    {
+     "claim": "The Sep 24 Xi visit is net bullish or net bearish for this window",
+     "kind": "judgment",
+     "verdict": "Unbroken by evidence. Pre-summit goodwill accumulation and holding announcements for the summit are both documented framings. Taken as near-neutral on the median, mildly tail-fattening."
+    }
+   ],
+   "reference_class": "USDA FAS weekly net soybean sales to China, 2026/27 marketing year, under the post-Busan state-directed buying program: the 8 published weeks Jun 18 - Aug 27 2026"
+  }
+ ]
+}
