@@ -1,0 +1,210 @@
+{
+ "record_id": "2026-09-07-bd0be144",
+ "question": "What heat-wave \"bollino\" level will Italy's Ministry of Health assign to Rome for September 17, 2026?",
+ "question_id": 45712,
+ "url": "https://www.metaculus.com/questions/45521/",
+ "question_type": "multiple_choice",
+ "forecast_at": "2026-09-07T02:56:34+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 4.3944,
+ "pools": {
+  "pooled_runs": {
+   "Level 0 (verde)": 0.7698979501547434,
+   "Level 1 (giallo)": 0.19200664664768005,
+   "Level 2 (arancione)": 0.03176021016214264,
+   "Level 3 (rosso)": 0.0063351930354338705
+  },
+  "phase1": {
+   "Level 0 (verde)": 0.7698979501547434,
+   "Level 1 (giallo)": 0.19200664664768005,
+   "Level 2 (arancione)": 0.03176021016214264,
+   "Level 3 (rosso)": 0.0063351930354338705
+  },
+  "phase2": null,
+  "spread_phase1": 0.1,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probabilities": {
+   "Level 0 (verde)": 0.79,
+   "Level 1 (giallo)": 0.165,
+   "Level 2 (arancione)": 0.038,
+   "Level 3 (rosso)": 0.007
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.2119,
+   "seconds": 302.7,
+   "estimate": {
+    "Level 0 (verde)": 0.72,
+    "Level 1 (giallo)": 0.24,
+    "Level 2 (arancione)": 0.035,
+    "Level 3 (rosso)": 0.005
+   },
+   "reasoning": "Prior: late-September Roma days are dominated by green/yellow; the 2026 Roma season split (0/1/2/3 approx 25/42/20/13%) is a whole-summer figure and mid-September sits far below the JJA mean, so the class prior shifts toward level 0. Calibration from Roma's own September bollini: level 1 accompanied 32-34C maxes, level 2 ~35C, level 3 36-37C, implying Roma stays green below roughly 31C in September. Day-10 forecasts for Sept 17 span 21.5C (ECMWF) to 30.8C (GFS), with ilMeteo at 29C and open-meteo best-match 23.4C (apparent max 26.4C) - the entire multi-model envelope sits at or under the level-1 threshold, and the post-Sept-9 pattern break (rain, ~10C drop) supports moderation. Counterargument: 2026 has been an exceptionally hot year with six heat waves already and one late-season African ridge could arrive ahead of the Sept 18-21 re-warming the models show; GFS is already 9C warmer than ECMWF for the same day, so the warm tail is not negligible, and my threshold estimate could be one notch too high if the system uses month-lowered thresholds. Thin spot: I could not retrieve pre-2026 September archive rows to measure the late-September base rate directly, so the prior leans on a single season plus the physical mapping.",
+   "sources": [
+    "https://raw.githubusercontent.com/ondata/ondate-calore/main/data/ondate-calore_archivio.csv",
+    "https://raw.githubusercontent.com/ondata/ondate-calore/main/data/ondate-calore_latest.csv",
+    "https://ondata.github.io/ondate-calore/",
+    "https://api.open-meteo.com/v1/forecast?latitude=41.9028&longitude=12.4964&daily=temperature_2m_max&models=ecmwf_ifs025,gfs_seamless,icon_seamless",
+    "https://www.ilmeteo.it/meteo/roma/lungo-termine",
+    "https://www.epicentro.iss.it/caldo/aggiornamenti",
+    "https://www.adnkronos.com/cronaca/caldo-italia-domenica-6-settembre-meteo_35tKGR4ddk0BcUr1KsFipL"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the Italian Ministry of Health 'Bollettini sulle ondate di calore' PDF/table for the city ROMA - the livello (0/1/2/3) in that bulletin's oggi column on 2026-09-17 - NOT off any observed temperature, NOT off regional Lazio civil-protection alerts, NOT off news paraphrase (news is acceptable only as a report of the same official figure). If no bulletin issues on 2026-09-17, the Sept-17 value from the most recent prior bulletin (48h/72h column) is used; if no bulletin covers the date at all, ANNULLED.\n\nEVENT WINDOW: the criteria target a single calendar day, 2026-09-17 (Thursday), read from the bulletin issued that day (~11:00 local = ~09:00 UTC). As of Now 2026-09-07T02:36Z the target day is 10 days ahead; 0% of the target day elapsed.\n\nSTATUS-QUO OUTCOME: Roma's most recent published bollino (bulletin extracted 2026-09-04, covering Sept 4/5/6) is Livello1; simple persistence of the current bulletin value would give Livello1, while persistence of the forecast weather regime (post-Sept-9 cooldown) would give a lower level.\n\nEVIDENCE (source, date):\n- Ministry/ISS (epicentro.iss.it, updated 2026-06-04): 2026 bulletins publish Mon-Fri from 25 May to 20 September; 27 cities; issued ~11:00 with 24/48/72h columns. Sept 17 is a Thursday inside the season. 2025's season ran only to mid-September; 2026 extends ~1 week longer.\n- ondata bollini archive (github.com/ondata/ondate-calore, retrieved 2026-09-07): ROMA rows for the 2026 season (5 Jun - 6 Sep, ~92 day-rows) split approximately Livello0 23, Livello1 39, Livello2 18, Livello3 12. This is an UNCONDITIONAL whole-season rate over Jun-early-Sep and is not the late-September conditional rate.\n- ondata archive, same pull: ROMA Livello0 days cluster on cooler stretches - 5-12, 15-17, 19 June; 3-4, 23-27 July; 18, 21, 30 August. ROMA reached Livello1 on 2026-09-02..06.\n- Class conditioned on Roma's own September readings (ondata + Adnkronos 2026-09-05, Giornale di Sicilia 2026-08-20): Roma at Livello1 with maxima ~32-34C; Livello2 around 1 Sep; Livello3 on 3 Sep with peaks 36-37C. Roma sat at Livello1 on 5-6 Sep while Civitavecchia, Frosinone, Viterbo, Genova, Trieste, Venezia were Livello0 - Roma runs a notch above its Lazio neighbours on the same days.\n- Adnkronos, 2026-09-05: Sunday 6 Sep - 3 cities orange (Bari, Campobasso, Perugia), 15 cities yellow including Roma, 9 green. The bulletin routinely spreads across all of 0/1/2 on a single day.\n- Adnkronos, 2026-09-05: the current (sixth) heat wave of summer 2026 was expected to end Wednesday 9 September with rain and a temperature drop; summer 2026 is the hottest on record for France, Switzerland and much of northern Italy.\n- Open-Meteo multi-model run for Rome (41.90N 12.50E), retrieved 2026-09-07: max for 2026-09-17 is 21.5C on ECMWF IFS025, 30.8C on GFS seamless; the default best-match series gives 23.4C max / 26.4C apparent max. Model spread for that single day is ~9C.\n- Open-Meteo best-match daily maxima for Rome, 2026-09-07 run: 7 Sep 33.8, 8 Sep 32.9, 9 Sep 31.4, 10 Sep 28.3, 11 Sep 24.7, 12 Sep 28.2, 13 Sep 29.1, 14 Sep 26.9, 15 Sep 28.8, 16 Sep 25.8, 17 Sep 23.4, 18 Sep 25.5, 19 Sep 26.6, 20 Sep 27.3, 21 Sep 29.5 - i.e. a step down after 10 Sep and a slow re-warming into 19-21 Sep. GFS on the same run keeps the whole 11-19 Sep stretch at 28-33C.\n- ilMeteo long-range for Rome, retrieved 2026-09-07: 14-20 Sep all 28-29C max, 18-19C min, mostly clear, 25% precipitation chance on 17 Sep - a warmer solution than ECMWF and cooler than nothing.\n- Climatology (climate-data.org / dove-e-quando, Rome): 11-20 September normals are ~25.6C max / 16.9C min; September mean max declines from ~29C to ~25C across the month.\n- Deciding-body calendar: bulletins are Mon-Fri; 17 Sep 2026 is a Thursday and 20 Sep is the stated season end, so both the 17 Sep bulletin and prior 48/72h columns from 15-16 Sep should exist. No announcement of an early season truncation was found.\n- Market check: searched Polymarket, Manifold, Kalshi and bookmaker coverage for any contract on Italian heat-wave bollini or Rome alert levels - NONE FOUND. Polymarket's weather book covers London/Paris/Berlin temperatures, not Italian ministry alert levels, and Polymarket is currently blocked in Italy on gambling-licence grounds.\n\nSEARCHED FOR BUT COULD NOT FIND: (a) pre-2026 rows of the ondata archive - the retrievable file covers only 5 Jun - 6 Sep 2026, so the direct 2023/2024/2025 mid-and-late-September distribution of Roma levels is unavailable; (b) the published city-specific apparent-temperature thresholds for Roma and whether they are month-varying within the season; (c) the salute.gov.it bulletin page itself, which returned a bot-validation interstitial rather than content; (d) any news report of Roma's bollino on 15-18 September in 2023, 2024 or 2025; (e) any count of same-length past September windows containing a level-2+ day in Roma.",
+   "reference_class": "Daily Ministry of Health bollino levels assigned to Roma in the second half of September across seasons of the national HHWWS (27-city system), i.e. late-season days near the Sept 15-20 bulletin cutoff, anchored on the observed 2026 Roma level distribution from the ondata archive and on the temperat"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.5073,
+   "seconds": 406.3,
+   "estimate": {
+    "Level 0 (verde)": 0.76,
+    "Level 1 (giallo)": 0.2,
+    "Level 2 (arancione)": 0.03,
+    "Level 3 (rosso)": 0.01
+   },
+   "reasoning": "Prior from the reference class: mid-to-late September in Rome is ~5C below the July-August regime, and levels 2-3 require the apparent-temperature threshold to be exceeded over consecutive days, which is uncommon that late. Forecast evidence for 17 Sep is genuinely split at day +10: ECMWF deterministic 21.5C and the multi-model best-match 23.4C are cool, GFS 30.8C is warm, and the ECMWF 50-member ensemble median is 28.65C with only 30% of members at/above 30C and ~4% at/above 32C. This season's own Rome level-vs-temperature record puts the 0/1 boundary near 31-33C, so P(level>=1) tracks roughly P(Tmax>=30.5C), around 20-25%. Two offsetting adjustments: 2026 has run exceptionally hot and the bulletin has leaned to Livello1 over Livello0 for Rome all season (53 vs 23 rows), which lifts level 1; against that, multiple Italian outlets flag an Atlantic pattern change from ~9-10 September and the highest-resolution deterministic guidance is the coolest. Levels 2-3 need multi-day threshold exceedance in the season's final week, which almost no ensemble member supports. Small (~2-3%) annulment risk from no bulletin being issued does not shift the relative weights.",
+   "sources": [
+    "https://raw.githubusercontent.com/ondata/ondate-calore/main/data/ondate-calore_latest.csv",
+    "https://raw.githubusercontent.com/ondata/ondate-calore/main/data/ondate-calore_archivio.csv",
+    "https://ondata.github.io/ondate-calore/",
+    "https://ensemble-api.open-meteo.com/v1/ensemble?latitude=41.9028&longitude=12.4964&daily=temperature_2m_max&models=ecmwf_ifs025 (ECMWF IFS 50-member ensemble, run of 2026-09-07)",
+    "https://api.open-meteo.com/v1/forecast?latitude=41.9028&longitude=12.4964&daily=temperature_2m_max&models=ecmwf_ifs025,gfs_seamless,icon_seamless",
+    "https://archive-api.open-meteo.com/v1/archive?latitude=41.9028&longitude=12.4964 (Rome observed daily maxima, Jun-Sep 2026)",
+    "https://www.salute.gov.it/new/it/tema/ondate-di-calore/bollettini-sulle-ondate-di-calore-0/",
+    "https://github.com/ondata/ondate-calore/tree/main/data"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the Italian Ministry of Health 'Bollettini sulle ondate di calore' value for ROMA for the calendar day 2026-09-17 — read from the bulletin ISSUED on 17 Sep (its 'oggi' column), not from an earlier bulletin's 48/72h forecast, and not from any regional Lazio bulletin, news summary or temperature reading. Only if no bulletin is issued that day does the most recent prior forecast for 17 Sep apply. Four options: Livello 0/1/2/3.\n\nEVENT WINDOW: single calendar day 2026-09-17 (Europe/Rome), fixed by the bulletin issued that morning. As of Now 2026-09-07T02:36Z, 0% elapsed; ~10 days ahead.\n\nDECIDING-BODY CALENDAR: bulletins published Mon-Fri from 11:00 local; 2026 season runs 25 May to 20 September (salute.gov.it season notice; corroborated by press summaries). 17 Sep 2026 is a Thursday, inside the season and on a publishing weekday. Searched for any announcement of an early 2026 season end or a September publication gap: none found.\n\nEVIDENCE — SYSTEM MECHANICS\n- Levels are driven by forecast apparent temperature (Tapp) against a fixed city-specific threshold, not by dry-bulb alone; humidity and wind shift the mapping day to day (DEP Lazio / Ministry level definitions).\n- Level 1 is defined as 'pre-allerta: conditions that may precede a heat wave'; level 2 as elevated temperatures with health effects for susceptible groups; level 3 as a heat wave persisting over multiple consecutive days. Levels 2-3 therefore carry a persistence requirement that level 0/1 do not.\n- Thresholds are fixed across the season and are not relaxed in September.\n\nEVIDENCE — OBSERVED 2026 SEASON RECORD FOR ROMA (ondata mirror of the Ministry bulletins, extracted 2026-09-07)\n- Level counts for ROMA across the archived 2026 season (4 Jun - 6 Sep): Livello0 23 rows, Livello1 53, Livello2 24, Livello3 27 (127 rows total; the archive has a gap 6-15 Jun).\n- Most recent archived values: 1 Sep L2; 2, 3, 4, 5, 6 Sep all L1. Latest bulletin in the file was issued 2026-09-04 covering 4/5/6 Sep, all L1.\n- Late-August sequence: 20 Aug L2; 21-25 Aug L1; 26-27 Aug L2; 28-29 Aug L3; 30-31 Aug L1.\n- Livello0 days for Roma this season: 4, 5, 16 Jun; 5, 24, 25, 26 Jul.\n\nEVIDENCE — LEVEL vs OBSERVED TEMPERATURE (open-meteo archive, Rome city grid point, cross-referenced to the above)\n- Days Roma was Livello1: observed maxima 32.2-36.9C (e.g. 14 Aug 36.9C = L1; 6 Sep 32.2C = L1).\n- Days Roma was Livello0: 16 Jun 31.3C; 5 Jul 33.7C; 24 Jul 34.6C; 25 Jul 32.1C; 26 Jul 32.8C. So the 0/1 boundary is NOT a clean dry-bulb cut — several 32-34.6C days scored Livello0.\n- Days Roma was Livello3: 28 Aug 39.8C, 29 Aug 35.5C, and the 31 Jul - 13 Aug run at 34-38.4C.\n\nEVIDENCE — FORECAST GUIDANCE FOR 17 SEP (runs of 2026-09-07)\n- ECMWF IFS 50-member ensemble, Rome daily max: median 28.65C, min 21.6C, max 33.0C, 15/50 members at/above 30C, ~10/50 at/above 31C, 2/50 at/above 32C.\n- Single deterministic runs disagree sharply: ECMWF IFS025 21.5C, open-meteo best-match 23.4C, GFS-seamless 30.8C. ICON has no data at that range.\n- Surrounding days, ECMWF deterministic: 14 Sep 27.4, 15 Sep 28.3, 16 Sep 25.6, 18 Sep 25.4, 19 Sep 27.0, 20 Sep 27.4. GFS is 2-5C warmer throughout (14-20 Sep: 32.6, 33.5, 32.5, 30.8, 28.7, 31.9, 30.1).\n- Near term (verifiable soon): 7 Sep ~33.8-34.7C, 8 Sep ~32.9-33.8C, then a drop from 9-11 Sep in ECMWF/ICON but not in GFS.\n\nEVIDENCE — SYNOPTIC NARRATIVE, BOTH DIRECTIONS\n- Cooling side: Italian outlets (meteo.it, ilmeteo.net, notizie.it) reported an Atlantic perturbation arriving 9-10 Sep with falling temperatures and widespread rain, and flagged the anticyclone breaking down in the 8-15 Sep window; Adnkronos reported the current (sixth) heat wave ending Wednesday 9 Sep. Rome climatological max for 11-20 Sep is ~25.6C.\n- Warming side: seasonal commentary (Moveo/Telepass, cettinella, ilmessaggero citing Giuliacci) describes September 2026 as split, with the Centre seeing frequent above-average phases and possible renewed fully-summer conditions from subtropical ridging; summer 2026 has run record-hot for parts of northern Italy, France and Switzerland; GFS holds 30-33C over Rome right through 14-20 Sep.\n\nSEARCHED FOR BUT COULD NOT FIND\n- Any multi-year history of Roma's mid-September bollino levels: the public ondata archive file retrievable here contains only the 2026 season (4 Jun - 6 Sep); 2023-2025 September rows could not be extracted, and news searches for specific mid-September dates in 2024/2025 returned nothing dated.\n- Rome's numeric Tapp threshold value: the DEP Lazio regional plan PDF could not be parsed and no page states the figure.\n- Any prediction market or bookmaker contract on this event (Polymarket, Manifold, Kalshi, bookmakers): none found.\n- Any bulletin issued after 2026-09-04 (the Ministry site returns a bot-check page; the ondata mirror had not yet ingested a later bulletin as of extraction).",
+   "reference_class": "Rome's daily HHWWS bollino level on bulletin days in the final ten days of the season (roughly 14-20 September), where Rome's climatological daily max is ~27-28C versus the ~33-35C dry-bulb needed to push apparent temperature past the city's alert threshold"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.3864,
+   "seconds": 410.5,
+   "estimate": {
+    "Level 0 (verde)": 0.82,
+    "Level 1 (giallo)": 0.145,
+    "Level 2 (arancione)": 0.03,
+    "Level 3 (rosso)": 0.005
+   },
+   "reasoning": "Rome's September alert threshold is maximum apparent temperature 34.5C, the highest month-threshold of the year; 2026 calibration shows Rome sitting at Livello 1 only when actual highs were 32-36C (Sept 1-6, Aug 25-27). The 13 mid-September days I could recover from the 2023-2025 bulletin archive were all Livello 0 for Rome, with every city at 0 - mid-September is structurally near-zero even in-season. Current 10-day guidance (updated 2026-09-07) puts Rome at 29C max on Sept 17 with 25% rain chance and 28-29C across Sept 14-20, i.e. near the ~28C climatological normal, with the Aeronautica Militare weekly outlook shifting the anticyclonic anomaly east. Getting to Livello 1 needs roughly a +3 to +4C bust on a day-10 forecast, or a pre-alert triggered by a Sept 18-19 surge that current guidance does not show. I hold back from a higher Level 0 number because 2026 has already produced six heat waves and 35-36C in Rome in early September, day-10 skill is low, and a rebuilt ridge is a live scenario; the historical class is also only three years deep and those Septembers were cool.",
+   "sources": [
+    "https://github.com/ondata/ondate-calore",
+    "https://raw.githubusercontent.com/ondata/ondate-calore/main/data/ondate-calore_latest.csv",
+    "https://raw.githubusercontent.com/ondata/ondate-calore/162e530bbbbbc078a4b38aad6cb598babffe02e5/data/ondate-calore_latest.csv",
+    "https://raw.githubusercontent.com/ondata/ondate-calore/ab7d5d47f74e17f8f966838072677cbbf0d91159/data/ondate-calore_latest.csv",
+    "https://raw.githubusercontent.com/ondata/ondate-calore/36f6a07a7bcf2e369ba927a6b0633ea1dbb0efe5/data/ondate-calore_latest.csv",
+    "https://raw.githubusercontent.com/ondata/ondate-calore/05b0d94374815ec9055dd6c8434732c1e7a9add1/data/ondate-calore_latest.csv",
+    "https://ondata.github.io/ondate-calore/",
+    "https://www.ilmeteo.it/meteo/roma/lungo-termine",
+    "https://www.meteo.it/notizie/allerta-meteo-ondate-calore-5-settembre-2026-italia-citta-cb4595fd",
+    "https://www.quotidiano.net/cronaca/sesta-ondata-di-caldo-in-italia-settembre-wwjz5pbn",
+    "https://www.adnkronos.com/cronaca/caldo-italia-domenica-6-settembre-meteo_35tKGR4ddk0BcUr1KsFipL",
+    "uniroma1.web.uniroma1.it - Piano operativo regionale ondate di calore 2024 (DEP Lazio), apparent-temperature thresholds for Roma"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the Italian Ministry of Health 'Bollettini sulle ondate di calore' value for ROMA in the bulletin issued on the day itself ('oggi' column), NOT off observed weather, NOT off regional civil-protection allerta meteo, NOT off a media summary. Bulletins are published Mon-Fri ~11:00 local, 27 cities, 24/48/72h columns. 2026 season: 25 May - 20 September, so 17 Sept (a Thursday) is in season and a bulletin is expected; salute.gov.it is behind a bot-protection wall for automated fetches, but ondata/ondate-calore (CC-BY, GitHub Actions scrape every ~4h) mirrors the same values and its historical commits are readable.\n\nEVENT WINDOW: the criteria define a single calendar day, 2026-09-17 00:00 -> 23:59 local; as of Now (2026-09-07T02:36Z) 0% elapsed, the day begins ~10 days out. Season ends 20 Sept, three days after the target date.\n\nMECHANISM / THRESHOLDS (DEP Lazio piano regionale, 2024): Rome's HHWWS trigger is maximum APPARENT temperature, month-specific - May 28.5C, June 32.5C, July 33.5C, August/September 34.5C. September therefore carries the highest threshold of the year. Livello 3 is defined as threshold exceedance persisting 3+ consecutive days; Livello 1 is a 'pre-allerta' state that can be assigned either to a day near threshold or to a day preceding a forecast exceedance.\n\nBASE RATES (each with the class it is computed over):\n- Over all Rome days 10-21 September inside the active season, 2023-2025, read from the ondata archive at historical commits: 13 distinct observed days (2023-09-15/16/17; 2024-09-13/14/15; 2024-09-17/18/19; 2025-09-10/11/12; 2025-09-17/18/19; 2025-09-19/20/21) - all 13 at Livello 0, and on every one of those days all 27 monitored cities were simultaneously at Livello 0. Caveat: only three years, and each of those Septembers was near or below normal in Rome.\n- Over Rome days in the FIRST week of September 2026 (i.e. conditioned on the current hot year): 2026-09-01 Livello 2; 2026-09-02 through 2026-09-06 Livello 1. So the system is demonstrably live and differentiating in September 2026, not defaulting to zeros.\n- Over Rome days in late August 2026 (same 34.5C threshold month-pair): 2026-08-25 Livello 1, 08-26 Livello 1, 08-27 Livello 2.\n\nCALIBRATION POINTS (level vs actual Rome air temperature, 2026):\n- 5 Sept 2026: Rome highs reported at 35-36C, approaching the September monthly record of 35.6C (shared 3 Sept 1982 / 7 Sept 2024) - Rome's bollino that day was Livello 1, while Bari, Brescia and Campobasso were Livello 2 (Quotidiano.net 5 Sept 2026; Meteo.it bulletin 5 Sept 2026).\n- 6 Sept 2026: 3 cities Livello 2 (Bari, Campobasso, Perugia), 15 cities Livello 1 including Rome, and Bolzano/Genova/Torino/Trieste/Venezia/Verona/Viterbo/Cagliari/Milano at Livello 0 (Adnkronos, 5-6 Sept 2026).\n- Rome late-August comparison days ran roughly 28-32C air temperature with high humidity (min temps to 26C) while at Livello 1, ahead of a 27-28 Aug African surge reported near 40C (RomaToday).\n\nWEATHER EVIDENCE, BOTH DIRECTIONS:\n- Toward cooler: iLMeteo Rome long-range, updated 2026-09-07 04:51, gives 14 Sept 18/29C, 15 Sept 18/29C, 16 Sept 18/29C, 17 Sept 19/29C with 25% precipitation probability, 18 Sept 19/28C, 19 Sept 19/28C, 20 Sept 18/29C. Meteo.it independently gives 19-29C for 17 Sept. Rome's climatological normal for 11-20 September is 25.6C high / 16.9C low (climate-data.org). Aeronautica Militare weekly outlook for 14-20 Sept: anticyclonic anomaly shifts east, moderately unstable westerly flow enters, though temperatures may stay above climatological average. Meteo.it and several Italian outlets flag a fresh incursion from 9-10 Sept ending the sixth heat wave with rain and falling temperatures; Adnkronos dates the end of that wave to Wednesday 9 Sept.\n- Toward warmer: summer 2026 is on record as the hottest on record for France, Switzerland and much of northern Italy including Piedmont and Milan; the 1-8 September period was the sixth heat wave of the season, with African anticyclone anomalies of +6/+8C and national peaks to 38C; June 2026 in Rome exceeded 40C. Longer-range Italian commentary (Giuliacci, Santini) describes September as split, with heat energy accumulated in the Mediterranean conditioning the month and the mid-month breakdown uncertain in timing. Day-10 deterministic guidance for a single city carries wide error.\n\nSEARCHED FOR BUT NOT FOUND: any prediction market or bookmaker contract on Italian bollini levels - checked Polymarket, Manifold (harness title search, nothing), and searched Kalshi and bookmakers directly with nothing found; note Italy has blocked Polymarket under gambling law. Also could not retrieve the full ondata archive CSV (399 KB, truncated by the fetch tool), so mid-September samples for 2023-2025 are the commit-snapshot days listed above rather than a complete daily series; could not retrieve any September 2023/2024/2025 day on which Rome was at Livello 1 or above, so the upper tail of the mid-September historical distribution is unmeasured rather than shown to be empty. Could not access salute.gov.it directly (bot wall). The question background asserts Rome hit Livello 3 on 3 September 2026; the ondata archive records Roma at Livello 1 for 2026-09-03, and contemporaneous press for 3-5 September describes yellow and orange bollini with no red for Rome - treat the background claim as unverified.",
+   "reference_class": "Rome's daily HHWWS bollino level on calendar days 10-21 September within the active bulletin season, 2023-2025, read from the ondata/ondate-calore mirror of the Ministry bulletins (13 distinct observed days, all Livello 0, all 27 cities at 0)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2499,
+   "seconds": 96.6,
+   "estimate": {
+    "Level 0 (verde)": 0.79,
+    "Level 1 (giallo)": 0.165,
+    "Level 2 (arancione)": 0.038,
+    "Level 3 (rosso)": 0.007
+   },
+   "reasoning": "Rome's September trigger is maximum APPARENT temperature 34.5C - the highest month-threshold of the year, not a relaxed late-season one - which is corroborated by Rome scoring Livello 0 on 33.7/34.6C dry-bulb July days. Mapped onto 2026's own record, Rome's L0/L1 boundary sits near 32-33C dry-bulb. The best guidance for 17 Sep is the ECMWF 50-member ensemble (median 28.65C, 2/50 at/above 32C), which converges with ilMeteo and Meteo.it at 29C; the 21.5C ECMWF deterministic that anchored one run is a cold outlier against its own ensemble, and GFS at 30.8C is the warm edge. Inflating for day-10 under-dispersion and real model-regime disagreement gives roughly 10-15% for a level-1-capable day. Levels 2-3 need apparent-T above threshold (and, for 3, over three consecutive days) in the season's final week, which no ensemble member supports. I also correct the Background: the archive and contemporaneous press both show Rome at Livello 1, not 3, on 3 September 2026 - the system is stingier for Rome than the Background implies. Main counterargument: 2026 has already produced six heat waves, day-10 skill is low, and the mid-September historical sample is only three years deep and possibly a degenerate snapshot.",
+   "sources": [],
+   "reconciliation": "Disputes settled from the dossiers alone (no web access this run). (1) Rome's September threshold: only Run 3 found it (DEP Lazio, apparent-T 34.5C for Aug/Sep, the year's highest); adopted because it independently explains Run 2's otherwise-anomalous Livello 0 readings at 33.7-34.6C dry-bulb in July, and it reverses Run 1's stated worry that thresholds might be month-LOWERED. (2) The Background's claim that Rome hit Livello 3 on 3 Sep 2026 is rejected: Runs 2 and 3 independently read the ondata mirror as Livello 1 for 2026-09-03, and Run 3 adds contemporaneous press showing no red for Rome; Run 1 simply repeated the Background. (3) The apparent conflict in 2026 season level counts (Run 1's 92 rows vs Run 2's 127) is a counting-unit artefact - day-rows vs 24/48/72h bulletin rows - and is not a factual disagreement; both imply an L0 share of ~18-25% over the whole summer, which is the wrong conditional for mid-September regardless. (4) Forecast dispute settled in Run 2's favour: a 50-member ECMWF ensemble median (28.65C) outranks any deterministic member, and it agrees with two independent Italian consumer forecasts at 29C, so Run 1's 21.5-23.4C central estimate is too cold and its 0.72 on Level 0 is under-weighted for the wrong reason. (5) Run 3's 13/13 mid-September Livello 0 history could NOT be verified here; I discount it because an all-27-cities-zero pattern is also what a season-end or placeholder snapshot looks like - so it is strong directional evidence, not a near-deterministic prior, and my Level 0 sits below what 13/13 would imply. (6) Pure judgment, no tiebreaker: record-hot 2026 versus the 9-10 Sep Atlantic break. I take the break, because it is corroborated by three independent outlet families and by the ensemble median landing near climatology+3; the hot-year prior is priced as a fatter Level 1/2 tail rather than a central shift. (7) Market: all three runs checked Polymarket, Manifold, Kalshi and bookmakers and found nothing - no anchor to blend. Net: near the top of the runs' range on Level 0, driven by the threshold fact, the false L3 claim, and the ensemble replacing a cold deterministic outlier.",
+   "disagreements": [
+    {
+     "claim": "Rome's September bollino trigger is maximum apparent temperature 34.5C, the highest month-threshold of the year",
+     "kind": "factual",
+     "verdict": "Settled for Run 3 - only run to find it, uncontradicted, and independently explains Run 2's Livello 0 readings at 33.7-34.6C dry-bulb in July; reverses Run 1's fear of month-lowered thresholds"
+    },
+    {
+     "claim": "Rome was at Livello 3 on 3 September 2026 (as the Background states)",
+     "kind": "factual",
+     "verdict": "Rejected - Runs 2 and 3 independently read the archive as Livello 1, plus contemporaneous press showing no red for Rome; implies a stingier Rome mapping than the Background suggests"
+    },
+    {
+     "claim": "2026 season Roma level counts: 23/39/18/12 (Run 1) vs 23/53/24/27 (Run 2)",
+     "kind": "factual",
+     "verdict": "Not a real conflict - day-rows vs 24/48/72h bulletin rows; both give ~18-25% Level 0 over the whole summer, the wrong conditional for mid-September"
+    },
+    {
+     "claim": "All 13 recoverable Rome days in 10-21 September 2023-2025 were Livello 0",
+     "kind": "factual",
+     "verdict": "Could not be verified from the dossiers; discounted because all-27-cities-zero is also the signature of a season-end or placeholder snapshot - treated as strong directional evidence, not a 13/13 prior"
+    },
+    {
+     "claim": "Central forecast for Rome Tmax on 17 Sep is ~23C (Run 1) vs ~28.6C ensemble median (Run 2) vs 29C (Run 3)",
+     "kind": "factual",
+     "verdict": "Settled at ~28.6-29C - the ECMWF 50-member ensemble median beats a single deterministic run and converges with ilMeteo and Meteo.it; the 21.5C deterministic is a cold outlier against its own ensemble"
+    },
+    {
+     "claim": "A prediction market or bookmaker prices this event",
+     "kind": "factual",
+     "verdict": "None found - all three runs checked Polymarket, Manifold, Kalshi and bookmakers; Polymarket is additionally blocked in Italy. No anchor available"
+    },
+    {
+     "claim": "How much the record-hot 2026 season should offset the 9-10 Sep Atlantic pattern break",
+     "kind": "judgment",
+     "verdict": "No evidence breaks the tie at day 10; I take the break (corroborated by three independent outlet families and by the ensemble median near climatology+3) and price the hot year as a fatter Level 1/2 tail"
+    },
+    {
+     "claim": "Livello 1 could fire on 17 Sep as pre-alert for a warm 18-19 Sep",
+     "kind": "judgment",
+     "verdict": "Real but small - the only re-warming signal in any dossier reaches 29.5C by 21 Sep, too weak and too late; included inside the Level 1 mass"
+    }
+   ],
+   "reference_class": "Rome (ROMA) daily bollino levels on 10-21 September days inside the active Ministry of Health heat-wave season, 2023-2025 (13 recoverable day-rows, all Livello 0), widened for a thin 3-year sample and for 2026 running exceptionally hot"
+  }
+ ]
+}
