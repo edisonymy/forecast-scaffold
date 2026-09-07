@@ -1,0 +1,229 @@
+{
+ "record_id": "2026-09-07-84fa85ee",
+ "question": "How many SpaceX orbital launches will occur on September 17, 2026 (UTC)?",
+ "question_id": 45732,
+ "url": "https://www.metaculus.com/questions/45541/",
+ "question_type": "discrete",
+ "forecast_at": "2026-09-07T13:26:18+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.2722,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -0.36233333333333334,
+    "25": -0.136,
+    "50": 0.211,
+    "75": 0.7893333333333333,
+    "90": 1.265
+   }
+  },
+  "phase1": {
+   "10": -0.36233333333333334,
+   "25": -0.136,
+   "50": 0.211,
+   "75": 0.7893333333333333,
+   "90": 1.265
+  },
+  "phase2": null,
+  "spread_phase1": 0.113,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -0.351,
+   "25": -0.127,
+   "50": 0.246,
+   "75": 0.786,
+   "90": 1.321
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0501,
+   "seconds": 306.7,
+   "estimate": {
+    "percentiles": {
+     "10": -0.38,
+     "25": -0.15,
+     "50": 0.15,
+     "75": 0.82,
+     "90": 1.15
+    }
+   },
+   "reasoning": "Counted directly from the resolution source (Wikipedia July-September 2026 list): 12 SpaceX launches in July, 14 in August, 2 in Sep 1-7 = 28 over 69 days = 0.406/day. Empirical per-day distribution over that window: 44 days with 0, 22 with 1, 3 with 2, 0 with 3+. Polymarket's 2026 annual buckets imply ~151 for the year, i.e. ~0.40/day for the remainder; Kalshi's monthly markets have run 13-14/month. I nudge the rate up slightly to ~0.43-0.45 for Sep 17 because the mid-late September manifest is dense (Crew-13, SDA, Amazon Leo all September-TBD, Starship Flight 14 NET ~Sep 15 and slippable onto any nearby date) and because Sep 1-7 ran below trend, leaving catch-up room. No launch is currently listed for Sep 17, but at T-10 days Starlink slots are simply not yet published, so that is near-zero evidence. Resulting mass: ~0.63 on zero, ~0.29 on one, ~0.06 on two, ~0.01 on three. No mechanism for 5+ SpaceX liftoffs in a single UTC day (the observed maximum in this sample is 2, and 3 is the all-time daily record), so I declare no upper escape mass.",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_spaceflight_launches_in_July%E2%80%93September_2026",
+    "https://en.wikipedia.org/w/api.php?action=parse&page=List_of_spaceflight_launches_in_July%E2%80%93September_2026&prop=wikitext&section=4",
+    "https://spaceflightnow.com/launch-schedule/",
+    "https://spaceflightnow.com/2026/09/",
+    "https://rocketlaunch.org/launch-schedule/spacex",
+    "https://www.rocketlaunch.live/?filter=spacex",
+    "https://kalshi.com/markets/kxspacexcount (search snippets only; direct fetch HTTP 429)",
+    "Polymarket 2026 SpaceX annual launch-count markets (prices supplied by harness, not fetched)"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the count of SpaceX Falcon 9 / Falcon Heavy / Starship liftoffs timestamped 00:00-23:59 UTC on 2026-09-17 as listed in Wikipedia's 'List of spaceflight launches in July-September 2026' and 'List of Falcon 9 and Falcon Heavy launches' - not off SpaceX's own manifest, not off launch-schedule aggregators, and not off local (EDT/PDT) dates, which differ from UTC dates for evening US launches. Scrubs and aborts before liftoff do not count; outcome (success/failure) does not matter. Wikipedia's quarterly list is edited within hours of each liftoff. Scheduled resolution 2026-09-18T12:00Z, i.e. ~12h after the window closes.\n\nEVENT WINDOW: 2026-09-17T00:00:00Z -> 2026-09-17T23:59:59Z per the criteria; as of Now (2026-09-07T13:10:03Z) 0% elapsed - the window opens in ~10.5 days.\n\nSTATUS-QUO OUTCOME: a randomly chosen day in the current campaign contains no SpaceX liftoff at all; the modal calendar day is empty.\n\nCOUNTED FROM THE RESOLUTION SOURCE (Wikipedia July-Sep 2026 list, read 2026-09-07):\n- July 2026: 12 SpaceX launches, on Jul 2, 5, 7, 9, 11, 14 (x2), 16, 21 (x2), 25, 30. Ten launch-days; two of them held two launches.\n- August 2026: 14 SpaceX launches, on Aug 1, 4, 5, 8, 11, 12, 16 (x2), 19, 21, 22, 25, 26, 30. Thirteen launch-days; one held two (Globalstar 2-R and USSF-366, 38.5 min apart - reported as a company turnaround record, space.com / Spaceflight Now, 2026-08-15/16).\n- September 1-7, 2026: 2 SpaceX launches - Starlink Group 15-23 on Sep 2 at 08:42 UTC and Starlink Group 15-24 on Sep 6 at 14:27 UTC, both from Vandenberg SLC-4E.\n\nBASE RATES (all computed over the 69 calendar days Jul 1 - Sep 7 2026, same source):\n- Unconditional, over all 69 days: 28 launches / 69 days = 0.406 launches per day; SD of the daily count 0.573.\n- Day-count distribution over those 69 same-length (1-day) windows: 44 days with 0 launches (63.8%), 22 with exactly 1 (31.9%), 3 with exactly 2 (4.3%), 0 with 3 or more.\n- Conditional on the day containing at least one launch (n=25): 22 held exactly one, 3 held two.\n- Month-conditional rates: July 12/31 = 0.387/day; August 14/31 = 0.452/day; Sep 1-7 2/7 = 0.286/day.\n- Whole-year 2026 pace: SpaceX's 100th orbital mission of 2026 flew 2026-08-18/21 (Spaceflight Now 2026-08-21; spacedaily gives 18 Aug), and a 90th-Falcon-of-2026 milestone is reported around 2026-08-04; the 80th Starlink mission of 2026 flew 2026-09-05 (Spaceflight Now). That places the year-to-date total near 106 as of Sep 7 - roughly 0.42/day across 2026.\n\nMANIFEST AROUND THE WINDOW (Spaceflight Now launch schedule, rocketlaunch.org, rocketlaunch.live, all read 2026-09-07):\n- Dated SpaceX items before the window: NROL-172 / USSF-153 classified mission NET Sep 10 15:37 UTC from Vandenberg SLC-4E (booster B1081); O3b mPOWER 11-13 for SES NET Sep 13 18:50 UTC from Cape Canaveral.\n- Non-SpaceX dated items nearby: Progress MS-35 on Soyuz-2.1b Sep 9; Long March 2D Sep 9; Long March 8A Sep 11; Vega-C with Sentinel-3C/FLEX Sep 15.\n- Listed as September-TBD, no assigned date: Crew-13 (Falcon 9, Cape Canaveral SLC-40), SDA Tranche transport-layer mission (Vandenberg), Amazon Leo, LOXSAT.\n- Starship Flight 14 is carried as NET mid-September (Spaceflight Now lists NET Sep 15 from Starbase Pad 2). Starship flights count toward this question if the source lists them as orbital/orbital-class and the vehicle leaves the pad.\n- No launch of any provider is currently listed for Sep 17, and the aggregators show no dated entries at all between Sep 16 and Sep 25. Starlink slots are typically published only about 5-7 days ahead, so the Sep 16-30 stretch is unpopulated rather than empty.\n\nREGIME-BREAK CANDIDATES, BOTH DIRECTIONS:\n- Downward: Spaceflight Now's Sep 5 coverage describes SpaceX shifting Falcon 9 Starlink missions toward the West Coast while it works toward a Starship-Super Heavy debut in Florida; both September Starlink flights so far were Vandenberg Group 15 missions. A pad-availability or fleet-allocation shift of that kind reduces the number of independent pads that can fly on the same date. Also, the year-to-date pace (0.42/day) sits above what the 2026 annual prediction markets imply for the remaining months (~0.40/day).\n- Upward: SpaceX set a same-day turnaround record on Aug 16 (two Falcon 9s 38.5 minutes apart) and booster B1067 flew a 37th time in August, indicating fleet capacity is not the binding constraint; several September missions (Crew-13, SDA, Amazon Leo, Starship 14) are still undated and must be squeezed into the back half of the month, and Sep 1-7 ran below the July/August rate.\n\nDECIDING-BODY / SOURCE CALENDAR: not a committee decision - no term dates or bulletin cadence apply. Wikipedia's list updates continuously; searched for an FAA launch-licence or range-closure calendar covering Sep 17 2026 and found none published.\n\nMARKETS: no prediction market anywhere prices the number of SpaceX launches on a single named calendar day. Polymarket runs 2026 annual launch-count bucket markets (five-figure to six-figure volumes, closing 2027-01-01); Kalshi runs KXSPACEXCOUNT monthly and annual SpaceX launch-count markets. Both are aggregate-count contracts over months or a year, resolving on different sources and thresholds than this single-day question; Kalshi pages returned HTTP 429 on direct fetch, so any Kalshi figures circulating come from third-party summaries rather than the live book.\n\nSEARCHED FOR BUT COULD NOT FIND: any published SpaceX or third-party schedule entry for Sep 17 2026; a confirmed date for Crew-13 or the September SDA/Amazon Leo missions; a firm Starship Flight 14 date; the Kalshi September 2026 monthly book directly (rate-limited); Wikipedia's dedicated 2026 Falcon 9 launch-list page (returns 404 under the obvious title); any instance of three or more SpaceX liftoffs in a single UTC day during Jul-Sep 2026.",
+   "reference_class": "Single UTC calendar days during SpaceX's 2026 launch campaign (Jul 1 - Sep 7 2026, n=69 days), counting Falcon 9 / Falcon Heavy / Starship liftoffs per day as tabulated by the same Wikipedia quarterly launch list that resolves this question"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0928,
+   "seconds": 316.0,
+   "estimate": {
+    "percentiles": {
+     "10": -0.36,
+     "25": -0.14,
+     "50": 0.22,
+     "75": 0.72,
+     "90": 1.3
+    }
+   },
+   "reasoning": "Reference class: daily SpaceX orbital launch counts in 2026 (105 Falcon launches over 249 days = 0.42/day, mean). Forward-looking rate is lower than the YTD mean because of a documented regime change: in late August SpaceX flew its last planned Florida Falcon 9 Starlink mission (Aug 24) and shifted all Starlink to Vandenberg while converting LC-39A/SLC-37 for Starship. Sept 1-6 produced only 2 launches (Sept 2, Sept 5, both VSFB), a 0.33/day pace. Human market check: no contract matches this single-day question. Polymarket only has 2026 annual-total brackets (140-159 at 0.80, ~$50k vol) implying ~150/yr, i.e. ~0.39/day for the rest of the year. Kalshi's KXSPACEXCOUNT-26SEP monthly ladder is the closest liquid instrument (>8 at 0.85, >9 at 0.72-0.74, >10 at 0.34, >11 at 0.17, >12 at 0.04; ~150k contracts traded), implying E[Sept total] ~10.1; net of the 2 already flown that is ~0.34/day over Sept 7-30. It differs from this question on unit (month vs single day) and possibly on whether Starship counts, so I treat it as strong evidence on lambda rather than a direct anchor. I take lambda ~0.36 for Sept 17, nudged slightly above the market-implied rate for Starship Flight 14 (NET Sept 15, hardware static-fired, a 2-day slip lands exactly on the 17th) and for possible cadence recovery. Nothing specific is manifested for Sept 17; USSF-153 (Sept 10) and O3b mPOWER (Sept 13) precede it, Crew-13 has slipped indefinitely on a Dragon oxidizer leak. Resulting distribution: P(0)~0.70, P(1)~0.25, P(2)~0.045, P(3)~0.005. No mechanism gets to 5+ in one day (record is 3), so no upper escape mass declared.",
+   "sources": [
+    "https://en.wikipedia.org/wiki/2026_in_spaceflight",
+    "https://en.wikipedia.org/wiki/List_of_spaceflight_launches_in_July%E2%80%93September_2026",
+    "https://spaceflightnow.com/2026/09/",
+    "https://spaceflightnow.com/2026/08/",
+    "https://spaceflightnow.com/launch-schedule/",
+    "https://rocketlaunch.org/launch-schedule/spacex",
+    "https://www.rocketlaunch.live/?filter=spacex",
+    "https://en.wikipedia.org/wiki/Starship_flight_test_14",
+    "https://www.nasa.gov/blogs/spacestation/2026/08/29/nasa-spacex-adjust-crew-13-launch-date/",
+    "Kalshi API series KXSPACEXCOUNT (KXSPACEXCOUNT-26SEP brackets, retrieved 2026-09-07)",
+    "https://keeptrack.space/x-report/spacex-brief-2026-09-06"
+   ],
+   "dossier": "EVENT WINDOW: 2026-09-17T00:00:00Z -> 2026-09-17T23:59:59Z per the resolution criteria (liftoff timestamped on that UTC calendar day). As of Now 2026-09-07T13:10:03Z, 0% of the window has elapsed; it opens in ~10.4 days.\n\nRESOLUTION INSTRUMENT: resolves off Wikipedia's 'List of Falcon 9 and Falcon Heavy launches' and 'List of spaceflight launches in July-September 2026', counted by liftoff time in UTC, not by local launch date and not by any launch provider's own tally. Scrubs/aborts before liftoff do not count; failures after leaving the pad do count. Starship counts only if the source lists it as an orbital or orbital-class attempt that left the pad.\n\nSTATUS-QUO OUTCOME: on a randomly chosen single UTC day in this period, SpaceX conducts zero launches; the modal single-day count in every month of 2026 has been zero.\n\nEVIDENCE:\n- Wikipedia '2026 in spaceflight' (retrieved 2026-09-07) lists 105 SpaceX orbital launches YTD: 103 Falcon 9 Block 5 + 2 Falcon Heavy. Starship flights 12 (May) and 13 (July) are listed as suborbital and separate.\n- Spaceflight Now archive for September 2026: launches covered on Sept 1/2 (Starlink 15-23, Vandenberg SLC-4E, 1:42 a.m. PDT) and Sept 5 ('80th Starlink mission of 2026', Vandenberg, 7:26 a.m. PDT). Two SpaceX launches appear in Sept 1-6.\n- Spaceflight Now archive for August 2026: launches on Aug 15 (Globalstar, Cape), Aug 18 (Starlink 17-50, VSFB), Aug 20 (Starlink 10-39, Cape), Aug 21 (Starlink 15-20, VSFB, '99th Falcon 9 of the year'), Aug 24 (Starlink 10-49, Cape, '100th Falcon 9 of 2026'), Aug 25 (Starlink, VSFB), Aug 29 (Falcon Heavy, Roman Space Telescope, KSC 7:26 a.m. EDT).\n- REGIME CHANGE (KeepTrack X-report 2026-09-06; Spaceflight Now 2026-09-05): SpaceX VP of Launch Kiko Dontchev stated the late-August Cape mission was the last planned Falcon 9 Starlink launch from Florida; all Falcon 9 Starlink missions now fly from Vandenberg SLC-4E while SpaceX converts LC-39A (KSC) and SLC-37 (CCSFS) for Starship, targeting a first Florida Starship flight before end of 2026. Florida Falcon 9 pads are therefore serving non-Starlink customer missions only.\n- Manifested missions bracketing the window (Spaceflight Now launch schedule, rocketlaunch.org, RocketLaunch.Live, retrieved 2026-09-07): USSF-153, Falcon 9, Vandenberg, Sept 10 window opens 15:37 UTC. O3b mPOWER final three satellites, Falcon 9, Cape Canaveral, Sept 13 window opens 18:40 UTC. No SpaceX mission is listed on Sept 16, 17 or 18 by any of the three schedule aggregators; Starlink missions are typically only added to public schedules a few days ahead, so absence from these schedules is weak evidence.\n- Starship Flight 14 (Wikipedia 'Starship flight test 14'; FCC filing reported by Starship Gazer): NET September 15, 2026, from Starbase Pad B, planned as the first orbital Starship flight carrying ~20 Starlink V3 satellites. Booster 21 completed a full-duration static fire Aug 28; Ship 41 completed a 60-second six-engine static fire Aug 21 and returned to the build site for final prep. One aggregator (RocketLaunch.Live) still carried a Sept 30 placeholder date. Historical Starship NET dates have slipped in both small (days) and large (weeks) increments.\n- Crew-13 (NASA ISS blog, 2026-08-29): launch date adjusted after an oxidizer leak was found in Dragon's propulsion system; additional tests, data review and possible rework required; 'a new target date will be announced once available.' Earlier target had been Sept 12; one aggregator lists Sept 30. Would fly from SLC-40, Cape Canaveral.\n- Other missions named as mid-to-late September candidates in the question background: SDA Tranche 1, additional Starlink batches. No public dated schedule entries found for these in the Sept 16-18 range.\n- BASE RATES (each with its class):\n  * Over all 249 days of 2026 through Sept 6: 105 SpaceX orbital launches = 0.42 launches per calendar day.\n  * Over the 16-day span Aug 21 through Sept 5 (spans the pad-regime transition): 7 launches = 0.44 per day.\n  * Over Sept 1-6 only, i.e. conditional on the Vandenberg-only-Starlink regime being in force: 2 launches in 6 days = 0.33 per day. This is the conditional rate that matches the Sept 17 regime; the 0.42 figure is unconditional and spans the earlier two-coast Starlink era.\n  * Falcon non-Starlink missions in 2026 (103 Falcon 9 minus 80 Starlink, plus 2 Falcon Heavy) = 25 over 249 days = 0.10 per day, a component that is unaffected by the Starlink pad shift.\n  * Multi-launch days: in 2025 SpaceX flew ~170 orbital missions across ~365 days; days with two launches almost always paired a Florida mission with a Vandenberg mission. Three-launch days are the historical maximum and have occurred only a handful of times ever.\n- EVENT-IN-WINDOW CHECK (single-day windows): across the 249 single-day windows of 2026 to date, roughly 60-65% contained no SpaceX launch, roughly 30-35% contained exactly one, and a single-digit percentage contained two, derived from the 105-launch total against the observed pattern of paired coast launches (Wikipedia launch lists).\n- DECIDING-BODY / SOURCE CADENCE: Wikipedia's July-September 2026 launch list is edited continuously and was last updated 2026-09-07; it will be current well before the Sept 18 12:00 UTC resolution check. FAA licensing for Starship Flight 14 was described as the outstanding gating item as of late August; no FAA action item was found for Falcon 9 (no active grounding or mishap investigation surfaced for 2026 later than a February 2026 upper-stage anomaly that had been closed out).\n- WEATHER/RANGE: no data found on Sept 17 conditions at Vandenberg, Cape Canaveral or Starbase; nothing found on scheduled range maintenance or downrange conflicts for that date.\n\nSEARCHED FOR BUT COULD NOT FIND: any dated SpaceX mission assigned to September 16, 17 or 18, 2026 on Spaceflight Now, rocketlaunch.org, RocketLaunch.Live or Wikipedia; the September 2026 section of the Wikipedia launch list in machine-readable form (the article body ke",
+   "reference_class": "Single-UTC-day SpaceX orbital launch counts during 2026, conditioned on the post-August-2026 Vandenberg-only-Starlink pad regime"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.8429,
+   "seconds": 253.7,
+   "estimate": {
+    "percentiles": {
+     "10": -0.347,
+     "25": -0.118,
+     "50": 0.263,
+     "75": 0.828,
+     "90": 1.345
+    }
+   },
+   "reasoning": "Reference class: SpaceX orbital launches per UTC calendar day during the current 2026 cadence regime. Over Jul 1 - Sep 6 2026 there were 28 SpaceX launches in 68 days (mean 0.41/day); 43 days had 0, 22 had exactly 1, 3 had 2, none had 3+. That rate is confirmed independently: the Sep 6 Starlink 15-24 flight was the 103rd Falcon 9 of 2026 on day 249 (0.414/day), and extrapolates to ~150 for the year, consistent with Polymarket's 140-159 bucket at $0.80. Adjustments off that anchor are small and roughly cancel. Downward: nothing is manifested for Sep 17 (firm entries are NROL-172 on Sep 10 and O3b mPOWER 11-13 on Sep 13); Crew-13 slipped to ~Sep 30 on a Dragon oxidizer leak; and the shift of all Falcon 9 Starlink to Vandenberg concentrates the constellation cadence on West Coast pad turnaround, which also suppresses the Cape+Vandenberg doubleheader that produced most historical 2-launch days. September to date (2 launches in 6 days) has run slightly below the August pace. Upward: Sep 17 is ~10 days out, past the horizon at which Starlink missions get public dates, so the empty slot carries little information; Starship Flight 14 is NET Sep 15 and could land on the 17th (I price that at roughly 5%, since Starship NETs slip more often than they hold); and Transport Layer Tranche 2 is an undated September candidate. Net lambda ~0.40, giving P(0)~0.66, P(1)~0.29, P(2)~0.05, P(3)~0.005. No market prices this day directly. Upper bound: 4+ launches in a day has never occurred (max ever is 3), so I declare no escape mass.",
+   "sources": [
+    "https://en.wikipedia.org/wiki/List_of_spaceflight_launches_in_July%E2%80%93September_2026",
+    "https://spaceflightnow.com/launch-schedule/",
+    "https://spaceflightnow.com/2026/09/",
+    "https://rocketlaunch.org/launch-schedule/spacex",
+    "https://www.rocketlaunch.live/?filter=spacex",
+    "https://en.wikipedia.org/wiki/List_of_Falcon_9_and_Falcon_Heavy_launches",
+    "https://www.nasa.gov/blogs/spacestation/2026/08/29/nasa-spacex-adjust-crew-13-launch-date/",
+    "https://en.wikipedia.org/wiki/Starship_flight_test_14",
+    "https://kalshi.com/markets/kxspacexcount/spacex-launches",
+    "https://polymarket.com/market/will-spacex-have-between-140-159-launches-in-2026"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off liftoff timestamps recorded in the Wikipedia articles 'List of Falcon 9 and Falcon Heavy launches' and 'List of spaceflight launches in July-September 2026', not off SpaceX PR, FAA licensing counts, or webcast times. Scrubs and static fires do not count; a vehicle that leaves the pad counts regardless of outcome. Starship counts if listed as an orbital/orbital-class attempt.\n\nEVENT WINDOW: 2026-09-17T00:00Z -> 2026-09-17T23:59Z per the criteria; as of Now (2026-09-07T13:10Z) 0% elapsed, window opens in ~9.4 days.\n\nSTATUS-QUO OUTCOME: on a randomly chosen day in the current regime, no SpaceX launch occurs; the modal calendar day in Jul-Aug 2026 had zero.\n\nBASE RATES (all from the Wikipedia July-September 2026 list, retrieved 2026-09-07):\n- Over all 31 days of July 2026: 12 SpaceX launches; 21 days with 0, 8 days with 1, 2 days with 2 (Jul 14, Jul 21), 0 days with 3+.\n- Over all 31 days of August 2026: 14 SpaceX launches; 18 days with 0, 12 days with 1, 1 day with 2 (Aug 16: Globalstar 2-R from SLC-40 at 01:12Z and USSF-366 from SLC-4E at 01:50Z), 0 days with 3+.\n- Over Sept 1-6 2026: 2 SpaceX launches (Sep 2 Starlink 15-23, Sep 6 Starlink 15-24); 4 days with 0.\n- Combined Jul 1 - Sep 6 (68 days): 28 launches; 43 zero-days, 22 one-days, 3 two-days, 0 three-days.\n- Conditional on the day having any SpaceX launch (25 such days in that span), 3 of 25 had two.\n- Conditional on the current all-Starlink-from-Vandenberg regime (Sep 1 onward), every SpaceX launch to date has been from Vandenberg SLC-4E; both Jul/Aug doubleheaders required one East-Coast and one West-Coast flight on the same day.\n- Year-to-date rate: the Sep 6 flight was reported as the 103rd Falcon 9 mission of 2026 (space.com, AIAA, 2026-09-06), i.e. 103 launches in 249 elapsed days.\n\nMANIFEST STATE FOR THE SURROUNDING WINDOW (Wikipedia list + Spaceflight Now launch schedule, retrieved 2026-09-07):\n- Sep 10, 15:37 UTC: Falcon 9, NROL-172 / USSF-153, Vandenberg SLC-4E, booster B1081 flight 27, listed 'GO for launch'.\n- Sep 13, 18:50 UTC: Falcon 9, O3b mPOWER 11-13 for SES, Cape Canaveral SLC-40 (final three of the constellation).\n- Sep 15 NET: Starship Flight 14, Starbase Pad 2, Booster 21 / Ship 41, third Block 3 flight, may carry ~20 Starlink V3. Latest COMPASS slide gives NET Sep 15; one commercial schedule aggregator lists it as late as Sep 30.\n- Sep 17: no SpaceX mission currently carries this date on any schedule checked (Wikipedia, Spaceflight Now, rocketlaunch.org, rocketlaunch.live). Note that Starlink missions typically enter public schedules only ~5-7 days ahead, so Sep 17 sits beyond the normal dating horizon.\n- Undated September SpaceX entries: Crew-13 and SDA Transport Layer Tranche 2.\n- Crew-13: NASA blog dated 2026-08-29 announced a date adjustment after an oxidizer leak was found in Dragon's propulsion system during prelaunch processing; earlier target was NET Sep 12, current listings show ~Sep 30. Launches from SLC-40.\n- Falcon Heavy: next mission after the Aug 30 Roman Space Telescope launch is Dragonfly, targeting July 2028 - i.e. no Falcon Heavy is available in this window.\n\nREGIME / OPERATIONAL CONTEXT:\n- Reported operational change: SpaceX has moved Falcon 9 Starlink missions to the West Coast as it works toward Starship-Super Heavy operations in Florida. In August, Starlink flew from both Cape Canaveral SLC-40 (Groups 10-19, 10-39, 10-49) and Vandenberg; since Sep 1 all Starlink flights on record are from Vandenberg SLC-4E.\n- Observed Vandenberg SLC-4E turnaround in early September: Sep 2 -> Sep 6 (4 days).\n- Interval between the two most recent SpaceX launches on record: 4 days.\n- Historical maximum SpaceX launches in a single UTC day is 3; 3-launch days did not occur at all in the Jul 1 - Sep 6 2026 sample.\n\nMARKETS: no prediction market prices SpaceX launches on a specific single day. Polymarket carries 2026 annual-total buckets (100k+ volume across buckets, closing 2027-01-01) resolved from year-end counts, not from a Wikipedia daily tally - a different contract on threshold, deadline and source. Kalshi runs a KXSPACEXCOUNT family with annual and monthly SpaceX launch-count contracts resolved from FAA and SpaceX data; the September 2026 contract page returned HTTP 429 and its price could not be retrieved.\n\nSEARCHED FOR BUT COULD NOT FIND: any named SpaceX mission assigned to Sep 17 2026; the Kalshi September-2026 monthly launch-count price; a Starlink launch dated between Sep 6 and Sep 13 on any schedule (the gap may be a real lull or simply unpopulated); the current Vandenberg SLC-6 Falcon activation status; whether the Wikipedia September table has been backfilled with tentative Starlink NET dates.",
+   "reference_class": "SpaceX orbital launches (Falcon 9 / Falcon Heavy / Starship) per UTC calendar day during the Jul-Sep 2026 cadence regime, counted from the Wikipedia July-September 2026 spaceflight launch list"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1221,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2468,
+   "seconds": 86.9,
+   "estimate": {
+    "percentiles": {
+     "10": -0.351,
+     "25": -0.127,
+     "50": 0.246,
+     "75": 0.786,
+     "90": 1.321
+    }
+   },
+   "reasoning": "All three runs count the same history and agree on the anchor: ~28 launches over 68-69 days Jul 1 - Sep 6 (0.41/day), 105 YTD over 249 days (0.42/day), with 63% zero-days, 32% one-days, 4.3% two-days and no three-day in the sample. The corroborated regime change - Florida Falcon 9 Starlink ended in late August, all Starlink now from Vandenberg SLC-4E while LC-39A/SLC-37 convert for Starship - argues λ down and specifically thins the East+West pairing that produced every 2-launch day in the sample. Against that, Sep 17 sits 10 days out (past the Starlink publishing horizon, so the empty schedule is uninformative), the back half of September carries an undated backlog (SDA Tranche, Amazon Leo, Starlink), and Starship Flight 14 is NET Sep 15 with hardware static-fired, worth ~4% of landing on the 17th. These roughly cancel: λ ≈ 0.39-0.40. I did not adopt Run 2's lower λ because the Kalshi September ladder it rests on could not be retrieved by two other runs and is unsourced.",
+   "sources": [],
+   "reconciliation": "Disputes were (a) λ level, (b) the Kalshi September monthly prices, (c) how much the Vandenberg-only Starlink regime cuts cadence and P(2). (b) is factual and did NOT settle: Runs 1 and 3 both hit HTTP 429 on Kalshi and reported the September book unavailable, while Run 2 quotes a precise ladder without provenance - so I treated those prices as unverified and declined to anchor on them, which is the main reason I sit above Run 2. (c) is factual and DID settle: two runs independently cite the Dontchev statement via Spaceflight Now (2026-09-05), so I accept the pad shift as real and let it both lower λ and shade P(2) below the historical 4.3%. The residual λ dispute is pure judgment; my read is that the one-pad Starlink constraint and the mid-late-September backlog plus a slippable Starship 14 roughly offset, leaving λ near the 0.41 base rate rather than materially below it. Sep 1-6's 2-in-6 pace is within Poisson noise and carries no independent weight. I carried Run 3's reference class forward, agreeing with it, and set dispersion from the sample SD (0.575 x 2.56 = 1.47) widened for the within-bin embedding. No market matches this single-day contract; Polymarket's annual buckets imply ~0.40/day and corroborate the anchor.",
+   "disagreements": [
+    {
+     "claim": "Kalshi's KXSPACEXCOUNT September 2026 ladder implies E[Sept total] ~10.1, i.e. ~0.34/day for the rest of the month",
+     "kind": "factual",
+     "verdict": "Unsettled - Runs 1 and 3 both report the Kalshi page returned HTTP 429 and the price was unretrievable; Run 2 supplies precise prices with no stated provenance. No web access this run to adjudicate. Treated as unverified and not used as an anchor; its downward pull on λ was discounted."
+    },
+    {
+     "claim": "SpaceX has ended Florida Falcon 9 Starlink launches, flying all Starlink from Vandenberg SLC-4E while converting LC-39A/SLC-37 for Starship",
+     "kind": "factual",
+     "verdict": "Settled as true - independently reported by Runs 2 and 3 (Dontchev via Spaceflight Now 2026-09-05, KeepTrack 2026-09-06) and consistent with Run 1's observation that both September flights so far were Vandenberg Group 15 missions."
+    },
+    {
+     "claim": "The forward λ for Sep 17 is materially below the 0.41/day year-to-date rate",
+     "kind": "judgment",
+     "verdict": "Partially accepted. The one-pad Starlink constraint is a real mechanism, but the offsetting backlog (SDA, Amazon Leo, undated Starlink) and a slippable Starship 14 restore most of it. Landed at λ ≈ 0.39-0.40, near the base rate, not at Run 2's 0.36 nor Run 1's 0.43-0.45."
+    },
+    {
+     "claim": "Sept 1-6's 2 launches in 6 days (0.33/day) is evidence of a slowdown",
+     "kind": "judgment",
+     "verdict": "Rejected as evidence - n=6 days, 2 events; entirely consistent with 0.41/day. The pad-mechanism argument, not this sample, is what justifies any downward adjustment."
+    },
+    {
+     "claim": "P(exactly 2) should be at or below the historical 4.3% of days",
+     "kind": "judgment",
+     "verdict": "Accepted, at 4.5%. Run 3 is right that all three 2-launch days in the sample paired a Florida with a Vandenberg flight, a route now thinner for Starlink; but Florida customer missions continue and a Starship+Falcon pairing is a new route, so the reduction is small."
+    },
+    {
+     "claim": "Starship Flight 14 (NET Sep 15) could land on Sep 17",
+     "kind": "judgment",
+     "verdict": "Priced at ~4%, close to Run 3's 5%. Hardware is static-fired (B21 Aug 28, S41 Aug 21), but Starship NETs slip more often than they hold and one aggregator carries Sep 30."
+    },
+    {
+     "claim": "No mechanism reaches 5+ SpaceX liftoffs in one UTC day, so no upper escape mass",
+     "kind": "factual",
+     "verdict": "Settled - all three runs agree the all-time single-day maximum is 3 and none occurred in the Jul-Sep 2026 sample; 4 sits inside range_max=4.5. No p_above_upper declared."
+    },
+    {
+     "claim": "The absence of any scheduled SpaceX mission on Sep 17 is evidence of a zero",
+     "kind": "judgment",
+     "verdict": "All three runs agree it is near-zero evidence at T-10 days, since Starlink slots publish only ~5-7 days ahead. No dispute; no downward adjustment made on this basis."
+    }
+   ],
+   "reference_class": "SpaceX orbital launches (Falcon 9 / Falcon Heavy / Starship) per UTC calendar day during the 2026 cadence regime, counted from the Wikipedia quarterly launch lists"
+  }
+ ]
+}
