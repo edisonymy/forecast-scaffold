@@ -1,0 +1,231 @@
+{
+ "record_id": "2026-09-07-24ff10ac",
+ "question": "What will UNE forecast as Cuba's peak-hour electricity generation deficit for the night of September 18, 2026?",
+ "question_id": 45735,
+ "url": "https://www.metaculus.com/questions/45544/",
+ "question_type": "discrete",
+ "forecast_at": "2026-09-07T14:27:37+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.2052,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 2006.6666666666667,
+    "25": 2121.6666666666665,
+    "50": 2216.6666666666665,
+    "75": 2315.0,
+    "90": 2428.3333333333335
+   },
+   "p_below_lower": 0.02,
+   "p_above_upper": 0.017333333333333336
+  },
+  "phase1": {
+   "10": 2006.6666666666667,
+   "25": 2121.6666666666665,
+   "50": 2216.6666666666665,
+   "75": 2315.0,
+   "90": 2428.3333333333335
+  },
+  "phase2": null,
+  "spread_phase1": 60.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 2030.0,
+   "25": 2130.0,
+   "50": 2205.0,
+   "75": 2295.0,
+   "90": 2410.0
+  },
+  "p_below_lower": 0.02,
+  "p_above_upper": 0.015
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.1109,
+   "seconds": 415.6,
+   "estimate": {
+    "percentiles": {
+     "10": 1960.0,
+     "25": 2090.0,
+     "50": 2195.0,
+     "75": 2300.0,
+     "90": 2420.0
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Reference class: UNE morning-nota forecast peak deficits, Aug 1 - Sep 7 2026 (median ~2220 MW, observed range ~2030-2411). Last seven days (deficit basis) ran 2310, 2290, 2060, 2190, 2250, 2095, 2190 - mean ~2200, and Sept 18 is a Friday (weekday demand, like Sept 4's 2190). Availability improved from ~990-1000 MW to ~1155-1160 MW as Cespedes U4 (145 MW) came on, but UNE simultaneously raised the demand forecast to 3350 MW on Sept 7, so the deficit did not fall. Two-sided drivers roughly cancel around the current level: upward - UNE has publicly warned that Sept-Dec brings additional scheduled maintenance layered on breakdowns (8-9 of 16 thermal units already out, 402 MW of thermal limitations), and Guiteras (~190-270 MW, ~20 unplanned trips in 2026, currently at ~30 consecutive days online) is a high-hazard single point that is presently IN, giving a right skew; downward - mild seasonal demand easing after mid-September, further unit returns from maintenance, and the fact that the series printed 2030-2095 three times in the last two weeks. Solar (record ~657 MW midday) does not serve the evening peak, so the ~1,700 MW of PV is near-irrelevant to this figure. I did not find any scheduled-return dates for specific units or a start date for Guiteras' promised general overhaul, so I stayed close to the recent-level anchor rather than assuming a step change. Escapes: >2825 would need availability near ~450 MW - ~460 MW below the worst forecast availability ever printed (910 MW on Aug 31) - plausible only via total fuel exhaustion or cascading multi-unit failure (~2%); <1575 would need ~1700 MW available or a demand collapse from a hurricane/SEN collapse, with the added wrinkle that a full collapse more likely annuls than resolves low (~2%).",
+   "sources": [
+    "https://www.cibercuba.com/apagones",
+    "https://www.cibercuba.com/noticias/2026-09-05-u1-e207888-s27061-nid339621-cuba-afronta-este-sabado-apagones-superaran-70",
+    "https://www.periodicocubano.com/une-anuncia-que-los-apagones-en-cuba-podrian-empeorar-entre-septiembre-y-diciembre/",
+    "https://polymarket.com/predictions/cuba",
+    "https://en.wikipedia.org/wiki/2024%E2%80%932026_Cuba_blackouts",
+    "https://giron.cu/2026/08/21/union-electrica-afectacion-de-2340-mw/",
+    "https://giron.cu/2026/08/27/union-electrica-afectacion-2060-mw/",
+    "https://www.cibercuba.com/noticias/2026-08-31-u1-e207888-s27061-nid339212-cuba-cierra-agosto-afectacion-2410-mw-megavatio",
+    "http://www.cubadebate.cu/noticias/2026/09/06/entrada-de-unidades-de-cespedes-disminuyen-pronostico-de-deficit-nocturno-para-este-domingo/",
+    "https://www.infobae.com/cuba/2026/09/03/cuba-preve-apagones-simultaneos-sobre-el-64-de-la-isla-por-un-deficit-de-2060-megavatios/",
+    "https://www.cibercuba.com/noticias/2026-09-05-u1-e209395-s27061-nid339610-reportero-oficialista-cubano-elogia-record-guiteras",
+    "https://www.noaa.gov/news-release/noaa-maintains-prediction-for-below-normal-atlantic-hurricane-season"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the *deficit* figure ('deficit de generacion') for the evening peak in UNE's FIRST (morning) nota informativa referring to 18 Sep 2026 - NOT the 'afectacion estimada' (a distinct, separate line, historically ~30 MW above the deficit) and NOT the realized/actual maximum affectation reported the following morning. If UNE states a deficit, that stated number governs; otherwise forecast max demand minus forecast availability. Range midpoints used if a range is given. No nota covering that evening peak, and no credible secondary compilation of it => annulment.\n\nEVENT WINDOW: the target is a single publication - UNE's morning nota of 18 Sep 2026 (Havana time, UTC-4), scheduled resolution 2026-09-19T00:00:00Z. Per the criteria the window is that one day; as of Now (2026-09-07T14:05Z) 0% of it has elapsed, with 11 days to run. UNE has published this nota daily without interruption through the period observed.\n\nSTATUS-QUO OUTCOME: UNE continues publishing a morning nota forecasting an evening-peak deficit in the same format and with the same fleet composition as the first week of September 2026.\n\nDAILY DEFICIT SERIES, deficit basis unless marked (source: UNE notas as compiled by CiberCuba/Cubadebate/Giron/Infobae, dates as shown):\n- Sep 1: 2310 MW; Sep 2: 2290 (avail 990, demand 3250); Sep 3: 2060 (avail 990, demand 3250, blackouts to 64%); Sep 4: 2190 (afectacion 2220); Sep 5: 2250 (avail 1000, demand 3250, afectacion 2280, ~70%); Sep 6 (Sunday): 2095 (avail 1155, demand 3250, afectacion 2125, ~65%); Sep 7 (Monday): 2190 (avail 1160, demand 3350, afectacion 2220).\n- Aug 10: afectacion 2280; Aug 13: afectacion 2281; Aug 20: afectacion 2281; Aug 21: afectacion 2340 (avail 1040); Aug 27: afectacion 2060; Aug 31: 2410 forecast (avail 910, demand 3300, ~73% of country).\n- Realized (not forecast) maxima for context: Aug 4 = 2411 MW (all-time record, generation = 23.46% of a 3150 MW demand); Aug 11 = 2411; Aug 18 = 2275 at 21:40; Jul 8 = 2341; Jul 29 = 2380; Sep 1 = 2323 at 20:50; Sep 2 = 2275 at 21:40.\n\nBASE RATES / CLASSES:\n- Over ALL UNE morning forecasts 1 Aug - 7 Sep 2026 (n~38): median ~2220 MW, observed span ~2030-2411, cross-day SD ~120 MW.\n- Over the FIRST HALF of 2026 (Jan-Jun, official media): average deficit 1955 MW, average daily outage 20 h - i.e. the level in the current summer regime sits materially above the year-to-date average; the regime shifted up during Jul-Aug.\n- Conditional on July 2026 specifically (worst month on record): deficit exceeded 2000 MW on 28 of 31 days; 4 days above 2300 MW.\n- Over 11-day-separated pairs within Aug-Sep 2026 (the horizon length here): Aug 10->Aug 21 +60 MW, Aug 20->Aug 31 +129 MW, Aug 21->Sep 1 ~0 MW, Aug 27->Sep 7 +160 MW (afectacion basis).\n- Event-in-window class: over the last two years, how many 11-day windows contained a total SEN collapse - 2026 has had at least 6-7 national collapses (Mar 4 western, Mar 16, Mar 21, Aug 2, plus others), i.e. roughly one per 5-6 weeks; searched but did not find a complete dated list.\n\nFLEET / SUPPLY FACTS:\n- Sep 5 nota: out for FAILURE - Mariel 5 and 6, Santa Cruz 2, Cienfuegos 4, Felton 2, Rente 6. Out for MAINTENANCE - Santa Cruz 3, Nuevitas 5, Rente 5. Thermal limitations 402 MW. 8-9 of 16 thermal units offline through the week.\n- Cespedes Unit 4 (145 MW) entered start-up for the Sep 6 peak; availability rose from ~990-1000 MW (Sep 2-5) to ~1155-1160 MW (Sep 6-7).\n- Antonio Guiteras (Matanzas, largest single block, nameplate >300 MW, ~270 MW under optimal conditions, generating ~190 MW currently) has been online ~30 consecutive days since an early-August synchronization; it has accumulated roughly twenty unscheduled outages during 2026 and has had no general overhaul since 2010. A ~6-month general maintenance was promised in the 2026 government programme; no start date located.\n- ~106 distributed-generation plants idle for lack of fuel (Sep 1-2 notas). Cuba needs ~100,000 bbl/d, produces ~40,000; in Apr 2026 it received 1 of the ~8 fuel ships/month it needs; a Russian diesel cargo was lost/undelivered in May 2026; official framing blames US measures, and outside reporting ties the 2026 escalation to a US cut-off of oil flows.\n- Solar: 133 PV parks, ~1,700 MW installed; PV share of generation up from 5.8% to >20% in a year, official target 30-35% by end-2026. Max PV power Sep 4 = 657 MW, Sep 1 = 609 MW, day record 900 MW (Feb 11). PV output is zero during the evening peak; no utility storage reported.\n- UNE public guidance (Aug 2026): outages 'could worsen' Sept-Dec as scheduled maintenance overlaps with breakdowns, with additional units entering maintenance in September and hurricane-season cloud cover cutting solar; lower temperatures late in the year may reduce demand while units continue to be withdrawn for repair. No numbers were attached to this guidance.\n- Demand side: forecast max demand has printed 3250 MW on most days, 3300 MW on Aug 31, 3350 MW on Sep 7. 18 Sep 2026 is a Friday (weekday). Sep 6, a Sunday, carried the lowest demand-driven deficit of the week.\n- Weather: NOAA's 2026 Atlantic season outlook is below-normal (75% chance below normal; 7-13 named storms, 2-6 hurricanes, 0-2 major), attributed to a developing El Nino; as of the latest report only three named storms (Arthur, Bertha, Cristobal) and no hurricanes had formed. INSMET puts the 2026 season-long probability of at least one hurricane affecting Cuba at 40% and of a tropical storm impact at 75%. Mid-September is the climatological peak of the season.\n\nMARKETS: no Polymarket, Manifold or Kalshi contract on Cuba's electricity deficit or blackouts was found; Polymarket's Cuba section carries only geopolitical contracts (leadership change, US military action, regime collapse). No bookmaker line found.\n\nSEARCHED FOR BUT NOT FOUND: unionelectrica.cu was unreachable (connection refused) so the primary notas were read only through secondary compilations; CiberCuba's observatory page reported its national-r",
+   "reference_class": "UNE morning nota informativa forecast peak-hour generation deficits for Cuba, daily, 1 Aug - 7 Sep 2026 (n~38), conditioned on the current regime of 8-9 thermal units out and Guiteras online"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.722,
+   "seconds": 361.9,
+   "estimate": {
+    "percentiles": {
+     "10": 2050.0,
+     "25": 2155.0,
+     "50": 2255.0,
+     "75": 2360.0,
+     "90": 2480.0
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Reference class: UNE daily forecast peak-hour deficits during the 2026 chronic-crisis regime, forecast ~11 days ahead. The last 7 published values (Sep 1-7) run 2,060-2,310 with a mean near 2,200; August ran 2,197-2,411. Availability is structurally pinned at ~1,000-1,160 MW (8-9 of 16 thermal units out, 402 MW of thermal limitations, ~657 MW of solar that peaks at midday and contributes nothing to the evening peak) against demand that has been 3,250-3,350 MW and is unlikely to fall much by mid-September. I center at 2,255 - marginally above the last week's mean - because the 2026 secular drift is upward (monthly records +~80 MW/month), UNE itself has warned Sept-Dec is the most critical period from overlapping maintenance, and the distribution is right-skewed by the Guiteras hazard: ~20 unscheduled outages in 2026 and a pending maintenance decision mean a meaningful chance it is off the grid on Sep 18, worth ~+190 MW. Downside comes from a fuel shipment or units returning from the three currently in scheduled maintenance, which is why the 10th percentile sits near September's observed low. Tails: >2,825 needs availability ~425 MW, i.e. a national-collapse recovery nota (7 SEN collapses already in 2026, most recently Aug 3), priced at 2%; <1,575 needs availability ~1,675 MW, a +515 MW jump with no precedent this year, or a tropical system collapsing reported demand - below-normal El Nino season makes this thin, priced at 1.5%. Evidence is one-sided in the sense that all sources are downstream of the same UNE notas; the compilers (CiberCuba, Cubadebate, Escambray, Infobae) agree on figures, so source count adds confirmation but not independence. No prediction market exists at any venue.",
+   "sources": [
+    "https://www.cibercuba.com/apagones",
+    "https://www.cibercuba.com/noticias/2026-09-05-u1-e207888-s27061-nid339621-cuba-afronta-este-sabado-apagones-superaran-70",
+    "https://www.cibercuba.com/noticias/2026-09-05-u1-e209395-s27061-nid339610-reportero-oficialista-cubano-elogia-record-guiteras",
+    "http://www.cubadebate.cu/noticias/2026/08/13/la-union-electrica-pronostican-afectaciones-de-hasta-2281-mw-en-horario-pico/",
+    "http://www.cubadebate.cu/noticias/2026/08/06/union-electrica-pronostica-una-afectacion-para-el-horario-pico-de-este-jueves-de-2305-mw/",
+    "https://www.cibercuba.com/noticias/2026-08-05-u1-e135253-s27061-nid337090-cuba-rompe-otro-record-apagones-deficit-supera-2400",
+    "https://www.infobae.com/cuba/2026/09/03/cuba-preve-apagones-simultaneos-sobre-el-64-de-la-isla-por-un-deficit-de-2060-megavatios/",
+    "https://diariodecuba.com/cuba/1785702808_68294.html",
+    "https://www.noaa.gov/news-release/noaa-maintains-prediction-for-below-normal-atlantic-hurricane-season"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the FORECAST figure in UNE's first (morning) 'nota informativa' referring to 2026-09-18's evening peak - not the realized/actual deficit, and not the 'afectacion estimada' (which runs ~30 MW above the deficit and is used only if UNE reports no deficit/demand/availability at all). If UNE states a 'deficit' figure it is used verbatim; otherwise forecast max demand minus forecast availability. Compiled at cibercuba.com/apagones; also carried by Cubadebate, Escambray, Juventud Rebelde, Infobae, 14ymedio, Diario de Cuba. Note cibercuba.com/apagones displayed a 'La fuente del parte nacional esta temporalmente inaccesible' banner on 2026-09-07, and unionelectrica.cu was unreachable (connection refused) on that date.\n\nEVENT WINDOW: a single observation - the UNE morning nota published on 2026-09-18 (UNE publishes these each morning, typically ~11:00-13:00 UTC), per the criteria. As of Now = 2026-09-07T14:05Z, 0% elapsed; ~11.0 days remain until the observation exists. Scheduled resolution 2026-09-19T00:00Z. 2026-09-18 is a Friday (ordinary weekday demand pattern).\n\nOBSERVED SERIES - UNE forecast peak deficit, MW (source: Cubadebate/Escambray/CiberCuba daily notas):\n- Aug 6: availability 975, max demand 3,250, deficit 2,275, afectacion 2,305\n- Aug 8: availability 1,050, demand 3,300, deficit 2,280\n- Aug 10: afectacion 2,280 | Aug 11: afectacion 2,347 | Aug 12: deficit 2,197, afectacion 2,227\n- Aug 13: availability 1,049, demand 3,300, deficit 2,251, afectacion 2,281\n- Aug 18: afectacion 2,369 (~71% of country affected at peak)\n- Sep 1: 2,310 (availability 1,020, demand 3,300) | Sep 2: 2,290 (availability 990, demand 3,250)\n- Sep 3: 2,060 (availability 990, demand 3,250; afectacion 2,090; 64% of island)\n- Sep 4: ~2,190 (afectacion 2,220) | Sep 5: 2,250 (availability 1,000, demand 3,250; afectacion 2,280; ~70%)\n- Sep 6: afectacion 2,223 (ABC Color reports up to 65% of territory) | Sep 7: availability 1,160, demand 3,350, deficit 2,190, afectacion 2,220\nRealized (not forecast) maxima run higher than the morning forecast on some days: e.g. realized max afectacion 2,323 MW at 20:50 on Sep 1.\n\nBASE RATES / LEVELS:\n- Over ALL of 2026 H1: average deficit 1,955 MW; average daily outage duration 20 h (Reuters/riotimesonline compilation).\n- Over JULY 2026 specifically: monthly AVERAGE deficit 1,793 MW (all-hours, not peak-only); four days above 2,300 MW peak deficit - a first; three SEN collapses in eight days (Diario de Cuba).\n- Over 2026 monthly MAXIMA of the peak deficit: May 2,174 -> June 2,208 -> July 2,341 -> Aug 4: 2,411 (all-time record since records began; national generation covered 23.46% of demand that peak).\n- Over summer 2024 (prior regime, for contrast): peak deficits 1,500-1,900 MW.\n- Conditional on Guiteras (largest single unit) being OFF the grid, the system loses ~190 MW of the ~1,000-1,160 MW available; conditional on it being ON, current availability figures above already include it.\n- SEN total collapses: 7 in calendar 2026 (national blackouts incl. Mar 4, Mar 16, Mar 21, Aug 3); 11 since Oct 2024.\n\nSUPPLY-SIDE FACTS:\n- 8-9 of Cuba's 16 thermoelectric units out for breakdown or maintenance through Aug-Sep 2026; thermal generation limitations totalled 402 MW on Sep 5; units named out on Sep 5: Mariel 5 & 6, Santa Cruz 2, Cienfuegos 4, Felton 2, Rente 6, plus three units in scheduled maintenance.\n- Antonio Guiteras (Matanzas, largest unit): 30 consecutive days online as of Sep 5, generating 190 MW vs >300 MW nameplate and ~270 MW optimal; ~20 unscheduled outages during 2026; no capital maintenance since 2010; July 17 it ran 26 minutes before a boiler leak. Plant leadership states capital maintenance is planned before year-end with downtime 'not exceeding 180 days', and light maintenance 'as soon as the Electric Union decides'.\n- Solar PV: parks generated 4,221 MWh on Fri Sep 4 with a midday peak of 657 MW; UNE notes this generation ceases during the evening peak hours.\n- UNE issued a public warning (14ymedio, August) that between September and December multiple units would coincide in maintenance or breakdown, with the SEN entering the final quarter in critical condition.\n- Distributed generation / fuel: repeated episodes of plants idled for lack of fuel (106 plants plus several fuel-storage facilities affected in one August episode; 1,100 MW lost to fuel shortage on May 14).\n\nEXTERNAL SHOCK CONTEXT: NOAA's August update holds a below-normal 2026 Atlantic season - 7-13 named storms, 2-6 hurricanes, 0-2 major - with a 75% chance of below-normal activity, attributed to El Nino conditions that emerged in June raising shear. Cuba's INSMET estimated in May a 40% seasonal probability of at least one hurricane affecting the island and 75% for a tropical storm. Mid-September is the climatological peak of the season. No named system was reported threatening Cuba as of 2026-09-07.\n\nMARKETS: Searched Polymarket, Manifold, Kalshi and bookmakers for any contract on Cuban electricity deficit, availability, or blackout figures - none found at any venue, at any threshold.\n\nSEARCHED FOR BUT COULD NOT FIND: (a) unionelectrica.cu's own nota archive - the site refused connections on 2026-09-07; (b) a machine-readable daily time series of the forecast deficit (eltoque.com/apagon-en-cuba surfaced in search but was not retrieved), so no direct empirical distribution of 11-day-apart changes could be computed - the dispersion above is inferred from the observed Aug-Sep spread; (c) any published UNE maintenance calendar naming which units are scheduled to return or leave service between Sep 8 and Sep 18; (d) any announced fuel-shipment arrivals dated into the Sep 8-18 window; (e) confirmation of whether the Sep 6 figure was a deficit or only an afectacion (sources conflict between ~2,095 deficit / 2,125 afectacion and 2,223 afectacion).",
+   "reference_class": "UNE daily 'nota informativa' forecast peak-hour generation deficits during the 2026 Cuban SEN crisis regime, evaluated at an ~11-day forecast horizon"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.081,
+   "seconds": 426.9,
+   "estimate": {
+    "percentiles": {
+     "10": 2010.0,
+     "25": 2120.0,
+     "50": 2200.0,
+     "75": 2285.0,
+     "90": 2385.0
+    },
+    "p_below_lower": 0.025,
+    "p_above_upper": 0.012
+   },
+   "reasoning": "Reference class first: the UNE daily forecast peak-hour deficit over Jul-Sep 2026 has a median near 2,190 MW, with July's daily peak affectation above 2,000 MW on 28 of 31 days and an all-time high of 2,411 MW (Aug 11). Sept 1-7 realized 2,060-2,310 (mean ~2,192), i.e. the August record spikes (2,410-2,411) have not persisted into September. Status quo therefore anchors the median at ~2,200; I nudge marginally above the week mean because Sep 18 is a Friday (weekday demand exceeds the Sunday troughs of 2,095) and UNE has publicly warned that Sep-Dec brings coinciding maintenance and pending repairs, offset by the modest seasonal easing of evening demand after early September. Both directions are live: eight of sixteen thermal units are out and any new trip adds 100-250 MW, while a fuel cargo restarting part of the 106 idle distributed-generation plants (Cuba needs ~8 ships/month, has been receiving roughly one) could cut several hundred MW quickly, as happened in April 2026. Escapes: >2,825 requires availability below ~500 MW, 17% past the all-time record - essentially only a hurricane or unrecovered SEN collapse, and NHC's Sep 7 outlook shows no Atlantic formation for 7 days in a NOAA below-normal, El-Nino season, so 1.2%. <1,575 requires a ~615 MW improvement in 11 days, plausible only on a large fuel delivery plus unit returns, with no such shipment reported as pending: 2.5%. No prediction market prices this quantity (Polymarket's Cuba book is regime/political only; nothing on Manifold or Kalshi), so no crowd anchor was available or used.",
+   "sources": [
+    "https://www.cibercuba.com/apagones",
+    "https://www.cibercuba.com/apagones/2026/08/19/",
+    "https://www.cibercuba.com/noticias/2026-09-06-u1-e208574-s27061-nid339663-sale-sen-unidad-3-termoelectrica-carlos-manuel",
+    "https://www.cibercuba.com/noticias/2026-08-31-u1-e207888-s27061-nid339212-cuba-cierra-agosto-afectacion-2410-mw-megavatio",
+    "http://www.cubadebate.cu/noticias/2026/08/26/une-pronostica-afectacion-de-2-130-mw-en-pico-nocturno-de-este-miercoles/",
+    "https://www.juventudrebelde.cu/cuba/2026-08-12/union-electrica-informa-deficit-de-2197-mw",
+    "https://diariodecuba.com/cuba/1785702808_68294.html",
+    "https://www.granma.cu/cuba/2026-09-06/afectaciones-al-servicio-electrico-para-hoy-domingo-06-09-2026-11-09-50",
+    "https://www.infobae.com/cuba/2026/09/03/cuba-preve-apagones-simultaneos-sobre-el-64-de-la-isla-por-un-deficit-de-2060-megavatios/",
+    "https://www.noaa.gov/news-release/noaa-maintains-prediction-for-below-normal-atlantic-hurricane-season",
+    "https://www.nhc.noaa.gov/gtwo.php",
+    "https://www.escambray.cu/2026/pronostican-afectacion-de-2280-mw-en-el-horario-pico-de-este-sabado/",
+    "https://polymarket.com/predictions/cuba"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the deficit figure in UNE's first (morning) nota informativa for 2026-09-18 forecasting THAT EVENING's peak (horario pico) - i.e. a forecast number, not the realized outage; not the 'afectacion estimada' (a distinct figure, used only if UNE reports no deficit/demand/availability at all); if UNE states a 'deficit' explicitly that figure is used, else demanda maxima minus disponibilidad. Compiled by CiberCuba's outage observatory (cibercuba.com/apagones); UNE posts at unionelectrica.cu/nota-informativa and the same figures are carried by Granma, Cubadebate and Escambray each morning. Note the observatory flagged on 2026-09-07 that 'la fuente del parte nacional esta temporalmente inaccesible', though secondary outlets continued publishing.\n\nEVENT WINDOW: the criteria define a single observation day - UNE's morning nota of 2026-09-18 covering that evening's peak. As of Now (2026-09-07T14:05Z), 0% elapsed; 11 days remain until the observation date.\n\nSTATUS-QUO OUTCOME: UNE publishes a nota every morning without interruption through 2026-09-07, forecasting evening-peak availability near 1,000-1,160 MW against maximum demand of 3,250-3,350 MW.\n\nEVIDENCE\n- 2026-09-07 (CiberCuba observatory): peak availability 1,160 MW, maximum demand 3,350 MW, deficit 2,190 MW, afectacion 2,220 MW.\n- 2026-09-06 (Granma / Cubadebate, Sunday): peak availability 1,155 MW, demand 3,250 MW, deficit 2,095 MW, afectacion 2,125 MW; midday afectacion 1,850 MW. Units of CTE Carlos Manuel de Cespedes entering service were cited as lowering that day's forecast.\n- 2026-09-05 (CiberCuba / Escambray, Saturday): availability 1,000 MW, demand 3,250 MW, deficit 2,250 MW, afectacion 2,280 MW; outages projected over ~70% of the country.\n- 2026-09-04 (Escambray / Cubadebate, Friday): afectacion 2,220 MW forecast for the peak.\n- 2026-09-03 (Infobae): deficit 2,060 MW, simultaneous outages over 64% of the island.\n- 2026-09-02 (CiberCuba / Cubadebate): availability 990 MW vs demand 3,250 MW; afectacion up to 2,290 MW.\n- 2026-09-01 (CiberCuba, school-year start): availability ~1,020 MW vs demand 3,300 MW; afectacion 2,310 MW forecast, 2,323 MW realized.\n- 2026-08-31 (CiberCuba / Infobae): availability 910 MW vs demand 3,300 MW, deficit/afectacion 2,410 MW - one MW below the all-time record of 2,411 MW set 2026-08-11 after the SEN was reconnected following ~48 hours of total collapse (the sixth collapse of 2026).\n- 2026-08-26 (Cubadebate): afectacion forecast 2,130 MW; realized maximum 2,089 MW at 21:00. 2026-08-19 (CiberCuba observatory): availability 1,170 MW, demand ~3,300 MW, afectacion 2,225 MW. 2026-08-12 (Juventud Rebelde): deficit 2,197 MW.\n- 2026-07-31 / 08 (Diario de Cuba): July 2026 was the worst generation month on record - three SEN collapses in eight days, four days above 2,300 MW, and on only 3 of 31 days did the peak energy not supplied fall below 2,000 MW; countrywide average deficit across all hours 1,659 MW. Escalation sequence of records: 2,204 MW (May 14), 2,191 MW (Jun 18), 2,341 MW (Jul 8), 2,380 MW (Jul 29), 2,411 MW (Aug 11).\n- Plant state as of 2026-09-06 (CiberCuba, Cubadebate): out of service by breakdown - Mariel 5, 6 (and 8 cited Sep 1), Santa Cruz 2, Cienfuegos 4, Cespedes 3 (air-compressor switch, went out Sep 6), Felton 2, Rente 6; in maintenance - Santa Cruz 3, Nuevitas 5, Rente 5. Eight of the country's 16 thermal units offline. 106 distributed-generation plants idle for lack of fuel, plus the Regla and Melones barges and the Mariel and Moa fuel plants unavailable.\n- Fuel supply (CiberCuba 2026-04-23; Diario de Cuba; OnCubaNews): Cuba requires ~8 fuel ships per month and received one between 2025-12-08 and late April 2026. The Russian tanker Anatoly Kolodkin discharged 100,000 t of crude in late March/early April 2026; simultaneous restart of distributed generation on 2026-04-17 partially reduced outages. No arriving cargo was reported in searches covering 2026-09-01 to 09-07.\n- Forward guidance (CiberCuba, 2026-08-21): UNE itself signalled that from September to December various thermoelectric units could coincide in maintenance or breakdown owing to pending work and accumulated technical problems.\n- Weather (NHC Graphical Tropical Weather Outlook, 2026-09-07): no tropical cyclone formation expected in the North Atlantic, Caribbean or Gulf during the next 7 days. NOAA's August update keeps a below-normal 2026 season: 7-13 named storms, 2-6 hurricanes, 0-2 major, 75% chance below-normal, with El Nino developing; season to date has produced only Arthur and Bertha and no hurricanes.\n- Calendar: 2026-09-18 is a Friday (weekday); recent Sunday notas (Sep 6) carried the lowest peak deficit of the week, weekday notas the higher ones.\n\nBASE RATES\n- Over all UNE daily peak-deficit notas 1-7 September 2026 (n=7): values 2,060 / 2,095 / ~2,190 / ~2,190 / 2,250 / ~2,260 / ~2,310; median ~2,190, range 250 MW, standard deviation ~85 MW.\n- Over all days of July 2026 (n=31, Diario de Cuba): 90% of days had peak energy not supplied above 2,000 MW; 4 days above 2,300 MW.\n- Over August 2026 days for which figures were retrieved (n=5: Aug 11, 12, 19, 26, 31): 2,089-2,411, straddling the month's record spikes and its quieter mid-month days.\n- Over 2026 as a whole, conditional on the post-July regime: the all-time maximum is 2,411 MW (2026-08-11); conditional on the pre-May regime, deficits sat materially lower - the mark of 2,204 MW on 2026-05-14 was described as an absolute historical record at the time, and an undated 2026 Granma nota reports a peak with availability 1,190 MW against demand 3,080 MW for a deficit of 1,890 MW.\n- Observed 11-day changes in the series where both endpoints were retrieved: 2026-08-19 to 2026-08-31 (12 days) +250 MW; 2026-08-26 to 2026-09-06 (11 days) about -5 MW. Largest short-horizon move retrieved: -350 MW over three days (Aug 31 to Sep 3).\n- The stated deficit and the afectacion estimada in the same nota have differed by 30 MW on every September 2026 day",
+   "reference_class": "UNE daily nota informativa forecast peak-hour generation deficits for the Cuban SEN, July-September 2026 (the ~70 most recent same-instrument observations)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.3103,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2529,
+   "seconds": 96.1,
+   "estimate": {
+    "percentiles": {
+     "10": 2030.0,
+     "25": 2130.0,
+     "50": 2205.0,
+     "75": 2295.0,
+     "90": 2410.0
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Reference class first: UNE forecast peak deficits Jul-Sep 2026 have a median near 2,200 MW; Sep 1-7 printed 2,060/2,290/2,060-2,260/2,190/2,250/2,095/2,190, mean ~2,198, on availability 990-1,160 against demand 3,250-3,350. Status quo dominates an 11-day horizon on a quantity UNE itself smooths. I do not adopt Run 2's upward level shift: its '+80 MW/month' drift is computed over monthly MAXIMA (extreme-value selection), while September's central tendency is running below August's, and several dossier September 'deficits' are arithmetically identifiable as afectacion (+30) rather than deficit, biasing the quoted series slightly high. Median therefore sits at the recent level, 2,205, with a Friday (weekday) rather than Sunday-trough demand. Mean sits above median: Guiteras is ON at ~30 consecutive days with ~20 unplanned trips in 2026 and no overhaul since 2010, an unpriced ~+190 MW hazard, and UNE has warned Sep-Dec brings overlapping maintenance on 8-9 of 16 thermal units already out plus 402 MW of thermal limitations. Downside is live but needs an event: a fuel cargo restarting part of the 106 idle DG plants (April 2026 precedent) or further returns beyond Cespedes U4. Solar (~657 MW midday) is irrelevant to the evening peak. No prediction market prices this quantity at any venue (Polymarket's Cuba book is regime/political only; nothing on Manifold or Kalshi per all three runs' searches), so no crowd anchor was used.",
+   "sources": [],
+   "reconciliation": "Instrument, event window and the absence of any market were agreed by all three runs and are carried forward unchanged. Two factual disputes were checkable from the dossiers alone (no web access this run): the Sep 6 figure, settled at deficit 2,095 by the self-consistent avail/demand/+30 triple; and the integrity of the quoted September series, where Sep 2 and Sep 3 fail arithmetic against their own availability/demand pairs, showing that some circulating 'deficits' are afectacion or realized values - unsettleable without the primary notas, so it is carried as a mild downward bias, not a correction. The main judgment dispute, Run 2's upward drift, was rejected on the ground that its evidence is a maxima series. The reconciled center therefore stays at the September level (2,205, Friday demand, no Sunday discount) rather than between the runs' medians, while the mean is pushed above it and the right tail fattened by the Guiteras hazard and UNE's own Sep-Dec maintenance warning - both of which are underweighted by a pure status-quo read. Dispersion was rebuilt from the cross-day SD plus a horizon component (380), landing between Run 3 and Runs 1-2 by computation rather than by compromise, and the upper escape was cut below every run's because a total collapse more likely annuls this question than resolves it high.",
+   "disagreements": [
+    {
+     "claim": "The 2026 forecast peak deficit is on an upward secular drift of ~+80 MW/month, justifying a median above the recent week's mean",
+     "kind": "judgment",
+     "verdict": "Rejected as an anchor: the cited escalation (2,204 -> 2,208 -> 2,341 -> 2,411) is a series of monthly MAXIMA, which drifts up by extreme-value selection; September's own central tendency (~2,198) is at or below August's median. Not carried."
+    },
+    {
+     "claim": "Sep 6 forecast was deficit 2,095 / afectacion 2,125 (Runs 1,3) vs afectacion 2,223 (Run 2, ABC Color)",
+     "kind": "factual",
+     "verdict": "Settled on internal consistency without web access: 1,155 avail / 3,250 demand = 2,095 exactly, with afectacion at +30, matching every other September nota. 2,223 reconciles with no published availability/demand pair. Took 2,095."
+    },
+    {
+     "claim": "The quoted September 'deficit' values are all true deficit-line figures",
+     "kind": "factual",
+     "verdict": "Partly refuted by arithmetic: Sep 2 (990/3,250 = 2,260 vs quoted 2,290) and Sep 3 (same pair vs quoted 2,060) do not reconcile, so some quoted values are afectacion (+30) or realized. Cannot be fully settled without the primary notas (unionelectrica.cu was unreachable to all runs); treated as a mild downward bias in the dossier mean rather than a resolved correction."
+    },
+    {
+     "claim": "10-90 dispersion should be 360 (Run 3) vs 420-440 (Runs 1,2)",
+     "kind": "judgment",
+     "verdict": "Reconciled at 380 from the cross-day SD (~120 MW) plus an 11-day regime-risk component, rather than split-the-difference; 440 over-widens a UNE-smoothed forecast, 360 under-prices the Sep-Dec maintenance warning."
+    },
+    {
+     "claim": "p_above_upper of 2% (Runs 1,2) for a >2,825 print via national-collapse recovery",
+     "kind": "judgment",
+     "verdict": "Lowered to 1.5%: the strongest precedent (post-collapse Aug 11 nota) printed only 2,411, and a live total collapse more plausibly yields no peak forecast at all - i.e. annulment - than a >2,825 figure."
+    }
+   ],
+   "reference_class": "UNE morning-nota FORECAST peak-hour generation deficits during the 2026 chronic-crisis regime (Jul 1 - Sep 7 2026), read ~11 days ahead"
+  }
+ ]
+}
