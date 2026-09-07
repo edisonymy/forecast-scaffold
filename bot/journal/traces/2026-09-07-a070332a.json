@@ -1,0 +1,224 @@
+{
+ "record_id": "2026-09-07-a070332a",
+ "question": "What will U.S. seasonally adjusted advance initial jobless claims be for the week ending September 12, 2026?",
+ "question_id": 45726,
+ "url": "https://www.metaculus.com/questions/45535/",
+ "question_type": "discrete",
+ "forecast_at": "2026-09-07T10:45:47+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.5014,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 190666.66666666666,
+    "25": 197833.33333333334,
+    "50": 204666.66666666666,
+    "75": 212000.0,
+    "90": 220833.33333333334
+   },
+   "p_below_lower": 0.028333333333333335,
+   "p_above_upper": 0.02
+  },
+  "phase1": {
+   "10": 190666.66666666666,
+   "25": 197833.33333333334,
+   "50": 204666.66666666666,
+   "75": 212000.0,
+   "90": 220833.33333333334
+  },
+  "phase2": null,
+  "spread_phase1": 4000.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 189500.0,
+   "25": 196500.0,
+   "50": 203000.0,
+   "75": 210500.0,
+   "90": 219500.0
+  },
+  "p_below_lower": 0.03,
+  "p_above_upper": 0.015
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.1558,
+   "seconds": 322.1,
+   "estimate": {
+    "percentiles": {
+     "10": 191000.0,
+     "25": 197500.0,
+     "50": 204000.0,
+     "75": 211000.0,
+     "90": 218500.0
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Status quo is a stable low-claims regime: last advance print 206k, 4-wk avg 207.25k, 2026 band 189-230k, with Challenger reporting the slowest layoff pace in four years. My prior comes from the late-Aug-to-mid-Sept 2-week change over 2015-2025 ex-2020, which was negative in 9 of 10 years with median -8k (residual seasonality), implying ~198k off a 206k base. I shrink that heavily to a ~204k median because 2026's Labor Day sits inside the target week rather than the prior one, seasonal factors are re-estimated annually, and street consensus for the intervening week is 209k. Two-sided evidence: downside from the seasonal dip and 2026's repeated below-consensus prints (Aug 1 came in 199k vs 203k expected); upside from TS Edouard's Sept 1 Louisiana landfall bleeding filings into the target week, though the comparable Arthur landfall in June left no national mark. I do not observe the Sept 5 print (released Sept 10), so this spans two weeks of unseen news. The Kalshi week-ending-Sept-5 ladder implies a ~204k median and 189-220k 10-90 — a one-week-off near-miss contract, used as corroboration rather than an anchor. Tails: sub-184.5k would be a 60-year low (3%); above 240.5k needs a +35k shock such as the Texas fraud surge that drove the Sept 6, 2025 print to 259k, or a major disaster, neither currently in view (1.5%).",
+   "sources": [
+    "https://fred.stlouisfed.org/data/ICSA.txt",
+    "https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXJOBLESSCLAIMS&status=open",
+    "https://tradingeconomics.com/united-states/jobless-claims",
+    "https://en.wikipedia.org/wiki/2026_Atlantic_hurricane_season",
+    "https://www.sharecast.com/news/international-economic/us-initial-jobless-claims-come-in-ahead-of-expectations-at-206000--23472762.html",
+    "https://www.noaa.gov/news-release/noaa-predicts-below-normal-2026-atlantic-hurricane-season",
+    "https://www.cnbc.com/2026/09/03/august-2026-jobs-report-payrolls.html"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the DOL ETA Unemployment Insurance Weekly Claims Report ADVANCE seasonally adjusted initial claims figure for the reference week, first publication only — not the revised figure, not the 4-week moving average, not unadjusted claims, not continuing claims. Mirrored as the newest ICSA observation on FRED after release. Scheduled 2026-09-17 08:30 ET.\n\nEVENT WINDOW: the reference week is Sunday 2026-09-06 -> Saturday 2026-09-12 per the criteria (DOL claims weeks run Sun-Sat). As of Now (2026-09-07T10:27Z = 06:27 ET Monday) roughly 18% of the reference week has elapsed. Note this is the collection window, not the forecasting-close time. Labor Day 2026 falls Monday 2026-09-07, i.e. INSIDE the reference week; in most recent years Labor Day instead fell in the week ending Sept 5-8.\n\nSTATUS-QUO OUTCOME: the level prevailing in the four weeks before the reference week, i.e. an advance print near 206,000 with a 4-week moving average of 207,250.\n\nRECENT SERIES (FRED ICSA, last updated 2026-09-03; revised values): 2026-06-06 230k, 06-13 227k, 06-20 216k, 06-27 217k, 07-04 217k, 07-11 209k, 07-18 189k, 07-25 198k, 08-01 200k, 08-08 212k, 08-15 207k, 08-22 204k, 08-29 206k. The week ending 2026-09-05 had not been released as of Now; its scheduled release is 2026-09-10.\n\nEVIDENCE BULLETS\n- DOL, released 2026-09-03: advance SA initial claims for w/e Aug 29 = 206,000, +2,000 on a revised 204,000; 4-week moving average 207,250 (+1,500). Consensus had been 205,000. (Sharecast / DOL)\n- Trading Economics page, retrieved 2026-09-07: consensus for the w/e Sept 5 release (2026-09-10) = 209,000; Trading Economics' own model = 203,000; the page notes claims sit near their 60-year low of 189,000 set mid-July 2026.\n- 2026 has produced repeated below-consensus prints in this regime: w/e Aug 1 came in 199,000 against 203,000 expected (Bolsamania/DOL, 2026-08-06).\n- Challenger, Gray & Christmas via CNBC 2026-09-03: 2026 layoff pace is the slowest in four years; economists characterise the market as 'slow hire, slow fire'. August nonfarm payrolls were expected at +53,000.\n- Reuters/Investing 2026-09-03 framed the Aug 29 rise as 'marginal amid a stable labor market'.\n- CNBC 2026-09-03 flags that Temporary Protected Status for hundreds of thousands of Haitians recently ended, affecting work authorization; note that workers losing authorization are generally not UI-eligible.\n- Tropical Storm Edouard (Aug 31 - Sept 3, 2026) made landfall at Johnson Bayou, Louisiana on 2026-09-01, peak 60 mph, 996 mbar, with rainfall to 17.71 inches and gusts to 71 mph in Texas. Filings from it fall across the weeks ending Sept 5 and Sept 12. (Wikipedia, 2026 Atlantic hurricane season)\n- Counterpoint on storm sensitivity: Tropical Storm Arthur hit near Galveston, TX on June 17-18, 2026 with >$1 billion damage and 4 fatalities; ICSA for w/e 2026-06-20 was 216,000, DOWN 11,000 from the prior week, i.e. no detectable national bump.\n- NOAA's 2026 outlook is below-normal: 7-13 named storms, 2-6 hurricanes, 0-2 major, with US/Caribbean major-hurricane landfall well below the long-period average, attributed to strong El Nino wind shear. Wikipedia's season page records no system active or forecast in the immediate outlook as of early September 2026.\n- Government-shutdown risk to the release: the federal fiscal year ends 2026-09-30, after the scheduled 2026-09-17 release, so a lapse-in-appropriations delay is not in play for this print.\n\nBASE RATES\n- Over all late-Aug-to-mid-Sept 2-week changes in ICSA, 2015-2025 excluding pandemic 2020 (class: the 2-week change from the week ending ~Aug 25-31 to the week ending ~Sept 7-14): 2015 -15k, 2016 -9k, 2017 +33k, 2018 -7k, 2019 -6k, 2021 -11k, 2022 -15k, 2023 -9k, 2024 -4k, 2025 -3k. Median -8k; 9 of 10 negative; the single positive is 2017 (Hurricanes Harvey and Irma). Source: FRED ICSA.\n- Conditioned on the sub-class where Labor Day fell on Sept 7 (same calendar alignment as 2026), the modern non-pandemic instance is 2015: Aug 29 279k -> Sept 12 264k, i.e. -15k. The 2020 instance (Sept 12 861k vs Aug 29 881k) is pandemic-distorted.\n- Conditioned on the sub-class of years with a September tropical landfall affecting TX/LA: 2017 (Harvey) produced +33k over the same 2-week span; 2026's storm was a 60 mph tropical storm rather than a Category 4.\n- Unconditional dispersion over the last ~2 years: SD of 2-week changes in ICSA ~11.5-12k. Realized 2026 2-week changes: -14, -10, +1, -8, -28, -11, +11, +14, +7, -8, -1 (SD 12.0k, mean -4.3k). Source: FRED ICSA.\n- Advance-vs-revised: advance prints are typically revised UP by roughly 1-2k, so an advance figure sits slightly below the level the same week eventually settles at. The w/e Aug 22 figure was revised from an advance to 204,000.\n- Extreme-print precedent within this class: w/e 2025-09-06 printed 259,000 against 236,000 the prior week, a +23k jump attributed to a fraudulent-filing surge concentrated in Texas, which unwound to 233k the following week. Source: FRED ICSA.\n\nMARKETS: no Polymarket or Manifold contract exists on this question (harness title search). Kalshi runs a weekly ladder, series KXJOBLESSCLAIMS, but as of Now the only open event is 26SEP10 — the week ending Sept 5, one week BEFORE this question's reference week. Same resolution instrument, different reference week. Eleven strikes from 185,000 to 235,000; open interest ranges from 0 to ~1,250 contracts per strike, heaviest at the 215,000 strike; several strikes have bid-ask spreads of 10+ cents. No contract on the week ending Sept 12 was open. Robinhood lists Kalshi-powered weekly claims events but none for the 2026-09-17 release.\n\nSEARCHED FOR BUT COULD NOT FIND: any published economist consensus for the week ending Sept 12 specifically (only the Sept 5 week has one); any open prediction market on the target week; the state-level claims detail or seasonal-adjustment factors for September 2026; the DOL PDF itself rendered as text (dol.gov/ui/data.pdf returned",
+   "reference_class": "Advance seasonally adjusted initial claims for the mid-September week (week ending Sept 8-14), measured as the 2-week change from the late-August level, 2015-2025 excluding the 2020 pandemic year"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.1338,
+   "seconds": 355.3,
+   "validation_errors_first_attempt": [
+    "percentile values must lie strictly inside the stated bounds (184500, 240500); violating: p10=190.0, p25=197.0, p50=204.0, p75=211.0, p90=221.0"
+   ],
+   "estimate": {
+    "percentiles": {
+     "10": 192000.0,
+     "25": 200000.0,
+     "50": 207000.0,
+     "75": 214000.0,
+     "90": 223000.0
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Last published advance figure is 206,000 for the week ending Aug 29, 2026 (4-week MA 207,250); the Sep 5 print lands Sep 10, after this run, so I am forecasting two weeks ahead from Aug 29 with no intervening observation. Level has been stable in the low-200s all summer (Jul 18 189k to Aug 29 206k, mean ~204k over the last 8 weeks), so status quo is a print near 205-210k and I centre at 207,000 with a small upward tilt: the week ending Sep 12 is the first full week after Labor Day (Mon Sep 7, 2026), a period where seasonal-adjustment factors historically add noise and where the last two Septembers printed above the August level. Dispersion, not direction, is the whole game here: the empirical 10-90 band of 2-week ICSA changes in 2026 is roughly -14k to +19k, so I use a ~31k 10-90 width, right-skewed because claims spike upward far more readily than they collapse downward. Escapes: below 184,500 needs a sub-2026-low print (2026 floor was 189k) — priced at 2%; above 240,500 needs a +35k jump, for which there is a concrete recent precedent (the Sep 2025 spike to ~263k driven by fraudulent filings concentrated in one state, plus hurricane-season and large-layoff mechanisms) — priced at 3%. Market check: the harness found no Polymarket or Manifold contract. Kalshi does run a weekly KXJOBLESSCLAIMS series and a market for this release almost certainly exists, but kalshi.com returned HTTP 429 on my fetch and search surfaced only older weeks (Feb/May/Jun 2026), so I have NO price to anchor on and did not blend one; treat this as 'market exists but price not retrieved'. Evidence is thin and one-sided in the sense that it is all just the recent level series, so I stay close to the reference-class anchor rather than manufacturing a view.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=ICSA (weekly ICSA observations through 2026-08-29)",
+    "https://www.sharecast.com/news/international-economic/us-initial-jobless-claims-come-in-ahead-of-expectations-at-206000--23472762.html",
+    "https://verifiedinvesting.com/blogs/us-economic-metrics/jobless-claims-week-ending-august-29-2026",
+    "https://tradingeconomics.com/united-states/jobless-claims",
+    "https://kalshi.com/markets/kxjoblessclaims/weekly-initial-jobless-claims (attempted, HTTP 429 - no price retrieved)"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the ADVANCE (first-published) seasonally adjusted initial claims figure for the week ending Sat 2026-09-12, in the DOL/ETA Unemployment Insurance Weekly Claims Report released 08:30 ET Thu 2026-09-17; equivalently the newest ICSA observation on FRED after that release. NOT the revised figure, NOT the 4-week moving average, NOT the not-seasonally-adjusted count, NOT continuing claims.\n\nEVENT WINDOW: the reference week runs Sun 2026-09-06 -> Sat 2026-09-12 per the criteria. As of Now 2026-09-07T10:27Z, roughly 8% of that filing week has elapsed. The forecasting-close time is irrelevant to this window.\n\nSTATUS QUO: the series continues near its recent level; last published advance figure 206,000 (week ending 2026-08-29).\n\nEVIDENCE\n- DOL advance SA initial claims, week ending 2026-08-29: 206,000, up 2,000 from prior week revised 204,000 (prior revised up 1,000 from 203,000). 4-week MA 207,250, up 1,500. (DOL/ETA report of 2026-09-03; Sharecast, VerifiedInvesting)\n- FRED ICSA weekly levels, 2026: Apr 25 190k; May 2 199k; May 9 212k; May 16 210k; May 23 212k; May 30 225k; Jun 6 230k; Jun 13 227k; Jun 20 216k; Jun 27 217k; Jul 4 217k; Jul 11 209k; Jul 18 189k; Jul 25 198k; Aug 1 200k; Aug 8 212k; Aug 15 207k; Aug 22 204k; Aug 29 206k. (FRED ICSA, retrieved 2026-09-07)\n- 2026 YTD high in the above window is 230k (Jun 6); 2026 YTD low is 189k (Jul 18).\n- The intervening print for the week ending 2026-09-05 is scheduled for Thu 2026-09-10, i.e. it publishes BEFORE the resolution date but was not available as of Now. Anyone forecasting after 2026-09-10 has one more observation than this dossier does. (Schaeffer's week-ahead calendar, 2026-09-03)\n- Named resolution source update cadence: DOL/ETA publishes every Thursday 08:30 ET without exception absent a lapse in appropriations; the Sep 17 release is the first publication of this figure.\n- Calendar: Labor Day fell Mon 2026-09-07. The reference week Sep 6-12 is therefore a full post-holiday filing week, not a holiday-shortened one. Wall Street observed a shortened trading week beginning Sep 7. (Schaeffer's, 2026-09-03)\n- SERIES DISPERSION (the record-only item): over the 17 overlapping 2-week-ahead changes in ICSA available in 2026 YTD, the changes sorted are -28, -14, -11, -10, -8, -8, -1, 0, +1, +2, +7, +11, +11, +14, +15, +18, +22 (thousands). Mean +1.2k, SD 13.3k, empirical 10th-90th roughly -14k to +19k. Series named: FRED ICSA; window length: 2 weeks, matching Aug 29 -> Sep 12.\n- BASE RATES, CONDITIONAL vs UNCONDITIONAL: unconditional over all ICSA weeks since 2022 the level has ranged roughly 190k-260k. Conditional on the trailing 4-week average sitting in 200-215k (the current condition), the following-fortnight print has stayed inside 190-225k in the large majority of 2026 cases; the only 2026 excursions above 225k came during the late-May/early-June cluster when the 4-week average had already risen. Component view: the summer-2026 sub-sample (Jul 11 - Aug 29, 8 weeks) has mean ~204k and range 189-212k, i.e. tighter than the full-year class.\n- SEPTEMBER PRECEDENT, both directions: post-Labor-Day September weeks in 2023-2025 printed above their preceding August levels more often than below, and September 2025 contained a large one-week upward excursion to roughly 263k attributed to fraudulent filings concentrated in a single state rather than to labour-market deterioration (TradingEconomics). Counter-evidence in the other direction: 2026's two lowest prints of the year (189k, 190k) both came in mid-summer weeks with no obvious trigger, showing the series can also gap down ~15-20k in a single week.\n- TREND: current level ~206k, 4-week MA 207,250 and drifting sideways-to-slightly-up (+1,500 on the latest print). Simple continuation of the last 8 weeks' drift does not exit the 184.5k-240.5k range by Sep 12. Named regime-break candidate upward: a state-level fraudulent-filing surge, hurricane-season landfall, or a mass federal/corporate layoff wave hitting the Sep 6-12 filing week. Named regime-break candidate downward: a repeat of the unexplained mid-summer air-pocket weeks that produced 189-190k.\n- Note on federal workers: claims by federal employees are counted in the separate UCFE programme and are not part of the headline SA initial claims figure; a federal shutdown or RIF affects ICSA only via contractor/spillover state filings.\n- MARKETS: Polymarket and Manifold - no candidate market found by title search. Kalshi runs a recurring weekly series (KXJOBLESSCLAIMS) with per-week markets; the listing page returned HTTP 429 on retrieval and search surfaced only Feb/May/Jun 2026 weeks, so no current price was obtained. No bookmaker line found.\n- MANIPULATION/ANCHORING SIGNALS: one AskNews item dated 2026-09-06 reports 'week ending January 3 - 208,000' with a 4-week average of 211,750; the week-ending date is from January 2026, so the item is a stale or mislabelled republication and its figures should not be treated as current. Likewise a search snippet describing a 263,000 print 'the first week of September' refers to September 2025, not 2026.\n\nSEARCHED FOR BUT COULD NOT FIND: (a) any economist consensus/median forecast for the week ending Sep 12, 2026 - economic calendars had not yet posted one; (b) a live Kalshi price for the Sep 17 release; (c) a readable version of the current dol.gov/ui/data.pdf (the PDF fetched as unparseable binary); (d) state-level advance claims detail or any pre-announced large layoff events landing in the Sep 6-12 filing week.",
+   "reference_class": "Advance seasonally adjusted initial claims (ICSA) two weeks after a stable low-200k reading, i.e. the distribution of ICSA levels conditional on the trailing 4-week average being 200-215k, using 2026 YTD weekly observations plus the post-Labor-Day September weeks of 2023-2025"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.9012,
+   "seconds": 300.4,
+   "estimate": {
+    "percentiles": {
+     "10": 189000.0,
+     "25": 196000.0,
+     "50": 203000.0,
+     "75": 211000.0,
+     "90": 221000.0
+    },
+    "p_below_lower": 0.035,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Last known print is 206,000 (advance, week ending Aug 29); the 4-week average is 207,250 and the last seven weeks average ~202k after a 189k July trough. The target week (Sep 6-12) is the Labor Day week: across 2015-2025 the Labor-Day-week ICSA print fell a median ~8k versus the print two weeks earlier, negative in 8 of 10 years, with the two exceptions both event-driven (2017 hurricanes, 2025 Texas fraud surge). That gives a reference-class anchor near 198k. I temper the tilt because DOL re-estimates seasonal factors annually (partially absorbing residual seasonality) and because Kalshi's adjacent-week (Sep 5) ladder centers ~204k, so I land at a 203k median. Right skew is retained for idiosyncratic state-level surges, but the usual fat-tail driver is off the table: NHC's Sep 7 outlook says no Atlantic formation is expected for 7 days, covering the whole measurement week. Layoff announcements are at a four-year low and no large WARN/strike event is in evidence, so the upside is thin; the left tail is compressed by the 189-190k floor seen twice in 2026. Evidence is decent but the market anchor is a near-miss contract on a different week, so I stay close to the recent level.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=ICSA (FRED series ICSA, weekly, 2014-2026)",
+    "https://verifiedinvesting.com/blogs/us-economic-metrics/jobless-claims-week-ending-august-29-2026",
+    "https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXJOBLESSCLAIMS&status=open (Kalshi KXJOBLESSCLAIMS-26SEP10 strike ladder)",
+    "https://www.nhc.noaa.gov/text/MIATWOAT.shtml (NHC Atlantic Tropical Weather Outlook, 2026-09-07 02:00 EDT)",
+    "https://www.noaa.gov/news-release/noaa-predicts-below-normal-2026-atlantic-hurricane-season",
+    "https://robinhood.com/us/en/prediction-markets/economics/events/2026-september-3-unemployment-claims-sep-03-2026/",
+    "https://www.bloomberg.com/news/articles/2026-09-03/us-job-cut-announcements-so-far-in-2026-are-at-a-four-year-low"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the ADVANCE (first-published) seasonally adjusted initial claims figure for the week ending 2026-09-12 in DOL/ETA's Unemployment Insurance Weekly Claims Report, scheduled 2026-09-17 08:30 ET (=FRED ICSA most recent observation after that release). Not the revised figure, not the 4-week average, not NSA. DOL publishes in units of 1,000, so the outcome is a multiple of 1000.\nEVENT WINDOW: claims filed Sunday 2026-09-06 -> Saturday 2026-09-12 per the criteria; as of Now (2026-09-07T10:27Z = 06:27 ET) about 18% elapsed. One intervening release (week ending 2026-09-05) lands 2026-09-10, before resolution but after this writing.\nSTATUS-QUO OUTCOME: no change from the last published level, 206,000 (advance, week ending 2026-08-29).\nEVIDENCE:\n- DOL via FRED ICSA, released 2026-09-03: week ending Aug 29 advance = 206,000, prior week revised to 204,000; 4-week average 207,250, up 1,500 (fourth consecutive weekly rise, +8,500 from the Aug 1 low of 198,750). Consensus had been 205,000.\n- FRED ICSA, 2026 weekly prints Jul-Aug: 07-11 209k, 07-18 189k, 07-25 198k, 08-01 200k, 08-08 212k, 08-15 207k, 08-22 204k, 08-29 206k. The 189k on 07-18 was reported as near a 60-year low; 04-25 printed 190k.\n- FRED ICSA, 2026 monthly texture: Jan ~201-211k, Feb 208-230k, Mar 203-213k, Apr 190-218k, May 199-225k, Jun 216-230k, Jul 189-217k, Aug 200-212k. 2026 range to date roughly 189k-230k.\n- Year-over-year: the comparable week in 2025 (week ending 08-30) was 236,000; continued claims run ~160,000 below August 2025 (verifiedinvesting, 2026-09-03). Continued claims week ending 08-22 = 1,779,000, +8,000; insured unemployment rate 1.2%.\n- BASE RATE, class = 'week containing Labor Day vs the ICSA print two weeks earlier, 2015-2025': changes were -15, -9, +33, -7, -6, -11, -15, -9, -5, +30 (thousands); median -8, 8 of 10 negative. Source: FRED ICSA. The two positive years are attributable: 2017 = Hurricanes Harvey/Irma; 2025 = a Texas filing surge that pushed the 2025-09-06 week to 259k.\n- BASE RATE, same class conditioned on NO hurricane landfall and NO state filing anomaly (8 of the 10 years): changes -15, -9, -7, -6, -11, -15, -9, -5; median about -9.\n- BASE RATE, decomposition of that two-week move: late-Aug week -> pre-Labor-Day week median about -5.5k; pre-Labor-Day week -> Labor Day week median about -2.5k (2015-2025, FRED ICSA).\n- BASE RATE, class = 'all 2-week changes in ICSA over the trailing ~15 months (Jun 2025 - Aug 2026, n=63)': mean -1.25k, SD 12.7k; SD 11.3k excluding the Sep-2025 Texas outlier pair. Observed 10th-90th range of those 2-week changes is roughly -20k to +18k.\n- Prediction markets: Kalshi lists series KXJOBLESSCLAIMS but the open event is KXJOBLESSCLAIMS-26SEP10, covering the week ending 2026-09-05 (a DIFFERENT week from this question). Liquidity is modest: open interest of a few hundred to ~1,250 contracts per strike, and the 210k strike had a 0.09/0.20 bid-ask, i.e. it is not a tight book. Polymarket and Manifold: none found. Robinhood's listed event covered the already-resolved 2026-09-03 release.\n- Hurricane risk: NHC Atlantic Tropical Weather Outlook issued 2026-09-07 02:00 EDT states no active systems and 'tropical cyclone formation is not expected during the next 7 days', which spans the entire measurement week. NOAA's seasonal outlook is below-normal (55% chance; 8-14 named storms) with a developing El Nino; only two named storms (Arthur, Bertha) had formed as of late August 2026.\n- Layoff side: Challenger job-cut announcements for the first eight months of 2026 total 529,914, the lowest year-to-date since 2022; July's 33,429 was the lowest month since July 2024; hiring plans through August the highest since 2023. August's heaviest sector was Consumer Products (10,057, incl. Procter & Gamble and Estee Lauder).\n- Other direction: the 4-week average has risen four straight weeks off the Aug 1 low, and commentary (verifiedinvesting, 2026-09-03) frames the weakness as in hiring rather than layoffs, with YTD payroll growth ~61k/month vs 166k in 2023-2024; the August Employment Situation (released 2026-09-04) was forecast near +65k.\n- Calendar/administrative: the Sept 17 release precedes the Sept 30 fiscal-year end, so a funding-lapse delay is not in play for this release. DOL's weekly cadence is Thursday 08:30 ET with no scheduled interruption found.\n- Precedent for an upside break: 2025-09-06 printed 259k against a 236k prior week (+23k in one week) on a state-level filing anomaly; 2017-09-02 printed 297k against 247k two weeks earlier on hurricane effects. Both show the mechanism by which this series can jump 25-50k in a single week.\nWHAT I SEARCHED FOR AND COULD NOT FIND: any market or contract on the week ending 2026-09-12 specifically (Kalshi's ladder stops at the Sep 5 week; no Polymarket/Manifold/bookmaker listing); a published consensus/economist forecast for either the Sept 10 or Sept 17 release; any state-specific filing anomaly, mass WARN notice, auto-plant shutdown, or large strike affecting Sep 6-12; the DOL data.pdf itself rendered only as binary, so figures are taken from FRED and from wire coverage of the 2026-09-03 release. One AskNews item dated 2026-09-06 (InvestingChannel) describes claims 'for the week ending January 3' at 208,000 with a 211,750 four-week average; those figures do not match the DOL/FRED record for either early January 2026 or early September 2026, and the item appears mislabeled or stale - it should not be treated as a September data point.",
+   "reference_class": "Advance seasonally adjusted US initial claims in the week containing Labor Day, 2015-2025, measured as the change from the print two weeks earlier (median about -8k, 8 of 10 years negative)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.2824,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2745,
+   "seconds": 114.4,
+   "estimate": {
+    "percentiles": {
+     "10": 189500.0,
+     "25": 196500.0,
+     "50": 203000.0,
+     "75": 210500.0,
+     "90": 219500.0
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Status quo is a stable low-claims regime: last advance 206k, 4-wk avg 207,250, summer band 189-212k, Challenger layoffs at a four-year low. The reference class (Labor-Day week vs two weeks prior) was negative in 8-9 of 10 years, median about -8k, and the only positives are event-driven (2017 hurricanes, 2025 Texas fraud surge), implying ~198k off a 206k base. I shrink most of that away because DOL re-estimates seasonal factors annually and the adjacent-week Kalshi ladder centers ~204k, landing at 203k after ~1k for the advance-vs-revised gap. The upward tilt in one run came from mistakenly treating Sep 6-12 as post-holiday when Labor Day sits inside it, so I discard that direction. Two weeks of unobserved news (the Sep 5 print lands Sep 10) keeps the 10-90 at ~30k, right-skewed: state-level filing anomalies spike this series 25-50k while the downside is floored near the 189-190k prints seen twice in 2026, and NHC's Sep 7 outlook of no Atlantic formation for 7 days removes the usual fat-tail driver.",
+   "sources": [],
+   "reconciliation": "Three disputes mattered. (1) FACTUAL, settled: Labor Day 2026 is Monday Sep 7, which falls inside the Sun Sep 6 - Sat Sep 12 reference week; Run 2's claim that this is a full post-holiday week is a calendar error, so its +207k tilt loses its stated basis and I do not average it in. (2) FACTUAL, partly settled without web access: Run 1 and Run 3 report different 2025 entries (-3k vs +30k) for the same-sounding class; this is a class-alignment difference (calendar-date week ending ~Sep 13 vs the Labor-Day-containing week ending Sep 6), not a data conflict. The Labor-Day-containing alignment is correct for 2026, and 2025's positive is attributable to the Texas fraudulent-filing surge; ex-event median is about -9k under either definition, so the anchor holds. (3) FACTUAL, reconciled as compatible: Run 1's TS Edouard upside and Run 3's NHC 'no formation next 7 days' are not in conflict - Edouard made landfall Sep 1 so its filings mostly hit the Sep 5 week, and the June Arthur landfall left no national mark, so I price the upside tail at the thinner end (1.5%) rather than Run 1's or Run 2's framing. JUDGMENT calls: dispersion, where I take the median of three independently computed SDs (11.7k x 2.56 = 30k) rather than the widest; and the degree of shrinkage from the 198k reference-class anchor, where I adopt Runs 1 and 3's reasoning that annually re-estimated seasonal factors absorb part of the residual, but land at 203k rather than 204k because the target is the advance print, which runs ~1k below the level the week eventually settles at. Could not settle from the dossiers: any economist consensus or live market price for the Sep 12 week - none exists in any run's retrieval, and the Kalshi KXJOBLESSCLAIMS ladder covers the Sep 5 week only (same instrument, wrong reference week), so it is corroboration at ~204k, never an anchor.",
+   "disagreements": [
+    {
+     "claim": "The week ending 2026-09-12 is a full post-holiday week rather than the Labor-Day-containing week",
+     "kind": "factual",
+     "verdict": "Resolved against Run 2 - Labor Day is Mon 2026-09-07 and Sep 12 is a Saturday, so the holiday sits inside the Sun Sep 6 - Sat Sep 12 reference week; Run 2's upward tilt is discarded"
+    },
+    {
+     "claim": "The 2015-2025 late-Aug-to-Labor-Day-week 2-week change is reliably negative (median about -8k)",
+     "kind": "factual",
+     "verdict": "Confirmed by two independent year-by-year computations from FRED ICSA (Runs 1 and 3); 8-9 of 10 years negative, both positives event-driven"
+    },
+    {
+     "claim": "2025's entry in that class was -3k (Run 1) or +30k (Run 3)",
+     "kind": "factual",
+     "verdict": "Both correct under different week alignments (calendar-date vs Labor-Day-containing); the Labor-Day-containing alignment applies to 2026 and its positive is the Texas fraud surge, so the ex-event median is unchanged"
+    },
+    {
+     "claim": "TS Edouard's Sep 1 Louisiana landfall meaningfully lifts filings in the Sep 6-12 week",
+     "kind": "judgment",
+     "verdict": "Down-weighted - landfall filings concentrate in the Sep 5 week, the comparable June Arthur landfall produced no national bump, and NHC's Sep 7 outlook rules out new formation across the measurement week"
+    },
+    {
+     "claim": "The right 10-90 dispersion is 27.5k, 31k, or 32k",
+     "kind": "judgment",
+     "verdict": "Set at 30k from the median of three independently computed SDs of 2-week ICSA changes (11.3k / 12.0k / 13.3k) x 2.56"
+    },
+    {
+     "claim": "A live Kalshi price for this release exists",
+     "kind": "factual",
+     "verdict": "No - two runs independently found the open KXJOBLESSCLAIMS event covers the week ending Sep 5 only; Run 2 got HTTP 429 and retrieved nothing. No contract on the Sep 12 week on any venue"
+    }
+   ],
+   "reference_class": "Labor-Day-containing week's SA advance initial claims vs the print two weeks earlier, 2015-2025 ex-2020 (FRED ICSA), with the 2015 sub-case sharing 2026's exact Sep-7 Labor Day alignment"
+  }
+ ]
+}
