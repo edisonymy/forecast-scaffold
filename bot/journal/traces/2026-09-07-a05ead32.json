@@ -1,0 +1,232 @@
+{
+ "record_id": "2026-09-07-a05ead32",
+ "question": "How many locally acquired human West Nile virus cases will ECDC report for Italy in 2026 in the weekly update published on or around 18 September 2026?",
+ "question_id": 45731,
+ "url": "https://www.metaculus.com/questions/45540/",
+ "question_type": "numeric",
+ "forecast_at": "2026-09-07T13:09:22+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 4.463,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 599.6666666666666,
+    "25": 636.6666666666666,
+    "50": 667.6666666666666,
+    "75": 702.3333333333334,
+    "90": 747.3333333333334
+   },
+   "p_above_upper": 0.005
+  },
+  "phase1": {
+   "10": 599.6666666666666,
+   "25": 636.6666666666666,
+   "50": 667.6666666666666,
+   "75": 702.3333333333334,
+   "90": 747.3333333333334
+  },
+  "phase2": null,
+  "spread_phase1": 30.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 602.0,
+   "25": 638.0,
+   "50": 667.0,
+   "75": 698.0,
+   "90": 748.0
+  },
+  "p_above_upper": 0.003
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.4004,
+   "seconds": 308.3,
+   "estimate": {
+    "percentiles": {
+     "10": 612.0,
+     "25": 652.0,
+     "50": 684.0,
+     "75": 718.0,
+     "90": 760.0
+    }
+   },
+   "reasoning": "ECDC's Italy row mirrors ISS national bulletins with a small negative offset (ECDC 139/311/516 vs ISS 141/312/521). The resolving 18 Sep ECDC report should reflect the ISS bulletin dated ~17 Sep, i.e. two further weekly increments on top of 516. 2026 is tracking 2025 almost exactly in level (432 vs 430 on ~27 Aug) but with slightly hotter recent increments (+120, +89 vs +79, +72). Applying 2025's 4-Sep-to-18-Sep shape (502->582->647, ratio 1.29) to 521 gives ~672 ISS; scaling 2025's next-two-week increments (+80, +65) by the ~1.1-1.25 factor 2026 has been running gives ~684-695 ISS, minus ~4 for the ECDC offset. Increments have already turned over (120 -> 89), and in both 2024 and 2025 mid-September sat at ~0.79-0.83 of the season total, so continued but decaying accumulation is the status quo. Downside: faster autumn decay plus a widening ECDC-vs-ISS reporting lag. Upside: a batch addition of retrospectively confirmed blood-donor/asymptomatic cases, of which Italy has an unusually high share this year, or a warm mid-September extending transmission. No prediction market prices this (checked Polymarket/Manifold via harness, plus my own searches of Kalshi/bookmakers: none found), so no crowd anchor. Reaching the open upper bound of 1100 would require ~+584 in two weeks, roughly 5x the largest weekly increment ever observed in Italy, so no escape mass declared.",
+   "sources": [
+    "https://www.epicentro.iss.it/westnile/bollettino",
+    "https://www.epicentro.iss.it/westnile/aggiornamenti",
+    "https://www.iss.it/-/west-nile-da-inizio-anno-647-casi-47-decessi",
+    "https://www.iss.it/-/west",
+    "https://www.mosticare.org/threat-map/west-nile-virus",
+    "https://www.mosticare.org/threat-map/data",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC13505423/",
+    "https://www.ecdc.europa.eu/en/west-nile-fever/surveillance-and-disease-data/disease-data-ecdc",
+    "https://wnv-weekly.ecdc.europa.eu/",
+    "https://www.fnob.it/2026/09/04/emergenza-arbovirosi-in-italia-lultimo-bollettino-iss-registra-227-casi-di-dengue-e-521-di-west-nile-con-26-decessi/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the Italy row of ECDC's weekly human WNV dashboard (wnv-weekly.ecdc.europa.eu, surfaced at ecdc.europa.eu/en/west-nile-fever/surveillance-and-disease-data/disease-data-ecdc), NOT off the ISS national bulletin and NOT off ECDC's separate monthly human+animal report. ECDC publishes Fridays; the resolving report is the first dated on/after 17 Sep 2026.\n\nEVENT WINDOW: last published ECDC update was dated 4 Sep 2026 -> resolving update expected 18 Sep 2026, a 14-day accumulation window per the criteria; as of Now (2026-09-07T12:50Z) 3 of 14 days elapsed = ~21%.\n\nSTATUS QUO OUTCOME: the count only moves upward and only via new weekly reporting; with no further reporting it stays at the 4 Sep value of 516.\n\nEVIDENCE (source, date):\n- ECDC weekly dashboard, Italy locally acquired 2026: 139 (data to 5 Aug), 224 (~17 Aug), 311 (~21 Aug), 516 (report dated 4 Sep 2026). Greece second at 284 on 4 Sep; ~1,086 cases across 15 countries.\n- ISS Bollettino WND 2026 series (epicentro.iss.it/westnile/bollettino), confirmed human cases: #1 28 Jul = 84; #2 6 Aug = 141; #3 13 Aug = 226; #4 20 Aug = 312; #5 27 Aug = 432; #6 3 Sep (data to 2 Sep) = 521, incl. 269 neuroinvasive, 179 fever, 70 asymptomatic blood-donor detections, 26 deaths, circulation in 75 provinces / 19 regions.\n- Implied ISS weekly increments 2026: +57, +85, +86, +120, +89.\n- ECDC-vs-ISS offset on matched data cuts, 2026: 139 vs 141; 311 vs 312; 516 vs 521 (ECDC below ISS by 1-5; ISS totals include a small number of imported cases).\n- ISS 2026 bulletin cadence: Tuesday for #1, then Thursdays (6, 13, 20, 27 Aug, 3 Sep). Next bulletins fall ~10 Sep and ~17 Sep 2026, each with data cut ~1-2 days earlier.\n- BASE RATE, class = Italian season 2025 by ISS bulletin (iss.it press releases + epicentro bulletin index): 89 (31 Jul), 351 (20-21 Aug), 430 (28 Aug), 502 (4 Sep), 582 (11 Sep), 647 (18 Sep), 680 (25 Sep). ECDC end-of-season 2025 total for Italy: 779 locally acquired (data to 3 Dec 2025).\n- BASE RATE, class = Italian season 2024: 382 human cases as of the 18-19 Sep 2024 ISS bulletin (with 51 new cases in the 12-18 Sep week); ISS full-2024 total 484 confirmed (266 neuroinvasive, 36 deaths); ECDC 2024 locally acquired for Italy ~455-460.\n- BASE RATE conditional on reaching mid-September: mid-Sep cumulative was ~0.83 of the ECDC season total in 2025 (647/779) and ~0.79 of the ISS season total in 2024 (382/484).\n- BASE RATE conditional on the first-September-week level: the 4 Sep -> 18 Sep 2025 cumulative growth ratio was 1.289; the analogous 2024 ratio is higher (2024 cumulative was ~331 on 11 Sep, implying a materially larger two-week ratio).\n- 2026 vs 2025 level comparison at matched dates: ISS 432 on 27 Aug 2026 vs 430 on 28 Aug 2025; ISS 521 on 2 Sep 2026 vs 502 on 4 Sep 2025. Neuroinvasive case fatality 7.2-7.7% in 2026 vs 13.9% same period 2025 (ISS bulletin #5/#6), consistent with broader/milder ascertainment in 2026 including blood-donor screening.\n- SERIES SPREAD, class = 2026 ISS weekly increments to date: observed range 57-120 per week; the two-week sums realised so far in 2026 are +142 (to 13 Aug from 28 Jul... ), +171 (20 Aug->3 Sep window equivalents), i.e. two-week totals have run roughly 140-210 during the peak.\n- EVENT-IN-WINDOW CHECK, class = ECDC weekly publication: ECDC published a Friday human weekly update in every week of the June-November season in 2024 and 2025; no missed week identified in 2026 through 4 Sep. Searched for an announced ECDC publication pause or schedule change for Sep 2026: none found.\n- Counter-signal (upward): commentary and Italian regional reporting describe an extended risk season now running from early summer into late autumn, warm-winter/early-summer mosquito dynamics, and virus circulation newly documented in 19 regions / 75 provinces in 2026 vs 17 regions / 66 provinces a week earlier - geographic expansion still in progress as of 3 Sep 2026.\n- Counter-signal (downward): the weekly increment already turned over (+120 in the week to 27 Aug, +89 in the week to 2 Sep); in both 2024 and 2025 the late-September weekly increment collapsed sharply (2025 fell to +33 in the week to 23 Sep); some local health authorities (e.g. ASL Napoli 2 Nord) report 2026 counts below their 2025 equivalents.\n- A 2026 commentary paper (PMC13505423) argues Italy faces a national-data 'information blackout' and that observers must rely on ECDC/EFSA; note this claim sits alongside ISS in fact publishing weekly bulletins on schedule through 3 Sep 2026. Treat as contested framing, not as evidence of a reporting stoppage.\n\nSEARCHED FOR BUT COULD NOT FIND: any prediction market or bookmaker contract on European/Italian WNV case counts (Polymarket, Manifold, Kalshi, bookmakers - none found); the machine-readable ECDC weekly country table (dashboard is an embedded widget that did not render to text); the exact ISS cumulative figure in the 5 Sep 2024 bulletin (#11 of 2024), which would pin the 2024 two-week ratio precisely; any published ECDC statement on the 2026 dashboard's end-of-season cutoff date; any ISS bulletin dated after 3 Sep 2026 (none exists as of Now).",
+   "reference_class": "Italian WNV transmission seasons 2018-2025 under ISS/ECDC weekly surveillance: cumulative locally acquired human case count at the mid-September report relative to the count at the first-week-of-September report (2025: 502->647, ratio 1.29; 2024: ~270->382; mid-Sep = ~0.79-0.83 of season total)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.3463,
+   "seconds": 351.2,
+   "estimate": {
+    "percentiles": {
+     "10": 605.0,
+     "25": 638.0,
+     "50": 665.0,
+     "75": 697.0,
+     "90": 740.0
+    },
+    "p_above_upper": 0.005
+   },
+   "reasoning": "Italy's ECDC row is a near-copy of the ISS weekly bulletin: 312 (19 Aug) -> 432 (26 Aug) -> 521 (2 Sep) vs ECDC 311 -> ~430 -> 516. The 18 Sep ECDC update should carry the ISS cut of ~16 Sep, i.e. two more weekly increments off 516. Reference class = Italy's own 14-day early-to-mid-September growth ratio in prior seasons: 1.29 (2025), ~1.29 (2022), ~1.4 (2024), ~1.5 (2018) -> anchor ~1.35x = ~697; 2025 is the tightest calendar/level analogue (432 vs 430 at 26 Aug) and implies ~665. Momentum is already decelerating (+120 then +89, ratio 0.74); pure geometric continuation gives ~632, while a 2025-shaped bump gives ~690, so I centre at 665. Downside tail covers a stale or partial ECDC dashboard refresh (one week of accrual instead of two, ~605-620); upside covers a warm-September extension of transmission and the broader 19-region spread. No prediction market prices this contract anywhere I could find, so no crowd anchor.",
+   "sources": [
+    "https://www.ecdc.europa.eu/en/west-nile-fever/surveillance-and-disease-data/disease-data-ecdc",
+    "https://wnv-weekly.ecdc.europa.eu/",
+    "https://www.epicentro.iss.it/westnile/bollettino",
+    "https://www.epicentro.iss.it/arbovirosi/bollettini",
+    "https://www.iss.it/-/west-nile-da-inizio-anno-647-casi-47-decessi",
+    "https://www.iss.it/-/west-nile-da-inizio-anno-718-casi-49-decessi",
+    "https://www.ecdc.europa.eu/en/publications-data/west-nile-fever-europe-2018-human-cases-updated-21-september",
+    "https://www.ecdc.europa.eu/en/publications-data/west-nile-virus-europe-2022-human-cases-updated-28-september-2022",
+    "https://www.mosticare.org/threat-map/west-nile-virus",
+    "https://www.quotidianodelsud.it/2026/08/27/west-nile-in-italia-432-casi-confermati-e-17-decessi",
+    "https://www.fnob.it/2026/09/04/emergenza-arbovirosi-in-italia-lultimo-bollettino-iss-registra-227-casi-di-dengue-e-521-di-west-nile-con-26-decessi/",
+    "https://www.ansa.it/canale_saluteebenessere/notizie/medicina/2025/09/11/west-nile-iss-da-inizio-anno-582-casi-in-italia-piu-del_060f5b02-b240-4c2e-ba38-5fbe645cb4d1.html",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC13505423/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the Italy row of ECDC's weekly human-surveillance dashboard (wnv-weekly.ecdc.europa.eu), first report dated on/after 17 Sep 2026 — NOT off the ISS national bulletin, NOT off the ECDC/EFSA monthly report, and not neuroinvasive-only or death counts. Italy's ECDC row has tracked the ISS bulletin closely: ISS 312 (data to 19 Aug 2026) vs ECDC 311 (~21 Aug); ISS 521 (data to 2 Sep) vs ECDC 516 (update 4 Sep, areas as of 3 Sep). The small gap is consistent with ECDC excluding imported cases (ISS totals include at least one imported death).\n\nEVENT WINDOW: 2026 Italian transmission season (first locally acquired onsets 12-27 May 2026 per ECDC monthly, data to 24 June 2026) -> data cut of the ECDC report dated on/after 17 Sep 2026 (expected ~16-17 Sep). As of 2026-09-07 roughly 93% of that window has elapsed; the last published observation (ECDC 4 Sep, data to 3 Sep) leaves about 14 days of further accrual.\n\n2026 OBSERVED SERIES (ISS weekly bulletins, epicentro.iss.it/westnile/bollettino; bulletin dates 28 Jul, 6 Aug, 13 Aug, 20 Aug, 27 Aug, 3 Sep):\n- data to 19 Aug 2026: 312 confirmed human cases, 13 deaths (Adnkronos, 20 Aug 2026)\n- data to 26 Aug 2026: 432 cases (+120 in the week), 17 deaths, neuroinvasive 223, blood donors 63, fever 144 (Quotidiano del Sud, 27 Aug 2026)\n- data to 2 Sep 2026: 521 cases (+89 in the week), 26 deaths, neuroinvasive 269, blood donors 70, fever 179; 75 provinces in 19 regions (FNOB / Italpress, 3-6 Sep 2026)\n- ECDC weekly, 4 Sep 2026: 15 countries, 1 086 locally acquired cases EU/EEA-wide; Italy 516, Greece 284 (11 unknown place of infection); 144 affected areas of which 62 in Italy\n- ECDC earlier 2026 Italy points: 2 cases (data to 24 Jun), 46 (data to 22 Jul), 139 (data to 5 Aug)\n\nBASE RATES / PRIOR-SEASON ANALOGUES (all Italy, same instruments):\n- Over the 2025 season (ISS, the closest calendar-and-level analogue): 430 at 26 Aug -> 502 at 2 Sep (+72) -> 582 at 9 Sep (+80) -> 647 at 16 Sep (+65) -> 680 at 23 Sep (+33) -> 718 at 30 Sep (+38) -> 779 locally acquired at ECDC season end (data to 3 Dec 2025). Ratio of the 16 Sep figure to the 2 Sep figure: 1.29. The 16 Sep figure was 83% of the season total.\n- Over the 2022 season (ECDC weekly): Italy 383 as of 7 Sep -> 536 as of 28 Sep; +82 Italian cases in the week to 7 Sep, +62 in the week to 28 Sep. Linear interpolation puts ~21 Sep near 490, a ~1.28 fourteen-day ratio.\n- Over the 2024 season: Italy ~382 human cases as of 18 Sep 2024 after +51 that week (ISS via Outbreak News Today), against a season total near 460 — implying a mid-September fourteen-day ratio around 1.4.\n- Over the 2018 season (ECDC): Italy 453 as of 20 Sep 2018, with +92 Italian cases in the single week 14-20 Sep; Italy's 2018 season total was 576. A later-peaking curve than 2025/2026.\n- Conditional on the season being a high-count Italian year (2018, 2022, 2025), the 14-day early-to-mid-September ratio has fallen in the 1.28-1.5 band; conditional on the 2 September level being near 500 (only 2025 and 2026 qualify), the single observed ratio is 1.29.\n\nEVIDENCE POINTING TOWARD CONTINUED FAST ACCRUAL:\n- Weekly increments in 2026 have exceeded the matching 2025 weeks (+120 vs 2025's step into 430; +89 vs 2025's +72).\n- Geographic footprint is wider than 2025 at the same date: 75 provinces / 19 regions (2026, 2 Sep) vs 72 provinces / 17 regions (2025, 16 Sep); 62 of ECDC's 144 European affected areas are Italian.\n- ECDC/EFSA noted weather conditions favourable to transmission and expected further human cases in coming weeks (monthly report, data to 5 Aug 2026); Italian coverage on 3 Sep 2026 (LaPresse) attributed the arbovirus picture partly to sustained heat.\n- Detection channels are broad: 70 of the 521 cases are asymptomatic blood donors, and neuroinvasive CFR is 7.7% in 2026 vs 13.9% in the same period of 2025, consistent with more mild-case ascertainment.\n\nEVIDENCE POINTING TOWARD DECELERATION:\n- The week-on-week increment ratio already turned down: +120 then +89 (0.74).\n- In every prior Italian season the increment collapses through late September (2025: +65 then +33; 2022 Italy fell from +82/week to +62/week).\n- Transmission is temperature-driven and Culex activity in the Po Valley declines through September; ECDC describes the season as roughly June-November with the peak in August-September.\n\nDATA-PUBLICATION RISKS TO NOTE:\n- A 2026 commentary (PMC13505423) describes an Italian 'information blackout' earlier in the season — delayed national bulletins attributed to privacy/decree issues in standing up new digital surveillance platforms; ISS weekly bulletins did resume from 28 Jul 2026 and have been published weekly since.\n- The ECDC landing page carried a 'Page last updated 21 August 2026' stamp when fetched on 7 Sep 2026, with the live table served inside an iframe; the underlying weekly table was nonetheless current to 3-4 Sep.\n- The criteria's fine print handles a skipped week (use the next update) and dashboard discontinuation (annul).\n\nMARKETS: no prediction market or bookmaker contract on this quantity was located on Polymarket, Manifold, or Kalshi.\n\nSEARCHED FOR BUT NOT FOUND: the machine-readable ECDC weekly country table itself (served as an image/iframe, not extractable); the ISS bulletin PDFs' epidemic curve by week of symptom onset (PDFs did not convert to text and the 2026 bulletin-6 PDF URL 404'd); an explicit ECDC weekly Italy figure for the update dated ~11 Sep 2026 (not yet published as of 7 Sep 2026); ECDC weekly Italy values for 6 Sep and 20 Sep 2024 and for 21 Sep 2022 (only adjacent weeks retrievable).",
+   "reference_class": "Italy's cumulative ECDC/ISS locally acquired human WNV count, ratio of the mid-September report (~16-20 Sep data cut) to the early-September report (~2-7 Sep data cut), across the 2018, 2022, 2024 and 2025 transmission seasons"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.4265,
+   "seconds": 368.0,
+   "estimate": {
+    "percentiles": {
+     "10": 582.0,
+     "25": 620.0,
+     "50": 654.0,
+     "75": 692.0,
+     "90": 742.0
+    },
+    "p_above_upper": 0.005
+   },
+   "reasoning": "Anchor is exact: ECDC showed Italy 516 locally acquired as of 3 Sep 2026, which is ISS's 521 confirmed minus 5 imported. Resolution needs two further weekly accruals (ISS bulletins of 10 and 17 Sep). Reference class: Italy's early-Sept -> mid-Sept 2-week multiplier was ~1.26 in 2025 (ECDC 500 on 3 Sep -> ~630 on 18 Sep, bracketed by ISS 502/582/680 and ECDC monthly's ~710 on 3 Oct) and ~1.28 in 2024 (-> 382 on 18 Sep); 2018 was faster (~1.5-1.6) in a later-shifted season. Applied to 516 that gives ~650. 2026 is running within ~3% of 2025 at identical bulletin dates (432 vs 430 on 27/28 Aug; 521 vs 502 on 3/4 Sep) and its weekly increments have just turned down (+120 -> +89), consistent with an onset peak in late August and a decaying reporting tail; against that, 2026 is more geographically dispersed (75 provinces/19 regions, 20 newly affected areas in the last week) with a hot, drought-driven Po Valley season, which argues for a slower decay than 2025. I take ~+80 and ~+58 for the next two weeks, minus ~6-7 imported, landing near 654. Left tail is fattened by publication risk (~10%): if the 18 Sep ECDC update carries only data through 10 Sep, it prints near 595. No prediction market prices this (checked Polymarket, Kalshi, Manifold, bookmakers - none found), so no crowd anchor. Upper escape past 1100 would need +584 in eleven days - only a definitional change or bulk retrospective dump - priced at 0.5%.",
+   "sources": [
+    "https://www.ecdc.europa.eu/en/west-nile-fever/surveillance-and-disease-data/disease-data-ecdc",
+    "https://wnv-weekly.ecdc.europa.eu/",
+    "https://www.epicentro.iss.it/westnile/bollettino",
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC13505423/",
+    "https://www.mosticare.org/threat-map/west-nile-virus",
+    "https://www.ansa.it/canale_saluteebenessere/notizie/medicina/2025/08/21/iss-i-casi-di-west-nile-in-italia-aumentano-da-275-a-351_8b3c5360-681f-464b-a5ca-6c2e1882b8f4.html",
+    "https://www.ansa.it/canale_saluteebenessere/notizie/medicina/2025/09/11/west-nile-iss-da-inizio-anno-582-casi-in-italia-piu-del_060f5b02-b240-4c2e-ba38-5fbe645cb4d1.html",
+    "https://www.adnkronos.com/cronaca/salgono-casi-west-nile-bollettino-iss_1Kf4MSMY592KKLa4NCOqQF",
+    "https://www.quotidianodelsud.it/2026/08/27/west-nile-in-italia-432-casi-confermati-e-17-decessi",
+    "https://gds.it/speciali/salute-e-benessere/2026/09/06/nei-primi-otto-mesi-del-2026-registrati-in-italia-227-casi-di-dengue-521-i-contagi-di-west-nile-virus-da-inizio-sorveglianza-4fc8dc59-856d-40ea-a019-b94f167887ee/",
+    "https://www.iss.it/-/west",
+    "https://efsa.onlinelibrary.wiley.com/doi/10.2903/j.efsa.2025.9662",
+    "https://efsa.onlinelibrary.wiley.com/doi/10.2903/j.efsa.2025.9715",
+    "https://www.ecdc.europa.eu/en/news-events/epidemiological-update-west-nile-virus-transmission-season-europe-2018"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the Italy row of ECDC's 'Weekly updates: Seasonal surveillance in humans in 2026 for West Nile virus' country table (wnv-weekly.ecdc.europa.eu), first report dated on or after 17 Sep 2026 — NOT off the ISS national bulletin, NOT off ECDC's separate MONTHLY human+animal report (different cadence and cutoff), and NOT neuroinvasive-only or death counts. Mechanical link verified: ECDC's Italy figure equals the ISS confirmed total minus ISS-declared imported cases (ISS 521 confirmed on 3 Sep 2026, 5 declared imported; ECDC Italy 516 as of 3 Sep 2026). ECDC's Friday report has been carrying the same-week Thursday ISS bulletin, so an 18 Sep ECDC update maps to ISS Bulletin N.8 dated 17 Sep 2026 (data cutoff ~16 Sep).\n\nEVENT WINDOW: 2026 Italian transmission season -> ECDC report cutoff ~17 Sep 2026, per the criteria. First 2026 cases appeared in ECDC week 27 (data to 1 Jul 2026). As of Now (2026-09-07T12:50Z), roughly 90% of a 1 Jun -> 17 Sep season window has elapsed. More decision-relevant: the last PUBLISHED data point is 3 Sep 2026; of the ~14 days between that cutoff and the resolving cutoff, ~4 days (29%) have elapsed and are unobserved, and ~10 days remain.\n\nSTATUS-QUO OUTCOME: ECDC publishes on Friday 18 Sep 2026 carrying the ISS bulletin of 17 Sep; the Italy cumulative figure is 516 plus two further weekly accruals, minus growth in the imported subtraction.\n\n2026 ITALY SERIES (ISS confirmed human cases, weekly Thursday bulletins; epicentro.iss.it/westnile/bollettino): N.4 20 Aug = 312; N.5 27 Aug = 432 (17 deaths); N.6 3 Sep = 521 (269 neuroinvasive, 70 blood-donor asymptomatic, 179 fever, 26 deaths; 5 imported). Corresponding ECDC locally-acquired Italy prints: 139 (data to 5 Aug), 224 (~12 Aug), 311 (~19 Aug), 516 (3 Sep). Implied weekly ECDC increments: +85, +87, +116, +89.\n\n2025 ITALY SERIES, SAME CALENDAR DATES (ISS): 14 Aug = 275; 21 Aug = 351 (22 deaths); 28 Aug = 430 (27 deaths); 4 Sep = 502; 11 Sep = 582 (39 deaths); 25 Sep = 680 (48 deaths); early Oct = 718 (49 deaths). ECDC monthly reported Italy at 500 locally acquired as of 3 Sep 2025 and Europe-wide 989 as of 3 Oct 2025; ECDC end-of-season 2025 Italy = 779 locally acquired. The 18 Sep 2025 bulletin (N.10) exists but its headline total was not retrievable in this run — it is bounded between 582 and 680.\n\nBASE RATES / REFERENCE CLASSES (2-week multiplier of Italy's cumulative count, ~3 Sep -> ~17-18 Sep, computed over Italian seasons, i.e. CONDITIONAL on Italy and on this specific mid-September window, not over all countries or all months):\n- 2025: ECDC 500 (3 Sep) -> ~630 (18 Sep, interpolated between ISS 582/11 Sep and 680/25 Sep, and consistent with ~710 on 3 Oct) = ~1.26.\n- 2024: 382 total by 18 Sep 2024 with +51 reported in the 12-18 Sep week; season-end Italy 455 = ~1.28 implied.\n- 2018 (late-shifted, larger season): 453 by 20 Sep 2018 with +92 in the 14-20 Sep week alone; season-end 576. Implied 2-week multiplier ~1.5-1.6.\n- Share of season total already reached at mid-September: ~82% (2025, ~630/779), ~84% (2024, 382/455), ~79% (2018, 453/576).\n- Unconditional-looking alternative anchor, for contrast: Italy's own 2026 realised 2-week increment over the two weeks ENDING 2 Sep was 311 -> 516 = +205.\n\nSERIES DISPERSION (Italy cumulative WNV count, 2-week windows in the Aug-Sep reporting period, 2024-2026): observed 2-week increments span ~+84 (2024 mid-Sep) to ~+205 (2026 late-Aug), with 2025's mid-Sep window at ~+130. Weekly increments in 2025 held a flat +72 to +80 through late Aug/early Sep before falling; 2026's weekly increments have run +85, +87, +116, +89.\n\nEVIDENCE FAVOURING CONTINUED HIGH ACCRUAL: 2026 circulation demonstrated in 75 provinces across 19 regions as of 3 Sep (vs 68 provinces / 16 regions at the equivalent 2025 point); ECDC recorded 20 areas newly affected in the single week to 3 Sep; Italian and European commentary cites anomalously high summer 2026 temperatures, a prolonged warm season, and Po Valley drought concentrating birds and vectors; ECDC states transmission has historically peaked in August AND September. Europe-wide 2026 total reached 1,086 across 15 countries by 3 Sep (Greece 284, Spain 88, Romania 56, North Macedonia 55, France 36).\n\nEVIDENCE FAVOURING DECELERATION: the 2026 weekly increment already turned down from +116 to +89; Italian onset peaks historically fall in weeks 33-35 (mid-to-late August) with a ~2-week reporting lag, so the reported-case increment typically crests in early-to-mid September and decays thereafter; in 2025 the increment fell from +80 (week to 10 Sep) to a combined +98 across the following two weeks; ECDC 2026 case-fatality on neuroinvasive forms is 7.2% vs 13.9% at the same 2025 point, consistent with broader/milder ascertainment rather than a worsening severe-case wave.\n\nPUBLICATION / DATA-FLOW RISK: A peer-reviewed comment ('The Cripticism of data: West Nile in Italy and the 2026 information blackout', ScienceDirect/PMC, 2026) reports Italian authorities failing to publish comprehensive national dashboards owing to bureaucratic and privacy delays in implementing digital surveillance decrees, with reliance shifted onto ECDC aggregates; the ISS 2026 bulletins themselves state they omit distribution by sex, age group and other breakdowns that 2025 bulletins carried. No announced change to ISS weekly cadence was found. ECDC has published on schedule every week of the 2026 season observed here. The question's fine print handles a missed week (next update used) and a discontinued dashboard (annulment).\n\nMARKETS: Searched Polymarket, Kalshi, Manifold and bookmakers for any contract on European or Italian WNV case counts — none found; no human market prices this.\n\nSEARCHED FOR BUT NOT FOUND: the headline total of ISS Bulletin N.10 of 18 Sep 2025 (PDF exists but was not machine-readable in this run); the ECDC weekly Italy print dated ~28 Aug 2026 (inferred as ~427 from ISS 432 minus imported, not directly confirmed); ISS 2026 ep",
+   "reference_class": "Italian WNV transmission seasons (2018, 2024, 2025): the multiplicative growth of ECDC/ISS cumulative locally acquired human case counts over the two weeks from ~3 September to ~17-18 September"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.4569,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2544,
+   "seconds": 96.7,
+   "estimate": {
+    "percentiles": {
+     "10": 602.0,
+     "25": 638.0,
+     "50": 667.0,
+     "75": 698.0,
+     "90": 748.0
+    },
+    "p_above_upper": 0.003
+   },
+   "reasoning": "ECDC's Italy row = ISS confirmed minus imported (521-5=516 at 3 Sep); the 18 Sep report should carry the 17 Sep ISS bulletin, i.e. two more weekly accruals. Reference class is Italy's own early-to-mid-September two-week multiplier: 1.289 (2025, settled at ISS 647 on 18 Sep against Run 3's interpolated 630), ~1.28 (2022, 2024), ~1.5 (2018, later-shifted); ~1.30 x 516 = 671. Increment path agrees: 2026's weekly steps ran +85/+87/+116/+89 and have just turned over, and 2025's post-peak decay was only ~19%/week, so +80 then +68 on ISS minus ~6 imported = ~667. I reject Run 1's 1.15-1.25x premium on 2025 (cumulative levels are only ~4% apart) and Runs 2/3's 0.74/week geometric decay (faster than any observed Italian post-peak week). Left tail covers a stale ECDC refresh carrying only data to 10 Sep (~600); right tail covers a warm-September extension plus bulk retrospective blood-donor confirmations. Reaching 1100 needs +584 in eleven days, ~5x the largest weekly increment ever recorded in Italy - priced at 0.3%.",
+   "sources": [],
+   "reconciliation": "Disputed: (a) 2025's 18-Sep ISS total - Runs 1 and 2 both retrieved 647, Run 3 interpolated ~630; I take 647 (two independent retrievals, consistent with the 582/680 bracket), which raises the 2025 two-week ratio from 1.26 to 1.289. (b) Whether the resolving ECDC report carries one or two ISS weeks - settled from the dossiers' matched pairs (ISS 141/312/521 vs ECDC 139/311/516, each a same-week Friday print), so two weeks is the base case and Run 3's 10% stale-report weight is trimmed to ~6-7% in the left tail. (c) Increment extrapolation - pure JUDGMENT, no evidence breaks it: Run 1's 1.15-1.25x premium on 2025 is not supported by the cumulative levels (521 vs 502, ~4% apart, with the excess concentrated in a single +120 catch-up week), while Runs 2/3's 0.74/week geometric decay exceeds any observed Italian post-peak decay (2025 was +80 -> +65, ~-19%); I bet on a mild premium over the 2025 shape, +80 then +68. (d) ECDC-ISS offset - Run 3's 'ISS minus declared imported' mechanism is right and matches the observed offsets of 2, 1 and 5; I subtract ~6 by mid-September. (e) Whether 2018's ~1.5 ratio belongs in the class - judgment; downweighted as a later-shifted season but kept as right-tail support. Not settleable on this run (no web access): the 2026 epidemic curve by week of onset, which would date the onset peak and is the single most decision-relevant missing fact; the ECDC weekly print of ~11 Sep 2026, unpublished as of Now. Market check: all three runs searched Polymarket, Kalshi, Manifold and bookmakers and found no contract on European or Italian WNV case counts; the harness title search also found none - no crowd anchor exists, and I retrieved nothing myself this run.",
+   "disagreements": [
+    {
+     "claim": "ISS 2025 bulletin of 18 Sep 2025 showed 647 cumulative confirmed cases",
+     "kind": "factual",
+     "verdict": "Resolved to 647 - Runs 1 and 2 retrieved it independently, Run 3 only failed to retrieve it; 647 sits inside the 582 (11 Sep) / 680 (25 Sep) bracket. Sets the 2025 two-week multiplier at 1.289."
+    },
+    {
+     "claim": "The ECDC weekly report dated 18 Sep 2026 will carry data through ~17 Sep (two further ISS weeks), not through ~10 Sep",
+     "kind": "factual",
+     "verdict": "Two weeks is the base case: every 2026 matched pair shows the Friday ECDC print carrying the same-week Thursday ISS bulletin (139/141, 311/312, 516/521). Residual stale-refresh risk cut from Run 3's 10% to ~6-7% and carried in the left tail near 600."
+    },
+    {
+     "claim": "2026 weekly increments should be scaled ~1.15-1.25x above 2025's at matched weeks",
+     "kind": "judgment",
+     "verdict": "Rejected as overstated - cumulative levels are only ~4% apart (521 vs 502) and the excess is concentrated in one +120 catch-up week. I use a mild premium over the 2025 shape (+80, +68) rather than Run 1's ~+95/+80 or Runs 2/3's geometric +66/+49."
+    },
+    {
+     "claim": "ECDC's Italy figure is exactly ISS confirmed minus ISS-declared imported cases",
+     "kind": "factual",
+     "verdict": "Mechanism accepted (Run 3); magnitudes on matched cuts were 2, 1 and 5, so the offset is small and slowly growing - I subtract ~6 by mid-September. Cannot be pinned exactly without the ECDC machine-readable table, which no run could extract."
+    },
+    {
+     "claim": "The 2018 season (two-week ratio ~1.5-1.6) belongs in the reference class",
+     "kind": "judgment",
+     "verdict": "Retained but downweighted: 2018 was a later-shifted season whose onset peak fell after Italy's 2026 weeks 33-35 pattern. It supports the right tail rather than the center."
+    },
+    {
+     "claim": "The 2026 Italian 'information blackout' commentary (PMC13505423) implies reporting-flow risk",
+     "kind": "factual",
+     "verdict": "Treated as contested framing, not a reporting stoppage - ISS has published weekly bulletins on schedule from 28 Jul through 3 Sep 2026 and ECDC has published every week of the observed 2026 season. No announced cadence change found by any run."
+    }
+   ],
+   "reference_class": "Italian WNV seasons, ratio of the cumulative locally acquired human case count at the mid-September report to its early-September (~3-4 Sep) value: 2018, 2022, 2024, 2025"
+  }
+ ]
+}
