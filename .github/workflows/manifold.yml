@@ -156,13 +156,34 @@ jobs:
           EXISTING=""
           for f in $FILES; do if [ -f "$f" ]; then EXISTING="$EXISTING $f"; fi; done
           if [ -z "$EXISTING" ]; then echo "no journal/phase files yet — nothing to publish"; exit 0; fi
-          # Scan only the lines THIS run adds. If the private deny-list matches an AI-authored
-          # reasoning/change-my-mind field, replace that entire field with a neutral marker.
-          # Matches in questions, contracts, sources, metadata, raw JSON, or keys still block
-          # publication. Re-stage and strictly re-scan so the recovery path also fails closed.
+          # Scan only the lines THIS run adds. If the private deny-list matches a free-text
+          # field the guard is allowed to blank — the model's own prose, or the platform's
+          # resolution criterion, which a reader can refetch from the journaled source URL —
+          # replace that entire field with a neutral marker. Matches in the question, keys,
+          # metadata, raw JSON, or a record with no public source URL still block publication.
+          # Re-stage and strictly re-scan so the recovery path also fails closed.
           git add -- $EXISTING
-          set +e; python scripts/journal_leak_guard.py --redact-model-output $EXISTING; status=$?; set -e
+          # tee + PIPESTATUS (this step has no pipefail): a redacted run publishes GREEN, so
+          # without this the only trace that a public record was blanked is buried in the job
+          # log. The guard prints field LABELS, never matched content or the deny-list.
+          set +e
+          python scripts/journal_leak_guard.py --redact-model-output $EXISTING \
+            | tee "$RUNNER_TEMP/redaction.log"
+          status=${PIPESTATUS[0]}
+          set -e
           if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
+          if grep -q "^redacted" "$RUNNER_TEMP/redaction.log"; then
+            {
+              echo "### Journal privacy redaction"
+              echo
+              echo "The deny-list matched a field this run was about to publish; the guard"
+              echo "blanked it and published the rest of the record."
+              echo
+              echo '```'
+              cat "$RUNNER_TEMP/redaction.log"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
           git add -- $EXISTING
           set +e; python scripts/journal_leak_guard.py $EXISTING; status=$?; set -e
           if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi

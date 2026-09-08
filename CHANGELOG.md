@@ -4,6 +4,38 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.4.29] - 2026-09-08
+
+### Fixed
+- **The Manifold bot's hourly publish no longer fails — and drops a bet's journal line —
+  when the deny-list matches a field the redaction path could not blank.** Runs
+  34198573098 (07:17) and 34231014848 (13:17) both died in the commit step with the guard
+  reporting `reference_class`, `resolution_criterion`, `reasoning` and `research.sources.[N]`;
+  the `--redact-model-output` recovery path only ever covered `reasoning` and
+  `what_would_change_my_mind`, so it refused, the job failed, and the run's pairs reached
+  nothing but a 30-day artifact. That is the worst possible failure mode for this bot
+  specifically: it posts real bets to Manifold BEFORE the journal is pushed, so a blocked
+  publish leaves a live position invisible to the next run's exposure cap. The recovery
+  path now blanks any field in an explicit allow-list (`scripts/journal_leak_guard.py`,
+  `MODEL_REDACTABLE_FIELDS` / `CONTRACT_REDACTABLE_FIELDS`) and publishes the rest of the
+  record. Two classes, and the distinction is the safety argument: the model's own prose
+  (`reasoning`, `reference_class`, `what_would_change_my_mind` items, `research.sources`
+  items), and `resolution_criterion` — which is NOT model-authored but a verbatim copy of
+  the platform's public contract text, so blanking it loses no evidence a reader cannot
+  refetch, and is therefore allowed ONLY on a public-platform record that journals its
+  `source.url`. Everything else stays exactly as fail-closed as before: the `question`
+  (the record's identity, and a deny-list hit in a market's own title is worth an operator's
+  eyes), keys, metadata, numbers, non-record lines, invalid patterns, zero-width matches.
+  A marked redaction beats the status quo on preregistration integrity too — the marker is
+  visible in the published record, where losing the line wholesale left no record at all.
+  `bot.yml` (the tournament bot) is deliberately untouched: it does not run the recovery
+  path at all, and whether a Metaculus preregistration line may be published with a blanked
+  field is an operator call, not a bug fix.
+- **A redacted publish is now visible without reading the job log**: the commit step tees the
+  guard's redaction summary into `$GITHUB_STEP_SUMMARY`. A run that blanks a field exits
+  GREEN, so the operator otherwise had no signal that a public record was altered. The guard
+  prints field LABELS only — never matched content, never the private deny-list.
+
 ## [0.4.28] - 2026-09-04
 
 **Architecture change (operator decision, 2026-09-03): parallel independent research is the
