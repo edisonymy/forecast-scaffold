@@ -1,0 +1,178 @@
+{
+ "record_id": "2026-09-08-f6d3f66c",
+ "question": "Will Zcash (ZEC) trade above $1,100 on September 17 or 18, 2026?",
+ "question_id": 45755,
+ "url": "https://www.metaculus.com/questions/45564/",
+ "question_type": "binary",
+ "forecast_at": "2026-09-08T06:09:04+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.015,
+ "pools": {
+  "pooled_runs": 0.6268281112939676,
+  "phase1": 0.6268281112939676,
+  "phase2": null,
+  "spread_phase1": 0.04,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probability": 0.65
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.1103,
+   "seconds": 346.6,
+   "estimate": 0.65,
+   "reasoning": "Spot is ~$1,130 (CoinGecko $1,132, CMC $1,128 on 2026-09-08), already ABOVE the $1,100 threshold — the question's background is stale by several days. So this is not 'can ZEC rally to $1,100' but 'will ZEC still be within ~3% of here, or touch back up, on Sep 17-18'. My reference class is the driftless lognormal barrier problem: ln(1100/1132) = -2.9%, realized sigma from CoinGecko's own 60-day daily series is 8.5-9.2%/day, so the strike sits ~0.10 SD below spot at a 8.8-day horizon; the criterion then grants the MAX over a 48h window (two daily highs), which adds materially. Continuous-max barrier calc gives 0.63-0.64 driftless, ~0.51 under a -1%/day bearish drift. Against that: the move is parabolic (+120% in a month, RSI>75, -6% off the $1,249 high), leverage is crowded after ~$49M of short liquidations, and ZEC has a demonstrated fat left tail (-50% in 48h on the June 2026 Orchard bug). For it: ZCSH ETF inflows still accelerating ($304M -> $414M+ AUM), rising hashrate, privacy-coin bid broadening to XMR/DASH, and ZEC's own realized 9-11 day window base rate ~76%+ (drift-contaminated, discounted). No prediction market matches this contract's threshold/dates/source; the Polymarket Dec-31 ladder only corroborates sigma ~0.075-0.09/day. Net: slightly above the driftless anchor.",
+   "sources": [
+    "https://www.coingecko.com/en/coins/zcash",
+    "https://api.coingecko.com/api/v3/coins/zcash/market_chart?vs_currency=usd&days=60&interval=daily",
+    "https://polymarket.com/predictions/zcash",
+    "https://coinmarketcap.com/currencies/zcash/historical-data/",
+    "https://coinmarketcap.com/cmc-ai/zcash/price-analysis/",
+    "https://www.coindesk.com/markets/2026/09/04/zcash-jumps-20-to-landmark-usd1-000-level-as-short-sellers-lose-usd34-million",
+    "https://ambcrypto.com/zcash-breaks-1100-as-privacy-coin-rally-broadens-xmr-dash-follow/",
+    "https://www.bitmex.com/blog/zec-crash-2026",
+    "https://www.coindesk.com/markets/2026/06/05/zcash-plummets-30-as-developer-reveals-a-major-bug-that-went-undetected-for-four-years",
+    "https://www.theblock.co/news/markets/2026-09-04-zcash-tops-1000-etf-inflows-ramp-up-miners-pile-in-413580",
+    "https://en.cryptonomist.ch/2026/09/06/zcash-price-surge-etf/",
+    "https://www.sec.gov/Archives/edgar/data/0001720265/000114336226000322/ZCSH082426.pdf"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the daily 'High' row for 2026-09-17 OR 2026-09-18 (UTC) in CoinMarketCap's Zcash historical-data table (CoinGecko historical-data page as fallback), NOT the daily close, NOT an exchange print, NOT a 24h-rolling high. Either of the two days qualifying is sufficient. Annulled only if neither source publishes a high for both days.\n\nEVENT WINDOW: 2026-09-17T00:00Z -> 2026-09-19T00:00Z per the criteria text. As of Now (2026-09-08T05:50Z), 0% elapsed; the window opens in 8.76 days and closes in 10.76 days.\n\nSTATUS QUO OUTCOME: ZEC's spot price sits above $1,100 as of Now, so the outcome that requires no change in the world is a YES.\n\nEVIDENCE (both directions):\n- 2026-09-08 (CoinGecko coin page, fetched this run): ZEC $1,132.19; 24h range $1,115.46-$1,216.03; 24h volume $829M; 7d +31.0%; market cap $19.15B; rank #9; -6.3% on the day.\n- 2026-09-08 (CoinMarketCap price analysis, via search): ZEC $1,127.94, -5.35% 24h; cited drivers = overbought RSI>75, volume cooling 51%, underperformance vs BTC (-1.11%). Named levels: $1,064 (23.6% Fib) support, $1,128 (50% Fib), $1,200 upper consolidation, $950 downside target on a break.\n- The question's Background text is STALE: it states ZEC trades $1,015-$1,021 and treats $1,100 as unbreached. Since then ZEC broke $1,100 and printed a multi-year high near $1,249 (AMBCrypto, CoinMarketCap, ~2026-09-06/07).\n- 2026-09-04 (CoinDesk): ZEC topped $1,000 for the first time since 2016, +20% in a session from ~$828 to ~$1,023; ~$36.6M leveraged positions liquidated, $34.5M of it shorts. A separate account puts short liquidations at ~$48.9M in 24h.\n- 2026-08-25 (SEC Form CERT / Grayscale): ZCSH, the first US spot ETF for a privacy coin, converted from the nine-year-old Grayscale Zcash Trust and listed on NYSE Arca with ~$304M AUM.\n- ETF flows (The Block / Cryptonomist, ~2026-09-04/06): >=$34.4M net inflows since launch with a single-day high of $12.6M on 2026-09-02; AUM reported past $414M and separately $463M. Rising network hashrate cited alongside.\n- Privacy-sector breadth (AMBCrypto): ZEC daily volume $800M-$1.2B; DASH ~$200-230M; XMR ~$140-210M — participation is not confined to ZEC.\n- 2026-06-05 (CoinDesk / BitMEX blog / KuCoin): Shielded Labs disclosed a critical Orchard-circuit counterfeiting vulnerability live since May 2022; ZEC fell ~38% intraday and ~50% over 48 hours, roughly $624 -> $309. Patched via the NU6.2 hard fork on 2026-06-03. Shielded Labs stated there is 'no definitive way to determine' whether it was exploited; the Foundation says turnstile accounting shows supply intact. Demonstrates a realized single-headline -50%/48h left tail in this asset this year.\n- Open tail priced on Polymarket: a 'Zcash's Orchard pool confirmed exploited?' contract runs to 2027-01-01 with ~$27K volume and ~$4.4K liquidity.\n\nBASE RATES / DISPERSION (computed this run from the CoinGecko daily close series, /api/v3/coins/zcash/market_chart, 60 daily points to 2026-09-08):\n- Class 'all ZEC daily log returns, last 20 days (the current post-breakout regime)': SD = 8.5% around the mean, 9.2% around zero. Realized mean over that stretch = +4.0%/day (a parabolic run; not a sustainable drift estimate).\n- Class 'ZEC daily log returns, mid-July to mid-August 2026 (pre-breakout, range-bound $455-$570)': visibly tighter, roughly 3-5%/day. Regime-dependent — the 8.5-9.2% figure is conditional on the current post-ETF, high-leverage regime; the unconditional 2026 figure is lower.\n- Class 'ZEC windows of the same length in the last 60 days': for each day t, whether max(close at t+9, close at t+10) exceeded 0.972 x close at t — 12 of ~50 windows failed on closes (all failures clustered in the mid/late-July downtrend and two marginal early-August cases); on daily HIGHS rather than closes several marginal failures would flip. This class is contaminated by the strongly positive realized drift of the sample period.\n- Class 'implied by the Polymarket Zcash Dec-31-2026 price ladder' (dip-to-$700 / dip-to-$400 / dip-to-$50 / reach-$1400 / reach-$2000; volumes $3.2K-$39.8K, all closing 2027-01-01, prices possibly struck against a lower spot): jointly consistent with daily sigma ~0.075-0.09 and a mildly negative drift. None of these contracts matches this question on threshold, deadline, resolution source, or the daily-high fine print.\n- 10-day dispersion implied by sigma=0.09/day: sigma_log over 10.76 days ~ 0.29, i.e. a 10th-90th price range of roughly x0.68 to x1.47 off spot.\n\nRECENT DAILY SERIES (CoinGecko 00:00Z snapshots, USD): Aug 19 508.54 | Aug 20 564.57 | Aug 21 568.97 | Aug 22 733.47 | Aug 23 803.23 | Aug 24 852.82 | Aug 25 830.32 | Aug 26 768.01 | Aug 27 816.38 | Aug 28 810.07 | Aug 29 801.38 | Aug 30 842.24 | Aug 31 836.20 | Sep 1 847.71 | Sep 2 829.86 | Sep 3 815.26 | Sep 4 952.67 | Sep 5 1023.04 | Sep 6 1025.93 | Sep 7 1227.11 | Sep 8 1139.14 (00:00Z) -> 1132.22 (05:50Z). Prior regime for context: the series sat in a $455-$570 band from mid-July through Aug 18.\n\nDECIDING-BODY / CALENDAR: none applicable — no committee, vote, or bulletin gates this. Named resolution source updates continuously and posts the completed UTC day's OHLC shortly after each 00:00Z rollover, so both required rows exist well before the 2026-09-19T00:00Z scheduled resolution. Searched for scheduled ZEC protocol events, network upgrades, halving, or unlock dates falling inside 2026-09-17/18: none found.\n\nMARKET SEARCH: searched Polymarket, Kalshi, and general prediction-market coverage for a contract on ZEC crossing this level on these dates. Found only (a) Dec-31-2026 horizon price-ladder contracts, (b) 15-minute 'ZCash Up or Down' contracts with $0 volume and ~$199 liquidity, (c) the Orchard-exploit contract. No contract matches this question's threshold + two-day window + CoinMarketCap-daily-high terms. No Kalshi ZEC daily-high contract found.\n\nSEARCHED FOR BUT COULD NOT FIND: CoinMarketCap's historical-data page would not return the OHLC table on fetch (FAQ/navigatio",
+   "reference_class": "Crypto asset currently ~2.9% ABOVE a fixed threshold, ~9%/day realized vol, asked whether the maximum over a 2-day window opening 8.8 days out exceeds that threshold (continuous-monitoring lognormal barrier); cross-checked against ZEC's own realized t+9/t+10 windows over the last 60 days"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.7642,
+   "seconds": 275.9,
+   "estimate": 0.61,
+   "reasoning": "Question background is stale: ZEC is $1,129.63 now (CMC, 2026-09-08), not ~$1,020, after peaking at $1,249.28 on Sep 6-7. So $1,100 sits ~2.6% BELOW spot, and resolution takes the max of two UTC daily highs (48h window). Reference class of a driftless high-vol asset 2.6% above a barrier, 8.8 days to a 48h max-window, with realized daily sigma 7.0% (Aug 20-Sep 7 CoinGecko closes; ~9.5% with the Aug 21 jump) gives ~0.63. Barrier math makes it forgiving: at $1,050 on Sep 17 there is still ~0.68 of tagging $1,100 within 48h, so the question is roughly 'will ZEC hold ~$1,000'. I shade slightly below the driftless base rate for post-parabolic reversion risk (RSI>75, volume -51%, -5.7% today, and Polymarket's ZEC ladder implying higher vol on its downside rungs than its upside rungs = crash skew), offset by persistent Grayscale ZCSH ETF inflows ($463M AUM). No market matches this contract: Kalshi has only ZEC perps; Polymarket's ladder is Binance-1min, touch-anytime, Jan-1-2027 - wrong source, wrong horizon, and internally non-monotone ($300 at 29% vs $400 at 15%) on $0.7-4.9k per-rung volume, so evidence not anchor.",
+   "sources": [
+    "https://coinmarketcap.com/currencies/zcash/",
+    "https://www.coingecko.com/en/coins/zcash",
+    "https://www.coingecko.com/en/coins/zcash/historical_data",
+    "https://polymarket.com/event/what-price-will-zcash-hit-before-2027",
+    "https://polymarket.com/predictions/zcash",
+    "https://coinmarketcap.com/top-stories/6a7a8339a24887465db263bd/",
+    "https://kalshi.com/perps/kxzecperp",
+    "https://coincentral.com/zcash-zec-price-privacy-coin-surges-20-to-all-time-high-as-grayscale-etf-hits-463m"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the daily 'High' shown in CoinMarketCap's ZEC price-history table for Sept 17 OR Sept 18, 2026 (UTC) — not the close, not a single-exchange print, not CoinGecko unless CMC omits the dates. CMC's daily high is a cross-exchange VWAP-style aggregate and can print slightly below the max tick on any one venue. Annulled only if BOTH CMC and CoinGecko lack a daily high for BOTH dates.\n\nEVENT WINDOW: 2026-09-17T00:00Z -> 2026-09-19T00:00Z per the criteria (two UTC calendar days). As of Now (2026-09-08T05:50:31Z), 0% elapsed; the window opens in 8.76 days and spans 48 hours. Note the question's scheduled-resolution timestamp is not the window.\n\nSTATUS-QUO OUTCOME: The question's own Background is stale — it was written off Sept 4 data (~$1,015-1,021). Current state as of 2026-09-08 05:50Z: CoinMarketCap spot $1,129.63, 24h high $1,214.18, 24h low $1,120.89, 24h change -5.74%, market cap $19.04B (CMC, 2026-09-08). CoinGecko concurrently: $1,126.16, 24h range $1,115.46-$1,216.03, 7d range $788.68-$1,249.28 (CoinGecko, 2026-09-08). Status quo = price is currently ABOVE the $1,100 threshold; carrying today's level forward unchanged resolves YES.\n\nEVIDENCE — PRICE HISTORY (CoinGecko daily closes, retrieved 2026-09-08):\n- 2026-08-20 $568.97; 08-21 $733.47; 08-22 $803.23; 08-23 $852.82; 08-24 $830.32; 08-25 $768.01; 08-26 $816.38; 08-27 $810.07; 08-28 $801.38; 08-29 $842.24; 08-30 $836.20; 08-31 $847.71.\n- 2026-09-01 $829.86; 09-02 $815.26; 09-03 $952.67; 09-04 $1,023.04; 09-05 $1,025.93; 09-06 $1,227.11; 09-07 $1,139.14. Sept 8 (partial) ~$1,129.\n- Multi-year peak $1,249.28 reached Sept 6-7, 2026 — highest since Oct 2016 (multiple outlets, 2026-09-07). All-time high remains $5,941.80 (Oct 29, 2016, CMC).\n- Note the Aug 25 - Sept 2 stretch: ZEC traded flat-to-down in the $768-$847 band for nine days AFTER the ETF launch. The vertical move is entirely Sept 3-6.\n\nDISPERSION / SERIES STATISTICS (computed this run from the CoinGecko closes above):\n- SD of daily log returns, Aug 21 - Sept 8 (n=18, excluding the +25.4% Aug 20->21 jump): 7.0%/day. Including that jump: ~9.5%/day. Mean daily log return over the same span: +2.4%/day (parabolic phase, not a sustainable rate).\n- Scaling 7.0%/day to the 8.76 days until the window opens: sigma ~20.7%. At 9.5%/day: ~28.1%. Over the full 10.76 days to window close: ~23-31%.\n- Largest single-day moves in the sample: +25.4% (Aug 21), +17.9% (Sept 6), +15.6% (Sept 3), -7.8% (Aug 25), -7.4% (Sept 7). Intraday ranges regularly exceed 8-10% (today's CMC 24h range is 8.3% of spot).\n\nEVIDENCE — DRIVERS (both directions):\n- UP: Grayscale converted its Zcash Trust into a spot ETP, ZCSH, listed on NYSE Arca Aug 25, 2026; AUM reported at $463M as of early Sept (CoinCentral, 2026-09-07). ETF-vehicle demand is a persistent, mechanical bid rather than a one-day event.\n- UP: ZEC rose from ~82nd to ~7th largest crypto by market cap on a cited ~2,496% run; renewed privacy-coin interest; a documented short squeeze.\n- UP: Kalshi launched US-regulated ZEC perpetuals (max 2.2x leverage) on June 30, 2026 — added regulated leverage access.\n- DOWN: CoinMarketCap's own analysis (Top Stories, 2026-09-08) attributes the current -5.35%/-5.74% move to an overbought technical correction: RSI above 75, trading volume cooled 51% from the $1,249 peak, and ZEC underperforming BTC, which it reads as profit-taking after the ETF-driven surge. It flags $1,064 (23.6% Fib) as support and a break below as risking ~$950.\n- DOWN: broader crypto market described as 'slightly down' / soft in the same window.\n- DOWN (tail): Polymarket carries an open 'Zcash's Orchard pool confirmed exploited?' market, $26.8K volume, resolving Jan 1 2027, trading at 6%. A confirmed protocol exploit is the clearest single-name crash catalyst.\n\nBASE RATES / CLASS ANCHORS (state the class each is over):\n- Over a driftless random walk with the REALIZED sigma above (7.0%/day), the probability that a barrier 2.6% below spot is exceeded by the running max somewhere inside a 48h window 8.76 days out is ~0.63-0.66 (reflection-principle barrier calc done this run). Over the SAME class but with price-martingale log drift (-sigma^2/2), ~0.61. Over the same class with an added -0.5%/day reversion drift, ~0.54. Over the same class with a +momentum drift, higher. This is the dominant anchor and it is a computation, not a survey.\n- CONDITIONAL component worth separating: P(ZEC >= ~$1,000 at Sept 17 00:00Z) under the driftless/martingale walk is ~0.60-0.64; conditional on being at $1,050 at window open, P(touch $1,100 within 48h) ~0.68; at $1,000, ~0.40; at $950, ~0.20. The 48h max-window materially widens the set of paths that resolve YES relative to a single-day close test.\n- Over the 19 realized daily closes Aug 20 - Sept 7, the count of 9-day-forward windows is too small to form an empirical rate; the sample is entirely within one parabolic regime and should not be used as a frequency base rate.\n\nHUMAN MARKETS — WHAT EXISTS AND HOW IT DIFFERS (searched this run):\n- NO market matches this question's terms (threshold $1,100, dates Sept 17-18 2026, CMC daily high). Searched Polymarket, Kalshi, and general bookmakers.\n- Kalshi: ZEC PERPETUALS only (kxzecperp), not a dated binary — no probability to read.\n- Polymarket 'What price will Zcash hit in 2026?' ($553,348 total volume since Aug 25, 2026; closes Jan 1 2027) is the nearest instrument. CONTRACT DIFFERENCES vs this question: (a) resolves off any Binance ZEC/USDT 1-minute candle, not CMC's aggregated daily high; (b) touch-any-time through Dec 31, ~115 days, vs a fixed 48h window ~9 days out; (c) ladder rungs are $1,300/$1,400/$1,500/$2,000 up and $700/$600/$500/$400/$300/$200/$100/$50 down — none at $1,100. Per-rung volume is thin ($280-$4,924) except the two deep-downside rungs ($39.8K and $21.6K). The down-ladder is internally non-monotone (a lower barrier prices above a higher one), evidence of stale/illiquid quotes. Back-solving implied sigma from the up-ru",
+   "reference_class": "Highly volatile crypto assets (daily sigma ~7-9%) trading ~2-3% above a price threshold: probability the threshold is exceeded by the daily high somewhere in a 48-hour window ~9 days forward, under a driftless random walk with reflection-principle barrier math"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.7035,
+   "seconds": 276.9,
+   "estimate": 0.62,
+   "reasoning": "ZEC trades ~$1,128 (CMC and CoinGecko, 2026-09-08 05:50 UTC), already ~2.5% ABOVE the $1,100 threshold, so the status-quo outcome is YES and NO requires a >10% drawdown that holds across both Sep 17 and Sep 18 UTC intraday highs. Reference class: ZEC's own realized daily log-return SD of 8.7% (CoinGecko closes, Aug 20-Sep 8 2026) fed into a two-stage barrier model — 8.76 days of diffusion to the window open, then the max over a 2-day window (typical upward excursion ~+9-11%) — giving a driftless base rate of 0.63. Equivalently, YES needs only that ZEC enters Sep 17 above roughly $1,015-1,020. No market matches this contract; six Polymarket ZEC touch markets exist but all use Dec-31-2026 deadlines, Polymarket's own resolution source, and a touch-anytime rather than two-specified-days structure, so they are evidence not anchor — jointly fitting them implies a mildly negative log drift, which is my only reason to shade below 0.63. Two-sided: ETF (ZCSH, $463M AUM, $34.4M net inflows) and an active short squeeze push up; RSI>75, volume -51%, price already 9% off the Sep 6 high with today running -6%, and a Sep 16 FOMC+dot-plot immediately before the window push the other way. Thin/one-sided evidence on drift, so I stay near the volatility-derived base rate.",
+   "sources": [
+    "https://www.coingecko.com/en/coins/zcash",
+    "https://www.coingecko.com/en/coins/zcash/historical_data",
+    "https://coinmarketcap.com/currencies/zcash/",
+    "https://www.coindesk.com/markets/2026/09/04/zcash-jumps-20-to-landmark-usd1-000-level-as-short-sellers-lose-usd34-million",
+    "https://www.theblock.co/news/markets/2026-09-04-zcash-tops-1000-etf-inflows-ramp-up-miners-pile-in-413580",
+    "https://financefeeds.com/zcash-price-prediction-zec-surges-past-1200-as-etf-inflows-and-massive-short-squeezes-fuel-privacy-coin-rally/",
+    "https://www.cryptotimes.io/2026/09/07/zec-price-prediction-for-september-will-it-cross-2200/",
+    "https://fedratecalc.com/fomc-meeting-schedule/",
+    "https://polymarket.com/market/will-zcash-reach-1400-by-december-31-2026",
+    "https://polymarket.com/market/will-zcash-dip-to-700-by-december-31-2026"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the daily 'High' column on CoinMarketCap's Zcash historical-data page for Sep 17 OR Sep 18, 2026 (UTC) — NOT the close, NOT a single exchange print, NOT any prediction-market settlement index. Threshold is strictly greater than $1,100.00. CoinGecko's ZEC historical page is the named fallback if CMC lacks the dates; annulled only if neither publishes both days. Either day qualifying is sufficient (two independent shots).\n\nEVENT WINDOW: 2026-09-17T00:00:00Z -> 2026-09-19T00:00:00Z per the criteria text. As of Now (2026-09-08T05:50:31Z), 0% elapsed — the window opens in 8.76 days and lasts 2 days.\n\nSTATUS-QUO OUTCOME: If ZEC's price were frozen at its current level and never moved again, the daily high on Sep 17 and Sep 18 would be above $1,100.\n\nPRICE LEVELS (all UTC):\n- Sep 8, ~05:50: $1,128.13 (CoinMarketCap); $1,127.55 (CoinGecko). 24h range per CMC $1,120.89-$1,214.18; per CoinGecko $1,115.46-$1,216.03. 24h change approx -5.9%. Market cap $19.0-19.3B, rank #10. 24h volume ~$1.06B.\n- Sep 6: multi-year high of $1,242.68-$1,249.28 intraday (highest since Oct 2016), per CoinDesk/CoinGecko-derived reporting.\n- Sep 7: opened $1,227.59, traded down through the day; close $1,139.14 (CoinGecko).\n- CoinGecko daily closes: Aug 20 $568.97 | Aug 21 $733.47 | Aug 22 $803.23 | Aug 23 $852.82 | Aug 24 $830.32 | Aug 25 $768.01 | Aug 26 $816.38 | Aug 27 $810.07 | Aug 28 $801.38 | Aug 29 $842.24 | Aug 30 $836.20 | Aug 31 $847.71 | Sep 1 $829.86 | Sep 2 $815.26 | Sep 3 $952.67 | Sep 4 $1,023.04 | Sep 5 $1,025.93 | Sep 6 $1,227.11 | Sep 7 $1,139.14.\n- All-time high: $5,941.80 per CoinMarketCap (Oct 2016); CoinGecko lists $3,191.93 (Oct 28, 2016) — the two named sources disagree on the ATH figure.\n\nSERIES DISPERSION (the base-rate material, computed over ZEC's OWN returns, not a broad crypto class):\n- Realized daily close-to-close log-return SD over Aug 20 - Sep 8, 2026 (19 obs, CoinGecko closes): 8.7%. Mean daily log return over that same window: +3.6%.\n- Largest single-day moves in that window: +25.4% (Aug 21), +17.9% (Sep 6), +15.6% (Sep 3), -7.8% (Aug 25), -7.4% (Sep 7).\n- CONDITIONAL vs UNCONDITIONAL: 8.7% is the CURRENT-REGIME (post-ETF, post-squeeze) daily SD. ZEC's longer-run unconditional daily vol before this regime was materially lower — the coin traded below $100 for years prior to 2026. Which of the two you use is a live judgment call, not a settled input.\n- Scaled to the 8.76 days from Now to window open: sigma approx 25% (current regime). Over the 2-day window itself: sigma approx 12%.\n- Background text states intraday swings 'often exceeding 10%'; the last two observed 24h ranges were 8.0% and 8.9% of price.\n\nRATE-OF-CHANGE / TREND:\n- +120% over 30 days, +32% over 7 days (CoinGecko, as of Sep 8). Up ~2,496% on the year per CMC reporting; moved from 82nd to ~7th-10th by market cap.\n- The trajectory of the rate: the move decelerated and reversed in the last 36 hours — down ~9% from the Sep 6 intraday high. Volume cooled 51% from the peak day. RSI reported above 75.\n- Named regime-break candidate UP: continued ETF creations plus further short liquidations. Named regime-break candidate DOWN: post-parabolic blowoff / momentum unwind; cited technical support at $1,064 (23.6% Fib) with a break said to risk $950.\n\nDRIVERS ON RECORD:\n- Grayscale converted its Zcash Trust to ZCSH, first US spot ZEC ETF, began trading NYSE Arca Aug 25, 2026 with ~$260M at conversion. Net assets $463.2M as of Sep 4 (Yahoo Finance / FinanceFeeds). At least $34.4M net inflows since launch; single-day high $12.6M on Sep 2 (crypto.news, The Block).\n- Short squeeze: ~$36.6M of leveraged ZEC positions liquidated in 24h around Sep 4, $34.5M of it shorts (CoinDesk, Sep 4). A named trader (Garrett Jin) reported adding to a ~$47M losing short position (Coinpedia, ~Sep 7) — i.e. sizable short interest remains open in both directions of interpretation.\n- Codebase upgrades in 2026: mobile proof generation ~14x faster (>3s to <200ms).\n- Privacy sector cited as the only major crypto category above its Bitcoin-Oct-2025-high level, with ZEC driving it.\n\nSCHEDULED EVENTS IN/NEAR THE WINDOW:\n- FOMC meeting Sep 15-16, 2026; rate decision Wed Sep 16 at 2:00pm ET with Summary of Economic Projections and dot plot; press conference 2:30pm ET. This lands the day BEFORE the window opens, so the price entering Sep 17 is set through a macro event. (FedRateCalc, Finance Calendar.)\n- Searched for, not found: any ZEC-specific scheduled catalyst (halving, protocol upgrade date, listing, unlock) falling in Sep 17-18, 2026.\n- Named resolution source update cadence: CoinMarketCap's historical-data table updates daily and would publish Sep 17/18 rows well before the Sep 19 resolution timestamp; no gap risk identified.\n\nPREDICTION MARKETS SEARCHED:\n- No Kalshi, Manifold, or bookmaker contract found on this question or any close variant (searched Sep 8).\n- Polymarket has six ZEC contracts, ALL with a Dec 31, 2026 deadline and touch-anytime structure, resolving off Polymarket's own source rather than a CMC daily-high table: 'reach $1400', 'reach $2000', 'dip to $700', 'dip to $400' (measured from Aug 24), 'dip to $100', 'dip to $50'. Volumes range from ~$3.2k to ~$39.8k; the upside legs are the thinnest at ~$3-5k. CONTRACT DIFFERENCES vs this question: (a) deadline Dec 31 vs Sep 18, (b) touch-anytime-over-4-months vs high-on-two-specific-days, (c) different resolution instrument, (d) different thresholds. None is a match; treat as regime evidence about implied vol and drift only, and note the upside legs are too thin to carry weight.\n- A separate genre of Kalshi/Polymarket 15-minute crypto markets exists (Kalshi settles on CF Benchmarks, Polymarket on Chainlink) — different instruments again, and no ZEC 10-day contract found there.\n\nEVENT-IN-WINDOW COUNT (attempted, INCOMPLETE): I could not retrieve a clean OHLC table with daily HIGHS (CoinGecko's historical page exposed close/mcap/volume only, no high/low column), so I co",
+   "reference_class": "ZEC's own 2026 daily return distribution (realized log-return SD 8.7%, Aug 20-Sep 8 2026, CoinGecko closes) applied as a barrier-crossing problem: probability that an asset currently 2.5% above a threshold has an intraday high above that threshold on at least one of two specified UTC days 9-10 days "
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.04,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.3953,
+   "seconds": 199.2,
+   "estimate": 0.65,
+   "reasoning": "ZEC is ~$1,130 (CMC $1,128 / CoinGecko $1,132, 2026-09-08 05:50Z) after peaking near $1,249 on Sep 6-7, so the $1,100 barrier sits ~2.7% BELOW spot and the status quo resolves YES. Resolution takes the max of two UTC daily highs, i.e. the running max over a 48h window opening in 8.76 days -- a forgiving test: ZEC only has to enter Sep 17 above roughly $1,010-1,020. Recomputing the two-stage continuous-max barrier with the runs' own series (sigma 8.5%/day around zero, Aug 20-Sep 8 CoinGecko closes) gives 0.68 under zero log-drift and 0.64 under a price-martingale; the runs' shared '0.63 driftless' anchor was actually the martingale case, so two of them double-counted the -sigma^2/2 drag when shading down. Against YES: a genuine in-progress retracement (RSI>75, volume -51% off the peak, -6% today), post-parabolic reversion risk after +120% in a month, a demonstrated -50%/48h left tail (June 2026 Orchard bug), and FOMC on Sep 16. For YES: persistent ZCSH ETF creations (~$414-463M AUM from ~$304M at the Aug 25 launch), sizable open short interest after ~$35-49M of short liquidations, and two shots at the barrier. Net: martingale anchor with a small bearish-momentum shade, which lands above the runs' pool rather than below it.",
+   "sources": [],
+   "reconciliation": "Disputes were mostly arithmetic over an identical price series, not evidence. (1) Sigma: Run 2's 7.0% excludes the single largest observation (Aug 21, +25.4%) from a 19-point sample; the SD around zero over Aug 20-Sep 8 is ~8.5-9.2% (Runs 1 and 3 agree). I take 8.5%/day, current-regime, and note all three flag it as conditional on the post-ETF/high-leverage regime rather than unconditional. (2) Spot reconciles to ~$1,130 across CMC and CoinGecko (0.4% spread, immaterial to a barrier 2.7% away). (3) The question's Background IS stale -- independently confirmed three times -- which flips this from a rally question to a hold-or-retag question; that is the single most important reconciled fact. (4) The decisive correction: all three cite ~0.63 as a 'driftless' barrier anchor. I recomputed the two-stage problem (reflection principle, continuous max over the 48h window, ln(1100/1130)=-2.69%, T1=8.76d, T2=2d) and get 0.68 with zero log-drift and 0.64 with the price-martingale drift of -sigma^2/2; at sigma=7% it is 0.69 / 0.65. So 0.63 is the martingale figure, and Runs 2 and 3 shaded further down from it for bearish drift -- charging the -3.2% log drag twice. Correcting that, the neutral anchor is 0.64-0.68. (5) I keep a small bearish shade, but only a small one: short-horizon post-parabolic/RSI signals are weak predictors in crypto, and under a jump-inclusive process the diffusive median drag is less negative than -sigma^2/2, so the martingale case likely understates. That is a pure JUDGMENT call and no evidence in the dossiers breaks it -- I take the reading I would bet on. (6) FOMC Sep 15-16 is uncontested and lands just before the window; direction-symmetric, slightly dispersion-widening, marginal for a barrier this close. (7) ZCSH AUM ($414M vs $463M) could not be settled without retrieval; the direction is agreed and the gap does not move the number. (8) No prediction market matches on threshold, deadline, source, or structure -- all three searched Polymarket and Kalshi and found only Dec-31-2026 touch-anytime ladder rungs (thin, $3-5k on the upside legs, and internally non-monotone: $300 above $400), so no anchor, only weak corroboration of sigma ~0.075-0.09/day and a mildly negative implied drift. I land above the runs' pool because the arithmetic error I found ran in one direction.",
+   "disagreements": [
+    {
+     "claim": "Realized daily log-return SD is 7.0% (Run 2) vs 8.5-8.7% (Runs 1, 3) vs 9.2-9.5%",
+     "kind": "factual",
+     "verdict": "Settled at ~8.5%/day: all three computed over the same quoted CoinGecko close series, and Run 2's lower figure comes from excluding the largest single observation (Aug 21, +25.4%), which is not defensible for a barrier calculation."
+    },
+    {
+     "claim": "Spot is $1,127.94 (CMC) vs $1,132.19 (CoinGecko) as of 2026-09-08 05:50Z",
+     "kind": "factual",
+     "verdict": "Settled as ~$1,130; the 0.4% spread is immaterial when the barrier is 2.7% below."
+    },
+    {
+     "claim": "The question's Background ($1,015-1,021, $1,100 unbreached) is stale",
+     "kind": "factual",
+     "verdict": "Settled YES by three independent retrievals: ZEC broke $1,100 and peaked at $1,242-1,249 on Sep 6-7. This reframes the question as hold-or-retag, not rally."
+    },
+    {
+     "claim": "The driftless two-stage barrier anchor is ~0.63",
+     "kind": "factual",
+     "verdict": "Corrected. Recomputing with sigma=8.5%/day gives 0.68 under zero log-drift and 0.64 under the price-martingale; 0.63 is the martingale number, so Runs 2 and 3 shading down from it as if driftless double-counts the -sigma^2/2 drag."
+    },
+    {
+     "claim": "Drift should be shaded negative (Runs 2, 3) or neutral-to-positive (Run 1)",
+     "kind": "judgment",
+     "verdict": "Not breakable on the available evidence. I apply only a small negative shade: post-parabolic/RSI technicals are weak short-horizon predictors, and the martingale drag already supplies most of the downward pull the bears wanted to add."
+    },
+    {
+     "claim": "FOMC Sep 15-16 with dot plot lands immediately before the window (raised only by Run 3)",
+     "kind": "factual",
+     "verdict": "Accepted as stated and uncontested; direction-symmetric vol event that slightly widens dispersion at window open. Marginal net effect."
+    },
+    {
+     "claim": "ZCSH AUM is $414M vs $463M",
+     "kind": "factual",
+     "verdict": "Could not be settled without retrieval; both runs agree AUM is large and growing from ~$304M at the Aug 25 launch, and the gap does not change the estimate."
+    },
+    {
+     "claim": "Some prediction market anchors this question",
+     "kind": "factual",
+     "verdict": "Settled NO. All three searched Polymarket, Kalshi and bookmakers; every ZEC contract differs on threshold, deadline (Dec 31 2026), resolution source (Binance 1-min / Polymarket's own), and structure (touch-anytime). Thin and internally non-monotone on the down-ladder, so evidence about sigma only."
+    }
+   ],
+   "reference_class": "Driftless-to-martingale lognormal barrier problem: a high-volatility asset sitting 2.7% above a barrier, 8.76 days from a 48h running-max window, with ZEC's own realized daily log-return SD of ~8.5% in the post-ETF regime"
+  }
+ ]
+}
