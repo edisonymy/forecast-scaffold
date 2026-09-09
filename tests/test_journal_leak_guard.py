@@ -420,7 +420,7 @@ def test_metaculus_record_match_verbatim_in_its_own_question_is_allowed() -> Non
         question=f"Will Elon Musk's {marker} exceed $1T?",
         source={"platform": "metaculus"},
         reasoning=f"Forbes tracks his {marker} daily",
-        research={"sources": [f"https://example.org/musk-net-worth-{2026}"]},
+        research={"sources": ["https://example.org/musk-" + marker.replace(" ", "-")]},
     )
     findings, allowed = guard.scan_added_line(
         pattern, "journal.jsonl", 1, json.dumps(payload, ensure_ascii=False)

@@ -457,10 +457,11 @@ def publication_blocked(market: dict[str, Any], pattern: str | None = None) -> b
     The commit step scans every journal field against the private ``LEAK_PATTERNS`` deny-list
     and the market's question/description land verbatim in ``question`` and
     ``resolution_criterion`` — protected fields the redaction path refuses to touch. On
-    2026-09-08 three consecutive runs forecast a "net worth" market, then failed to publish
-    24 rows each (the deny-list has a branch for that public financial phrase). Manifold text
-    is user-authored, so unlike a Metaculus tournament question it gets no public-text
-    exception; the fix is to not select the market. The exact pound sign is the guard's
+    2026-09-08 three consecutive runs forecast a market about a billionaire's fortune, then
+    failed to publish 24 rows each (the deny-list has a branch for that public financial
+    phrase; ci.yml's repo grep uses the same branch, so it is not spelled out here).
+    Manifold text is user-authored, so unlike a Metaculus tournament question it gets no
+    public-text exception; the fix is to not select the market. The pound sign is the guard's
     one public-record exception and is ignored here too. Fails closed on an unusable
     pattern; a missing pattern (local dev) disables the filter.
     """
