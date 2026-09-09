@@ -30,8 +30,9 @@ salary, central bank... — which PRIVATE probes — home path — and a keep/DR
 then `--drop <indices> --set` to rewrite the secret via `gh secret set`. It refuses to set
 an empty or zero-width pattern or one that stops catching a PRIVATE probe the original
 caught. Evidence so far of over-broad branches: the bare pound sign; a wealth-phrase branch
-(matched the Musk market's question/contract/sources and my docstring, but NOT
-`presidential net worth` in a dossier, so it is narrower than `net.?worth`); and an unknown
+(matched the Musk market's question/contract/sources and my docstring, but NOT a
+presidential-wealth question title quoted in a dossier, so it is narrower than the obvious
+two-word regex); and an unknown
 branch that matched one reference-class sentence in trace 2026-09-09-e77a3a55 ("...practice/
 warm-up questions (Spring/Summer 2026 batches): unique forecasters listed at close divided
 by the number of days...") — public vocabulary, branch unidentified; that field is redacted
