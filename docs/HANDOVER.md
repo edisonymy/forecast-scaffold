@@ -1,5 +1,54 @@
 # HANDOVER — continuation state as of 2026-07-16
 
+## 2026-09-09: Fall 2026 entry armed; the v0.4.28 A/B is scored
+
+**Fall 2026 FutureEval** — project 33121, slug `fall-futureeval-2026`, opens 2026-09-28,
+forecasting ends 2027-01-06, closes 2027-03-05, $50k. One practice question is already open
+(45516, discrete, `[PRACTICE]`, runs to Sep 28) — the production roster now includes the
+Fall slug, so the bot forecasts it live before the season opens. That is the rehearsal;
+read its trace.
+
+Entry state (all pushed to main):
+- `TOURNAMENT_ID` repo variable -> `fall-futureeval-2026,minibench` (was the dead summer
+  slug). `EXTRA_TOURNAMENTS` in bot.yml is unchanged: `market-pulse-26q3,market-pulse-26q4`
+  (26q3 forecasting ends Sep 16; 26q4 is pre-entered and arms itself when created).
+- `discover_seasonal_slugs` now keys on `forecasting_end_date`, `close_date` only as a
+  fallback — it used the LATER of the two, so Summer 2026 (forecasting closed Sep 6, closes
+  Nov 5) stayed in the roster for two months as a dead slug that read like a healthy one.
+  Live check: `[]` today, `['fall-futureeval-2026']` from Sep 28.
+- Claude Code CLI pinned 2.1.201 -> **2.1.236** (`stable`; `latest` was 2.1.267 and an
+  unattended 10-minute cron should not ride the newest release). Proven end-to-end in CI
+  (run 34407539997): install, auth, agent call, JSON envelope parsed, $1.22 recorded, exit 0.
+  It cannot be tested locally — the nested CLI has no credentials on this machine and BOTH
+  versions fail identically ("Not logged in"), so test CLI bumps in CI, not here.
+- **AskNews credit is exhausted** (0 articles in CI, where the secret is set; operator
+  confirmed). Production has always failed open on it, so the only loss is the news
+  starting-material. bot-test.yml's AskNews smoke is now `continue-on-error`: it still goes
+  RED (that is the signal, and it fired correctly) but no longer skips the forecast step
+  behind it. Renewal is a per-season operator action if you want it back for Fall.
+- OpenRouter fallback: $69.31 of $100 left.
+
+**The v0.4.28 A/B is scored** — `bench/analysis/design-ab-2026-09-03/scored-2026-09-09.txt`
+(scorer: `score_ab.py` in the same directory; 22 paired resolved questions, both arms
+opus-5 at medium, Metaculus fetches banned in both test checkouts):
+
+| | new (parallel research) vs old (dossier + lenses) |
+|---|---|
+| continuous, n=14 | **+1.97/q, CI90 [+0.17, +4.10]**, new better on 9/14 |
+| binary, n=8 | -0.035 log score (-1.75/q spot-peer equivalent), CI90 [-0.088, +0.0007], new better on 2/8 |
+| cost | 2.00x overall (binaries 1.23x, numerics 3.05x: 1 research run -> 3) |
+
+Read: the change helps exactly where the deficit was. Continuous questions were the entire
+summer deficit (-399 pts over 29 q) and are the only arm whose CI excludes zero. The binary
+side is negative but not significant and one question carries it — 45508 (spot-BTC-ETF
+$500m inflow) resolved YES with old at 0.139 and new at 0.110, worth -0.234 of the -0.035
+mean; the other seven deltas are within +/-0.05. Do not read the binary number as a
+regression on n=8 with one dominating miss; do re-score after the next MiniBench wave.
+
+Next session: (1) read the Fall practice question's trace once a tick forecasts it;
+(2) re-run `score_ab.py` after the next wave to grow n; (3) `bench/analysis/phase_pools.py`
+once enough supervisor rows have resolved, to decide whether the reconciler earns its cost.
+
 ## 2026-09-04 00:20 UTC+1: v0.4.28 MERGED to main (89eeb3a) — parallel research + reconciler live
 
 The architecture change below is now production: from the next 10-minute tick the bot runs
