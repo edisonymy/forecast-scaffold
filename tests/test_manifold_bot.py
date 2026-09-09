@@ -1037,7 +1037,7 @@ def test_cloud_workflow_is_hourly_subscription_only_and_hard_capped() -> None:
         index for index, block in enumerate(step_blocks) if "id: activation" in block
     )
     post_gate = step_blocks[activation_index + 1 :]
-    assert len(post_gate) == 10
+    assert len(post_gate) == 11  # [AMENDED 2026-09-09] + the withheld-pairs artifact step
     for block in post_gate:
         assert "steps.activation.outputs.active == 'true'" in block
     assert "--provider subscription" in workflow

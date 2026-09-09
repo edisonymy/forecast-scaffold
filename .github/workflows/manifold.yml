@@ -138,6 +138,7 @@ jobs:
           gh issue create --title "$title" --body-file "$RUNNER_TEMP/alert-body.md"
 
       - name: Commit journal + phase (pre-registration)
+        id: commit
         # always(): journaled pairs and any phase promotion must be committed even if a later
         # market errored or the run timed out — the journal + phase file are the public record.
         if: always() && steps.activation.outputs.active == 'true'
@@ -160,8 +161,17 @@ jobs:
           # reasoning/change-my-mind field, replace that entire field with a neutral marker.
           # Matches in questions, contracts, sources, metadata, raw JSON, or keys still block
           # publication. Re-stage and strictly re-scan so the recovery path also fails closed.
+          # Snapshot first: whatever the guard withholds below survives in the run artifact.
+          mkdir -p "$RUNNER_TEMP/journal-snapshot" && cp $EXISTING "$RUNNER_TEMP/journal-snapshot/"
           git add -- $EXISTING
           set +e; python scripts/journal_leak_guard.py --redact-model-output $EXISTING; status=$?; set -e
+          if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
+          # [ADDED 2026-09-09] a deny-list hit in a protected field withholds THAT pair from
+          # the public journal (kept in the artifact) and never fails the run — the bet, if
+          # any, was placed long before this step. run_manifold also pre-filters markets
+          # whose own text matches, so this is the backstop, not the plan.
+          git add -- $EXISTING
+          set +e; python scripts/journal_leak_guard.py --quarantine $EXISTING; status=$?; set -e
           if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
           git add -- $EXISTING
           set +e; python scripts/journal_leak_guard.py $EXISTING; status=$?; set -e
@@ -187,6 +197,17 @@ jobs:
             sleep 3
           done
           exit 1
+
+      - name: Preserve withheld Manifold pairs
+        # [ADDED 2026-09-09] mirrors bot.yml: the quarantine path is green by design and the
+        # withheld pair exists only in this pre-guard snapshot. A withheld pair with a bet on
+        # it is invisible to the next run's exposure cap until backfilled — reconcile promptly.
+        if: ${{ always() && steps.commit.outputs.quarantined == 'true' && steps.activation.outputs.active == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: withheld-manifold-journal-${{ github.run_id }}
+          path: ${{ runner.temp }}/journal-snapshot/
+          retention-days: 90
 
       - name: Preserve journal + phase on publish failure
         # Mirrors bot.yml's artifact step, and matters MORE here: this bot posts real bets

@@ -1,5 +1,47 @@
 # HANDOVER — continuation state as of 2026-07-16
 
+## 2026-09-09 23:40: the guard can no longer fail a run — quarantine mode + deny-list tool
+
+Operator's rule (stated tonight): the leak guard may cost the public journal a row, never a
+prediction. Predictions were never at risk — Metaculus submission and Manifold bets happen
+in the run step, the guard runs in the commit step afterwards — but a block turned the run
+red and dropped EVERY row of the run from the public journal until someone backfilled from
+the artifact. Now (both workflows, commit step `id: commit`):
+
+1. snapshot `bot/journal` to `$RUNNER_TEMP/journal-snapshot` BEFORE the guard touches it;
+2. `--redact-model-output` (reasoning, reference_class, change-my-mind items; in traces
+   also dossier/reconciliation/disagreements/named_scenarios) -> re-stage;
+3. `--quarantine` [NEW]: any addition still blocked (a protected field: question,
+   contract, sources, keys, raw) is withheld — the jsonl line deleted from the working
+   tree, a new trace file unlinked — `::warning::` annotation, `quarantined=true` step
+   output, exit 0 -> re-stage;
+4. strict scan (must be clean) -> commit -> push.
+
+A `withheld-journal-<run>` / `withheld-manifold-journal-<run>` artifact (90 days) carries
+the pre-guard snapshot whenever step 3 fired. Backfill from it after narrowing the
+deny-list. The guard still fails closed (exit 2, run red) when it cannot evaluate the
+pattern or cannot edit a file safely (e.g. a blocked line inside a MODIFIED trace).
+
+**Narrowing the deny-list** — the secret cannot be read back from GitHub, so it needs the
+operator once: paste the value into `LEAK_PATTERNS` in a local shell (never chat, never a
+file), then `python scripts/leak_patterns_tool.py --report` (one content-free line per
+top-level branch: length, which PUBLIC probes it matches — pound sign, the wealth phrase,
+salary, central bank... — which PRIVATE probes — home path — and a keep/DROP? verdict),
+then `--drop <indices> --set` to rewrite the secret via `gh secret set`. It refuses to set
+an empty or zero-width pattern or one that stops catching a PRIVATE probe the original
+caught. Evidence so far of over-broad branches: the bare pound sign; a wealth-phrase branch
+(matched the Musk market's question/contract/sources and my docstring, but NOT
+`presidential net worth` in a dossier, so it is narrower than `net.?worth`); and an unknown
+branch that matched one reference-class sentence in trace 2026-09-09-e77a3a55 ("...practice/
+warm-up questions (Spring/Summer 2026 batches): unique forecasters listed at close divided
+by the number of days...") — public vocabulary, branch unidentified; that field is redacted
+in the backfilled trace.
+
+Also tonight: the two `cancelled` tournament runs (21:40, 21:50) were ticks queued behind my
+30-minute dispatched test (34407276008, 21:30-22:00); `concurrency` keeps one pending run per
+group and cancels the older pending one — benign, by design, no alert issue. That dispatched
+run itself went red on the trace block above (pre-fix guard) after submitting the Fall
+practice forecast (median 4.8 new forecasters/day); row + trace backfilled.
 ## 2026-09-09 23:00: the failed-run emails — three root causes, all fixed (9ec3848, 30825fc)
 
 Operator forwarded GitHub failure emails. Diagnosis from the run logs + the

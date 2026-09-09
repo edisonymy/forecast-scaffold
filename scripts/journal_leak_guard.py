@@ -19,10 +19,11 @@ Model reasoning may therefore contain the pound sign or the question's own words
 different sensitive match on the same line still blocks publication.  Raw/non-record lines,
 invalid patterns, zero-width matches, and every other match remain fail-closed.  The
 optional ``--redact-model-output`` recovery mode may replace an entire newly-added
-``reasoning`` or ``what_would_change_my_mind`` item — or, in a trace, one model-authored
-string under ``calls.[i].{reasoning,dossier,reconciliation,disagreements,named_scenarios}``
-— with a neutral marker.  It refuses to alter public questions/contracts, sources, metadata,
-keys, or raw JSON; callers must re-stage and run the strict default scan before publication.
+``reasoning``, ``reference_class`` or ``what_would_change_my_mind`` item — or, in a trace,
+one model-authored string under ``calls.[i].{reasoning,dossier,reconciliation,
+disagreements,named_scenarios,reference_class}`` — with a neutral marker.  It refuses to
+alter public questions/contracts, sources, metadata, keys, or raw JSON; callers must
+re-stage and run the strict default scan before publication.
 
 The script reads additions directly from ``git diff --cached`` so historical public lines
 cannot lock future publication and matched content never enters workflow logs.
@@ -51,8 +52,12 @@ PLATFORM_PUBLISHED_TEXT = frozenset({"metaculus"})
 PUBLIC_TEXT_FIELDS = ("question", "resolution_criterion")
 PUBLIC_CURRENCY_SYMBOL = chr(0xA3)
 MODEL_OUTPUT_REDACTION = "[redacted by publication privacy guard]"
+# Model-authored free text. reference_class was added 2026-09-09 after a run's trace was
+# blocked on a reference-class sentence made of public tournament vocabulary.
+RECORD_MODEL_FIELDS = frozenset({"reasoning", "reference_class"})
 TRACE_MODEL_FIELDS = frozenset(
-    {"reasoning", "dossier", "reconciliation", "disagreements", "named_scenarios"}
+    {"reasoning", "dossier", "reconciliation", "disagreements", "named_scenarios",
+     "reference_class"}
 )
 _HUNK_HEADER = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@")
 _CHANGE_MIND_ITEM = re.compile(r"^what_would_change_my_mind\.\[(\d+)\]$")
@@ -333,7 +338,7 @@ def _redact_model_fields(
         return addition.text, 0
     fields = {finding.field for finding in findings}
     if any(
-        field != "reasoning" and not _CHANGE_MIND_ITEM.fullmatch(field)
+        field not in RECORD_MODEL_FIELDS and not _CHANGE_MIND_ITEM.fullmatch(field)
         for field in fields
     ):
         return None
@@ -344,8 +349,8 @@ def _redact_model_fields(
     if not isinstance(payload, dict):
         return None
 
-    if "reasoning" in fields:
-        payload["reasoning"] = MODEL_OUTPUT_REDACTION
+    for field in fields & RECORD_MODEL_FIELDS:
+        payload[field] = MODEL_OUTPUT_REDACTION
     change_mind = payload.get("what_would_change_my_mind")
     for field in fields:
         item = _CHANGE_MIND_ITEM.fullmatch(field)
@@ -502,6 +507,71 @@ def redact_staged_model_output(pattern: str, patch: str, *, root: Path) -> int |
     return redacted_fields
 
 
+def quarantine_staged_additions(
+    pattern: str, patch: str, *, root: Path
+) -> tuple[int, int]:
+    """[ADDED 2026-09-09] Withhold still-blocked additions instead of blocking the publish.
+
+    Removes each blocked jsonl line and each blocked wholly-new trace file from the working
+    tree so that the clean remainder can be re-staged and published. The forecast itself was
+    submitted long before this step runs; the deny-list must only ever cost the public
+    journal a row, never the run. Callers snapshot the journal to the run artifact BEFORE
+    calling this, so a withheld row is never lost. Returns (lines removed, files removed).
+    Raises GuardError rather than corrupt a file it cannot safely edit (a blocked line
+    inside a modified trace, a working file that no longer matches the staged diff).
+    """
+    per_line, documents = split_additions(_iter_patch_additions(patch))
+    line_removals: dict[str, dict[int, str]] = {}
+    file_removals: list[str] = []
+    for addition in per_line:
+        findings, _allowed = scan_added_line(
+            pattern, addition.path, addition.ordinal, addition.text
+        )
+        if not findings:
+            continue
+        if is_trace_path(addition.path):
+            raise GuardError("a blocked line inside a modified trace cannot be quarantined")
+        line_removals.setdefault(addition.path, {})[addition.line_number] = addition.text
+    for document in documents:
+        findings, _allowed = scan_added_line(
+            pattern, document.path, document.first_ordinal, document.text
+        )
+        if findings:
+            file_removals.append(document.path)
+
+    root = root.resolve()
+    prepared: list[tuple[Path, str | None]] = []
+    for relative in [*line_removals, *file_removals]:
+        target = (root / relative).resolve()
+        try:
+            target.relative_to(root)
+        except ValueError as exc:
+            raise GuardError("a staged journal path escapes the repository") from exc
+        if relative in file_removals:
+            prepared.append((target, None))
+            continue
+        original = target.read_text(encoding="utf-8", errors="surrogateescape")
+        newline = "\r\n" if "\r\n" in original else "\n"
+        trailing_newline = original.endswith(("\r", "\n"))
+        lines = original.splitlines()
+        for line_number, expected in line_removals[relative].items():
+            index = line_number - 1
+            if index < 0 or index >= len(lines) or lines[index] != expected:
+                raise GuardError("the working journal no longer matches the staged diff")
+        drop = {number - 1 for number in line_removals[relative]}
+        kept = [line for index, line in enumerate(lines) if index not in drop]
+        rewritten = newline.join(kept) + (newline if trailing_newline and kept else "")
+        prepared.append((target, rewritten))
+
+    for target, rewritten in prepared:
+        if rewritten is None:
+            target.unlink()
+        else:
+            target.write_text(rewritten, encoding="utf-8", errors="surrogateescape", newline="")
+    removed_lines = sum(len(v) for v in line_removals.values())
+    return removed_lines, len(file_removals)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("paths", nargs="+", help="staged journal paths to scan")
@@ -512,6 +582,14 @@ def build_parser() -> argparse.ArgumentParser:
         help=(
             "replace matches only in added reasoning/change-my-mind fields (and, in trace "
             "files, model-authored call text); protected fields still fail closed"
+        ),
+    )
+    parser.add_argument(
+        "--quarantine",
+        action="store_true",
+        help=(
+            "withhold still-blocked added lines / new trace files from the working tree "
+            "(snapshot the journal to an artifact first) instead of failing; exit 0"
         ),
     )
     return parser
@@ -544,6 +622,24 @@ def main(argv: Sequence[str] | None = None) -> int:
                     "re-stage and run the guard again"
                 )
                 return 0
+        if findings and args.quarantine:
+            lines, files = quarantine_staged_additions(
+                private_pattern, patch, root=args.root
+            )
+            print(
+                f"quarantined {lines} added line(s) and {files} new trace file(s); "
+                "withheld from publication, kept in the run artifact — re-stage and run "
+                "the guard again"
+            )
+            print(
+                f"::warning::journal leak guard withheld {lines} line(s) and {files} "
+                "trace file(s) from the public journal (see the run artifact)"
+            )
+            output = os.environ.get("GITHUB_OUTPUT")
+            if output:
+                with open(output, "a", encoding="utf-8") as handle:
+                    handle.write("quarantined=true\n")
+            return 0
     except (GuardError, OSError):
         print("journal leak guard could not complete safely", file=sys.stderr)
         return 2

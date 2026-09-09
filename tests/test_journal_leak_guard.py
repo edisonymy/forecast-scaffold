@@ -230,6 +230,22 @@ def test_cli_can_redact_only_matching_model_output_fields(
     assert guard.main(["--root", str(tmp_path), "bot/journal/manifold.jsonl"]) == 0
 
 
+def test_reference_class_is_redactable_in_records_and_traces() -> None:
+    """[ADDED 2026-09-09] run 34407276008: a trace was blocked on a reference-class sentence
+    made of public tournament vocabulary. The field is model-authored, like reasoning."""
+    private_marker = "private" + "-marker-739"
+    line = guard.AddedLine("j.jsonl", 1, 1, json.dumps(record(reference_class=private_marker)))
+    redacted, count = guard._redact_model_fields(private_marker, line)
+    assert count == 1 and json.loads(redacted)["reference_class"] == guard.MODEL_OUTPUT_REDACTION
+    doc = trace()
+    doc["calls"][0]["reference_class"] = f"class {private_marker}"
+    text = json.dumps(doc, ensure_ascii=False, indent=1)
+    document = guard.TraceDocument("bot/journal/traces/t.json", 1, len(text.splitlines()), text)
+    redacted, count = guard._redact_trace_document(private_marker, document)
+    assert count == 1
+    assert json.loads(redacted)["calls"][0]["reference_class"] == guard.MODEL_OUTPUT_REDACTION
+
+
 def test_model_output_redaction_refuses_protected_fields(
     tmp_path: Path, monkeypatch, capsys
 ) -> None:
@@ -298,12 +314,19 @@ def test_workflows_use_content_free_scanner_and_tournament_publish_safely() -> N
     assert "schedule:" not in bot
     assert "workflow_dispatch:" in bot
     assert "forecast-bot-kicker" in bot
-    assert manifold.count("scripts/journal_leak_guard.py") == 2
+    assert manifold.count("scripts/journal_leak_guard.py") == 3
     assert "--redact-model-output" in manifold
+    # [ADDED 2026-09-09] quarantine: a protected-field hit withholds the row, never the run;
+    # the snapshot is taken BEFORE the guard touches the tree and uploaded when it fired.
+    for text in (bot, manifold):
+        assert "--quarantine" in text
+        assert text.index("journal-snapshot") < text.index("--redact-model-output")
+        assert "steps.commit.outputs.quarantined == 'true'" in text
+        assert "id: commit" in text
     # [ADDED 2026-09-09] the tournament bot publishes trace files too; its commit step must
     # run the same redact-then-strict recovery flow, or a pound sign in a dossier blocks the
     # whole run's journal (run 34091868152, 2026-09-07).
-    assert bot.count("scripts/journal_leak_guard.py") == 2
+    assert bot.count("scripts/journal_leak_guard.py") == 3
     assert "--redact-model-output" in bot
 
 
@@ -496,3 +519,77 @@ def test_cli_redacts_model_authored_trace_text_and_refuses_sources(
     ) == 1
     assert "calls.[0].sources.[0]" in capsys.readouterr().err
     assert other.read_text(encoding="utf-8") == original
+
+
+# ------------------------------------------------------------ [ADDED 2026-09-09] quarantine
+
+
+def test_cli_quarantine_withholds_only_the_blocked_row_and_trace(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    journal = tmp_path / "bot" / "journal"
+    traces = journal / "traces"
+    traces.mkdir(parents=True)
+    private_marker = "private" + "-marker-739"
+    clean_row = json.dumps(record(question="Clean question"))
+    bad_row = json.dumps(record(question=f"Question about {private_marker}"))
+    (journal / "forecasts.jsonl").write_text(
+        clean_row + "\n" + bad_row + "\n" + clean_row + "\n", encoding="utf-8"
+    )
+    good_trace = traces / "2026-09-09-aaaa0000.json"
+    good_trace.write_text(json.dumps(trace(), ensure_ascii=False, indent=1), encoding="utf-8")
+    bad = trace(record_id="2026-09-09-bbbb0000")
+    bad["calls"][0]["sources"] = [f"https://example.org/{private_marker}"]
+    bad_trace = traces / "2026-09-09-bbbb0000.json"
+    bad_trace.write_text(json.dumps(bad, ensure_ascii=False, indent=1), encoding="utf-8")
+    subprocess.run(["git", "add", "--", "bot/journal/"], cwd=tmp_path, check=True)
+    monkeypatch.setenv("LEAK_PATTERNS", private_marker)
+    output = tmp_path / "gh-output"
+    monkeypatch.setenv("GITHUB_OUTPUT", str(output))
+
+    assert guard.main(["--root", str(tmp_path), "--quarantine", "bot/journal/"]) == 0
+    out = capsys.readouterr()
+    assert "quarantined 1 added line(s) and 1 new trace file(s)" in out.out
+    assert "::warning::" in out.out
+    assert private_marker not in out.out + out.err
+    assert output.read_text(encoding="utf-8") == "quarantined=true\n"
+    expected = clean_row + "\n" + clean_row + "\n"
+    assert (journal / "forecasts.jsonl").read_text(encoding="utf-8") == expected
+    assert good_trace.exists() and not bad_trace.exists()
+
+    subprocess.run(["git", "add", "-A", "--", "bot/journal/"], cwd=tmp_path, check=True)
+    assert guard.main(["--root", str(tmp_path), "bot/journal/"]) == 0
+    assert "clean" in capsys.readouterr().out
+
+
+def test_quarantine_is_a_no_op_when_nothing_is_blocked(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    target = tmp_path / "bot" / "journal" / "manifold.jsonl"
+    target.parent.mkdir(parents=True)
+    original = json.dumps(record()) + "\n"
+    target.write_text(original, encoding="utf-8")
+    subprocess.run(["git", "add", "--", str(target)], cwd=tmp_path, check=True)
+    monkeypatch.setenv("LEAK_PATTERNS", "private" + "-marker-739")
+    monkeypatch.delenv("GITHUB_OUTPUT", raising=False)
+    args = ["--root", str(tmp_path), "--quarantine", "bot/journal/manifold.jsonl"]
+    assert guard.main(args) == 0
+    assert "clean" in capsys.readouterr().out
+    assert target.read_text(encoding="utf-8") == original
+
+
+def test_quarantine_refuses_a_blocked_line_inside_a_modified_trace() -> None:
+    import pytest
+
+    private_marker = "private" + "-marker-739"
+    patch = (
+        "diff --git a/bot/journal/traces/x.json b/bot/journal/traces/x.json\n"
+        "--- a/bot/journal/traces/x.json\n"
+        "+++ b/bot/journal/traces/x.json\n"
+        "@@ -3,0 +4 @@\n"
+        f'+ "dossier": "{private_marker}",\n'
+    )
+    with pytest.raises(guard.GuardError):
+        guard.quarantine_staged_additions(private_marker, patch, root=ROOT)

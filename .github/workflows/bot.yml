@@ -142,6 +142,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Commit journal (pre-registration)
+        id: commit
         # always(): submitted forecasts must be committed even when a later question errored
         # or the run timed out — the journal commits even when forecasts look bad.
         if: always()
@@ -170,10 +171,19 @@ jobs:
           # a trace dossier blocked a whole run's journal on 2026-09-07]. Matches in
           # questions, contracts, sources, metadata, raw JSON, or keys still block
           # publication. Re-stage and strictly re-scan so the recovery path fails closed.
+          # Snapshot first: whatever the guard withholds below survives in the run artifact.
+          mkdir -p "$RUNNER_TEMP/journal-snapshot" && cp -R bot/journal/. "$RUNNER_TEMP/journal-snapshot/"
           git add bot/journal/
           set +e; python scripts/journal_leak_guard.py --redact-model-output bot/journal/; status=$?; set -e
           if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
+          # [ADDED 2026-09-09] A deny-list hit in a protected field withholds THAT row / trace
+          # from the public journal (kept in the artifact) and never fails the run: the
+          # forecast was submitted long before this step, and the operator's rule is that
+          # the guard may cost a journal line, never a prediction.
           git add bot/journal/
+          set +e; python scripts/journal_leak_guard.py --quarantine bot/journal/; status=$?; set -e
+          if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
+          git add -A bot/journal/
           set +e; python scripts/journal_leak_guard.py bot/journal/; status=$?; set -e
           if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
           # The pattern list cannot know credential VALUES — but a prompt-injected agent's
@@ -198,6 +208,17 @@ jobs:
             sleep 3
           done
           exit 1
+
+      - name: Preserve withheld journal lines
+        # [ADDED 2026-09-09] the quarantine path above is green by design; the withheld
+        # rows/traces live only here (pre-guard snapshot). Backfill by hand after narrowing
+        # the deny-list: scripts/leak_patterns_tool.py, docs/HANDOVER.md.
+        if: ${{ always() && steps.commit.outputs.quarantined == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: withheld-journal-${{ github.run_id }}
+          path: ${{ runner.temp }}/journal-snapshot/
+          retention-days: 90
 
       - name: Preserve journal on publish failure
         # A leak-guard match, push failure, or the 110-minute kill must block PUBLICATION,
