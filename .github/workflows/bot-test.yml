@@ -60,6 +60,12 @@ jobs:
       - name: AskNews smoke
         # Positive proof the CI secret works: bot/asknews.py fails CLOSED (returns [] on any
         # error), so a bad key in the real run would just silently drop the news section.
+        # [AMENDED 2026-09-09] continue-on-error: the step still goes RED when the key is
+        # dead — which is the whole signal, and it fired correctly when the Summer key
+        # lapsed — but it no longer skips the forecast step behind it. Production
+        # (bot.yml) has always failed open on AskNews, so a dead news key must not be the
+        # thing that stops us testing the forecaster itself.
+        continue-on-error: true
         env:
           ASKNEWS_API_KEY: ${{ secrets.ASKNEWS_API_KEY }}
         run: |
