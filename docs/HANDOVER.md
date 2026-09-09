@@ -9,7 +9,7 @@ Operator forwarded GitHub failure emails. Diagnosis from the run logs + the
 |---|---|---|
 | CI @ 8a67b02 | lint on the committed A/B scorer | fixed same day (494c9f2) |
 | bot-test 34407355778 | AskNews smoke hard-gated the forecast step; credit exhausted | `continue-on-error` (c2aa893) |
-| bot.yml 34091868152 (Sep 7 06:40) | leak guard blocked `traces/2026-09-07-da1b9cfe.json:<raw>` x2: a **pound sign** in a dossier / disagreement claim ("£20m Wentworth redevelopment"). Trace files are pretty-printed multi-line JSON, so each line scanned as a non-record and the public-record pound exception never applied | guard reassembles a wholly new `bot/journal/traces/*.json` from its staged additions and scans it as ONE decoded document; `--redact-model-output` can now replace model-authored strings under `calls.[i].{reasoning,dossier,reconciliation,disagreements,named_scenarios}` (refuses sources/question/keys/metadata); bot.yml's commit step runs redact-then-strict like manifold.yml; traces carry `source.platform` |
+| bot.yml 34091868152 (Sep 7 06:40) | leak guard blocked `traces/2026-09-07-da1b9cfe.json:<raw>` x2: a **pound sign** in a dossier / disagreement claim (a "GBP 20m Wentworth redevelopment", written with the currency symbol). Trace files are pretty-printed multi-line JSON, so each line scanned as a non-record and the public-record pound exception never applied | guard reassembles a wholly new `bot/journal/traces/*.json` from its staged additions and scans it as ONE decoded document; `--redact-model-output` can now replace model-authored strings under `calls.[i].{reasoning,dossier,reconciliation,disagreements,named_scenarios}` (refuses sources/question/keys/metadata); bot.yml's commit step runs redact-then-strict like manifold.yml; traces carry `source.platform` |
 | manifold.yml Sep 7 03:17 | Manifold API HTTP 503 on the balance read | transient, nothing to do |
 | manifold.yml Sep 8 x3 | a market about Elon Musk's fortune: the private deny-list has a branch for that public financial phrase, which matched `question`, `resolution_criterion`, `reasoning`, sources — protected fields, so redaction refused and 24 rows/run went unpublished | `run_manifold.publication_blocked` + `gather_markets` skip any market whose own question/description matches `LEAK_PATTERNS` at selection (content-free log line, pound sign ignored, fail-closed on an unusable pattern, off when unset). Metaculus records additionally get a narrow exception: a match whose text occurs verbatim in the record's own question/resolution_criterion is allowed (the platform published it; hyphens/underscores read as spaces so URL slugs qualify) — a tournament question must never be skipped |
 
@@ -17,7 +17,8 @@ Backfilled (30825fc): tournament row `2026-09-07-da1b9cfe` (BMW PGA 54-hole lead
 06:55Z) + its trace, and the 18 clean Manifold rows from Sep 8. The 6 Musk rows were dropped:
 their public fields match the deny-list and cannot be redacted. No bets had been placed
 (balance 1093 < 1100 floor). Guard-scanned locally with a stand-in pattern
-(`£|<financial phrase>|<home path>`): clean, 3 pound matches allowed.
+(pound symbol | financial phrase | home path): clean, 3 pound-symbol matches allowed. The
+symbol itself is a deny-list branch, so never write it literally outside the journal.
 
 Gotchas learned: (1) ci.yml greps the WHOLE repo (minus journal) with the real pattern — a
 docstring or test literal that spells the financial phrase fails CI (it did, 34410546026);
