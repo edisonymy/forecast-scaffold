@@ -6,7 +6,7 @@ import statistics as st
 import sys
 from pathlib import Path
 
-ROOT = Path(r"C:\Users\Edison Yi\Documents\code\forecast-scaffold")
+ROOT = Path(__file__).resolve().parents[3]  # repo-relative, not the author's home
 D = ROOT / "bench" / "analysis" / "design-ab-2026-09-03"
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))

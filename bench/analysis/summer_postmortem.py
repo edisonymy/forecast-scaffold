@@ -8,7 +8,7 @@ import collections
 import datetime as dt
 from pathlib import Path
 
-ROOT = Path(r"C:\Users\Edison Yi\Documents\code\forecast-scaffold")
+ROOT = Path(__file__).resolve().parents[2]  # repo-relative, not the author's home
 tok = os.environ.get("METACULUS_TOKEN", "")
 H = {"User-Agent": "forecast-scaffold-bot/0.1", "Accept": "application/json", "Authorization": f"Token {tok}"}
 

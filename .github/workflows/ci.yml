@@ -55,7 +55,12 @@ jobs:
         env:
           LEAK_PATTERNS: ${{ secrets.LEAK_PATTERNS }}
         run: |
-          PATTERNS="${LEAK_PATTERNS:-net.?worth|users.Edison.Yi}"
+          # Fallback for forks/PRs where the secret is not available. [AMENDED 2026-09-10]
+          # It used to name the operator and a public financial phrase; both were
+          # over-broad (they blocked four bot runs) and the name did not belong in a
+          # public file. Now: an author home path of ANY name, which is a code smell
+          # in a committed file regardless of whose it is.
+          PATTERNS="${LEAK_PATTERNS:-[/\\]Users[/\\][A-Za-z]+ [A-Za-z]+[/\\]}"
           set +e
           grep -rniIE --exclude-dir=.git --exclude-dir=.venv --exclude-dir=journal --exclude=ci.yml "$PATTERNS" .
           status=$?

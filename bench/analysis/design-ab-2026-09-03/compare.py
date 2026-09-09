@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-ROOT = Path(r"C:\Users\Edison Yi\Documents\code\forecast-scaffold")
+ROOT = HERE.parents[2]  # repo-relative: no home path in a committed script
 SCRAPE = ROOT / "bench" / "analysis" / "minibench-2026-08-24-community-scrape-2026-09-03.txt"
 OVERLAY = ROOT / "bot" / "journal" / "resolutions.jsonl"
 sys.path.insert(0, str(ROOT / "bot"))

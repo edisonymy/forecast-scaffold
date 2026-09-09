@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import statistics as st
 import sys
+import os
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -34,8 +35,11 @@ from readout_tranche1 import (  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 CURRENT = ROOT / "bench/results/btf2-loop1-adm.tranche1.results.jsonl"
-V2 = Path("C:/Users/Edison Yi/Documents/code/forecast-scaffold-ab-research-v2/"
-          "bench/results/btf2-loop1-adm.ab-research-v2.results.jsonl")
+# The v2 arm lives in a sibling checkout of this repo; resolve it relative to this one
+# so no author home path is committed. Override with AB_RESEARCH_V2_ROOT if it moved.
+V2_ROOT = Path(os.environ.get("AB_RESEARCH_V2_ROOT")
+               or ROOT.parent / f"{ROOT.name}-ab-research-v2")
+V2 = V2_ROOT / "bench/results/btf2-loop1-adm.ab-research-v2.results.jsonl"
 
 
 def resolutions_from_set() -> dict[str, float]:

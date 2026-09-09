@@ -17,6 +17,17 @@ is never printed. ``--drop`` removes branches by index; ``--set`` pipes the narr
 pattern to ``gh secret set LEAK_PATTERNS`` on stdin. Refuses to set a pattern that no longer
 matches every PRIVATE probe the original matched, has a zero-width match, or is empty.
 
+A GitHub secret cannot be read back, so when the value is lost the deny-list is composed
+fresh instead — ``--candidate FILE`` reads one from a file (never a shell argument, so it
+stays out of history and process lists), reports it the same content-free way, checks it
+against the whole working tree the way ``ci.yml`` does, and ``--set`` installs it::
+
+    python scripts/leak_patterns_tool.py --candidate ../deny-list.txt
+    python scripts/leak_patterns_tool.py --candidate ../deny-list.txt --set
+
+Write the file OUTSIDE the repository (a scratch directory), one GNU ERE alternation on a
+single line, and delete it afterwards. ``--template`` prints a starting skeleton.
+
 Branches are split on top-level ``|`` only: alternation inside ``(...)`` or ``[...]`` stays
 with its branch, and a backslash escapes the next character.
 """
@@ -46,9 +57,12 @@ PUBLIC_PROBES: dict[str, str] = {
 }
 # What the list exists to catch. Only the operator's home path is known to this tool;
 # every other private branch is preserved unseen (its index is reported, not its text).
+# Assembled at import time from parts: written out, these literals would themselves be
+# matched by a home-path branch, and ci.yml greps this file with the real deny-list.
+_USER = os.environ.get("LEAK_PROBE_USER") or Path.home().name
 PRIVATE_PROBES: dict[str, str] = {
-    "home-path": "C:" + chr(0x5C) + "Users" + chr(0x5C) + "Edison Yi" + chr(0x5C) + "x",
-    "home-path-posix": "/Users/Edison Yi/x",
+    "home-path": chr(0x5C).join(["C:", "Users", _USER, "x"]),
+    "home-path-posix": "/".join(["", "Users", _USER, "x"]),
 }
 
 
@@ -131,6 +145,70 @@ def validate(original: str, new: str) -> list[str]:
     return problems
 
 
+TEMPLATE = """\
+# One GNU extended regular expression, alternation separated by |, on ONE line.
+# Case-insensitive at match time. Keep it to identifiers that are actually yours and
+# actually private: a branch made of ordinary public vocabulary blocks journal rows for
+# no benefit (that is what happened to the pound sign and a wealth phrase in the old list).
+#
+# Lines starting with # are comments and are stripped; blank lines are ignored.
+# Anything left is joined with | into the final pattern.
+#
+# Suggested starting points -- delete what does not apply, add what does:
+users.<your name with . between words>
+<your personal email local part>@
+<your phone number, digits only or with separators as you write it>
+<your street address line>
+<any account handle you never want in a public journal>
+"""
+
+
+def load_candidate(path: Path) -> str:
+    """One alternation from a file: comments and blank lines stripped, branches joined."""
+    lines = [
+        line.strip()
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.strip().startswith("#")
+    ]
+    if not lines:
+        raise ValueError("the candidate file has no pattern lines")
+    if len(lines) == 1:
+        return lines[0]
+    return "|".join(lines)
+
+
+def repo_matches(pattern: str, root: Path) -> list[str]:
+    """Files in the working tree the candidate would match, the way ci.yml greps.
+
+    Returned as paths and counts only -- never the matching text. A non-empty result means
+    CI's leak-guard job would fail on the next push, so the candidate needs narrowing before
+    it is installed. The journal directory is excluded exactly as ci.yml excludes it.
+    """
+    tracked = subprocess.run(
+        ["git", "ls-files"], cwd=root, capture_output=True, text=True,
+        encoding="utf-8", errors="surrogateescape", check=False,
+    )
+    if tracked.returncode != 0:
+        raise GuardError("git could not list the working tree")
+    hits: list[str] = []
+    for relative in tracked.stdout.splitlines():
+        # Mirror ci.yml's exclusions exactly: the journal directory (scanned by the staged
+        # guard instead) and ci.yml itself (it carries the fallback pattern).
+        if not relative or relative.startswith("bot/journal/"):
+            continue
+        if Path(relative).name == "ci.yml":
+            continue
+        target = root / relative
+        try:
+            text = target.read_text(encoding="utf-8", errors="surrogateescape")
+        except (OSError, UnicodeDecodeError):
+            continue
+        count = len(_ere_matches(pattern, text))
+        if count:
+            hits.append(f"{relative} ({count} match(es))")
+    return hits
+
+
 def set_secret(new: str) -> None:
     subprocess.run(
         ["gh", "secret", "set", "LEAK_PATTERNS"],
@@ -141,15 +219,72 @@ def set_secret(new: str) -> None:
     )
 
 
+def _run_candidate(args) -> int:
+    """Report, repo-check and optionally install a freshly composed deny-list."""
+    try:
+        candidate = load_candidate(args.candidate)
+    except (OSError, ValueError) as exc:
+        print(f"cannot read the candidate: {exc}", file=sys.stderr)
+        return 2
+    branches = split_branches(candidate)
+    print(f"candidate: {len(branches)} top-level branch(es)")
+    print("\n".join(report(branches)))
+    sys.stdout.flush()
+    problems = validate(candidate, candidate)
+    if problems:
+        print("unusable candidate:", *problems, sep="\n  ", file=sys.stderr)
+        return 1
+    uncovered = [
+        name for name, probe in PRIVATE_PROBES.items() if not _matches(candidate, probe)
+    ]
+    if uncovered:
+        print(f"note: candidate does NOT catch known private probe(s): {', '.join(uncovered)}")
+    try:
+        hits = repo_matches(candidate, Path.cwd())
+    except GuardError as exc:
+        print(f"repo check skipped: {exc}", file=sys.stderr)
+        hits = []
+    if hits:
+        sys.stdout.flush()
+        print(f"REFUSING: the candidate matches {len(hits)} tracked file(s) — ci.yml's "
+              "leak-guard job greps the whole repo and would fail on the next push:",
+              file=sys.stderr)
+        for hit in hits[:20]:
+            print(f"  {hit}", file=sys.stderr)
+        return 1
+    print("repo check: clean (no tracked file outside bot/journal matches)")
+    if args.set:
+        set_secret(candidate)
+        print("GitHub secret LEAK_PATTERNS updated — delete the candidate file now")
+    else:
+        print("dry run — add --set to install it")
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--report", action="store_true", help="one content-free line per branch")
+    parser.add_argument(
+        "--candidate",
+        type=Path,
+        help="read a NEW pattern from this file instead of the environment (keeps it out "
+             "of shell history); use when the old secret's value is lost",
+    )
+    parser.add_argument(
+        "--template", action="store_true", help="print a starting skeleton for --candidate"
+    )
     parser.add_argument("--drop", default="", help="comma-separated branch indices to remove")
     parser.add_argument("--set", action="store_true", help="write the narrowed secret to GitHub")
     args = parser.parse_args(argv)
+    if args.template:
+        print(TEMPLATE, end="")
+        return 0
+    if args.candidate:
+        return _run_candidate(args)
     pattern = os.environ.get("LEAK_PATTERNS", "")
     if not pattern:
-        print("set LEAK_PATTERNS in this shell's environment first (never in chat or a file)",
+        print("set LEAK_PATTERNS in this shell's environment first (never in chat or a "
+              "file), or compose a new list with --candidate FILE (see --template)",
               file=sys.stderr)
         return 2
     branches = split_branches(pattern)

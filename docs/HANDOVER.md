@@ -1,5 +1,43 @@
 # HANDOVER — continuation state as of 2026-07-16
 
+## 2026-09-10: the deny-list secret's value is LOST — compose a fresh one
+
+The operator does not have the `LEAK_PATTERNS` value. GitHub never returns a secret, the
+PowerShell history holds only today's commands, and nothing in the repo or git history
+records it (set 2026-07-03). So `--report` / `--drop` are unusable; the list gets rewritten
+from scratch instead:
+
+```
+python scripts/leak_patterns_tool.py --template > ../deny-list.txt   # OUTSIDE the repo
+# edit: one identifier per line, comments with #, blank lines ignored
+python scripts/leak_patterns_tool.py --candidate ../deny-list.txt          # dry run
+python scripts/leak_patterns_tool.py --candidate ../deny-list.txt --set    # installs it
+rm ../deny-list.txt
+```
+
+`--candidate` reads the pattern from a FILE (never argv, so it stays out of history and
+process lists), reports it the same content-free way, and refuses to install one that is
+empty, has a zero-width match, or **matches any tracked file** — that last check mirrors
+ci.yml's repo-wide grep, so an over-broad list is caught before it can redline CI. It
+reports (does not block) when the candidate misses the known home-path probes.
+
+Prerequisites cleared today so a home-path branch is actually installable:
+- four bench scripts had the author's home directory hardcoded as `ROOT`; they now resolve
+  the repo relative to `__file__` (`readout_ab_research_v2.py` takes `AB_RESEARCH_V2_ROOT`
+  or a sibling checkout). They were also simply broken for anyone else.
+- the tool's own probe strings and the test's `HOME` constant are assembled from parts at
+  import time, so they are not themselves matched by a home-path branch.
+- `bench/results/*.log` still contain home paths but are gitignored, so they never reach a
+  CI checkout.
+- ci.yml's fallback (used when the secret is unset, e.g. fork PRs) no longer names the
+  operator or a financial phrase; it is now an author home path of ANY name.
+
+What the old list is known to have contained: a bare pound-sign branch; a wealth-phrase
+branch narrower than the obvious two-word regex (it matched the Musk market's question,
+contract and sources but NOT a presidential-wealth question title quoted in a dossier);
+and at least one branch matching a reference-class sentence of public tournament
+vocabulary. None of those belong in a replacement.
+
 ## 2026-09-09 23:40: the guard can no longer fail a run — quarantine mode + deny-list tool
 
 Operator's rule (stated tonight): the leak guard may cost the public journal a row, never a
