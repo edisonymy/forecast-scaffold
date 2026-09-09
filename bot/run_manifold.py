@@ -50,11 +50,13 @@ from uuid import uuid4
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "bot"))
+sys.path.insert(0, str(ROOT))
 
 # ruff: noqa: E402  (imports follow the sys.path bootstrap above)
 import run_bot
 
 from forecast_scaffold.core import ForecastRecord, Journal, _utc_now, clamp
+from scripts import journal_leak_guard
 
 DEFAULT_JOURNAL = ROOT / "bot" / "journal" / "manifold.jsonl"
 MANIFOLD_API = "https://api.manifold.markets/v0"
@@ -448,6 +450,31 @@ def criteria_text(market: dict[str, Any]) -> str:
     return str(market.get("textDescription") or "").strip()
 
 
+def publication_blocked(market: dict[str, Any], pattern: str | None = None) -> bool:
+    """[ADDED 2026-09-09] True when the market's own public text would trip the journal
+    leak guard, so the pair could be forecast but never published.
+
+    The commit step scans every journal field against the private ``LEAK_PATTERNS`` deny-list
+    and the market's question/description land verbatim in ``question`` and
+    ``resolution_criterion`` — protected fields the redaction path refuses to touch. On
+    2026-09-08 three consecutive runs forecast a "net worth" market, then failed to publish
+    24 rows each (the deny-list has a branch for that public financial phrase). Manifold text
+    is user-authored, so unlike a Metaculus tournament question it gets no public-text
+    exception; the fix is to not select the market. The exact pound sign is the guard's
+    one public-record exception and is ignored here too. Fails closed on an unusable
+    pattern; a missing pattern (local dev) disables the filter.
+    """
+    pattern = os.environ.get("LEAK_PATTERNS", "") if pattern is None else pattern
+    if not pattern:
+        return False
+    text = f"{market.get('question') or ''}\n{market.get('textDescription') or ''}"
+    try:
+        matches = journal_leak_guard._ere_matches(pattern, text)
+    except journal_leak_guard.GuardError:
+        return True
+    return any(m != journal_leak_guard.PUBLIC_CURRENCY_SYMBOL for m in matches)
+
+
 def top_tag(market: dict[str, Any]) -> str | None:
     """The market's top groupSlug, used for the diversity cap. None when untagged (untagged
     markets share no theme, so the cap does not apply to them)."""
@@ -548,7 +575,12 @@ def gather_markets(
     enriched: list[dict[str, Any]] = []
     for m in prescreened[: limit * 4 + 20]:
         detail = market_detail(str(m.get("id")))
-        enriched.append({**m, **detail})
+        full = {**m, **detail}
+        if publication_blocked(full):
+            # Content-free by design: the id is enough to audit, the text must not be logged.
+            print(f"  skip {full.get('id')}: market text matches the publication deny-list")
+            continue
+        enriched.append(full)
     return select_markets(enriched, limit, now_ms)
 
 

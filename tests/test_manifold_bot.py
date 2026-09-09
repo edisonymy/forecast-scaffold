@@ -71,6 +71,41 @@ def test_selection_happy_path_and_volume_ranking() -> None:
     assert [m["id"] for m in picked] == ["high", "mid", "low"]  # 24h-volume desc
 
 
+def test_publication_blocked_by_deny_list_match_in_market_text() -> None:
+    """[ADDED 2026-09-09] a market whose own question/description trips the private
+    deny-list can be forecast but never published (2026-09-08: three runs, 72 rows lost)."""
+    marker = "private" + "-marker-739"
+    assert run_manifold.publication_blocked(mk(question=f"Will {marker} happen?"), marker)
+    assert run_manifold.publication_blocked(
+        mk(textDescription=f"Resolves on the {marker.upper()} figure"), marker
+    )
+    assert not run_manifold.publication_blocked(mk(), marker)
+    # The exact pound sign is the guard's public-record exception, so it is not a block.
+    symbol = chr(0xA3)
+    assert not run_manifold.publication_blocked(mk(question=f"Over {symbol}1bn?"), symbol)
+    assert run_manifold.publication_blocked(
+        mk(question=f"Over {symbol}1bn for {marker}?"), f"{symbol}|{marker}"
+    )
+    # No pattern (local dev) disables the filter; an unusable pattern fails closed.
+    assert not run_manifold.publication_blocked(mk(question=marker), "")
+    assert run_manifold.publication_blocked(mk(), "(")
+
+
+def test_gather_markets_skips_blocked_markets(monkeypatch: pytest.MonkeyPatch, capsys) -> None:
+    marker = "private" + "-marker-739"
+    listing = [mk("ok", volume24Hours=10.0), mk("bad", volume24Hours=9000.0)]
+    monkeypatch.setattr(run_manifold, "search_markets", lambda n: listing)
+    monkeypatch.setattr(
+        run_manifold, "market_detail",
+        lambda mid: {"textDescription": f"about {marker}"} if mid == "bad" else {},
+    )
+    monkeypatch.setenv("LEAK_PATTERNS", marker)
+    picked = run_manifold.gather_markets(5, now_ms=NOW_MS)
+    assert [m["id"] for m in picked] == ["ok"]
+    out = capsys.readouterr().out
+    assert "skip bad" in out and marker not in out
+
+
 def test_selection_bettor_floor() -> None:
     # [AMENDED 2026-08-19] the floor is a tuning knob (50 -> 25 -> 15), so the boundary is
     # derived from MIN_BETTORS: one below is rejected, exactly at it is accepted.

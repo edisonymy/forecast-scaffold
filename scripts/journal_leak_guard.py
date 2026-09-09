@@ -1,15 +1,28 @@
 """Content-free leak guard for newly staged machine-generated journal lines.
 
-The private ``LEAK_PATTERNS`` regex remains authoritative and is never printed.  The only
-exception is an exact decoded pound-sign match anywhere in a valid public Metaculus or
-Manifold JSON record.  This narrowly works around a bad literal currency-symbol branch in
-the private pattern without weakening other matches: model reasoning may contain the
-pound sign, but any different sensitive match on the same line still blocks publication.
-Raw/non-record lines, invalid patterns, zero-width matches, and every other match remain
-fail-closed.  The optional ``--redact-model-output`` recovery mode may replace an entire
-newly-added ``reasoning`` or ``what_would_change_my_mind`` item with a neutral marker.
-It refuses to alter public questions/contracts, sources, metadata, keys, or raw JSON; callers
-must re-stage and run the strict default scan before publication.
+The private ``LEAK_PATTERNS`` regex remains authoritative and is never printed.  Three
+narrow exceptions exist, all of them for text the public platform itself already published:
+
+* an exact decoded pound-sign match anywhere in a valid public Metaculus or Manifold JSON
+  record (a bad literal currency-symbol branch in the private pattern);
+* [ADDED 2026-09-09] in a **Metaculus** record, a match whose text also occurs verbatim in
+  the record's own ``question`` / ``resolution_criterion`` — the tournament assigns the
+  question and Metaculus publishes it, so a deny-list branch that matches the question's
+  own words (public financial vocabulary, say) cannot be a leak of the operator's data.
+  Hyphens/underscores in the match are read as spaces so a source URL slug qualifies;
+* [ADDED 2026-09-09] per-question trace files (``bot/journal/traces/<id>.json``) are
+  pretty-printed multi-line JSON, so they are scanned as one decoded document rather than
+  line by line — a trace line on its own is not a record and would always fail as ``<raw>``.
+  Only a wholly new trace file qualifies; a modified one falls back to per-line scanning.
+
+Model reasoning may therefore contain the pound sign or the question's own words, but any
+different sensitive match on the same line still blocks publication.  Raw/non-record lines,
+invalid patterns, zero-width matches, and every other match remain fail-closed.  The
+optional ``--redact-model-output`` recovery mode may replace an entire newly-added
+``reasoning`` or ``what_would_change_my_mind`` item — or, in a trace, one model-authored
+string under ``calls.[i].{reasoning,dossier,reconciliation,disagreements,named_scenarios}``
+— with a neutral marker.  It refuses to alter public questions/contracts, sources, metadata,
+keys, or raw JSON; callers must re-stage and run the strict default scan before publication.
 
 The script reads additions directly from ``git diff --cached`` so historical public lines
 cannot lock future publication and matched content never enters workflow logs.
@@ -28,14 +41,24 @@ from collections import Counter
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from functools import lru_cache
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 PUBLIC_PLATFORMS = frozenset({"manifold", "metaculus"})
+# Platforms whose question/contract text is authored and published by the platform itself
+# (assigned to the bot, never chosen by it), so a match inside it is public by construction.
+PLATFORM_PUBLISHED_TEXT = frozenset({"metaculus"})
+PUBLIC_TEXT_FIELDS = ("question", "resolution_criterion")
 PUBLIC_CURRENCY_SYMBOL = chr(0xA3)
 MODEL_OUTPUT_REDACTION = "[redacted by publication privacy guard]"
+TRACE_MODEL_FIELDS = frozenset(
+    {"reasoning", "dossier", "reconciliation", "disagreements", "named_scenarios"}
+)
 _HUNK_HEADER = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@")
 _CHANGE_MIND_ITEM = re.compile(r"^what_would_change_my_mind\.\[(\d+)\]$")
+_TRACE_CALL_FIELD = re.compile(r"^calls\.\[\d+\]\.([a-z_]+)(?:\.|$)")
+_FIELD_INDEX = re.compile(r"^\[(\d+)\]$")
+_MATCH_SEPARATORS = re.compile(r"[-_\s]+")
 
 
 @dataclass(frozen=True, order=True)
@@ -50,6 +73,17 @@ class AddedLine:
     path: str
     ordinal: int
     line_number: int
+    text: str
+    new_file: bool = False
+
+
+@dataclass(frozen=True)
+class TraceDocument:
+    """A wholly new pretty-printed trace file, reassembled from its staged additions."""
+
+    path: str
+    first_ordinal: int
+    line_count: int
     text: str
 
 
@@ -121,10 +155,23 @@ def _ere_matches(pattern: str, value: str) -> tuple[str, ...]:
     return matches or ("",)
 
 
+def _normalize_match(text: str) -> str:
+    """Case-fold and read hyphens/underscores as spaces so URL slugs compare to prose."""
+    return _MATCH_SEPARATORS.sub(" ", text).strip().lower()
+
+
+def _platform_published_text(payload: dict[str, Any], platform: str) -> str:
+    """The record's platform-authored public text (normalized), or "" when none applies."""
+    if platform not in PLATFORM_PUBLISHED_TEXT:
+        return ""
+    parts = [payload.get(name) for name in PUBLIC_TEXT_FIELDS]
+    return " ".join(_normalize_match(p) for p in parts if isinstance(p, str) and p)
+
+
 def scan_added_line(
     pattern: str, path: str, added_line: int, text: str
 ) -> tuple[list[Finding], int]:
-    """Return blocked locations and exact-pound exceptions in a public JSON record."""
+    """Return blocked locations and the public-text exceptions granted in a JSON record."""
     raw_matches = Counter(_ere_matches(pattern, text))
     try:
         payload = json.loads(text)
@@ -141,6 +188,7 @@ def scan_added_line(
     source = payload.get("source")
     platform = str(source.get("platform", "")).lower() if isinstance(source, dict) else ""
     public_record = platform in PUBLIC_PLATFORMS
+    published_text = _platform_published_text(payload, platform)
     for field_path, value in _iter_strings(payload):
         for match in _ere_matches(pattern, value):
             if raw_matches[match] > 0:
@@ -150,7 +198,10 @@ def scan_added_line(
                 and PUBLIC_CURRENCY_SYMBOL in pattern
                 and match == PUBLIC_CURRENCY_SYMBOL
             )
-            if public_record_currency:
+            published_verbatim = bool(
+                match and published_text and _normalize_match(match) in published_text
+            )
+            if public_record_currency or published_verbatim:
                 allowed += 1
             else:
                 findings.append(Finding(path, added_line, _field_label(field_path)))
@@ -179,11 +230,16 @@ def staged_diff(paths: Sequence[str], *, root: Path) -> str:
 def _iter_patch_additions(patch: str) -> Iterable[AddedLine]:
     """Yield staged additions with both safe display ordinals and working-tree line numbers."""
     current_path = "<unknown>"
+    current_new_file = False
     next_line_number: int | None = None
     ordinal = 0
     for line in patch.splitlines():
         if line.startswith("diff --git "):
             next_line_number = None
+            current_new_file = False
+            continue
+        if line.startswith("--- "):
+            current_new_file = line[4:] == "/dev/null"
             continue
         if line.startswith("+++ "):
             current_path = line[4:].removeprefix("b/")
@@ -196,7 +252,9 @@ def _iter_patch_additions(patch: str) -> Iterable[AddedLine]:
             continue
         if line.startswith("+"):
             ordinal += 1
-            yield AddedLine(current_path, ordinal, next_line_number, line[1:])
+            yield AddedLine(
+                current_path, ordinal, next_line_number, line[1:], current_new_file
+            )
             next_line_number += 1
         elif line.startswith("-"):
             continue
@@ -204,14 +262,60 @@ def _iter_patch_additions(patch: str) -> Iterable[AddedLine]:
             next_line_number += 1
 
 
+def is_trace_path(path: str) -> bool:
+    posix = PurePosixPath(path)
+    return posix.suffix == ".json" and "traces" in posix.parts[:-1]
+
+
+def split_additions(
+    additions: Iterable[AddedLine],
+) -> tuple[list[AddedLine], list[TraceDocument]]:
+    """Separate per-line additions from wholly new trace files scanned as one document."""
+    by_path: dict[str, list[AddedLine]] = {}
+    order: list[str] = []
+    for addition in additions:
+        if addition.path not in by_path:
+            order.append(addition.path)
+        by_path.setdefault(addition.path, []).append(addition)
+    per_line: list[AddedLine] = []
+    documents: list[TraceDocument] = []
+    for path in order:
+        lines = by_path[path]
+        whole_new_file = (
+            is_trace_path(path)
+            and all(line.new_file for line in lines)
+            and [line.line_number for line in lines] == list(range(1, len(lines) + 1))
+        )
+        if whole_new_file:
+            documents.append(
+                TraceDocument(
+                    path,
+                    lines[0].ordinal,
+                    len(lines),
+                    "\n".join(line.text for line in lines),
+                )
+            )
+        else:
+            per_line.extend(lines)
+    return per_line, documents
+
+
 def scan_patch(pattern: str, patch: str) -> tuple[tuple[Finding, ...], int, int]:
     additions = 0
     allowed = 0
     findings: set[Finding] = set()
-    for addition in _iter_patch_additions(patch):
+    per_line, documents = split_additions(_iter_patch_additions(patch))
+    for addition in per_line:
         additions += 1
         new_findings, new_allowed = scan_added_line(
             pattern, addition.path, addition.ordinal, addition.text
+        )
+        findings.update(new_findings)
+        allowed += new_allowed
+    for document in documents:
+        additions += document.line_count
+        new_findings, new_allowed = scan_added_line(
+            pattern, document.path, document.first_ordinal, document.text
         )
         findings.update(new_findings)
         allowed += new_allowed
@@ -261,41 +365,131 @@ def _redact_model_fields(
     return redacted, len(fields)
 
 
+def _is_trace_model_field(field: str) -> bool:
+    """A string leaf under one call's model-authored text; never a key, never metadata."""
+    if field.endswith("<key>"):
+        return False
+    call_field = _TRACE_CALL_FIELD.match(field)
+    return bool(call_field) and call_field.group(1) in TRACE_MODEL_FIELDS
+
+
+def _redact_leaf(payload: Any, field: str) -> bool:
+    """Replace the string at a dotted/indexed field label; False when it is not a string."""
+    node = payload
+    components = field.split(".")
+    for component in components[:-1]:
+        index = _FIELD_INDEX.fullmatch(component)
+        if index and isinstance(node, list) and int(index.group(1)) < len(node):
+            node = node[int(index.group(1))]
+        elif not index and isinstance(node, dict) and component in node:
+            node = node[component]
+        else:
+            return False
+    leaf = components[-1]
+    index = _FIELD_INDEX.fullmatch(leaf)
+    if index and isinstance(node, list) and int(index.group(1)) < len(node):
+        if not isinstance(node[int(index.group(1))], str):
+            return False
+        node[int(index.group(1))] = MODEL_OUTPUT_REDACTION
+        return True
+    if not index and isinstance(node, dict) and isinstance(node.get(leaf), str):
+        node[leaf] = MODEL_OUTPUT_REDACTION
+        return True
+    return False
+
+
+def _redact_trace_document(
+    pattern: str, document: TraceDocument
+) -> tuple[str, int] | None:
+    """Redact model-authored strings in a whole trace, or refuse when anything else matched."""
+    findings, _allowed = scan_added_line(
+        pattern, document.path, document.first_ordinal, document.text
+    )
+    if not findings:
+        return document.text, 0
+    fields = {finding.field for finding in findings}
+    if not all(_is_trace_model_field(field) for field in fields):
+        return None
+    try:
+        payload = json.loads(document.text)
+    except (json.JSONDecodeError, TypeError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    for field in fields:
+        if not _redact_leaf(payload, field):
+            return None
+    # Same layout bot/run_bot.write_trace produces, so the redacted file stays a trace.
+    redacted = json.dumps(payload, ensure_ascii=False, indent=1)
+    remaining, _allowed = scan_added_line(
+        pattern, document.path, document.first_ordinal, redacted
+    )
+    if remaining:
+        return None
+    return redacted, len(fields)
+
+
+def _rewrite_lines(original: str, replacements: dict[int, tuple[str, str]]) -> str:
+    newline = "\r\n" if "\r\n" in original else "\n"
+    trailing_newline = original.endswith(("\r", "\n"))
+    lines = original.splitlines()
+    for line_number, (expected, replacement) in replacements.items():
+        index = line_number - 1
+        if index < 0 or index >= len(lines) or lines[index] != expected:
+            raise GuardError("the working journal no longer matches the staged diff")
+        lines[index] = replacement
+    return newline.join(lines) + (newline if trailing_newline else "")
+
+
+def _rewrite_document(original: str, expected: str, replacement: str) -> str:
+    newline = "\r\n" if "\r\n" in original else "\n"
+    trailing_newline = original.endswith(("\r", "\n"))
+    if original.splitlines() != expected.split("\n"):
+        raise GuardError("the working trace no longer matches the staged diff")
+    return newline.join(replacement.split("\n")) + (newline if trailing_newline else "")
+
+
 def redact_staged_model_output(pattern: str, patch: str, *, root: Path) -> int | None:
     """Rewrite eligible staged additions in the working tree; return None when unsafe."""
-    replacements: dict[str, dict[int, tuple[str, str]]] = {}
+    line_replacements: dict[str, dict[int, tuple[str, str]]] = {}
+    document_replacements: dict[str, tuple[str, str]] = {}
     redacted_fields = 0
-    for addition in _iter_patch_additions(patch):
+    per_line, documents = split_additions(_iter_patch_additions(patch))
+    for addition in per_line:
         result = _redact_model_fields(pattern, addition)
         if result is None:
             return None
         redacted, field_count = result
         if not field_count:
             continue
-        replacements.setdefault(addition.path, {})[addition.line_number] = (
+        line_replacements.setdefault(addition.path, {})[addition.line_number] = (
             addition.text,
             redacted,
         )
         redacted_fields += field_count
+    for document in documents:
+        result = _redact_trace_document(pattern, document)
+        if result is None:
+            return None
+        redacted, field_count = result
+        if not field_count:
+            continue
+        document_replacements[document.path] = (document.text, redacted)
+        redacted_fields += field_count
 
     root = root.resolve()
     prepared: list[tuple[Path, str]] = []
-    for relative, line_replacements in replacements.items():
+    for relative in [*line_replacements, *document_replacements]:
         target = (root / relative).resolve()
         try:
             target.relative_to(root)
         except ValueError as exc:
             raise GuardError("a staged journal path escapes the repository") from exc
         original = target.read_text(encoding="utf-8", errors="surrogateescape")
-        newline = "\r\n" if "\r\n" in original else "\n"
-        trailing_newline = original.endswith(("\r", "\n"))
-        lines = original.splitlines()
-        for line_number, (expected, replacement) in line_replacements.items():
-            index = line_number - 1
-            if index < 0 or index >= len(lines) or lines[index] != expected:
-                raise GuardError("the working journal no longer matches the staged diff")
-            lines[index] = replacement
-        rewritten = newline.join(lines) + (newline if trailing_newline else "")
+        if relative in line_replacements:
+            rewritten = _rewrite_lines(original, line_replacements[relative])
+        else:
+            rewritten = _rewrite_document(original, *document_replacements[relative])
         prepared.append((target, rewritten))
 
     for target, rewritten in prepared:
@@ -316,8 +510,8 @@ def build_parser() -> argparse.ArgumentParser:
         "--redact-model-output",
         action="store_true",
         help=(
-            "replace matches only in added reasoning/change-my-mind fields; "
-            "protected fields still fail closed"
+            "replace matches only in added reasoning/change-my-mind fields (and, in trace "
+            "files, model-authored call text); protected fields still fail closed"
         ),
     )
     return parser
@@ -368,7 +562,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     print(
         f"clean ({additions} staged added line(s); "
-        f"{allowed} public-record currency match(es) allowed)"
+        f"{allowed} public-record match(es) allowed)"
     )
     return 0
 

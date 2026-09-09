@@ -162,8 +162,17 @@ jobs:
           # the literal pattern out of this file so the ci.yml guard does not match it.
           : "${LEAK_PATTERNS:?set the LEAK_PATTERNS secret before the bot can publish}"
           # Scan only the lines THIS run adds. The content-free scanner applies the private
-          # deny-list to every field, with one narrow workaround for the exact pound sign in
-          # public question/contract fields; model-authored content remains fail-closed.
+          # deny-list to every field, with narrow workarounds for the exact pound sign in a
+          # public record and for text Metaculus itself published in the question. If the
+          # deny-list matches an AI-authored reasoning field, or model text inside a trace
+          # file, replace that string with a neutral marker [ADDED 2026-09-09: the same
+          # recovery flow manifold.yml has had since 2026-08; without it one pound sign in
+          # a trace dossier blocked a whole run's journal on 2026-09-07]. Matches in
+          # questions, contracts, sources, metadata, raw JSON, or keys still block
+          # publication. Re-stage and strictly re-scan so the recovery path fails closed.
+          git add bot/journal/
+          set +e; python scripts/journal_leak_guard.py --redact-model-output bot/journal/; status=$?; set -e
+          if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
           git add bot/journal/
           set +e; python scripts/journal_leak_guard.py bot/journal/; status=$?; set -e
           if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi

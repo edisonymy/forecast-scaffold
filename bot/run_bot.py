@@ -2757,6 +2757,9 @@ def forecast_question(
             "question": title,
             "question_id": question.get("id"),
             "url": (record.source or {}).get("url"),
+            # Trace documents are scanned whole by scripts/journal_leak_guard.py; the
+            # platform is what qualifies them for its narrow public-text exceptions.
+            "source": {"platform": (record.source or {}).get("platform") or "metaculus"},
             "question_type": qtype,
             "forecast_at": record.forecast_at,
             "effort": record.effort,
