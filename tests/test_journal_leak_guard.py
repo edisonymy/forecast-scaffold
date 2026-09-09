@@ -318,3 +318,150 @@ def test_bot_commit_step_scans_every_secret_it_is_handed() -> None:
     # LEAK_PATTERNS is the deny-list itself (a pattern file, not a credential value).
     assert exposed - {"LEAK_PATTERNS"} == scanned
     assert "ASKNEWS_API_KEY" in scanned
+
+
+def _init_journal(tmp_path: Path) -> Path:
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    target = tmp_path / "bot" / "journal" / "manifold.jsonl"
+    target.parent.mkdir(parents=True)
+    return target
+
+
+def test_redaction_covers_the_fields_that_blocked_the_live_manifold_publish(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    """Regression for runs 34198573098 / 34231014848 (2026-09-08).
+
+    Both hourly ticks blocked on a market whose text tripped the private deny-list in
+    `reference_class`, `resolution_criterion` and `research.sources.[N]`. Only `reasoning`
+    and `what_would_change_my_mind` were redactable, so the recovery path refused, the job
+    failed, and the journal lines — for markets the bot may already have BET on — reached
+    nothing but a 30-day artifact. Every field in that set is either model-authored or
+    refetchable from `source.url`, so the recovery path must now blank them and publish."""
+    target = _init_journal(tmp_path)
+    private_marker = "private" + "-marker-739"
+    blocked = {
+        "question": "Will the public market resolve YES?",
+        "resolution_criterion": f"Creator description mentioning {private_marker}",
+        "source": {
+            "platform": "manifold",
+            "question_id": "abc123",
+            "url": "https://manifold.markets/user/slug",
+        },
+        "reference_class": f"past cases like {private_marker}",
+        "reasoning": f"analysis includes {private_marker}",
+        "what_would_change_my_mind": ["a public update"],
+        "research": {
+            "n_searches": 2,
+            "sources": ["https://example.com/public", f"https://example.com/{private_marker}"],
+        },
+        "probability": 0.42,
+    }
+    target.write_text(json.dumps(blocked, ensure_ascii=False) + "\n", encoding="utf-8")
+    subprocess.run(["git", "add", "--", str(target)], cwd=tmp_path, check=True)
+    monkeypatch.setenv("LEAK_PATTERNS", private_marker)
+
+    argv = ["--root", str(tmp_path), "bot/journal/manifold.jsonl"]
+    assert guard.main([*argv[:2], "--redact-model-output", argv[2]]) == 0
+    output = capsys.readouterr()
+    assert "redacted 4 model-output field(s)" in output.out
+    # The locations name fields, never content or the deny-list itself.
+    for field in ("reference_class", "resolution_criterion", "reasoning", "research.sources.[1]"):
+        assert field in output.out
+    assert private_marker not in output.out + output.err
+
+    payload = json.loads(target.read_text(encoding="utf-8"))
+    assert payload["reference_class"] == guard.MODEL_OUTPUT_REDACTION
+    assert payload["resolution_criterion"] == guard.MODEL_OUTPUT_REDACTION
+    assert payload["reasoning"] == guard.MODEL_OUTPUT_REDACTION
+    assert payload["research"]["sources"] == [
+        "https://example.com/public",
+        guard.MODEL_OUTPUT_REDACTION,
+    ]
+    # Everything that makes the record verifiable survives untouched.
+    assert payload["question"] == blocked["question"]
+    assert payload["source"] == blocked["source"]
+    assert payload["probability"] == 0.42
+
+    subprocess.run(["git", "add", "--", str(target)], cwd=tmp_path, check=True)
+    assert guard.main(argv) == 0
+
+
+def test_contract_text_is_only_redactable_on_a_public_record_with_a_url(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    """`resolution_criterion` may be blanked only because a reader can refetch it from
+    `source.url`. Without a public platform AND that URL it is evidence like any other and
+    the guard must fail closed instead."""
+    target = _init_journal(tmp_path)
+    private_marker = "private" + "-marker-739"
+    original = (
+        json.dumps(
+            {
+                "question": "Will the private question resolve YES?",
+                "resolution_criterion": f"criterion mentioning {private_marker}",
+                "source": {"platform": "manifold", "question_id": "abc123"},
+                "reasoning": "public analysis",
+            }
+        )
+        + "\n"
+    )
+    target.write_text(original, encoding="utf-8")
+    subprocess.run(["git", "add", "--", str(target)], cwd=tmp_path, check=True)
+    monkeypatch.setenv("LEAK_PATTERNS", private_marker)
+
+    assert (
+        guard.main(
+            ["--root", str(tmp_path), "--redact-model-output", "bot/journal/manifold.jsonl"]
+        )
+        == 1
+    )
+    blocked = capsys.readouterr()
+    assert "resolution_criterion" in blocked.err
+    assert private_marker not in blocked.out + blocked.err
+    assert target.read_text(encoding="utf-8") == original
+
+
+def test_redaction_still_refuses_metadata_keys_and_unparseable_lines(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    """The widened allow-list is a list, not a policy of blanking whatever matched."""
+    target = _init_journal(tmp_path)
+    private_marker = "private" + "-marker-739"
+    payload = {
+        "question": "Will the public market resolve YES?",
+        "source": {
+            "platform": "manifold",
+            "url": "https://manifold.markets/user/slug",
+            "pair_id": f"pair-{private_marker}",
+        },
+        "reasoning": "public analysis",
+    }
+    target.write_text(json.dumps(payload) + "\n", encoding="utf-8")
+    subprocess.run(["git", "add", "--", str(target)], cwd=tmp_path, check=True)
+    monkeypatch.setenv("LEAK_PATTERNS", private_marker)
+
+    assert (
+        guard.main(
+            ["--root", str(tmp_path), "--redact-model-output", "bot/journal/manifold.jsonl"]
+        )
+        == 1
+    )
+    assert "source.pair_id" in capsys.readouterr().err
+
+    # A key name that matches, and a non-record line, both stay fail-closed.
+    for line in (json.dumps({private_marker: "value"}), f"not json {private_marker}"):
+        target.write_text(line + "\n", encoding="utf-8")
+        subprocess.run(["git", "add", "--", str(target)], cwd=tmp_path, check=True)
+        assert (
+            guard.main(
+                [
+                    "--root",
+                    str(tmp_path),
+                    "--redact-model-output",
+                    "bot/journal/manifold.jsonl",
+                ]
+            )
+            == 1
+        )
+        capsys.readouterr()

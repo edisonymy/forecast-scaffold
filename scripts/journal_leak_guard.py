@@ -7,9 +7,14 @@ the private pattern without weakening other matches: model reasoning may contain
 pound sign, but any different sensitive match on the same line still blocks publication.
 Raw/non-record lines, invalid patterns, zero-width matches, and every other match remain
 fail-closed.  The optional ``--redact-model-output`` recovery mode may replace an entire
-newly-added ``reasoning`` or ``what_would_change_my_mind`` item with a neutral marker.
-It refuses to alter public questions/contracts, sources, metadata, keys, or raw JSON; callers
-must re-stage and run the strict default scan before publication.
+newly-added free-text field with a neutral marker, but only the fields named in
+``MODEL_REDACTABLE_FIELDS`` / ``CONTRACT_REDACTABLE_FIELDS``: the model-authored prose
+(``reasoning``, ``reference_class``, ``what_would_change_my_mind`` items,
+``research.sources`` items) and — on a public-platform record that journals its
+``source.url`` — the platform's own ``resolution_criterion``, which stays recoverable from
+that URL.  It refuses to alter the ``question`` (the record's identity), metadata, keys,
+numbers, or raw JSON; callers must re-stage and run the strict default scan before
+publication.
 
 The script reads additions directly from ``git diff --cached`` so historical public lines
 cannot lock future publication and matched content never enters workflow logs.
@@ -35,7 +40,29 @@ PUBLIC_PLATFORMS = frozenset({"manifold", "metaculus"})
 PUBLIC_CURRENCY_SYMBOL = chr(0xA3)
 MODEL_OUTPUT_REDACTION = "[redacted by publication privacy guard]"
 _HUNK_HEADER = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@")
-_CHANGE_MIND_ITEM = re.compile(r"^what_would_change_my_mind\.\[(\d+)\]$")
+_LIST_INDEX = re.compile(r"^\[(\d+)\]$")
+
+# Free-text fields the recovery mode may blank, as field labels with list indices collapsed
+# to "[]".  Two classes, and the distinction is the whole safety argument:
+#
+#   * model-authored prose — the agent wrote it, so a deny-list hit there is exactly what the
+#     guard exists to keep out of a public file, and nothing outside this repo can restore it
+#     anyway;
+#   * `resolution_criterion` — NOT model-authored: on a Manifold/Metaculus record it is a
+#     verbatim copy of the platform's own public contract text (`criteria_text(market)`), so
+#     blanking it loses no evidence a reader cannot fetch from the journaled `source.url`.
+#     Hence CONTRACT_REDACTABLE_FIELDS is gated on a public record that carries that URL.
+#
+# `question` is deliberately absent: it is the record's identity and the key a reader joins on,
+# and a deny-list hit in a market's own title is worth an operator's eyes rather than a silent
+# blank.  Keys, metadata, numbers and non-record lines stay fail-closed as before.
+MODEL_REDACTABLE_FIELDS = frozenset({
+    "reasoning",
+    "reference_class",
+    "what_would_change_my_mind.[]",
+    "research.sources.[]",
+})
+CONTRACT_REDACTABLE_FIELDS = frozenset({"resolution_criterion"})
 
 
 @dataclass(frozen=True, order=True)
@@ -218,21 +245,69 @@ def scan_patch(pattern: str, patch: str) -> tuple[tuple[Finding, ...], int, int]
     return tuple(sorted(findings)), additions, allowed
 
 
+def _field_shape(field: str) -> str:
+    """A field label with list indices collapsed: ``research.sources.[5]`` ->
+    ``research.sources.[]``."""
+    return ".".join(
+        "[]" if _LIST_INDEX.fullmatch(part) else part for part in field.split(".")
+    )
+
+
+def _redactable_fields(payload: dict[str, Any]) -> frozenset[str]:
+    """The field shapes this record may have blanked, given where its text came from."""
+    allowed = set(MODEL_REDACTABLE_FIELDS)
+    source = payload.get("source")
+    if isinstance(source, dict):
+        platform = str(source.get("platform", "")).lower()
+        # The contract text is only recoverable while the record says where to fetch it.
+        if platform in PUBLIC_PLATFORMS and str(source.get("url", "")).strip():
+            allowed |= CONTRACT_REDACTABLE_FIELDS
+    return frozenset(allowed)
+
+
+def _set_field(payload: Any, field: str, value: str) -> bool:
+    """Replace the string at a decoded field label; False when the path no longer resolves.
+
+    A label is built from decoded JSON, so a key containing a literal "." can in principle
+    produce one that no longer round-trips. That resolves to False here — refusing to redact
+    — rather than to a guess about which key was meant."""
+    parts = field.split(".")
+    target = payload
+    for part in parts[:-1]:
+        index = _LIST_INDEX.fullmatch(part)
+        if index:
+            position = int(index.group(1))
+            if not isinstance(target, list) or position >= len(target):
+                return False
+            target = target[position]
+        else:
+            if not isinstance(target, dict) or part not in target:
+                return False
+            target = target[part]
+    last = _LIST_INDEX.fullmatch(parts[-1])
+    if last:
+        position = int(last.group(1))
+        if not isinstance(target, list) or position >= len(target):
+            return False
+        if not isinstance(target[position], str):
+            return False
+        target[position] = value
+        return True
+    if not isinstance(target, dict) or not isinstance(target.get(parts[-1]), str):
+        return False
+    target[parts[-1]] = value
+    return True
+
+
 def _redact_model_fields(
     pattern: str, addition: AddedLine
-) -> tuple[str, int] | None:
-    """Redact only model-authored fields, or refuse when any protected field matched."""
+) -> tuple[str, tuple[str, ...]] | None:
+    """Redact only the eligible free-text fields, or refuse when any protected field matched."""
     findings, _allowed = scan_added_line(
         pattern, addition.path, addition.ordinal, addition.text
     )
     if not findings:
-        return addition.text, 0
-    fields = {finding.field for finding in findings}
-    if any(
-        field != "reasoning" and not _CHANGE_MIND_ITEM.fullmatch(field)
-        for field in fields
-    ):
-        return None
+        return addition.text, ()
     try:
         payload = json.loads(addition.text)
     except (json.JSONDecodeError, TypeError):
@@ -240,16 +315,13 @@ def _redact_model_fields(
     if not isinstance(payload, dict):
         return None
 
-    if "reasoning" in fields:
-        payload["reasoning"] = MODEL_OUTPUT_REDACTION
-    change_mind = payload.get("what_would_change_my_mind")
+    redactable = _redactable_fields(payload)
+    fields = sorted({finding.field for finding in findings})
+    if any(_field_shape(field) not in redactable for field in fields):
+        return None
     for field in fields:
-        item = _CHANGE_MIND_ITEM.fullmatch(field)
-        if item:
-            index = int(item.group(1))
-            if not isinstance(change_mind, list) or index >= len(change_mind):
-                return None
-            change_mind[index] = MODEL_OUTPUT_REDACTION
+        if not _set_field(payload, field, MODEL_OUTPUT_REDACTION):
+            return None
 
     redacted = json.dumps(payload, ensure_ascii=False)
     remaining, _allowed = scan_added_line(
@@ -258,25 +330,33 @@ def _redact_model_fields(
     if remaining:
         # A very broad deny-list may also match the neutral marker or serialized JSON.
         return None
-    return redacted, len(fields)
+    return redacted, tuple(fields)
 
 
-def redact_staged_model_output(pattern: str, patch: str, *, root: Path) -> int | None:
-    """Rewrite eligible staged additions in the working tree; return None when unsafe."""
+def redact_staged_model_output(
+    pattern: str, patch: str, *, root: Path
+) -> tuple[Finding, ...] | None:
+    """Rewrite eligible staged additions in the working tree; return None when unsafe.
+
+    Returns the redacted locations (path/line/field only — never content) so the operator can
+    see WHICH fields a run blanked without the private deny-list or the matched text reaching
+    a workflow log."""
     replacements: dict[str, dict[int, tuple[str, str]]] = {}
-    redacted_fields = 0
+    redacted_fields: list[Finding] = []
     for addition in _iter_patch_additions(patch):
         result = _redact_model_fields(pattern, addition)
         if result is None:
             return None
-        redacted, field_count = result
-        if not field_count:
+        redacted, fields = result
+        if not fields:
             continue
         replacements.setdefault(addition.path, {})[addition.line_number] = (
             addition.text,
             redacted,
         )
-        redacted_fields += field_count
+        redacted_fields.extend(
+            Finding(addition.path, addition.ordinal, field) for field in fields
+        )
 
     root = root.resolve()
     prepared: list[tuple[Path, str]] = []
@@ -305,7 +385,7 @@ def redact_staged_model_output(pattern: str, patch: str, *, root: Path) -> int |
             errors="surrogateescape",
             newline="",
         )
-    return redacted_fields
+    return tuple(redacted_fields)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -316,8 +396,8 @@ def build_parser() -> argparse.ArgumentParser:
         "--redact-model-output",
         action="store_true",
         help=(
-            "replace matches only in added reasoning/change-my-mind fields; "
-            "protected fields still fail closed"
+            "replace matches only in the added free-text fields the allow-list "
+            "covers; the question, keys, metadata and raw lines still fail closed"
         ),
     )
     return parser
@@ -346,9 +426,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             if redacted is not None:
                 print(
-                    f"redacted {redacted} model-output field(s); "
+                    f"redacted {len(redacted)} model-output field(s); "
                     "re-stage and run the guard again"
                 )
+                for location in redacted:
+                    print(
+                        f"  {location.path}:added-line-{location.added_line}:"
+                        f"{location.field}"
+                    )
                 return 0
     except (GuardError, OSError):
         print("journal leak guard could not complete safely", file=sys.stderr)
