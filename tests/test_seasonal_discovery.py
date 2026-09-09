@@ -76,6 +76,34 @@ class TestDiscoverSeasonalSlugs:
             "summer-futureeval-2026"
         ]
 
+    def test_a_season_past_its_forecasting_cutoff_is_dropped(self) -> None:
+        """[AMENDED 2026-09-09] Summer 2026 stopped accepting forecasts on Sep 6 but does
+        not close until Nov 5. Keying on the later date kept a dead slug in the roster for
+        two months — an API call per tick, and a dead slug that looks like a healthy one."""
+        summer = {
+            "id": 1,
+            "slug": "summer-futureeval-2026",
+            "name": "Summer 2026 FutureEval Bot Tournament",
+            "start_date": "2026-05-18T00:00:00Z",
+            "forecasting_end_date": "2026-09-06T00:00:00Z",
+            "close_date": "2026-11-05T00:00:00Z",
+        }
+        before = datetime(2026, 9, 5, tzinfo=UTC)
+        after = datetime(2026, 9, 9, tzinfo=UTC)
+        assert run_bot.discover_seasonal_slugs([summer], before) == ["summer-futureeval-2026"]
+        assert run_bot.discover_seasonal_slugs([summer], after) == []
+
+    def test_close_date_is_the_fallback_when_there_is_no_forecasting_cutoff(self) -> None:
+        project = {
+            "id": 2,
+            "slug": "winter-futureeval-2027",
+            "name": "Winter 2027 FutureEval Bot Tournament",
+            "start_date": "2026-09-01T00:00:00Z",
+            "close_date": "2026-12-31T00:00:00Z",
+        }
+        assert run_bot.discover_seasonal_slugs(
+            [project], datetime(2026, 9, 9, tzinfo=UTC)) == ["winter-futureeval-2027"]
+
     def test_sorted_by_start_date_descending(self) -> None:
         projects = [
             {

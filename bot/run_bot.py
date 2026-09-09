@@ -1364,10 +1364,15 @@ def discover_seasonal_slugs(projects: list[dict[str, Any]], now: datetime) -> li
     treat discovery as the primary path and its own config as a trailing safety net.
 
     "Active" means: start_date <= now when start_date is present (no lower bound
-    otherwise), and the later of forecasting_end_date / close_date is > now — a project
-    with neither end field is excluded outright (an undated tournament could be an
-    all-time evergreen project, not a season). Sorted by start_date descending so the
-    newest season leads when more than one project ever qualifies at once."""
+    otherwise), and the tournament is still ACCEPTING FORECASTS — `forecasting_end_date`
+    when the project publishes one, `close_date` only as a fallback. [AMENDED 2026-09-09]
+    This was the later of the two, which kept a season alive for the two months between
+    its forecasting cutoff and its resolution close: Summer 2026 stopped accepting
+    forecasts on Sep 6 but does not close until Nov 5, so every tick was still spending
+    an API call on it and, worse, a dead slug in the roster looks exactly like a healthy
+    one. A project with neither end field is excluded outright (an undated tournament
+    could be an all-time evergreen project, not a season). Sorted by start_date descending
+    so the newest season leads when more than one project ever qualifies at once."""
     active: list[tuple[datetime, str]] = []
     for project in projects:
         name = str(project.get("name") or "")
@@ -1379,11 +1384,9 @@ def discover_seasonal_slugs(projects: list[dict[str, Any]], now: datetime) -> li
         start = _parse_iso_z(project.get("start_date"))
         if start is not None and start > now:
             continue
-        ends = [d for d in (
-            _parse_iso_z(project.get("forecasting_end_date")),
-            _parse_iso_z(project.get("close_date")),
-        ) if d is not None]
-        if not ends or max(ends) <= now:
+        end = (_parse_iso_z(project.get("forecasting_end_date"))
+               or _parse_iso_z(project.get("close_date")))
+        if end is None or end <= now:
             continue
         active.append((start or datetime.min.replace(tzinfo=UTC), str(slug)))
     active.sort(key=lambda pair: pair[0], reverse=True)
