@@ -1,4 +1,165 @@
-# HANDOVER — continuation state as of 2026-07-16
+# HANDOVER — continuation state as of 2026-09-06 (late evening)
+
+## 2026-09-06 late: PR #40 verified against the live Smarkets venue (local session)
+
+Branch `claude/monetize-forecaster-02dx6t`, head = the commit after `8a7ef8b` ("exchanges:
+verify the Smarkets client against the live venue"). 981 tests pass, ruff and mypy clean,
+pushed. The five UNVERIFIED items below were checked from a networked machine:
+
+1. **Events filter** (`state=&type_domain=`): CORRECT — 213 politics + current-affairs
+   events. But the listing is id-ascending and paged by 100, and the client stopped at one
+   page, so it saw only the oldest container events (UK, Rest of World, ...) and none of
+   the recent by-elections. Fixed: every page is walked (348 -> 601 contracts, 139 eligible).
+2. **Quantity unit**: WRONG. The OpenAPI spec (api.smarkets.com/v0/control/openapi/) says
+   quote `quantity` is the resting order's TOTAL POT (backer stake + layer liability) in
+   1/10000 GBP; the backer stake — Betfair's `size` convention, what `size_gbp` carries — is
+   `quantity x price / 1e8`. Depth had been overstated ~2x at evens and ~20x on a 5% runner.
+   Fixed in `smarkets_normalise`.
+3. **Settlement**: WRONG. Contracts carry `state_or_outcome` (new / open / live / halted /
+   winner / loser / deadheat / reduced / voided / unavailable) and markets `state` (... /
+   settled / voided); the guessed `contract.state` / `.outcome` fields do not exist, so no
+   Smarkets bet would ever have settled. Fixed and confirmed live: `--ids
+   smarkets:150170446:417059135` (Clacton by-election, Reform UK) -> status=closed,
+   outcome=true; Labour -> false. Quotes / volumes / last prices answer EMPTY after
+   settlement — by-id quoting tolerates that. Dead heat = closed with outcome None.
+   Also fixed: markets have no `volume` or `close_time` fields — matched volume comes from
+   `/volumes/` (whole GBP) and the last executed price from `/last_executed_prices/` (a
+   PERCENT string), both now fetched per chunk; close_time is the event `start_datetime`.
+4. **Betfair**: STILL UNVERIFIED — needs the operator's delayed app key + login in the
+   environment (`BETFAIR_APP_KEY`, `BETFAIR_USERNAME`, `BETFAIR_PASSWORD`); the session had
+   none. Run `python bot/exchanges.py --probe --venue betfair` and `--ids betfair:<closed
+   market>:<selection>` once the secrets exist, and save the two payloads as fixtures.
+5. **Fixtures**: `tests/fixtures/smarkets_open_raw.json` (Senate-control market, two
+   runners) and `smarkets_settled_raw.json` (Clacton winner), with normalisation tests
+   over them (`test_smarkets_real_*`) plus a paging test.
+
+Local forecast tick (Smarkets-only, `--limit 2 --tier medium`, journals in the temp dir):
+selected the two deepest eligible contracts (Brazil presidential, GBP 134k matched) —
+Lula blind 0.48 / sighted 0.58 / proxy 0.54 vs mid 0.5765; Flavio Bolsonaro 0.40 / 0.43 /
+0.02 vs 0.4101. `market_read=informed` on both; the sighted reasoning cites the Smarkets
+book and the harness market lookup (Polymarket 0.57 on $9.8M). No paper bet (sighted
+numbers inside the spread after commission — correct). Credit $2.00 for the tick
+(~$0.87 per pair + ~$0.13 per proxy, sonnet-5 at medium). Note the preflight rejects a
+machine with `ANTHROPIC_BASE_URL` set: run it with `env -u ANTHROPIC_BASE_URL`. The
+exchange runner does not write trace files (that is run_bot's feature); the reasoning is
+in the journal record.
+
+Manifold edge (`python bot/score_manifold.py`, 2026-09-06, needs `PYTHONIOENCODING=utf-8`
+on Windows): resolution Brier BLIND 0.114 vs SIGHTED 0.096 (n=371 resolved pairs);
+movement-toward-us blind +0.033 (n=764), sighted +0.059 (n=479). The scorer's
+"+6430 mana mark-to-market over 193 bets" is NOT a usable P&L: it is a slippage-free
+share model that pays e.g. +754 on a 10-mana NO at 0.987 (the real fill bought 413
+shares, not 769), and it includes the 92 dry-run bets. Recomputed on the 101 LIVE bets
+with actual fill shares where journaled (54 of 101) and exit prices where exited:
+realised (35 resolved) +1559 on 1498 staked — but 29 of those 35 lack fill data and
+are share-model estimates dominated by two near-certain NO wins; exited (19) +199 on
+1075; unrealised (46) -20 on 2537. The app ledger (+775 mana as of the previous
+handover) remains the number to trust; the journal cannot reproduce it without fills.
+The 78%-invested vs 30%-cap check was not done (needs the account key).
+
+Next: operator merges PR #40, adds the Betfair secrets, dispatches `exchange-paper.yml`
+once with `mode=forecast`, confirms the journal commit and two hourly snapshot ticks;
+then item 4 above.
+
+## 2026-09-06 evening: exchange PAPER bot on PR #40 — handover to a LOCAL session
+
+**Read first:** `docs/exchange-paper-policy.md` (strategy, preregistered gate, every red-team
+verdict), then the PR description of #40, then this section. Branch
+`claude/monetize-forecaster-02dx6t`, head `a2d81ab` (6 commits on top of main `f24c68d`).
+PR #40 is a DRAFT, all 8 checks green, mergeable, no open review threads. Full suite 977
+passed, ruff + mypy clean. NOT merged: the operator merges.
+
+### What this session concluded (monetisation analysis, three red-team passes)
+- UK resident: Polymarket is close-only for the UK, Kalshi refuses UK residents. Legal,
+  automatable venues are Betfair Exchange (6% commission, Expert Fee above GBP 25k/yr
+  winnings, free DELAYED API key) and Smarkets (2%, public read API). Betting profits are
+  tax-free for UK individuals.
+- Ranked by risk-adjusted EV after red-teaming: (1) Metaculus prize stack, ~GBP 3k/yr net
+  of subscription + time, zero capital, decaying 30-50%/yr as entrants grow; (2) an exchange
+  bot ONLY IF the paper phase shows a >= ~3-point transferable edge (then Sharpe ~0.85
+  uncorrelated with equities, depth-capped around GBP 25-50k of bankroll) — at 1.5 points
+  it earns less than the index fund the bankroll leaves; (3) the track record as a
+  credential (highest mean, ~10% probability, not passive). Dropped: merger arbitrage
+  (Sharpe ~0 after costs/tax, crisis-correlated), OTM option bets (negative EV, retail
+  spreads), VPN into Polymarket (ToS breach, frozen-funds tail, most-competed venue),
+  energy-sector trades (insider-information risk from the day job).
+- The Manifold record (+775 mana, ~19% in 8 weeks on ~4,060 deployed, mark-to-market)
+  is the only estimate of the edge and it is against a spreadless, commission-free,
+  arbitrageur-free book. The exchange PAPER bot exists to measure the real number.
+
+### What was built (all paper; no code path can place an order — tested structurally)
+- `bot/exchanges.py` read-only Smarkets + Betfair clients; normalised contracts with
+  best back/lay + resting size (`back.prob >= lay.prob`); by-id quoting (listings only
+  return OPEN markets — settlement is only visible by id); cross-venue matching; cross-venue
+  lock maths; Betfair odds ladder. `--probe`, `--ids <contract ids>`.
+- `bot/run_exchange.py` selection (depth-ranked, never model-ranked), blind + sighted pair
+  via `run_manifold.forecast_market` (new kw-only hooks `brief_builder`,
+  `extra_blind_disallowed`; Manifold callers unchanged), shadow reasoning-only proxy
+  (`source.mode="proxy"`), paper bet ROUTED to the venue with the larger pound-EV, gates in
+  pounds (net EV >= 1.5%/GBP and >= GBP 2), Betfair-only dead-outsider lays under a 10%
+  liability cap, maker quote one ladder tick inside the touch beside every taker fill,
+  re-forecast only when BOTH touches move >= 10 points, lock ledger, `--snapshot-only`.
+  Journals: `bot/journal/exchange.jsonl`, `exchange-prices.jsonl`, `exchange-arbs.jsonl`.
+- `bot/score_exchange.py` offline: CLV in POINTS on the taker/hold/full population is the
+  gate (n>=200, CI90 lower>0, >=100 settled, ROI>0, Brier(sighted)-Brier(mid)<=-0.01 =>
+  GO-LIVE-CANDIDATE; n>=200 & CLV<=0 => KILL; else HOLD). Everything else descriptive:
+  maker vs taker (lower-bound fills), exit-past-fair-value, stop-loss, longshots, routing,
+  lock persistence, proxy correlation. `--refresh` pulls live quotes by id.
+- `.github/workflows/exchange-paper.yml` hourly; forecast tick when the newest journaled
+  forecast is > 5.5 h old (robust to cron slips), snapshot-only otherwise; subscription-
+  only, `--budget 6`; leak-guarded commit; Betfair secrets optional and hidden from the
+  agent subprocess (`run_bot._SECRETS_TO_HIDE`).
+- Leak guard: `smarkets`/`betfair` are public platforms; NEVER write a bare pound sign in
+  human-authored files (ci.yml's private deny-list matches it — write "GBP").
+
+### UNVERIFIED (the sandbox could not reach the venues) — verify these FIRST, locally
+1. Smarkets event filter: the client sends `state=upcoming&state=live&type_domain=politics
+   &type_domain=current_affairs`. Smarkets' own reference bot used `states=`/`types=`. If
+   `--probe` returns 0 Smarkets contracts, check docs.smarkets.com (blocked in the sandbox)
+   and fix `_smarkets_events` in `bot/exchanges.py`.
+2. `SMARKETS_QUANTITY_SCALE = 10000` (quantity units of GBP). If `--probe` sizes look 100x
+   off, change it. Price scale 10000 (basis points) is more certain.
+3. Smarkets settlement fields: `smarkets_normalise` guesses `contract.state == "settled"`
+   with `outcome`/`result` in winner/loser. Quote a KNOWN settled market with
+   `python bot/exchanges.py --ids smarkets:<market_id>:<contract_id>` and confirm
+   `status=closed, outcome=true/false`. If the result lives elsewhere (e.g. market
+   `winner_id`), fix the mapping — otherwise Smarkets bets never settle.
+4. Betfair delayed key: confirm `listMarketCatalogue` on eventTypeId 2378961 returns
+   markets, and `listMarketBook` by id on a CLOSED market shows runner WINNER/LOSER. The
+   delayed key may withhold some price data; EX_BEST_OFFERS is expected to work.
+5. Real-payload fixtures: once 1-4 are seen, save one raw Smarkets and one raw Betfair
+   response (open + settled) under `tests/fixtures/` and add normalisation tests on them.
+
+### Next steps, in order
+1. `git fetch origin && git checkout claude/monetize-forecaster-02dx6t && pip install -e
+   ".[dev]" && pytest -q` (expect 977 passed).
+2. Verify items 1-5 above. Push fixes to the same branch (PR #40 updates).
+3. One local forecast tick against real venues, journals in /tmp, to eyeball prompts and
+   cost: `python bot/run_exchange.py --limit 2 --tier medium --journal /tmp/x.jsonl
+   --prices /tmp/p.jsonl --arbs /tmp/a.jsonl` (needs a local `claude` login; the twin
+   section and market_read should appear in the sighted trace; cost ~$1.3/pair + proxy).
+4. Merge PR #40. Add repo secrets `BETFAIR_APP_KEY` (delayed), `BETFAIR_USERNAME`,
+   `BETFAIR_PASSWORD` (optional; Smarkets-only without them). Dispatch the workflow once
+   with `mode=forecast`, read the digest, confirm the journal commit; then confirm two
+   hourly snapshot ticks landed.
+5. Score Manifold locally (network needed; the sandbox could not): `python
+   bot/score_manifold.py` — blind vs sighted Brier and realised P&L are the current best
+   estimate of the edge; split realised vs unrealised, and check the 78%-invested vs
+   30%-exposure-cap discrepancy noted from the app screenshot.
+6. Weekly: `python bot/score_exchange.py` (add `--refresh` to pull quotes by id). HOLD
+   until the gate speaks; do not size, do not open a live account on "looks good so far".
+7. Prize stack (idea 1, highest certainty): make sure `--discover` in bot.yml picks up the
+   Fall 2026 FutureEval slug, MiniBench and Market Pulse 26Q4 automatically; full coverage
+   is the whole lever (a missed question scores 0 vs a median +12..17). Raise
+   `--limit` on the exchange bot for the US midterm window (2026-11-03) when per-race
+   books carry GBP 1k-10k at the touch.
+
+### Do not
+- Do not add a live-order code path to `bot/exchanges.py` or `run_exchange.py` in this
+  PR; a live phase is a separate policy document after a GO-LIVE-CANDIDATE verdict.
+- Do not re-add the LLM screening funnel, within-market overround arbs, an EV-per-day
+  hurdle, or mid-triggered exits — each was dropped with a reason in the policy doc.
+- Do not gate on any descriptive arm; the gate population is fixed.
 
 ## 2026-09-04 00:20 UTC+1: v0.4.28 MERGED to main (89eeb3a) — parallel research + reconciler live
 

@@ -711,15 +711,21 @@ def validate_market_read(payload: dict[str, Any]) -> list[str]:
 def forecast_market(
     market: dict[str, Any], mode: str, tier: str, args: argparse.Namespace,
     config: dict[str, Any], budget_state: dict[str, Any] | None = None,
-    deadline: float | None = None,
+    deadline: float | None = None, *,
+    brief_builder: Any = None, extra_blind_disallowed: str = "",
 ) -> dict[str, Any] | None:
     """One blind or sighted research forecast for one market. Thin runner over run_bot's
     agent machinery (modeled on bench/run_bench.forecast_one): build the system prompt via
     build_system, run the agent, extract + validate the JSON, one repair retry. Returns the
     payload plus cost/model, or None if it never produced a valid probability.
+
+    ``brief_builder(market, sighted=...)`` defaults to :func:`build_manifold_brief`; other
+    consumers of this loop (bot/run_exchange.py) pass their own so the budget, deadline,
+    validation, market_read and source-floor machinery stay one implementation.
+    ``extra_blind_disallowed`` appends venue domains to the blind run's tool deny list.
     """
     blind = mode == "blind"
-    brief = build_manifold_brief(market, sighted=not blind)
+    brief = (brief_builder or build_manifold_brief)(market, sighted=not blind)
     # Research floor (both modes are research forecasts): ANNOUNCE the tier's min_sources in
     # the brief and ENFORCE it in the validate/repair loop below — reused verbatim from
     # run_bot (SOURCE_FLOOR_SECTION + distinct_source_count), so this floor matches the
@@ -731,6 +737,8 @@ def forecast_market(
     base_cmd = args.agent_cmd
     system = run_bot.build_system(tier, blind, config)
     agent_cmd = agent_cmd_for(base_cmd, blind)
+    if blind and extra_blind_disallowed:
+        agent_cmd += "," + extra_blind_disallowed
 
     budget_state = budget_state if budget_state is not None else {
         "usd": 0.0,

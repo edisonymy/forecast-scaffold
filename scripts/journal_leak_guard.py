@@ -31,7 +31,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-PUBLIC_PLATFORMS = frozenset({"manifold", "metaculus"})
+PUBLIC_PLATFORMS = frozenset({"manifold", "metaculus", "smarkets", "betfair"})
 PUBLIC_CURRENCY_SYMBOL = chr(0xA3)
 MODEL_OUTPUT_REDACTION = "[redacted by publication privacy guard]"
 _HUNK_HEADER = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@")
