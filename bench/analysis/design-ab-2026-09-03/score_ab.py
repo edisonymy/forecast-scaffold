@@ -1,6 +1,9 @@
 """Score the 2026-09-03 design A/B at resolution: paired log score + continuous platform score."""
 from __future__ import annotations
-import json, math, statistics as st, sys
+import json
+import math
+import statistics as st
+import sys
 from pathlib import Path
 
 ROOT = Path(r"C:\Users\Edison Yi\Documents\code\forecast-scaffold")
@@ -8,7 +11,7 @@ D = ROOT / "bench" / "analysis" / "design-ab-2026-09-03"
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT))
 from forecast_scaffold.core import percentiles_to_cdf  # noqa: E402
-from bench.analysis.minibench_numeric_tails import boot_ci, location_of, score_row  # noqa: E402
+from bench.analysis.minibench_numeric_tails import boot_ci, score_row  # noqa: E402
 
 
 def load(names):
