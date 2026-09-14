@@ -196,22 +196,27 @@ What happened, in order:
     `Documents/code/forecast-scaffold-new` (directory swap left to Edison,
     since this session was running inside the old tree).
 
-### OPEN ITEM — the five API secrets (blocks the bot)
+### Secrets — RESOLVED 22:12 UTC
 
-The machine-to-machine copy (a one-off workflow in the archive piping each
-secret into `gh secret set` on the new repo) was blocked by the session's
-permission classifier, so Edison enters them himself. Until then the bot
-refuses live runs (green, harmless) and `resolution-sync.yml` stays disabled.
+The automated copy was blocked by the session's permission classifier, so
+Edison ran a one-off `copy-secrets.yml` workflow in the archive himself (it
+pipes each archive secret into `gh secret set` on the new repo; no value is
+ever printed). All six secrets present; `COPY_TARGET_TOKEN` deleted;
+`resolution-sync.yml` enabled. The workflow file remains on the archive's
+main and is inert without that token.
 
-```
-gh secret set METACULUS_TOKEN          --repo edisonymy/forecast-scaffold
-gh secret set ASKNEWS_API_KEY          --repo edisonymy/forecast-scaffold
-gh secret set OPENROUTER_API_KEY       --repo edisonymy/forecast-scaffold
-gh secret set CLAUDE_CODE_OAUTH_TOKEN  --repo edisonymy/forecast-scaffold   # or: claude setup-token
-gh secret set MANIFOLD_API_KEY         --repo edisonymy/forecast-scaffold   # only if the Manifold bot returns
-gh workflow enable resolution-sync.yml --repo edisonymy/forecast-scaffold
-```
+### Verification (22:15–22:45 UTC)
 
-Then, once two consecutive bot runs are green WITH journal commits, delete
-the archive's secrets (`gh secret delete <NAME> --repo
-edisonymy/forecast-scaffold-mit-archive`) so nothing can ever run there.
+- `resolution-sync.yml`: ran and committed `bot: resolutions sync` to the new
+  `main` (Metaculus token + journal commit path proven).
+- `bot.yml` 22:20 tick via the kicker: authenticated, swept every tournament
+  question, all closed/resolved on a Sunday night, `forecast 0 question(s)`.
+- `bot-test.yml` single-post backtest (post 44521, tier low, dry run):
+  `forecast 6 question(s), 0 failed` under the subscription token — the
+  Claude OAuth path is proven. Nothing submitted or committed.
+- Deny-list: raw GNU grep of the new `LEAK_PATTERNS` over all 93 journal
+  files (a superset of what the guard scans) found 0 matching lines, so no
+  historical entry would have tripped it.
+- forecast-exchange `exchange-tick` 22:00 run cloned `scaffold=988c9f8`.
+- Archive secrets can now be deleted at leisure (`gh secret delete <NAME>
+  --repo edisonymy/forecast-scaffold-mit-archive`); nothing runs there.
