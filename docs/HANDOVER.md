@@ -1,5 +1,14 @@
 # HANDOVER — continuation state as of 2026-07-16
 
+## 2026-09-14: repo relicensed and re-published — read docs/relicense-migration.md first
+
+`edisonymy/forecast-scaffold` is now a FRESH public repo (single root commit
+`988c9f8`, PolyForm Noncommercial 1.0.0, v0.5.0). All prior history, the 47 PRs
+and the MIT-era tree live in the PRIVATE `edisonymy/forecast-scaffold-mit-archive`.
+Commit SHAs cited below this section refer to the archive. The bot is paused
+in effect until Edison re-enters the five API secrets (see the open item in
+docs/relicense-migration.md); the deny-list lives in `~/.forecast-scaffold.env`.
+
 ## 2026-09-13: exchange trading bot moved to a PRIVATE repository
 
 The UK betting-exchange paper bot (PR #40 on this repo: `bot/exchanges.py`, `run_exchange.py`,
