@@ -1,0 +1,216 @@
+{
+ "record_id": "2026-09-07-054e053d",
+ "question": "How many tonnes of rare-earth permanent magnets will China export to the United States in August 2026?",
+ "question_id": 45749,
+ "url": "https://www.metaculus.com/questions/45558/",
+ "question_type": "numeric",
+ "forecast_at": "2026-09-07T21:35:02+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.987,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 205.0,
+    "25": 351.6666666666667,
+    "50": 486.6666666666667,
+    "75": 603.3333333333334,
+    "90": 715.0
+   },
+   "p_above_upper": 0.01
+  },
+  "phase1": {
+   "10": 205.0,
+   "25": 351.6666666666667,
+   "50": 486.6666666666667,
+   "75": 603.3333333333334,
+   "90": 715.0
+  },
+  "phase2": null,
+  "spread_phase1": 40.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 255.0,
+   "25": 380.0,
+   "50": 490.0,
+   "75": 590.0,
+   "90": 680.0
+  },
+  "p_above_upper": 0.005
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.8712,
+   "seconds": 217.8,
+   "estimate": {
+    "percentiles": {
+     "10": 105.0,
+     "25": 290.0,
+     "50": 460.0,
+     "75": 590.0,
+     "90": 700.0
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Reference class: the 16 monthly China->US rare-earth permanent-magnet (85051110) volumes since the April 2025 licence regime began; these run from 0 t to ~650 t with a median near 460 t, and two outright zero months (Sept 2025, May 2026). Prior anchored at ~460 t before news. July 2026's ~647 t was the second-highest post-control month and the first above the 2024 monthly average since Oct 2025, so simple mean-reversion pulls August down even absent shocks; the one prior Aug/Jul pair (590 vs ~619 in 2025) was also modestly lower. Against that, Reuters (Sept 4) reports a handful of Chinese suppliers refusing US shipments since early August after Beijing sanctioned the Responsible Business Alliance — specific, in-window, and negative — but it is explicitly partial ('Reuters was unable to determine the total number', four cited instances), its concrete volume examples are yttrium/gallium rather than magnets, and finished magnets are the category that has been recovering while controlled compounds stay suppressed; some firms also reported newly granted licences. Offsetting upside: Trump's 200% tariff threat and summit-driven uncertainty create a real incentive for US buyers to pull shipments forward, and August tonnage reflects licences issued before the pullback. I therefore centre modestly below July with a wide, left-skewed distribution: meaningful mass at 100-300 t if the pullback bit broadly, and ~15-20% above July's level if it did not touch magnets. Evidence is thin on the magnet-specific impact, so I stay close to the reference-class centre rather than pricing the news as a collapse.",
+   "sources": [
+    "https://finance.yahoo.com/news/china-rare-earth-firms-halt-071537922.html",
+    "https://www.scmp.com/economy/global-economy/article/3347326/chinas-rare-earth-magnet-exports-us-keep-falling-europe-gains",
+    "https://www.csis.org/analysis/rare-earth-export-restrictions-one-year-later",
+    "https://silverado.org/data-dashboards/china-global-exports-rare-earth-elements-rare-earth-permanent-magnets/",
+    "https://rareearthexchanges.com/news/china-rare-earth-export-controls-magnet-rebound/",
+    "https://www.usnews.com/news/top-news/articles/2026-09-04/china-rare-earth-firms-halt-some-us-shipments-over-geopolitical-worries-sources-say",
+    "https://www.spglobal.com/market-intelligence/en/news-insights/articles/2026/6/china-tightens-rare-earth-export-curbs-on-10-us-companies-103014947"
+   ],
+   "dossier": "SUBJECT: tonnes of Chinese rare-earth permanent magnets (Chinese customs subheading 85051110, NOT the broader 6-digit HS 8505.11) exported to the United States during calendar month August 2026.\n\nRESOLUTION INSTRUMENT: resolves off GACC destination-level monthly customs data for subheading 85051110 as reported by Reuters/Bloomberg/SCMP/CNBC — not off the 6-digit HS 8505.11 total, not off US import statistics, not off global magnet export totals. Where outlets differ, the most commonly cited value governs. GACC publishes headline trade data around the 8th of the following month and detailed by-destination/by-commodity data around the 18th-20th; the August 2026 detail is therefore due mid-to-late September 2026. If GACC stops publishing destination detail for the category, the question annuls.\n\nEVENT WINDOW: 2026-08-01 -> 2026-08-31 per the criteria; as of 2026-09-07T21:20Z, 100% elapsed. The physical quantity is already determined; only its publication is pending.\n\nSTATUS-QUO OUTCOME: absent any shock, the month lands in the band the series has occupied under the licence regime, near its post-control central tendency, with July's level as the immediately preceding observation.\n\nBASE RATES / SERIES HISTORY (all GACC-derived):\n- Over the ~16 months since the April 2025 controls began, monthly US-bound volumes have spanned 0 t to roughly 650 t. Two of those months were exactly zero: September 2025 and May 2026 (question background, citing GACC).\n- Conditional on the preceding month being at or above the 2024 monthly average, the sample is thin — July 2026 was the first such month since October 2025.\n- Over July->August specifically, the one comparable post-control pair: August 2025 ~590 t vs July 2025 ~619 t (a ~5% month-on-month decline). Source: SCMP/Reuters reporting of GACC data.\n- July 2026 US-bound: ~647 t, +32.6% month-on-month and +4.5% year-on-year, second-highest monthly volume since controls began, and the first month above the 2024 monthly average since October 2025 (Reuters/gulfnews, Silverado Policy Accelerator dashboard updated 2026-08-31, rareearthexchanges 2026-09-01). Implied June 2026 ~488 t.\n- January+February 2026 combined: 994 t, -22.5% year-on-year; US was China's third-largest magnet buyer at 9.2% of total exports (SCMP, 2026-03-20).\n- Cumulative January-July 2026 US-bound magnet exports ran roughly 16% below the same period of 2024 (question background). Residual arithmetic implies March and April 2026 each in the low-400s t.\n- China's global magnet exports July 2026: 5,375.1 t, -4.9% month-on-month, -3.6% year-on-year; H1 2026 global magnet exports were at record levels (GACC via Reuters/digitimes).\n\nEVIDENCE POINTING TOWARD LOWER AUGUST VOLUMES:\n- Reuters, 2026-09-04: a handful of Chinese suppliers have refused to ship rare earths to US customers since early August, after Beijing sanctioned the US-based Responsible Business Alliance; the firms fear punishment for complying with the Responsible Minerals Initiative audit framework. Reuters cited four instances and stated it could not determine the total number of affected suppliers. Not a formal blanket ban.\n- Same Reuters piece: suppliers indicated they intend to keep commercial sales cautious until the Xi-Washington bilateral talks scheduled for 2026-09-24 conclude.\n- China added 10 US entities to its dual-use export-control list on 2026-06-22, including MP Materials and USA Rare Earths, with immediate effect (S&P Global).\n- Elevated bilateral tension during the window: Trump publicly threatened tariffs of up to 200% if China curbed magnet supply.\n- Controlled rare-earth compounds and metals to the US remain far below historical levels; total rare-earth transfers to the US run at roughly half 2024 levels (Chinese customs data cited by Reuters).\n- MOFCOM has banned export of rare-earth extraction, separation and magnet-manufacturing technology outright.\n\nEVIDENCE POINTING TOWARD HIGHER OR UNCHANGED AUGUST VOLUMES:\n- The commodities named in the September 4 supplier-refusal reporting were yttrium, gallium, terbium, tungsten and indium phosphide — raw and refined inputs — not finished sintered NdFeB magnets. The article carried no magnet tonnage impact estimate and did not quantify aggregate August disruption.\n- Same article: some US firms reported recently receiving multiple licences after long waits.\n- Analysts note China's restrictions have bitten far harder on separated compounds and metals than on finished magnets, which have been rebounding (rareearthexchanges, 2026-09-01; Silverado, 2026-08-31).\n- Shipments in any month reflect licences and orders placed weeks earlier, so a pullback beginning in early August has a lagged and partial effect on August-dated customs entries.\n- Tariff threats and visible supply risk create an incentive for US buyers to accelerate orders and stockpile.\n- Silverado notes China is on average shipping physically smaller sintered NdFeB magnets to the US, so unit counts and tonnage can diverge; the resolution metric is tonnage.\n\nSEARCHED FOR BUT NOT FOUND: any published or preliminary August 2026 US-bound magnet figure (GACC detail not yet out as of 2026-09-07); a complete month-by-month 2025-2026 US-bound tonnage table (CSIS, Silverado and MacroMicro pages did not expose one — MacroMicro and one trade-data aggregator returned HTTP 403); any magnet-specific quantification of the supplier pullback; any exact 2024 US-bound monthly average figure; any prediction market, bookmaker or exchange contract on this quantity on Polymarket, Kalshi or Manifold — none found.",
+   "reference_class": "Monthly China-to-US rare-earth permanent-magnet (Chinese customs subheading 85051110) export volumes under the post-April-2025 export-licence regime, May 2025 through July 2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.9828,
+   "seconds": 273.9,
+   "estimate": {
+    "percentiles": {
+     "10": 240.0,
+     "25": 375.0,
+     "50": 500.0,
+     "75": 610.0,
+     "90": 725.0
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Reference class: the 15 monthly China->US NdFeB magnet volumes under the post-April-2025 licensing regime (GACC subheading 85051110). Trailing-12-month mean is ~490 t, and the Feb-Jul 2026 mean is ~476 t; that is my prior, not July's 647 t. July 2026 (647.3 t, +32.6% MoM, highest since Oct 2025) is an outlier at the top of the post-control range, and this series reverts hard after spikes: after Jul 2025's ~619 t came 590 t then 420.5 t; after the Oct 2025 peak came five consecutive monthly declines to a 406 t nine-month low in Mar 2026. Straight mean reversion alone puts August near 520-580. Adjusting down for the documented shock: MOFCOM listed the Responsible Business Alliance on 5 Aug 2026 and Reuters (4 Sep) reports a handful of Chinese suppliers have since refused US shipments, covering ~85% of the August month. But the reporting is thin and mostly about non-magnet materials -- Reuters quantified yttrium (27 t in July), not magnets, cited only four documented refusal instances, and could not size the total; major magnet makers hold general licences and the customs figure partly clears June/July orders, so the hit is partial and lagged. The RMI due-diligence channel does bite disproportionately at US automotive/electronics buyers, which is the main downside mechanism and why my distribution is left-skewed. No market prices this. Upper escape (>1200 t) is priced at 1%: no month in the entire series, including pre-control 2024, has approached that level.",
+   "sources": [
+    "https://www.scmp.com/economy/global-economy/article/3347326/chinas-rare-earth-magnet-exports-us-keep-falling-europe-gains",
+    "https://www.miningweekly.com/article/china-rare-earth-firms-halt-some-us-shipments-over-geopolitical-worries-sources-say-2026-09-04",
+    "https://www.freemalaysiatoday.com/category/business/2026/09/04/china-rare-earth-firms-halt-some-us-shipments-over-geopolitical-worries",
+    "https://rareearthexchanges.com/news/china-demonstrates-its-rare-earth-leverage-u-s-imports-of-export-controlled-materials-fall-to-zero-while-magnet-trade-stays-constrained/",
+    "https://rareearthexchanges.com/news/china-rare-earth-export-controls-magnet-rebound/",
+    "https://www.kitco.com/news/off-the-wire/2026-04-20/chinas-rare-earth-magnet-exports-fall-16-march",
+    "https://www.bloominglobal.com/media/detail/chinas-rare-earth-magnet-exports-july-2026-trade-data-and-destination-report",
+    "https://www.mofo.com/resources/insights/260821-mofcom-places-the-responsible-business-alliance",
+    "https://www.cnbc.com/2025/10/21/chinas-rare-earth-magnet-exports-to-us-falls-for-second-month-reversing-brief-recovery-.html",
+    "https://silverado.org/data-dashboards/china-global-exports-rare-earth-elements-rare-earth-permanent-magnets/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the US-bound tonnage in GACC monthly detailed customs data for Chinese subheading 85051110 (rare-earth NdFeB permanent magnets) as reported by Reuters/Bloomberg/SCMP/CNBC -- NOT the broader 6-digit HS 8505.11 total, NOT US import statistics, NOT the global monthly total, NOT export-licence counts.\n\nEVENT WINDOW: 2026-08-01 -> 2026-08-31 per the resolution criteria; as of 2026-09-07 21:20 UTC, 100% elapsed. The quantity is already physically determined; only publication remains. GACC releases headline trade data ~8th of the following month and detailed by-destination/by-commodity data ~18th-20th, so the August figure is expected roughly 18-20 Sep 2026 -- i.e. at or just after the 19 Sep scheduled resolution; the fine print says resolution waits if the data is merely delayed.\n\nSTATUS-QUO OUTCOME: absent any new shock, the month lands near the recent run-rate of this series, which has been trending up from a March trough.\n\nOBSERVED SERIES, US-bound magnet tonnes (GACC via Reuters/SCMP/Kitco/trade press):\n- 2025: May 46 | Jun 352.8 | Jul ~619 (implied by July 2026 being +4.5% YoY) | Aug 590 (-5% MoM) | Sep 420.5 (-28.7% MoM) | Oct = local peak, above 647 and above the 2024 monthly average\n- Nov 2025 - Feb 2026: four consecutive monthly declines (SCMP, 2026 report on Jan-Feb data)\n- 2026: Jan+Feb combined 994 (-22.5% YoY; US = 9.2% of China's total magnet exports, third-largest buyer) | Mar 406, -9.5% MoM, a nine-month low and the fifth consecutive decline, -30.6% YoY (Kitco/Reuters, 20 Apr 2026) | Apr not separately reported in sources found; implied below May by the description of May as a recovery | May 473 (Rare Earth Exchanges/Silverado, 26 Jun 2026) | Jun ~488 (implied) | Jul 647.3, +32.6% MoM, +4.5% YoY, highest since Oct 2025, first month above the 2024 monthly average since Oct 2025 (Reuters, 21 Aug 2026)\n- Jan-Jul 2026 cumulative is roughly 16% below the same period of 2024.\n\nBASE RATES / DISPERSION:\n- Over all 15 post-control months (May 2025 - Jul 2026): mean ~470 t, range 46-750 t.\n- Conditional on the licensing regime having normalised (Nov 2025 - Jul 2026, excluding the May-Jun 2025 shutdown): mean ~490 t, range 406-647 t.\n- Conditional on the six most recent months (Feb-Jul 2026): mean ~476 t.\n- Conditional on the three most recent months: mean ~536 t, direction upward.\n- Month-over-month log changes, Nov 2025 - Jul 2026: SD ~0.18 (observed MoM moves -18%, -9.5%, ~-4%, +21%, +3%, +33%). Including the May-Jun 2025 shutdown months the SD is ~0.28.\n- Post-spike behaviour in this series: the two prior local peaks (Jul 2025 ~619, Oct 2025) were each followed by declines, one mild (-5%) and one steep (-28.7%), then a multi-month downtrend after October.\n- Global monthly magnet exports, Jul 2026: 5,375.1 t, -4.9% MoM, -3.6% YoY. Mar 2026 global: 5,238 t. Q1 2026 global: 16,001 t, +4.8% YoY. EU was the largest destination bloc in July 2026 at 39.8%; Germany led individual destinations; the US ranked second, ahead of South Korea.\n\nEVIDENCE POINTING DOWN:\n- 5 Aug 2026: MOFCOM placed the Responsible Business Alliance and five other US supply-chain due-diligence entities on its Anti-Foreign Sanctions Law countermeasure list, five days after the US added 43 Chinese firms to the UFLPA Entity List on 31 Jul 2026 (Morrison Foerster, 21 Aug 2026; Fieldfisher; Kumi). Chinese mineral companies were urged to halt all RBA/Responsible Minerals Initiative audits, data submissions and cooperation (MLex).\n- Reuters, 4 Sep 2026: a handful of Chinese suppliers have refused to ship rare earths to US companies since early August, wary of Beijing punishing them for complying with RMI due diligence; some held valid export licences. Sources cited four specific instances of Chinese firms declining to send material. Other Chinese rare-earths firms had already stopped US shipments in recent months to avoid geopolitical entanglement.\n- 22 Jun 2026: MOFCOM blacklisted MP Materials and USA Rare Earth, barring Chinese firms from supplying them dual-use materials.\n- Some US firms have waited more than six months for mineral licences; prices for yttrium, indium phosphide and tungsten remain near record highs on tight supply.\n- RBA/RMI frameworks are used chiefly by automotive and electronics buyers, which are the dominant end-users of US-bound NdFeB magnets.\n\nEVIDENCE POINTING UP:\n- The Reuters halt story is scoped to rare earths broadly; the only tonnage it quantifies is yttrium (27 t to the US in July, second-highest month since Jan 2025, after two zero months). It does not name magnet producers, does not report any magnet tonnage, and states Reuters could not determine how many suppliers were involved.\n- General export licences (one-year, client-specific) were rolled out to major magnet makers: JL Mag can ship to nearly all its customers; Ningbo Yunsheng and Zhong Ke San Huan hold narrower permissions; suppliers to Ford received them.\n- Reuters' own framing is that exports of many rare earths and related magnets have rebounded since the April 2025 restrictions.\n- Customs clearances in early August reflect orders and licences from June/July, so a halt beginning 5 Aug propagates only partially into the August figure.\n- Xi visits Washington on 24 Sep 2026; rare-earth supply is on the US planning agenda and some firms anticipate an increase in licence approvals around the summit.\n- US buyers face documented stockpiling incentives given repeated supply interruptions.\n\nDATA-QUALITY NOTE: the question background states US-bound magnet exports were zero in May 2026. Sources found contradict this -- the zero applies to export-controlled rare-earth compounds and metals; US-bound magnet exports in May 2026 were 473 t. Treat the 473 t figure as the magnet series value.\n\nSEARCHED FOR BUT NOT FOUND: any separately reported April 2026 US-bound magnet tonnage; any November or December 2025 monthly tonnage (only the 'four consecutive declines' characterisation); the exact October 2025 peak value",
+   "reference_class": "Monthly China-to-US rare-earth permanent-magnet export volumes (GACC subheading 85051110) in the post-April-2025 export-control regime, May 2025 through July 2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.8476,
+   "seconds": 278.8,
+   "estimate": {
+    "percentiles": {
+     "10": 270.0,
+     "25": 390.0,
+     "50": 500.0,
+     "75": 610.0,
+     "90": 720.0
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Reference class: monthly GACC 85051110 China->US magnet volumes in the 2026 post-licensing regime. Jan+Feb 2026 = 994 t combined (SCMP, -22.5% y/y); May = 473 t; Jul = 647 t (+4.6% y/y, highest since Oct 2025, first month above the 2024 monthly average since then). Backing out the background's 'Jan-Jul 2026 ~16% below Jan-Jul 2024' implies Mar/Apr/Jun each ~460-490 t, so the 2026 run-rate is a fairly stable ~460-500 t with July an outlier high. I corrected the background's key error: US-bound MAGNETS were not zero in May 2026 (473 t); the zero was controlled RE compounds/metals. So the series is far less bimodal than the prompt implies, and a low-hundreds August is not the status quo. Two forces pull down from 647: ordinary mean reversion after a licence-batch catch-up month (Aug-25 came in 5% below the Jul-25 spike), and Reuters (4 Sep 2026) reporting a handful of suppliers refusing US shipments from early August after China sanctioned the RBA - unquantified, supplier-level, not a blanket ban, and pitched mainly at controlled raw materials in a 'two-speed' chain where magnets had largely recovered. Since RBA members are exactly the electronics/auto OEMs buying magnets, I weight it as a real but partial drag. Centre ~500 t (roughly the 2026 median, ~0.77x July), with a fat left tail for the halt biting harder than reported and an upside capped by July already being a post-control high. No human market found on Polymarket/Kalshi/Manifold; the harness's Manifold candidates (US-China war, GDP overtake) share no resolution terms with this question and are not anchors. p_above_upper=0.01: >1200 t would need roughly double any post-control month - only a pre-emptive stockpiling rush ahead of the announced US 2027 import phase-out plus full backlog clearance.",
+   "sources": [
+    "https://www.scmp.com/economy/global-economy/article/3347326/chinas-rare-earth-magnet-exports-us-keep-falling-europe-gains",
+    "https://rareearthexchanges.com/news/china-demonstrates-its-rare-earth-leverage-u-s-imports-of-export-controlled-materials-fall-to-zero-while-magnet-trade-stays-constrained/",
+    "https://rareearthexchanges.com/news/china-rare-earth-export-controls-magnet-rebound/",
+    "https://finance.yahoo.com/news/china-rare-earth-firms-halt-071537922.html",
+    "https://theoregongroup.com/commodities/rare-earths/chinese-rare-earth-suppliers-halt-licensed-us-shipments-ahead-of-xi-visit/",
+    "https://finance.biggo.com/news/9b39e714-20ad-4a36-91f1-6ecfc1b1baf7",
+    "https://silverado.org/publications/chinas-global-exports-rare-earths-june-26-update/",
+    "https://silverado.org/data-dashboards/infographic-chinas-exports-us-rare-earths/"
+   ],
+   "dossier": "EVENT WINDOW: 1 Aug 2026 -> 31 Aug 2026 per the resolution criteria (calendar month of August 2026). As of Now = 2026-09-07T21:20Z, 100% elapsed - the quantity is already realised; only publication is pending.\n\nRESOLUTION INSTRUMENT: resolves off the GACC by-destination monthly figure for Chinese customs subheading 85051110 (rare-earth/NdFeB permanent magnets) as reported by Reuters/Bloomberg/SCMP/CNBC - NOT the broader 6-digit HS 8505.11 total, NOT global magnet exports, NOT exports of controlled rare-earth compounds/metals (a separate series that is frequently confused with magnets in secondary coverage). GACC releases preliminary headline trade data ~8th of the following month and detailed by-commodity/by-destination data ~18th-20th; August 2026 detail therefore expected ~18-20 Sep 2026, i.e. after this question's scheduled 19 Sep resolution date in the worst case (criteria say resolution waits for delayed data).\n\nCORRECTION TO A WIDELY REPEATED CLAIM: the 'zero in May 2026' figure that appears in some framings of this question refers to export-controlled rare-earth COMPOUNDS AND METALS to the US, which were 0 t in May 2026 (first such gap since Sep 2025). US-bound MAGNETS in May 2026 were 473 t (Rare Earth Exchanges, 26 Jun 2026). Do not treat a zero magnet month as a 2026 precedent.\n\nSECOND CORRECTION: web searches for 'August 2026' on this topic return an SCMP piece stating 590 t 'in August, down 5% from July when imports had surged 76% month on month'. That is AUGUST 2025 data (Jun-25 353 t -> Jul-25 ~619.6 t, +75.5% -> Aug-25 590 t, -5%). No August 2026 by-destination figure had been published as of 2026-09-07.\n\nEVIDENCE BULLETS\n- Jan+Feb 2026 combined US-bound magnets: 994 t, -22.5% y/y; US was China's 3rd-largest buyer at 9.2% of total exports; EU 4,775 t, +28.4% y/y (SCMP, published 20 Mar 2026, updated 20 May 2026).\n- May 2026 US-bound magnets: 473 t; same month US-bound export-controlled RE compounds/metals: 0 t (Rare Earth Exchanges, 26 Jun 2026). May 2025 comparison: 46 t.\n- Jul 2026 US-bound magnets: 647 t, +4.6% y/y, highest since Oct 2025, and the first month since Oct 2025 to exceed the 2024 monthly average (Rare Earth Exchanges, 1 Sep 2026; BigGo/Nikkei-derived, 20 Aug 2026).\n- Jul 2026 China global magnet exports: 5,375 t, -3.6% y/y. Exports to Japan 111 t, -52.2% y/y (BigGo, 20 Aug 2026).\n- 'Two-speed' pattern through Jul 2026: exports of fully controlled RE compounds and metals stayed far below historical levels while permanent-magnet exports largely recovered; US-bound controlled compounds went 8 t (Jun 2026) -> 29 t (Jul 2026). Analysts note customs data cannot identify what share of exported magnets falls under the controls (Rare Earth Exchanges, 1 Sep 2026).\n- Reuters, 4 Sep 2026: a handful of Chinese rare-earth suppliers have refused to ship to US customers since early August 2026, after Beijing sanctioned the US-based Responsible Business Alliance; the refusals occurred despite valid approved export licences. Reuters was unable to determine how many suppliers were involved. Scope described covers yttrium, indium phosphide, tungsten 'and related magnets'. No blanket ban was announced.\n- Same Reuters piece, other direction: several US firms report recently receiving multiple licences after long waits and anticipate more approvals around the summit; Rhodium's Reva Goujon expects Beijing to loosen critical-raw-material controls somewhat around the 24 Sep 2026 Xi visit to Washington. That easing window falls after the August event window.\n- Same Reuters piece: China shipped 27 t of yttrium to the US in July 2026, its second-highest monthly shipment since Jan 2025, after two prior months of zero; yttrium flows run at roughly half their 2024 level. Gallium shipments down 65% and yttrium down 98% year-to-date on some measures.\n- China issued a first batch of 'general' (streamlined, multi-shipment) rare-earth export licences to magnet makers during 2026 (Tom's Hardware / Mining.com), a procedural change that reduces per-shipment approval friction.\n- Silverado Policy Accelerator (22 Jul 2026) characterised US-bound magnet flows as 'well below historical levels' in June 2026.\n- Structural: China holds ~91% of refined rare-earth output and ~94% of sintered permanent-magnet production (2024). April 2025 controls put seven medium/heavy REs (incl. terbium, dysprosium, yttrium) and magnets containing them under licensing.\n- Policy backdrop pulling the other way over a longer horizon: US legislative push to end imports of rare-earth magnets from China, Russia, Iran and North Korea by 2027.\n\nBASE RATES / SERIES HISTORY (US-bound magnets, tonnes)\n- Over the Jan-Jul 2026 post-licensing regime specifically: Jan+Feb 994 combined (~497/mo); May 473; Jul 647. Cumulative Jan-Jul 2026 was reported ~16% below Jan-Jul 2024; combined with the known months this implies Mar, Apr and Jun each in the mid-400s to high-400s (DERIVED by arithmetic, not directly sourced - treat as an estimate).\n- Over the 2024 pre-control baseline: the 2024 monthly average sat just below the Jul 2026 print of 647 t, since Jul 2026 was described as the first month above that average since Oct 2025.\n- Over the 2025 post-control months: Apr 2025 controls -> May 2025 46 t -> Jun 2025 353 t (+660% m/m) -> Jul 2025 ~619.6 t (+75.5% m/m) -> Aug 2025 590 t (-5% m/m) -> Oct 2025 a local peak (Jul 2026's 647 t was 'highest since October 2025') -> monthly declines every month from Oct 2025 through Mar 2026.\n- Conditional on the prior month being a local spike: the one in-regime precedent (Jul-25 spike -> Aug-25) saw a -5% m/m move.\n- Conditional on a fresh Beijing-side restrictive action landing mid-window: the closest analogue is the Apr 2025 control announcement, where the following full month fell to 46 t from a pre-control run-rate near 600 t. That was a formal blanket licensing regime, not a supplier-level refusal.\n- Month-on-month log changes across the last 12 months of this series have a standard deviation of rough",
+   "reference_class": "Monthly China->US NdFeB permanent-magnet export volumes (GACC customs subheading 85051110) during the post-April-2025 licensing regime, specifically the Jan-Jul 2026 stretch"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1589,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2427,
+   "seconds": 81.4,
+   "estimate": {
+    "percentiles": {
+     "10": 255.0,
+     "25": 380.0,
+     "50": 490.0,
+     "75": 590.0,
+     "90": 680.0
+    },
+    "p_above_upper": 0.005
+   },
+   "reasoning": "Reconciled on evidence, not by averaging the runs. The load-bearing fix is factual: the 'zero in May 2026' in the background is the controlled rare-earth compounds/metals series, not magnets - US-bound magnets were 473 t. Internal arithmetic confirms it: with Jan+Feb 994, Mar 406, Jun ~488, Jul 647 and Jan-Jul 2026 ~16% below Jan-Jul 2024, a zero May would force Apr and Jun near 800 t each, contradicting July's 647 t being the highest month since Oct 2025; May = 473 closes the arithmetic and implies a 2024 monthly average of ~580-600, itself consistent with July being the first month above that average since Oct 2025. So there is no zero month in this series since June 2025, and the deep left tail one run priced is unsupported. Prior is therefore the stable 2026 run-rate of ~470-500 t, not July's outlier 647 t. Two forces pull below July: ordinary reversion after a licence-catch-up spike (the one in-regime Jul->Aug pair moved -5%; the Oct-25 peak was followed by five straight declines), and the 5 Aug RBA listing with Reuters' 4 Sep report of suppliers refusing US shipments despite valid licences. That shock is real but partial and lagged - Reuters quantified only yttrium, cited four instances, could not size the total, major magnet makers hold general licences, and August clearances partly discharge June/July orders - so it justifies left skew, not a step change. Centre 490 t, about 0.76x July.",
+   "sources": [],
+   "reconciliation": "In dispute: (1) whether US-bound magnets were 0 t in May 2026 (Run 1, following the background) or 473 t (Runs 2 and 3); (2) how much the RBA-sanction supplier pullback cuts August magnet tonnage; (3) how far to revert from July's 647 t. No web access this run, so (1) was settled by arithmetic consistency across figures all three dossiers agree on - a zero May is irreconcilable with Jan-Jul 2026 running ~16% below 2024 while July at 647 t is the highest month since Oct 2025, whereas 473 t fits cleanly. I therefore adopt Runs 2/3's corrected series and reject Run 1's zero-inclusive reference class and its 105 t p10; that is why my centre is above Run 1's 460 t and my left tail much thinner. (2) is pure judgment that no dossier resolves - Reuters explicitly could not determine how many suppliers were involved and quantified no magnet tonnage, while RMI adopters are exactly the auto/electronics magnet buyers, so I price it as a partial drag with a fat-ish left tail rather than a regime break; I would bet on partial. (3) I carry Runs 2/3's reference-class prior (~470-500 t 2026 run-rate) forward as my own, with July treated as an outlier. My 490 t centre sits marginally below their 500 t because I weight the in-window pullback slightly more than they did, and my 90-10 width of 425 t sits between Run 3's 400 and Run 2's 470. Publication timing (GACC detail due ~18-20 Sep vs a 19 Sep scheduled resolution) affects when, not what, resolves - the fine print waits on delayed data. No human market prices this quantity; the harness's Manifold candidates are unrelated and were not used.",
+   "disagreements": [
+    {
+     "claim": "US-bound rare-earth magnet exports were zero in May 2026, as the background states.",
+     "kind": "factual",
+     "verdict": "Rejected. The zero belongs to the export-controlled compounds/metals series; magnets were 473 t. Settled without web access by arithmetic: a zero May cannot be reconciled with Jan+Feb 994, Mar 406, Jun ~488, Jul 647 and the stated ~16% Jan-Jul shortfall vs 2024 without forcing Apr and Jun above July's documented post-Oct-2025 high. Same conflation explains the 'zero in September 2025' - magnets were 420.5 t that month."
+    },
+    {
+     "claim": "The early-August supplier refusals following the 5 Aug RBA listing materially cut August magnet tonnage.",
+     "kind": "judgment",
+     "verdict": "Unresolved by evidence and left carrying its uncertainty. Reuters could not size it, quantified only yttrium, and named no magnet producer; but RMI adopters are the dominant US magnet buyers. Priced as a partial drag plus a fat left tail rather than a step change - the reading I would bet on."
+    },
+    {
+     "claim": "August should revert from July's 647 t toward the 2026 run-rate.",
+     "kind": "judgment",
+     "verdict": "Agreed by all three runs and carried forward: the one in-regime Jul->Aug pair fell 5%, the Oct-25 peak was followed by five consecutive declines, and July was explicitly a catch-up high."
+    },
+    {
+     "claim": "A tradeable human market prices this quantity.",
+     "kind": "factual",
+     "verdict": "No. All three runs searched Polymarket, Kalshi and Manifold and found nothing; the harness's Manifold candidates share no resolution terms. No market anchor used."
+    },
+    {
+     "claim": "August 2026 data will be published before the 19 Sep scheduled resolution.",
+     "kind": "factual",
+     "verdict": "Uncertain and immaterial to the estimate. GACC detail is due ~18-20 Sep; the fine print holds resolution open for data delay, so this shifts timing, not the value."
+    }
+   ],
+   "reference_class": "Monthly China->US rare-earth permanent-magnet (GACC 85051110) tonnages under the post-April-2025 licence regime, magnet series only (excluding the May-Jun 2025 shutdown and excluding the controlled-compounds series that the question background conflates with it): Jul-25 ~619, Aug-25 590, Sep-25 420."
+  }
+ ]
+}

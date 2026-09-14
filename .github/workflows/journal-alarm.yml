@@ -1,0 +1,56 @@
+name: Journal alarm
+
+# Independent outage tripwire for the Tournament bot (bot.yml). bot.yml's own
+# "Alert on trouble" step only fires when a step fails — it cannot see a run that
+# reports success while quietly doing nothing (2026-08-01: silent for a day, 6
+# questions missed). This runs on its own clock so it keeps checking even while
+# bot.yml itself is the thing that's broken.
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run journal alarm
+        id: check
+        continue-on-error: false
+        env:
+          TOURNAMENT_ID: ${{ vars.TOURNAMENT_ID }}
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/journal_alarm.py | tee "$RUNNER_TEMP/alarm-reason.txt"
+
+      - name: Alert (one open issue, never hourly spam)
+        if: ${{ failure() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Bot alarm: journal silence"
+          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then echo "alert issue #$existing already open"; exit 0; fi
+          {
+            echo "Automated alert from the journal-alarm workflow."
+            echo
+            echo '```'
+            cat "$RUNNER_TEMP/alarm-reason.txt"
+            echo '```'
+            echo
+            echo "Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo
+            echo "Close this issue once resolved — the next problem will open a fresh one."
+          } > "$RUNNER_TEMP/alert-body.md"
+          gh issue create --title "$title" --body-file "$RUNNER_TEMP/alert-body.md"

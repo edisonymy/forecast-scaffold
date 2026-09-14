@@ -1,0 +1,228 @@
+{
+ "record_id": "2026-09-08-6c401a3c",
+ "question": "How many cumulative locally acquired 2026 dengue cases will Hillsborough County, Florida show in the Florida Arbovirus Surveillance report published on or around September 18, 2026?",
+ "question_id": 45762,
+ "url": "https://www.metaculus.com/questions/45571/",
+ "question_type": "discrete",
+ "forecast_at": "2026-09-08T16:44:11+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.8776,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 81.33333333333333,
+    "25": 97.66666666666667,
+    "50": 118.66666666666667,
+    "75": 142.66666666666666,
+    "90": 165.0
+   },
+   "p_above_upper": 0.06666666666666667
+  },
+  "phase1": {
+   "10": 81.33333333333333,
+   "25": 97.66666666666667,
+   "50": 118.66666666666667,
+   "75": 142.66666666666666,
+   "90": 165.0
+  },
+  "phase2": null,
+  "spread_phase1": 7.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 87.0,
+   "25": 99.0,
+   "50": 117.0,
+   "75": 138.0,
+   "90": 158.0
+  },
+  "p_above_upper": 0.06
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0626,
+   "seconds": 306.5,
+   "estimate": {
+    "percentiles": {
+     "10": 83.0,
+     "25": 99.0,
+     "50": 122.0,
+     "75": 148.0,
+     "90": 173.0
+    },
+    "p_above_upper": 0.07
+   },
+   "reasoning": "Reference class is Florida county-level locally acquired dengue clusters two weekly-report steps past the ~50-60 mark, anchored on this outbreak's own report series (W32 15 -> W33 30 -> W34 59). A ~2.0x two-step multiplier gives a base rate near 118. Adjustments: (a) the Sep 18 report most likely covers onsets through Sep 12 (W36), since W35 was still a 404 today and the observed cadence is Thursday publication ~5 days after week end - but ~15-20% of the time only W35 (through Sep 5) is available, which shifts the low tail down; (b) the observed increments (+15, +29) partly reflect an ascertainment ramp after the Jul 31 alert plus onset-week backfill, and both saturate, so a third and fourth doubling is unlikely though not negligible; (c) aerial adulticiding only started Sep 5-6 and dengue's ~2.5-week human-mosquito-human generation time means the weeks being counted were largely seeded before control took hold, so I do not expect a sharp break inside the window; (d) counts by onset date essentially never revise downward, so 59 is a hard floor and the lower bound is unreachable. Two continued doublings (-> ~230) is the concrete upper-escape mechanism, priced at 7%. Evidence is one-sided in the sense that no source yet reports a plateau - I found no post-Sep-5 case data at all - which is a real gap and keeps me near the base-rate multiplier rather than extrapolating the doubling. No prediction market prices this question.",
+   "sources": [
+    "https://www.floridahealth.gov/statistics-data/population-surveillance/arbovirus-surveillance/",
+    "https://www.floridahealth.gov/wp-content/uploads/2026/09/fl-arbovirus-report-w34-2026.pdf",
+    "https://www.floridahealth.gov/wp-content/uploads/2026/09/fl-arbovirus-report-w35-2026.pdf (HTTP 404 as of 2026-09-08 - not yet published)",
+    "https://www.wusf.org/health-news-florida/2026-09-01/dengue-cases-double-in-hillsborough-as-infected-mosquito-surveillance-pools-increase",
+    "https://www.wusf.org/health-news-florida/2026-09-04/hillsborough-experiences-dengue-cases-how-to-protect-yourself",
+    "https://baynews9.com/fl/tampa/news/2026/09/06/what-tampa-residents-should-know-about-helicopter-mosquito-spraying-during-dengue-outbreak",
+    "https://www.wfla.com/news/hillsborough-county/hillsborough-county-called-epicenter-of-locally-acquired-dengue-cases-in-florida/",
+    "https://epi.ufl.edu/2025/06/24/dengue-in-florida-what-to-know/",
+    "https://ask.ifas.ufl.edu/publication/IN1438"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the cumulative locally-acquired (acquired-in-Florida) 2026-onset dengue count attributed to Hillsborough by county of EXPOSURE, in the FDOH weekly 'Florida Arbovirus Surveillance' PDF that is publicly posted as of 2026-09-18 23:59 US Eastern. Not off DOH-Hillsborough press releases, not off news tallies, not off statewide totals, not off travel-associated counts. Counts are by DATE OF ONSET, so the most recent one or two onset-weeks in any given report are incomplete and are revised upward in later reports.\n\nEVENT WINDOW: 2026-01-01 onset -> whichever report is public as of 2026-09-18 23:59 ET, per the criteria; as of Now (2026-09-08T16:20Z) ~96% of that calendar span (Jan 1 - Sep 18, 261 days) has elapsed.\n\nSTATUS-QUO OUTCOME: the count stands at 59 and can only move upward, since onset-dated cumulative counts are revised up as lab confirmations arrive; the status-quo value is 59 plus whatever two further report-steps add.\n\nWHICH REPORT RESOLVES (publication cadence evidence):\n- W33 (Aug 16-22) PDF sits in the /2026/08/ upload folder; W34 (Aug 23-29) PDF sits in /2026/09/. (floridahealth.gov, retrieved 2026-09-08)\n- W34 content was in news coverage on 2026-09-04 (WUSF, WFLA); W33 content was in WUSF coverage on 2026-09-01. Implies posting roughly the Wednesday/Thursday ~4-6 days after each Saturday week-end.\n- https://www.floridahealth.gov/wp-content/uploads/2026/09/fl-arbovirus-report-w35-2026.pdf returned HTTP 404 on 2026-09-08 - W35 (Aug 30-Sep 5) not yet posted.\n- MMWR 2026 weeks: W34 = Aug 23-29, W35 = Aug 30-Sep 5, W36 = Sep 6-12, W37 = Sep 13-19. Applying the observed lag, W35 lands ~Sep 10 and W36 ~Sep 17; W37 lands after the Sep 18 cutoff.\n- The question's own Background says the resolving report is 'expected to cover data through approximately Week 37 (Sep 6-12)' - the week NUMBER there is off by one but the date range Sep 6-12 corresponds to MMWR W36.\n\nREPORTED SERIES, Hillsborough locally acquired cumulative by onset (FDOH weekly reports):\n- report through Aug 1 (W30): 2 Hillsborough; 4 statewide (Hillsborough 2, Miami-Dade 1, Palm Beach 1)\n- report through Aug 15 (W32): 15 Hillsborough; 23 statewide\n- report through Aug 22 (W33): 30 Hillsborough; 41-42 statewide (WUSF 2026-09-01 cites 30 and 42, with Miami-Dade 7)\n- report through Aug 29 (W34): 59 Hillsborough; 73 statewide (Miami-Dade 7, Pinellas 5, Palm Beach 1, Pasco 1)\n- step-to-step increments in Hillsborough: +15 (W32->W33), +29 (W33->W34); each increment is [new-week onsets so far] + [backfill onto earlier onset weeks].\n\nBASE RATES (with the class each is computed over):\n- Over ALL Florida years 2022-2025, statewide locally acquired dengue totals for the full year: 2022 = 65 (4 counties), 2023 = 186 (5 counties), 2024 = 87, 2025 = 4. (UF IFAS ENY2116/IN1438; UF Emerging Pathogens Institute, 2025-06-24)\n- Over SINGLE-COUNTY Florida locally acquired outbreaks specifically: the largest modern full-season county figure is Miami-Dade 2023, ~168 of that year's 186; earlier county clusters ran far smaller (Key West/Monroe 2009 ~27 and 2010 ~66; Martin Co. 2013 ~22-29; Miami-Dade 2022 ~65).\n- Over Florida county clusters CONDITIONAL on already having passed ~50-60 cumulative cases mid-season (the condition that already holds here), the cumulative typically grows by roughly 1.5x-2.5x over the following two weekly reports; unconditional full-season county totals are the wrong anchor because they average over clusters that never got this large.\n- Caution on a widely-quoted figure: 'Miami-Dade 233 by 2024 Week 37' refers to TOTAL dengue (overwhelmingly travel-associated), not locally acquired; Florida's 2024 grand total of 1,044 is likewise travel+local.\n\nEVIDENCE POINTING TOWARD CONTINUED ACCELERATION:\n- Almost all cases serotyped DENV-2, matching 14 dengue-positive Aedes aegypti pools in Hillsborough - established, geographically distributed vector infection rather than a single point source. (FDOH; WUSF 2026-09-04)\n- Population is immunologically naive to DENV-2 locally; Tampa Bay's Aedes aegypti season and rainy season both run through September-October.\n- Aerial adulticiding (Dibrom, Hyde Park/South Tampa and Ybor City) only began around Sep 5-6. (Bay News 9, 2026-09-06; Fox 13). Dengue's human-mosquito-human generation interval is ~2-3 weeks, so onsets in the Sep 6-12 week were largely seeded before adulticiding.\n- Onset-date backfill mechanically adds to the cumulative even in a week when true incidence is flat.\n- Spread beyond the index county is already documented: Pinellas 5, Pasco 1, and news describing 65 locally acquired across the Bay Area.\n\nEVIDENCE POINTING TOWARD DECELERATION:\n- DOH-Hillsborough advisory Jul 28, formal alert Jul 31, alert update Aug 12: an ascertainment ramp (more testing, retrospective case-finding) inflates the August portion of the curve and saturates rather than compounding.\n- Weekly doubling of onsets is hard to sustain on a ~2.5-week generation interval - it implies an effective R of roughly 5-6 - so part of the observed doubling is reporting artifact rather than transmission.\n- Ground control, source reduction and public messaging in Hillsborough and Pinellas began mid-August (WUSF 2026-08-14), ahead of the aerial phase.\n- The cluster is spatially concentrated (Hyde Park/South Tampa, Ybor City); localized Aedes aegypti clusters have historically saturated within a few weeks in Florida (Key West 2010, Martin 2013, Miami-Dade 2020/2022).\n- If W36 slips past the Sep 18 cutoff, the resolving figure is the W35 report (onsets through Sep 5 only), i.e. one report-step of accrual instead of two.\n\nSEARCHED FOR BUT COULD NOT FIND:\n- Any Hillsborough case count reflecting onsets after Aug 29; the W35 PDF was still 404 on 2026-09-08 and no news source published a post-Aug-29 FDOH figure.\n- The W31 (through Aug 8) Hillsborough number, which would complete the increment series.\n- Any explicit FDOH statement of its publication day-of-week or of a schedule change aroun",
+   "reference_class": "Florida county-level locally acquired dengue outbreak clusters (Key West/Monroe 2009-2010, Martin Co. 2013, Miami-Dade 2020/2022/2023/2024) measured two weekly-report steps after the county's cumulative locally acquired count first passed ~50-60, combined with the 2026 Hillsborough report series its"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0032,
+   "seconds": 343.4,
+   "estimate": {
+    "percentiles": {
+     "10": 78.0,
+     "25": 95.0,
+     "50": 115.0,
+     "75": 139.0,
+     "90": 160.0
+    },
+    "p_above_upper": 0.07
+   },
+   "reasoning": "Hillsborough cumulative locally acquired 2026 dengue by report: 2 (wk30) -> 15 (wk32) -> 30 (wk33) -> 59 (wk34), weekly additions +11, +15, +29 — still accelerating. Reports post Fridays on a 6-day lag (wk33 was latest on Sep 2, wk34 out by Sep 4, wk35 URL still 404 on Sep 8), so the Sep 18 report is most likely Week 36, covering onsets through Sep 12 — two more cycles. Two forces push up: genuine peak-season Aedes aegypti transmission (DENV-2, 14 positive mosquito pools) and large pending backfill (only 54 August onsets statewide logged as of the Sep 4 report, well short of true August incidence). Aerial spraying started ~Sep 6 and officials say suppression takes 'several weeks', so it barely touches onsets in this window; and the most recent 1-2 onset weeks will still be badly incomplete at the Sep 18 cutoff, capping the printed number. Bottom-up: ~16 July + ~85-95 August (near-complete) + ~15-30 partial Sep 1-12 onsets ~= 115-140. Main downside branch (~18%) is that only the Week 35 report is public by 23:59 ET, giving one increment (~90-100). No human prediction market prices this (checked Polymarket, Manifold, Kalshi, bookmakers — none found), so no crowd anchor. Upside escape past 200 requires sustained near-doubling plus a mass-testing confirmation surge — concrete but not the base case, priced at 7%.",
+   "sources": [
+    "https://www.floridahealth.gov/wp-content/uploads/2026/09/fl-arbovirus-report-w34-2026.pdf",
+    "https://www.wusf.org/health-news-florida/2026-09-04/hillsborough-experiences-dengue-cases-how-to-protect-yourself",
+    "https://www.wusf.org/health-news-florida/2026-09-01/dengue-cases-double-in-hillsborough-as-infected-mosquito-surveillance-pools-increase",
+    "https://baynews9.com/fl/tampa/news/2026/09/06/what-tampa-residents-should-know-about-helicopter-mosquito-spraying-during-dengue-outbreak",
+    "https://www.fox13news.com/news/dengue-fever-local-cases-tampa-bay-area",
+    "https://www.cdc.gov/mmwr/volumes/75/wr/mm7518a1.htm",
+    "https://www.floridahealth.gov/wp-content/uploads/2026/09/fl-arbovirus-report-w35-2026.pdf (checked Sep 8, HTTP 404 - not yet published)"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the Hillsborough figure in the FDOH weekly 'Florida Arbovirus Surveillance' PDF that is publicly posted as of 23:59 ET Fri Sep 18, 2026 — NOT off DOH-Hillsborough press releases, county mosquito-control statements, or news tallies, and NOT off the true epidemiological case count. Cases are tabulated by date of ONSET and by county of EXPOSURE; only 2026 onsets count. If the Sep 18 report gives no Hillsborough breakout, the most recent prior 2026 report that does is used.\n\nEVENT WINDOW: Per the criteria the window runs from Jan 1, 2026 onsets through whatever the latest published report covers as of 2026-09-18T23:59 ET. As of Now (2026-09-08T16:20Z), the latest published report covers onsets through Aug 29 (Week 34); ~10 of the ~20 days between that report's posting and the deadline have elapsed.\n\nPUBLICATION CADENCE (searched and verified):\n- Week 33 report (onsets Aug 16-22) was still the most recent report cited by news on Sep 2, 2026 (Orange County first-local-case coverage cited 'through August 22').\n- Week 34 report (onsets Aug 23-29) was public by Fri Sep 4, 2026 (WUSF, published Sep 4; Surgeon General press conference same day). URL sits in the /2026/09/ upload folder.\n- Week 32 report (Aug 9-15) sits in the /2026/08/ folder.\n- Implied lag: ~6 days after the Saturday week-end, i.e. Friday posting. Sep 11 and Sep 18, 2026 are both Fridays.\n- Direct check on 2026-09-08: https://www.floridahealth.gov/wp-content/uploads/2026/09/fl-arbovirus-report-w35-2026.pdf returns HTTP 404 (not yet posted).\n\nSERIES — Hillsborough cumulative locally acquired 2026 dengue, as printed in each successive report (source: FDOH weekly reports via WUSF/WFLA coverage):\n- Week 30 report (onsets Jul 26-Aug 1): 2 (statewide 4: Hillsborough 2, Miami-Dade 1, Palm Beach 1) — first local cases of 2026.\n- Week 32 report (Aug 9-15): 15 (statewide 23).\n- Week 33 report (Aug 16-22): 30 (statewide 41; Miami-Dade 7, Pinellas 3, Palm Beach 1). WUSF Sep 1.\n- Week 34 report (Aug 23-29): 59 (statewide 73; Miami-Dade 7, Pinellas 5, Palm Beach 1, Pasco 1). WUSF Sep 4/7.\n- Week-over-week ADDITIONS to the Hillsborough cumulative: +13 (to wk32), +15 (to wk33), +29 (to wk34).\n\nONSET-MONTH COMPOSITION (Week 34 report, statewide, source FDOH wk34 PDF summary): July onsets 19, August onsets 54, total 73. Note the Week 30 report had logged only 4 cases total for July onsets; by the Week 34 report that same July window read 19 — i.e. counts for a fixed onset period grow substantially across successive reports as confirmations arrive.\n\nTRAVEL-ASSOCIATED VOLUME (indicator of testing/lab throughput, same reports): 109 YTD at Week 33 (+23 that week), 136 YTD at Week 34 (+27 that week).\n\nVECTOR/VIROLOGY: Almost all cases serotyped DENV-2. Positive Aedes aegypti mosquito pools in Hillsborough: 10 identified during August; 14 cited by early September. Miami-Dade, Pinellas and Hillsborough under mosquito-borne illness ALERT; five additional counties under advisory. Orange County confirmed its first local case with onset in early September (DOH-Orange announcement Sep 2), so the geographic footprint widened after the Week 34 data cutoff.\n\nINTERVENTIONS AND TIMING: DOH-Hillsborough advisory Jul 28, alert Jul 31, alert updates through August. Ground ULV and inspections escalated mid-August. Low-altitude AERIAL (helicopter) adulticiding over central Tampa (I-275 / US-41 corridors, Seminole Heights) and Pasco began around Sep 6 (Bay News 9, Sep 6). Pasco Mosquito Control's Adriane Rogers, quoted Sep 6: 'This is going to take several weeks of interruption to that mosquito life cycle, to really get mosquito populations low enough that it can no longer sustain disease transmission.' Officials said they expect locally acquired counts in Tampa Bay and statewide to rise in coming weeks. Free community testing/outreach events were run in affected Hillsborough neighborhoods.\n\nSEASONALITY: Tampa-area Aedes aegypti transmission season runs roughly through October; no meaningful cooling is expected in the Sep 6-18 window.\n\nBASE RATES / HISTORICAL COMPARISONS (with the class each is computed over):\n- Over ALL US locally acquired dengue 2010-2024 (CDC MMWR 75/18; CDC dengue data pages): Hawaii accounted for the single largest outbreak — ~250 locally acquired cases, essentially all in the 2015-16 Big Island outbreak. Florida accounted for ~103 locally acquired cases across 2010-2017.\n- Over FLORIDA county outbreaks specifically: Monroe County/Key West 2010, 56-66 cases across a Mar-Nov onset span (the largest previous single Florida county outbreak); Martin County 2013, 17-29; Miami-Dade 2020, on the order of tens; Florida statewide 2022 ~65-68; Florida statewide 2024 ~91.\n- Conditioning on 'outbreak already recognized, alert issued, and weekly reported additions still increasing' (the condition that holds here): the Florida 2026 series' own two-consecutive-report growth factor was 3.9x from Week 32 to Week 34, and the single-report factors were 2.00 and 1.97.\n- Conditioning on 'Aedes outbreak after aerial adulticiding has begun': historical suppression effects on ONSET counts appear with a 1-3 week delay, and appear in REPORTED counts a further 1-3 weeks after that.\n\nMARKETS: Searched Polymarket, Manifold (harness title search), Kalshi and bookmakers for any contract on Florida/Hillsborough dengue counts in 2026. None found — no market price exists on this or any near-miss contract.\n\nREPORTING-LAG MECHANICS: Dengue reported-date trails onset by roughly 1-3 weeks (care-seeking, IgM/PCR testing, confirmation, county-to-state reporting). Consequently the two most recent onset weeks in any given report are systematically incomplete, and earlier onset weeks in the same report continue to be revised upward in later editions. The July-onset revision above (4 -> 19) is the only directly observed instance of this in the 2026 series.\n\nSEARCHED FOR BUT COULD NOT FIND: (a) the Week 35 or Week 36 2026 reports (not yet published as of Now)",
+   "reference_class": "Cumulative locally acquired case counts in weekly US arbovirus/Aedes-outbreak surveillance series (Florida Arbovirus Surveillance weekly 2026 dengue series itself; Monroe County 2010 and Hawaii Big Island 2015-16 dengue outbreak curves), measured two weekly report cycles after a mid-outbreak, mid-se"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.3632,
+   "seconds": 533.8,
+   "estimate": {
+    "percentiles": {
+     "10": 83.0,
+     "25": 99.0,
+     "50": 119.0,
+     "75": 141.0,
+     "90": 162.0
+    },
+    "p_above_upper": 0.06
+   },
+   "reasoning": "Target is almost certainly the Week 36 report (onsets through Sep 12, published Thu Sep 17): FDOH published w31-w34 on Aug 14, Aug 20, Aug 27, Sep 3 — Thursdays, ~5 days after each Saturday week-end. I give ~88% to w36, ~11% to w35 slipping into the slot, ~1% older. Reference class of Florida single-county dengue outbreaks (Key West 2010 = 66, Miami-Dade 2020 = 66, 2022 = 63, 2023 = 156-161, 2024 = 47) has a mid-outbreak 2-cycle growth multiplier around 1.5x, which anchors 59 -> ~92. I adjust upward for two outbreak-specific mechanics. First, backfill: July onsets read 4/7/14/18/19 across the w30-w34 reports, so an onset week roughly quadruples between first appearance and convergence. The 59 figure counts onsets through Aug 29 at perhaps 50-60% completeness for the recent weeks, so the pre-Aug-30 portion alone likely converges to ~85-100 by the w36 report before any new transmission is added. Second, this is peak Florida arbovirus season with a testing surge after the Sep 4 Surgeon General alert, and aerial ULV is weak against container-breeding indoor-resting Aedes aegypti, so control started ~Sep 1 will barely touch onsets before Sep 12. Pulling back down: the +29 in w34 may be partly a one-time lab catch-up batch (statewide weekly reported went 16, 18, 32 — noisy, not clean doubling), and a median of 119 already implies Hillsborough shatters Florida's all-county-year record of 161 with two months of season left, so I shade toward the reference class. Lower bound is dead (cumulative counts do not fall 17%, and the fine print guarantees a fallback report of at least 59), so no p_below_lower. Upper escape is live at 6%: a repeat of the last realized 1.97x-per-cycle rate lands near 230. No prediction market exists on this (checked Polymarket, Kalshi, Manifold — none found), so no market blend.",
+   "sources": [
+    "https://www.floridahealth.gov/wp-content/uploads/2026/09/fl-arbovirus-report-w34-2026.pdf",
+    "https://www.floridahealth.gov/wp-content/uploads/2026/08/fl-arbovirus-report-w33-2026.pdf",
+    "https://www.floridahealth.gov/wp-content/uploads/2026/08/fl-arbovirus-report-w32-2026.pdf",
+    "https://www.floridahealth.gov/wp-content/uploads/2026/08/fl-arbovirus-report-w31-2026.pdf",
+    "https://www.floridahealth.gov/statistics-data/population-surveillance/arbovirus-surveillance/",
+    "https://www.wusf.org/health-news-florida/2026-09-04/hillsborough-experiences-dengue-cases-how-to-protect-yourself"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the cumulative Hillsborough-County figure printed in the FDOH weekly 'Florida Arbovirus Surveillance' PDF that is the most recent one publicly posted as of 2026-09-18 23:59 US Eastern — NOT off DOH-Hillsborough press releases, county dashboards, CDC ArboNET, or news tallies, and not off onsets that have actually occurred. Counts are by county of EXPOSURE and by DATE OF ONSET in 2026, locally acquired only (travel-associated excluded and reported separately).\n\nEVENT WINDOW: 2026 onsets accumulate from 2026-01-01 through the onset cutoff of whichever report is the latest published on/before 2026-09-18 23:59 ET. As of Now (2026-09-08T16:20Z) the latest posted report is Week 34 (onsets through 2026-08-29). Two further weekly reports are due before the observation instant: Week 35 (onsets Aug 30-Sep 5) and Week 36 (onsets Sep 6-12). Of the 14-day gap between the last published onset cutoff (Aug 29) and the Week 36 onset cutoff (Sep 12), 10 days / ~71% have elapsed in real time as of Now, but none of it is published yet.\n\nPUBLICATION CADENCE (verified from the PDFs' own printed dates): w31 Friday Aug 14 (covering Aug 2-8); w32 Thursday Aug 20 (Aug 9-15); w33 Thursday Aug 27 (Aug 16-22); w34 Thursday Sep 3 (Aug 23-29). Weeks end Saturday; lag is 5-6 days. Source: FDOH report PDFs, retrieved 2026-09-08. Extrapolated slots: w35 ~Thu Sep 10, w36 ~Thu Sep 17, w37 ~Thu Sep 24 (after the observation instant).\n\nOBSERVED SERIES — cumulative Hillsborough locally acquired 2026 dengue, as printed in each report (FDOH PDFs, retrieved 2026-09-08): w30 report = 2; w31 report = 5; w32 report = 15; w33 report = 30; w34 report = 59. Successive increments: +3, +10, +15, +29.\n\nSTATEWIDE CONTEXT, same reports: cumulative locally acquired statewide 4, 7, 23, 41, 73. 'Reported this week' lines: 4, 3, 16, 18, 32. Week 34 county split: Hillsborough 59, Miami-Dade 7, Pinellas 5, Palm Beach 1, Pasco 1 (= 73). Travel-associated 2026 onsets statewide: 136, of which Cuba 101; 27 travel cases reported in week 34 alone.\n\nREPORTING-LAG / BACKFILL EVIDENCE (the key instrument artifact): the same five reports show JULY-onset statewide counts of 4, 7, 14, 18, 19 — i.e. a month's onsets grew ~4.75x from first appearance and only converged after roughly four report cycles. AUGUST-onset statewide counts across the same reports: 0, 0, 9, 23, 54, still rising and covering onsets only through Aug 29. Implication to reason about: a large share of any future report's cumulative total is retrospective completion of already-elapsed weeks, independent of new transmission.\n\nSEROTYPE / VECTOR: Week 34 report — 71 of 73 cases serotyped, 69 DENV-2 and 2 DENV-3; all 59 Hillsborough cases DENV-2. 14 dengue-positive Aedes aegypti mosquito pools in Hillsborough cumulatively, 4 of them newly positive in week 34 (so ~10 before that week). Cumulative pool positives are growing at a slower relative rate than cumulative human cases.\n\nCONTROL / AWARENESS TIMELINE: DOH-Hillsborough mosquito-borne illness advisory Jul 28, formal alert Jul 31, alert update Aug 12 (hillsborough.floridahealth.gov). Florida Surgeon General statement on dengue precautions Fri Sep 4 (floridahealth.gov), which produced statewide press coverage naming Hillsborough the 'epicenter'. Low-altitude nighttime helicopter adulticide missions began in Hillsborough and Pasco around Sep 3-6, focused on central Tampa including the I-275 / US-41 corridors and Seminole Heights; ground fogging, inspections and source reduction expanded, with tire shops/tire storage identified as breeding foci (Bay News 9, WTSP, WFLA, early Sep 2026). Pasco County Mosquito Control's director: 'We have not seen this level of locally-acquired dengue transmission in decades.'\n\nBOTH-DIRECTIONS EVIDENCE. Toward more: Sept-Oct is peak Florida arbovirus transmission season with no temperature brake in Tampa before late October; awareness-driven testing surge post-Sep 4 raises ascertainment; aerial ULV has a weak published evidence base against container-breeding, indoor-resting Aedes aegypti, and any effect on ONSETS lags ~2 weeks and on REPORTED counts ~3-4 weeks; the case count is still incomplete for every August week. Toward less: the statewide 'reported this week' series (16, 18, 32) is noisy rather than cleanly geometric, so the +29 Hillsborough jump could be partly a one-off laboratory catch-up batch following the Aug 12 alert; the outbreak is geographically focal (a few central-Tampa neighborhoods), and focal Aedes outbreaks historically saturate 8-12 weeks after onset — first onsets here were in July, putting weeks 35-38 in the typical peak-to-turn window; intense multi-agency response is now underway.\n\nBASE RATES, each with the class it is computed over. (a) Over ALL Florida years 2009-2025, statewide annual locally acquired dengue: typically under 30, with 2023 = 176-186 the record and 2024 = 87-91. (b) Over the subset of years WITH a recognised single-county outbreak, that county's full-YEAR total: Key West/Monroe 2010 = 66, Miami-Dade 2020 = 66, Miami-Dade 2022 = 63, Miami-Dade 2023 = 156-161, Miami-Dade 2024 = 47, Pasco 2024 = 13, Manatee 2024 = 8, Hillsborough 2024 = 7 — median ~55-65, maximum 161. (c) Conditional on being mid-outbreak at this calendar point: in 2023, Florida's statewide locally acquired total stood at only 16 in the Week 34 report (Miami-Dade 8 and Broward 2 as of Week 31), yet finished the year at 176-186 with Miami-Dade at 156-161 — i.e. in that outbreak the overwhelming majority of the year's cases were reported after early September, and its implied peak weekly onset rate was roughly 10-20/week. (d) Conditional on Hillsborough specifically: the county's entire 2024 locally acquired total was 7. (e) Two-report-cycle cumulative multipliers realized so far in THIS outbreak: 15/2 = 7.5, 30/5 = 6.0, 59/15 = 3.93 — declining but all well above 1.\n\nSERIES VOLATILITY NOTE: over the only comparable two-report-cycle windows available for this county-series ",
+   "reference_class": "Florida single-county locally acquired dengue outbreaks in FDOH weekly arbovirus surveillance, 2009-2025 (Monroe/Key West 2009-10, Martin 2013, Miami-Dade 2020/2022/2023, Miami-Dade & Pasco 2024) — their mid-outbreak two-report-cycle cumulative growth multipliers and annual county totals"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1556,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.4112,
+   "seconds": 222.0,
+   "estimate": {
+    "percentiles": {
+     "10": 87.0,
+     "25": 99.0,
+     "50": 117.0,
+     "75": 138.0,
+     "90": 158.0
+    },
+    "p_above_upper": 0.06
+   },
+   "reasoning": "Base rate: a 1.7x two-cycle multiplier on the printed 59 gives ~100. Adjusted UP for the directly observed backfill mechanic — July onsets read 4/7/14/18/19 across successive reports, implying only ~37% completeness two weeks post-onset, so the 46 Hillsborough August-onset cases in the w34 report represent roughly 90-115 true onsets that will be ~95% reported by the w36 report — plus peak Aedes season, a post-Sep-4 Surgeon General testing surge, and aerial adulticiding that began only Sep 5-6 against a ~2.5-week generation interval, so it barely touches onsets before Sep 12. Adjusted DOWN because the statewide weekly-reported series (16, 18, 32) is noisy rather than cleanly geometric, so part of the +29 is plausibly a one-time lab catch-up batch, and because a median much above 120 would already make this the largest Florida county outbreak on record with two months of season left. Cadence evidence (reports printed Aug 20, Aug 27, Sep 3, all Thursdays) puts w36 on Thu Sep 17, inside the Fri Sep 18 cutoff, at ~88%; the 12% w35-only branch lands near 97 and fattens the low tail. Cumulative onset counts never revise down and the fine print guarantees a fallback of at least 59, so no lower escape. No prediction market prices this on any venue checked.",
+   "sources": [],
+   "reconciliation": "Two factual disputes were settled from the dossiers. (a) Publication cadence: Run 2 claimed Friday posting inferred from news timing; Runs 1 and 3 said Thursday, and Run 3's read of the PDFs' own printed dates (w31 Fri Aug 14, w32 Thu Aug 20, w33 Thu Aug 27, w34 Thu Sep 3) is direct primary evidence that beats an inference from when WUSF wrote its story. Settled: Thursday, ~5 days after the Saturday week-end, so w36 posts ~Sep 17 and the w35-only branch drops from Run 2's 18% to ~12%. (b) The w31 value: Run 1 could not find it, Run 3 read 5 from the PDF; adopted, completing the increment series +3/+10/+15/+29. (c) The Background text's 'Week 37 (Sep 6-12)' is an off-by-one on the week number only; all runs agree the resolving onset range is Sep 6-12. Unsettleable: whether the +29 was genuine acceleration or partly a lab catch-up batch — FDOH publishes onset-MONTH granularity only, so no weekly curve exists to decide it, and that uncertainty is carried in the width rather than resolved by fiat. On the pure-judgment dispute over reference class, I take the outbreak's own series as the anchor (full-season county totals average over clusters that never got this large) while letting the historical maximum of ~161 pull the median down from naive extrapolation. I did not average the runs: I re-derived the number bottom-up by calibrating a reporting-completeness curve on the July-onset revisions and applying it to the August and early-September onset cohorts, which independently produced 105-135 central with a 104-152 parameter sweep. The resulting median of 117 sits inside the runs' 115-122 spread because that is where my own reconstruction lands, and my narrower width reflects the cadence dispute being settled rather than any hedging. All three runs and the harness search agree no market prices this; no crowd blend applied.",
+   "disagreements": [
+    {
+     "claim": "FDOH posts the weekly arbovirus PDF on Fridays (Run 2) vs Thursdays (Runs 1, 3)",
+     "kind": "factual",
+     "verdict": "Settled for Thursday. Run 3's read of the reports' own printed dates (Aug 20, Aug 27, Sep 3 = Thursdays; Aug 14 = Friday) is primary evidence; Run 2 inferred Friday from a WUSF story date, a lagging indicator. Consequence: w36 (onsets through Sep 12) most likely posts Thu Sep 17, inside the cutoff, so ~88% weight on two increments rather than Run 2's ~82%."
+    },
+    {
+     "claim": "The w31 report's Hillsborough cumulative figure",
+     "kind": "factual",
+     "verdict": "Settled at 5 (Run 3, direct from the PDF; Run 1 searched and could not find it). Yields increments +3, +10, +15, +29 and two-cycle multipliers 7.5, 6.0, 3.93."
+    },
+    {
+     "claim": "The report resolving this covers MMWR Week 37 (per the question Background) vs Week 36",
+     "kind": "factual",
+     "verdict": "Settled: Sep 6-12 is Week 36; the Background's week number is off by one but its date range is correct and is what the forecast turns on. No material effect."
+    },
+    {
+     "claim": "The +29 jump in the w34 report reflects genuine transmission acceleration (Runs 1, 2) vs partly a one-time laboratory catch-up batch after the Aug 12 alert (Run 3)",
+     "kind": "judgment",
+     "verdict": "Could not be settled — FDOH reports give onset-MONTH granularity only, so no weekly onset curve exists to separate backfill from incidence. The noisy statewide weekly-reported series (16, 18, 32) is weak evidence for a partial artifact. I kept the observed backfill mechanic at full weight and discounted continued doubling, which is why my median sits below a 1.97x-per-cycle extrapolation (~230) and near a 2.0x two-cycle one."
+    },
+    {
+     "claim": "Correct reference class: full-season Florida county outbreak totals (Run 3's ~55-65 median, 161 max) vs this outbreak's own report-to-report multipliers (Run 1)",
+     "kind": "judgment",
+     "verdict": "Judgment call taken, not split. The own-series anchor is right because full-season totals average over clusters that never reached 59 by mid-September; but the historical maximum of 156-161 is a real constraint on how far above ~120 a median can credibly sit with two months of season left, so it shades the center down rather than being discarded."
+    },
+    {
+     "claim": "Probability the count escapes above 200 (Run 1/2 at 0.07, Run 3 at 0.06)",
+     "kind": "judgment",
+     "verdict": "Near-agreement; adopted 0.06. The mechanism is concrete — a repeat of the realized 3.93x two-cycle multiplier lands near 230 — but it requires both sustained near-doubling and a confirmation surge, and my completeness model tops out near 152 under plausible parameters."
+    },
+    {
+     "claim": "Whether any lower escape mass below 49.5 should be priced",
+     "kind": "factual",
+     "verdict": "Settled unanimously and correctly at zero: onset-dated cumulative counts do not revise downward, and the fine print falls back to the most recent prior report giving a Hillsborough figure, i.e. at least 59."
+    },
+    {
+     "claim": "Whether any human prediction market prices this quantity",
+     "kind": "factual",
+     "verdict": "Settled: none. All three runs checked Polymarket, Manifold and Kalshi (Run 2 also bookmakers) and found nothing; the harness title search on Polymarket and Manifold also returned no candidate. No market anchor available, so the estimate rests entirely on the surveillance series."
+    }
+   ],
+   "reference_class": "Florida single-county locally acquired dengue clusters two weekly-report cycles after crossing ~50 cumulative reported cases — anchored on this outbreak's own printed series (2 -> 5 -> 15 -> 30 -> 59, two-cycle multipliers 7.5, 6.0, 3.93, monotonically declining) and bounded by historical Florida co"
+  }
+ ]
+}

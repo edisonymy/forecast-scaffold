@@ -1,0 +1,244 @@
+{
+ "record_id": "2026-09-04-fdcad62b",
+ "question": "How much will Nasdaq-100 Futures total price returns exceed S&P 500 Futures in these biweekly periods of Q3 2026? (Sep 7 - Sep 18)",
+ "question_id": 44664,
+ "url": "https://www.metaculus.com/questions/44528/",
+ "question_type": "numeric",
+ "forecast_at": "2026-09-04T17:56:04+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.9297,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -1.8333333333333333,
+    "25": -0.8333333333333334,
+    "50": 0.11,
+    "75": 1.0233333333333334,
+    "90": 1.9100000000000001
+   },
+   "p_below_lower": 0.015333333333333332,
+   "p_above_upper": 0.011333333333333334
+  },
+  "phase1": {
+   "10": -1.8333333333333333,
+   "25": -0.8333333333333334,
+   "50": 0.11,
+   "75": 1.0233333333333334,
+   "90": 1.9100000000000001
+  },
+  "phase2": null,
+  "spread_phase1": 0.13,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -2.0,
+   "25": -0.85,
+   "50": 0.1,
+   "75": 1.05,
+   "90": 1.95
+  },
+  "p_below_lower": 0.025,
+  "p_above_upper": 0.018
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.7981,
+   "seconds": 223.3,
+   "estimate": {
+    "percentiles": {
+     "10": -1.8,
+     "25": -0.85,
+     "50": 0.18,
+     "75": 1.12,
+     "90": 1.98
+    },
+    "p_below_lower": 0.018,
+    "p_above_upper": 0.012
+   },
+   "reasoning": "Reference class of ~9-10 trading-day NDX-minus-SPX price-return windows centers near +0.2pp (QQQ 1yr 26.41% vs SPY 20.98%; 2026 YTD NDX +17.1% vs SPX +13.1% = +0.24pp/biweek). Window is Sep 8-18 (Labor Day Sep 7 closed), 9 sessions, containing CPI Sep 11, a live FOMC Sep 15-16 with a ~52-66% priced 25bp HIKE, Apple's event, Oracle/Adobe earnings and Sep 18 quad witching. Two-directional: NDX beta >1 plus rate-hike/duration risk into weak September seasonality argues for underperformance (Sep 4 post-payrolls NQ -1.11% vs ES -0.59%), while re-accelerating AI momentum (Nvidia, Dell, Snowflake +16.6%, NDX +4.2% vs SPX +2.7% in August) argues the other way. These roughly cancel, so I sit essentially on the base rate with wide, slightly left-skewed dispersion: 2026 has produced two NDX corrections in which tech fell hard while equal-weight/cyclical benchmarks held up, so the downside tail is fatter than the upside. No prediction market prices this spread at Kalshi, Polymarket or Manifold, so there is no crowd anchor; evidence is thin on the specific relative question and I stay near the class prior. Escape mass beyond +/-5pp priced at 3% total: below via an AI-capex/chip panic plus a hawkish hike (the late-July 2026 mechanism), above via a blowout AI catalyst plus a dovish hold.",
+   "sources": [
+    "https://stockanalysis.com/etf/qqq/",
+    "https://stockanalysis.com/etf/spy/",
+    "https://www.nasdaq.com/articles/august-2026-review-and-outlook",
+    "https://www.nasdaq.com/articles/july-2026-review-and-outlook",
+    "https://www.chase.com/personal/investments/learning-and-insights/article/september-2026-rate-hike-now-expected-amid-energy-shocks",
+    "https://www.macroradar.io/vix",
+    "https://www.econ-calendar.com/cpi-release-dates",
+    "https://kalshi.com/category/financials/nasdaq",
+    "https://www.cnbc.com/2026/09/01/stock-market-today-live-updates.html",
+    "https://investorshub.advfn.com/market-news/article/35698/u-s-stock-futures-fall-after-august-payrolls-exceed-expectations-dow-jones-sp-nasdaq-wall-street"
+   ],
+   "dossier": "SUBJECT: NDX futures minus ES futures price return, pp, over Sep 7 - Sep 18 2026.\n\nRESOLUTION INSTRUMENT: resolves off the price return of Nasdaq-100 futures vs S&P 500 futures over the window, not off the cash indices and not total-return (dividend-inclusive) series. Note the quarterly futures roll: the Sep contracts (NQU6/ESU6) expire at the Sep 18 open, so a front-month series rolls to Dec around Sep 10; NDX's lower dividend yield (~0.6%) vs SPX (~1.2%) means an UNADJUSTED roll would add roughly +0.15pp of carry difference over a quarter, while a back-adjusted continuous series removes it. Which convention applies is not stated.\n\nEVENT WINDOW: Sep 7 -> Sep 18 2026 per the criteria; as of 2026-09-04T17:39Z, 0% elapsed. Sep 7 is Labor Day, US markets closed, so 9 trading sessions: Sep 8, 9, 10, 11, 14, 15, 16, 17, 18. Sep 18 is triple/quad witching.\n\nSTATUS-QUO OUTCOME: the spread lands close to its historical per-window drift, i.e. low-single-digit tenths of a percentage point, with neither index detaching from the other.\n\nBASE RATES AND DISPERSION:\n- Over ALL biweekly windows 2015-2026, NDX has run ahead of SPX by roughly +5pp/yr on price return, i.e. ~+0.2pp per 9-10 session window. (Nasdaq index performance materials; QQQ/SPY trailing returns.)\n- Trailing 1yr as of Sep 4 2026: QQQ total return +26.41%, SPY +20.98% (stockanalysis.com, Sep 4 2026). Dividend yields differ (QQQ ~0.5%, SPY ~1.1%), so the price-return gap is somewhat wider than the 5.4pp total-return gap.\n- 2026 YTD through Aug 31: NDX +17.1%, SPX +13.1% (Nasdaq August 2026 Review and Outlook) = +4.0pp over 8 months.\n- CONDITIONAL on 2026's regime specifically, monthly spreads have been large in both directions: Aug 2026 NDX +4.2% vs SPX +2.7% (+1.5pp, best August since 2021, snapping two consecutive monthly NDX losses); July 2026 NDX -6.6% while S&P 500 Equal Weight was +1.0% (Nasdaq July 2026 Review). 2026 monthly spread SD is roughly 2.5pp, vs a more typical ~2.0pp.\n- Implied-vol-based dispersion: VIX ~16.34 and VXN ~20.3 as of Sep 2026 (MacroRadar; Capital.com VXN futures). VIX printed 14.13 in late August, its 2026 low. Historical VIX seasonal median rises from ~16.5 in late August to ~18 by mid-September (Yahoo Finance chart-of-the-day).\n\nEVIDENCE, TECH-RELATIVE-STRENGTH SIDE:\n- Aug 26 2026: Nvidia rallied on revenue guidance; US-listed chip stocks rallied, Nvidia +7.4% on the print (CNBC, Aug 26 2026).\n- Sep 2 2026: Dell earnings blowout snapped a three-day losing streak; Nasdaq Composite +0.45%, S&P 500 +0.46%, Nvidia +3%, Micron +2.4% (CNBC/cryptobriefing, Sep 2 2026).\n- Sep 3 2026: Dow +1.2% to 53,686.11, Nasdaq Composite +1.4% to 26,584.06, S&P 500 +1.1% to 7,747.71; Snowflake +16.6% on a Q2 beat (InvestorsHub, Sep 4 2026).\n- Sep 4 2026 pre-open: Nasdaq-100 futures +135pts (~+0.4%) vs S&P 500 futures +0.1% and flat Dow futures, after Fed Governor Waller signalled willingness to hold rates (Invezz, Sep 4 2026).\n- Window contains NDX-specific catalysts: Apple's usual early/mid-September product event, Oracle and Adobe earnings in the Sep 9-11 stretch.\n\nEVIDENCE, TECH-RELATIVE-WEAKNESS SIDE:\n- Sep 4 2026 08:30 ET: August nonfarm payrolls +162k vs ~53-55k expected, July revised down to 21k, unemployment 4.1% vs 4.2% expected; Treasury yields rose and futures fell (InvestorsHub, Sep 4 2026). Intraday Sep 4: NQ -327.25 to 29,185.75 (-1.11%) vs ES -45.50 (about -0.59% off ~7,750), i.e. the higher-beta index fell about twice as far.\n- FOMC meets Sep 15-16 2026 with the decision Sep 16, INSIDE the window. July 2026 held at 3.50-3.75% on a 9-3 vote with three dissents. CME FedWatch odds of a 25bp HIKE were ~63.2% early in the week, fell to ~52.4% after Waller's remarks, and separate reporting put the market-implied hike probability at 65-66% around Aug 31 (Chase, Marketplace, ATFX, InvestorsHub). Drivers cited: Iran-conflict supply-chain shocks keeping energy costs elevated, and doubt about the Fed's inflation resolve.\n- August CPI prints Sep 11 2026 08:30 ET (BLS schedule), also inside the window; PPI follows.\n- 10-year Treasury yield touched 4.818% in the week of Sep 2, a level last seen November 2023.\n- NDX entered its SECOND correction of 2026 in late July, opening ~10% below its June peak of 30,660 as a chip selloff deepened on AI-monetization and capex/free-cash-flow concerns; Alphabet's capex hike while burning cash was named a trigger (Bloomberg Jul 28, Fortune Jul 28, Motley Fool Jul 31). Concentration means NDX can sell off quickly while other sectors hold up.\n- Seasonality note from SimCorp's Melissa Brown: September has averaged -58bp over 45 years and is typically worse in its SECOND half, though she cautions it is not a definitive signal (Invezz, Sep 4 2026). The window straddles both halves.\n- Bloomberg, Aug 31 2026: a ten-month rift has kept the Nasdaq short of a record even after August's gain.\n\nMARKET CHECK: No prediction market prices NDX-vs-SPX relative performance. Kalshi carries index-level and threshold contracts (S&P 500 to 8,000 in 2026 ~66%; to 8,200 ~1-in-3, CNBC Aug 6 2026) and Robinhood carries single-day NQ price events, but no head-to-head spread contract on any of Kalshi, Polymarket, Manifold or bookmakers.\n\nSEARCHED FOR BUT COULD NOT FIND: (a) an explicit historical distribution of 9-10 trading-day NDX-minus-SPX spreads with published quantiles - the dispersion figures above are reconstructed from implied vols and monthly index returns, not from a published table; (b) the exact futures-series convention (roll-adjusted or not) this question resolves against; (c) June and July 2026 cap-weighted S&P 500 monthly returns to pair against the NDX figures, so the July spread is inferred from the equal-weight comparison; (d) any Kalshi or bookmaker contract on relative index performance; (e) confirmed dates for the Apple event and Oracle earnings inside the window.",
+   "reference_class": "All ~9-10 trading-day (biweekly) windows of Nasdaq-100 minus S&P 500 price return, 2015-2026, with 2026 weighted for regime"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.8458,
+   "seconds": 276.0,
+   "estimate": {
+    "percentiles": {
+     "10": -1.65,
+     "25": -0.75,
+     "50": 0.05,
+     "75": 0.85,
+     "90": 1.6
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.007
+   },
+   "reasoning": "Reference class first: over biweekly (9-10 session) windows since 2010 the NDX-SPX price-return spread is roughly symmetric around a small positive median (~+0.15pp), consistent with NDX beating SPX in 12 of the last 16 calendar years. 2026 YTD runs a similar pace (+4.0pp over ~8.2 months, ~+0.2pp per biweek). Adjusting off that anchor: (a) September seasonality is a mild negative for the spread - NDX averages -2.1% in September (2017-2025) vs SPX ~-1.5%, and NDX's ~1.15 beta drags the spread whenever expected index return is negative, with the back half of September historically the weak half; (b) the regime cuts against duration - a Fed HIKE was ~50-52% priced for the Sep 16 FOMC before today's payrolls beat (162k vs 55k expected), and the SEP/dot plot lands inside the window; (c) offsetting positives are the Apple event Sep 9 and Adobe earnings Sep 10, both NDX-overweight, and NDX's +4.2% August. These roughly cancel, so I center essentially at zero (+0.05pp) rather than at the drift. Dispersion is the harder call: VIX at 14.32 is the 2026 low, but the FOMC hike/hold coin flip is a genuinely bimodal driver for tech-vs-broad-market and quad-witching adds flow noise, so I hold the spread near its full reference-class width rather than discounting for the calm tape. Evidence is thin and indirect - no market prices this spread and no source forecasts it - so I stay close to the base rate. Tails past +/-5pp need a ~4-sigma dislocation (AI-financing credit event or hawkish shock on the low side, AI melt-up or flight-to-mega-cap-quality on the high side); priced ~1%/0.7%.",
+   "sources": [
+    "https://www.fool.com/investing/2026/08/28/history-says-the-nasdaq-100-does-this-in-september/",
+    "https://finance.yahoo.com/markets/stocks/articles/stock-market-news-sep-4-090900700.html",
+    "https://www.cnbc.com/2026/09/01/big-tech-has-lagged-the-market-nearly-all-year-whats-happening.html",
+    "https://www.nasdaq.com/articles/august-2026-review-and-outlook",
+    "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+    "https://www.cnbc.com/2026/08/17/stock-market-volatility-vix-wall-street.html",
+    "https://www.businesswire.com/news/home/20260831054310/en/Adobe-to-Announce-Q3-FY2026-Earnings-Results-on-Sept.-10-2026",
+    "https://www.macrumors.com/2026/08/26/apple-iphone-event-2026/",
+    "https://investors.broadcom.com/news-releases/news-release-details/broadcom-inc-announce-third-quarter-fiscal-year-2026-financial",
+    "https://www.financecalendar.com/event/us-cpi-report-september-2026/",
+    "https://kalshi.com/category/financials/indices",
+    "https://investorshub.advfn.com/market-news/article/35698/u-s-stock-futures-fall-after-august-payrolls-exceed-expectations-dow-jones-sp-nasdaq-wall-street"
+   ],
+   "dossier": "STATUS-QUO OUTCOME: the two indices track closely; a biweekly NDX-SPX price-return difference near zero is what the tape does absent a regime driver.\n\nEVENT WINDOW: Sep 7 -> Sep 18, 2026 per the question title; as of Now (2026-09-04T17:39Z) 0% elapsed - the window has not opened. Sep 7 is Labor Day (US equity markets closed), so the window spans 9 sessions, Sep 8 through Sep 18. Scheduled resolution 2026-09-18T20:00Z = 16:00 ET, which is also September quad-witching / Sep-contract expiry for ES and NQ.\n\nRESOLUTION INSTRUMENT: resolves off Nasdaq-100 FUTURES vs S&P 500 FUTURES price returns, not the cash indices and not total-return (dividend-reinvested) indices. NDX cash dividend yield ~0.6% vs SPX ~1.2%, so futures carry differs slightly from cash by roughly 0.015pp over 9 sessions - second-order, but note that a front-month series may roll across the Sep 18 expiry.\n\nEVIDENCE (both directions):\n- 2026 YTD through early Sep: NDX +17.1%, SPX +13.1% (Nasdaq, 'August 2026 Review and Outlook'). Cumulative spread +4.0pp over ~8.2 months.\n- August 2026: SPX +2.7%, NDX +4.2% - best August for both since 2021 (same source).\n- Big Tech (Alphabet, Amazon, Apple, Meta, Microsoft, Nvidia) has trailed the S&P 500 for 92% of 2026 and is on pace for one of its worst 12-month stretches since 2013, second only to 2022 (CNBC, 2026-09-01).\n- NDX closed 29,482.32 on Sep 3, 2026 (+1.16%); SPX closed 7,747.71 (+1.1%); Dow 53,686.11 (+1.2%); Nasdaq Composite 26,584.06 (+1.4%) (Yahoo Finance / InvestorsHub, 2026-09-04). NDX record high was just above 30,660 in early June 2026, so NDX sits ~3.8% below its peak.\n- Sep 2, 2026: SPX and Dow rose over 1% while NDX gained 0.8% as chip producers underperformed (CNBC, 2026-09-02).\n- Aug 2026 payrolls released Sep 4: +162k vs +55k expected, July revised down to +21k, unemployment 4.1% vs 4.2% expected. Treasury yields rose; index futures fell on the print (InvestorsHub, 2026-09-04).\n- Rate path: CME FedWatch showed ~52.4% odds of a September rate HIKE, down from 63.2%, after Fed Governor Waller signalled preference to hold pending further disinflation (InvestorsHub / Invezz, 2026-09-04). NOTE: two independent outlets both word this as a hike, i.e. a tightening-bias regime; treat the direction as reported but not fully verified.\n- Scheduled inside the window: Apple 'Surprise and Shine' iPhone 18 Pro / foldable event Sep 9, first launch under new CEO John Ternus (MacRumors, 2026-08-26); Adobe Q3 FY2026 after the close Sep 10 (Business Wire, 2026-08-31); August CPI Sep 11 08:30 ET (Finance Calendar); FOMC decision Sep 16 14:00 ET with Summary of Economic Projections / dot plot (federalreserve.gov). Broadcom Q3 FY2026 already reported Sep 2, i.e. BEFORE the window (Broadcom IR).\n- Volatility: VIX closed 14.32 on Sep 4 (-5.8%), after touching 14.13, the lowest level of 2026. Median VIX since 1990 runs ~16.5 in late August, ~18 by mid-September, ~19 in early October (CNBC, 2026-08-17; Yahoo Finance).\n\nBASE RATES (with the class each is computed over):\n- Over all calendar years 2010-2025: NDX out-returned SPX in 12 of the last 16 years, average NDX annual return +18.8% (Nasdaq Global Indexes).\n- Over Septembers 2017-2025 (conditional on the month being September): NDX averaged -2.1% with 67% of Septembers negative (Motley Fool, 2026-08-28). SPX Septembers over the same 9 years averaged roughly -1.5%, implying a September NDX-SPX spread averaging about -0.6pp per full month, i.e. ~-0.3pp per half-month. n=9 and heavily driven by 2021-2023.\n- Over all months (unconditional): NDX Sep 2022 -10.6% vs SPX -9.3% (spread -1.3pp); NDX Sep 2025 +5.4% vs SPX ~+3.5% (spread ~+1.9pp) - the two most extreme recent Septembers, in opposite directions.\n- Over 2024 calendar months (unconditional monthly class): the NDX-SPX monthly spread ranged roughly -2.8pp to +2.9pp with an SD near 1.7pp and a mean near +0.1pp.\n- Over 2026 to date: mean monthly spread ~+0.49pp.\n- Series-dispersion note: 9 sessions is ~43% of a trading month, so sqrt-time scaling of the monthly SD gives a 9-session SD near 1.0pp before any regime adjustment.\n\nMARKET CHECK: no Polymarket or Manifold candidate found by title search; an independent check of Kalshi found NDX and SPX single-index level markets (year-end range, monthly max, yearly min) but NO contract on the relative performance of the two indices, and no bookmaker line. Nothing prices this quantity.\n\nSEARCHED FOR BUT COULD NOT FIND: a downloadable NDX and SPX daily series to compute the realized 9-session spread distribution directly (stooq CSV and Slickcharts both blocked); the actual Sep 4, 2026 closing levels for NDX and SPX (only Sep 3 closes retrievable); the historical Sep 7-18 spread for 2022-2025 specifically; any analyst forecast of NDX-vs-SPX relative performance for September 2026; NQ/ES futures roll-schedule confirmation for the series used to resolve.",
+   "reference_class": "Biweekly (9-10 trading session) windows of Nasdaq-100 minus S&P 500 futures price returns, 2010-2026, with the mid-to-late-September subset (2017-2025) weighted for seasonality"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.9917,
+   "seconds": 408.6,
+   "estimate": {
+    "percentiles": {
+     "10": -2.05,
+     "25": -0.9,
+     "50": 0.1,
+     "75": 1.1,
+     "90": 2.15
+    },
+    "p_below_lower": 0.018,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Nine trading sessions (Sep 7 is Labor Day), so this is almost purely a dispersion question: directional signal-to-noise on the spread is ~0.06. Base rate: NDX has beaten SPX by ~6pp/yr over 2015-2026 (~+0.2pp per 9 sessions), and 2026 realized is strikingly consistent (+3.45pp YTD, +5.4pp over 1yr, both ~+0.19pp/9d). I shrink that ~50% as a momentum artifact and net it against second-half-September seasonality and a live Sep 16 FOMC where a hawkish Warsh Fed may hike (26% Kalshi to ~60% elsewhere) - a duration shock that hits high-beta NDX asymmetrically. Result: median +0.10, essentially flat. Dispersion is where the work is: VIX 16.34 is calm (45th pct of 10yr) but 2026 has been an unusually high-dispersion year for THIS spread specifically - two NDX corrections, SOX -25% into a bear market by late July, then a hard August reversal - and the window stacks Aug CPI (Sep 11), FOMC (Sep 16) and quad-witching (Sep 18). Both directions are live: NDX sits ~4.2% below its 52w high while SPX is only ~1.3% below its own (catch-up room), yet the AI trade has been repeatedly punished this year. Open bounds priced via a vol-regime mixture rather than a single fat-tailed fit, since a reversion to July's dispersion puts ~4% past each bound; slightly heavier left for the hike risk. No prediction market prices this spread (see below), so no anchor to blend.",
+   "sources": [
+    "https://stockanalysis.com/etf/qqq/",
+    "https://stockanalysis.com/etf/spy/",
+    "https://stockanalysis.com/etf/compare/qqq-vs-spy/",
+    "https://www.macroradar.io/vix",
+    "https://www.fool.com/investing/2026/08/28/history-says-the-nasdaq-100-does-this-in-september/",
+    "https://chartrow.com/sp500/ytd",
+    "https://seekingalpha.com/news/4620298-nasdaq-100-flirts-with-correction-territory-as-chip-selloff-deepens",
+    "https://fedratecalc.com/next-fomc-meeting",
+    "https://www.bls.gov/schedule/",
+    "https://investorshub.advfn.com/market-news/article/35698/u-s-stock-futures-fall-after-august-payrolls-exceed-expectations-dow-jones-sp-nasdaq-wall-street"
+   ],
+   "dossier": "QUANTITY: Nasdaq-100 futures price return minus S&P 500 futures price return, in percentage points, over the stated window.\n\nEVENT WINDOW: Sep 7 2026 -> Sep 18 2026 per the question criteria; as of Now (2026-09-04T17:39Z) 0% elapsed - the window has not begun. Sep 7 is Labor Day (US cash equities closed; CME equity futures trade a shortened Globex session to ~13:00 ET), so the window spans ~9 cash sessions: Sep 8, 9, 10, 11, 14, 15, 16, 17, 18. Scheduled resolution 2026-09-18T20:00:00Z = 16:00 ET, the cash close and the Sep quad-witching expiry.\n\nRESOLUTION-INSTRUMENT NOTE: resolves off FUTURES price returns (NQ vs ES), not cash index or total-return series. Two consequences: (a) futures embed carry, and NDX's dividend yield (~0.6%) is below SPX's (~1.2%), a differential worth roughly 0.02-0.05pp to NQ over two weeks; (b) the Sep contract expires ON Sep 18 and the Sep->Dec roll occurs in the days prior, so an unadjusted front-contract series would show a roll artifact where a continuous/back-adjusted series would not - which convention is used is unstated in the criteria.\n\nLEVELS AND POSITIONING (as of Sep 3-4, 2026):\n- Sep 3 closes: S&P 500 7,747.71; Nasdaq Composite 26,584.06; Dow 53,686.11 (InvestorsHub, Sep 4).\n- Sep 4 intraday ~13:50 ET: SPY 769.31 (-0.50%, prev close 773.17); QQQ 716.85 (-0.11%, prev close 717.67) (stockanalysis.com, Sep 4).\n- QQQ 52-week range 555.60-748.65; SPY 52-week range 629.28-779.37 (stockanalysis.com, Sep 4). QQQ sits ~4.2% below its 52w high; SPY ~1.3% below its own.\n- YTD total return through ~Sep 3: QQQ +17.01%, SPY +13.56%. Trailing 1-year: QQQ +26.40%, SPY +20.98% (stockanalysis.com comparison page, Sep 4).\n- S&P 500 YTD through Sep 2: +12.8% total return / +12.2% price; SPY 681.92 (2025-12-31 close) -> 773.11 (Sep 3) (ChartRow).\n\nBASE RATES, WITH THE CLASS EACH IS COMPUTED OVER:\n- Over all rolling ~2-week periods 2015-2026: NDX has outperformed SPX by roughly 6pp/yr on average, i.e. ~+0.2pp per 9 sessions (derived from index/ETF long-run returns).\n- Over 2026 YTD specifically (~168 sessions): QQQ-SPY total-return gap +3.45pp, i.e. ~+0.19pp per 9 sessions. Over the trailing 12 months: +5.4pp, i.e. ~+0.19pp per 9 sessions. The two conditional estimates coincide with the long-run unconditional one.\n- Over Septembers 2017-2025 (9 cases): NDX averaged -2.1% for the month with negative returns 67% of the time (Motley Fool, Aug 28 2026); S&P 500 averaged about -1.1% per September over 1928-2025. The NDX September average is driven by 2020, 2021 and 2022; in the three most recent cases the NDX-minus-SPX September gap was 2023 ~0pp (both ~-5%), 2024 ~0pp (both ~+2%), 2025 ~+1.9pp (NDX +5.4% vs SPX +3.5%).\n- Over 45 years of Septembers: average -58bp for the S&P 500, with the weakness concentrated in the SECOND half of the month (Melissa Brown, SimCorp, via Invezz Sep 4) - the half this window covers.\n\nVOLATILITY / DISPERSION OBSERVATIONS:\n- VIX 16.34 as of Sep 1-2 2026: 45th percentile over 10 years, 10-year average 19.72, +12.6% over 3 months, +14.7% over 12 months (MacroRadar). VIX printed 14.13 earlier in September, its lowest level of 2026.\n- Median seasonal VIX path: ~16.5 in late August, ~18 by mid-September, ~19 by early October.\n- 52-week range width: QQQ 34.7% vs SPY 23.9% - NDX's range is ~1.45x SPX's.\n\n2026 REGIME HISTORY FOR THIS SPREAD (both directions):\n- NDX printed an all-time high in early June 2026, then entered correction territory on July 29, closing ~10% below that peak; by late July it was more than 11% off the peak (Bloomberg/Seeking Alpha/Motley Fool, Jul 28-31). This was NDX's SECOND correction of 2026.\n- The Philadelphia Semiconductor Index fell 4.5% on July 28 and closed 25% below its June 22 high, meeting the bear-market definition (Seeking Alpha, Jul 28).\n- Driver was skepticism about Big Tech AI capex; sentiment shifted from rewarding AI exposure unconditionally to demanding evidence of AI return on investment.\n- Through H1 2026 the Magnificent 7 returned 5.4% vs 7.9% for the S&P 500 - the first year since the 2022 hiking cycle in which the Mag 7 genuinely lagged the broad index.\n- August 2026 reversed: QQQ ~+4.2% vs SPY ~+2.7% on trailing-1-month figures as of Aug 31, and NDX recovered most of the correction, ending the period ahead of SPX YTD.\n- Tech is nonetheless projected to deliver the largest earnings and revenue growth of all 11 S&P 500 sectors in 2026.\n\nMACRO EVENTS INSIDE THE WINDOW:\n- Aug CPI: Sep 11, 08:30 ET (BLS schedule). PPI also mid-month.\n- FOMC meeting Sep 15-16, decision Sep 16. This is a LIVE meeting for a HIKE, not a cut. Venue pricing diverges: Kalshi ladder 26% hike / 73% hold / 1% cut; another aggregator 42.1% hike / 56.9% hold; one report put hike odds near 60% after Fed Chair Kevin Warsh's Jackson Hole remarks on Aug 28. Context cited for the hawkish tilt includes energy shocks and July's hold having 'lowered the bar'.\n- Sep 18 is quarterly quad-witching plus the quarterly index share-count rebalance. The annual Nasdaq-100 reconstitution is in December, not September.\n- Fed Governor Christopher Waller said he could support holding rates in September if inflation continues to cool; this cut hike odds from ~63% to ~50-52% and drove a Thursday Sep 3 rally (Dow +1.2%, Nasdaq Composite +1.4%, S&P 500 +1.1%).\n- Aug nonfarm payrolls, released Sep 4: +162,000 vs ~53-55,000 expected, July revised down to +21,000, unemployment 4.1% vs 4.2% expected. Treasury yields rose and equity futures fell on the print.\n- Pre-payroll on Sep 4, Nasdaq-100 futures were +~135 points (+0.4%) while S&P 500 futures were +0.1% and Dow futures were flat (Invezz).\n- Sep 3 session detail: S&P 500 and Dow each rose over 1% while the Nasdaq-100 gained 0.8%, as chip producers underperformed.\n- Single-name items in/near the window: Lululemon -18% pre-market Sep 4 on weak US sales and a second full-year guidance cut (S&P 500 member, not NDX). Adobe -3% on a CEO transition announcement (NDX member; Adobe also reports in mid-September). Snowf",
+   "reference_class": "Nine-to-ten-trading-day (biweekly) differences between Nasdaq-100 and S&P 500 futures price returns, 2015-2026, conditioned on a moderate-VIX (14-18) regime"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.07,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2565,
+   "seconds": 100.6,
+   "estimate": {
+    "percentiles": {
+     "10": -2.0,
+     "25": -0.85,
+     "50": 0.1,
+     "75": 1.05,
+     "90": 1.95
+    },
+    "p_below_lower": 0.025,
+    "p_above_upper": 0.018
+   },
+   "reasoning": "Nine sessions (Sep 7 is Labor Day), so this is a dispersion question with signal-to-noise ~0.06 on direction. Class prior is +0.19pp per window and 2026 realized matches it almost exactly (+3.45pp YTD, +5.4pp trailing 1yr). I shrink it ~50%: Big Tech has trailed the S&P for 92% of 2026 and the Mag 7 lagged in H1, so the NDX lead is not durable mega-cap momentum; second-half-September seasonality and a live Sep 16 FOMC where a HIKE is priced 26-66% both cut against high-beta duration, as the Sep 4 payroll tape showed (NQ -1.11% vs ES -0.59%). Offsetting: Apple's Sep 9 event, Adobe Sep 10, NDX sitting ~4% below its 52w high vs SPX ~1.3%, and a possible unadjusted Sep->Dec roll adding ~+0.1pp of carry. Net median +0.10. Width set by the 2026 regime rather than the calm tape, since CPI Sep 11, FOMC with dot plot Sep 16 and quad-witching Sep 18 all sit inside the window. No prediction market anywhere prices this spread, so no crowd anchor.",
+   "sources": [],
+   "reconciliation": "Two real disputes. (1) Dispersion, 2.8 vs 4.1pp: settleable and settled. Run 2 scaled a 2024 monthly spread SD of 1.7pp; Runs 1 and 3 scaled 2026's ~2.5pp. The window is in 2026, a year with two NDX corrections and a SOX bear market, and Run 2's own text says it wants the 'full reference-class width' while pricing something narrower. Adopted the 2026-regime computation (Run 3's basis, which I agree with), shaded down for VIX at its 2026 low, giving 3.95. (2) Median, +0.18 vs +0.05 vs +0.10: pure judgment, no evidence breaks it. I take the shrink-by-half reading because the Mag7-lags-SPX-in-2026 fact (Runs 2 and 3, mutually consistent with NDX leading only via non-Mag7 names) undercuts treating the +0.19pp drift as a persistent factor, while the Sep 4 payroll asymmetry confirms NDX's rate beta into a live FOMC. Unsettleable factuals, left carrying their uncertainty: the futures roll convention (all three flag it; unadjusted would add ~+0.10-0.15pp, part of why I stay positive rather than at zero), the FOMC hike probability quoted at 26/42/52/60-66% across venues (all runs agree the meeting is two-sided, so it widens rather than shifts), and a Sep 2/Sep 3 date collision on which index led, which is pre-window and immaterial. I depart from all three runs on escape mass, pricing 2.5%/1.8% vs their 0.7-1.8%: July 2026 delivered roughly an 8pp monthly spread, ~5pp when scaled to nine sessions, so a repeat of that dispersion regime is a named mechanism rather than a tail abstraction. Market check confirmed across all three runs and the harness: nothing on Polymarket, Manifold, Kalshi or bookmakers prices relative NDX-vs-SPX performance; only single-index level and FOMC contracts exist, none matching this resolution instrument.",
+   "disagreements": [
+    {
+     "claim": "Dispersion 90-10 width is 2.8pp (Run 2) vs 3.7-4.1pp (Runs 1, 3)",
+     "kind": "factual",
+     "verdict": "Settled for the wider reading: Run 2 scaled a 2024 monthly SD of 1.7pp, but the window sits in the 2026 regime whose monthly spread SD is ~2.5pp per Run 1's figures and Run 3's July/August evidence. Set 3.95."
+    },
+    {
+     "claim": "How much of the +0.19pp/window NDX drift survives September seasonality and a live FOMC",
+     "kind": "judgment",
+     "verdict": "No evidence breaks the tie. Took the half-shrink (+0.10), because Mag7 underperformance through 2026 means the NDX lead is not durable mega-cap momentum, and NDX's rate beta showed up directly on the Sep 4 payroll print."
+    },
+    {
+     "claim": "September FOMC hike probability: 26% (Kalshi) / 42% / 52% / 60-66%",
+     "kind": "factual",
+     "verdict": "Could not settle without web access; sources genuinely diverge. Immaterial to the median since all runs agree the meeting is two-sided, so it feeds dispersion, not direction."
+    },
+    {
+     "claim": "Whether the resolving futures series is back-adjusted continuous or unadjusted front-month rolling Sep->Dec inside the window",
+     "kind": "factual",
+     "verdict": "Unsettled - the criteria text is silent and all three runs flagged it. Unadjusted would add ~+0.10-0.15pp of carry to NDX; carried as one reason the median stays positive rather than zero."
+    },
+    {
+     "claim": "Big Tech trailed the S&P for 92% of 2026 (Run 2) vs NDX leads SPX by 4.0pp YTD (all runs)",
+     "kind": "factual",
+     "verdict": "Both true and compatible: non-Mag7 NDX constituents drove the index lead. Reconciled as evidence AGAINST treating the drift as persistent momentum."
+    },
+    {
+     "claim": "Sep 3 session: NDX +1.16% (Run 2) vs NDX +0.8% lagging on chips (Run 3)",
+     "kind": "factual",
+     "verdict": "Likely a Sep 2 / Sep 3 date collision between the two write-ups; could not settle. Pre-window and immaterial to a Sep 8-18 spread."
+    },
+    {
+     "claim": "NDX June 2026 peak at ~27,190 vs ~30,660",
+     "kind": "factual",
+     "verdict": "Unresolved conflict flagged by Run 3 itself; likely an NDX-vs-Composite mixup. Does not affect a relative-return forecast."
+    },
+    {
+     "claim": "Escape mass past +/-5pp: 1.7% to 3.3% total across runs",
+     "kind": "judgment",
+     "verdict": "Priced above all three at 4.3% total. July 2026's ~8pp monthly spread scales to ~5pp over nine sessions, so the tail has a named 2026 mechanism rather than requiring a 4-sigma event."
+    }
+   ],
+   "reference_class": "Rolling ~9-10 trading-session windows of Nasdaq-100 minus S&P 500 price return, 2015-2026, with the September/second-half subclass as a conditioning overlay"
+  }
+ ]
+}

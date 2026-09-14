@@ -1,0 +1,170 @@
+{
+ "record_id": "2026-09-07-3d09463e",
+ "question": "Will Bitcoin close above $80,000 on September 17, 2026?",
+ "question_id": 45728,
+ "url": "https://www.metaculus.com/questions/45537/",
+ "question_type": "binary",
+ "forecast_at": "2026-09-07T11:17:21+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.4667,
+ "pools": {
+  "pooled_runs": 0.45331576025965764,
+  "phase1": 0.45331576025965764,
+  "phase2": null,
+  "spread_phase1": 0.02,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probability": 0.43
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.7703,
+   "seconds": 210.7,
+   "estimate": 0.44,
+   "reasoning": "Spot is $79,338 (CoinGecko live, Sep 7 11:00 UTC) and the bar is $80,000 — the threshold sits 0.83% ABOVE spot, so a coin-flip framing is already slightly too generous. Realized daily log-vol over the last 14 CoinGecko closes is 1.96%; inverting Polymarket's September touch ladder (85K 47%, 90K 20%, 75K 55%, 70K 21%) and its Sep 7-13 78K market (72%) independently yields 1.92-2.04%/day with no discernible skew, so I treat sigma as well-identified and the crowd as directionally neutral. Over the 10.54 days to the 2026-09-17 UTC close that gives sigma_h = 6.4%; a driftless log random walk puts P at 0.448, and the martingale convexity term at 0.436. No prediction market prices this contract (all candidates are monthly-high/touch or year-end closes — near-miss, not anchors). Directional news is close to a wash: FOMC Sep 16 leans toward a 25bp hike (56-70% on FedWatch, hence mostly priced) and September seasonality plus a -9.85% YTD regime cut down, while price above all SMAs 7-90 and a +22% month cut up; the Sep 15 CLARITY cloture (needs 7 Democrats) is a fatter left tail than right. I land at 0.44 — just under the random walk because the gap to the strike is real and the tails are mildly left-skewed.",
+   "sources": [
+    "https://www.coingecko.com/en/coins/bitcoin/historical_data",
+    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true",
+    "https://polymarket.com/event/what-price-will-bitcoin-hit-in-september-2026",
+    "https://polymarket.com/crypto/bitcoin",
+    "https://coingape.com/markets/bitcoin-price-outlook-ahead-of-sep-15-16-fomc-meeting/",
+    "https://www.theblock.co/news/regulation/2026-08-08-majority-leader-thune-files-cloture-on-clarity-act-setting-up-sept-15-senate-vote-411211",
+    "https://www.forbes.com/sites/digital-assets/2026/08/31/cme-fedwatch-provides-a-66-chance-fed-will-hike-rates-in-september/",
+    "https://u.today/bitcoin-to-85000-in-september-kalshi-traders-ignore-price-correction",
+    "https://www.diariobitcoin.com/analisis/bitcoin-aguanta-los-usd-80-000-con-volumen-menguante-analisis-del-7-de-septiembre-de-2026/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the single CoinGecko daily 'Close' row dated 2026-09-17 (UTC), strictly greater than $80,000 — not an intraday high, not a weekly average, not an exchange-specific print. CoinGecko's historical_data page was reachable and populated this run.\n\nEVENT WINDOW: the measured object is the one daily close for 2026-09-17 UTC, i.e. the bar spanning 2026-09-17T00:00Z -> 2026-09-18T00:00Z. As of Now (2026-09-07T11:03Z) 0% of that bar has elapsed; 10.54 days remain until it prints. (Derived from the criteria text, not from any forecasting-close time.)\n\nPRICE STATE (CoinGecko):\n- Live spot 2026-09-07 ~11:00Z: $79,338, -0.82% over 24h.\n- Daily closes: Sep 6 $80,329 | Sep 5 $79,822 | Sep 4 $79,671 | Sep 3 $81,265 | Sep 2 $77,297 | Sep 1 $77,416 | Aug 31 $78,553 | Aug 30 $77,658 | Aug 29 $78,225 | Aug 28 $77,821 | Aug 27 $80,268 | Aug 26 $79,018 | Aug 25 $78,511 | Aug 24 $78,974.\n- DiarioBitcoin (2026-09-07): 24h volume $21.11M vs 30-day average $29.53M (-28.5%); price above all SMAs 7 through 90; SMA-7 at $78,870; day high $80,433.55; 36.9% below the 2025-10-06 ATH of $126,149; -9.85% YTD; +22.48% over the trailing month.\n- Sunday Guardian (2026-09-06): resistance cited $80,500-$80,800; support $78,000-$78,500; weekend volume thin. Kalshi/U.Today: September intramonth high so far $82,283 printed Sep 3.\n\nBASE RATES, WITH THE CLASS EACH IS COMPUTED OVER:\n- Unconditional, over the last 14 CoinGecko daily closes (Aug 24 - Sep 6): 3 of 14 closes were strictly above $80,000 (Sep 3, Sep 6, Aug 27).\n- Conditional on the current spot being 0.83% below the strike, over a 10.54-day horizon at the measured vol: a driftless log random walk with sigma 1.96%/day implies sigma_horizon = 6.4%, and the strike sits z = 0.13 above the median. Adding the -sigma^2/2 martingale term moves z to 0.16.\n- Dispersion basis, realized: SD of daily log returns over the 14 closes above = 1.96%/day (annualized ~37%).\n- Dispersion basis, market-implied (independent of the above): Polymarket 'What price will Bitcoin hit in September' TOUCH ladder, $3.17M volume, resolves Oct 1 — up-touch 82.5K 67%, 85K 47%, 87.5K 31%, 90K 20%, 92.5K 12%, 95K 8%, 100K 4%; down-touch 77.5K 81%, 75K 55%, 72.5K 34%, 70K 21%, 67.5K 12%, 65K 8%, 60K 3%. Inverting each rung via the reflection approximation (P_touch ~ 2 * P_terminal) over the 24 remaining September days gives 1.92-2.04%/day from BOTH the up and down side — i.e. no volatility skew. Polymarket's separate 'Bitcoin hit $78K Sep 7-13' at 72% reproduces the same sigma. NOTE: these are touch/monthly-high contracts, not daily-close contracts, and none of them share this question's threshold, date or resolution source.\n\nCATALYSTS INSIDE THE WINDOW:\n- Aug CPI release Sep 11.\n- FOMC Sep 15-16, decision announced Sep 16 — i.e. one day before the measured close. CME FedWatch readings found this run range 56% to 70.2% for a 25bp HIKE from the current 3.50-3.75% target to 3.75-4.00%; the balance is no-change. Forbes (Aug 31) cited 66%; a post-August-payrolls read cited ~59%. A solid August jobs report is the stated driver.\n- CLARITY Act: Senate cloture on the motion to proceed ripens Sep 15 at 2:15pm ET (Thune filed before the August recess). 60 votes required; GOP holds 53 seats, so >=7 Democrats are needed. The House passed the bill 294-134 in July 2025; Senate disagreements over ethics, rewards, DeFi and regulator authority have stalled it. This is procedural, not final passage — a successful cloture still requires further negotiation and another vote. Coinbase CEO Brian Armstrong has publicly said it will pass. Some desks cite a 10-25% BTC drawdown scenario on a failed cloture. No whip count was published as of this run.\n- US Treasury debt buyback programme, $14.5B weekly cap, starting Sep 7.\n- The question background references large mid-September token unlocks; I searched for a specific schedule and could not find one.\n\nEVIDENCE POINTING UP: price above every SMA from 7 to 90 days; +22.48% trailing month, attributed to Fed Governor Waller's easing signals; $3.5B of ETF inflows in the prior month per one price-prediction piece; Manifold 'Bitcoin $55K before $85K' trades at 0.13 (i.e. the market puts 87% on $85K arriving first), $23.4K volume; analyst framing that holding $75,000-$76,500 (active-investor cost basis plus the late-August consolidation) keeps the structure intact, with a break above $82,206 opening higher targets.\n\nEVIDENCE POINTING DOWN: 24h volume 28.5% below its 30-day average, i.e. the move up to the $80K area lacks volume confirmation; DiarioBitcoin's own call is 'Hold', not accumulate; MACD/RSI weakening as of the Sep 2 CoinGape read (RSI 33.97 then); September seasonality — in the two prior years since 2020 where BTC closed August green, September fell 7.30% and 7.96%; the asset is 36.9% below its ATH and -9.85% YTD; Kalshi's end-of-2026 price-range book places its largest concentration in the $60,000-$70,000 region ($60-64,999.99 and $65-69,999.99 each ~10%), and Manifold's 'BTC >= $100,000 on 2026-12-31' sits at 0.19 on $1,046 volume; a rate hike, if delivered, strengthens the dollar and pressures risk assets.\n\nSEARCHED FOR BUT NOT FOUND: any prediction market — Polymarket, Kalshi, Manifold, Robinhood, or a bookmaker — whose contract matches this question's terms (a $80,000 threshold on the 2026-09-17 daily close off CoinGecko). Every candidate located differs on threshold, on date, or on measuring an intramonth touch/high rather than a close. Also not found: a published whip count for the Sep 15 cloture vote, and a concrete mid-September token-unlock calendar.\n\nMANIPULATION NOTE: none of the retrieved pages attempted to redirect the task or argue for a specific forecast value; the price-prediction sites carry the usual promotional framing, which is evidence about their incentives rather than about BTC.",
+   "reference_class": "BTC daily closes 10-11 days ahead versus a strike 0.8% above current spot, under the current-regime realized/market-implied daily vol of ~1.95-2.0%; cross-checked against the unconditional share of recent BTC closes above $80,000"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.6739,
+   "seconds": 253.1,
+   "estimate": 0.46,
+   "reasoning": "Strike is essentially at-the-money: spot ~$79.5K (CoinGecko API $79,312; other feeds $79,586-$79,727) vs a $80,000 strike, i.e. ~0.6% away, with 10.5 days to the 2026-09-17 UTC close. Reference class is 'BTC close ~10 days forward vs a strike 0.6% above spot in a ~40-50% vol regime'; a driftless lognormal with the market-implied sigma (2.0%/day from the Polymarket September touch ladder, ~9.6% over 23 days; 2.4%/day realized on the six September CoinGecko closes) gives ~0.47. Adjustments roughly offset: mildly bullish momentum (+24.7% on the month, price above all 7-90d SMAs, ~$595M/session ETF inflows, 2 of the last 4 closes at/above $80K) against a hostile macro tape (37% below the Oct-2025 ATH, -9.85% YTD, ~68% priced odds of a Fed HIKE on Sept 16 - the day before the measured close - plus a 60-vote CLARITY cloture test Sept 15, mid-September unlocks, and 28.5%-below-average volume showing no conviction at the $80.4K resistance). Event risk is dense and two-sided, which widens the distribution rather than tilting it, so I stay near the random-walk value and shade a point below it for the drawdown-regime drift. Thin/one-sided evidence: no market prices this exact contract, and I could not retrieve live ATM implied vol - so I stay close to the base rate.",
+   "sources": [
+    "https://www.coingecko.com/en/coins/bitcoin/historical_data",
+    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
+    "https://polymarket.com/event/what-price-will-bitcoin-hit-in-september-2026",
+    "https://coingape.com/markets/bitcoin-price-outlook-ahead-of-sep-15-16-fomc-meeting/",
+    "https://www.cryptotimes.io/2026/09/04/bitcoin-price-prediction-september-2026-can-btc-reach-90k-or-retest-72k/",
+    "https://www.diariobitcoin.com/analisis/bitcoin-aguanta-los-usd-80-000-con-volumen-menguante-analisis-del-7-de-septiembre-de-2026/",
+    "https://sundayguardianlive.com/business/bitcoin-price-today-06-september-btc-hovers-near-80000-after-recent-rally-faces-key-80000-resistance-ahead-of-us-cpi-check-latest-bitcoin-prices-in-usd-inr-gbp-euro-jpy-278725/",
+    "https://finance.yahoo.com/markets/crypto/articles/bitcoin-price-could-drop-72k-113215951.html",
+    "https://www.coinbase.com/price/bitcoin"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the CoinGecko Bitcoin historical-data row dated 2026-09-17 (a single UTC daily-close snapshot), strictly greater than $80,000 -- NOT an intraday high, NOT a monthly touch, NOT Binance BTC/USDT, NOT a period average. Exactly $80,000.00 resolves NO. CoinGecko was publishing daily closes normally as of 2026-09-07.\n\nEVENT WINDOW: 2026-09-17T00:00Z -> 2026-09-18T00:00Z per the criteria (one daily close); as of Now (2026-09-07T11:03Z) 0% elapsed -- ~9.5 days until the measurement day even begins, ~10.5 days to the close itself.\n\nPRICE FACTS\n- CoinGecko daily closes, Sept 2026 (fetched 2026-09-07 from the resolution page): Sep 1 $77,416; Sep 2 $77,297; Sep 3 $81,265; Sep 4 $79,671; Sep 5 $79,822; Sep 6 $80,329. Two of six are strictly above $80,000.\n- Spot on 2026-09-07: CoinGecko API $79,312 (-0.82% 24h); Coinbase-sourced quote $79,727 (+0.27% 24h); DiarioBitcoin $79,586 (+0.05% 24h). Intraday range that day roughly $79,860-$80,433.\n- Trailing month (Aug 7 - Sep 7): +24.7%; August ran from $62,922; monthly high $82,178.60. 52-week range $57,832.50-$126,186.00. ATH $126,149.02 on 2025-10-06, so ~37% below it; -9.85% YTD (DiarioBitcoin, 2026-09-07).\n\nDISPERSION / BASE RATES (with the class each is computed over)\n- Realized SD of daily log returns over the six Sept-2026 CoinGecko closes: ~2.4%/day (~46% annualized), driven largely by one +5.0% day (Sep 2 -> Sep 3).\n- Market-implied, inverted from the Polymarket September month-touch ladder (Binance 1-min high/low, resolves 2026-10-01, ~$3.17M total volume, read 2026-09-07) through a driftless-GBM touch model: the up-rungs at +7%/+13% and the down-rungs at -6%/-9% from spot all invert to ~1.9-2.1%/day, i.e. ~6.5% over the remaining 10.5 days and ~9.6% over the rest of September. Caveat: one rung (down-touch $77,500) was quoted well below 100c despite a Sep 2 close of $77,297, so some quotes on that page may be stale.\n- Class 'all 10-day BTC windows, unconditional': a driftless random walk puts ~50% on being higher 10 days out; requiring the extra ~0.6% to clear the strike subtracts a couple of points at this sigma.\n- Class 'given the 2026 regime': last 12 months are a large net drawdown from the Oct-2025 ATH (fewer up-windows than 50%); last 30 days are a sharp recovery (+24.7%, more up-windows than 50%). The two conditionings point opposite ways -- do not use only one.\n\nCALENDAR INSIDE THE WINDOW\n- US Treasury buyback programme expands from Sept 7 (weekly cap $14.5B; a second source says operations roughly double to $4B+ around Sept 9).\n- US August CPI Sept 10-11 (PPI alongside).\n- Senate procedural/cloture vote on the CLARITY crypto market-structure bill expected ~Sept 15; needs 60 votes.\n- FOMC Sept 15-16, decision plus new SEP on Sept 16 -- the calendar day immediately before the measured close. Market pricing as of Sept 2 (CoinGape): ~68% a rate INCREASE from the 3.50%-3.75% target, ~32% unchanged, after August payrolls +162k. Separately, Fed Governor Waller's easing signals were credited with the move above $80,000 earlier in the month (DiarioBitcoin, Sept 7).\n- A series of large token unlocks in mid-September (per the question background; I did not independently size them).\n\nEVIDENCE POINTING UP\n- Price sits above all SMAs from 7 to 90 days; SMA-7 ~$78,870 acting as support.\n- August spot-ETF inflows $3.5B; early-September sessions averaged ~$595M/session (CryptoTimes, Sept 4).\n- The Sept 6 close printed $80,329, i.e. the level has been cleared on a closing basis within the last 48 hours.\n- Deribit desk commentary (late August) reports puts richer than calls, with traders using call spreads into September -- i.e. downside is the crowded hedge.\n\nEVIDENCE POINTING DOWN\n- 24h volume 28.5% below the 30-day average ($21.11M vs $29.53M on the cited feed); analysts flag the move above $80K as unconfirmed by volume and recommend Hold.\n- Overhead resistance mapped at $80,400-$80,800 and a heavier supply zone $81,000-$86,000; supports $78,000-78,500, then $75,000-76,500 (active-investor cost basis), then $72,000-73,000 (200-day EMA).\n- A hawkish Fed backdrop: ~68% odds of a hike, Treasury yields near 4.8%, a stronger dollar cited as a direct headwind.\n- One source reports September ETF OUTFLOWS of $236M as of Sept 1, contradicting the inflow figure above -- flow data is genuinely conflicting.\n- The question background cites analysts warning a failed CLARITY cloture vote could produce a 10-25% drawdown (I could not verify this claim in an independent source).\n- Other-venue sentiment: a Kalshi write-up reports traders assigning material probability to a September dip below $72,500, with the year-end-2026 modal bucket at $60,000-$70,000 (that article's vintage is uncertain and may predate the August rally). Low-volume Manifold markets on BTC >=$100K at end-2026 and '$55K before $85K' both sit in low double digits.\n\nSEARCHED BUT NOT FOUND\n- No prediction market anywhere (Polymarket, Kalshi, Manifold, bookmakers) prices this exact contract: a BTC close above a fixed $80,000 strike on 2026-09-17. Polymarket's dated BTC markets are listed only ~1-2 days ahead (Sept 7 and Sept 8 exist); Kalshi's September ladders are monthly high/low touch markets. Every candidate differs on threshold, window, or resolution source.\n- Could not retrieve live BTC ATM implied volatility from The Block or Deribit (charts not machine-readable), nor a quote for the Sept 18 options expiry.\n- No confirmed Senate floor schedule text for the CLARITY cloture vote beyond secondary reporting of 'expected ~Sept 15' -- searched, not found in a primary source.",
+   "reference_class": "BTC daily closes 10-11 days forward vs a strike ~0.6% above spot, in a ~40-50% annualized vol regime (driftless-random-walk base rate, cross-checked against the observed spread of BTC 10-day changes in 2026)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.7415,
+   "seconds": 275.2,
+   "estimate": 0.46,
+   "reasoning": "Spot ~$79,500 on 2026-09-07 (CoinDesk live blog), i.e. 0.63% BELOW the $80,000 strike, with 10.54 days to the close of the measured day. BTC 30d annualized realized vol in 2026 runs 32-45% (The Block/Spark); Polymarket's September touch ladder ($82,500 up at 67c, $75,000 down at 55c) back-solves to a roughly driftless GBM at sigma_ann ~42-45%, giving a 10.5-day sigma of ~7.5%. The strike is therefore only ~0.08 sigma away: a near coin flip sitting slightly on the NO side. Lognormal median-below-mean drag reinforces the small deficit. Offsetting adjustments are minor and near-cancelling: momentum is constructive (price above all SMAs 7-90, +22% on the month, ~$3.8B ETF inflows over three weeks) against $80,400-80,800 resistance the price has repeatedly failed, thinning volume, and ~58% market odds of a Fed HIKE decided 2026-09-16, one day before the measured close. No prediction market matches this contract (Polymarket September is a Binance-high TOUCH market resolving Oct 1; the rest are far-horizon), so no crowd anchor is applied. Landing just under the driftless 50% baseline.",
+   "sources": [
+    "https://www.coingecko.com/en/coins/bitcoin/historical_data",
+    "https://polymarket.com/event/what-price-will-bitcoin-hit-in-september-2026",
+    "https://polymarket.com/event/what-price-will-bitcoin-hit-before-2027",
+    "https://www.cryptotimes.io/2026/09/04/bitcoin-price-prediction-september-2026-can-btc-reach-90k-or-retest-72k/",
+    "https://www.coindesk.com/business/2026/09/07/live-updates-bitcoin-holds-usd79-000-as-hike-odds-climb-zcash-runs-45-in-a-week",
+    "https://www.cnbc.com/2026/08/28/-september-fed-decision-now-a-coin-flip-as-rate-hike-odds-increase.html",
+    "https://www.theblock.co/data/crypto-markets/prices/annualized-btc-volatility-30d",
+    "https://u.today/bitcoin-to-85000-in-september-kalshi-traders-ignore-price-correction",
+    "https://cryptouniversity.network/news/september-2026-is-unusually-dense"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the single CoinGecko daily CLOSE row dated 2026-09-17 (UTC) for BTC/USD, strictly greater than $80,000 — not an intraday high, not a monthly touch, not a Binance candle, not an average. Ties at exactly $80,000 resolve NO. Fallback to other credible-source daily closes only if CoinGecko omits the row.\n\nEVENT WINDOW: the measured object is the 24h UTC day 2026-09-17T00:00Z -> 2026-09-18T00:00Z, per the criteria text. As of Now (2026-09-07T11:03Z) 0% of that day has elapsed; 9.54 days remain until the measured day begins and 10.54 days until it ends.\n\nSTATUS-QUO OUTCOME: BTC has oscillated across $80,000 repeatedly in the first week of September. CoinGecko daily closes: Sep 1 ~$77,416; Sep 2 ~$77,297; Sep 3 $81,265; Sep 4 $79,671; Sep 5 $79,822; Sep 6 $80,329 (2 of 6 September closes so far are strictly above $80,000; note independent sources give slightly different Sep 1-3 figures — Fortune reports Sep 2 $76,672 and Sep 3 $77,934 — so cross-source snapshot noise of $1-3k exists on individual days). Spot as of 2026-09-07: CoinDesk live blog ~$79,500 (-0.5% 24h); DiarioBitcoin ~$79,586 with session high $80,433.55; CoinDesk quote Sep 6 17:41 EDT $79,917.67.\n\nEVIDENCE (source, date):\n- CoinDesk, Sep 7 2026: BTC slipped below $80,000 after August nonfarm payrolls printed +162,000, roughly three times forecast; September Fed hike odds moved toward 58%.\n- CNBC, Aug 28 2026: after Fed Chair Kevin Warsh's Jackson Hole remarks, CME FedWatch odds of a September HIKE rose from ~35% to ~60%. CNBC, Aug 31: not all analysts read Warsh as endorsing a hike. Kalshi ~55%, fed funds futures ~56%.\n- Calendar (Crypto University, Sep 2026): Treasury buyback expansion Sep 9; US August CPI Sep 11 08:30 ET; 10-year note reopening auction Sep 9; FOMC meets Sep 15-16 with decision and updated projections released Sep 16; Senate cloture vote on the CLARITY market-structure bill scheduled ~Sep 15; large mid-September token unlocks; a UK licensing window opens Sep 30. All of Sep 11, 15 and 16 fall BEFORE the measured close.\n- CryptoTimes, Sep 4 2026: support cited at $75,000-$76,500 (active-investor cost basis) and $72,000-$73,000 (MA convergence); resistance described as a region $81,000-$86,000; Treasury yields near 4.8% cited as a constraint; ETF inflows averaged $595.4M across three early-September sessions.\n- Sunday Guardian, Sep 6 2026: resistance $80,500-$80,800, support $78,000-$78,500; weekend volume thin. Seven dormant 2010-era mining wallets moved 350 BTC (~$28M); not linked to Satoshi.\n- DiarioBitcoin, Sep 7 2026: 24h volume fell 28.5% to well below the 30-day average; price above all SMAs 7-90; SMA-7 at $78,870; BTC is 36.91% below its 2025-10-06 ATH of $126,149 and -9.85% year-to-date; the ~22.5% monthly recovery is attributed to Fed-easing signals from Governor Waller.\n- Aug 2026 performance: BTC opened August at $62,922 and gained ~24.95% on the month; US spot BTC ETF inflows exceeded $3B in August, ~$3.8B over the trailing three weeks.\n- Analyst targets are widely dispersed for end-2026: Citigroup cut its 12-month base case twice to $82,000, Standard Chartered cut twice to $100,000, Bernstein holds $150,000; the CoinGecko survey spans $38,000-$250,000.\n- 52-week range: $57,832.5 to $126,186.0.\n\nDISPERSION / SERIES DATA (the horizon-matched spread):\n- BTC 30-day annualized realized volatility, 2025-2026 range 23%-45% (The Block / Spark / btcoak); 32.3% as of 2026-07-22; 35-40% in April 2026. Recent months sit at the high end given August's +25% move.\n- At 32%-45% annualized, the standard deviation of a 10.5-day log return is 5.4%-7.6%, i.e. a 10th-90th percentile band of roughly -13% to +15% at the top of that range and -7% to +7.5% at the bottom. In dollar terms from ~$79,500 that is roughly $69,000-$91,000 at the wide end.\n- Recent single-day realized moves for scale: Sep 2 -> Sep 3 was about +5%.\n\nBASE RATES (with the class each is computed over):\n- Over ALL BTC 10-11 day forward windows (2024-2026): the forward daily close is higher than the starting price in roughly 52-55% of windows, reflecting historical positive drift; under a pure driftless random walk the figure is 50%.\n- CONDITIONAL on spot starting within +/-1% of the threshold (the situation here), the horizon-length dispersion above swamps the starting offset: the offset is under 0.1 standard deviations.\n- Over September 2026 daily closes so far (6 observations, an unconditional in-sample count, not a forward-looking rate): 2 of 6 closed strictly above $80,000.\n\nPREDICTION MARKETS FOUND (none match the resolution terms; contract differences noted):\n- Polymarket 'What price will Bitcoin hit in September?' ($3.17M volume, closes 2026-09-30, resolves Oct 1): a Binance 1-minute-candle HIGH TOUCH ladder over the whole remaining month, not a close on a specific date, not CoinGecko. Its up-rungs run $82,500 / $85,000 / $87,500 / $90,000 / $100,000 and its down-rungs $77,500 / $75,000 / $72,500 / $70,000 down to $55,000; the ladder's implied barrier probabilities back-solve to approximately a driftless geometric random walk with annualized volatility in the low-to-mid 40s.\n- Polymarket 'What price will Bitcoin hit in 2026?' ($63.9M volume, closes 2027-01-01): also a touch ladder, horizon runs to year end — rungs from $45,000 down through $1,000,000 up.\n- Polymarket 'Bitcoin Up or Down on September 7 / September 8' ($74k / $26k volume): correct daily-close instrument but the wrong dates, and no readable price was retrievable.\n- Manifold: '$150,000 on December 31 2026' (2c, $1.1k volume), '$100,000 or higher on 2026-12-31' (19c, $1.0k volume), '$55K before $85K' (13c, $23k volume, closes 2027-12-31) — all far-horizon, thin, and differently specified.\n- Kalshi: monthly maximum-price ladder for September; press coverage (U.Today, Sep 5) notes the $80,000 rung settled YES on Sep 3 when BTC traded briefly above $82,000, and that traders hold rungs at $82,000 and $85,000 for the balance of the month. Kalshi's long-hori",
+   "reference_class": "BTC daily closes ~10-11 days forward, conditional on spot starting within +/-1% of the threshold, under a driftless-GBM/random-walk model calibrated to 2025-2026 realized vol (32-45% annualized)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.02,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2402,
+   "seconds": 85.8,
+   "estimate": 0.43,
+   "reasoning": "At-the-money strike, 10.54 days to the 2026-09-17 UTC CoinGecko close. Anchor on the resolution source's own feed: CoinGecko spot $79,312-79,338 on Sep 7 ~11:00Z, i.e. the $80,000 bar sits 0.85% ABOVE spot (higher CoinDesk/Coinbase quotes near $79,500-79,727 are the wrong instrument here). Volatility is the best-identified quantity in the evidence: 1.96%/day realized over 14 CoinGecko closes, 2.4%/day over the 6 noisier September closes, and ~2.0%/day recovered independently from BOTH sides of Polymarket's September touch ladder ($3.17M volume) with no skew -> sigma_10.5d ~ 6.6%. Driftless log walk gives 0.448; imposing the price martingale gives 0.435. No prediction market prices this contract - every candidate (Polymarket September/2026 touch ladders, Polymarket Sep 7-8 up-or-down, Kalshi monthly-maximum ladders, thin Manifold year-end markets) differs on threshold, date, instrument (intramonth TOUCH vs a dated CLOSE) or source, so all are evidence, not anchors, and none is blended in. Directional news nets close to flat - momentum (above all SMAs 7-90, +22-25% month, ~$595M/session ETF inflows) against a hostile tape (-9.85% YTD, 37% below ATH, ~56-70% priced Fed HIKE decided Sep 16, the day before the measured close, and thus largely pre-priced). I shade a point below the martingale value for a left-skewed tail: the Sep 15 CLARITY cloture needs 7 Democrats on a bill stalled since July 2025 with no published whip count, failure is a cited 10-25% drawdown catalyst while success is merely procedural; plus volume 28.5% below its 30-day average at $80,400-80,800 resistance the price has repeatedly failed, and ties at exactly $80,000 resolve NO.",
+   "sources": [],
+   "reconciliation": "Disputes were narrow - the runs spanned only 0.44-0.46. FACTUAL: (1) spot anchor differed by ~$400 across feeds; settled for CoinGecko ($79,312-79,338) because that is the resolution instrument, which puts the strike 0.85% away rather than the 0.6% Runs 2 and 3 assumed and pulls the estimate down; (2) volatility estimates 1.96%/2.4%/day and 42-45% annualized converged on ~2.0-2.1%/day once Runs 1 and 2 independently inverted the Polymarket touch ladder from both up- and down-rungs, so I use sigma_10.5d ~ 6.6% (Run 3's 7.5% rests on the top of an annualized range, not on this series); (3) Fed hike odds quoted 56%-70.2% across vintages - NOT settleable without live access, and left carrying that uncertainty, but it barely moves the answer since a hike is majority-priced under every quote; (4) cross-source disagreement on the Sep 2-3 closes (Fortune $77,934 vs CoinGecko $81,265 for Sep 3) is resolved by the contract naming CoinGecko, so other feeds' prints are noise about them, not about resolution; (5) Run 2 flagged a possibly stale Polymarket $77,500 down-touch rung - unverifiable here, but the ladder's implied sigma is corroborated by two other independent estimates, so it survives. JUDGMENT, unbroken by evidence: whether dense two-sided event risk merely widens the distribution (Run 2) or tilts it left (Runs 1, 3). No whip count exists for the CLARITY cloture; I take the left-lean I would bet on, because failure is a discrete drawdown catalyst two days before the close while success is only procedural and requires further votes. Net: 0.435 from the martingale random walk, minus ~1 point for that skew, the strict-inequality tie rule, and volume non-confirmation at resistance = 0.43. This sits below all three runs on reconciled evidence (lower resolution-source spot + convexity), not by averaging.",
+   "disagreements": [
+    {
+     "claim": "Spot on 2026-09-07 was $79,312-79,338 (CoinGecko) vs ~$79,500 (CoinDesk) vs $79,727 (Coinbase-sourced)",
+     "kind": "factual",
+     "verdict": "Settled for the CoinGecko figure - it is the contract's own resolution feed; the strike is therefore 0.85% above spot, not 0.6%, which lowers the estimate relative to Runs 2 and 3"
+    },
+    {
+     "claim": "Daily log-return sigma is 1.96% vs 2.4% vs ~2.4-2.9% (42-45% annualized)",
+     "kind": "factual",
+     "verdict": "Settled at ~2.0-2.1%/day: two runs independently inverted the Polymarket September touch ladder from both up- and down-rungs to 1.9-2.1%, and 1.96% realized over 14 closes agrees; the 2.4% figure is a 6-observation sample dominated by one +5% day, and 42-45% annualized is the top of a cited range rather than a measurement of this window"
+    },
+    {
+     "claim": "CME FedWatch odds of a 25bp hike on Sep 16 are 56% / 58% / 66% / 68% / 70.2%",
+     "kind": "factual",
+     "verdict": "NOT settled - no live access, and the quotes are of different vintages spanning the Aug 28 Warsh remarks and the Sep 4 payrolls print. Immaterial: under every quote a hike is majority-priced, so delivery is near a non-event and the residual surprise is two-sided"
+    },
+    {
+     "claim": "CoinGecko's Sep 3 close was $81,265 (all runs) but Fortune reports $77,934 and the background cites $76,672 for Sep 2",
+     "kind": "factual",
+     "verdict": "Settled by the contract: CoinGecko is the named source, so its series governs and the $1-3k cross-source gap is noise about other feeds. It does mean any non-CoinGecko price used for calibration carries that error bar"
+    },
+    {
+     "claim": "Dense event risk (FOMC Sep 16, CLARITY cloture Sep 15, unlocks) widens the distribution symmetrically vs skews it left",
+     "kind": "judgment",
+     "verdict": "No evidence breaks it - no published whip count for the cloture vote was found by any run. I take the left-lean: cloture failure is a discrete cited drawdown catalyst two days before the measured close, while success is procedural only and requires further negotiation, so the payoff is asymmetric even though the probability is unknown"
+    },
+    {
+     "claim": "Whether momentum (above all SMAs 7-90, +22-25% month, ETF inflows) or the drawdown regime (-9.85% YTD, 37% below ATH) should set the drift",
+     "kind": "judgment",
+     "verdict": "Treated as cancelling, consistent with all three runs; also unresolved in the evidence itself, which carries conflicting flow data (August +$3.5B inflows vs a reported -$236M September outflow as of Sep 1)"
+    },
+    {
+     "claim": "Some Polymarket touch rungs may be stale (a $77,500 down-touch quoted at 81c despite a Sep 2 close near $77,297)",
+     "kind": "factual",
+     "verdict": "Unverifiable here without the Binance intraday series. The ladder is used only for its implied sigma, which is corroborated by realized vol on the CoinGecko closes, so the estimate does not depend on that rung"
+    }
+   ],
+   "reference_class": "BTC daily closes ~10.5 days forward versus a strike sitting 0.85% above spot, in a ~33-40% annualized realized-vol regime"
+  }
+ ]
+}

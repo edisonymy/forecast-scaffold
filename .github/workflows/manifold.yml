@@ -1,0 +1,264 @@
+name: Manifold bot
+
+on:
+  # GCP Cloud Scheduler `manifold-bot-kicker` invokes this workflow_dispatch hourly at
+  # minute 17 UTC. The activation gate below keeps those reliable ticks dark until the
+  # operator's requested start date without exposing secrets or consuming Claude credits.
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false # never kill an in-flight forecasting/betting run
+
+jobs:
+  manifold:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    permissions:
+      contents: write # commits the public journal + phase file
+      issues: write # the betting-disabled alert below files one deduped issue
+    steps:
+      - name: Activation gate (not before 2026-07-15)
+        id: activation
+        shell: bash
+        run: |
+          not_before="2026-07-15T00:00:00Z"
+          if [ "$(date -u +%s)" -lt "$(date -u -d "$not_before" +%s)" ]; then
+            echo "active=false" >> "$GITHUB_OUTPUT"
+            echo "Manifold bot is dormant until $not_before."
+            exit 0
+          fi
+          echo "active=true" >> "$GITHUB_OUTPUT"
+
+      # workflow_dispatch pins github.sha when the tick is queued. Because this workflow's
+      # concurrency group can leave a tick waiting behind a long in-flight run, that SHA may
+      # be stale by the time checkout starts — and the phase machine READS the checked-out
+      # bot/journal/manifold-phase.json, so a stale tree can re-apply a superseded phase and
+      # guarantee a rebase conflict on publish. Start from current main, as bot.yml does.
+      - uses: actions/checkout@v4
+        if: steps.activation.outputs.active == 'true'
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        if: steps.activation.outputs.active == 'true'
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        if: steps.activation.outputs.active == 'true'
+        with:
+          node-version: "22"
+
+      - name: Install
+        if: steps.activation.outputs.active == 'true'
+        # Same pinned CLI as bot.yml: an unattended cron must not pick up a broken or
+        # compromised release mid-flight. Bump deliberately, then watch one run.
+        run: |
+          pip install -e .
+          npm install -g @anthropic-ai/claude-code@2.1.236
+
+      - name: Run Manifold bot
+        if: steps.activation.outputs.active == 'true'
+        # This path is Claude-subscription-only. The explicit setup-token is required and
+        # run_manifold rejects metered/gateway auth before doing any repo or network work.
+        # Its cumulative $5 accounting is backed by Claude's native --max-budget-usd on each
+        # subprocess, set to exactly the unspent remainder. Unknown usage reserves the entire
+        # remainder and fails the step closed.
+        #
+        # Require the Manifold key before model spend: a missing live credential must not burn
+        # an hourly credit window on forecasts that can only be dry-run. Betting remains gated
+        # by the phase machine, balance floor, exposure cap, position guard, and killed state.
+        #
+        # --budget, not --limit, is what actually ends a busy run: a forecast PAIR (blind +
+        # sighted, medium tier) costs ~$1.10, so the old $5 cap stopped the run after ~4
+        # markets no matter what --limit said (measured 2026-08-18: "3 market(s), $3.39/$5.00").
+        # Raised to $8 (~7 markets) with --limit 12 to match, so the widened selection funnel
+        # can actually be worked through instead of being cut off by the cap.
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          MANIFOLD_API_KEY: ${{ secrets.MANIFOLD_API_KEY }}
+          LEAK_PATTERNS: ${{ secrets.LEAK_PATTERNS }}
+        run: |
+          set -o pipefail
+          : "${CLAUDE_CODE_OAUTH_TOKEN:?set the subscription setup-token secret}"
+          : "${MANIFOLD_API_KEY:?set the live Manifold credential secret}"
+          : "${LEAK_PATTERNS:?set the publication deny-list secret}"
+          python bot/run_manifold.py --limit 12 --tier medium --live --provider subscription \
+            --budget 8 --deadline-minutes 45 --timeout 900 --require-subscription-auth \
+            --agent-cmd "claude -p --model claude-sonnet-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch" \
+            | tee "$RUNNER_TEMP/manifold.log"
+
+      - name: Manifold run summary
+        # Mirrors bot.yml's digest step: the load-bearing stdout lines (phase transitions,
+        # recorded pairs, bets, skips, the informed-read/exposure/floor markers) in the job
+        # summary. always() + trailing `|| true` (grep exits 1 on zero matches, e.g. a missing
+        # log) mean this never fails the job.
+        if: always() && steps.activation.outputs.active == 'true'
+        run: |
+          {
+            echo "### Manifold bot digest"
+            echo
+            echo '```'
+            grep -hiE "phase|recorded|journaled pair|BET |DRY-RUN would bet|market_read|exposure|floor|skip|CONVERGENCE|SELL-FAILED|selected|credit|SUBSCRIPTION-DEFER|session limit" \
+              "$RUNNER_TEMP/manifold.log" || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Alert on betting disabled (one open issue, never daily spam)
+        # A --live run that degrades to forecast-only (invalid key, balance-read failure,
+        # balance below the phase-1 floor) exits GREEN and keeps burning agent spend daily
+        # with no bets possible. run_manifold.py prints a "BETTING-DISABLED: <reason>"
+        # stdout line on exactly those illegitimate paths — never on a legitimate zero-bet
+        # run (convergence exits, informed reads) — so grep ONLY for the marker, never for
+        # bet counts. Dedupe mirrors bot.yml's alert step: while the issue stays open,
+        # nothing new is filed.
+        if: always() && steps.activation.outputs.active == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [ -f "$RUNNER_TEMP/manifold.log" ] || exit 0
+          markers=$(grep -E "^BETTING-DISABLED:" "$RUNNER_TEMP/manifold.log" || true)
+          [ -n "$markers" ] || exit 0
+          title="Manifold bot: betting disabled while live"
+          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then echo "alert issue #$existing already open"; exit 0; fi
+          {
+            echo "Automated alert from the hourly Manifold workflow: a --live run degraded to"
+            echo "forecast-only — forecasts continue (and cost money) but no bets can be placed."
+            echo
+            echo '```'
+            echo "$markers"
+            echo '```'
+            echo
+            echo "Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo
+            echo "Close this issue once resolved — the next degraded run will open a fresh one."
+          } > "$RUNNER_TEMP/alert-body.md"
+          gh issue create --title "$title" --body-file "$RUNNER_TEMP/alert-body.md"
+
+      - name: Commit journal + phase (pre-registration)
+        id: commit
+        # always(): journaled pairs and any phase promotion must be committed even if a later
+        # market errored or the run timed out — the journal + phase file are the public record.
+        if: always() && steps.activation.outputs.active == 'true'
+        env:
+          LEAK_PATTERNS: ${{ secrets.LEAK_PATTERNS }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          MANIFOLD_API_KEY: ${{ secrets.MANIFOLD_API_KEY }}
+        run: |
+          # Leak-guard the machine-generated files BEFORE publishing. The bot ingests untrusted
+          # market text and agent output; a personal-data match must block the push, not fail a
+          # later CI run after the content is already public. Fail closed: require the deny-list.
+          : "${LEAK_PATTERNS:?set the LEAK_PATTERNS secret before the bot can publish}"
+          FILES="bot/journal/manifold.jsonl bot/journal/manifold-phase.json"
+          # Scan (and commit) only files that exist: a zero-market first run can leave the
+          # journal uncreated, and a missing path must not fail the scan or git add.
+          EXISTING=""
+          for f in $FILES; do if [ -f "$f" ]; then EXISTING="$EXISTING $f"; fi; done
+          if [ -z "$EXISTING" ]; then echo "no journal/phase files yet — nothing to publish"; exit 0; fi
+          # Scan only the lines THIS run adds. If the private deny-list matches an AI-authored
+          # reasoning/change-my-mind field, replace that entire field with a neutral marker.
+          # Matches in questions, contracts, sources, metadata, raw JSON, or keys still block
+          # publication. Re-stage and strictly re-scan so the recovery path also fails closed.
+          # Snapshot first: whatever the guard withholds below survives in the run artifact.
+          mkdir -p "$RUNNER_TEMP/journal-snapshot" && cp $EXISTING "$RUNNER_TEMP/journal-snapshot/"
+          git add -- $EXISTING
+          set +e; python scripts/journal_leak_guard.py --redact-model-output $EXISTING; status=$?; set -e
+          if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
+          # [ADDED 2026-09-09] a deny-list hit in a protected field withholds THAT pair from
+          # the public journal (kept in the artifact) and never fails the run — the bet, if
+          # any, was placed long before this step. run_manifold also pre-filters markets
+          # whose own text matches, so this is the backstop, not the plan.
+          git add -- $EXISTING
+          set +e; python scripts/journal_leak_guard.py --quarantine $EXISTING; status=$?; set -e
+          if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
+          git add -- $EXISTING
+          set +e; python scripts/journal_leak_guard.py $EXISTING; status=$?; set -e
+          if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
+          # A prompt-injected agent's visible output lands in exactly these files — scan for the
+          # credential VALUES themselves, fail-closed.
+          for secret in "$CLAUDE_CODE_OAUTH_TOKEN" "$MANIFOLD_API_KEY"; do
+            if [ -n "$secret" ] && grep -rqF -- "$secret" $EXISTING 2>/dev/null; then
+              echo "::error::a credential value appears in the journal — not publishing"; exit 3
+            fi
+          done
+          git config user.name "forecast-scaffold-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add $EXISTING
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "manifold: journal + phase update $(date -u +%FT%TZ)"
+          # Rebase-and-retry: a concurrent tournament-bot commit must not lose a journaled
+          # pair. The tree is clean after the commit, so autostash is both unnecessary and
+          # forbidden by the repository's feature-work safety rule.
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep 3
+          done
+          exit 1
+
+      - name: Preserve withheld Manifold pairs
+        # [ADDED 2026-09-09] mirrors bot.yml: the quarantine path is green by design and the
+        # withheld pair exists only in this pre-guard snapshot. A withheld pair with a bet on
+        # it is invisible to the next run's exposure cap until backfilled — reconcile promptly.
+        if: ${{ always() && steps.commit.outputs.quarantined == 'true' && steps.activation.outputs.active == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: withheld-manifold-journal-${{ github.run_id }}
+          path: ${{ runner.temp }}/journal-snapshot/
+          retention-days: 90
+
+      - name: Preserve journal + phase on publish failure
+        # Mirrors bot.yml's artifact step, and matters MORE here: this bot posts real bets
+        # to Manifold before the journal is pushed. A leak-guard block, a push failure, or
+        # the 55-minute kill must block PUBLICATION, not destroy the evidence — otherwise a
+        # placed bet has no record anywhere and its exposure is invisible to the next run's
+        # exposure cap. cancelled() is the load-bearing half: a job-timeout kill, and a
+        # runner GitHub reclaims mid-flight, are cancellations rather than failures, and
+        # they are the paths where a bet-but-unjournaled pair can otherwise die with the
+        # runner. Best-effort by nature — a job that never acquires a runner runs no steps
+        # at all, including this one.
+        if: ${{ (failure() || cancelled()) && steps.activation.outputs.active == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: unpublished-manifold-journal-${{ github.run_id }}
+          # Scoped to this bot's two files: the tournament journal in the same directory is
+          # already published and would bloat every artifact.
+          path: |
+            bot/journal/manifold.jsonl
+            bot/journal/manifold-phase.json
+          retention-days: 30
+
+      - name: Alert on job failure (one open issue, never hourly spam)
+        # The BETTING-DISABLED alert above only fires when the run produced a log to grep,
+        # so it is structurally blind to the failure that kills the run step itself — on
+        # 2026-08-06 three consecutive runs failed and filed nothing, and the operator found
+        # out by email instead. This step covers that class: any failed or cancelled job
+        # files one deduped issue, under a title distinct from the betting-disabled alert so
+        # the two never suppress each other. Dedupe is the same: while the issue stays open,
+        # nothing new is filed.
+        if: ${{ (failure() || cancelled()) && steps.activation.outputs.active == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Manifold bot needs attention"
+          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then echo "alert issue #$existing already open"; exit 0; fi
+          {
+            echo "Automated alert from the hourly Manifold workflow: the job did not complete."
+            echo
+            echo "A journaled-but-unpublished pair (possibly with a bet already placed on"
+            echo "Manifold) is attached to the run as the unpublished-manifold-journal"
+            echo "artifact — reconcile it before the next run, or its exposure is invisible"
+            echo "to the exposure cap."
+            echo
+            echo "Common causes: leak-guard block, journal push conflict, the 55-minute"
+            echo "timeout kill, an expired CLAUDE_CODE_OAUTH_TOKEN or MANIFOLD_API_KEY, or"
+            echo "GitHub Actions failing to allocate a runner (job cancelled with no logs)."
+            echo
+            echo "Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo
+            echo "Close this issue once resolved — the next problem will open a fresh one."
+          } > "$RUNNER_TEMP/failure-body.md"
+          gh issue create --title "$title" --body-file "$RUNNER_TEMP/failure-body.md"

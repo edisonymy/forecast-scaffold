@@ -1,0 +1,175 @@
+{
+ "record_id": "2026-09-03-f011d6b1",
+ "question": "Will U.S. spot Bitcoin ETFs record a single-day net inflow exceeding $500 million on any trading day between August 31 and September 7, 2026?",
+ "question_id": 45508,
+ "url": "https://www.metaculus.com/questions/45319/",
+ "question_type": "binary",
+ "forecast_at": "2026-09-03T22:44:28+00:00",
+ "effort": "medium",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": true,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 4.6132,
+ "pools": {
+  "pooled_runs": 0.10586609357868307,
+  "phase1": 0.10586609357868307,
+  "phase2": null,
+  "spread_phase1": 0.1,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probability": 0.12
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.242,
+   "seconds": 195.6,
+   "estimate": 0.08,
+   "reasoning": "Window is 5 trading days (Aug 31, Sep 1-4); Labor Day Sep 7 is excluded by the criteria. Farside totals already published: Aug 31 +216.7, Sep 1 -236.5, Sep 2 +101.15 — all well short. So YES requires Sep 3 or Sep 4 alone to clear +500. Reference class: 2026 YTD days above +$500m are roughly 5-6 out of ~168 sessions (~3-4%/day) — Jan 6 +697.2, a mid-Jan +753/+843.6 pair, at least one early-May day, and Aug 19 +517.2 / Aug 20 +606.3. Even in August, the best flow month of 2026 (+$3.52bn, 16 of 21 positive sessions, a 9-day streak), only 2 of 21 days cleared the bar, and the Aug 24-31 tail ran +314.3, +232.2, +242.3, ~-1, +216.7 — the streak's biggest days were nowhere near +500. Upward pull: BTC rallied ~3% to ~$81.3k on Sep 3 on Waller/Fed-pause comments after dipping below $78k, with reported renewed institutional bid and Strategy resuming purchases; large inflow days cluster on strong rally days. Downward pull: this week's flow response to price has been weak (Sep 2 was an up day for BTC yet only +101m), IBIT's recent best single-day was ~+278m and would need ~+400m to carry a 500-total, and only two candidate days remain. Two days at a rally-conditioned ~4-5%/day, with positive correlation between them, gives ~8%; a small extra haircut for the chance Sep 4's figure is not published before the Sep 5 00:00Z resolution stamp keeps it there.",
+   "sources": [
+    "https://farside.co.uk/btc/ (403 on direct fetch; totals recovered via Farside's own X posts, e.g. https://x.com/FarsideUK/status/2094995120995086711 for 2026-09-01 TOTAL -236.5 and https://x.com/FarsideUK/status/2093183452346450328 for 2026-08-27 TOTAL 242.3)",
+    "https://bitbo.io/treasuries/etf-flows/ (daily flow table, Aug 19-31 2026)",
+    "https://www.newsbtc.com/news/bitcoin-etfs-add-142m-september-trading-inflows/",
+    "https://coinmarketcap.com/academy/article/bitcoin-etfs-pull-dollar843m-in-biggest-2026-daily-haul",
+    "https://financefeeds.com/crypto-etfs-add-471-million-on-august-26-as-bitcoin-extends-eight-day-inflow-streak/",
+    "https://hedgeco.net/news/09/2026/spot-bitcoin-etfs-posted-a-101-15-million-net-inflow-on-september-2.html",
+    "https://www.fool.com/coverage/stock-market-today/2026/09/03/crypto-market-today-sept-3-bitcoin-reclaims-usd81-000-on-fed-rate-pause-signals/",
+    "https://bitcoinmagazine.com/markets/bitcoin-rallies-over-82000-and-stocks-rise",
+    "https://99bitcoins.com/news/bitcoin-btc/bitcoin-news-etfs-september-outflows/",
+    "https://www.coindesk.com/markets/2026/05/14/bitcoin-investors-yanked-usd635-million-from-spot-etfs-in-a-day-here-s-what-it-means-for-price",
+    "https://www.coinglass.com/etf/bitcoin (fetched; table did not render, no data obtained)"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the 'Total' row of the Farside Investors Bitcoin ETF Flow table (https://farside.co.uk/btc/), US$m, single trading day — not a multi-day sum, not any single fund, not SoSoValue unless Farside stops publishing. Note trackers disagree: Farside, SoSoValue, and holdings-derived tables (bitbo/walletpilot) print different daily numbers for the same date; only the Farside 'Total' row governs. farside.co.uk returns HTTP 403 to automated fetches; its daily totals are mirrored verbatim on the @FarsideUK X account.\n\nEVENT WINDOW: Aug 31 2026 -> Sep 4 2026 per the criteria (Sep 7 Labor Day explicitly excluded, no trading). Five eligible sessions: Mon Aug 31, Tue Sep 1, Wed Sep 2, Thu Sep 3, Fri Sep 4. As of Now = 2026-09-03T22:31Z, the first three sessions are complete WITH published Farside totals; Sep 3's regular session has closed (16:00 ET = 20:00 UTC) but its flow figure was not yet published at Now; Sep 4 has not traded. Roughly 70-80% of the window elapsed by session count, 60% by published-data count.\n\nPUBLISHED FLOWS IN THE WINDOW (Farside 'Total', US$m):\n- Aug 31: +216.7 (IBIT +205.9). Sources: Farside via bloomingbit 2026-09-01; bitbo table shows +211.5 for the same date. A separate newsbtc piece dated 2026-09-01 19:15 cites '$142 million' for the session opening September — a different tracker's figure for the same session; the Farside number is the governing one.\n- Sep 1: -236.5 (IBIT -201.2, FBTC -43.7, BITB +8.4). Source: @FarsideUK post for 2026-09-01. Described as the largest daily outflow since July 31.\n- Sep 2: +101.15 (IBIT +115.45, MSBT +7.3, BITB +4.19, GBTC -56.21). Sources: cryptobriefing / hedgeco, 2026-09-02.\n- Sep 3: not published as of Now.\n- Sep 4: not traded.\n\nAUGUST 2026 DAILY FARSIDE TOTALS FOUND (US$m): Aug 7 +101.7; Aug 12 -61.1; Aug 13 -131.1; Aug 17 +297.6; Aug 18 +189; Aug 19 +517.2; Aug 20 +606.3; Aug 21 +307.5; Aug 25 +314.3; Aug 26 +232.2 (IBIT +200.8, FBTC +25.6, BITB +6.0); Aug 27 +242.3 (IBIT +277.6, FBTC -83.6, GBTC -27.2); Aug 28 a small outflow that broke the streak (bitbo -1.1). Aug 19 and Aug 20 were reported as the largest daily inflows since early May.\n\nBASE RATES / EVENT-IN-WINDOW COUNTS:\n- Over ALL 2026 trading days to date (~168 sessions): days with Farside Total above +500 that I could identify number about five or six — Jan 6 (+697.2), a mid-January pair (+753 and +843.6, the latter reported as 2026's largest single session), at least one early-May session, plus Aug 19 and Aug 20. That is on the order of 3-4% of sessions.\n- Over AUGUST 2026 ONLY (21 sessions, the best flow month of the year): 2 sessions above +500, i.e. ~10%.\n- Over the LAST 7 published sessions (Aug 25 - Sep 2), conditioning on the current post-streak regime: the largest single-day total was in the low 300s.\n- August aggregate: +$3.52bn net inflow (SoSoValue), best month of 2026 vs July's +$172m; 16 of 21 sessions positive, including a nine-session inflow streak Aug 17-27; total net assets rose ~31% to ~$99.61bn; monthly volume +49% to $58.63bn. 2026 YTD net flow improved from -$5.29bn to -$1.77bn over the month, i.e. 2026 as a whole is still a net-outflow year.\n- All-time Farside extremes since Jan-2024 launch: max single day ~+1,373.8, min ~-1,113.7, average daily ~+82. Oct 7 (prior year) +875.6 is cited as a reference peak. A -635 day occurred 2026-05-14.\n\nPRICE / CATALYST CONTEXT (both directions):\n- BTC rose ~25% in August 2026, its strongest month since Nov 2024 (+37.29%), trading above $80k in late August.\n- Sep 1: BTC dipped below $77,000; that session produced the window's outflow.\n- Sep 2: BTC recovered toward $80k while the flow total was ~+101m — i.e. an up price day this week did not produce a large creation day.\n- Sep 3 (session already closed at Now): BTC up ~3% over 24h, printing as high as $81,282 and around $80,974 at 13:30 ET, attributed to Fed Governor Waller signalling he may support holding rates steady. Coverage cites renewed institutional demand and Strategy resuming BTC purchases after a two-month pause; other analysts flag overbought/exhaustion signals and rising Treasury yields as a headwind.\n- Rotation signal: Ether and XRP ETFs took inflows on Sep 1 (+$11m ETH, +$14.4m XRP) on the day BTC ETFs bled; Ether ETFs flipped to -$48.08m on Sep 2 while BTC took inflows. Cited analyst framing for September: bull case of resumed inflows, base case of choppy flows digesting the August gain, bear case of persistent outflows near $77k.\n- Fund-level structure: IBIT dominates the aggregate — its recent single-day extremes in this stretch run roughly -201 to +278, and GBTC is a persistent negative contributor. A large aggregate total requires an outsized IBIT creation day rather than broad participation.\n\nDECIDING-BODY / CALENDAR: no committee decides this; the only calendar facts are the NYSE trading calendar (Sep 7 Labor Day closed, confirming a 5-session window) and Farside's publication cadence. Farside posts each session's totals the same evening (their Sep 1 total was public by Sep 1 evening), which bears on whether the Sep 4 figure exists before the 2026-09-05T00:00Z resolution stamp — I found no stated publication-time guarantee.\n\nHUMAN MARKETS: searched Polymarket, Kalshi, Manifold and bookmaker coverage for any contract on U.S. spot Bitcoin ETF daily net-flow thresholds. No market found on this event or any near-twin; the only prediction-market coverage returned was BTC price markets and general Polymarket/Kalshi volume news.\n\nSEARCHED FOR BUT COULD NOT FIND: (a) the Sep 3 2026 Farside total — not published at Now; (b) a complete machine-readable Farside daily series for 2026 (farside.co.uk 403s, walletpilot 403s, coinglass table did not render), so the count of >+500 days in 2026 is assembled from news citations and may miss one or two; (c) Aug 24 and Aug 28 exact Farside totals (only a holdings-derived tracker's values were obtainable); (d) the exact early-May 2026 session that the 'largest since early May' comparison",
+   "reference_class": "U.S. spot Bitcoin ETF trading days in 2026 (and the Aug-2026 sub-class) with aggregate Farside net flow above +$500m"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.3255,
+   "seconds": 223.9,
+   "estimate": 0.08,
+   "reasoning": "Reference class: single US spot BTC ETF trading days clearing +$500m aggregate. August 2026 was the strongest month of the year ($3.52bn, inflows on 16 of 21 sessions, a 9-session streak Aug 17-27) and still produced exactly two such days (Aug 19 +$517.2m, Aug 20 +$606.3m) — 2/21 = ~9.5% even in the hot regime; the week ending Aug 28 totalled only $924.5m across 5 days, so no additional >$500m day hid there. Across 2026 YTD (net -$1.77bn through August) the rate is far lower, ~2-4%. Three of the five eligible sessions are already reported and all fell well short (max +$216.7m); the current regime is post-rally digestion, with Sep 1 the largest outflow since July 31 and IBIT contributing only $115m on a positive Sep 2. That leaves Sep 3 (already traded, BTC up ~1.6% reclaiming ~$81k — supportive of a modest inflow, not a 5x jump) and Sep 4, a pre-Labor-Day Friday carrying the August NFP print. Two days at roughly 5% each, positively correlated, plus an instrument quirk: scheduled resolution at 2026-09-05T00:00Z may precede Farside's posting of the Sep 4 row, which truncates effective exposure toward a single day. Market check: Polymarket runs daily 'Bitcoin ETF Flows on <date>?' contracts resolving off the same Farside table, but they are positive-vs-negative only with no $500m threshold and the Sep 3 book showed $0 volume at 50/50 — a non-matching contract with no liquidity, so evidence of nothing, not an anchor. No Kalshi or bookmaker line found on a $500m daily-flow threshold.",
+   "sources": [
+    "https://www.tftc.io/bitcoin-etf-flows",
+    "https://bitbo.io/treasuries/etf-flows/",
+    "https://polymarket.com/event/bitcoin-etf-flows-on-september-3-2026",
+    "https://hedgeco.net/news/09/2026/spot-bitcoin-etfs-posted-a-101-15-million-net-inflow-on-september-2.html",
+    "https://cryptobriefing.com/bitcoin-etf-inflows-altcoin-outflows/",
+    "https://www.coindesk.com/tech/2026/08/20/live-updates-bitcoin-etfs-draw-usd517-million-ether-pulls-usd189-million-in-biggest-inflows-in-months",
+    "https://cointelegraph.com/markets/bitcoin-etf-best-month-2026-btc-up-25-august",
+    "https://fortune.com/article/price-of-bitcoin-09-03-2026/",
+    "https://99bitcoins.com/news/bitcoin-btc/bitcoin-news-etfs-september-outflows/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the 'Total' row (US$m) of the Farside Investors Bitcoin ETF Flow table at farside.co.uk/btc, per single trading day — not a multi-day sum, not any single fund, not monthly totals. Fallback instrument is SoSoValue's 1-day aggregate. Note Farside and SoSoValue print slightly different numbers for the same date (e.g. Aug 31: Farside 216.7 vs a holdings-based tracker's 211.2), and Bitbo's 'change in BTC holdings' table is date-shifted relative to Farside — do not treat non-Farside tables as the contract. Farside typically posts a day's row after the US close, in the UK evening. NOTE: scheduled resolution is 2026-09-05T00:00:00Z, which may fall before or right at the posting time of the Sep 4 row.\n\nEVENT WINDOW: Aug 31 2026 -> Sep 4 2026 inclusive, per the criteria text; that is five US regular trading sessions (Mon Aug 31, Tue Sep 1, Wed Sep 2, Thu Sep 3, Fri Sep 4). Sep 7 is Labor Day and produces no flow. As of Now (2026-09-03T22:31Z): four of five sessions have closed (~80% of sessions elapsed); three have published flow values; the Sep 3 session closed at 20:00Z with its value not yet published; Sep 4 has not traded. (The question Background states 'four regular trading days' — that is a miscount of the same Aug 31-Sep 4 span.)\n\nREPORTED VALUES INSIDE THE WINDOW (Farside, US$m): Aug 31 +216.7 (IBIT +205.9); Sep 1 -236.5 (IBIT -201.2, FBTC -43.7, BITB +8.4) — described as the largest single-day outflow since Jul 31; Sep 2 +101.2 (IBIT +115.5). Sep 3 and Sep 4: not yet published.\n\nBASE RATES:\n- Over all 21 August 2026 trading days: 2 days printed above +$500m (Aug 19 +517.2, Aug 20 +606.3, the largest in roughly 3.5 months). Cross-check: the four days Aug 18-21 totalled $1.61bn (189.0 + 517.2 + 606.3 + 307.5), and the week ending Aug 28 totalled $924.5m across five sessions, so no further >$500m day is hidden in late August. (Sources: Farside via CoinDesk 2026-08-20 and 2026-08-21 live blogs; CryptoSlate; Cointelegraph 2026-09-02.)\n- Over August 2026 as a whole: $3.52bn net across 21 sessions, inflows on 16 of them, a nine-session inflow streak Aug 17-27; best month of 2026 and reportedly the best since Oct 2025 (SoSoValue via Cointelegraph).\n- Over 2026 year-to-date, a net-OUTFLOW year: -$5.29bn YTD before August, improving to -$1.77bn by Aug 31. Reported 2026 single-day highs before August were far smaller — ~$471m on Apr 6 called the strongest daily intake to that point, and one earlier-2026 session cited at ~$753m; July's whole month netted just $172m and included a 10-session outflow streak that drained $2.73bn (CoinDesk 2026-04-07; Yahoo/Finance Jul 2026; Cointelegraph).\n- Distribution extremes since Jan 2024 launch, per the question background: max ~+$1,373.8m, min ~-$1,113.7m, average daily ~+$82m.\n\nSTATUS-QUO OUTCOME: daily totals continue in the low-hundreds-of-millions band in either direction, as on every reported session of this window so far, and no session prints above +$500m.\n\nEVIDENCE FOR A LARGER PRINT: BTC reclaimed ~$80k on Sep 3, quoted ~$80,974 at 13:30 EDT, roughly +1.3-1.6% on the day after trading near $77.9k on Sep 2 (Fortune, Yahoo Finance, 2026-09-03); the Aug 19-20 pair of >$500m days occurred on exactly this kind of run toward $80k, so the level-reclaim setup has precedent. Strategy (Saylor) resumed BTC purchases after a two-month pause, deploying $370m. Total spot BTC ETF net assets rose 31% in August to ~$99.6bn, and August trading volume rose ~49% to $58.6bn, so the asset base capable of generating large creations is at a record. ETH and XRP ETFs stayed positive through Sep 1-2, indicating crypto ETF demand broadly is not shut off. The Aug 2026 August NFP print lands Friday Sep 4 (BLS; first Friday), a macro catalyst that can move risk assets sharply.\n\nEVIDENCE AGAINST A LARGER PRINT: momentum broke on Sep 1 with the largest outflow since Jul 31, concentrated in IBIT; the Sep 2 rebound was small (+101m) with IBIT the only meaningful contributor; BTC dipped below $77k during the week after trading above $80k in late August. Analysts cited by 99Bitcoins frame the base case as choppy flows digesting the 25% August gain, with rising Treasury yields a headwind and persistent outflows the bear case. Sep 4 is the Friday before a Labor Day long weekend, typically a lighter-participation session. IBIT alone showed -$1.83bn over the trailing month against +$154.5m over the trailing five sessions. Same-day ETF creations often lag a price move by a session, and the session after Sep 4 (Sep 8) falls outside the window. Geopolitics (airstrikes, an energy-price surge) sits in the background as a two-sided risk.\n\nHUMAN MARKETS SEARCHED: Polymarket runs daily 'Bitcoin ETF Flows on <date>?' events resolving off the same Farside Total, but the outcome set is Positive vs Negative with NO dollar threshold; the Sep 3 event was launched Sep 3 and showed $0.00 volume across all timeframes. No Kalshi, Manifold, or bookmaker contract on a $500m single-day flow threshold was found.\n\nSEARCHED FOR BUT NOT FOUND: the Sep 3 2026 Farside Total (farside.co.uk returned HTTP 403 to direct fetch; CoinGlass returned an unpopulated page; walletpilot returned 403); a complete day-by-day Farside table for June-August 2026 to count >$500m days precisely outside August; any confirmed Sep 4 catalyst specific to ETF creations (index event, model-portfolio allocation, new listing); and confirmation of Farside's exact posting time for the Sep 4 row relative to the scheduled resolution timestamp.",
+   "reference_class": "Single US-equity trading days since Jan 2024 on which aggregate US spot Bitcoin ETF net flow exceeded +$500m, conditioned on the prevailing flow regime (2/21 days in the strong August 2026 month; ~2-4% of days across net-outflow 2026 YTD)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.5154,
+   "seconds": 276.1,
+   "estimate": 0.18,
+   "reasoning": "Three of five window days are published and all fell far short: Aug 31 +216.7, Sep 1 -236.5, Sep 2 +101.1 (Farside, via tftc.io and cryptosignalapp mirrors, which agree with each other and with news reporting). Only Sep 3 (closed, unpublished) and Sep 4 remain. Reference class: Farside daily totals in the current post-Aug-17 regime, 2/13 days above +500 (both mid-streak, Aug 19 +517.2 / Aug 20 +606.3); across 2026 YTD the rate is far lower (~3-4%), with a ~2-month stretch to Jul 3 where even +221m was the largest day. Sep 3's BTC rally (+~5.5% to ~$81.5k on Waller's rate-pause signal) conditions upward, but the closest in-regime analogue is Aug 25's squeeze to $81.1k which delivered only +314.4, and follow-through Aug 26 only +232.1 - a single spike day has not produced 500+ in this regime. September flows so far are net negative and commentary frames a choppy digestion of August's 25% gain. Sep 4 adds the Aug payrolls print but is a pre-Labor-Day Friday, and Farside's publication lag makes it uncertain whether Sep 4 is even in the resolver's view by Sep 5 00:00Z. No prediction market prices this contract, so no anchor. Thin evidence on Sep 3's actual flow keeps me near the regime base rate with a modest bull adjustment.",
+   "sources": [
+    "https://www.tftc.io/bitcoin-etf-flows",
+    "https://cryptosignalapp.com/etf/flows",
+    "https://bitbo.io/treasuries/etf-flows/",
+    "https://api.manifold.markets/v0/search-markets?term=bitcoin%20ETF%20inflow",
+    "https://www.coinglass.com/etf/bitcoin",
+    "https://farside.co.uk/btc/ (HTTP 403, not retrievable this run)",
+    "https://www.cryptotimes.io/2026/09/03/bitcoin-price-reclaims-80k-as-us-spot-etfs-record-101m-inflows/",
+    "https://www.fool.com/coverage/stock-market-today/2026/09/03/crypto-market-today-sept-3-bitcoin-reclaims-usd81-000-on-fed-rate-pause-signals/",
+    "https://bitcoinmagazine.com/markets/bitcoin-rallies-over-81000",
+    "https://www.cnbc.com/2026/09/03/august-2026-jobs-report-payrolls.html",
+    "https://coinpaper.com/35205/bitcoin-etfs-reverse-course-with-101m-inflows-as-btc-nears-78k",
+    "https://99bitcoins.com/news/bitcoin-btc/bitcoin-news-etfs-september-outflows/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the single-day 'Total' row (US$m) in the Farside Investors Bitcoin ETF Flow table at farside.co.uk/btc/, with SoSoValue as fallback only if Farside stops publishing. Not off monthly totals, not off cumulative sums, not off any single fund, not off SoSoValue by default. Note Farside and SoSoValue print slightly different numbers for the same session (one August session was reported as 606.3 by Farside and ~608 by SoSoValue-sourced coverage), so the specific table matters. farside.co.uk returned HTTP 403 to automated fetch this run; the values below come from mirrors (tftc.io, cryptosignalapp.com) that agree with each other and with news reporting of Farside figures. A third mirror (bitbo.io) returned a materially different and internally inconsistent series for the same dates and should be treated as unreliable.\n\nEVENT WINDOW: Aug 31, 2026 -> Sep 4, 2026 per the criteria (5 US regular trading days: Mon Aug 31, Tue Sep 1, Wed Sep 2, Thu Sep 3, Fri Sep 4; the question's background text calls this 'four' days but enumerates five). Sep 7 is Labor Day and produces no flow. As of Now (2026-09-03T22:31Z): 4 of 5 sessions have closed (80% elapsed by session count), but only 3 of 5 have published values (60%). Sep 3's session closed at 20:00Z and its Total was not yet available on any mirror at the time of this research; Sep 4 has not traded.\n\nPUBLISHED VALUES INSIDE THE WINDOW (Farside Totals, US$m): Aug 31 +216.7; Sep 1 -236.5; Sep 2 +101.1. Source: tftc.io/bitcoin-etf-flows and cryptosignalapp.com/etf/flows, both retrieved 2026-09-03; corroborated by 99bitcoins (2026-09-03) and coinpaper for the Sep 1 and Sep 2 figures.\n\nPRIOR SESSIONS (Farside Totals, US$m), for the distribution: Aug 13 -131.1; Aug 14 -57.6; Aug 17 +297.6; Aug 18 +189.3; Aug 19 +517.2; Aug 20 +606.3; Aug 21 +307.5; Aug 24 +337.6; Aug 25 +314.4; Aug 26 +232.1; Aug 27 +242.2; Aug 28 -201.8. Source: tftc.io mirror of Farside, retrieved 2026-09-03.\n\nBASE RATES: (a) over ALL Farside sessions Aug 17 - Sep 2, 2026 (13 sessions, the current regime): 2 exceeded +500, both consecutive and mid-streak. (b) over ALL 2026 YTD sessions (~167 through Sep 2): substantially rarer - the Aug 19/20 pair was described in contemporaneous coverage as 'among the largest daily inflows in roughly 3.5 months', implying no session between roughly early May and Aug 19 reached that level; separately, July 3's +221m was reported by CoinDesk as the largest single-day inflow in roughly two months, implying no session May-early-July exceeded +221m. One session earlier in 2026 was reported at ~+753m. (c) conditional on a large single-day BTC rally in this same regime: Aug 25, when BTC squeezed to ~$81,138, produced +314.4, and its follow-through session +232.1. (d) over full history since Jan 2024: max single-day +1,373.8, min -1,113.7, average daily ~+82 (per the question background).\n\nMONTHLY CONTEXT: August 2026 was the strongest month of 2026 for US spot BTC ETFs at ~$3.52bn net inflow (SoSoValue), vs July's $172m, with inflows on 16 of 21 sessions including a nine-session streak Aug 17-27. That cut 2026 YTD net flow from about -$5.29bn to about -$1.77bn. Total net assets rose to ~$99.6bn end-August; monthly trading volume ~$58.6bn, up ~49%. Source: SoSoValue via cryptobreaking.com, 2026-09-02. Note 2026 YTD remains net NEGATIVE despite August.\n\nPRICE / MACRO INSIDE THE WINDOW: BTC gained ~25% in August, its strongest month since Nov 2024, touching ~$81,138 on Aug 25 after a short squeeze. It fell below $77,000 on Sep 1 and traded ~$77,759 early Thursday Sep 3 (+0.25% at that point). During Sep 3 it rallied to as high as ~$81,282-81,491, up ~5.5% on the day, its first close above $80,000 in September; drivers cited were Fed Governor Waller signalling he may support holding rates steady, and a pause in US-Iran hostilities. Sources: Motley Fool 2026-09-03, Bitcoin Magazine, CoinDesk live blog 2026-09-03, 24/7 Wall St 2026-09-03.\n\nSEP 3 FLOW: not published anywhere at the time of research. Note one search summary attributes an 'IBIT +$115.4m, BITB +$4.2m, MSBT +$7.3m, Grayscale BTC mini +$30.4m' breakdown to 'Thursday' - those components sum to roughly the published Sep 2 total and were reported on the morning of Sep 3 with BTC at ~$77,759, so they describe the Sep 2 session, not Sep 3. Do not treat them as Sep 3 data.\n\nSEP 4 CALENDAR: BLS Employment Situation (August payrolls) releases Fri Sep 4, 2026 at 08:30 ET. Dow Jones consensus ~+53,000; other surveys +50k to +55k, unemployment 4.1%, AHE +0.2% m/m. June and July combined showed a net loss of 3,000 jobs; August ADP printed +38,000 vs +47,000 expected, the smallest in seven months. Commentary frames a strong print as the hawkish outcome and a soft print as removing hike risk. Sources: CNBC 2026-09-03, top1markets, tradingkey. Sep 4 is also the Friday before the Labor Day long weekend. US equity markets keep a full regular session on Sep 4 (no early close found; searched, absent).\n\nRESOLUTION-SOURCE UPDATE CADENCE: Farside posts a session's Total after the US close, typically late UK evening or the following morning. Empirically this run, at 2026-09-03T22:31Z (23:31 UK) the Sep 3 row was still not visible on any mirror. Scheduled resolution is 2026-09-05T00:00:00Z, which is 20:00 ET Sep 4 / 01:00 UK Sep 5 - i.e. the Sep 4 row may or may not be posted by then. The criteria text itself includes Sep 4 regardless.\n\nEVIDENCE POINTING BOTH WAYS - UP: Sep 3 was a sharp BTC rally on a dovish Fed signal; the two 500+ sessions in this regime were consecutive, so creation surges cluster; ETH and XRP ETFs also flipped to inflows and kept attracting capital into September (+$11m ETH, +$14.4m XRP on Sep 1), indicating live crypto-ETF demand; August set a 2026 record with a nine-session inflow streak; analysts' bull case is resumed inflows. DOWN: September opened with -$236.5m, the largest daily withdrawal since Jul 31, concentrated in IBIT (-$201.2m) and FBTC (-$43.7m); 2026 YTD net fl",
+   "reference_class": "Farside daily 'Total' net flow for US spot BTC ETFs, per-trading-day exceedance of +$500m, measured over (a) 2026 YTD ~167 sessions and (b) the current Aug 17 - Sep 2 regime of 13 sessions"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.5303,
+   "seconds": 93.1,
+   "estimate": 0.12,
+   "reasoning": "Three of five eligible sessions (Aug 31, Sep 1, Sep 2) are published Farside Totals of +216.7, -236.5, +101.1 — all far short — so YES requires Sep 3 (closed, unpublished at Now) or Sep 4 alone to clear +500. Base rate: ~3-4% of 2026 sessions cleared +500; even August 2026, the year's best month (+$3.52bn, 16/21 positive, a nine-session streak), produced exactly 2 of 21 (~9.5%), both mid-streak and consecutive. That streak regime has ended: Aug 28 was an outflow, Sep 1 was the largest single-day outflow since Jul 31, and the trailing five sessions average roughly zero with ~200 SD, so +500 is a ~2.5-sigma print. Conditioning up: Sep 3 was a genuine rally session — BTC ran from ~$77.8k to ~$81.3k on Waller's rate-pause signal, Strategy resumed buying, ETH/XRP ETF demand is live — and creation surges cluster on exactly this setup (Aug 19/20). Capping that: price-to-flow transmission has been weak all week (Sep 2 was an up day for only +101m), the closest in-regime analogue (Aug 25's squeeze to ~$81.1k) delivered just +314 with +232 follow-through, and a 500 total essentially requires IBIT alone near +400 versus a recent best of ~+278. I price Sep 3 at ~10% and Sep 4 — pre-Labor-Day Friday, two-sided NFP, plus some chance its row is not published by the 2026-09-05T00:00Z stamp — at ~5%, positively correlated, giving ~12%.",
+   "sources": [],
+   "reconciliation": "The runs split 0.08/0.08/0.18 almost entirely on which reference class governs the two remaining days, not on facts. All three agree on the resolution instrument (Farside 'Total' row only), the window (five sessions Aug 31-Sep 4; the Background's 'four' is a miscount of the same span it enumerates), and the three published values. Factual checks I could settle from the dossiers: (a) Aug 28 — Run 1 read -1.1 from bitbo, Run 3 read -201.8 from tftc; Runs 2 and 3 independently flag bitbo as date-shifted and internally inconsistent, so -201.8 is the better read, which makes the current sub-regime weaker, not stronger; (b) the Polymarket 'Bitcoin ETF Flows' daily contract Run 2 found is positive-vs-negative with no dollar threshold and $0 volume, so it is not a near-twin and not an anchor — Runs 1 and 3 finding 'no market' is not a contradiction, and no venue prices this threshold. Unsettled without web access: the exact Sep 3 magnitude (Run 1 ~+3% to $81.3k, Run 2 +1.3-1.6% intraday quote, Run 3 +5.5% to $81.5k — all agree BTC reclaimed ~$81k from ~$77.8k, so the direction is unanimous and the magnitude spread is second-order); the exact 2026 YTD count of >+500 sessions (bounded at ~5-6 of ~168 by news framings, no machine-readable series obtainable); and whether Farside posts the Sep 4 row before the 2026-09-05T00:00Z stamp. The remaining dispute is pure judgment: Runs 1 and 2 anchor near the YTD ~3-4% daily rate with only mild conditioning; Run 3 anchors near the in-regime 2/13 = 15%. Both are wrong as stated. The 15% is drawn from a nine-session inflow streak that has demonstrably ended (Sep 1 was the largest outflow since Jul 31), so it overstates; but the 3-4% unconditional understates a day on which BTC rallied ~4% and reclaimed $80k on a dovish Fed signal, since every historical +500 print sits on exactly such a day. Pricing Sep 3 conditionally (~10%, capped by the Aug 25 analogue at +314 and by IBIT's ~+278 recent ceiling) and Sep 4 at ~5% with a small publication haircut lands at 0.12 — above the two low runs because the Sep 3 rally is real and unpriced by them, below Run 3 because the streak conditions that produced its 15% are gone.",
+   "disagreements": [
+    {
+     "claim": "Aug 28 Farside Total was ~-1.1 (Run 1) vs -201.8 (Run 3)",
+     "kind": "factual",
+     "verdict": "Settled toward -201.8: Run 1's figure came from bitbo, which Runs 2 and 3 independently identify as a holdings-derived, date-shifted table that disagrees with Farside; Run 3's tftc/cryptosignalapp mirrors agree with each other and with news reporting. Either value is far below the threshold; the larger outflow makes the current regime look weaker."
+    },
+    {
+     "claim": "Magnitude of the Sep 3 BTC move (+1.3-1.6% / +3% / +5.5%)",
+     "kind": "factual",
+     "verdict": "Not settleable without retrieval — the quotes are taken at different intraday times. All three agree BTC traded from ~$77.8k to roughly $81.0-81.5k intraday on Waller's rate-pause signal, so a materially positive rally session is established and the residual spread does not change the conditional."
+    },
+    {
+     "claim": "How many 2026 sessions exceeded +$500m (5-6 of ~168 vs 'far lower')",
+     "kind": "factual",
+     "verdict": "Unsettled precisely; no complete Farside series was obtainable (403s on farside.co.uk, walletpilot, sosovalue). Bounded at roughly 3-4% of sessions by the 'largest since early May' and 'largest in ~two months' framings the runs found. I carry that as an approximate anchor, not a counted rate."
+    },
+    {
+     "claim": "Whether a human market prices this event (Run 2 found a Polymarket daily flow contract; Runs 1 and 3 found none)",
+     "kind": "factual",
+     "verdict": "Settled and reconciled: Run 2's contract resolves off the same Farside Total but is positive-vs-negative with no $500m threshold and had $0 volume. Non-matching contract, zero liquidity — evidence of nothing. No anchor exists from any venue."
+    },
+    {
+     "claim": "Whether the Sep 4 row will be published before the 2026-09-05T00:00Z resolution stamp",
+     "kind": "factual",
+     "verdict": "Unsettled — no run found a stated Farside posting-time guarantee, and empirically the Sep 3 row was still absent at 23:31 UK. The criteria text includes Sep 4 regardless, so I apply only a small haircut to Sep 4's effective exposure rather than excluding it."
+    },
+    {
+     "claim": "Governing reference class for the two remaining days: 2026 YTD (~3-4%/day) vs post-Aug-17 regime (2/13 = ~15%)",
+     "kind": "judgment",
+     "verdict": "Neither raw. The 15% is conditioned on a nine-session inflow streak that ended before this window, so it overstates; the 3-4% unconditional understates a strong rally session, which is the only condition under which +500 prints have ever occurred. I take the conditional reading: ~10% for Sep 3, ~5% for Sep 4."
+    },
+    {
+     "claim": "How much weight the Sep 3 rally deserves given weak price-to-flow transmission this week",
+     "kind": "judgment",
+     "verdict": "No evidence breaks this tie — the Sep 3 flow is unpublished. I bet on the dampened reading: Sep 2 was an up price day for only +101m, and the closest in-regime rally analogue (Aug 25 to ~$81.1k) produced +314, so a rally is necessary but historically not sufficient for +500 in this regime."
+    }
+   ],
+   "reference_class": "US spot Bitcoin ETF regular trading sessions with Farside aggregate Total above +$500m, 2026 YTD (~3-4% of ~168 sessions) and within the Aug-17-onward regime (2 of 13), conditioned on same-day BTC rally sessions in that regime"
+  }
+ ]
+}

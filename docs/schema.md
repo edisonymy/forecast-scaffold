@@ -1,0 +1,117 @@
+# ForecastRecord schema (v1)
+
+One forecast = one JSON object = one line of the journal (JSONL). The journal is append-only;
+`resolve` rewrites the file in place, and a git history of the journal file (plus platform
+timestamps, where forecasts are also submitted to a platform) is the tamper-evidence story.
+
+Canonical implementation: `src/forecast_scaffold/core.py` (`ForecastRecord`), vendored into each
+skill at `scripts/fsj.py`. `fsj.py record --dry-run` prints a valid record without writing it.
+
+## Fields
+
+Only `question` is required. Serialization drops `null` fields; absent = null.
+
+### Identity & lifecycle
+
+| Field | Type | Meaning |
+|---|---|---|
+| `id` | str | `<created-date>-<8 hex>`; generated, stable across round-trips |
+| `schema_version` | int | `1` |
+| `created` | str | UTC ISO-8601, when the record was drafted |
+| `forecast_at` | str? | UTC ISO-8601, when the probability was committed — the pre-registration timestamp |
+| `status` | str | `draft` \| `open` \| `resolved` \| `annulled` (annulled = ambiguous/voided; excluded from all scoring) |
+| `dry_run` | bool? | v0.4.8: `true` = produced by a `--dry-run`/`--post` run that never submitted anywhere — exclude from the live track record; `null` on older records (assume live) |
+
+### Estimand (the question)
+
+| Field | Type | Meaning |
+|---|---|---|
+| `question` | str | one proposition, one sentence |
+| `question_type` | str | `binary` (first-class) \| `multiple_choice` \| `numeric` \| `discrete` |
+| `resolution_criterion` | str | exactly what counts, judged by which source — carried verbatim into reasoning |
+| `resolve_by` | str? | ISO date the answer should be knowable |
+| `source` | obj? | `{platform, question_id, url}` for platform questions |
+| `reference_class` | str | the outside-view anchor |
+| `base_rate` | float? | its numeric base rate, when one exists |
+| `why_it_matters` | str | VOI note: which decision/tracked belief this moves |
+| `parent_id` | str? | id of the record this decomposes (fast-proxy linkage) |
+| `fast_proxy` | bool | short-horizon sub-question of a slow parent |
+
+### Forecast (shape gated by `question_type`)
+
+| Field | Type | Meaning |
+|---|---|---|
+| `probability` | float? | binary: final pooled p, in [0,1] (the value submitted — post recalibration when one is fitted) |
+| `raw_probability` | float? | v0.4.19: binary pooled p BEFORE post-hoc logistic recalibration (Platt scaling). Present only when a fitted `recalibration.json` actually moved the number; `null`/absent when no recalibration applied (then `probability` is the raw value) |
+| `options` / `probabilities` | list? | multiple_choice: parallel lists; probabilities sum to 1 (±0.01) |
+| `percentiles` | obj? | numeric/discrete: `{"10","25","50","75","90"}`, strictly increasing |
+| `submitted_cdf` | list? | numeric/date: the exact CDF (~201 points) submitted to the platform — a preregistration record of the object actually scored, since `percentiles` alone can't be rebuilt into it |
+| `scaling` | obj? | numeric/date: `{range_min, range_max, zero_point, lower_open, upper_open, cdf_size}` the CDF was built against — needed to interpret `submitted_cdf` |
+| `raw_draws` | list? | the individual ensemble draws (audit trail) |
+| `aggregation` | str? | how the number was pooled: `"trimmed_mean(n=5)"`, `"geo_mean_odds(runs=3)"` (binary), `"quantile_mean(runs=3)"` (continuous), `"geo_mean_mc(runs=3)"` (multiple_choice), `angles=P,P,P` in place of `runs=N` in angle mode, `"single_run(of N intended)"` when the ensemble collapsed; incl. any crowd blend and clamp. v0.4.28 adds two markers inside the parentheses/wrapper: `shared_evidence, ` prefixes the tag when the pooled numbers are the second round (phase 2), and the whole tag is wrapped as `supervisor(...)` when the reconciler's number was the one submitted — e.g. `"supervisor(shared_evidence, angles=P,P,P)"` |
+| `run_percentiles` | list? | v0.4.28, continuous: the per-run percentile dicts of **whichever round was pooled** — phase 2 when shared evidence ran, else phase 1 — **research run first**. The independent first round is always `run_percentiles_phase1` (absent = no phase 2 ran, so this field *is* the first round). Present only when more than one run pooled |
+| `run_escapes` | list? | v0.4.28, continuous: parallel to `run_percentiles` — `[p_below_lower, p_above_upper]` as each run declared them, `null` where a run declared nothing |
+| `percentiles_run1` | obj? | v0.4.28, continuous: the **first independent research run's** own set — `run_percentiles_phase1[0]`, falling back to `run_percentiles[0]` when phase 2 did not run. This is the **single-run counterfactual** (what a one-run harness would have submitted), so it must never be a shared-evidence estimate. Makes pooling scorable paired at resolution. Note for the dispersion-guard analysis: on a pooled row, `percentiles_pre_guard` is the *research run's* attempt-0, so its paired comparison is against `percentiles_run1`, not against the pooled `percentiles` |
+| `run_probabilities` | list? | v0.4.28, multiple_choice: per-run `{option: p}` dicts for whichever round was pooled (phase 2 where it ran, else phase 1), research run first; `run_probabilities_phase1` always holds the independent first round. Present only when more than one run pooled |
+| `probabilities_run1` | obj? | v0.4.28, multiple_choice: `run_probabilities_phase1[0]`, falling back to `run_probabilities[0]` when phase 2 did not run — keyed by option label (not the parallel-list shape of `probabilities`) — the single-run counterfactual |
+| `raw_draws_phase1` | list? | v0.4.28, binary: the phase-1 per-run probabilities, present only when **phase 2 ran** and displaced them (`raw_draws` then holds phase 2). Absent = `raw_draws` is phase 1 |
+| `run_percentiles_phase1` | list? | v0.4.28, continuous: same, for the per-run percentile dicts |
+| `run_escapes_phase1` | list? | v0.4.28, continuous: parallel to `run_percentiles_phase1` |
+| `run_probabilities_phase1` | list? | v0.4.28, multiple_choice: same, for the per-run `{option: p}` dicts |
+| `pool_phase1` | float\|obj? | v0.4.28: the phase-1 pool in the question type's own shape (binary: float; continuous: the five percentiles; MC: `{option: p}`). Written whenever angle mode ran with `share_evidence` or `supervisor` enabled — i.e. whenever some later phase could have replaced it |
+| `pool_phase2` | float\|obj? | v0.4.28: the phase-2 (shared-evidence) pool, same shape. Present only where that phase ran and produced ≥2 estimates |
+| `spread_phase1` | float? | v0.4.28: that phase's disagreement — binary: max−min probability; continuous: max−min of the run medians, in question units; MC: max−min of the pooled leader's probability. The herding check needs the spreads, not only the scores |
+| `spread_phase2` | float? | v0.4.28: the same measure over the second round |
+| `supervisor` | obj? | v0.4.28: `{estimate, reconciliation, sources, mode, spread, cost_usd}` — the reconciler's own output, journaled whether or not its number was submitted (it is when `aggregation` starts `supervisor(`). `estimate` is in the type's shape, continuous carrying `{percentiles, p_below_lower, p_above_upper}`; `mode` is `research` \| `reasoning` (whether the spread bought it web tools); `spread` is the number compared with the tier threshold — for continuous, medians spread ÷ pooled IQR |
+| `effort` | str? | `low`/`medium`/`high`, with `(auto)` when auto-triaged |
+| `model` | str | free string naming the model(s) used |
+| `provider` | str? | billing/routing path that produced it, e.g. `subscription` / `openrouter` |
+| `crowd` | obj? | `{value, source, at}` — the crowd/market number **at forecast time** |
+| `reasoning` | str | 3–6 line summary: base rate → key update → main counterargument |
+| `what_would_change_my_mind` | list[str] | observations that would move the number |
+| `research` | obj? | `{n_searches, sources: [urls]}` |
+| `trace_path` | str? | v0.4.28: path **relative to the journal file's directory** (`traces/<id>.json`) of this question's per-call trace — one JSON object per agent call (phase, stage, run index/angle, mode, model, cost, seconds, that run's own estimate, reasoning, sources, dossier, the reconciler's `reconciliation`/`disagreements`, and the first attempt's validation errors when a repair happened), plus the pools and what was submitted. Best-effort: a trace that failed to write prints a warning and is simply absent |
+
+### Resolution
+
+| Field | Type | Meaning |
+|---|---|---|
+| `resolution` | obj? | `{outcome: bool\|float\|str, resolved_on: iso-date, note}` |
+
+A record is **scorable** (enters the Brier score) when: `status == "resolved"`,
+`question_type == "binary"`, `probability` set, and `resolution.outcome` is a boolean.
+
+## Versioning policy
+
+- **Additive optional fields do not bump `schema_version`.** Readers ignore unknown fields
+  (`from_dict` filters to known names), so old code reads new journals.
+- **Breaking changes bump `schema_version`**, and the reader must accept version N and N−1.
+
+## Interop: decision-journal (`DecisionRecord`) format
+
+Some decision-scaffolding systems store forecasts as a general `DecisionRecord` with
+`method="forecast"` and the estimand metadata packed into `assumptions` provenance strings. The
+mapping is lossless in both directions:
+
+| ForecastRecord | DecisionRecord |
+|---|---|
+| `question` | `title` and `prediction.expectation` |
+| `probability` | `prediction.probability` |
+| `options` / `probabilities` | `prediction.options` / `prediction.probabilities` (present for multiple_choice) |
+| `percentiles` | `prediction.percentiles` (present for numeric/discrete/date) |
+| `resolve_by` | `prediction.resolve_by` |
+| `reasoning` | `rationale` |
+| `what_would_change_my_mind` | `what_would_change_my_mind` |
+| `question_type` | assumption `"estimand_kind: <kind>"` |
+| `reference_class` | assumption `"reference_class: <text>"` |
+| `why_it_matters` | assumption `"VOI: <text>"` |
+| `resolution_criterion` | assumption `"resolves_when: <text>"` |
+| `parent_id` | assumption `"parent_decision: <id>"` |
+| `fast_proxy` | assumption `"fast_proxy: true"` (present only when true) |
+| `resolution.outcome` (bool) | `resolution.realized` |
+| `resolution.note` | `resolution.what_happened` |
+| `resolution.resolved_on` | `resolution.resolved_on` |
+| — (constants on export) | `method="forecast"`, `needs_system2=false` |
+
+`fsj.py export --format decision-record` implements this mapping (annulled records export as
+resolved with `realized: null` plus an `"annulled: true"` assumption).

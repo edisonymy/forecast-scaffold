@@ -1,0 +1,34 @@
+Ignored 15 nonzero-run row(s) (angles duplicate=3, high=6, high duplicate=3, plain duplicate=3); readout uses run==0 only.
+plain   38 scorable rows, $4.53
+high    37 scorable rows, $20.48
+angles  36 scorable rows, $59.61
+
+== COVERAGE (run-0 scorable qids per arm vs three-arm union, n_union=38) ==
+plain   38/38  missing: none
+high    37/38  missing: btf2:0133ef63-6912-5e75-8c71-13c936d577a9
+angles  36/38  missing: btf2:0133ef63-6912-5e75-8c71-13c936d577a9, btf2:74e399bb-ca76-5427-84fd-4c59423b3ad6
+
+== SUMMARY on each arm's OWN scorable set (NOT comparable across arms) ==
+arm       n   Brier     REL     RES  vs teacher
+plain    38  0.1566  0.0471  0.0803  +0.0066
+high     37  0.1388  0.0492  0.0962  -0.0132
+angles   36  0.1485  0.0662  0.1019  -0.0077
+
+== SUMMARY on the three-way common complete-case set (comparable; n_common=36) ==
+arm       n   Brier     REL     RES  vs teacher
+plain    36  0.1651  0.0522  0.0699  +0.0090
+high     36  0.1426  0.0505  0.0972  -0.0136
+angles   36  0.1485  0.0662  0.1019  -0.0077
+
+== DIFFERENTIAL-ATTRITION DIAGNOSTIC (high's Brier split by angles coverage) ==
+high on angle-complete qids (n=36): 0.1426
+high on angle-missing  qids (n=1): 0.0016
+angles run-0 coverage 36 vs high 37 (+2.7% below high)
+VERDICT: attrition non-differential (rule: coverage gap >5% AND missing-vs-complete Brier split >= 0.02; got gap +2.7%, split -0.1410)
+
+PAIRED (negative = first arm better; bootstrap 90% CI primary)
+plain   vs high   : mean +0.0219  CI90 [-0.0027,+0.0505]  (n=37, plain wins 16/37)
+plain   vs angles : mean +0.0166  CI90 [-0.0075,+0.0442]  (n=36, plain wins 18/36)
+high    vs angles : mean -0.0059  CI90 [-0.0163,+0.0040]  (n=36, high wins 22/36)
+
+Reminder: screen run 0 first and pass confirmed hits via --exclude-qid.

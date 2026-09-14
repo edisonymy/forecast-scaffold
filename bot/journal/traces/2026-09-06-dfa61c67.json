@@ -1,0 +1,237 @@
+{
+ "record_id": "2026-09-06-dfa61c67",
+ "question": "How much will Gold Futures total price returns exceed S&P 500 Futures in these biweekly periods of Q3 2026? (Sep 7 - Sep 18)",
+ "question_id": 44657,
+ "url": "https://www.metaculus.com/questions/44527/",
+ "question_type": "numeric",
+ "forecast_at": "2026-09-06T18:50:34+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.9258,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -5.433333333333334,
+    "25": -2.8666666666666667,
+    "50": 0.06666666666666667,
+    "75": 3.1,
+    "90": 5.733333333333333
+   },
+   "p_below_lower": 0.03,
+   "p_above_upper": 0.04
+  },
+  "phase1": {
+   "10": -5.433333333333334,
+   "25": -2.8666666666666667,
+   "50": 0.06666666666666667,
+   "75": 3.1,
+   "90": 5.733333333333333
+  },
+  "phase2": null,
+  "spread_phase1": 0.6,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -6.0,
+   "25": -3.5,
+   "50": -0.3,
+   "75": 3.0,
+   "90": 5.6
+  },
+  "p_below_lower": 0.035,
+  "p_above_upper": 0.04
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0234,
+   "seconds": 332.1,
+   "estimate": {
+    "percentiles": {
+     "10": -5.4,
+     "25": -2.8,
+     "50": 0.2,
+     "75": 3.3,
+     "90": 5.7
+    },
+    "p_below_lower": 0.04,
+    "p_above_upper": 0.045
+   },
+   "reasoning": "Base rate first: over 2000-2026 gold and S&P futures price returns have near-identical long-run CAGRs (~8.2% vs ~8.7% price-only), so the median 2-week gold-minus-S&P spread is ~0pp with all the action in dispersion, not drift. I stay essentially at that anchor: the window's dominant event (FOMC Sep 16, hike odds quoted 50-66% across the last week, plus a dot plot) is a genuine coin flip whose surprise is already priced both ways, and Aug CPI lands Sep 11. Directional adjustments cancel - hawkish Warsh Fed and the Sep 4 pattern (hot payrolls: gold -2.4% vs S&P -0.38%) are gold-negative, while the live Strait of Hormuz/Iran premium, a 34-50% dovish-hold surprise to which gold has the larger beta, weak late-September equity seasonality, and S&P futures excluding dividends tilt the other way; net median +0.2pp. Dispersion is the real answer: gold's 2026 realized vol is roughly 1.6x the S&P's, giving ~4.8pp of two-week spread sd. Both bounds are open and 2026 has repeatedly delivered >10pp two-week divergences (a -9% single gold day on Jan 30, a -28% Q2 slide, a +9.6% August), so I price real escape mass on both sides: a hawkish 50bp/hot-dots shock resuming the correction while equities hold on strong growth (down), or Hormuz escalation or a Fed-independence shock spiking gold into an equity selloff (up). Evidence on gold's September seasonality was directly contradictory across sources, so I gave it no weight. No prediction market matches this contract, so nothing to blend against.",
+   "sources": [
+    "https://tradingeconomics.com/commodity/gold",
+    "https://www.vtmarkets.com/en-ca/discover/gold-vs-sp-500-2026-performance-comparison-investment-guide/",
+    "https://fedratecalc.com/fomc-meeting-schedule/september-2026/",
+    "https://www.financecalendar.com/event/us-cpi-report-september-2026/",
+    "https://www.macroradar.io/vix",
+    "https://discoveryalert.com.au/gold-volatility-index-gvz-implied-volatility-explained-2026/",
+    "https://goldsilver.com/industry-news/article/gold-silver-market-correction-2026-bull-market/",
+    "https://sundayguardianlive.com/business/gold-price-prediction-september-2026-will-gold-surge-or-crash-gold-gains-96-in-august-as-fed-rate-hike-odds-hit-64-can-gold-reclaim-165-lakh-274238/",
+    "https://kalshi.com/markets/kxinxvsgold/will-the-sp-500-outperform-gold-this-year/kxinxvsgold-26dec31",
+    "https://www.kiplinger.com/investing/economy/this-weeks-economic-calendar",
+    "https://www.schaeffersresearch.com/content/ezines/2026/09/04/stocks-slip-as-hot-jobs-report-boost-treasury-yields",
+    "https://finance.yahoo.com/personal-finance/investing/article/gold-price-today-friday-september-4-2026-gold-price-lifts-ahead-of-jobs-report-105540094.html"
+   ],
+   "dossier": "QUANTITY: gold futures price return minus S&P 500 futures price return, in percentage points, over Sep 7 - Sep 18, 2026.\n\nEVENT WINDOW: Sep 7 2026 -> Sep 18 2026 per the criteria (scheduled resolution 2026-09-18T20:00:00Z); as of Now = 2026-09-06T18:33:27Z, 0% elapsed - the window has not begun. Sep 7 2026 is US Labor Day (markets closed), so the window contains 9 CME trading sessions: Sep 8, 9, 10, 11, 14, 15, 16, 17, 18. Sep 18 is the third Friday (quad witching; September ES contract expiry).\n\nRESOLUTION INSTRUMENT: resolves off futures price returns for both legs, not spot gold and not S&P 500 total return - i.e. the S&P leg excludes dividends (~1.2-1.4%/yr, ~0.05pp over this window). The gold leg's active contract in early Sep 2026 is December; quoted Dec futures have run $40-60 above spot (Sep 3: spot $4,429.23 vs Dec $4,474.75, source: Minfin summarizing Jefferies note, 2026-09-06). Roll/contract-selection convention is not specified in the criteria text provided.\n\nLEVELS AND RECENT PATH:\n- S&P 500 closed 7,718.60 on Fri Sep 4 2026, -0.38% on the day; Dow -0.51% to 53,414.25; Nasdaq -0.29%; Russell 2000 +0.25%. First down week of September. (Schaeffer's, 2026-09-04)\n- Dec gold futures -2.4% to $4,428.80 on Sep 4 2026, -1.3% for that week. (Schaeffer's, 2026-09-04)\n- Spot gold $4,432.56 on Sep 4 2026, -0.92% d/d, +4.36% over 30 days, +23.38% y/y; fell ~2% intraday to ~$4,380 after the payrolls print. (TradingEconomics gold page, accessed 2026-09-06)\n- Gold gained 9.6% during August 2026. (Sunday Guardian, Sep 2026)\n- Gold spot ~$4,332 on Aug 11 2026. (goldpriceinsight/IG summary, Aug 2026)\n- One week-ahead source describes gold near $4,500 on the Friday after two up sessions on dovish Fed commentary - inconsistent with the $4,428-4,432 figures above; the level is ambiguous in the $4,430-4,500 band across sources.\n\nMACRO / EVENTS INSIDE THE WINDOW:\n- Aug CPI released Sep 11 2026, 08:30 ET (BLS schedule). Aug PPI Sep 10. Univ. of Michigan preliminary September sentiment/inflation expectations also in-window.\n- FOMC Sep 15-16 2026; decision Wed Sep 16 14:00 ET with Summary of Economic Projections and dot plot; press conference 14:30 ET. Fed blackout runs Sep 5 - Sep 17. (Federal Reserve calendar / FedRateCalc)\n- Direction of policy is a HIKE debate, not a cut debate. CME FedWatch-derived hike odds for this meeting have been quoted at 66.4% (post-Jackson Hole, late Aug), 58% (after the Sep 4 payrolls print), and ~50% (after dovish Fed-governor commentary) - i.e. unsettled inside a 50-66% band in the fortnight before the meeting.\n- August nonfarm payrolls came in at 162,000 vs 53,000 expected; 2-year Treasury yield hit its highest since January 2025. 10-year ~4.79%. (Schaeffer's / CNBC, Sep 3-4 2026)\n- Fed Chair Kevin Warsh delivered a hawkish Jackson Hole message (late Aug 2026), saying the Fed has 'work to do' on prices; analysts flagged possible friction with Treasury.\n- Strait of Hormuz crisis, ongoing since February 2026, plus Iran conflict re-escalation headlines in early September. WTI crude $91.48 on Sep 4, +9.7% on the week, on Middle East supply risk. (Schaeffer's, 2026-09-04)\n\nVOLATILITY / DISPERSION INPUTS:\n- VIX 16.34 in early September 2026, up 14.7% y/y, near its 10-year average; it printed a 2026 low of 14.13 in August. VIX's median seasonal path rises from ~16.5 in late August toward ~18 by mid-September. (MacroRadar, CNBC 2026-08-17)\n- CBOE gold vol index GVZ traded 24-27 through mid-July 2026, closing 25.60 on 2026-07-17 - characterised as elevated but not extreme. (DiscoveryAlert, Jul 2026)\n- Gold's realized daily moves in the week to Sep 4 2026: +0.9%, -0.9% to -2.4% depending on contract/spot.\n- 2026 gold has printed outsized moves: record $5,589-5,594 on Jan 28-29 2026 followed by a ~9% single-day drop on Jan 30; a fall of roughly 28% to ~$4,046 by July 2026, the steepest quarterly correction since 2013; a June 2026 monthly decline described as the worst since October 2008, to a seven-month low near $3,975-4,000; then +9.6% in August. (GoldSilver, GoldPriceInsight, metalcharts.org)\n- Drivers named for the 2026 correction: the Fed's hawkish pivot under Chair Warsh, the paradoxically bearish effect of the Iran conflict via higher oil -> higher inflation expectations -> higher rate projections, and profit-taking after gold's 60%+ gain in 2025.\n\nBASE RATES (with the class each is computed over):\n- Over all years 2000-2026: S&P 500 ~10.1% CAGR total return; gold ~8.2% CAGR. Removing S&P dividends (~1.4%/yr) leaves the two price-return series within ~0.5pp/yr of each other, i.e. a near-zero average two-week price-return spread. (VT Markets / Kalshi comparison pages)\n- Conditional on an S&P down year (9 such years in that sample): gold outperformed in 8 of 9, averaging +19.4% vs -15.3%. Conditional on an S&P up year, the relationship is much weaker.\n- Conditional on calendar year 2024 specifically: S&P +25% total return, gold +27%.\n- Two-week dispersion class - windows of the same 9-10 session length: at the currently observed vols (gold ~24% ann., S&P ~15% ann.) an independent-normal spread has an annualized sigma near 25-26%, which over 9/252 of a year implies a standard deviation of roughly 4.7-4.9 percentage points. Over the last 12 months the realized 2026 tape contained at least two or three same-length windows in which the two assets diverged by more than 10 percentage points (the late-January spike-and-crash, the June decline, the August advance).\n- Gold September seasonality is CONTRADICTORY in the sources: one dataset reports September as gold's worst month (90% of the last ten Septembers negative, 73% of the last fifteen, 60% of the last twenty); another reports September as gold's strongest month at +2.1% average, and a third puts January and December as the strongest at +1.6%/+1.5%. Equity September seasonality is the well-known weak-month pattern, concentrated in the second half of the month.\n\nSTATUS-QUO OUTCOME: the two legs move together in magnitude and ",
+   "reference_class": "Two-week (9-10 trading day) windows from 2000-2026 of front-month gold futures price return minus front-month S&P 500 futures price return, with the sub-class of 2026 windows (elevated gold vol, GVZ 24-27) used to set dispersion"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.8192,
+   "seconds": 278.4,
+   "estimate": {
+    "percentiles": {
+     "10": -5.7,
+     "25": -3.2,
+     "50": -0.3,
+     "75": 2.7,
+     "90": 5.6
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.04
+   },
+   "reasoning": "Reference class: rolling 10-trading-day differences between front-month gold futures and E-mini S&P futures returns in the 2025-26 high-gold-vol regime. That class centers just below zero (equity risk premium ~+0.3pp per two weeks vs ~zero drift on a gold futures price return, plus gold's positive skew pulling its median below its mean) with a 10-90 width near 12pp. Adjustments off that anchor are small and offsetting: hawkish momentum (2yr yield highest since Jan-2025, ~60% hike priced for Sep 16, gold -2.4% on the Sep 4 payrolls beat, gold +3% YTD vs S&P +13%) argues for a negative median, while a live two-sided Fed (Waller/Williams dovish vs Warsh hawkish; a hold would be a dovish shock that gold levers hardest) and an unresolved US-Iran conflict with WTI ~$91 argue the other way. I keep the median near the class median (-0.3) rather than trading the trend, because the hike is already largely priced and 2-week momentum is weak evidence. Dispersion is the real content: CPI (Sep 11) and FOMC+dots (Sep 16) both land inside a 9-session window, and gold's rate beta is ~5-6x the S&P's, so the spread inherits gold's vol almost undiluted. Tails are priced explicitly: a Hormuz/oil-shock or Fed-hold combination (gold up, equities down) on one side, an Iran de-escalation plus hawkish surprise (gold down, equities up) on the other. Evidence is genuinely two-sided and no matching market exists, so I stay close to the reference class.",
+   "sources": [
+    "https://goldsilver.com/industry-news/goldsilver-news/gold-silver-iran-escalation-fed-hike-odds/",
+    "https://www.riotimesonline.com/gold-silver-precious-metals-saturday-september-5-2026/",
+    "https://www.schaeffersresearch.com/content/ezines/2026/09/04/stocks-slip-as-hot-jobs-report-boost-treasury-yields",
+    "https://www.babypips.com/analysis/fundies-cheat-sheet-2026-09-07-cpi-week-fed-blackout-ecb-hot-headline-cool-core-levels",
+    "https://fedratecalc.com/fomc-meeting-schedule/",
+    "https://finance.yahoo.com/quote/%5EGVZ/",
+    "https://www.barchart.com/futures/quotes/ESU26",
+    "https://kalshi.com/markets/kxgoldw/gold-weekly-price-/kxgoldw-26sep0417",
+    "https://www.vtmarkets.com/en-ca/discover/gold-vs-sp-500-2026-performance-comparison-investment-guide/",
+    "https://finance.yahoo.com/personal-finance/investing/article/gold-price-today-friday-september-4-2026-gold-price-lifts-ahead-of-jobs-report-105540094.html"
+   ],
+   "dossier": "QUANTITY: gold futures total price return minus S&P 500 futures total price return, in percentage points, over the stated window. Resolves off futures price series (front/active contract), not spot gold and not the S&P cash index; a December gold contract and a September/December ES contract carry their own roll and carry effects. Event window: Sep 7 -> Sep 18, 2026 per the criteria; as of Now (2026-09-06T18:33Z) 0% elapsed - the window has not begun. Scheduled resolution 2026-09-18T20:00:00Z.\n\nSTATUS-QUO OUTCOME (no new information; both instruments drift at their normal rates): a spread within roughly a point of zero, negative by the size of the two-week equity risk premium.\n\nLEVELS\n- Sep 4, 2026 close: spot gold US$4,429/oz, -1.14% on the day, +0.19% on the week (Rio Times, Sep 5, 2026).\n- Sep 4, 2026: December gold futures $4,428.80, -2.4% on the day, -1.3% on the week (Schaeffer's, Sep 4, 2026). Sep 3: December gold $4,474.75, +1.4%, intraday high $4,470.70 (Minfin/Jefferies note, Sep 6, 2026; INN).\n- Sep 4, 2026: S&P 500 cash 7,718.60, -0.38%; Dow 53,414.25, -0.51%; Nasdaq Composite 26,506.99, -0.29%; Russell 2000 +0.25% (Schaeffer's, Sep 4, 2026). E-mini S&P Sep '26 futures last 7,754.75 at the Sep 4 close (Barchart ESU26).\n- Sep 2, 2026: gold $4,335, silver $64.34 (GoldSilver, Sep 2, 2026). Sep 4: silver $66.17, -1.22% (Rio Times).\n- WTI crude $91.48 on Sep 4, +0.2% on the day and +9.7% on the week (Schaeffer's, Sep 4, 2026).\n\nVOLATILITY / SERIES SPREAD\n- CBOE GVZ (30-day gold implied vol) ~26.66, up ~4% intraday, early September 2026; VIX ~15.26 same period (Cboe/Yahoo GVZ, TradingView, early Sep 2026). GVZ/VIX ratio ~1.75.\n- Gold's 2026 path: reported record high near $5,608/oz in January 2026, then a multi-month decline to the $4,300-4,500 area by early September (search summary of Fortune/top1markets, Sep 2026) - a very wide realized range for a single year. Treat the exact January figure as second-hand.\n- Reference-class dispersion, over rolling 10-trading-day windows: unconditional over the full 2010-2024 period, the gold-minus-S&P return difference has a standard deviation near 4-4.5pp; over 2025-2026 only (gold realized vol 22-30% vs S&P 15-17%, daily correlation roughly +0.1 to +0.3), nearer 5pp. Conditional on the window containing both a CPI release and an FOMC decision, the upper end of that range is the relevant one. Sources: GVZ/VIX levels above plus standard vol scaling; hand-constructed, not a published series.\n\nCALENDAR INSIDE THE WINDOW (Kiplinger/Babypips/Vantage week-ahead, published ~Sep 5-6, 2026; FedRateCalc FOMC schedule)\n- Mon Sep 7: US Labor Day, equity markets closed; four-day trading week.\n- Thu Sep 10: PPI (pre-open). Fri Sep 11: August CPI (pre-open) - the last inflation print before the Fed, consensus split between a hot energy-led headline ~0.4% m/m and a benign core ~0.2%.\n- Fed is in pre-meeting blackout for the CPI reaction; no official commentary available to steer it.\n- Tue-Wed Sep 15-16: FOMC, decision 2:00pm ET Sep 16, with a Summary of Economic Projections (dot plot).\n- Thu Sep 17 - Fri Sep 18: post-FOMC sessions; Sep 18 is quarterly triple-witching/index-rebalance day for US equity futures and options.\n\nFED PRICING (both directions)\n- CME FedWatch odds of a 25bp HIKE at the Sep 16 meeting: ~35% before Aug 28, high-50s/60s immediately after Chair Warsh's hawkish Jackson Hole speech, ~65-70% by Sep 2, ~58-60% after the Sep 4 payrolls (GoldSilver Sep 2, 2026; CoinGape/ATFX/centralbank.watch; Vantage week-ahead Sep 2026). Current target range 3.50%-3.75%.\n- Internal split reported: Waller and Williams dovish, Warsh hawkish (Vantage, Sep 2026).\n- August payrolls came in at 162,000, described as more than tripling analyst estimates; two-year Treasury yield hit its highest since January 2025 (Schaeffer's, Sep 4, 2026; Rio Times, Sep 5, 2026).\n\nRATE SENSITIVITY, MEASURED\n- On the Sep 4 payrolls beat, December gold futures moved -2.4% while the S&P 500 moved -0.38% - roughly a 6:1 ratio of response to the same macro surprise.\n- On Sep 1, 2026, gold moved lower specifically on growing rate-hike expectations (Yahoo Finance, Sep 1, 2026).\n\nGEOPOLITICS (both directions)\n- US-Iran conflict active: CENTCOM strikes Aug 30, Aug 31 and Sep 2, 2026; Iran struck US bases after the Sep 2 strike (GoldSilver, Sep 2, 2026; INN).\n- On Sep 2, the day of the second US strike, gold fell 2.7% and silver 3.7% - the sharpest single-day drop for either in weeks - and the further escalation the next day produced almost no move; the cited analysis attributes price action to Fed expectations rather than headlines (GoldSilver, Sep 2, 2026).\n- On Sep 3, gold futures rallied on Strait of Hormuz escalation to an intraday $4,470.70 (INN, Sep 2026). WTI's +9.7% week was attributed to Middle East supply risk (Schaeffer's, Sep 4, 2026).\n- Escalation scenarios named by analysts include strikes on Iranian desalination infrastructure and oil toward $200/bbl, with gold scenario targets of $5,500-6,000; separately, earlier 2026 equity records were partly credited to hopes of reopening the Strait of Hormuz (Canadian Mining Report; CNN/Bloomberg Aug 2026).\n\nSTRUCTURAL GOLD FLOW\n- Jefferies (Sep 3-6, 2026) models $4,650/oz by year-end 2026 and reiterates $4,500 in H2 2026 / $5,000 in H1 2027, driven by reserve diversification and the US deficit rather than real rates or the dollar; it names net central-bank selling as the main downside risk.\n- Central banks bought a net 27 tonnes in February 2026 (VT Markets).\n\nRELATIVE PERFORMANCE BASE RATES (note the conditioning)\n- Over all of 2026 to date: gold roughly +3% YTD versus S&P 500 roughly +13% YTD as of about August 2026 - equities ahead by ~10pp over eight months, i.e. a mean two-week spread near -0.6pp (VT Markets; 24/7 Wall St).\n- Over April 2026 specifically the ordering was reversed: gold +9.18% YTD vs S&P +3.9% YTD (24/7 Wall St, Apr 23, 2026) - the full-year figure hides a large mid-year reversal, so the unconditional 2026 average und",
+   "reference_class": "Rolling 10-trading-day (two-week) differences between front-month COMEX gold futures price returns and E-mini S&P 500 futures price returns, 2025-2026 high-gold-volatility regime; conditioned on windows containing both a CPI print and an FOMC decision"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.754,
+   "seconds": 276.3,
+   "estimate": {
+    "percentiles": {
+     "10": -5.2,
+     "25": -2.6,
+     "50": 0.3,
+     "75": 3.3,
+     "90": 5.9
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.035
+   },
+   "reasoning": "Reference class: overlapping ~9-10 session windows of front-month COMEX gold futures return minus front-month S&P 500 futures return during the 2024-2026 high-gold-vol regime; the median edge is small and positive (gold has outrun equities over that span), so the anchor is ~+0.4pp with a wide spread. Almost all the uncertainty is gold's: GVZ at 26.63 vs VIX near a 2026 low of 14.2 means gold contributes roughly twice the equity leg's variance, and the two legs are currently positively correlated (both fell on the hot Sep 4 payrolls print), which trims the spread sigma rather than inflating it. I do not tilt the median far off zero because the drivers offset: a live Sep 16 FOMC hike is gold-negative via real rates but also equity-negative; Iran-linked energy supply risk and central-bank buying bid gold, while equities carry record-high momentum and +16% YTD. September gold seasonality is genuinely contested in the sources (one dataset says 90% of the last ten Septembers closed red, another says +2.1% average over 50 years), so I treat it as a wash. I keep mild right skew because the fat tail here is a geopolitical or FOMC shock that lifts gold and hits stocks simultaneously, whereas the symmetric negative case needs a fast gold liquidation into an equity melt-up. Escape mass is real on both sides: gold has posted +30% and -26% multi-week moves this year alone, so a +/-10pp two-week spread is not exotic.",
+   "sources": [
+    "https://tradingeconomics.com/commodity/gold",
+    "https://finance.yahoo.com/quote/%5EGVZ/",
+    "https://www.chase.com/personal/investments/learning-and-insights/article/september-2026-rate-hike-now-expected-amid-energy-shocks",
+    "https://www.cnbc.com/2026/08/17/stock-market-volatility-vix-wall-street.html",
+    "https://www.schaeffersresearch.com/content/ezines/2026/09/04/stocks-slip-as-hot-jobs-report-boost-treasury-yields",
+    "https://finance.yahoo.com/personal-finance/investing/article/gold-forecast-and-tracker-where-will-prices-land-in-2026-130000340.html",
+    "https://www.kiplinger.com/investing/economy/this-weeks-economic-calendar",
+    "https://kalshi.com/markets/kxinxvsgold/will-the-sp-500-outperform-gold-this-year/kxinxvsgold-26dec31"
+   ],
+   "dossier": "QUANTITY: front-month gold futures percent price return minus front-month S&P 500 futures percent price return, in percentage points, over the stated window. Resolves off futures price returns, not spot gold and not S&P 500 total return (dividends excluded); front-month futures carry differs from spot by roughly the financing rate, worth on the order of a tenth of a point over two weeks.\n\nEVENT WINDOW: Sep 7 2026 -> Sep 18 2026 per the criteria; as of 2026-09-06T18:33Z, 0% elapsed (the window has not opened). Sep 7 2026 is the first Monday of September = US Labor Day, CME equity and metals markets closed or holiday-session only, so the window spans roughly 9 regular sessions, Sep 8 through Sep 18. Sep 18 is the third Friday = quarterly quad-witching and index rebalance.\n\nSTATUS-QUO OUTCOME: both legs drift with no relative dislocation, producing a spread near zero.\n\nLEVELS AND VOL (as of Sep 4 2026 close):\n- Spot gold 4,432.56 USD/oz, -0.92% on the day, +4.36% over the prior month, +23.38% year over year (TradingEconomics, Sep 4 2026).\n- December COMEX gold futures quoted in the 4,430-4,540 range across outlets on Sep 3-4; sources disagree on the exact print (Minfin cites Dec futures +1.4% to 4,474.75 on Sep 3; Schaeffer's cites Dec futures -2.4% to 4,428.80 on Sep 4).\n- S&P 500 cash 7,718.6 on Sep 4, -0.38% on the day; index roughly +16% year to date and near record highs (Schaeffer's Sep 4 2026; CNBC Aug 17 2026).\n- GVZ (CBOE gold ETF volatility index) closed 26.63 on Sep 4 2026, 52-week high 48.68 set around the January gold peak (Yahoo Finance).\n- VIX dipped to 14.2 in late August 2026, its 2026 low, and was 14.92 on Sep 1 (CNBC Aug 17 2026; robomacro VIX daily Sep 1).\n- VIX seasonal median since 1990: ~16.5 in late August, ~18 by mid-September, ~19 in early October (CNBC).\n\nCALENDAR INSIDE THE WINDOW:\n- Aug PPI and Aug CPI released Sep 10-11 2026; preliminary September U. Michigan sentiment and inflation expectations Sep 11 (Kiplinger, Cannon Trading week-ahead for week of Sep 7).\n- FOMC meets Sep 15-16 2026, decision 2:00pm ET Sep 16, current target 3.50%-3.75%. CME FedWatch showed roughly 58-66% odds of a 25bp HIKE, up after July's hold; drivers cited are Iran-conflict energy costs and above-target inflation. Waller made dovish comments on Sep 4 that pared hike odds toward ~60% (Chase, Marketplace, ATFX, LiteFinance).\n- Aug nonfarm payrolls printed 162,000 on Sep 4, described as more than triple estimates; 2-year Treasury yield hit its highest since January 2025; equities and gold both fell that session.\n\nEVIDENCE FOR GOLD-SIDE STRENGTH: WTI 91.48 (+9.7% on the week to Sep 4) on Middle East supply risk; Jefferies (Sep 6) maintains 4,500 H2 2026 and 5,000 H1 2027 targets on reserve diversification and deficit variables; sustained central-bank buying cited across outlets; September equity seasonality is historically the weakest month of the year.\n\nEVIDENCE FOR EQUITY-SIDE STRENGTH: gold peaked intraday at 5,589.38 on Jan 28 2026 and subsequently corrected about 26%, trading below 4,000 at one point mid-year; gold was up only ~3% year to date at mid-2026 against roughly +13% for the S&P at that time; Goldman Sachs cut its year-end 2026 gold target from 5,400 to 4,900 on Jun 19; BofA trimmed Q4 2026 to 4,800 on slowing investor demand; rising policy rates raise real yields, the standard gold headwind; strong labor data supports earnings.\n\nBASE RATES FOUND:\n- Over all years since 2000: S&P 500 ~10.1% CAGR vs gold ~8.2% CAGR (search summary of long-run comparisons) - unconditional and annual, not window-specific.\n- Gold September seasonality, two conflicting computations over different classes: over the last ten Septembers, 90% closed negative (73% over fifteen years, 60% over twenty); over a 50-year sample, September averages +2.1%, among the strongest months. The conditioning variable is sample length; the two disagree in sign.\n- Conditional on the current regime (GVZ 22-30 rather than its long-run ~16-17), gold's per-session dispersion is roughly 1.5-1.7x its normal level, while equity implied vol sits near a 2026 low - i.e. the vol ratio between the two legs is unusually wide right now, which is the conditioning fact that matters more than any unconditional annual comparison.\n\nMARKETS: no Polymarket or Manifold contract on this quantity (harness title search). Kalshi lists KXINXVSGOLD-26DEC31, 'Will the S&P 500 outperform gold this year', which differs on horizon (full calendar 2026), form (binary direction, not magnitude) and instrument (index total return, not futures price return); its page returned HTTP 429 and no price was obtained. No bookmaker line found.\n\nSEARCHED FOR BUT COULD NOT FIND: a clean daily price series for either leg over July-September 2026 (stooq CSV endpoints returned empty, Kalshi rate-limited), so realized-volatility and gold/equity correlation figures could not be computed directly and were inferred from implied-vol levels and reported single-day moves; resolved outcomes of the earlier biweekly periods in this same Q3 2026 series; any published forecast of the gold-minus-equity spread over a two-week horizon.",
+   "reference_class": "Overlapping ~9-10 trading-session windows, 2024-2026, of front-month gold futures percent price return minus front-month S&P 500 futures percent price return, restricted to the elevated gold-volatility regime (GVZ roughly 22-30)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1006,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2942,
+   "seconds": 125.8,
+   "estimate": {
+    "percentiles": {
+     "10": -6.0,
+     "25": -3.5,
+     "50": -0.3,
+     "75": 3.0,
+     "90": 5.6
+    },
+    "p_below_lower": 0.035,
+    "p_above_upper": 0.04
+   },
+   "reasoning": "Both legs are futures PRICE returns, so expected spread = gold excess return (~0) minus the equity risk premium (~4-5%/yr = +0.16pp over 9 sessions); gold's positive skew puts the median a touch below that mean, giving -0.3pp. Runs 1 and 3 anchored positive off a 2024-26 class in which gold happened to outrun equities - realized outperformance read as expected drift, and the sign flips if the class is 2026-to-date, which is the tell. Directional tilts inside the window cancel: a 50-66%-priced Sep 16 hike plus hawkish dots is gold-negative but also equity-negative, while a dovish hold is the surprise gold levers hardest. I discount the runs' geopolitical right skew: on Sep 2 gold fell 2.7% on the US strike and barely moved on the next escalation, because oil -> inflation -> hawkish-Fed currently dominates the safe-haven channel. Almost all the content is dispersion - CPI (Sep 11) and FOMC+SEP (Sep 16) inside 9 sessions, GVZ ~27 against VIX ~15 - and my vol scaling gives 4.8pp SD, slightly wider than all three runs, so I widen rather than average. Contested September gold seasonality (90% red over 10y vs +2.1% over 50y) gets zero weight.",
+   "sources": [],
+   "reconciliation": "Two factual disputes could not be settled without price data on this run (no web access): (a) Dec gold futures -2.4% on Sep 4 versus spot gold -0.92%/-1.14% the same day, which is internally inconsistent and which Run 2 leans on for a 6:1 gold-versus-equity rate beta - I carry the beta as a 2.5x-6x range rather than picking the extreme; (b) gold ~+3% YTD 2026, which is hard to square with gold +23.4% y/y and +48% in 2025, and which barely matters over 9 sessions anyway. Window mechanics were agreed and accepted: 0% elapsed, Labor Day Sep 7, 9 sessions Sep 8-18, quad-witching Sep 18. The median disagreement was pure judgment about which reference class conditions the prior; I resolved it on the instrument definition (futures price returns on both legs, so ERP is the only systematic tilt and it favors the equity leg) rather than on either run's realized-return class, landing at -0.3 - coinciding with Run 2's number but not its momentum reasoning. The right-skew disagreement was settled against Runs 1 and 3 by evidence inside Run 2's own dossier: escalation has recently traded gold DOWN via the oil-to-hawkish-Fed channel, so I keep only a mild upper tilt. Dispersion I recomputed myself rather than carrying forward, and it came out wider (11.6 vs their 10.7-11.3), so I widened outside all three. Market check: all three runs independently found no contract matching this fortnight/magnitude/futures-price-return spread on Polymarket, Manifold, Kalshi, Robinhood or any bookmaker; Kalshi KXINXVSGOLD-26DEC31 differs on horizon, form and instrument, so it is evidence and not an anchor - no blend applied.",
+   "disagreements": [
+    {
+     "claim": "Dec gold futures fell 2.4% on Sep 4 while spot gold fell only 0.92-1.14%",
+     "kind": "factual",
+     "verdict": "Unsettled - no price data available this run; the two figures are mutually inconsistent, so Run 2's 6:1 rate-beta claim is carried as a 2.5x-6x range and the qualitative point (gold's rate beta clearly exceeds the S&P's) survives either way"
+    },
+    {
+     "claim": "Gold is ~+3% YTD 2026 versus S&P ~+13%",
+     "kind": "factual",
+     "verdict": "Unsettled - conflicts with gold +23.4% y/y and +48% in 2025 unless gold entered 2026 near $4,300; given low weight regardless, since 8-month drift is near-irrelevant over a 9-session window"
+    },
+    {
+     "claim": "The window is Sep 8-18 (9 sessions), 0% elapsed, ending on quad-witching",
+     "kind": "factual",
+     "verdict": "Settled - all three runs agree independently; accepted"
+    },
+    {
+     "claim": "The median spread is positive (+0.2/+0.3) because gold outran equities in the 2024-26 class",
+     "kind": "judgment",
+     "verdict": "Rejected - that is realized outperformance treated as expected drift, and the sign flips on a 2026-to-date class; resolved to -0.3 from the futures-price-return definition (gold excess return ~0 minus ERP ~+0.16pp) plus gold's positive skew"
+    },
+    {
+     "claim": "Geopolitical escalation gives the spread meaningful right skew",
+     "kind": "judgment",
+     "verdict": "Weakened - gold fell 2.7% on the Sep 2 US strike and barely moved on the following escalation; the oil-to-inflation-to-hawkish-Fed channel currently dominates, so only a mild upper tilt is kept"
+    },
+    {
+     "claim": "10-90 dispersion is 10.7-11.3pp",
+     "kind": "judgment",
+     "verdict": "Revised wider to 11.6pp on independent vol scaling (gold 24%, S&P 15%, corr ~0.22 -> 4.8pp SD over 9/252, truncated at the open bounds)"
+    },
+    {
+     "claim": "No prediction market prices this spread",
+     "kind": "factual",
+     "verdict": "Confirmed by three independent searches; Kalshi KXINXVSGOLD-26DEC31 is a near-miss on horizon, form and instrument, so no blend"
+    }
+   ],
+   "reference_class": "overlapping ~9-10 session windows of front-month COMEX gold futures price return minus front-month E-mini S&P 500 futures price return, with dispersion conditioned on the current high-gold-vol / low-equity-vol regime (GVZ ~27 vs VIX ~15) and the recently positive daily correlation between the legs"
+  }
+ ]
+}

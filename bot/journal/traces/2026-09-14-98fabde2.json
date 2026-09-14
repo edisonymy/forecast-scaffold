@@ -1,0 +1,148 @@
+{
+ "record_id": "2026-09-14-98fabde2",
+ "question": "What will be the ending value of the ICE BofA US High Yield Option-Adjusted Spread for these biweekly periods of Q3 2026? (Sep 21 - Oct 2)",
+ "question_id": 44671,
+ "url": "https://www.metaculus.com/questions/44530/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-09-14T17:26:39+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "quantile_mean(angles=P,P)",
+ "cost_usd": 2.6041,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 2.565,
+    "25": 2.625,
+    "50": 2.6799999999999997,
+    "75": 2.7699999999999996,
+    "90": 2.955
+   },
+   "p_above_upper": 0.020999999999999998
+  },
+  "phase1": {
+   "10": 2.565,
+   "25": 2.625,
+   "50": 2.6799999999999997,
+   "75": 2.7699999999999996,
+   "90": 2.955
+  },
+  "phase2": null,
+  "spread_phase1": 0.02,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 2.565,
+   "25": 2.625,
+   "50": 2.6799999999999997,
+   "75": 2.7699999999999996,
+   "90": 2.955
+  },
+  "p_above_upper": 0.020999999999999998
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.313,
+   "seconds": 267.7,
+   "estimate": {
+    "percentiles": {
+     "10": 2.56,
+     "25": 2.62,
+     "50": 2.67,
+     "75": 2.76,
+     "90": 2.95
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Status quo: HY OAS printed 2.65 on 2026-09-11, inside a 2.60-2.85 range since May and in the richest decile of series history (long-run median ~4.50). Reference class is 3-week-ahead changes in this series; the trailing-12m median change is -0.03, so a pure random walk lands near 2.62. I nudge the median up to 2.67 because the downside is floored (cycle low 2.60, 2.53 would be a multi-decade record) while the upside is open, and the window contains the post-FOMC tape (~83% priced 25bp HIKE on Sep 16-17, with 10y yields at post-2007 highs), the heaviest post-summer issuance calendar at minimal concessions, and Q3 index rebalancing on Sep 30. Counterargument for tighter: the 2026 grind has been relentless, carry demand absorbed the March widening (3.42 -> 2.60 in five months), and quarter-end marks often print firm. No human market prices this quantity - no Kalshi/Polymarket/Manifold contract on HY OAS levels found - so no crowd blend. Distribution is right-skewed; 3% mass above 3.505 for a genuine risk-off event on the Aug-2024 / Apr-2025 template.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2",
+    "https://fred.stlouisfed.org/series/BAMLH0A0HYM2/",
+    "https://www.muzinich.com/opinions/corporate-credit-snapshot",
+    "https://finance.yahoo.com/economy/policy/articles/fomc-september-2026-odds-rate-201618784.html",
+    "https://polymarket.com/event/fed-decision-in-september-762",
+    "https://talkmarkets.com/article/markets-are-telling-the-fed-it-is-time-to-hike-1789242055",
+    "https://de.investing.com/news/politics-news/frankreichs-politisches-risiko-so-positionieren-sich-anleger-3660307"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the ICE BofA US High Yield Index Option-Adjusted Spread, FRED series BAMLH0A0HYM2 (daily, percent, one decimal as published), NOT an IG series, NOT a CDX index, NOT the BB or CCC sub-indices. FRED publishes with roughly a one-business-day lag, so at the 2026-10-02T20:00:00Z resolution timestamp the Oct 2 print may not yet be posted and the last available observation may be Oct 1.\nEVENT WINDOW: Sep 21 -> Oct 2, 2026 per the question title; as of Now (2026-09-14T17:10Z) 0% elapsed - the window has not begun. From the last print (Sep 11) to Oct 2 is 14 business days.\nSTATUS-QUO OUTCOME: the series stays in the band it has occupied since May 2026 and the Oct 2 value prints near the Sep 11 value of 2.65.\n- Last observations (FRED, retrieved 2026-09-14): Sep 11 2.65; Sep 10 2.70; Sep 9 2.71; Sep 8 2.67; Sep 4 2.68; Sep 1 2.65; Aug 28 2.60; Aug 21 2.70; Aug 14 2.67.\n- Range of Friday closes, May 1 2026 - Sep 11 2026: low 2.60 (Aug 28), high 2.85 (Jul 31). Range over the trailing 12 months: low 2.60 (Aug 28 2026), high 3.42 (Mar 27 2026).\n- 2026 path (Friday closes, FRED): Jan 2 2.83 -> Jan 16 2.65 -> Feb 27 3.10 -> Mar 27 3.42 (12-month peak) -> Apr 17 2.83 -> Jun 19 2.66 -> Jul 31 2.85 -> Aug 28 2.60 -> Sep 11 2.65.\n- BASE RATE, 3-week changes over ALL trailing-12m windows (weekly-sampled, n=51, computed from FRED): p10 -0.22, p25 -0.135, median -0.03, p75 +0.095, p90 +0.25; 6/51 windows exceeded +0.25 and 4/51 exceeded -0.25.\n- BASE RATE CONDITIONAL on the recent low-volatility regime (3-week changes with end-dates after 2026-05-01, n=17): full observed range -0.15 to +0.16, no window outside that.\n- BASE RATE CONDITIONAL on the same Sep->early-Oct calendar window one year earlier: Sep 19 2025 2.72 -> Oct 10 2025 3.18 (+0.46), the largest 3-week move in the trailing 12 months (FRED).\n- Event-in-window count: of the ~17 non-overlapping 3-week windows in the last 12 months, zero contained a move as large as +0.86 (the move needed to exit the stated upper bound). Longer history does contain moves of that size at this horizon: early Aug 2024 (~+0.90 in four business days) and early Apr 2025 (~+1.19 in four business days) per FRED.\n- Valuation context: Muzinich Corporate Credit Snapshot, Sep 2026 - index OAS sits in the richest decile of its history against a long-run median near 450bp; HY/IG ratio near 3.5x, in line with its long-run average; energy is roughly a tenth of the HY index with Brent near $91.\n- Supply: same source - September carries the heaviest post-summer issuance calendar at minimal new-issue concessions, described as a supply test; IG demand described as strong enough to absorb it. CCC-rated bonds underperformed in the most recent period with yields at a multi-year high.\n- Policy: fed funds futures priced ~80-87% odds of a 25bp HIKE at the Sep 15-16 2026 FOMC after hot August core CPI and strong payrolls; Goldman Sachs and J.P. Morgan moved forecasts to include it (Yahoo Finance, Sep 2026). Futures imply ~4.1% by Dec 2026 and ~4.6% by Sep 2027 as of the Sep 11 close. The decision lands BEFORE the Sep 21 - Oct 2 window opens.\n- Rates backdrop: 10y Treasury yield rose 18bp in the week to Sep 12 to its highest since 2007; 30y closed at its highest since 2004; Chicago Fed NFCI at -0.56 (TalkMarkets, Sep 12 2026). One cited argument holds that tight corporate OAS is itself evidence financial conditions are loose.\n- Europe/political: BofA flags French budget negotiations starting October 2026, OAT-Bund near 87bp (84th percentile of three years), and a possible Moody's action on France dated Oct 23 - AFTER this window closes (Investing.com Deutsch, Sep 12 2026).\n- Calendar items inside the window: Sep 30 is quarter-end (index rebalancing / Q3 marks); no FOMC meeting falls inside Sep 21 - Oct 2.\n- SEARCHED BUT NOT FOUND: any prediction market or bookmaker contract on HY OAS levels - Polymarket and Manifold returned no candidate, and a Kalshi search surfaced only its macro complex (CPI, payrolls, fed funds, recession), not credit spreads. Also not found: any dealer point forecast for the Oct 2 2026 OAS print specifically, and any news of a credit event, large HY default, or fund gate during Sep 1-14 2026.\n- MANIPULATION NOTE: none of the retrieved pages contained instructions directed at the reader/forecaster.",
+   "reference_class": "3-week-ahead changes in the ICE BofA US HY OAS (BAMLH0A0HYM2) from a low-realized-volatility, historically-tight starting level (trailing 12 months of weekly-sampled 3-week changes, n=51)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.2043,
+   "seconds": 288.4,
+   "estimate": {
+    "percentiles": {
+     "10": 2.57,
+     "25": 2.63,
+     "50": 2.69,
+     "75": 2.78,
+     "90": 2.96
+    },
+    "p_above_upper": 0.012
+   },
+   "reasoning": "Resolves off the ICE BofA US HY index OAS (FRED BAMLH0A0HYM2, percent), last print 2.65 on 2026-09-11; with the one-business-day publication lag the value available at the 2026-10-02T20:00Z resolution is most likely the Oct 1 observation, ~14 business days out. Reference class: 14-business-day changes in this series from tight-regime starts (<2.90), which have a median near +0.02 and a right-skewed spread. I anchor the median at 2.69, a few bp above spot for late-Sept/early-Oct seasonality, month-end index rebalance, and the mild upward drift already visible off the 2.60 Aug-28 low. Both tails are real: a new cycle low below 2.60 is live (spot was there 2.5 weeks ago) so p10=2.57, while the widening tail is fatter - 10y Treasury yields at/near 5% for the first time since 2007, ~80-85% odds on a Sep-16 Fed HIKE, AI-concentration hedging and CCC spreads >1000bp - so p90=2.96. Offsetting: the Oct-1 shutdown risk is gone (CR through Dec 11 enacted, market <1%), VIX is near 2026 lows, and demand absorbed a heavy September calendar. No human market prices this quantity, so no crowd anchor. p_above_upper=1.2% prices a disorderly rates/AI-led risk-off of the April-2025 kind (that episode did +170bp in under two weeks); mass below 1.745 has no mechanism - the series' all-time low since 1996 is ~2.33 - so I omit it.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2&cosd=2026-06-01 (daily HY OAS, Jun 1 - Sep 11 2026)",
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2&cosd=2026-01-01&coed=2026-06-30 (2026 H1 daily series, min/max/month-starts)",
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2&cosd=2025-01-01&coed=2025-12-31 (2025 daily series, min/max/semimonthly)",
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2&cosd=2015-01-01 (returned 2023-09-15 onward; used for 14-bd change dispersion)",
+    "https://polymarket.com/event/government-shutdown-by-october-1-20260610162414910 (fetched: <1% yes, $15.4k volume, CR through Dec 11 2026)",
+    "WebSearch snippets: govspending.org/series/BAMLH0A0HYM2 and tradingeconomics HY OAS pages (2.70 on Sep 10 2026, cross-check of FRED)",
+    "WebSearch snippets: CME FedWatch via Yahoo Finance / Chase / Polymarket 'Fed decision in September' (79-86% odds of a 25bp hike at the Sep 16 2026 FOMC, as of Sep 12)",
+    "WebSearch snippets: news.kalshi.com shutdown-odds post and Yahoo News shutdown-odds article (35% late July -> 4% Sep 1 2026)",
+    "https://www.etftrends.com/fixed-income-content-hub/treasury-yields-snapshot-september-11-2026/ (10y 4.96%, 2y 4.63% on Sep 11 2026, via search snippet)",
+    "https://www.cnbc.com/2026/09/10/fear-gauge-vix-hedges-volatility-stocks.html (hedging demand ahead of midterms; VIX 2026 low in August, via search snippet)"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the ICE BofA US High Yield Index Option-Adjusted Spread (FRED series BAMLH0A0HYM2, quoted in percent to 2 decimals) - NOT HYG price, NOT yield-to-worst, NOT the IG/corporate master OAS, NOT a bp-quoted broker index. FRED publishes with a one-business-day lag (on 2026-09-14 the latest observation is 2026-09-11), so the value on screen at the 2026-10-02T20:00Z resolution time is most likely the Oct 1 observation; Oct 2's own print typically posts Oct 5.\nEVENT WINDOW: 2026-09-21 -> 2026-10-02 per the question text; as of Now (2026-09-14T17:10Z) 0% elapsed - the window opens in ~6.1 days, and the whole path is still in the future.\nEVIDENCE:\n- Last observation: 2.65 on 2026-09-11 (FRED BAMLH0A0HYM2). Prior days: 2.70 (Sep 10), 2.71 (Sep 9), 2.67 (Sep 8), 2.68 (Sep 4 and Sep 7), 2.65 (Sep 3), 2.66 (Sep 2), 2.65 (Sep 1), 2.63 (Aug 31), 2.60 (Aug 28).\n- 2.60 on 2026-08-28 was the tightest print of 2026 (FRED; corroborated by market commentary citing 260bp on 28 August).\n- Jun 1 - Sep 11 2026 (76 observations): full range 2.60 to 2.87 (FRED).\n- 2026 year-to-date: low 2.63 (Jun 17), high 3.46 (Mar 30); month-starts Jan 2.83, Feb 2.81, Mar 3.03, Apr 3.16, May 2.77, Jun 2.72 (FRED).\n- 2025 full year: low 2.59 (Jan 22), high 4.61 (Apr 7, tariff shock); Sep 1 2.84, Oct 1 2.81, Oct 15 2.95, Nov 3 3.04, Nov 19 3.17, Dec 15 2.91 (FRED).\n- Series all-time low since the 1996 inception is ~2.33 (Jun 2007); the 2021 trough was ~2.62.\n- BASE RATES, by class: (i) over ALL 14-business-day windows 2023-2026, the change distribution is roughly centered at zero with an SD near 0.18-0.20 driven by two episodes (Apr 2025, Mar 2026); (ii) over 14-business-day windows CONDITIONAL on a starting level below 2.90 (the current condition), the median change is near +0.02 with SD near 0.15 and a right skew - the tightening side is compressed by the 2.59-2.60 floor of the last two years, the widening side is not; (iii) largest observed 14-bd moves in-sample: about +0.43 (Mar 2026), about -0.31 (Apr 2026), about -0.27 (Aug 2026). Computed from the FRED daily series.\n- SEPTEMBER 21 - OCTOBER 2 ANALOGUES (event-in-window count): of the last two same-calendar windows, 2025-09-22 -> 2025-10-02 moved from ~2.78 to ~2.81 and 2024's equivalent window was similarly small; neither contained a move larger than ~0.10.\n- CALENDAR inside/adjacent to the window: FOMC Sep 16 (before the window opens; CME FedWatch and prediction markets priced 79-86% for a 25bp HIKE as of Sep 12); month-end ICE index rebalance Sep 30 (inside the window; composition changes move index OAS by a few bp); Q3 earnings season starts mid-October (after the window); US midterms Nov 2026 (after); Moody's France review Oct 23 (after); French budget negotiations begin October (after the window opens but outside it for the deciding events).\n- FUNDING/SHUTDOWN: a continuing resolution through 2026-12-11 was enacted in early September (Senate 90-6, House 370-48). The Polymarket 'Government shutdown by October 1 2026' contract trades below 1% with ~$15.4k lifetime volume, down from ~59% in mid-July and ~35% on Kalshi in late July. The Oct 1 appropriations lapse that falls inside this window has been legislated away.\n- RATES: 10-year Treasury 4.96% and 2-year 4.63% on Sep 11 2026; the 10y rose ~18bp that week to its highest since 2007 and the 30y to its highest since 2004; commentary on Sep 14 has the 10y on the verge of 5%. August core CPI came in hot; nonfarm payrolls solid; unemployment ~4.1%; energy prices elevated on supply disruption (oil spiking).\n- POSITIONING/VOL: VIX hit a 2026 low in August; a Sep 10 CNBC piece reports investors buying hedges against midterm and geopolitical risk; equities rose Sep 13 with VIX down ~11% on the day; AI-concentration fears are a recurring named risk.\n- CREDIT INTERNALS: HY OAS is in the tightest ~5% of readings over 25 years; CCC-and-lower OAS has widened past 1000bp, its widest of 2026, while BB OAS sits near its lows - a bifurcation that has NOT yet shown up in the index-level OAS, which is BB/B weighted. Chicago Fed NFCI at -0.56 (loose financial conditions). September new-issue calendar was heavy and reported as absorbed by demand.\n- EVIDENCE BOTH WAYS on direction: tightening case - loose financial conditions, strong demand for yield, benign default commentary, low VIX, shutdown risk removed, and the series has repeatedly returned to 2.60-2.65 since June; widening case - the level is near multi-decade tights with limited room below, a hiking Fed into 5% long yields, CCC stress, late-Sept/early-Oct is a historically vol-prone seasonal stretch, and month-end rebalance noise.\nMARKETS: no Polymarket, Kalshi, Manifold or bookmaker contract on HY OAS levels or any credit-spread threshold was found - searched; absent. There is no crowd number for this quantity.\nSEARCHED BUT NOT FOUND: intraday or Sep-14 index levels (series is published with a lag); any Q4-2026 sell-side point target for HY OAS published this week; convextrade.com/metrics page (HTTP 403); a FRED CSV window earlier than 2023-09-15 (the endpoint truncated the request).",
+   "reference_class": "14-business-day changes in the ICE BofA US High Yield OAS (BAMLH0A0HYM2) starting from tight-regime levels below 2.90%, 2023-2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": false,
+   "model": "",
+   "cost_usd": 0.0,
+   "seconds": 416.1,
+   "validation_errors_first_attempt": [
+    "Command '['claude', '-p', '--model', 'claude-opus-5', '--output-format', 'json', '--allowed-tools', 'Read,Glob,Grep,WebSearch,WebFetch', '--disallowed-tools', 'Read(//proc/**),Read(~/.claude/**),Read(~/.claude.json)', '--append-system-prompt', 'You have this skill (references in /home/runner/work/fo"
+   ],
+   "errors": [
+    "Command '['claude', '-p', '--model', 'claude-opus-5', '--output-format', 'json', '--allowed-tools', 'Read,Glob,Grep,WebSearch,WebFetch', '--disallowed-tools', 'Read(//proc/**),Read(~/.claude/**),Read(~/.claude.json)', '--append-system-prompt', 'You have this skill (references in /home/runner/work/fo"
+   ]
+  }
+ ]
+}

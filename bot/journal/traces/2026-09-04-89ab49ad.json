@@ -1,0 +1,235 @@
+{
+ "record_id": "2026-09-04-89ab49ad",
+ "question": "What will be the ending value of the UST 10Y Yield for these biweekly periods of Q3 2026? (Sep 7 - Sep 18)",
+ "question_id": 44676,
+ "url": "https://www.metaculus.com/questions/44531/",
+ "question_type": "discrete",
+ "forecast_at": "2026-09-04T17:25:27+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.8931,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 4.603333333333333,
+    "25": 4.698333333333333,
+    "50": 4.786666666666666,
+    "75": 4.881666666666667,
+    "90": 4.989999999999999
+   },
+   "p_above_upper": 0.011666666666666667
+  },
+  "phase1": {
+   "10": 4.603333333333333,
+   "25": 4.698333333333333,
+   "50": 4.786666666666666,
+   "75": 4.881666666666667,
+   "90": 4.989999999999999
+  },
+  "phase2": null,
+  "spread_phase1": 0.01,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 4.62,
+   "25": 4.72,
+   "50": 4.79,
+   "75": 4.88,
+   "90": 5.0
+  },
+  "p_above_upper": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.8039,
+   "seconds": 223.6,
+   "estimate": {
+    "percentiles": {
+     "10": 4.6,
+     "25": 4.7,
+     "50": 4.79,
+     "75": 4.89,
+     "90": 5.0
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Random-walk anchor dominates a 9-trading-day horizon: DGS10 last printed 4.79 (Sep 1-2) with Sep 4 around 4.78-4.79 after a large payrolls beat, so the median is the current level with only a hair of upward tilt from the persistent Jul-Sep trend (4.48 -> 4.79) and post-Labor-Day supply. Reference class is 10-business-day changes in DGS10, whose median change is ~0. The window is unusually event-heavy - Aug CPI Sep 11 and an FOMC on Sep 16 with a dot plot where a hike is a near coin-flip (52-63% across the week) - which widens the distribution rather than shifting it: a hawkish hike is largely priced (modest upside), while a Waller-style hold would be the bigger surprise (downside), leaving expected drift near zero. Mild right skew reflects the level sitting at a 3-year high with an oil/Hormuz inflation impulse and a 30Y already near 5.21%; a break of 4.80 has little chart structure until 5.00. No human market number was obtainable: Kalshi lists weekly/daily 10Y-yield range contracts (KXTNOTEW/KXTNOTED) that match this resolution shape well, but the page returned HTTP 429 and no price was retrieved; Polymarket and Manifold have no candidate. So no blending was done - this is an unanchored own-model estimate. Upper bound 5.255 is +46bp, ~3 SD, requiring a hot CPI plus hawkish hike plus dots pointing higher and a supply/fiscal scare: priced at 1%. Lower bound 3.495 is -129bp in two weeks with no plausible mechanism, so no downside escape declared.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2025-01-01",
+    "https://tradingeconomics.com/united-states/government-bond-yield",
+    "https://www.morningstar.com/news/dow-jones/202609038232/10-year-treasury-yield-falls-to-4761-data-talk",
+    "https://www.tradingkey.com/analysis/stocks/us-stocks/262151468-nonfarm-payrolls-market-expectation-revision-rate-hike-odds-tradingkey",
+    "https://finance.yahoo.com/economy/articles/strong-august-jobs-report-sends-125410799.html",
+    "https://fedratecalc.com/fomc-meeting-schedule/september-2026/",
+    "https://www.morningstar.com/economy/august-cpi-report-forecasts-point-sticky-inflation-tariff-pressures",
+    "https://www.cnbc.com/2026/08/28/treasury-yields-jackson-hole.html",
+    "https://www.nuveen.com/global/insights/fixed-income/fixed-income-weekly-commentary",
+    "https://kalshi.com/markets/kxtnotew/treasury-10y-weekly-yield (HTTP 429, no price retrieved)"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the ending value of the UST 10Y yield for the biweekly period, i.e. the Sep 18 2026 close (scheduled resolution 2026-09-18T20:00Z = 4pm ET), not an intra-period high/low and not an average. Note two commonly-cited series differ by ~1-3bp on any given day: FRED DGS10 (constant maturity, ~3:30pm ET) vs Tradeweb FTSE closing prices (3pm ET) used by Dow Jones/Morningstar.\n\nEVENT WINDOW: Sep 7 -> Sep 18 2026 per the criteria; as of Now (2026-09-04T17:10Z) 0% elapsed - the window has not yet begun. Sep 7 is Labor Day (US bond market closed), so the window contains 9 trading sessions (Sep 8, 9, 10, 11, 14, 15, 16, 17, 18). Sep 18 is a quarterly triple-witching Friday.\n\nSTATUS-QUO OUTCOME: the yield ends the window at approximately its level entering it, i.e. near 4.78-4.79.\n\nLEVELS AND HISTORY (FRED DGS10 unless noted):\n- 2026-09-02: 4.79. 2026-09-01: 4.79 (Tradeweb intraday high 4.81, described as highest since Oct 2023). 2026-08-31: 4.75. 2026-08-21: 4.74. 2026-08-14: 4.68. 2026-07-31: 4.75. 2026-07-06: 4.48. (Source: FRED DGS10 CSV, retrieved 2026-09-04.)\n- 2026-09-03 (Tradeweb, per Morningstar/Dow Jones, pub. 2026-09-03): 4.761%, -3.2bp on the day; described as the largest one-day decline since Aug 25 and largest two-day decline since Aug 26 - i.e. no daily move larger than ~3.4bp in the preceding week. Third-highest close of 2026. 52-week high 4.795% (2026-09-01); 52-week low 3.952% (2025-10-22). Up 0.609pp year-to-date; up 0.585pp year-over-year.\n- 2026-09-04 (Tradeweb, per CNBC/Yahoo): 10Y 4.782%, +1.8bp after payrolls; 2Y 4.39%, +5.3bp, highest since Jan 2025. TradingEconomics quotes the 10Y at 4.77-4.79 on Sep 4. 30Y quoted near 5.21% in late-Aug commentary (Nuveen).\n- Trajectory: +31bp from Jul 6 to Sep 2; +15bp over the trailing month (TradingEconomics).\n\nSCHEDULED EVENTS INSIDE THE WINDOW:\n- Aug CPI: Thu 2026-09-11, 8:30am ET (BLS). FactSet consensus: headline +0.3% m/m / 2.9% y/y; core +0.3% m/m / 3.1% y/y (Morningstar preview). Prior core PCE +0.2% m/m / 3.3% y/y, in line.\n- FOMC: Mon-Wed Sep 15-16, decision Wed 2026-09-16 2:00pm ET, WITH Summary of Economic Projections and dot plot; press conference 2:30pm ET (Chair Kevin Warsh). Remaining 2026 meetings: Oct 27-28, Dec 8-9.\n- Aug payrolls already released Fri Sep 4 (inside data flow but before the window): +162k vs +53k Dow Jones consensus, unemployment 4.1% unchanged, June/July revised up a combined +55k.\n\nPOLICY PRICING (both directions):\n- The September move under debate is a HIKE, not a cut. Odds of a 25bp hike: ~63% (Wed Sep 2), ~50-52% (Thu Sep 3, after Waller), 59% (Fri Sep 4, after payrolls). Sources: InstaForex 2026-09-04, TradingKey 2026-09-04, TradingEconomics.\n- Hawkish side: Warsh's Jackson Hole remarks (late Aug) that the Fed 'may have work to do' lifted hike odds above 57% and pushed the 2Y up 12bp to 4.35% (CNBC 2026-08-28); Warsh has pledged not to hesitate on inflation (CNBC 2026-07-29, which also notes 'the bond market has doubts'). Oil is set for a strong weekly gain on Middle East tension and Strait of Hormuz shipping uncertainty (InstaForex 2026-09-04). Reported concerns over corporate debt supply and the federal deficit (TradingEconomics).\n- Dovish side: Governor Waller said on Sep 3 he would support leaving rates unchanged if inflation pressures keep moderating, and that his vote turns on the Aug CPI print. Political/market pressure on Warsh reported around Jackson Hole (CNBC 2026-08-26, re Bessent).\n\nBASE RATES AND DISPERSION (the class each is computed over):\n- Over ALL 33 overlapping 10-business-day windows in DGS10 from 2026-07-06 to 2026-09-02: mean change +4.8bp, SD 6.8bp, min -7bp, max +20bp; 24 of 33 windows positive. This is a trending-but-range-compressed sample.\n- Over the SAME period, single-day DGS10 changes: mean +0.7bp, SD 4.2bp, largest single-day move 7bp. iid scaling of that daily SD to 9 sessions gives 12.7bp - roughly double the realized 10-day SD, i.e. the series has been strongly mean-reverting inside a 4.60-4.79 band.\n- Over the BROADER class of 10-business-day DGS10 changes across 2024-2026 (not recomputed here, from the series' general behavior): a 10-90 spread on the order of 40-45bp, materially wider than the Jul-Sep 2026 sample.\n- CONDITIONAL on the window containing an FOMC meeting with an SEP release and a decision priced near 50/50: not separately computed from data here - flagged as a known dispersion-widening condition rather than a measured rate. Searched for, not found.\n- Realized 2026 range so far: low 3.952 (Oct 2025, 52-wk), high 4.795 (Sep 1 2026). YTD start implied ~4.17-4.18 from the +0.609pp YTD figure.\n\nPREDICTION MARKETS: Kalshi lists series KXTNOTEW ('Treasury 10-year yield on Friday', weekly range buckets) and KXTNOTED (daily), whose contract shape closely matches a period-ending-close question; the live strike ladder and prices could NOT be retrieved this run (HTTP 429). Polymarket and Manifold: no candidate market found by title search. No bookmaker line found.\n\nPUBLISHED FORECASTS (all longer-horizon than this window, so weak evidence for a 2-week close): TradingEconomics Q3-2026 forecast 4.70, 12-month 4.48. Nuveen year-end 2026 range 4.25-4.50. Transamerica year-end 2026 3.75, with core CPI 3.1% and core PCE 2.9%. Long Forecast model September 2026 average 5.040, month-end 5.051. These span 3.75 to 5.05 for horizons beyond this window and disagree sharply with each other.\n\nSEARCHED FOR BUT COULD NOT FIND: live Kalshi strike prices or volume for the week ending Sep 18; the Sep 2026 Treasury auction calendar (the Treasury tentative-schedule search returned only the October cycle, so whether a 10Y note auction or reopening falls inside Sep 8-18 is unconfirmed); any Sep 4 official close from FRED (series not yet updated at retrieval time); dealer positioning/CFTC futures data; a measured base rate for 10Y moves conditional on a coin-flip FOMC with an SEP.",
+   "reference_class": "10-business-day changes in the US 10-Year Treasury constant-maturity yield (FRED DGS10), 2024-2026, and specifically the 33 overlapping 10-day windows from 6 Jul to 2 Sep 2026; median change ~0bp, so the class implies the last observed level as the point anchor"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.7663,
+   "seconds": 246.9,
+   "estimate": {
+    "percentiles": {
+     "10": 4.59,
+     "25": 4.68,
+     "50": 4.79,
+     "75": 4.9,
+     "90": 5.01
+    },
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Reference class is 10-trading-day changes in DGS10; the class median is 'no change', so the prior is the current level (~4.78 on Sep 4 after payrolls; 4.79 FRED print Sep 1-2). I keep the median essentially at the random walk with a token upward nudge (4.79) reflecting the summer uptrend (+41bp since Jun 26), yields at 3-year highs on oil/Hormuz inflation risk, heavy corporate supply and deficit concerns, and today's 162k payroll beat lifting hike odds to ~59%. Offsetting that: Waller's dovish lean, consensus forecasts near 4.70 by quarter-end, and buyer interest that has repeatedly capped this range near 4.80. Dispersion is set above the quiet-summer baseline because CPI (Sep 11) and a genuinely coin-flip FOMC with dots (Sep 16) both land inside the window, so both a soft-CPI rally toward 4.6 and a hawkish-hike selloff toward 5.0 are live. No matching human market was found (Polymarket/Manifold none; Kalshi daily 10Y series returned no open contracts via API and the site rate-limited), so nothing to blend against. Mild right skew: the low tail needs a growth scare that today's jobs print argues against, while the high tail has a concrete oil-plus-hawkish-Fed mechanism.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10 (DGS10 daily series, 2024-09-01 to 2026-09-04)",
+    "https://tradingeconomics.com/united-states/government-bond-yield",
+    "https://www.morningstar.com/news/dow-jones/202609038232/10-year-treasury-yield-falls-to-4761-data-talk",
+    "https://www.bloomberg.com/news/articles/2026-09-04/treasuries-slide-after-strong-jobs-data-lift-fed-hike-wagers",
+    "https://www.cnbc.com/2026/09/04/jobs-report-august-2026.html",
+    "https://www.instaforex.com/forex-news/3141375",
+    "https://fedratecalc.com/fomc-meeting-schedule/september-2026/",
+    "https://www.bls.gov/cpi/",
+    "https://www.chase.com/personal/investments/learning-and-insights/article/september-2026-rate-hike-now-expected-amid-energy-shocks",
+    "https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXUST10AD (returned empty)"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the ending (last-observation) value of the UST 10Y yield for the Sep 7 - Sep 18, 2026 biweekly period; i.e. a 10Y constant-maturity/benchmark yield quote (FRED DGS10 / Tradeweb 3pm ET closing prices are the common publishers), NOT a futures price, NOT an intraday high/low, NOT an average over the period. Note sources differ by 1-3bp on any given day (Tradeweb 4.761 vs FRED 4.77 for Sep 3, 2026). Grid implied by the stated bounds is 0.01 increments from 3.50 to 5.25.\nEVENT WINDOW: Sep 7 -> Sep 18, 2026 per the period label; as of Now 2026-09-04T17:10Z, 0% elapsed (window has not begun). Sep 7 is Labor Day (US bond market closed); 9 trading sessions Sep 8, 9, 10, 11, 14, 15, 16, 17, 18. From the Sep 4 close to the Sep 18 close is 10 trading sessions.\nLEVEL / RECENT PATH (FRED DGS10, retrieved 2026-09-04): 4.38 on 2026-06-26; 4.55 on 07-15; 4.75 on 07-31; 4.65 on 08-07; 4.72 on 08-17; 4.75 on 08-31; 4.79 on 09-01 and 09-02. Tradeweb close 4.761 on 09-03 (-3.2bp, largest one-day decline since Aug 25). Intraday high of 4.81 reported Sep 1-2, described as highest since October 2023. 52-week low 3.952 on 2025-10-22. Yield up 0.609pp year-to-date through Sep 3.\nSep 4 (question date): August nonfarm payrolls +162,000 vs +53,000 Dow Jones consensus, unemployment 4.1%, strongest month since March (BLS via CNBC/Yahoo, 2026-09-04). Bloomberg (2026-09-04): Treasuries sold off, 2Y +5.3bp to 4.39% (briefly +8bp), 10Y +1.8bp to 4.782%. Odds of a September quarter-point hike moved from ~52% to ~59% on the print. Some same-day wire summaries still cite 4.74-4.77 from Sep 3 commentary.\nSep 3 (prior day): Fed Governor Christopher Waller said he would support leaving rates unchanged if price pressures keep moderating, and that his decision turns on the August inflation data; September hike pricing fell from ~63% to ~50% (InstaForex/Morningstar, 2026-09-03).\nSCHEDULED INSIDE THE WINDOW: August CPI released Fri Sep 11, 2026, 8:30 ET (BLS schedule). FOMC meets Tue-Wed Sep 15-16; statement 14:00 ET Sep 16 with the Summary of Economic Projections and dot plot, Chair press conference 14:30 ET. Quarterly 3Y/10Y/30Y coupon auctions fall in the Sep 8-10 stretch. All three land BEFORE the Sep 18 resolution.\nPOLICY STARTING POINT: target range 3.50-3.75%, held for a fifth consecutive meeting on Jul 28-29, 2026 by a 9-3 vote, with three dissents preferring +25bp (Federal Reserve FOMC minutes / fedratecalc). No hike has been delivered this cycle to date.\nUPWARD-PRESSURE EVIDENCE: Iran-conflict supply shocks and Strait of Hormuz shipping uncertainty keeping oil elevated, with oil set for a strong weekly advance as of Sep 4; heavy corporate debt issuance; federal deficit concerns; questions about Fed inflation credibility after the July hold (Chase, TradingEconomics commentary, Aug-Sep 2026). Trend: +41bp from the Jun 26 low to the Sep 1-2 level over roughly ten weeks.\nDOWNWARD-PRESSURE EVIDENCE: Waller's stated openness to a hold; the Sep 3 two-day decline was the largest since late August; TradingEconomics' own model projection puts the 10Y around 4.70 by quarter-end; the 4.79-4.81 area is the top of the 52-week range and has repeatedly attracted buyers.\nVOLATILITY BASE RATE (computed from FRED DGS10 this run): standard deviation of daily changes over Jun 1 - Sep 2, 2026 is roughly 4.2bp; mean absolute daily change roughly 3.4bp. Largest observed 10-session moves within that same summer window were about +17bp (e.g. 4.38 -> 4.55, 4.55 -> 4.71); mean 10-session drift over the window was positive at roughly +5bp. Conditional on a window containing both a CPI print and an SEP-bearing FOMC, realized dispersion in the 2023-2026 era has run materially above that unconditional summer figure; 10-session moves of 40-50bp occurred in Nov 2024 and Apr 2025 under regime-break conditions, so the two-year unconditional 10-day distribution is wider than the Jun-Sep 2026 one. Typical FOMC-day 10Y moves are on the order of 5-8bp, smaller than same-day 2Y moves.\nMARKETS: harness title search found no Polymarket or Manifold candidate. Kalshi operates 10Y yield series (KXUST10AD daily, KXTNOTED, KX10Y2Y spread) but the public markets API returned an empty list for the daily series this run and kalshi.com returned HTTP 429; no contract matching a Sep 18, 2026 ending value could be priced. No bookmaker line found.\nSEARCHED FOR BUT NOT FOUND: any live prediction-market or futures-implied quote for the Sep 18 10Y level; a stated FRED-vs-Tradeweb tiebreaker in the resolution text (the criteria section is blank); the August CPI consensus forecast; the confirmed FRED print for Sep 3 and Sep 4 (series retrieved ended at Sep 2); primary-dealer 10Y forecast survey for end-September 2026.",
+   "reference_class": "10-trading-day changes in the U.S. 10Y constant-maturity Treasury yield (FRED DGS10), Sep 2024 - Sep 2026, with the Jun-Sep 2026 sub-regime used for the volatility estimate"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0423,
+   "seconds": 308.9,
+   "estimate": {
+    "percentiles": {
+     "10": 4.62,
+     "25": 4.715,
+     "50": 4.78,
+     "75": 4.855,
+     "90": 4.96
+    },
+    "p_above_upper": 0.005
+   },
+   "reasoning": "Anchor is a random walk from spot ~4.77% (Sep 4, TradingEconomics; DGS10 4.78-4.79 Sep 2-3; Tradeweb 4.761 Sep 3), with the reference-class median 9-day change of +0.01pp -> base rate 4.78. Nine trading days (Sep 7 is Labor Day) containing Aug CPI on Sep 11 and an FOMC on Sep 16 that is priced near a coin flip for a 25bp HIKE to 3.75-4.00%. FOMC adds variance, not much drift, for the 10Y: a delivered hike is half-priced and can bull-flatten, while a hold against 3.4% headline CPI risks a term-premium selloff - so both branches have plausible up and down long-end paths. Mild right skew from rising oil (Hormuz), 30Y at a 19-year high of 5.31% (CNBC, Aug 17), heavy corporate/Treasury supply, and the fact that spot sits at a 3-year high in an uptrending regime; offset by two consecutive down sessions into Sep 3-4 on dovish Waller remarks and by the repeated pattern of buyers appearing near 4.80. Market check found NO contract matching this resolution date; Kalshi daily-yield pages were rate-limited (429). Nearest evidence is Kalshi year-end 2026 pricing (56% above 4.75%, 27% above 5.00%) - a different deadline, so treated as weak evidence of a no-drift consensus, not an anchor, and not blended. Escape above 5.255 needs +48bp in 9 sessions; the largest 9-day move in the 2-year sample was +0.61 (Oct 2024), so ~0.5% is priced. Escape below 3.495 needs -127bp, which has no plausible 9-session mechanism short of a systemic crisis, so it is omitted.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10 (daily DGS10 series pulled for 2025-06-01..2026-09-04 and 2024-09-01..2026-09-04; used to compute the 9- and 10-trading-day change distributions)",
+    "https://tradingeconomics.com/united-states/government-bond-yield",
+    "https://www.atfxcapital.com/en/analysis/market-news/september-fomc-meeting-2026-is-a-rate-hike-on-the-table",
+    "https://en.bloomingbit.io/feed/news/119015 (Kalshi year-end 2026 10Y odds, via search summary)",
+    "https://www.fxstreet.com/analysis/forecasting-the-upcoming-week-what-if-the-ecb-and-us-cpi-202609041613 (week-ahead calendar, via search summary)",
+    "https://www.bls.gov/cpi/ (August 2026 CPI release date, Sep 11, via release-schedule search)",
+    "https://www.cnbc.com/2026/08/17/treasury-yields-federal-reserve-fomc-minutes.html (30Y at 5.31%, 19-year high, via search summary)",
+    "https://www.cnbc.com/2026/08/24/prediction-market-traders-skeptical-bessent-will-send-yields-lower.html (via search summary)",
+    "https://kalshi.com/markets/KXTNOTED and https://kalshi.com/markets/kxust10ad/ust-10-year-daily/kxust10ad-26sep18 (ATTEMPTED, both returned HTTP 429 — no price data obtained)"
+   ],
+   "dossier": "EVENT WINDOW: Sep 7 -> Sep 18, 2026 per the criteria; as of 2026-09-04T17:10:49Z the window has NOT begun (0% elapsed). Sep 7 is Labor Day (US markets closed), so the window contains 9 trading sessions, Sep 8 through Sep 18.\n\nRESOLUTION INSTRUMENT: resolves off the ending (Sep 18) level of the UST 10Y yield, i.e. a single closing quote on one date - NOT an average over the period, NOT an intraperiod high/low, and NOT the FOMC-day print. The verbatim criteria text supplied is empty, so the exact quote source is unspecified; note that the common sources differ by ~1-3bp on the same day (Tradeweb 3pm ET close 4.761% on Sep 3 vs FRED/H.15 DGS10 4.78% on Sep 3). Bounds are 3.495-5.255, both OPEN.\n\nLEVEL / RECENT PATH (source: FRED DGS10 daily series; Tradeweb via Morningstar; TradingEconomics):\n- Sep 4, 2026 intraday: ~4.77%, after the August employment report showed 162K payrolls added vs ~56K consensus, which pushed the yield to ~4.79% before it cooled (TradingEconomics, Sep 4).\n- Sep 3, 2026: Tradeweb 3pm close 4.761%, down 3.2bp; DGS10 4.78%. Second consecutive daily decline.\n- Sep 1-2, 2026: DGS10 4.79% both days; one report cites an intraday 4.818% on Sep 2, described as the highest since Nov 2023. 52-week high 4.795% (Tradeweb basis) set Sep 1.\n- 52-week low: 3.952% on Oct 22, 2025. Year-to-date change through Sep 3: +0.609pp. Year-over-year: +0.585pp.\n- Aug 31 4.75, Aug 28 4.73, Aug 21 4.74, Aug 14 4.68, Aug 3 4.70, Jul 31 4.75, Jun 26 4.38 (DGS10). The June trough near 4.38 and the subsequent ~40bp climb into September are both inside the last 3 months.\n- Bloomberg (Sep 4) headline: 'US yield swings abate before jobs data after volatile week.'\n\nBASE RATES / DISPERSION:\n- Over ALL overlapping 9-trading-day windows in DGS10, Sep 2024 - Sep 2026 (n=494): SD 0.151pp, p10 -0.16, median +0.01, p90 +0.18. Largest positive +0.61 (Sep 3 -> Oct 10, 2024); largest negative -0.68 (Jan 10 -> Feb 21, 2025).\n- Over the RECENT regime only, 10-trading-day windows May 15 - Sep 2, 2026 (n=66, computed from the same series): p10 -0.12, median ~+0.02, p90 +0.16, SD ~0.09; extremes -0.18 and +0.24. So the last 3.5 months realized roughly 60% of the two-year dispersion, with a positive mean drift.\n- Conditional note: the two-year sample's fat tails come from windows containing a macro regime event (Nov 2024 election, Jan-Feb 2025, Apr 2025 tariff shock). This particular window contains two scheduled Tier-1 events; calm windows in the same series were materially tighter than the unconditional figure.\n\nSCHEDULED EVENTS INSIDE THE WINDOW:\n- Sep 7: Labor Day, US bond market closed.\n- Sep 8: NFIB small business optimism; consumer inflation expectations (FXStreet week-ahead, Sep 4).\n- Sep 11, 8:30am ET: August CPI (BLS release calendar). Prior print (July CPI, released Aug 12): headline 3.4% y/y, core 2.5% y/y; CNBC reported Treasury yields 'little changed' on that in-line July print.\n- Sep 9-11: standard mid-month Treasury coupon auctions (10-year notes are customarily auctioned in the second week of September and issued on the 15th, per TreasuryDirect general auction timing). September is also historically a heavy month for investment-grade corporate issuance; TradingEconomics cites 'soaring supply of corporate debt' as a current driver.\n- Sep 15-16: FOMC meeting; decision Sep 16 at 2:00pm ET. Current target range 3.50%-3.75%.\n- Sep 18: window ends (resolution 20:00 UTC = 4:00pm ET).\n\nPOLICY STATE AND THE TWO-SIDED CASE:\n- Direction of the live decision is a HIKE, not a cut: markets price roughly 50-57% on +25bp to 3.75%-4.00% (multiple readings the same week: ~70% early in the week per TradingEconomics, ~63% Sep 3, ~50-52% Sep 4 after dovish Waller remarks, ~55-57% in other reports). The odds have swung more than 30 points inside two weeks, which is itself information about how unsettled the outcome is.\n- Hawkish side: Chair Kevin Warsh's Jackson Hole address (late Aug) lifted hike odds from ~33-36% to ~60-66%; several FOMC members have flagged hike risk citing oil and product prices; inflation is above the 2% goal (July CPI 3.4% headline / 2.5% core; PCE readings cited near 3.3-3.7% y/y in one secondary source, which conflicts with the CPI figures and I could not reconcile); oil is up sharply on Strait of Hormuz shipping tensions; the 30Y topped 5.31% on Aug 17, a 19-year high, on term-premium/deficit concerns; federal deficit concerns and corporate supply are named drivers.\n- Dovish side: Governor Waller said on Sep 3 he would support holding if there is continued progress toward 2%, and that his decision hinges on the August CPI; July payrolls FELL 23,000 with 103,000 of downward revisions and unemployment at 4.1%; July retail sales -0.6% m/m, the first decline in nine months; core PCE came in line; one week-ahead commentary still describes the Fed as 'expected to remain on hold.' The Aug 4 payroll beat (162K) cuts the other way and is the newest labor datapoint.\n- Long-end transmission is ambiguous in both branches: a delivered hike is roughly half-priced and a hawkish Fed can compress long-end inflation compensation, while a hold against 3.4% CPI can widen term premium. Prior instances this cycle where the 10Y approached 4.80 (Aug 21, Sep 1-2) were followed within days by retracements of 5-10bp.\n- Institutional wrinkle: Warsh withheld the dot plot and forward guidance at his first meeting (June 2026), per CNBC and Yahoo Finance. Secondary sources disagree on whether a Summary of Economic Projections/dot plot accompanies the Sep 16 decision - one asserts SEP and dot plot are released Sep 16, others report the dot plot was abandoned. Unresolved; it matters because a missing SEP removes a normally market-moving artifact from the window.\n- Treasury Secretary Bessent has undertaken 'bond interventions' aimed at pushing yields lower; CNBC (Aug 24) reports prediction-market traders are doubtful they will work.\n\nPREDICTION MARKETS: No contract found anywhere matching this question's date and resolution. The harn",
+   "reference_class": "Overlapping 9-trading-day changes in the FRED DGS10 10-year Treasury constant-maturity yield, Sep 2024 - Sep 2026 (n=494), applied to the current level; sub-class of event-window instances containing both a CPI print and an FOMC decision"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0545,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2422,
+   "seconds": 86.9,
+   "estimate": {
+    "percentiles": {
+     "10": 4.62,
+     "25": 4.72,
+     "50": 4.79,
+     "75": 4.88,
+     "90": 5.0
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Nine trading sessions (Sep 7 is Labor Day) from a Sep 4 close of 4.782% (Tradeweb, +1.8bp on a 162k payrolls beat vs ~55k consensus). Reference class of 9-day DGS10 changes has a median of +0.01pp, so the random walk sets the median at 4.79. The window's two Tier-1 events - Aug CPI Sep 11, FOMC Sep 16 where a 25bp HIKE is priced near a coin flip (50-63% across the week) - widen the distribution rather than shift it: a delivered hike is half-priced and can bull-flatten the long end, while a Waller-style hold against above-target inflation risks a term-premium selloff. Mild right skew from spot sitting at a 3-year high, oil on Hormuz tensions, the 30Y near its 19-year high, and heavy corporate/Treasury supply; capped by repeated buyer defense of 4.79-4.81 and sell-side forecasts near 4.70 for quarter-end. No human market prices this resolution date (Polymarket/Manifold none; Kalshi's matching 10Y series rate-limited 429 in all three runs), so nothing was blended.",
+   "sources": [],
+   "reconciliation": "Three disputes mattered. (1) Anchor: settled at 4.78 - Runs 1 and 2 both cite the Sep 4 Tradeweb close 4.782%, more recent and more same-basis than Run 3's ~4.77 intraday quote. (2) Dispersion, the only material gap: Run 1 self-declares its 40-45bp two-year figure as not recomputed, while Run 3 actually computed n=494 9-day windows (SD 0.151, p10/p90 -0.16/+0.18). I take the computed number over the recalled one - but Run 3 then shrank BELOW its own unconditional base to 33bp on recent-regime compression, which is wrong for a window containing CPI plus a genuinely 50/50 policy decision, precisely the condition that generates that sample's tails. Landing at 0.38 (SD x 2.56) is above Run 3 and just below Runs 1-2, and it is where the reconciled computation puts me, not a split. (3) Whether an SEP/dot plot accompanies Sep 16 is FACTUAL and UNRESOLVED: Run 3 documents that Warsh withheld the dot plot in June 2026 and that sources conflict; no web access this run to settle it, so it stays as width rather than a decided premise - second-order, since the hike decision carries the variance either way. The July-CPI-vs-PCE figure conflict Run 3 flags is likewise unresolved and does not move the median. Drift is pure judgment with no evidence breaking the tie between momentum and the 4.80 cap; I take the random walk, which is what I would bet on. Reference class carried forward from Run 3 because it is the only one computed on the correct 9-session horizon.",
+   "disagreements": [
+    {
+     "claim": "Spot anchor entering the window is ~4.77 (Run 3) vs 4.78-4.79 (Runs 1-2)",
+     "kind": "factual",
+     "verdict": "Settled at 4.78: two runs independently cite the Sep 4 Tradeweb close of 4.782% (+1.8bp post-payrolls); Run 3's 4.77 was an intraday TradingEconomics quote."
+    },
+    {
+     "claim": "Unconditional 10-90 width of 9-10 trading-day DGS10 changes is ~40-45bp (Run 1) vs ~34bp (Run 3, n=494)",
+     "kind": "factual",
+     "verdict": "Settled for Run 3: it computed the sample; Run 1 explicitly states it did not recompute. Gaussian scaling of the computed SD (0.151 x 2.56 = 0.387) sets my width."
+    },
+    {
+     "claim": "Correct conditioning: use the compressed May-Sep 2026 regime (~28-33bp) or the two-year unconditional (~34-39bp)",
+     "kind": "judgment",
+     "verdict": "Unconditional. The window contains Aug CPI and an FOMC where a hike is near 50/50; that is the event content that produced the two-year sample's dispersion, so shrinking below it is not defensible."
+    },
+    {
+     "claim": "A Summary of Economic Projections / dot plot accompanies the Sep 16 FOMC decision",
+     "kind": "factual",
+     "verdict": "UNRESOLVED. Runs 1-2 assert yes; Run 3 reports Warsh withheld the dot plot at the June 2026 meeting and that secondary sources conflict. No web access this run. Carried as uncertainty in the width; impact is modest."
+    },
+    {
+     "claim": "July CPI 3.4% headline / 2.5% core (Run 3) vs August consensus core 3.1% y/y (Run 1) vs PCE cited at 3.3-3.7%",
+     "kind": "factual",
+     "verdict": "UNRESOLVED and internally inconsistent across dossiers. Does not shift the median - the Sep 11 print is the event, and its surprise is symmetric ex ante."
+    },
+    {
+     "claim": "September hike odds as of Sep 4",
+     "kind": "factual",
+     "verdict": "Converged at ~59% after the payrolls beat, up from ~50-52% post-Waller on Sep 3 and ~63% on Sep 2. All three runs agree on the path."
+    },
+    {
+     "claim": "Whether any human market prices this resolution",
+     "kind": "factual",
+     "verdict": "None found by any run. Kalshi's shape-matching weekly/daily 10Y series returned HTTP 429 in all three; Polymarket/Manifold have no candidate. Run 3's Kalshi year-end quotes are a different deadline - weak corroboration of no-drift, not an anchor."
+    },
+    {
+     "claim": "Probability of escaping above 5.255",
+     "kind": "judgment",
+     "verdict": "0.5%-2% across runs; took 1%. +46bp in 9 sessions is ~3 SD against a sample max of +61bp."
+    }
+   ],
+   "reference_class": "Overlapping 9-trading-day changes in FRED DGS10, Sep 2024 - Sep 2026 (n=494): median +0.01pp, SD 0.151pp, p10 -0.16 / p90 +0.18"
+  }
+ ]
+}

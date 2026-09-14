@@ -1,0 +1,118 @@
+﻿name: Bot dry run / testing area
+
+on:
+  workflow_dispatch:
+    inputs:
+      tournament:
+        description: "Tournament id or slug (ignored when 'post' is set)"
+        required: false
+      post:
+        description: "Single post id to backtest/re-forecast (implies dry-run; forecasts one closed or open question)"
+        required: false
+      dry_run:
+        description: "Dry run (record only, never submit)"
+        type: boolean
+        default: true
+      limit:
+        description: "Max questions this run"
+        default: "3"
+      blind:
+        description: "Blind mode (hide the community prediction from the agent)"
+        type: boolean
+        default: false
+      effort:
+        description: "Effort tier (force medium/high to exercise the multi-run dossier path)"
+        type: choice
+        options: [auto, low, medium, high]
+        default: auto
+      include_forecasted:
+        description: "Re-forecast questions this account already forecast (testing only)"
+        type: boolean
+        default: false
+      provider:
+        description: "LLM billing path"
+        type: choice
+        options: [subscription, openrouter]
+        default: subscription
+
+permissions:
+  contents: read # dry-run / testing-area runs never commit; the journal is shown in logs only
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install
+        run: |
+          pip install -e .
+          npm install -g @anthropic-ai/claude-code@2.1.236
+
+      - name: AskNews smoke
+        # Positive proof the CI secret works: bot/asknews.py fails CLOSED (returns [] on any
+        # error), so a bad key in the real run would just silently drop the news section.
+        # [AMENDED 2026-09-09] continue-on-error: the step still goes RED when the key is
+        # dead — which is the whole signal, and it fired correctly when the Summer key
+        # lapsed — but it no longer skips the forecast step behind it. Production
+        # (bot.yml) has always failed open on AskNews, so a dead news key must not be the
+        # thing that stops us testing the forecaster itself.
+        continue-on-error: true
+        env:
+          ASKNEWS_API_KEY: ${{ secrets.ASKNEWS_API_KEY }}
+        run: |
+          python - <<'EOF'
+          import sys
+          from bot.asknews import search_news
+          arts = search_news("global economy")
+          print(f"asknews smoke: {len(arts)} articles")
+          sys.exit(0 if arts else 1)
+          EOF
+
+      - name: Run
+        env:
+          METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
+          ASKNEWS_API_KEY: ${{ secrets.ASKNEWS_API_KEY }}
+          # Subscription OAuth by default. Do NOT add ANTHROPIC_API_KEY: it takes precedence
+          # and silently switches to per-token API billing. With provider=openrouter the bot
+          # maps OPENROUTER_API_KEY into the CLI's env itself.
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          # via env, never interpolated into the shell line (script-injection safe)
+          INPUT_TOURNAMENT: ${{ inputs.tournament }}
+          INPUT_POST: ${{ inputs.post }}
+          INPUT_LIMIT: ${{ inputs.limit }}
+          INPUT_PROVIDER: ${{ inputs.provider }}
+          INPUT_EFFORT: ${{ inputs.effort }}
+        run: |
+          # Single-post backtest (--post, forces dry-run) or a tournament sweep — the target
+          # comes via env, never interpolated into the command line. A dispatch with NO
+          # target is a smoke-only run (secrets/env check): succeed without forecasting
+          # instead of failing on run_bot's argparse and emailing a false alarm.
+          if [ -z "$INPUT_POST" ] && [ -z "$INPUT_TOURNAMENT" ]; then
+            echo "no tournament/post input — smoke-only dispatch, skipping the bot run"
+            exit 0
+          fi
+          if [ -n "$INPUT_POST" ]; then
+            target=(--post "$INPUT_POST")
+          else
+            target=(--tournament "$INPUT_TOURNAMENT" --limit "$INPUT_LIMIT")
+          fi
+          python bot/run_bot.py "${target[@]}" \
+            --provider "${INPUT_PROVIDER:-subscription}" \
+            --effort "${INPUT_EFFORT:-auto}" \
+            ${{ inputs.dry_run && '--dry-run' || '' }} \
+            ${{ inputs.blind && '--blind' || '' }} \
+            ${{ inputs.include_forecasted && '--include-forecasted' || '' }} \
+            --agent-cmd "claude -p --model claude-opus-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch"
+
+      - name: Show journal
+        run: cat bot/journal/forecasts.jsonl || true

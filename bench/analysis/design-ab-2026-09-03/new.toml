@@ -1,0 +1,97 @@
+# forecast-scaffold configuration template.
+#
+# Everything that churns — model preferences, draw counts, clamps, blend weights — lives
+# here, never in the skills' markdown. Copy this file next to your journal (or point
+# $FORECAST_CONFIG at it) and edit freely; missing keys fall back to built-in defaults.
+# This template mirrors core.DEFAULTS exactly (a test asserts it).
+
+[clamp]
+# Final probabilities outside this band trigger a warning and are clamped by `aggregate`.
+# 38% of tournament-winning bots clamp to roughly this band. Override deliberately when
+# evidence is genuinely overwhelming and documented.
+min = 0.02
+max = 0.98
+
+# draws      = in-context estimates within one run (works on every surface, but they are
+#              CORRELATED — they see each other — and headless agents under-execute them).
+# runs       = independent runs a harness (bot/bench/subagents) launches and pools with
+#              geo_mean_odds. The deterministic effort lever; unavailable in a plain chat,
+#              where the skill falls back to in-context draws and says so.
+# run_models = optional model ids the harness cycles through for runs after the first —
+#              cross-model diversity is the strongest documented ensemble lever (tournament
+#              winners average ~1.8 model families; same-model trios underperform diverse
+#              ones). Empty = every run uses the command's model. Binary questions only for
+#              now: MC/numeric stay single-run until a pooling rule is preregistered.
+# Run counts are lean (v0.4.0): research + 2 (medium) / 3 (high) reasoning runs. This is
+# a cost/quality judgment call, not a measured result: the old BTF-2 null
+# (+0.0002 +/- 0.0148, n=85, v0.1.0) tested in-context draws, not this independent-runs
+# architecture, and its BTF-2 corpus was later found partially contaminated (2026-07
+# probe: 8/55 questions flagged) — so it neither supports nor refutes these sizes. A
+# leak-free re-measurement is pending. geo_mean_odds pools untrimmed; the suggested-angle
+# rotation leads with the counter-biasing opposite pair so any k >= 2 stays directionally
+# neutral.
+# min_sources = floor on DISTINCT actually-consulted sources the research (full) run must
+#               return; announced in its prompt and enforced by the bot's validate/repair
+#               loop BEFORE any forecast is accepted (reasoning runs are exempt — [] stays
+#               honest there). Added 0.4.5: the first live batch put its most
+#               crowd-divergent calls on its thinnest research (q44381 MC: 0 sources;
+#               q44382/q44511: 2) — exactly the single-run paths the dossier contract
+#               never covered.
+# run_angles  = engineered evidence diversity — SHIPS DARK (empty everywhere until benched).
+#               [] = the dossier architecture above, unchanged. Non-empty (e.g. ["F","D","A"])
+#               FLIPS the bot flow: instead of one shared-dossier research run + reasoning-only
+#               runs, it launches one INDEPENDENT full-research run per angle (operator briefs
+#               in skills/forecast/references/research-angles.md), each on a deliberately
+#               different information diet, then pools them. Measured why: runs that share one
+#               dossier correlate ~0.97 (members disagree ~0.03), so the pool equals the member
+#               average at N times the cost — evidence diversity is the pooling prerequisite.
+#               Binary only, like runs (geo_mean_odds pool).
+[tiers.low]
+draws = 1
+searches = 1
+runs = 1
+run_models = []
+min_sources = 1
+run_angles = []
+
+[tiers.medium]
+draws = 5
+searches = 5
+runs = 3
+run_models = []
+min_sources = 3
+run_angles = ["P", "P", "P"]
+
+# Candidate future high-tier upgrade (NOT implemented): disjoint-retrieval runs — each run
+# researches its own sources instead of sharing one dossier. Half-validated externally
+# (source-split agents beat shared-source agents) and it is the regime where extremizing
+# becomes legitimate; gated on the issue #9 evidence-elasticity result before any build.
+[tiers.high]
+draws = 12
+searches = 12
+runs = 4
+run_models = []
+min_sources = 5
+run_angles = ["P", "P", "P"]
+
+[blend]
+# Weight on the crowd/market number when one exists — used by the chat/CLI aggregate
+# path when the SAME question's human crowd/market value is passed explicitly (Halawi's
+# validated 4:1-crowd optimum applies there). The BOT harness never blends (v0.4.11,
+# operator decision): cross-platform contract equivalence takes judgment, so market
+# anchoring lives in the agent's research step, disclosed in its reasoning.
+crowd_weight = 0.8
+
+[aggregation]
+# "trimmed_mean" for correlated draws from one forecaster (the default);
+# "geo_mean_odds" for genuinely independent forecasters/agents; "median" as a robust fallback.
+method = "trimmed_mean"
+
+[journal]
+path = "forecasts.jsonl"
+
+[models]
+# Hints for the host agent — the scaffold never calls models itself. Model choice dominates
+# scaffolding, so revisit these regularly; leave triage empty to let the host agent decide.
+triage = ""
+notes = "model choice dominates scaffolding; keep this fresh"

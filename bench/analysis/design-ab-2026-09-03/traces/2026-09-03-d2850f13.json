@@ -1,0 +1,213 @@
+{
+ "record_id": "2026-09-03-d2850f13",
+ "question": "What will Bitcoin's price be on September 4, 2026?",
+ "question_id": 45479,
+ "url": "https://www.metaculus.com/questions/45289/",
+ "question_type": "numeric",
+ "forecast_at": "2026-09-03T22:55:16+00:00",
+ "effort": "medium",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": true,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.5476,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 78095.0,
+    "25": 79703.0,
+    "50": 81066.66666666667,
+    "75": 82540.33333333333,
+    "90": 84144.66666666667
+   }
+  },
+  "phase1": {
+   "10": 78095.0,
+   "25": 79703.0,
+   "50": 81066.66666666667,
+   "75": 82540.33333333333,
+   "90": 84144.66666666667
+  },
+  "phase2": null,
+  "spread_phase1": 150.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 78000.0,
+   "25": 79500.0,
+   "50": 81150.0,
+   "75": 82600.0,
+   "90": 83900.0
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.008,
+   "seconds": 176.1,
+   "estimate": {
+    "percentiles": {
+     "10": 78300.0,
+     "25": 79900.0,
+     "50": 81000.0,
+     "75": 82300.0,
+     "90": 83700.0
+    }
+   },
+   "reasoning": "Horizon is ~25.3h from Now to the 2026-09-05T00:00Z end of the Sept 4 UTC day; the resolution window has not started. Reference class: one-day-ahead BTC UTC closes in a high-vol regime -> the status-quo anchor is spot, $81,224 (CoinGecko API, 22:42Z Sept 3), with the base rate being the trailing-30d daily return distribution (median |move| ~0.7%, SD 2.38%, 20% of days outside +/-2.5%). Upward evidence: today's +5.3% breakout on Waller pause signals, US/Iran de-escalation, Clarity Act push and ~$2.8B ETF inflows; +23% over 30 days; short-term breakout momentum. Downward evidence: multiple outlets flag overbought conditions after a one-day spike, spot was sampled near an intraday high ($81,491 print), and macro headwinds persist (WTI >$90, 10y at 4.81%, strengthening USD). Aug 2026 NFP (cons. +55k vs prior -23k) prints 8:30 ET inside the window, a genuine two-sided vol catalyst. I centered marginally below spot for spike-fade risk and widened the band ~8% above the realized-vol floor for the NFP event and crypto fat tails. No matching daily prediction-market contract price retrieved; the Polymarket September touch market is a different contract shape and stale.",
+   "sources": [
+    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd",
+    "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily",
+    "https://fortune.com/article/price-of-bitcoin-09-03-2026/",
+    "https://www.fool.com/coverage/stock-market-today/2026/09/03/crypto-market-today-sept-3-bitcoin-reclaims-usd81-000-on-fed-rate-pause-signals/",
+    "https://features.financialjuice.com/2026/08/31/us-nfp-prep-4th-september/",
+    "https://polymarket.com/event/what-price-will-bitcoin-hit-in-september-2026",
+    "https://bitcoinmagazine.com/markets/bitcoin-rallies-over-81000",
+    "https://www.coinspeaker.com/bitcoin-macro-pressure-resilience/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the 'Close' column for 2026-09-04 (UTC) on CoinGecko's Bitcoin historical data page — NOT an exchange-specific close, NOT a US-session close, NOT an average of the day. CoinGecko's UTC daily close is effectively the price at 2026-09-05T00:00:00Z.\n\nEVENT WINDOW: 2026-09-04T00:00:00Z -> 2026-09-05T00:00:00Z per the criteria (the UTC day whose close is the resolution value). As of Now (2026-09-03T22:44:28Z) 0% elapsed — the window opens in ~1h15m and the measured instant is ~25.3h away.\n\nEVIDENCE (source, date):\n- BTC spot $81,224 at 2026-09-03T22:42:20Z, +5.34% on 24h (CoinGecko simple/price API, retrieved 2026-09-03).\n- BTC opened 2026-09-03 at $77,310.77, -0.1% vs Sept 2 open; $77,892.97 at 07:19 ET; $80,974.15 at 13:30 EDT (Fortune, 2026-09-03).\n- Reported intraday print of $81,491 on a 5.5% jump attributed to a pause in US/Iranian hostilities (Bitcoin Magazine, 2026-09-03).\n- Fed Governor Waller said 2026-09-03 he may support holding rates steady; framed as boosting crypto (Motley Fool, 2026-09-03).\n- Trump urged lawmakers to pass the crypto Clarity Act; Bloomberg reports renewed ETF inflows (~$2.8B, largest since October) and Strategy resuming BTC purchases after a two-month pause (Morningstar/Bitcoin Magazine, early Sept 2026).\n- Macro headwinds inside the same period: WTI crude futures >$90/bbl (+~9% on the week); US 10y yield 4.81%, highest since 2023; gold fell $4,700 -> $4,300/oz in under a week; strengthening USD named as the primary threat to a sustained BTC rally (Coinspeaker, 2026-09-02 and 2026-09-03).\n- On 2026-09-02 BTC traded $76,987–$77,537 (-1.2% to -1.5%), described as range-bound $76,000–$80,000 (Coinspeaker / Clarin, 2026-09-02).\n- SCHEDULED CATALYST INSIDE THE WINDOW: BLS Employment Situation for August releases Friday 2026-09-04 at 08:30 ET (12:30Z). Consensus NFP +55k (prior -23k), range +102k to -25k; unemployment 4.1% (range 4.0–4.2%); AHE y/y 3.0% (prior 3.2%) (FinancialJuice NFP prep, 2026-08-31).\n- BTC all-time high ~$126,198 on 2025-10-06 (Clarin, 2026-09-02).\n- Technical commentary on 2026-09-03 describes an $81,000 breakout accompanied by overbought alerts (Cryptonomist, 2026-09-03).\n\nSERIES DISPERSION (CoinGecko market_chart, 31 daily UTC closes, 2026-08-04 to 2026-09-03):\n- SD of daily log returns over all 30 changes: 2.38%. Over the last 10 changes only: 2.13%.\n- Empirical spread of ONE-DAY changes (the same length as the remaining horizon): 20% of the 30 days moved more than +/-2.5%; 13% moved more than +/-3.3%. Largest four moves were all upside: +7.00%, +6.88%, +5.24%, +4.94% (the 2026-08-19 to 2026-08-21 breakout cluster). Largest downside move: -3.10%.\n- Base rate conditional on the current regime (post-Aug-19 breakout, last 15 days) rather than the full month: daily closes have oscillated in a $77,300–$80,300 band with no trend, until today's move.\n- Level path: ~$62.8k trough (2026-08-16) -> ~$78.3k (2026-08-21) -> flat $77–80k for two weeks -> current level. Roughly +23% over 30 days.\n\nSTATUS QUO OUTCOME: absent news, the Sept 4 UTC close equals current spot, since a one-day-ahead BTC close is a near-martingale.\n\nMARKETS: Polymarket runs daily 'Bitcoin above ___ on September 4?' contracts and Kalshi/Robinhood run 15-minute and intraday BTC range contracts, but no live quote for a same-day contract could be retrieved this run. The only retrievable Polymarket numbers were from the MONTHLY 'What price will Bitcoin hit in September' touch market — a different contract shape (touch-any-time over the whole month vs a single UTC daily close) and evidently a pre-rally snapshot, so it does not price this question.\n\nSEARCHED FOR BUT NOT FOUND: live Polymarket/Kalshi quotes for a Sept 4 daily BTC contract; Sept 3 intraday high/low from a primary exchange; Sept 2–3 spot Bitcoin ETF daily net-flow prints; BTC options implied vol / the Deribit 1-day ATM IV for the Sept 4 expiry; any confirmation of whether the US/Iran de-escalation is durable.",
+   "reference_class": "One-day-ahead changes in BTC's UTC daily close during the current high-volatility regime (trailing 30 daily closes, CoinGecko, 2026-08-04 to 2026-09-03)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.9956,
+   "seconds": 184.8,
+   "estimate": {
+    "percentiles": {
+     "10": 78385.0,
+     "25": 79839.0,
+     "50": 81150.0,
+     "75": 82561.0,
+     "90": 84034.0
+    }
+   },
+   "reasoning": "Resolution is the CoinGecko UTC daily close for Sep 4, which equals the 2026-09-05T00:00Z price - 25.3 hours from Now (2026-09-03T22:44Z). Live CoinGecko spot is $81,230 (+5.42% 24h) after a news-driven rally: Waller hinting at a September hold (hike odds 67%->50.5%), a US-Iran de-escalation, ~$2.8B of ETF inflows, DXY under 99. At a one-day horizon BTC is close to a martingale, so the center is spot, not a trend extrapolation; the +5.4% pop gives some mean-reversion pull but also confirms elevated vol, and the two roughly cancel. Polymarket's liquid Sep-4 ladder (~$516k liquidity) has a median of ~$81,190 - essentially spot - and implies sigma 2.0% to 16:00 UTC; its contract settles at noon ET off Binance BTC/USDT, 8h short of our close, so I scaled variance up by sqrt-time to sigma ~2.4% and lifted the tails to match the ladder's fatness (it prices P(>84k)=6.9% vs 4.5% lognormal). August NFP lands 12:30 UTC Sep 4, inside the window, sustaining event vol. Both bounds are effectively unreachable in one day (+23% to 100k, -32% to 55k), so I declare no escape mass.",
+   "sources": [
+    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true&include_last_updated_at=true",
+    "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=14&interval=daily",
+    "https://gamma-api.polymarket.com/events (slug bitcoin-above-on-september-4-2026)",
+    "https://www.fool.com/coverage/stock-market-today/2026/09/03/crypto-market-today-sept-3-bitcoin-reclaims-usd81-000-on-fed-rate-pause-signals/",
+    "https://bitcoinmagazine.com/markets/bitcoin-rallies-over-81000",
+    "https://www.bls.gov/schedule/2026/home.htm",
+    "https://fortune.com/article/price-of-bitcoin-09-03-2026/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the CoinGecko Bitcoin historical-data 'Close' column for the UTC day 2026-09-04, NOT an exchange spot quote at forecast time and NOT a noon-ET print. In the CoinGecko daily series the value stamped for date D equals the price snapshot at 00:00 UTC on D+1, so the resolving number is the BTC/USD price at 2026-09-05T00:00:00Z. EVENT WINDOW: 2026-09-04T00:00:00Z -> 2026-09-05T00:00:00Z per the criteria; as of Now (2026-09-03T22:44:28Z) 0% elapsed, with ~25.3 hours between Now and the resolving snapshot.\n\nSTATUS QUO: the last observed price carries forward. Live CoinGecko simple/price at 2026-09-03T22:46:40Z: $81,230, 24h change +5.42%.\n\nEVIDENCE:\n- CoinGecko daily 00:00Z snapshots (= prior-day Close), all 2026: Aug 21 73,020.95; Aug 22 78,317.78; Aug 23 77,081.02; Aug 24 77,712.32; Aug 25 78,973.89; Aug 26 78,511.23; Aug 27 79,018.03; Aug 28 80,268.37; Aug 29 77,820.76; Aug 30 78,225.14; Aug 31 77,658.23; Sep 1 78,552.78; Sep 2 77,416.44; Sep 3 77,297.13. (CoinGecko API, retrieved 2026-09-03.)\n- Fortune reported BTC opened 2026-09-03 at $77,310.77; Yahoo Finance reported $77,934.11 at 08:00 ET and $80,974.15 at 13:30 ET the same day (both 2026-09-03).\n- Motley Fool, 2026-09-03: 'Bitcoin Reclaims $81,000 on Fed Rate Pause Signals' - Governor Waller said he could support holding rates steady in September if August CPI shows continued progress; market-implied odds of a September hike fell from 67% to 50.5% in a day.\n- Bitcoin Magazine, 2026-09-03: BTC +5.5% to $81,491 after a pause in US-Iran hostilities; equities rose alongside.\n- CoinDesk live blog, 2026-09-03: spot ETFs took in over $2.8B, the largest since October 2025; Strategy made its first BTC purchase in two months; DXY fell >0.5% below 99 on a yen rally. Same piece flags next week's CPI as the next macro catalyst.\n- Coinspeaker, 2026-09-02: BTC $77,537.68 (-1.47%) inside a $76k-$80k range while WTI topped $90 (+9% w/w) and the US 10y yield hit 4.81%, its highest since 2023; gold fell $4,700 -> $4,300 in under a week.\n- BLS release schedule: the August 2026 Employment Situation (nonfarm payrolls) publishes Friday 2026-09-04 at 08:30 ET = 12:30 UTC - INSIDE the event window. Consensus previews cite roughly +50k to +55k payrolls, unemployment 4.1%, AHE +0.2% m/m.\n- Cryptonomist, 2026-09-03, flags overbought technical readings after the breakout; crypto.news cites a falling-wedge target at $83,450. Counterweight: the same outlets note the strengthening-dollar / rising-real-yield regime as the standing threat, and the Sep 2 range was $76k-$80k, i.e. today's level sits at the top of the two-week range.\n- Prior all-time high $126,198 on 2025-10-06 - the current level is well below it; nothing near a round-number ATH magnet is in play.\n\nBASE RATES (with the class each is computed over):\n- Over the 13 consecutive daily log changes in the CoinGecko 00:00Z series Aug 21 - Sep 3 2026: mean +0.44%/day, SD 2.40%/day; the observed 10th-90th spread of those 1-day changes runs about -3.0% to +5.1% (n is small and includes two jump days, +7.0% Aug 21->22 and +5.4% on Sep 3 itself).\n- Conditional on the prior day being a >4% up-move (the condition that is already KNOWN to hold here): BTC's next-day distribution is empirically near-symmetric with materially elevated vol - volatility clusters, drift does not persist reliably at a 1-day horizon.\n- Conditional on a scheduled top-tier US macro print inside the window (NFP), realized 1-day BTC vol runs above the unconditional daily figure rather than below it.\n- Unconditionally over the last 1-2 years, a BTC 1-day move exceeding +/-20% (what it would take to leave the 55,000-100,000 range from the current level in this window) has occurred zero times.\n\nHUMAN MARKET: a liquid Polymarket ladder exists on BTC for September 4 2026 (~$516k liquidity, ~$1.27M volume across 11 strikes). CONTRACT MISMATCH to note: it settles at noon ET (16:00 UTC) on Sep 4 off the Binance BTC/USDT close - about 8 hours EARLIER than this question's 00:00 UTC Sep 5 snapshot, and off a different price instrument (single-venue USDT pair vs CoinGecko USD aggregate; historically a sub-0.2% basis). Its strike ladder is dense between $76k and $88k. Kalshi has BTC markets but the ones surfaced are end-of-2026 range contracts, not a Sep 4 daily.\n\nSEARCHED FOR BUT NOT FOUND: an intraday high/low for Sep 3 2026; ETF flow data specific to Sep 3 settlement; any CoinGecko methodology change or outage affecting the Sep 4 close; a Kalshi or bookmaker contract matching this question's exact 00:00 UTC Sep 5 snapshot; any scheduled crypto-specific event (unlock, fork, regulatory decision) dated Sep 4 2026.",
+   "reference_class": "One-UTC-day-ahead BTC/USD closes: the distribution of ~1-day log returns for BTC in the current (Aug-Sep 2026) volatility regime, applied to the last observed spot price"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0341,
+   "seconds": 197.5,
+   "estimate": {
+    "percentiles": {
+     "10": 77600.0,
+     "25": 79370.0,
+     "50": 81050.0,
+     "75": 82760.0,
+     "90": 84700.0
+    }
+   },
+   "reasoning": "Resolution is the CoinGecko close for Sept 4 UTC, i.e. ~25.2 hours after Now (2026-09-03T22:44Z). Reference class: 1-day-ahead BTC closes relative to current spot, which is a near-martingale, so the prior is centred on spot ($81,188 live at 22:49Z) with dispersion set by realized vol. Recent realized daily vol is elevated (3.0% SD over the last 18 sessions; today alone was +5.4%), so the 10-90 band is ~+/-4.5%. I nudged the median ~0.2% below spot because the move was substantially a short squeeze ($164M shorts liquidated in four hours vs $7.3M longs; TA commentary flagging overbought) and price has already ticked off the $81,731 intraday high - but this is a small tilt, not a call. No matched market exists at this horizon; the only BTC books I could price are Dec-2026 range contracts, useless as an anchor. Both bounds are 32%/23% away - a single-session move of that size is essentially unprecedented outside March-2020-style events, and I see no concrete mechanism in play, so I declare no escape mass.",
+   "sources": [
+    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true",
+    "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily",
+    "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=2",
+    "https://gamma-api.polymarket.com/markets?closed=false&order=volumeNum",
+    "https://www.fool.com/coverage/stock-market-today/2026/09/03/crypto-market-today-sept-3-bitcoin-reclaims-usd81-000-on-fed-rate-pause-signals/",
+    "https://www.coindesk.com/business/2026/09/03/live-updates-crypto-majors-bounce-while-global-funds-run-their-lowest-dollar-hedges-since-2015",
+    "https://fortune.com/article/price-of-bitcoin-09-03-2026/",
+    "https://www.coinspeaker.com/bitcoin-macro-pressure-resilience/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the CoinGecko Bitcoin historical-data page 'Close' column for the calendar date 2026-09-04 UTC - not an exchange print, not a futures settlement, not the price at forecasting close. Note: the question background's quoted Aug 21 close ($77,378) does not reconcile exactly with CoinGecko's own daily API snapshots for adjacent days (discrepancies of order 1%), so the instrument carries roughly +/-1% ambiguity versus a naive 00:00-UTC snapshot.\n\nEVENT WINDOW: the quantity is fixed at the end of 2026-09-04 UTC (i.e. 2026-09-05T00:00:00Z). From Now = 2026-09-03T22:44:28Z that is ~25.2 hours ahead. Measuring the window as the resolution day itself (2026-09-04T00:00Z -> 2026-09-05T00:00Z), 0% has elapsed as of Now; the day has not begun.\n\nLEVEL AND RECENT PATH (CoinGecko API, pulled 2026-09-03T22:49Z):\n- Live spot: $81,188, +5.39% over 24h. Intraday high $81,731 at ~20:00Z Sept 3; price had eased to ~$81,186 by 22:49Z.\n- Daily 00:00-UTC snapshots: Sep 3 $77,297; Sep 2 $77,416; Sep 1 $78,553; Aug 31 $77,658; Aug 30 $78,225; Aug 29 $77,821; Aug 28 $80,268; Aug 27 $79,018; Aug 26 $78,511; Aug 25 $78,974; Aug 24 $77,712; Aug 23 $77,081; Aug 22 $78,318; Aug 21 $73,021; Aug 20 $69,291; Aug 19 $64,686; Aug 17 $62,844; Aug 5 $64,062.\n- So: a ~24% run from the low-$60,000s (Aug 17-19) into the high-$70,000s by Aug 22, then twelve days oscillating in a $77.3k-$80.3k band, then a break upward on Sept 3.\n- All-time high $126,198 on 2025-10-06 (Clarin, 2026-09-02); current level is ~36% below it.\n\nDISPERSION / SERIES STATISTICS (computed from the CoinGecko daily series above):\n- SD of daily log returns over the last 18 sessions (Aug 17 - Sep 3): ~3.0%. Excluding the three Aug 19-22 breakout days, SD of the remainder is ~1.9%.\n- Observed 10th-90th range of single-day changes over that window: roughly -3.1% to +6.9%.\n- Absolute daily moves during the Aug 23 - Sep 2 consolidation ran ~0.2% to ~3.1%; the two largest single-day moves in the last three weeks were +7.0% (Aug 21->22) and +5.4% (the current session).\n\nEVIDENCE FOR UPWARD CONTINUATION (all Sept 3, 2026):\n- Fed Governor Waller signalled he may support holding rates steady; Treasury yields dropped after the 10-year had hit 4.81%, its highest since 2023 (Motley Fool, CoinDesk, Sept 3).\n- DXY fell more than 0.5% below 99 on a rallying yen (CoinDesk, Sept 3).\n- US-Iran hostilities paused, cutting a geopolitical risk premium (Sept 3 coverage).\n- Trump publicly pressed lawmakers on the Clarity Act; reported spot-ETF inflows of ~$2.8B, described as the largest since October 2025 (Sept 3 coverage). Separately, spot-ETF August month-to-date net inflows were ~+$2.1B through Aug 20 (question background).\n- Broad risk-on: total crypto market cap ~$2.82T, equities up alongside (The Block, Sept 3).\n\nEVIDENCE FOR GIVE-BACK OR STALL:\n- The move was substantially forced buying: ~$164M of shorts liquidated in four hours against ~$7.3M of longs; ~$415M of short losses cited over the move (news.bitcoin.com, Sept 3). Squeeze-driven advances lack persistent spot demand once liquidations clear.\n- TA commentary on the same day explicitly flagged overbought conditions at the $81,000 breakout (Cryptonomist, Sept 3).\n- WTI crude above $90/bbl, up ~9% on the week - an inflationary impulse that cuts against the rate-pause thesis (Coinspeaker, Sept 2).\n- Gold fell from ~$4,700 to ~$4,300/oz in under a week, undercutting a generic 'flight to hard assets' story (Coinspeaker, Sept 2).\n- A strengthening dollar was named the primary threat to any sustained rally before today's DXY reversal (Coinspeaker, Sept 2); the yen-driven dollar move is one day old.\n- The prior twelve sessions repeatedly failed to hold above $80,000 (Aug 28 snapshot $80,268 was followed by $77,821 the next day).\n\nSTATUS-QUO OUTCOME: absent new information, the price one day forward equals the current spot; BTC one-day-ahead closes behave as a near-martingale, with the width of the distribution set by prevailing realized volatility rather than by any directional view.\n\nBASE RATES / CLASSES:\n- Over all BTC trading days (multi-year): mean one-day drift is indistinguishable from zero relative to spot; median one-day-ahead close equals spot.\n- Conditional on the current elevated-vol regime (last 18 sessions): daily log-return SD ~3.0% vs ~1.9% for the calmer Aug 23 - Sep 2 sub-window, and ~2.0-2.5% for BTC's longer-run typical daily vol. The conditioning variable (which regime we are in) is known and points to the higher figure, since today itself was a 5.4% session.\n- Conditional on 'the day after a >4% single-session gain' within this same series (Aug 22, following +7.0% on Aug 21): the next session gave back ~1.6%. n=1 in this window; not a usable rate on its own.\n\nMARKETS: Polymarket's Gamma API returned no open contract on BTC's price for Sept 4 or Sept 5, 2026; its liquid BTC books are year-end range markets resolving 2026-12-31 (wrong deadline, wrong instrument). Polymarket is reported to run daily 'Bitcoin above ___ on September 4?' books and Robinhood/Kalshi run intraday BTC range books, but no price, volume or last-move data for any of these could be retrieved this run. No Kalshi, Manifold or bookmaker contract matching this question's date and resolution source was found.\n\nSEARCHED FOR BUT COULD NOT FIND: live odds or volume on any short-dated BTC price market; BTC options implied volatility for the Sept 4/Sept 5 expiry; confirmed spot-ETF flow figures for Sept 3 from a primary issuer source (the $2.8B figure comes from news aggregation only); any scheduled US macro release or crypto-specific event dated Sept 4, 2026 (the next named catalyst in coverage is the CPI report the following week, after resolution).",
+   "reference_class": "BTC/USD daily closes one day ahead of spot, in an elevated-volatility regime (random-walk/martingale class over 2024-2026 daily CoinGecko data)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0529,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.5099,
+   "seconds": 87.0,
+   "estimate": {
+    "percentiles": {
+     "10": 78000.0,
+     "25": 79500.0,
+     "50": 81150.0,
+     "75": 82600.0,
+     "90": 83900.0
+    }
+   },
+   "reasoning": "Resolution is the CoinGecko UTC close for Sep 4, i.e. the price at 2026-09-05T00:00Z, ~25.3h from Now; the resolution day has not begun. At a one-day horizon BTC is a near-martingale, so the center is current spot (~$81,190-81,230 at 22:42-22:49Z Sep 3) rather than a trend extrapolation of the +5.4% session. Directional evidence is genuinely two-sided: real repricing catalysts (Waller signalling a September hold, US-Iran de-escalation, DXY below 99, ~$2.8B ETF inflows, Strategy resuming purchases) against squeeze mechanics (~$164M shorts liquidated vs ~$7.3M longs), overbought readings, twelve prior sessions that failed to hold above $80k, and standing macro headwinds (WTI >$90, 10y near 4.81%). I take spot with only a token tilt: the intraday high of $81,731 (20:00Z) has already faded ~0.7%, so the spike-fade argument is partly spent, but I keep a mild left skew for squeeze give-back. Width is the substantive call: the trailing-30d SD (2.38%) and the market-implied ~2.4% agree, and I widen to ~2.8% for vol clustering after a 5.4% day plus the August NFP print at 12:30Z inside the window. Both bounds require a one-day move of -32% or +23%, never observed outside March-2020-class events, so no escape mass is declared.",
+   "sources": [],
+   "reconciliation": "FACTUAL 1 - does a Polymarket Sep-4 BTC book exist? Run 2 reported a liquid ladder (~$516k liquidity, ~$1.27M volume, dense strikes $76-88k, noon-ET settlement off Binance BTC/USDT); Runs 1 and 3 reported retrieval failures, with Run 3 saying the Gamma API returned nothing. The harness's own candidate list corroborates Run 2: multiple Sep-4/5/6/7 BTC strike contracts with real volume (31,993 on the <$70,000 Sep 4 book). Absence of retrieval is not absence of a market, so I side with Run 2 on existence. The harness prices are only weakly informative on level - <$70,000 at 0.00 and $70-72k at 0.00 merely confirm that a >13% one-day drop is priced near zero, consistent with spot at $81.2k and with all three runs. Run 2's specific implied sigma (2.0% to 16:00Z) and fat-tail read (P(>84k)=6.9%) I could not verify on this run with no web access, so I treat it as directional support for a ~2.4% baseline rather than as a hard anchor. Its noted contract mismatch (8 hours short of our snapshot, single-venue USDT pair vs CoinGecko USD aggregate) is real and correctly handled by sqrt-time scaling. FACTUAL 2 - was spot sampled at an intraday high? Run 1 argued yes and tilted the median down for spike-fade; Run 3's finer data shows the high was $81,731 at ~20:00Z and price had already eased to ~$81,186 by 22:49Z. Run 3 is right: roughly 0.7% of the fade has already occurred, which removes most of Run 1's justification for centering below spot. I therefore center essentially at spot and express the give-back risk as mild left skew instead of a shifted median. FACTUAL 3 - NFP inside the window: all three agree the August Employment Situation prints 2026-09-04 12:30Z, inside the window. Settled, and it argues for width, not direction. FACTUAL 4 - instrument precision: Run 3 flagged a ~1% reconciliation gap between the question background's Aug 21 close ($77,378) and CoinGecko's own 00:00Z snapshots. Real but small and unresolvable here; it is a further argument against a narrow band, not a shift. JUDGMENT - dispersion. Run 3's 6,900 leans on an 18-session SD of ~3.0% that is inflated by including the Aug 19-22 breakout jumps; its own ex-breakout figure is ~1.9%. Runs 1/2 at ~5,100 sit at sigma ~2.45%, essentially the unconditional trailing-30d number, which under-weights that today was itself a 5.4% session (volatility clusters) and that a top-tier macro print lands mid-window. Neither side is right: I land at sigma ~2.8%, above Runs 1/2 and below Run 3, giving 5,900. JUDGMENT - drift: no evidence breaks the tie between momentum and squeeze give-back, and at a one-day horizon the martingale is the bet I would take, so the median is spot with a token -0.05% and asymmetric tails. All three runs declined escape mass and I agree - the required one-day moves (-32% / +23%) have no mechanism in play.",
+   "disagreements": [
+    {
+     "claim": "A liquid Polymarket ladder on BTC's Sep 4 price exists and can be priced",
+     "kind": "factual",
+     "verdict": "Settled for Run 2. The harness's candidate list shows multiple Sep-4 BTC strike contracts with real volume (31,993 on the <$70,000 book), so Runs 1 and 3 hit retrieval failures rather than an absent market. Run 2's specific implied sigma could not be independently verified with no web access this run, so it informs but does not anchor the width."
+    },
+    {
+     "claim": "Run 2's Sep-4 ladder settles at noon ET off Binance BTC/USDT, 8h before this question's snapshot and on a different instrument",
+     "kind": "factual",
+     "verdict": "Unverifiable here, but plausible and correctly handled: Run 2 sqrt-time scaled the variance and noted the sub-0.2% USD/USDT basis. I carry the same treatment with extra uncertainty on the sigma level."
+    },
+    {
+     "claim": "Spot was sampled near the Sep 3 intraday high, justifying a median below spot",
+     "kind": "factual",
+     "verdict": "Settled against Run 1. Run 3's granular data shows the $81,731 high printed ~20:00Z and price had already eased to ~$81,186 by 22:49Z, so the fade is partly realized. Median moves back to spot; give-back risk is expressed as left skew."
+    },
+    {
+     "claim": "The correct 10-90 width is ~5,100 (Runs 1-2) vs ~6,900 (Run 3)",
+     "kind": "judgment",
+     "verdict": "Neither. Run 3's 3.0% SD is contaminated by the Aug 19-22 breakout jumps (ex-breakout 1.9%); Runs 1/2's ~2.45% ignores volatility clustering after a 5.4% session and the NFP print inside the window. Settled at sigma ~2.8%, width 5,900 - outside all three inputs' logic but between their numbers because that is where the vol evidence lands."
+    },
+    {
+     "claim": "The Sep 3 rally was substantially a short squeeze and should mean-revert",
+     "kind": "judgment",
+     "verdict": "Unbroken by evidence. Real liquidation data ($164M shorts vs $7.3M longs) sits alongside real fundamental catalysts (Waller, ETF inflows, DXY, de-escalation). No tie-breaker exists, so I take the martingale reading I would bet on: median at spot, with a modest left tail rather than a shifted center."
+    },
+    {
+     "claim": "Escape mass past $55,000 / $100,000 should be declared",
+     "kind": "judgment",
+     "verdict": "All three runs declined; I agree. A one-day -32% or +23% move has no named mechanism in play and is essentially unprecedented outside March-2020-class events."
+    }
+   ],
+   "reference_class": "One-day-ahead BTC/USD UTC daily closes relative to current spot, conditional on an elevated-volatility regime (trailing-30d daily log-return SD 2.38%) and a scheduled top-tier US macro release inside the window"
+  }
+ ]
+}

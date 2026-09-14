@@ -1,0 +1,21 @@
+resolved binaries: 130  train (< 2026-08-01): 92  test (>= 2026-08-01): 38
+temporal fit on train: a=0.684 b=+0.010  (shrink toward 0.5; b>0 lifts toward YES)
+temporal test Brier: raw 0.1163 -> recal 0.1224  delta +0.0061 (negative = helps)
+  map: 0.03->0.09  0.05->0.12  0.10->0.18  0.20->0.28  0.35->0.40  0.50->0.50  0.65->0.61  0.80->0.72  0.90->0.82  0.95->0.88
+5-fold CV on all 130: raw 0.1644 -> recal 0.1638 delta -0.0007  mean slope 0.770
+full-set fit: a=0.769 b=-0.045  (n=130, RECAL_MIN_N=40)
+  [FAIL] temporal helps
+  [PASS] cv helps
+  [PASS] enough data
+VERDICT: STAY INERT
+
+resolved binaries: 130  train (< 2026-08-10): 100  test (>= 2026-08-10): 30
+temporal fit on train: a=0.731 b=-0.022  (shrink toward 0.5; b>0 lifts toward YES)
+temporal test Brier: raw 0.1342 -> recal 0.1339  delta -0.0002 (negative = helps)
+  map: 0.03->0.07  0.05->0.10  0.10->0.16  0.20->0.26  0.35->0.38  0.50->0.49  0.65->0.61  0.80->0.73  0.90->0.83  0.95->0.89
+5-fold CV on all 130: raw 0.1644 -> recal 0.1638 delta -0.0007  mean slope 0.770
+full-set fit: a=0.769 b=-0.045  (n=130, RECAL_MIN_N=40)
+  [FAIL] temporal helps
+  [PASS] cv helps
+  [PASS] enough data
+VERDICT: STAY INERT

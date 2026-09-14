@@ -1,0 +1,228 @@
+{
+ "record_id": "2026-09-07-0566ac5b",
+ "question": "What will the U.S. seasonally adjusted annual rate of total housing starts be for August 2026?",
+ "question_id": 45727,
+ "url": "https://www.metaculus.com/questions/45536/",
+ "question_type": "discrete",
+ "forecast_at": "2026-09-07T11:03:01+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.3477,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 1157.3333333333333,
+    "25": 1236.3333333333333,
+    "50": 1314.3333333333333,
+    "75": 1397.3333333333333,
+    "90": 1475.0
+   },
+   "p_below_lower": 0.01,
+   "p_above_upper": 0.019
+  },
+  "phase1": {
+   "10": 1157.3333333333333,
+   "25": 1236.3333333333333,
+   "50": 1314.3333333333333,
+   "75": 1397.3333333333333,
+   "90": 1475.0
+  },
+  "phase2": null,
+  "spread_phase1": 8.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 1175.0,
+   "25": 1248.0,
+   "50": 1325.0,
+   "75": 1402.0,
+   "90": 1485.0
+  },
+  "p_below_lower": 0.008,
+  "p_above_upper": 0.018
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0317,
+   "seconds": 288.0,
+   "estimate": {
+    "percentiles": {
+     "10": 1160.0,
+     "25": 1235.0,
+     "50": 1315.0,
+     "75": 1400.0,
+     "90": 1470.0
+    },
+    "p_below_lower": 0.012,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Reference class: months immediately following a >=10% MoM decline in total starts SAAR (1990-2026) - median next-month change roughly +7%, ~2 of 3 such months rise, which off the 1,239k July base anchors ~1,325k. This world's own 2026 series shows the same whipsaw (Apr->May -18.2%, May->Jun +18.0%). Supporting the bounce: July permits 1,443k vs starts 1,239k (16.5% gap vs a typical 5-8%), SF permits 894k > SF starts 808k, MF permits 490k > MF starts 421k, and NAHB HMI ticked 34->35. Pulling the other way and why I sit below consensus (1.35-1.36M) and below the thin Kalshi implied median (~1,337): the 2026 trend is clearly down (Jan-Apr avg 1,452 vs May-Jul avg 1,284), mortgage rates near a 12-month high at ~6.67%, >9 months of new-home supply, TD expecting subdued building through H2, and a late-August Gulf tropical system over the upper Texas coast. Net: median 1,315, i.e. a partial rather than full retracement. The August reference month is 100% elapsed as of 2026-09-07, so this is pure measurement uncertainty on an unusually noisy series - hence tails kept wide rather than narrowed.",
+   "sources": [
+    "https://tradingeconomics.com/united-states/housing-starts",
+    "https://www.mortgagenewsdaily.com/news/08212026-new-residential-construction-housing-starts-b",
+    "https://economics.td.com/us-housing-starts-and-permits",
+    "https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXHOUSINGSTART (KXHOUSINGSTART-26SEP17 ladder)",
+    "https://www.census.gov/construction/nrc/pdf/newresconst.pdf",
+    "https://eyeonhousing.org/2026/08/affordability-pressures-keep-builder-confidence-low/",
+    "https://www.freddiemac.com/pmms",
+    "https://calculatedrisk.substack.com/p/housing-starts-single-family-down",
+    "https://www.news4jax.com/weather/hurricane/2026/08/31/tropical-storm-warning-issued-for-portions-of-the-upper-texas-and-southwestern-louisiana-coast/",
+    "https://www.noaa.gov/news-release/noaa-maintains-prediction-for-below-normal-atlantic-hurricane-season"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the FIRST-PUBLISHED August 2026 total (all structures) privately-owned housing starts SAAR line in the Census/HUD 'New Residential Construction' release scheduled 2026-09-17 08:30 ET (13:00 UTC) - not single-family, not multifamily, not permits, and NOT any later revision. Fine print: if the release slips past 2026-09-18 (shutdown or processing delay), resolution waits for first official publication.\n\nEVENT WINDOW: reference month 2026-08-01 -> 2026-08-31 per the criteria; as of Now (2026-09-07T10:46Z) 100% elapsed. The underlying quantity is already determined in the world; what remains is Census estimation and publication.\n\nSERIES HISTORY (Census, SAAR thousands, 2026): Jan 1,487; Feb 1,356; Mar 1,502; Apr 1,465; May 1,199 (revised; originally reported 1,177 per TradingEconomics); Jun 1,415 (revised); Jul 1,239 (first print). Jan-Apr mean 1,452.5; May-Jul mean 1,284.3; Jan-Jul mean 1,380.4. 2026 observed range 1,199-1,502.\n\nJULY 2026 REPORT DETAIL (Census, released 2026-08-18): total starts 1,239k, -12.4% vs revised June 1,415k, -13.5% vs July 2025's 1,432k. Single-family 808k, -9.9% vs revised June 897k, -15.7% YoY. 5+ units 421k. Permits 1,443k, +5.0% vs revised June 1,374k, +3.1% YoY; SF permits 894k (+2.5%); 5+ permits ~490k. Completions 1,212k, -9.1% MoM, -16.8% YoY; SF completions 878k; MF completions 329k. TD Economics: July was 'the second-lowest reading in the post-pandemic period after May 2026'; TD's own pre-release forecast had been 1.30M.\n\nBASE RATES (each with the class it is computed over):\n- Over ALL months 2015-2025: SD of month-over-month change in total starts SAAR ~105k (~7.5% of level).\n- Over 2026 YTD only (n=6 changes: -131, +146, -37, -266, +216, -176): SD ~190k, mean change -41k.\n- CONDITIONAL on the prior month having fallen >=10% MoM (1990-2026): the following month rose in roughly two of three cases, with a mean change of roughly +7% to +9%. Illustrative cases: Feb 2015 -17% -> Mar +2%; Feb 2021 -10.3% -> Mar +19.4%; Jul 2022 -9.6% -> Aug +12.2%; May 2025 -9.8% -> Jun +4.6%. Counter-case: Feb 2025 -9.8% was followed by Mar 2025 -11.4% (consecutive double-digit declines do occur).\n- CONDITIONAL on this same 2026 series: Apr->May -18.2% was followed by May->Jun +18.0%.\n- Permits-vs-starts gap: typical permits run ~5-8% above starts; July 2026's gap was 16.5%.\n- Consensus-error class: published economist consensus misses on this release have historically had SD roughly 85-90k.\n\nSTATUS-QUO OUTCOME: the July level (1,239k) repeats unchanged.\n\nCONDITIONS DURING AND AROUND THE AUGUST REFERENCE MONTH:\n- Freddie Mac PMMS 30-yr fixed: 6.69% (Aug 6), 6.67% (Aug 13), 6.65% (Aug 20); rates rose sharply from early July off a late-May plateau and sat near a 12-month high; a year earlier the same week was 6.63%.\n- NAHB/Wells Fargo HMI (Aug 18, 2026): 35, up from 34, vs expectations of 33; 16th consecutive month below 40. Current sales 39 (+2), six-month expectations 43 (unchanged), buyer traffic 23 (unchanged). 35% of builders cutting prices (down 2pts from July), average cut 6%. NAHB flagged the Midwest as a bright spot with regional new-home sales up >2% YTD.\n- New-home supply above nine months at the current sales pace; builders leaning on concessions and incentives.\n- Weather: NOAA maintained a below-normal 2026 Atlantic season forecast (8-14 named storms). Late August produced a tropical depression in the Gulf; NHC issued a tropical storm warning for the upper Texas and southwest Louisiana coast (Port Bolivar to the Vermilion/Cameron line) with 3-6\" rain, locally 9\", across the upper Texas coast inland to east-central Texas, around Aug 31.\n\nFORWARD-LOOKING COMMENTARY ON THE RECORD:\n- Mortgage News Daily and HousingWire both framed the July permits/starts divergence as a signal of possible rebound in coming months; MND noted multifamily starts tend to lag single-family turns by ~6 months.\n- TD Economics: 'homebuilding activity is likely to remain subdued through the second half of 2026'; no numerical August projection given.\n- TradingEconomics lists a consensus and an in-house model figure for the August reference month, and projects the series trending near 1,290k in 2027 and 1,270k in 2028.\n\nMARKETS: Kalshi runs a monthly series (KXHOUSINGSTART) with a contract set keyed to this exact 2026-09-17 release; strikes at 1.150/1.200/1.250/1.300/1.350/1.400/1.450/1.500M. Cumulative traded volume across all eight strikes is under ~120 contracts, four strikes have zero volume, bid-ask spreads run 6-9 cents, and the ladder is internally inconsistent between the 1.400 and 1.450 strikes. No Polymarket or Manifold contract was found by the harness title search.\n\nSEARCHED FOR BUT COULD NOT FIND: any Bloomberg/Reuters/Action Economics economist-poll median specifically for the August 2026 reference month; any advance or leaked August estimate; regional (Northeast/Midwest/South/West) August indicators; the Census 'authorized but not started' backlog figure for July 2026; any assessment quantifying construction days lost to the late-August Gulf system.\n\nSTALE-SOURCE WARNING: two items surfaced in search that are NOT about this question - an InvestingChannel piece dated 2026-09-06 reporting 'October' starts of 1.246M against an October 2024 comparison and a government shutdown (that is October 2025 data), and a Haver piece describing an August rebound to 1.575M from 1.404M with permits at 1.517M (that is August 2022). Neither is August 2026.",
+   "reference_class": "US total privately-owned housing starts SAAR in the month immediately following a >=10% month-over-month decline (1990-2026), applied to the July 2026 base of 1,239k"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0627,
+   "seconds": 308.8,
+   "estimate": {
+    "percentiles": {
+     "10": 1160.0,
+     "25": 1238.0,
+     "50": 1310.0,
+     "75": 1388.0,
+     "90": 1465.0
+    },
+    "p_below_lower": 0.008,
+    "p_above_upper": 0.012
+   },
+   "reasoning": "The August reference month is fully elapsed as of 2026-09-07; this is nowcast error on an already-realized figure, so the whole distribution is one-month-ahead estimation uncertainty. Anchor: July first print 1239 (SF 808, 5+ 421). Reference class = months following a >=8% MoM decline in HOUST since Jan-2023: all 8 such months rose, mean +7.7%, median +5.2%, implying ~1300-1335. Corroborating up: July permits 1443 far exceed starts, SF permits 894 vs SF starts 808, NAHB HMI ticked 34->35, sell-side consensus ~1350. Corroborating down: -13.5% YoY, SF starts at a near-3-year low, mortgage rates ~6.66%, HMI below 40 for 16 straight months, completions -16.8% YoY, and 2027 forecasts drifting to ~1.27-1.29M. I split these at ~1310 median: reversion is mechanical and well-evidenced, but the trend is genuinely downward, so I sit below the 1350 consensus and above pure persistence. Component build agrees (SF ~845 + 5+ ~460 + 2-4 ~13 = 1318). Spread from historical MoM dispersion (9-10% SD), not from confidence. Escapes priced small but nonzero: 995 is a -19.7% MoM print, worse than any decline in the sample; 1605 requires a ~+30% multifamily-driven spike (5+ starts have jumped that hard before, e.g. the 1609 print in May 2023). No market price obtained (Kalshi 429'd twice; no Polymarket/Manifold contract), so no market blending was done.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=HOUST (monthly HOUST 2023-01 to 2026-07)",
+    "https://www.census.gov/construction/nrc/current/index.html (Monthly New Residential Construction, July 2026, CB26-127, rel. 2026-08-18)",
+    "https://www.mortgagenewsdaily.com/news/08212026-new-residential-construction-housing-starts-b",
+    "https://tradingeconomics.com/united-states/housing-starts",
+    "https://www.investing.com/economic-calendar/housing-starts-151",
+    "https://www.nahb.org/news-and-economics/press-releases/2026/08/affordability-pressures-keep-builder-confidence-low",
+    "https://kalshi.com/markets/kxhousingstart/monthly-housing-starts (attempted, HTTP 429, no price retrieved)"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the FIRST-PUBLISHED August 2026 total privately-owned housing starts SAAR (all structures, thousands) in the Census/HUD 'New Residential Construction' release scheduled 2026-09-17 08:30 ET -- NOT off the revised figure, NOT off single-family or 5+ sub-components, NOT off the FRED-displayed value (FRED carries later revisions). Later revisions are explicitly irrelevant.\n\nEVENT WINDOW: reference month August 2026 -> 2026-08-01 to 2026-08-31 per the criteria; as of Now (2026-09-07T10:46Z) 100% elapsed. The quantity is already realized and collected; only publication is pending. The 2026-09-17 date is a publication date, not the window.\n\nEVIDENCE (source, date):\n- July 2026 first print (Census/HUD CB26-127, rel. 2026-08-18): total starts 1,239 SAAR, -12.4% vs revised June 1,415, -13.5% vs July 2025. Single-family 808 (-9.9%); 5+ units 421.\n- Same release: building permits 1,443 SAAR (+5.0% MoM, +3.1% YoY); single-family permits 894 (+2.5%); 5+ permits 490. Permits exceeded starts by ~204k SAAR; SF permits exceeded SF starts by 86k.\n- Same release: completions 1,212 SAAR (-9.1% MoM, -16.8% YoY); SF completions 878 (-5.8%); 5+ completions 329.\n- Census/FRED HOUST monthly levels 2026: Jan 1,385; Feb 1,346; Mar 1,522; Apr 1,414; May 1,182; Jun 1,415; Jul 1,239 (revised series, retrieved 2026-09-07). First-published values for the same months differed (e.g. Jan first print 1,487, Apr 1,465, May 1,177, Jun 1,427); mean first-print minus final over these 7 months is about +16k, i.e. within noise.\n- HOUST 2025 monthly levels: Jan 1,353; Feb 1,491; Mar 1,346; Apr 1,400; May 1,289; Jun 1,379; Jul 1,432; Aug 1,291; Sep 1,319; Oct 1,273; Nov 1,319; Dec 1,378 (FRED, retrieved 2026-09-07).\n- NAHB/Wells Fargo HMI, August 2026 (NAHB, 2026-08-18): 35, up from 34 in July; 16th consecutive month below 40. Current sales 39 (+2), 6-month expectations 43 (flat), buyer traffic 23 (flat). 35% of builders cut prices in August (vs 37% July), average cut 6%. Regional: Northeast 44, Midwest 45, South 31, West 27.\n- 30-year fixed mortgage rate cited at roughly 6.66% in mid-August 2026 commentary (search-surfaced industry commentary, Aug 2026).\n- Analyst commentary accompanying the July release (Mortgage News Daily, 2026-08-21) frames a 'divergence between permits and starts' and notes multifamily starts typically lag single-family turns by ~6 months.\n- Sell-side survey expectations for recent months vs outcomes (Investing.com economic calendar, retrieved 2026-09-07): Jan fcst 1,340 / act 1,487; Feb fcst 1,398 / act 1,356; Mar fcst 1,380 / act 1,502; Apr fcst 1,420 / act 1,465; May fcst 1,430 / act 1,177; Jun fcst 1,310 / act 1,427; Jul fcst 1,340 / act 1,239. Survey errors have exceeded 100k SAAR in 5 of 7 months and have flipped sign repeatedly.\n- Longer-horizon projections in circulation put full-year 2026 starts near 1.37M and 2027 near 1.27-1.33M (Fannie Mae housing forecast Aug 2026; Trading Economics long-run projections, retrieved 2026-09-07).\n\nBASE RATES (each with its class):\n- Over ALL one-month changes in HOUST, Jan-2023 through Jul-2026 (n=42, FRED revised series): mean +0.2%, SD 9.0%; 10th-90th percentile of monthly % change roughly -11% to +13%; largest observed decline -16.6% (Feb->Mar 2024), largest increase +19.8% (Apr->May 2023).\n- Over the LAST 12 one-month changes only (Aug-2025 through Jul-2026): SD 10.4% -- recent dispersion runs above the 3-year average, driven by the Mar-Jul 2026 swings (+13.1%, -7.1%, -16.4%, +19.7%, -12.4%).\n- CONDITIONAL on the prior month having fallen >=8% MoM (n=8 since Jan-2023): the following month's change was +3.1%, +3.6%, +12.8%, +6.3%, +10.2%, +4.0%, +2.2%, +19.7% -- mean +7.7%, median +5.2%, zero declines.\n- CONDITIONAL on July->August specifically (n=3, 2023/2024/2025): -9.8%, +9.9%, -9.8%. Seasonal adjustment is supposed to remove calendar effects; this small sample shows no consistent August sign.\n- Trailing averages as of Jul-2026 (FRED revised): last 3 months 1,279; last 6 months 1,353; last 12 months 1,340.\n- Two consecutive double-digit MoM declines: zero occurrences in the 42-month window.\n\nSTATUS-QUO OUTCOME: no change from the last observed print, i.e. an August SAAR at the July level of 1,239.\n\nEVIDENCE POINTING UP: permits/starts gap of 204k and SF permits above SF starts by 86k; the conditional base rate after >=8% declines; HMI up one point; multifamily permits at 490 vs 5+ starts of 421; the series' documented tendency to overshoot in both directions and snap back.\nEVIDENCE POINTING DOWN: -13.5% YoY; SF starts at a near-three-year low; completions down 16.8% YoY, shrinking the pipeline; mortgage rate near 6.7%; HMI below 40 for 16 months and buyer traffic at 23; a third of builders cutting prices; multi-year projections drifting toward a lower run rate in 2027.\n\nMARKETS: Kalshi operates a monthly housing-starts series (ticker family KXHOUSINGSTART, monthly events keyed to the release date); the August-2026 event page returned HTTP 429 on two attempts and no price, volume or bracket structure was retrieved. Polymarket and Manifold: no matching contract found by either the harness title search or mine. The ~1,350 figure carried on Trading Economics is a sell-side survey consensus, not a traded price.\n\nSEARCHED FOR BUT COULD NOT FIND: any traded market price or bracket structure for the August 2026 print; any August-2026 regional or preliminary Census figure (none exists before publication); a dated Bloomberg/Reuters consensus panel with dispersion for this specific release; any August 2026 residential construction spending or Dodge Momentum reading; confirmation of whether a government-funding lapse could delay the 2026-09-17 release (FY2027 appropriations lapse would fall on 2026-10-01, after the release date). Note the AskNews item headlined 'Housing Starts Decreased to 1.246 million Annual Rate in October' carries a 2026-09-06 publish date but its internal year-over-year comparisons are to October 2024, so it descri",
+   "reference_class": "Months immediately following a >=8% month-over-month decline in the Census/HUD total privately-owned housing starts SAAR series (HOUST), Jan-2023 through Jul-2026 (n=8), combined with the unconditional distribution of one-month changes in the same series (n=42)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.9513,
+   "seconds": 296.5,
+   "estimate": {
+    "percentiles": {
+     "10": 1152.0,
+     "25": 1236.0,
+     "50": 1318.0,
+     "75": 1404.0,
+     "90": 1490.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.025
+   },
+   "reasoning": "Prior from the trailing-12-month HOUST median (1,332) and, conditionally, from the class 'month after a >=8% MoM drop' (5 cases 2024-2026, all positive, median +6.3% -> ~1,317 from July's 1,239). Three independent strands push the center above a naive carry-forward of 1,239: July permits 1,443 vs starts 1,239 gives a starts/permits ratio of 0.86 against a 2026 average of 0.96; single-family 808k is a clear outlier below the 2026 SF mean of ~906k; and a SF/MF rebuild (SF ~860, 5+ ~450, 2-4 ~28) lands near 1,340. Mortgage rates were flat at 6.65-6.69% through August, NAHB HMI ticked UP to 35 (beat 33), and the hurricane season is below-normal with no identified August construction disruption. Offsetting: a real H2 downshift (May-Jul average 1,279 vs Jan-Apr 1,417) and a genuine single-family downtrend as builders work off completed inventory (35% cutting prices, HMI below 40 for 16 straight months). I set the median at 1,318 — at the conditional rebound base rate, deliberately below both the SF/MF decomposition (~1,340) and the thin Kalshi implied median (~1,340), discounting the latter for sub-$200-notional books and ask-capped mids. Dispersion stays wide: Census's own 90% CI on the monthly change routinely spans zero, and 2026 has printed +233 and -232 single-month swings.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=HOUST (FRED HOUST monthly series, 2021-2026)",
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=PERMIT,HOUST1F (FRED building permits and single-family starts, 2024-2026)",
+    "https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXHOUSINGSTART (Kalshi KXHOUSINGSTART-26SEP17 order book)",
+    "https://tradingeconomics.com/united-states/housing-starts",
+    "https://economics.td.com/us-housing-starts-and-permits",
+    "https://www.mortgagenewsdaily.com/news/08212026-new-residential-construction-housing-starts-b",
+    "https://www.nahb.org/news-and-economics/press-releases/2026/08/affordability-pressures-keep-builder-confidence-low",
+    "https://www.freddiemac.com/pmms (30-yr FRM weekly survey, August 2026)",
+    "https://www.housingwire.com/articles/july-2026-housing-starts-drop-permits-rise/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the FIRST-PUBLISHED August-2026 total (all structures) privately-owned housing starts SAAR line in the Census/HUD 'Monthly New Residential Construction' release, in thousands — not single-family, not 5+ units, not permits, not completions, and not any later revision. Scheduled release 2026-09-17 08:30 ET (13:00 UTC).\n\nEVENT WINDOW: reference month August 2026, i.e. 2026-08-01 -> 2026-08-31 per the criteria; as of Now (2026-09-07T10:46Z) 100% elapsed. The quantity is already realized and unpublished; ~10.1 days remain to publication. Fine print: if the release slips past 2026-09-18, resolution waits for first official publication. Federal fiscal year ends 2026-09-30, i.e. any appropriations lapse would begin AFTER the scheduled release date.\n\nOBSERVED SERIES (FRED HOUST, current-vintage revised, thousands SAAR):\n- 2025: Jan 1353, Feb 1491, Mar 1346, Apr 1400, May 1289, Jun 1379, Jul 1432, Aug 1291, Sep 1319, Oct 1273, Nov 1319, Dec 1378. 2025 mean 1356.\n- 2026: Jan 1385, Feb 1346, Mar 1522, Apr 1414, May 1182, Jun 1415, Jul 1239. 2026 YTD mean 1358.\n- The question's Background quotes first-published/other-vintage 2026 values (Jan 1487, Feb 1356, Mar 1502, Apr 1465, May 1199, Jun 1415, Jul 1239); revisions to this series are routinely 30-100k.\n\nBASE RATES / DISTRIBUTIONS (source: FRED HOUST, series accessed 2026-09-07):\n- Over ALL months 2024-01..2026-07 (n=30 changes): mean MoM change -5k, SD of MoM change 125k.\n- Over 2026 months only (n=7 changes): SD of MoM change 161k; largest single-month moves +233k (Jun) and -232k (May).\n- Over the trailing 12 months Aug-2025..Jul-2026: median level 1332, mean 1340, min 1182, max 1522.\n- CONDITIONAL on the prior month falling >=8% MoM (5 instances 2024-2026: Mar-24, Jan-25, Mar-25, Aug-25, Jun-26): the following month changed +6.3%, +10.2%, +4.0%, +2.2%, +19.7% (median +6.3%, mean +8.5%; 5 of 5 positive).\n- Residuals of the actual level vs a trailing-3-month-average predictor, Dec-2025..Jul-2026: -4, -245, +42, -98, +152, -15, +62, +74 (SD approx 114k).\n- Starts/permits ratio, 2026 monthly average approx 0.96; July 2026 ratio 0.86.\n\nJULY 2026 RELEASE DETAIL (Census/HUD, released 2026-08-18): total starts 1,239 (-12.4% vs revised June 1,415; -13.5% vs July 2025). Single-family 808 (-9.9% vs revised June 897). 5+ units 421 (multifamily -15.6% to -16.8% MoM depending on source). Building permits 1,443 (+5.0% MoM, +3.1% YoY; FRED current vintage 1,433). Completions 1,212 (-9.1% MoM, -16.8% YoY). Reuters/Bloomberg note the print came in below a consensus of ~1.30-1.35M and was described as the second-lowest post-pandemic reading.\n\nSINGLE-FAMILY COMPONENT (FRED HOUST1F): 2025 monthly 1002, 1094, 939, 953, 945, 925, 959, 873, 837, 893, 929, 946; 2026 monthly 894, 923, 1017, 914, 889, 897, 808. Implied 5+ component (total minus SF) for 2026: 491, 423, 505, 500, 293, 518, 431.\n\nPERMITS COMPONENT (FRED PERMIT): 2026 monthly 1393, 1540, 1363, 1423, 1410, 1374, 1433 — range-bound all year with no downtrend; July 2026 permits exceed July 2025 permits (1400).\n\nCONDITIONS DURING THE AUGUST REFERENCE MONTH:\n- Freddie Mac PMMS 30-yr fixed: 6.69% (Aug 6), 6.67% (Aug 13), 6.65% (Aug 20), 6.66% (Aug 27); 6.63% a year earlier. Essentially unchanged vs July and vs Aug 2025.\n- NAHB/Wells Fargo HMI August 2026 = 35, up from 34 in July, against a consensus of 33. Present sales 39 (+2); six-month expectations 43 (unchanged). 16th consecutive month below 40. 35% of builders cut prices in August (down 2pp from July), average cut 6%.\n- 2026 Atlantic hurricane season: NOAA May outlook 8-14 named storms / 3-6 hurricanes (below-normal); as of early August only two named storms (Arthur, Bertha, both Gulf) and no hurricanes. No identified August landfall disrupting South-region construction.\n- Analyst framing on both sides: TD Economics (July release note) cites elevated mortgage rates near 6.7%, high inventory and rising construction costs, expects subdued homebuilding through H2-2026, while noting the permits increase 'suggests a modest rebound ahead.' Mortgage News Daily headlines the same release as 'Permits Point to Stronger Future Activity' and notes multifamily starts tend to lag single-family turns by roughly 6 months.\n- Trading Economics carries a Q3-2026 housing starts figure of ~1.300M; its 'next release' cell simply carries July's value forward and is not a model forecast.\n\nSTATUS-QUO OUTCOME: if August prints unchanged from July, the value is 1,239. If it prints at the trailing-12-month median, 1,332. If it prints at the 2026 YTD mean, 1,358. If it prints at the May-Jul three-month mean, 1,279.\n\nMARKET COVERAGE: a directly-matching listed contract on the August-2026 reference month exists on a regulated U.S. exchange, with strikes laddered every 50k from 1.150M to 1.500M and settlement tied to the same Census release; total traded volume across all strikes is approximately 120 contracts with open interest approximately 105, and four of eight strikes have never traded. Bid-ask spreads run 6-9 cents. No Polymarket, Manifold or bookmaker contract on this question was located.\n\nSEARCHED FOR BUT NOT FOUND: any published sell-side or wire-service consensus estimate for the August-2026 reference month (Reuters/Bloomberg/Econoday consensus not yet posted as of 2026-09-07); any Fed regional-bank nowcast for monthly housing starts; any regional (Northeast/Midwest/South/West) breakdown of the July 2026 release; the Census 90% confidence interval on the July monthly percent change (the release PDF would not parse) — background text states the CI on the monthly change frequently spans zero; any August-2026 weather or labor-disruption event specific to residential construction.",
+   "reference_class": "Monthly U.S. total privately-owned housing starts SAAR (Census/HUD HOUST), trailing 12 months Aug-2025..Jul-2026, plus the conditional sub-class 'the month immediately following a >=8% month-over-month decline' over 2024-2026"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0497,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2662,
+   "seconds": 112.8,
+   "estimate": {
+    "percentiles": {
+     "10": 1175.0,
+     "25": 1248.0,
+     "50": 1325.0,
+     "75": 1402.0,
+     "90": 1485.0
+    },
+    "p_below_lower": 0.008,
+    "p_above_upper": 0.018
+   },
+   "reasoning": "August is 100% elapsed as of 2026-09-07; the figure is realized and only publication is pending, so the whole distribution is estimation uncertainty on a noisy series. Anchor: July first print 1,239 (SF 808, 5+ 421), the second-lowest post-pandemic reading. The conditional-rebound class puts the center at ~1,315. Three independent strands push slightly higher: the starts/permits ratio fell to 0.86 vs a 0.96 2026 average (0.96 x 1,443 permits = ~1,385); SF at 808 is ~100k below its own 2026 mean and SF is the low-variance component, while 5+ at 431 was already near its 452 mean, so the mechanical room to revert sits in SF; and first prints have run ~+16k above later revisions this year, while two of the three runs built their base rates on revised data. Two weak external anchors (a ~120-contract Kalshi ladder implying ~1.34M, and a soft ~1.30-1.35M sell-side consensus) also sit above the runs. Against that: a genuine H2 downshift (May-Jul 1,279 vs Jan-Apr 1,417), HMI 35 for a 16th straight month below 40, buyer traffic 23, 35% of builders cutting prices, 9+ months of supply, and rates flat near 6.66%. All three runs applied the rebound base rate and then discounted again for a trend already embedded in that class; correcting that double-count lands me at 1,325, modestly above all of them and still below both market and consensus.",
+   "sources": [],
+   "reconciliation": "Runs clustered tightly (medians 1310/1315/1318) so the work was auditing shared assumptions, not splitting differences. Settled factually: (a) the conditional-rebound base rate - Run 1's 1990-2026 window (~2 of 3 rise) supersedes Runs 2/3's 'all positive' over n=5-8, but all three imply a central next-month change of +5 to +7% off 1,239; (b) the Kalshi contract exists and matches the resolution criteria - Runs 1 and 3 independently retrieved the same ladder and implied median ~1.34M, resolving Run 2's failed fetch, though ~120 contracts of lifetime volume and 6-9c spreads make it corroboration rather than an anchor; (c) Run 1's late-August Gulf tropical storm and Runs 2/3's 'no disruption found' are compatible, since the latter are dated early August, and one day in one sub-region is immaterial to a SAAR; (d) the vintage question - resolution is the first print, 1,239 is the base under either vintage, and Run 2's own +16k first-print-minus-revised gap means revised-vintage base rates tilt slightly low. Unsettled: whether a genuine sell-side consensus panel for August 2026 exists (Runs 1/2 cite ~1.30-1.35M via aggregators, Run 3 found none posted); I let it carry that uncertainty and used it only as weak corroboration. The one pure judgment call: all three runs took the conditional rebound and then shaded down for the same downtrend that is already inside the reference class. I judge that a double-count and moved the median to 1,325 - above all three members because the reconciled evidence (permits ratio, SF-specific outlier, first-print tilt, two above-consensus external anchors) puts it there, while still well below the 1,385 the permits ratio alone would imply, because the H2 downshift is real. Dispersion carried forward from Runs 2/3 unchanged; no narrowing is warranted when consensus forecasters have missed by 100k+ in 5 of 7 recent months.",
+   "disagreements": [
+    {
+     "claim": "Months following a >=8-10% MoM decline rise essentially always (Runs 2/3, n=5-8) vs ~2 of 3 of the time (Run 1, 1990-2026)",
+     "kind": "factual",
+     "verdict": "Run 1's longer window wins; 'all positive' is small-sample. All windows agree the central next-month change is +5 to +7%, so the anchor of ~1,315 survives either way."
+    },
+    {
+     "claim": "A sell-side consensus of ~1.30-1.35M exists for the August 2026 reference month",
+     "kind": "factual",
+     "verdict": "Could not settle without web access. Runs 1/2 cite aggregator figures; Run 3 found no posted panel and warns TE's cell carries July forward. Used as weak evidence only."
+    },
+    {
+     "claim": "A directly-matching traded market exists for this release",
+     "kind": "factual",
+     "verdict": "Settled yes - Runs 1 and 3 independently retrieved the same Kalshi ladder (strikes 1.150-1.500M, ~120 contracts volume, implied median ~1.34M); Run 2's non-retrieval was an HTTP 429. Too thin to anchor on; contract terms do match the resolution source and reference month."
+    },
+    {
+     "claim": "A late-August Gulf tropical system disrupted South-region construction",
+     "kind": "factual",
+     "verdict": "Compatible with Runs 2/3, whose 'no storm' statements are dated early August. Effect on a seasonally adjusted annual rate from ~1 day in one sub-region is negligible; no adjustment made."
+    },
+    {
+     "claim": "Base rates should be computed on the revised FRED series (Runs 2/3) vs first prints (Run 1 / the question's Background)",
+     "kind": "factual",
+     "verdict": "Resolution is the first print. July's 1,239 is identical under both vintages, so the anchor is unaffected, but Run 2's own +16k mean first-print-minus-revised gap implies revised-vintage base rates tilt slightly low - a small upward nudge."
+    },
+    {
+     "claim": "How far below the conditional-rebound base rate the median should sit for the 2026 downtrend",
+     "kind": "judgment",
+     "verdict": "No evidence breaks this; I take the reading I would bet on. The rebound class already contains trending periods, so shading below it double-counts the trend. Median moved to 1,325, above all three runs but still below both the permits-ratio implication (~1,385) and the observed market/consensus (~1.34M)."
+    }
+   ],
+   "reference_class": "total US housing starts SAAR in the month immediately following a >=8-10% MoM decline, 1990-2026 (~2 of 3 rise, median next-month change ~+6%), cross-checked against the trailing-12-month HOUST median of ~1,332"
+  }
+ ]
+}

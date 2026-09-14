@@ -1,0 +1,170 @@
+{
+ "record_id": "2026-09-07-f0b7da97",
+ "question": "Will the CDC report 5 or more human West Nile virus disease cases in Florida for 2026 by September 18, 2026?",
+ "question_id": 45739,
+ "url": "https://www.metaculus.com/questions/45548/",
+ "question_type": "binary",
+ "forecast_at": "2026-09-07T16:08:49+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 4.0956,
+ "pools": {
+  "pooled_runs": 0.09591703176357547,
+  "phase1": 0.09591703176357547,
+  "phase2": null,
+  "spread_phase1": 0.03,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probability": 0.1
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.4009,
+   "seconds": 426.5,
+   "estimate": 0.1,
+   "reasoning": "CDC's table showed Florida at 2 as of the Sept 1 data cut; YES requires 5+ visible Sept 17-18, i.e. +3 cases entering ArboNET within roughly two update cycles (page updates every 1-2 weeks; likely cuts ~Sept 8 and ~Sept 15, so effective accrual window is ~2 weeks, not 2.5). Reference class of Florida's early-September 17-day increments in ArboNET is 0-2 cases in most years; needing 3 implies a 4-8x acceleration over Florida's observed 2026 pace (1 symptomatic case through week 32, 2nd announced Aug 31). Florida's environmental indicators are moderate, not alarming: 46 cumulative sentinel-chicken seroconversions and 7 mosquito pools across 12 counties through week 32, versus 27 chicken seroconversions in a single week (wk 37) of 2024. The record national 2026 season is concentrated outside the Southeast and Florida's arbovirus dynamics decouple from it. Tail risk kept nonzero by real over-dispersion: Florida counts are batch-reported, non-neuroinvasive cases enter via labs without county press releases, and Florida has demonstrated late-season surges (4 cases by Sept 14 2024 to ~23 by year end). But those surges historically land in October-December, after this window closes.",
+   "sources": [
+    "https://www.cdc.gov/west-nile-virus/data-maps/current-year-data.html",
+    "https://www.floridahealth.gov/wp-content/uploads/2026/08/fl-arbovirus-report-w32-2026.pdf",
+    "https://www.floridahealth.gov/statistics-data/population-surveillance/arbovirus-surveillance/",
+    "https://www.flhealthcharts.gov/ChartsReports/rdPage.aspx?rdReport=NonVitalIndNoGrpCounts.DataViewer&cid=8645",
+    "https://www.floridahealth.gov/diseases-and-conditions/mosquito-borne-diseases/_documents/2024-37-arbovirus-surveillance.pdf",
+    "https://www.floridahealth.gov/wp-content/uploads/2026/01/2025Week53ArbovirusReport_1-5-26-4.pdf",
+    "https://www.news4jax.com/news/local/2026/08/31/human-case-of-west-nile-virus-confirmed-in-duval-county/",
+    "https://www.medicaldaily.com/west-nile-virus-2026-cdc-alert-23-states-cases-476028"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the 'Total human disease cases' value in the Florida row of the CDC 'Current Year Data (2026)' West Nile page (cdc.gov/west-nile-virus/data-maps/current-year-data.html), NOT off Florida DOH weekly arbovirus reports, NOT off Florida Health CHARTS, and NOT off news announcements. Presumptive viremic blood donors (PVDs) are explicitly excluded from that column. CDC page states: 'Current season data are updated every one to two weeks during June through December'; other 2026 coverage describes weekly updates during peak transmission. Page as fetched 2026-09-07 carries 'Data are current as of September 1, 2026' and 'Last Updated September 1, 2026' — i.e. no post-Sept-1 refresh was visible at the time of this research run.\n\nEVENT WINDOW: Per the resolution criteria text, the observation window is 2026-09-17 00:00 ET -> 2026-09-18 23:59 ET. As of Now (2026-09-07T15:50Z) the window has not opened; 0% elapsed, ~9.4 days until it opens. Counting from the last known CDC data cut (2026-09-01) to the window open, ~16 days of case accrual and roughly 1-2 CDC publication cycles fall in between.\n\nEVIDENCE — FLORIDA 2026 SEASON TO DATE:\n- FL DOH Arbovirus Surveillance week 32 (Aug 9-15, 2026): 'In 2026, one human case of WNV illness acquired in Florida has been reported in Alachua County (May), and one asymptomatic blood donor has been reported in Leon County (July).' No human WNV case reported that week. (floridahealth.gov, wk32 report)\n- Same week-32 report: cumulative 2026 WNV-positive samples = 1 symptomatic human, 1 asymptomatic blood donor, 46 sentinel chickens, 7 mosquito pools, across 12 counties. Six chickens seroconverted that week in Hillsborough, Pasco, Pinellas, Walton. Dead-bird surveillance through wk 32: 1,284 reports / 3,054 birds.\n- FL DOH-Duval announced a locally acquired human WNV case on Mon 2026-08-31; Jacksonville Mosquito Control began ground spraying. Duval also had late-August locally acquired cases in 2024 and 2025. (news4jax 2026-08-31; wokv; hoodline 2026-09)\n- The question's own background states the CDC table listed Florida at 2 human disease cases around 2026-09-01, consistent with the two symptomatic FL DOH cases (Alachua May, Duval late Aug). Leon County blood-donor detection does not count toward that column.\n- Weeks 33 (Aug 16-22) and 34 (Aug 23-29) 2026 FL reports exist on the FL DOH index page; their text could not be extracted this run (PDF text extraction failed). Weeks 35 and 36 of 2026 were searched for and NOT FOUND as published/indexed as of 2026-09-07 — the newest report listed on the FL DOH arbovirus index is week 34.\n\nEVIDENCE — FLORIDA HISTORICAL PACE AND TIMING (both directions):\n- 2024, FL DOH week 37 report (Sept 8-14, 2024): 'In 2024, four human cases of WNV illness acquired in Florida have been reported in Bay (August), Duval (July), Marion (July), and Walton (July) counties,' plus five asymptomatic blood donors. One new human case that week (Bay). Twenty-seven sentinel chickens seroconverted in that single week across 11 counties.\n- 2025, FL DOH week 53 (year-end) report: 'six human cases of WNV illness acquired in Florida' — Clay (July), Duval (August), Escambia (August, October) — plus seven asymptomatic blood donors. Two of the six carried October onsets.\n- Florida Health CHARTS, 'West Nile Virus Disease' annual counts (note: this series runs higher than FL DOH's 'acquired in Florida' symptomatic count and is not the resolution source): 2024=23, 2023=14, 2022=9, 2021=10, 2020=51, 2019=4, 2018=39, 2017=6, 2016=8, 2015=13, 2014=17, 2013=7, 2012=74, 2011=23.\n- Comparing the 2024 pair: 4 FL-acquired symptomatic cases as of mid-September 2024 versus a much larger CHARTS annual figure for 2024 implies the bulk of Florida's annual accrual in that year landed after mid-September, and/or via case categories not announced county-by-county.\n- Florida's stated peak transmission window is July-September per DOH/press coverage; Florida also records WNV onsets into October-December in multiple recent years.\n\nEVIDENCE — NATIONAL CONTEXT (both directions):\n- 2026 is being described as the worst US West Nile season in ~22 years, tracking roughly 5x the historical baseline and near the 2003 trajectory; ~71% of 2026 cases reported as neuroinvasive; 23 states with activity was cited as a 10-year high early in the season. (medicaldaily 2026; weather.com 2026-08-21)\n- One report cites CDC's Aug 11, 2026 update at 181 human cases across 29 jurisdictions with 11 deaths; the question background cites 'several hundred' cases across ~40 states by late Aug/early Sept 2026.\n- The national surge is concentrated outside the Southeast: heavily covered in California (Orange County CA reported >300 WNV-positive mosquito samples in 2026, >2x the 2014 'epidemic' level) and other western/plains jurisdictions. No comparable 2026 surge coverage was found for Florida.\n- National transmission normally peaks late August-September, so a majority of the 2026 national season's case reporting was still ahead as of early September.\n\nMARKETS: Searched Polymarket, Manifold (harness title search), Kalshi, and bookmakers for any contract on Florida or US West Nile case counts — none found. Kalshi has run unrelated disease contracts (hantavirus PHEIC 2026).\n\nSEARCHED FOR BUT COULD NOT FIND: (a) the live CDC 2026 state table itself — the table is rendered dynamically and did not appear in fetched HTML, so the Florida value as of 2026-09-07 could not be independently confirmed beyond the Sept 1 figure stated in the question; (b) FL arbovirus reports for weeks 35 and 36 of 2026 (not yet published/indexed); (c) extractable text from the week 33 and week 34 2026 FL PDFs; (d) any Florida county health department announcement of a new human WNV case dated between 2026-09-01 and 2026-09-07; (e) a published CDC schedule of exact 2026 current-year-data refresh dates.",
+   "reference_class": "Florida's CDC/ArboNET current-year human WNV case count increments over ~17-day early-September windows, 2015-2025, conditioned further on seasons running at or below 2 cases by September 1"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.3987,
+   "seconds": 322.3,
+   "estimate": 0.08,
+   "reasoning": "CDC's page still reads 'current as of September 1, 2026' with Florida at 2; YES needs +3 cases reflected by the Sept 15-ish refresh. Reference class: Florida's early-September increment was +1 in 2024 (4 YTD at Week 37, en route to 18 for the year) and ~0-1 in 2025 (3 YTD at Week 36, next case in October) — Florida's human-case season is October/November-weighted, and ArboNET lags states by weeks, so a mid-September data cut mostly reflects late-August onsets. Florida added just 1 case between the June 30 and Sept 1 CDC cuts. No September human cases surfaced in news or DOH advisories (Orange/Pasco/Brevard alerts are chicken/mosquito-pool driven). Upside risks: an exceptional national 2026 season, widespread sentinel-chicken seroconversion in Central Florida, lumpy ArboNET batch postings, and travel-acquired cases counted by state of residence. Downside: CDC's stated one-to-two-week cadence means possibly only one refresh lands before the window. Poisson-ish arrival at ~1 case per two weeks gives P(>=3) near 0.08, with a modest fat-tail bump for batching offset by refresh-timing risk.",
+   "sources": [
+    "https://www.cdc.gov/west-nile-virus/data-maps/current-year-data.html",
+    "https://www.floridahealth.gov/statistics-data/population-surveillance/arbovirus-surveillance/",
+    "https://www.floridahealth.gov/diseases-and-conditions/mosquito-borne-diseases/_documents/2024-37-arbovirus-surveillance.pdf",
+    "https://www.floridahealth.gov/diseases-and-conditions/mosquito-borne-diseases/_documents/2025-36-arbovirus-surveillance.pdf",
+    "https://www.floridahealth.gov/wp-content/uploads/2026/08/fl-arbovirus-report-w32-2026.pdf",
+    "https://hoodline.com/2026/09/duval-county-confirms-human-west-nile-case-as-jacksonville-crews-spray-for-mosquitoes/",
+    "https://www.cdc.gov/mosquitoes/php/arbonet/index.html",
+    "https://orange.floridahealth.gov/2026/08/27/doh-orange-issues-mosquito-borne-illness-advisory/",
+    "https://spacecoastdaily.com/2026/09/west-nile-virus-confirmed-in-brevard-county-by-department-of-health/",
+    "https://www.medicaldaily.com/west-nile-virus-143-cases-cdc-peak-season-august-2026-477066"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the value in the 'Total human disease cases' column, Florida row, of the CDC Current Year Data (2026) table at cdc.gov/west-nile-virus/data-maps/current-year-data.html — NOT off Florida DOH weekly arbovirus reports, NOT off county press releases, and NOT off presumptive viremic blood donors (explicitly excluded). CDC counts by state of RESIDENCE (so a Florida resident infected out of state counts); Florida DOH's weekly report counts cases 'acquired in Florida' and lists blood donors separately.\n\nEVENT WINDOW: Per the resolution criteria, the observation window runs 2026-09-17 00:00 ET to 2026-09-18 23:59 ET. As of Now (2026-09-07T15:50Z) 0% of that window has elapsed; it opens in ~9.4 days.\n\nEVIDENCE (source, date):\n- CDC current-year page fetched 2026-09-07 carries the stamp 'Data are current as of September 1, 2026' and 'Last updated/reviewed: September 1, 2026' — no refresh since the snapshot referenced in the question (cdc.gov, retrieved 2026-09-07).\n- CDC (cdc.gov/mosquitoes ArboNET page): current-season data 'are updated every one to two weeks' June–December; CDC also states health departments 'may have more up-to-date information than what is presented here' due to reporting delays.\n- Florida DOH 2026: one symptomatic locally acquired human WNV case, Alachua County, May; one asymptomatic blood donor, Leon County, July (FL DOH Week 32 report, Aug 9–15, 2026).\n- Second 2026 Florida symptomatic locally acquired human case confirmed in Duval County, announced by DOH-Duval Monday 2026-08-31; Jacksonville Mosquito Control conducting ground spraying (hoodline, 2026-09-01; Action News Jax).\n- Most recent Florida DOH weekly arbovirus report posted as of 2026-09-07 is Week 34 (Aug 23–29). Weeks 35 and 36 are not yet online (floridahealth.gov arbovirus surveillance index, retrieved 2026-09-07).\n- Florida environmental indicators 2026 through Week 32: 46 sentinel chickens and 7 mosquito pools positive across 12 counties (FL DOH Week 32, 2026). For scale, Florida's full-year 2024 total was 867 positive sentinel chickens across 33 counties (FL DOH 2024 season summary).\n- County mosquito-borne illness advisories issued in 2026 for Orange (2026-08-27, sentinel chickens), Pasco (2026-07-30 and updated 2026-08-26, sentinel chickens), Brevard (early September 2026, sentinel chickens) — all triggered by non-human surveillance, not by human cases.\n- No Florida human WNV case announcements located anywhere in September 2026 as of 2026-09-07 (multiple news searches; Florida county DOH offices routinely issue a press release for each human case, as Duval did on Aug 31).\n- National 2026 context: CDC counted 48 human cases across 23 states as of 2026-06-30; 143 as of ~2026-08-04; 181 across 29 jurisdictions with 11 deaths as of ~2026-08-11. Arizona/Maricopa dominates (73 of 181 at that point); ~71% of national cases neuroinvasive. Trade press characterizes 2026 as the most intense season since 2003 (medicaldaily, Aug 2026).\n- Florida's contribution to the CDC table has moved once in nine weeks: Florida stood at 1 case in the June 30, 2026 CDC cut and at 2 in the September 1, 2026 cut.\n\nBASE RATES (with the class each is computed over):\n- Over Florida state-years 2024 and 2025, measured at the same calendar point: Florida YTD human WNV cases were 4 at Week 37 (Sept 8–14, 2024) and 3 at Week 36 (Aug 31–Sep 6, 2025). 2026 stands at 2 at the equivalent point.\n- Conditional on being in an early-September window specifically: Florida added +1 case during Week 37 2024 (one Bay County case) and 0–1 across Weeks 36–38 of 2025 (the next 2025 case after the Week 36 tally was an October Escambia case).\n- Over full Florida years (unconditional annual totals): 2024 = 18 human cases across 14 counties; 2025 = 6 human cases (Clay July, Duval August, Escambia August and October). Florida's national-table full-year counts are typically single digits to low twenties.\n- Conditional on Florida's seasonal shape: in 2024 Florida went from 4 cases at mid-September to 18 at year end, i.e. roughly three-quarters of that year's cases were reported after mid-September — Florida's Culex nigripalpus-driven human-case peak is October–November, later than the national August–September peak.\n\nSEARCHED FOR BUT COULD NOT FIND:\n- The rendered CDC state-by-state table itself (the page's HTML returns prose only; the table is script-rendered; the restoredcdc.org mirror and mappr.co both returned 403).\n- Florida DOH weekly arbovirus reports for Weeks 35 and 36 of 2026 (not yet published; Week 35 URL under the usual naming pattern returns 404). The Week 32 and Week 34 PDFs were retrieved but are image/compressed PDFs that would not text-extract.\n- Any prediction market on this event: harness title search of Polymarket and Manifold returned no candidate; my own searches of Kalshi, Manifold, Polymarket and bookmakers found no West Nile virus or Florida-arbovirus contract at any threshold or deadline. No market price exists to compare contract terms against.\n- A published Florida-specific mid-September ArboNET snapshot for years before 2024.\n- Florida's exact 2026 case-onset dates, which would indicate how much of the reporting pipeline is already filled.",
+   "reference_class": "Florida state-years: change in the CDC/ArboNET Florida WNV human-case count across the ~2.5-week window from the early-September data cut to the mid-September data cut (2024, 2025 directly observed; Florida peak-season windows generally)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0398,
+   "seconds": 260.8,
+   "estimate": 0.11,
+   "reasoning": "Needs +3 cases (2 -> 5) with only ~1-2 CDC page updates left before the Sept 17-18 window (page updates every 1-2 weeks; data current as of Sept 1). Florida's 2026 human burden is strikingly low relative to its enzootic activity: state surveillance at week 32 showed just 1 symptomatic case (Alachua, May) plus 1 blood donor (Leon, July, PVD - explicitly not counted), with the Duval case announced Aug 31 making CDC's 2. That is ~0.1 cases/week over the season. No new Florida county human-case advisory appeared Sept 1-7, and Florida DOH reliably press-releases each one, so the near-term reporting pipeline looks empty. I disconfirmed the 'Sarasota September case' lead - that article is from Oct 2023, not 2026. Upside risks are real but bounded: peak transmission is late Aug-Oct, enzootic amplification is high (46 sentinel chickens, 7 mosquito pools, 12 counties), the national season is a 22-year high, and ArboNET counts can jump in lumps when a state submits a batch. Weighting a quiet continuation (~60%), moderate ramp (~30%), and sharp fall outbreak (~10%) gives P(>=3 new) near 0.11. Thin direct evidence on the live CDC value today (the table is JS-rendered and I could not read it), which is the main source of error in both directions.",
+   "sources": [
+    "https://www.cdc.gov/west-nile-virus/data-maps/current-year-data.html",
+    "https://www.flhealthcharts.gov/ChartsDashboards/rdPage.aspx?rdReport=NonVitalIndNoGrp.Dataviewer&cid=8645",
+    "https://www.floridahealth.gov/statistics-data/population-surveillance/arbovirus-surveillance/",
+    "https://www.floridahealth.gov/wp-content/uploads/2026/09/fl-arbovirus-report-w34-2026.pdf",
+    "https://www.floridahealth.gov/wp-content/uploads/2026/08/fl-arbovirus-report-w32-2026.pdf",
+    "https://www.yahoo.com/news/florida-health-dept-west-nile-002637786.html",
+    "https://hoodline.com/2026/09/duval-county-confirms-human-west-nile-case-as-jacksonville-crews-spray-for-mosquitoes/",
+    "https://www.wokv.com/news/local/human-case-locally-acquired-west-nile-virus-confirmed-duval-county/GRSWIVCJVJHP3HIPB4IYWTSEUY/",
+    "https://alachua.floridahealth.gov/2026/06/23/doh-alachua-issues-mosquito-borne-illnessadvisory/",
+    "http://leon.floridahealth.gov/2026/07/27/doh-leon-issues-mosquito-borne-illness-advisory-2/",
+    "https://orange.floridahealth.gov/2026/08/27/doh-orange-issues-mosquito-borne-illness-advisory/",
+    "https://pasco.floridahealth.gov/2026/08/26/doh-pasco-issues-updated-mosquito-borne-illness-advisory/",
+    "https://www.medicaldaily.com/west-nile-virus-2026-peak-season-august-september-maricopa-deaths-cdc-23-states-476106",
+    "https://westnile.ca.gov/download?download_id=5217"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the value in the 'Total human disease cases' column, Florida row, of the CDC current-year (2026) West Nile table at cdc.gov/west-nile-virus/data-maps/current-year-data.html — NOT off Florida DOH weekly arbovirus reports, NOT off county press releases, and NOT off news counts. Presumptive viremic blood donors (PVDs) are explicitly excluded from the total. CDC page states 'Current season data are updated every one to two weeks during June through December' and, at last fetch, 'Data are current as of September 1, 2026.' CDC also notes ArboNET is passive and subject to state reporting lag, and that cases are counted by county/state of residence, not exposure.\n\nEVENT WINDOW: Sept 17, 2026 00:00 ET -> Sept 18, 2026 23:59 ET per the criteria. As of Now (2026-09-07T15:50Z) the window has not begun: 0% elapsed. The count is read at any point during that window, so the operative accrual period is from the Sept 1 data-cut through whatever the final CDC page refresh on or before Sept 18 captures. Given the stated 1-2 week cadence and a Sept 1 cut, expect approximately one or two refreshes in that interval (roughly Sept 8-9 and Sept 15-16); a skipped cycle would leave only one.\n\nSTARTING VALUE: CDC page listed Florida at 2 total human disease cases as of the Sept 1, 2026 data cut (per the question's own background). Threshold is 5.\n\nFLORIDA 2026 EVIDENCE:\n- Florida DOH arbovirus surveillance, week 32 (Aug 9-15, 2026): no human WNV cases reported that week; season-to-date positives from 1 symptomatic human, 1 asymptomatic blood donor, 46 sentinel chickens, 7 mosquito pools, across 12 counties. (floridahealth.gov weekly report w32)\n- The one symptomatic case to that point: Alachua County, onset May; DOH-Alachua advisory issued June 23, 2026. (alachua.floridahealth.gov, WCJB 2026-06-23)\n- Asymptomatic blood donor: Leon County, July; DOH-Leon advisory July 27, 2026. Blood donors are PVDs and do not count toward the resolution figure. (leon.floridahealth.gov)\n- Second symptomatic case: Duval County, locally acquired, announced by DOH-Duval Aug 31, 2026, with Jacksonville Mosquito Control ground spraying. (WOKV, Hoodline, both 2026-09)\n- The two symptomatic cases (Alachua + Duval) reconcile exactly with CDC's figure of 2.\n- Enzootic activity is broad: sentinel-chicken- or mosquito-pool-driven advisories in 2026 from Pasco (Jul 30, updated Aug 26), Hillsborough (Jul 28, updated Aug 12), Palm Beach (Aug 3), Orange (Aug 27, several positive sentinel chickens). None of these announced a human case. (county floridahealth.gov pages, dates as given)\n- Searched Sept 1-7, 2026 for any additional Florida county advisory announcing a confirmed HUMAN WNV case: none found. Florida county health departments have issued a press release for each 2026 human case (Alachua, Leon, Duval), so this channel has been reliable this season.\n- FALSE LEAD, flagged so it is not double-counted: search engines surface 'Florida Health Dept.: West Nile Virus case from September confirmed in Sarasota County.' Fetched and checked — that article is dated Oct 17, 2023 and concerns a Sept 2023 case. There is no 2026 Sarasota human WNV case in the evidence. A similar Polk County 'confirmed human case of locally-acquired dengue and West Nile' item is dated Oct 31, 2024.\n- Latest Florida weekly report posted as of Now is week 34 (Aug 23-29); week 35 (Aug 30-Sep 5) was not yet retrievable (404 on the expected URL pattern). Could not extract the w34 PDF text with the tools available, so its exact season-to-date human count is unverified.\n\nBASE RATES:\n- Florida WNV disease cases per calendar YEAR, whole-year totals, FLHealthCHARTS (Florida DOH, indicator 8645): 2024:23, 2023:14, 2022:9, 2021:10, 2020:51, 2019:4, 2018:39, 2017:6, 2016:8, 2015:13, 2014:17, 2013:7, 2012:74, 2011:23, 2010:12, 2009:3, 2008:3, 2007:3, 2006:3, 2005:22. Median ~11, range 3-74. These are full-year, final counts.\n- Conditional on the season being quiet through early September (the condition that is already known here — 2 counted cases at Sept 1), the relevant historical analogues are the low-total years: 2019 (4), 2017 (6), 2016 (8), 2009/2008/2007/2006 (3 each). Conditional on a big Florida fall, the analogues are 2018 (39), 2020 (51), 2012 (74), where large numbers accrued in the Sept-Nov tail.\n- Component rate implied by 2026 itself: 2 counted cases across roughly 18 weeks of season to date = ~0.11 counted cases/week. Florida transmission season extends later than the Midwest, with human onsets clustering Aug-Oct, so the peak-season weekly rate exceeds the season-average rate by some multiple.\n- Full-year totals overstate what the CDC current-year page shows in mid-September, because onset-to-ArboNET-posting lag is typically several weeks and the Oct-Dec tail is not yet in.\n\nNATIONAL 2026 CONTEXT (for the transmission environment, not for Florida's count):\n- CDC-reported national counts through 2026: 143 cases (data through Aug 4), 181 cases / 29 jurisdictions / 11 deaths (through Aug 11), ~299 cases / 37 states, ~71% neuroinvasive (through Aug 25). Described as the worst season since 2003 and running roughly 5x the usual pace for the date. (Medical Daily reporting on CDC data, Aug-Sep 2026)\n- The national surge is concentrated in Arizona/Maricopa County (~73 cases, >1/3 of the national total at one point, most of the season's deaths), a different ecology and vector regime from Florida.\n- CDC and commentators note US WNV transmission usually peaks late August through September.\n\nSERIES / EVENT-WINDOW CHECKLIST:\n- Deciding-body calendar: CDC page refresh cadence found and recorded above (every 1-2 weeks, June-December); no fixed publication weekday was found — searched, absent. Florida DOH weekly arbovirus reports post with roughly a one-week lag (week 34, ending Aug 29, was posted under a September URL).\n- Observed spread of Florida's counted-case changes over ~2.5-week windows during 2026: the CDC-visible Florida count went 0 -> 1 (June",
+   "reference_class": "Florida WNV seasons where the CDC current-year page showed a low single-digit case count in early September, and more generally US state-seasons needing a +3 case jump within a ~2-week ArboNET/CDC update horizon at the observed state pace"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.03,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2145,
+   "seconds": 71.1,
+   "estimate": 0.1,
+   "reasoning": "CDC's current-year table showed Florida at 2 as of the Sept 1, 2026 data cut; YES requires 5+, i.e. +3 cases visible by Sept 17-18 across only one or two page refreshes (stated cadence: every 1-2 weeks). ArboNET's multi-week state-reporting lag means a ~Sept 15 cut mostly reflects late-August onsets, which are already counted (Alachua May, Duval announced Aug 31). Florida's 2026 pace is ~0.11 counted cases/week and its count moved just 1->2 between the June 30 and Sept 1 CDC cuts while national counts sextupled; the record 2026 national season is Maricopa/California-concentrated and Florida's Culex nigripalpus human peak falls in October-November, after this window closes. Even granting a peak-season rate of ~0.5/week, lambda~1 over two weeks gives P(>=3)~8%. I nudge above that because the historical 'mid-September Florida' anchors all runs used are Florida DOH 'acquired in Florida' symptomatic counts, not CDC by-residence values -- and FL's 4-announced-by-mid-September vs 18-23 full-year 2024 gap shows CDC ingests lab-reported and out-of-state-exposure cases that never get a county press release, so the 'empty pipeline' read is weaker than it looks and ArboNET posts in lumps.",
+   "sources": [],
+   "reconciliation": "Three runs (0.10, 0.08, 0.11) agreed on every load-bearing fact: CDC page stamped 'current as of September 1, 2026' with Florida at 2; two symptomatic FL cases (Alachua May, Duval announced Aug 31) reconciling exactly to that 2; Leon County blood donor excluded as a PVD; FL DOH weekly reports only posted through week 34; no market found on any venue. No web access this run, so I reconciled on the dossiers. Dispute 1 (refresh count) resolved to 1-2 cycles with the last cut ~Sept 15 -- all three read the same CDC cadence sentence, and the disagreement was hedging, not conflicting evidence. Dispute 2 (the mid-September base rate) I judge PARTLY UNSETTLED and it is the one place I depart from the runs' framing: the '4 at Week 37 2024 / 3 at Week 36 2025' anchors that Runs 1 and 2 lean on are Florida DOH 'acquired in Florida' symptomatic counts, and all three runs explicitly failed to retrieve any historical CDC-table Florida value for mid-September. Since CDC counts by state of residence and ingests lab-reported cases without press releases -- and Florida's 4-by-mid-September vs 18-23 full-year 2024 gap proves that channel undercounts -- the true instrument-specific base rate is somewhat above the DOH-derived one. That correction is why I do not go to Run 2's 0.08, which treats the absence of September county advisories as near-dispositive. Dispute 4 (does the record national season transfer to Florida) is pure JUDGMENT with no evidence breaking it; I take the runs' unanimous read that it does not, because Florida's own count moved 1->2 in nine weeks while the national count sextupled, and Florida's human-case peak is October-November. Run 3's Sarasota lead was checked and correctly killed (Oct 2023 article). Landing at 0.10 is not an average of the three: it is the Poisson figure (~0.08 at lambda~1) plus right-tail mass for by-residence and batch-posting cases, minus refresh-timing risk. Chief residual uncertainty, shared by all runs: none of us could read the live JS-rendered CDC table, so Florida's value as of Sept 7 is only known through the Sept 1 snapshot in the question text.",
+   "disagreements": [
+    {
+     "claim": "One versus two CDC page refreshes land between the Sept 1 data cut and the Sept 17-18 window",
+     "kind": "factual",
+     "verdict": "Settled to 1-2, most likely 2 (~Sept 8-9 and ~Sept 15-16), from CDC's own stated 'every one to two weeks, June through December' cadence, which all three runs fetched identically. No fixed publication weekday exists; all three searched and found none. Either way, ArboNET's reporting lag means the final pre-window cut mostly reflects late-August onsets already counted."
+    },
+    {
+     "claim": "Florida's mid-September historical YTD count was 4 (2024) and 3 (2025), making 2 in 2026 only modestly below par",
+     "kind": "factual",
+     "verdict": "PARTLY UNSETTLED, and materially so. Those figures are Florida DOH 'acquired in Florida' symptomatic counts, not values from the CDC by-residence table this question resolves off. All three runs list the historical CDC Florida mid-September value as searched-for-but-not-found. Florida's 2024 full year was 18-23 against 4 DOH-announced by mid-September, so the DOH series is a floor on the CDC instrument, not a match to it. I let this carry its uncertainty and weighted the right tail up accordingly."
+    },
+    {
+     "claim": "The absence of any Florida county human-case press release Sept 1-7 shows the near-term reporting pipeline is empty",
+     "kind": "judgment",
+     "verdict": "Partly discounted. The channel did fire for all three 2026 detections (Alachua, Leon, Duval), so it has been reliable at this season's low volume -- but the 2024 gap above shows it does not capture everything CDC eventually counts. Treated as real but weaker evidence than Run 3 treats it."
+    },
+    {
+     "claim": "The record 2026 national season (worst since 2003, ~5x baseline) raises Florida's near-term case risk",
+     "kind": "judgment",
+     "verdict": "Rejected, unanimously across runs and on evidence I find persuasive: the surge is concentrated in Arizona/Maricopa (~73 of 181 at one point) and California, a different vector regime. Florida moved 1->2 over the same nine weeks the national count sextupled. Florida's enzootic signal (46 sentinel chickens, 7 mosquito pools, 12 counties) is genuinely broad but has stayed decoupled from human cases all season, and Florida's human peak is October-November -- after this window."
+    },
+    {
+     "claim": "A September 2026 human WNV case was confirmed in Sarasota County",
+     "kind": "factual",
+     "verdict": "FALSE, settled. Run 3 fetched the article: it is dated Oct 17, 2023 and concerns a Sept 2023 case. A similar Polk County item is from Oct 31, 2024. Excluded so it is not double-counted as 2026 evidence."
+    },
+    {
+     "claim": "A prediction market prices this event and could serve as an anchor",
+     "kind": "factual",
+     "verdict": "None found. Harness title search of Polymarket and Manifold returned no candidate; Runs 1-3 independently searched Kalshi, Polymarket, Manifold and bookmakers and found no West Nile or Florida-arbovirus contract at any threshold. No market anchor exists, so no contract-terms comparison was possible."
+    }
+   ],
+   "reference_class": "Florida state-seasons, change in the CDC/ArboNET current-year human WNV case count over a ~2.5-week early-to-mid-September interval, given a low (<=3) count at the September 1 data cut"
+  }
+ ]
+}

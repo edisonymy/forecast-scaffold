@@ -1,0 +1,226 @@
+{
+ "record_id": "2026-09-07-a7f64e62",
+ "question": "Will Singapore's 24-hour PSI reach the Unhealthy band (101 or higher) in at least one region on September 17 or 18, 2026?",
+ "question_id": 45733,
+ "url": "https://www.metaculus.com/questions/45542/",
+ "question_type": "binary",
+ "forecast_at": "2026-09-07T13:49:10+00:00",
+ "effort": "high (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P,P)",
+ "cost_usd": 5.0329,
+ "pools": {
+  "pooled_runs": 0.605681299615121,
+  "phase1": 0.605681299615121,
+  "phase2": null,
+  "spread_phase1": 0.1,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probability": 0.62
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.9125,
+   "seconds": 253.0,
+   "estimate": 0.58,
+   "reasoning": "Reference class (2-day windows in mid/late September of years where a transboundary haze episode had already pushed Singapore PSI into Unhealthy in early September: 2015, 2019, 2023-Oct analog, 2006) implies roughly 0.55. Adjusting up: intensifying El Nino with below-normal regional rainfall, SW Monsoon and SE/S transport winds persisting to early October, 17-18 Sep sitting in the climatological haze peak, NEA's own forecast band explicitly including Low Unhealthy and its ~two-week persistence statement, peat fires that smoulder after hotspots fade, and an unusually generous criterion (any 1 of 5 regions, any hourly update, 2 days) that only needs Central — which ran 20-35 points above the lowest region on 4-5 Sep — to touch 101 once. Adjusting down: the last two days were clearly Moderate (max 92), Riau/Jambi are at ~zero hotspots so the nearest Sumatran source is quiescent, Kalimantan counts fell from their late-August peak under suppression and cloud seeding with showers forecast there, and 10-11 days exceeds skillful wind/rain forecast range. Decomposed: P(episode still Unhealthy-capable on 17-18 Sep) ~0.80 x P(hit over a correlated 2-day window | capable) ~0.68, plus a small residual, gives ~0.56; nudged to 0.58 for El Nino intensification into the seasonal peak. No market exists on this contract.",
+   "sources": [
+    "https://www.nea.gov.sg/media/news/advisories/index/haze-situation-update-07-september-2026",
+    "https://www.nea.gov.sg/media/news/advisories/index/haze-situation-update-06-september-2026",
+    "https://www.haze.gov.sg/",
+    "https://asmc.asean.org/home/",
+    "https://www.weather.gov.sg/weather-fortnightly-outlook/",
+    "https://www.abc.net.au/news/2026-09-07/indonesia-wildfires-haze-poor-air-quality-smog-drought-el-nino/107122922",
+    "https://www.asiaone.com/singapore/haze-situation-7-september-psi-singapore",
+    "https://en.antaranews.com/news/429180/indonesia-stays-alert-as-forest-fire-hotspots-decline",
+    "https://www.cnbcindonesia.com/news/20260902115743-4-764301/update-karhutla-2026-hotspot-di-riau-jambi-nol-kalimantan-parah",
+    "https://www.malaymail.com/news/singapore/2026/09/05/singapore-haze-eases-in-west-but-central-region-remains-unhealthy/233999",
+    "https://mothership.sg/2026/09/nea-daily-haze-advisories-sep-2026/",
+    "https://wmo.int/resources/publication-series/global-seasonal-climate-updates/gscu-son2026"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off NEA's 24-hr PSI by region (North/South/East/West/Central) as published on haze.gov.sg — NOT the 1-hr PM2.5 and NOT the 3-hr PSI. Threshold 101 in ANY single region at ANY hourly update on either day. Central region has run 20-35 index points above the lowest region throughout this episode (e.g. 4 Sep: Central 103-105 while North 79, South 75, East/West 89).\n\nEVENT WINDOW: 17 Sep 2026 00:00 SGT -> 18 Sep 2026 23:59 SGT (= 16 Sep 16:00 UTC -> 18 Sep 15:59 UTC) per the criteria text. As of Now (2026-09-07T13:26Z) the window has not opened: 0% elapsed; ~9.1 days until it opens, ~11.1 days until it closes.\n\nOBSERVED SERIES (daily max regional 24-hr PSI, any hour):\n- 4 Sep 2026: crossed 100 at 7am (first since 8 Oct 2023); Central 103 at 8am, 105 at noon, 123 at 10pm; other regions 75-89. [NEA / Mothership, 4 Sep]\n- 5 Sep 2026: Central 120 at 6am, 115 at 9am; West briefly Unhealthy then back to 98; East 96. Trend turned improving from ~9pm 5 Sep. [Malay Mail / The Star, 5 Sep]\n- 6 Sep 2026: 24-hr PSI 73-87, all regions Moderate at 6pm. [NEA Haze Situation Update, 6 Sep]\n- 7 Sep 2026: 24-hr PSI 63-85 per NEA advisory; Central 92 at 10am, 1-hr PM2.5 27. Second consecutive Moderate day. [NEA advisory + AsiaOne, 7 Sep]\n=> Over the 4 days 4-7 Sep, the >=101 criterion was met on 2 of 4 (base rate over days-within-this-episode-so-far: 2/4). Prior comparable episode: last Unhealthy reading before this was 8 Oct 2023.\n\nBASE RATES FOUND (with the class each is computed over):\n- Over ALL Septembers 2016-2025 (unconditional): Singapore regional 24-hr PSI reached >=101 in September in essentially no year in that span; the only Unhealthy haze readings were Sep 2019 and Oct 2023. Unconditional per-2-day-window rate is low single digits.\n- Over Septembers CONDITIONAL on an active episode having already produced >=101 in the first week (1997, 2006, 2014, 2015, 2019, 2023-Oct-analog): mid/late-September windows contained further Unhealthy readings in most but not all of those years; 2015 was near-continuous through late Sep-Oct, 2019 had Unhealthy clusters ~14-15, 18-19 and 21-24 Sep, 2023's October episode lasted ~2-3 days and did not recur two weeks later.\n- CONDITIONAL on strong El Nino + peak dry season: the climatological maximum of Singapore Unhealthy-PSI days falls mid-September to mid-October, i.e. later than, not before, the question window.\n\nSTATUS-QUO OUTCOME (what happens if nothing changes from the last 48h): readings stay in the 60-95 Moderate band and the window contains no reading >=101.\n\nDRIVERS / EVIDENCE BOTH DIRECTIONS:\n- Toward more haze: WMO GSCU SON 2026 and ASMC seasonal outlook both forecast El Nino intensifying into Nov-Dec with below-normal rainfall over the southern Maritime Continent, highest probability over exactly the source region. [WMO, ASMC]\n- Toward more haze: SW Monsoon runs to early October; prevailing winds forecast SE-to-SW, the transport direction that carries Sumatra/Kalimantan smoke to Singapore. [ASMC, NEA 6 Sep]\n- Toward more haze: NEA's 6 and 7 Sep advisories both forecast the 24-hr PSI in the 'High Moderate to Low Unhealthy' / 'Moderate to Low Unhealthy' range; dry conditions expected to persist over Singapore AND southern/central Sumatra. [NEA, 6-7 Sep]\n- Toward more haze: NEA/MSS stated hazy conditions could continue for around two weeks from early September. MSS fortnightly outlook (1-15 Sep) forecasts below-average rainfall, 33-35C highs. [MSS weather.gov.sg]\n- Toward more haze: ~200,000 ha burned in Indonesia excluding August data; Pontianak AQI readings above 900; visibility 200-500 m in parts of Kalimantan; forestry minister Raja Juli Antoni: 'The field of struggle is right here in September'; a firefighter quoted saying 2026 conditions are worse than 2015. [ABC News, 7 Sep]\n- Toward more haze: peat fires smoulder sub-surface; minister quoted 'hotspots do not mean there is no smoke because of the nature of peatlands'. [ANTARA, 31 Aug]\n- Toward less haze: fires are concentrated in West and Central Kalimantan; Riau reported ZERO hotspots and Jambi 0-4 as of 1-2 Sep; South Sumatra ~89. The nearest and historically most Singapore-relevant Sumatran source provinces are quiescent. [CNBC Indonesia, 2 Sep; ANTARA, 31 Aug]\n- Toward less haze: hotspot counts fell from the late-August peak under joint suppression — Central Kalimantan 1,116 -> ~300, West Kalimantan ~800 -> ~400 by 31 Aug — before rebounding to West Kal 859 / Central Kal 623 on 1 Sep and 805 high-confidence nationally on 2 Sep. The series oscillates; no clean monotone trend. [ANTARA 31 Aug; CNBC Indonesia 2 Sep]\n- Toward less haze: NEA notes some showers forecast over parts of Kalimantan in the coming days — over the dominant current source region. Cloud seeding, water bombing and repeated peat wetting operations are ongoing and continue through September. [NEA 7 Sep; ANTARA 31 Aug]\n- Toward less haze: of 37 high-intensity hotspots verified in South Sumatra, only 11 were confirmed as actual fires — satellite hotspot counts overstate fire activity. [ANTARA, 31 Aug]\n\nDISCREPANCY WORTH NOTING: the question Background asserts 'tens of thousands of hotspots detected across Kalimantan and Sumatra' in early September. Indonesian primary reporting gives ~805-1,370 high-confidence hotspots NATIONALLY per day on 1-2 Sep. The Background figure is either cumulative-season or inflated; do not treat it as a daily count.\n\nFORECAST HORIZON NOTE: the window opens ~9 days after Now. Deterministic weather guidance for Singapore wind direction and Sumatra/Kalimantan rainfall has little skill beyond ~5-7 days, so conditions on 17-18 Sep rest on the seasonal/monsoon regime plus fire-suppression trajectory rather than any current synoptic forecast.\n\nMARKET CHECK: no prediction market found. Harness title search of Polymarket and Manifold returned no candidate; an independent search covering Kalshi and bookmakers also found none. No crowd anchor exists for this contract.\n\nSEARCHED FOR BUT COU",
+   "reference_class": "Two-day windows in mid-to-late September in years where transboundary haze had already produced an Unhealthy (>=101) regional 24-hr PSI reading in Singapore during the first week of September, under dry-season/El Nino conditions (1997, 2006, 2014, 2015, 2019, 2023-Oct analog)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0223,
+   "seconds": 308.1,
+   "estimate": 0.56,
+   "reasoning": "Base rate for a random 2-day September window in Singapore is ~13% (≈30 Unhealthy Sept days across 2013-2025, concentrated in 2015 and 2019), but conditioning dominates: an episode is already underway (Sep 4-6 all crossed 101, Central peaking 123), a strengthening super El Niño (>90% very strong in NH fall), the Sept-Oct Indonesian fire-season peak, 15,652 Kalimantan+Sumatra hotspots YTD with 1,400+/day in West/Central Kalimantan by Sep 1, below-normal rainfall forecast through October, and a weak MJO with no Maritime-Continent rain pulse until ~Sep 25-27 mean no obvious clearing mechanism before the window. The resolution instrument is highly permissive — any of 5 regions at any of ~48 hourly updates on a rolling 24-hr mean, with the threshold sitting mid-band in the observed 90-125 oscillation. Chief counterweight: dense regional smoke was present over Sumatra/Kalimantan on most days from ~Aug 21 yet produced zero Singapore Unhealthy readings until Sep 4, proving regional severity alone is insufficient without southerly wind alignment; the current episode is already decaying (Sep 7 max 92) and Sep 17-18 is ~10 days beyond forecast skill, so day-specific wind alignment is close to a coin flip conditional on the regime. No prediction market prices this event on any venue I checked (Polymarket, Manifold, Kalshi, bookmakers), so there is no anchor to blend against. Roughly 0.90 that the fire/dry regime persists to the window, times ~0.6 that exposure aligns on at least one of the two days.",
+   "sources": [
+    "https://www.haze.gov.sg/",
+    "https://www.haze.gov.sg/resources/historical-readings",
+    "https://www.nea.gov.sg/media/news/advisories/index/haze-situation-update-(04-september-2026)",
+    "https://asmc.asean.org/home/",
+    "https://www.asiaone.com/singapore/haze-situation-7-september-psi-singapore",
+    "https://www.asiaone.com/singapore/haze-singapore-psi-reading-7-september-moderate",
+    "https://www.malaymail.com/news/singapore/2026/09/06/singapore-haze-eases-after-unhealthy-readings-but-smoke-threat-lingers/234077",
+    "https://mothership.sg/2026/09/haze-sep-2026/",
+    "https://mothership.sg/2026/09/nea-daily-haze-advisories-sep-2026/",
+    "https://www.abc.net.au/news/2026-09-07/indonesia-wildfires-haze-poor-air-quality-smog-drought-el-nino/107122922",
+    "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.pdf",
+    "https://www.bom.gov.au/climate/mjo/",
+    "https://www.thestar.com.my/news/nation/2026/08/29/over-15000-hotspots-in-kalimantan-and-sumatra",
+    "https://en.wikipedia.org/wiki/2019_Southeast_Asian_haze",
+    "https://www.weather.gov.sg/weather-fortnightly-outlook/",
+    "https://www.asiaone.com/singapore/singapore-weather-september-2026-first-half-dry-warm-humid"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off NEA's 24-hr PSI (a rolling 24-hour mean, updated hourly) for five regions on haze.gov.sg — NOT the 1-hr PM2.5 and NOT the 3-hr PSI. Trigger is ANY ONE of the five regions (North/South/East/West/Central) hitting 101+ at ANY single hourly update. Approximately 5 regions x 48 hourly updates = ~240 region-hour observations in the window; one region for one hour suffices. Historically the Central region runs highest in this episode; NEA also publishes readings via the NEA site and myENV app.\n\nEVENT WINDOW: 17 Sep 2026 00:00 SGT -> 18 Sep 2026 23:59 SGT per the criteria (= 16 Sep 16:00 UTC -> 18 Sep 15:59 UTC). As of Now (2026-09-07T13:26Z), 0% elapsed; the window opens in ~9.1 days and the forecast horizon to window-open is ~9 days, to window-close ~11 days.\n\nSTATUS-QUO OUTCOME: As of the most recent reading (07 Sep, 10am SGT), all five regions were in the Moderate band — Central 92, East 86, West 86, South 78, North 68; Central 1-hr PM2.5 was 27 (normal). NEA's standing forecast is that the 24-hr PSI will be 'in the moderate to low unhealthy range'. NEA has been issuing daily haze advisories since the evening of 4 Sep.\n\nEVIDENCE — CURRENT EPISODE (Singapore readings):\n- 04 Sep 2026: 24-hr PSI first crossed 100 at 7am (Central), 104-105 by 9-10am; Central reached 123 by 11pm. West/East 89, North 79, South 75 at 9am. First reading above 100 since Oct 2023. (NEA Haze Situation Update 04 Sep; AsiaOne; Mothership)\n- 05 Sep 2026: Central peaked at 123 at 1am, fell back to 91 by midnight; West 86 and East 77 at midnight, both Moderate. (Malay Mail, 06 Sep)\n- 06 Sep 2026: a 24-hr PSI reading of 103 recorded; by later that day all five regions were back within the Moderate band. (Malay Mail 06 Sep; AsiaOne 07 Sep)\n- 07 Sep 2026: all regions Moderate through 10am, Central max 92. haze.gov.sg last updated 5:29pm 07 Sep. (AsiaOne; haze.gov.sg)\n- Prior to 04 Sep: dense smoke haze was observed over southern/central Sumatra and parts of Kalimantan on most days since around 21 Aug, with no Singapore reading at or above 101 during that ~14-day stretch. (Mothership, citing MSS/NEA)\n\nEVIDENCE — REGIONAL FIRE / METEOROLOGY:\n- ASMC/Star, 29 Aug 2026: 15,652 hotspots detected Jan-27 Aug in Kalimantan (12,212) and Sumatra (3,440).\n- Daily counts, 31 Aug 2026: 261 hotspots Kalimantan, 63 Sumatra (ASMC via Sarawak Tribune). Indonesia Sipongi system, 01 Sep 2026: West Kalimantan 859, Central Kalimantan 623, South Sumatra 89, South Kalimantan 73.\n- ASMC current situation page: moderate-to-dense transboundary smoke plumes over northwestern Borneo from clusters in Kalimantan, eastern Java, central/southern Sumatra; many air quality stations in Borneo reporting Unhealthy to Hazardous, several in Sumatra and western Peninsular Malaysia reporting Unhealthy. Thick smoke and cloud cover obscure the full hotspot extent.\n- ABC News, 07 Sep 2026: at least 200,000 ha burnt nationally (figure excludes August); some fire-area residents report 60+ days without rain; peatland fires burning underground; Indonesian forestry minister: 'The field of struggle is right here in September'; a firefighter quoted as saying 'Conditions in 2026 are indeed worse than in 2015'; health impacts reported roughly doubled. Indonesia has deployed water-bombing aircraft and ~1,000 personnel across Kalimantan and Sumatra.\n- NOAA CPC ENSO discussion: El Niño strengthening; >90% chance of a very strong event during NH fall/winter 2026-27; 69% chance during OND 2026 of an event exceeding any since 1950 (RONI +2.5C or more). Decreased cloudiness across the Maritime Continent since May.\n- BMKG: 2026 dry season more intense and prolonged than usual; August and September flagged as the most critical months for fire risk. Indonesian fires historically intensify from midyear and peak September-October.\n- MSS fortnightly outlook (1-15 Sep 2026): Southwest Monsoon prevailing and forecast to persist, winds mainly from the southeast or southwest; total rainfall below average over most of Singapore; daily max 33-35C; sporadic showers possible in the second week but dry conditions expected to persist over most of the surrounding region throughout the fortnight. The outlook covering 16-30 Sep had not been published as of Now.\n- ASMC seasonal forecast (SON 2026) and subseasonal outlook (31 Aug-13 Sep 2026): below-normal rainfall across the southern part of the region through October; haze expected to improve where showers occur and stay elevated where dry weather is prolonged.\n- BoM MJO monitoring (as of 22 Aug): MJO weak or indiscernible, most likely to remain weak over the following fortnight; projections put an amplitude-~1.0 pulse emerging into Phase 3 (Indian Ocean/Bay of Bengal) around 25-27 Sep, i.e. after the event window.\n- Wind mechanism per NEA (04 Sep advisory): prevailing southeasterly or southerly winds carry Sumatran and West Kalimantan smoke toward Singapore; NEA notes Singapore may continue to be affected under those winds if the fires persist. Separately, southeasterly/southerly flow carries West Kalimantan smoke northward into western Sarawak and the central Philippines, while southwesterly flow directs Sumatran smoke toward Peninsular Malaysia and Singapore. The Northeast Monsoon wind reversal does not begin until roughly late October.\n\nBASE RATES (each with the class it is computed over):\n- Over all September days in Singapore 2013-2025 (13 Septembers, ~390 days): roughly 30 days with at least one region's 24-hr PSI at 101+, i.e. ~8% of days; because Unhealthy days cluster into multi-day episodes, the share of 2-day windows containing at least one such day is somewhat higher than 2x the daily rate would suggest but well under it doubling. Nearly all of those days fall in 2015 (~20) and 2019 (6); 2016, 2017, 2018, 2020, 2021, 2022, 2024 and 2025 contributed approximately none.\n- Over September days GIVEN a strong/very strong El Niño and peak-season Indonesian fires (Sept-Oct 1997 and Sept-Oct 2015): Singapore was in",
+   "reference_class": "Two-day windows falling 10-11 days after the onset of a Singapore Unhealthy-PSI transboundary haze episode, split by ENSO/drought regime (analogues: Sept-Oct 1997, Sept-Oct 2015 strong El Niño; Jun 2013, Sep 2014, Sep 2019, Aug 2016, Oct 2023, Mar 2025 neutral/weak regimes)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.2348,
+   "seconds": 313.2,
+   "estimate": 0.66,
+   "reasoning": "Fire source and transport regime are near seasonal peak and forecast to persist: El Nino peaking in September, ASMC Alert Level 3 for southern ASEAN, ~7,400 hotspots in West Kalimantan, and Indonesia's forestry minister stating natural rainfall may not return until early October; MJO is weak/suppressed over the Maritime Continent through mid-September. Base rate anchor: across Septembers with an already-active Singapore haze episode (1997, 2006, 2014, 2015, 2019, 2023), roughly half of 2-day windows ~10-14 days post-onset contained a regional 24-hr PSI >=101 - high in strong-El Nino years (2015 sustained Unhealthy for weeks), low in weaker years (2019 ended with rain on day 10-11; 2023 faded within days). Adjusting up: 2026 matches the strong-El Nino template, and the resolution bar is generous (any of 5 regions, any hourly update, over 48 hours), with even the current Moderate lull days peaking at 92-95, ~8 points below threshold. Adjusting down: the last two days (6-7 Sep) were entirely Moderate, showing wind/transport gates the outcome day-to-day; Indonesia has surged cloud seeding, water bombing and 1,000 extra personnel; and the window is 9-11 days out, so regime persistence is genuinely uncertain. Direct empirical anchor from the current episode: 2 of 3 rolling 2-day windows over 4-7 Sep contained a >=101 reading.",
+   "sources": [
+    "https://www.haze.gov.sg/",
+    "https://www.nea.gov.sg/media/news/advisories/index/haze-situation-update-06-september-2026",
+    "https://www.asiaone.com/singapore/haze-situation-7-september-psi-singapore",
+    "https://www.asiaone.com/singapore/haze-singapore-psi-reading-7-september-moderate",
+    "https://www.weather.gov.sg/weather-fortnightly-outlook/",
+    "https://asmc.asean.org/home/",
+    "https://en.wikipedia.org/wiki/2019_Southeast_Asian_haze",
+    "https://en.wikipedia.org/wiki/2026_Indonesia_wildfires",
+    "https://en.antaranews.com/news/429219/indonesia-braces-for-september-as-forest-fires-threaten-to-spread",
+    "https://en.antaranews.com/news/429853/indonesia-disperses-8-tons-of-salt-in-jambi-cloud-seeding-efforts",
+    "https://www.malaymail.com/news/singapore/2026/09/05/singapore-haze-eases-in-west-but-central-region-remains-unhealthy/233999",
+    "https://www.malaymail.com/news/singapore/2026/09/06/singapore-haze-eases-after-unhealthy-readings-but-smoke-threat-lingers/234077",
+    "https://mothership.sg/2026/09/haze-sep-2026/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off NEA's 24-hr PSI for the five regions (North/South/East/West/Central) as published on haze.gov.sg — NOT the 1-hr PM2.5 and NOT the 3-hr PSI. Threshold is >=101 for any ONE region at ANY hourly update. The 24-hr PSI is a rolling 24-hour average, so it is smoothed relative to hourly PM2.5 and lags plume arrival.\n\nEVENT WINDOW: 17 Sep 2026 00:00 SGT -> 18 Sep 2026 23:59 SGT (= 2026-09-16T16:00Z -> 2026-09-18T16:00Z) per the criteria text. As of Now (2026-09-07T13:26Z), 0% of the event window has elapsed; it opens in ~9.1 days and closes in ~11.1 days.\n\nOBSERVED READINGS THIS EPISODE (all 24-hr PSI, SGT):\n- 4 Sep: Central 103 @8am, 105 @10am (some outlets 104); regional spread 83-116; East reached 102. First haze-driven Unhealthy reading since 8 Oct 2023. NEA began daily haze advisories that evening. (Malay Mail / The Star / Xinhua, 4 Sep 2026)\n- 5 Sep: Central 115 @9am, West 98, East 96; Central peaked 123 @1am. Three regions logged Unhealthy at some point. (Malay Mail 5 Sep 2026; NEA)\n- 6 Sep: Central down to 91 @midnight; all five regions Moderate by 7am; 6pm island range 73-87; 1-hr PM2.5 38-66 ug/m3 (Band I-2). Improving trend dated from 9pm 5 Sep. (NEA Haze Situation Update 6 Sep 2026)\n- 7 Sep: Central 92 @10am; North 68, East 86, South 78, West 86 — all Moderate; 1-hr PM2.5 27. Second consecutive Moderate day. (AsiaOne 7 Sep 2026)\n- NEA's own forward guidance in the 6 Sep and 7 Sep advisories: 24-hr PSI expected in the 'High Moderate to Low Unhealthy' / 'moderate to low unhealthy' range in the coming days.\n\nEVENT-IN-WINDOW COUNT (current episode, direct): of the three rolling 2-day windows spanning 4-7 Sep (4-5, 5-6, 6-7), two contained at least one regional 24-hr PSI >=101 and one did not. Sample is 4 days, all within the first week of the episode.\n\nSOURCE / DRIVER STATE:\n- ASMC has southern ASEAN at Alert Level 3 (its top haze alert tier), with 0300Z and 0900Z updates. Moderate-to-dense transboundary smoke plumes over northwestern Borneo; dense haze from clusters in Kalimantan, eastern Java, and central/southern Sumatra; many regional air-quality stations at Unhealthy-to-Hazardous. (asmc.asean.org, retrieved 7 Sep 2026)\n- Hotspots: West Kalimantan rose by 3,553 to 7,377 in one day in early Sep (active fires +88 to 104); Central Kalimantan 5,244 (-147), fire spots +16 to 72; South Sumatra +209 to 1,013; Riau showed a marked decline. (Antara / regional reporting, early Sep 2026)\n- Area burned: >202,000 ha nationally in 2026 to mid/late Aug per Forestry Ministry; Jan-Jun 2026 alone 107,465 ha, +110% vs same period 2023. West Kalimantan 38,311 ha as of 20 Aug. (Wikipedia 2026 Indonesia wildfires; Forestry Ministry)\n- Wind: Southwest Monsoon prevailing; MSS and ASMC both forecast winds from the southeast to south/southwest — the sector that carries southern/central Sumatran and West Kalimantan smoke toward Singapore.\n\nRAINFALL / CLIMATE:\n- MSS fortnightly outlook (1-15 Sep 2026): total rainfall below average over most of the island; fair and occasionally windy on most days; only localised short-duration afternoon thundery showers on a few days. The 16-30 Sep outlook is not yet published (MSS issues it around mid-month), so no official forecast exists covering the event window itself.\n- ASMC seasonal: below-normal rainfall predicted for much of ASEAN for Sep and SON 2026, highest probability over the southern Maritime Continent; above-normal temperatures. El Nino conditions declared established on 21 Aug 2026 with the Nino3.4 index intensifying through Jul-early Aug; some reporting characterises it as a 'Godzilla El Nino' and pairs it with a positive Indian Ocean Dipole.\n- Indonesia's Forestry Minister Raja Juli Antoni: forecasts indicate natural rainfall may not return until early October, describing September as 'our battleground'. (Antara, early Sep 2026)\n- MJO: weak/indiscernible as of the 22 Aug BoM assessment and forecast to stay weak through the following fortnight; suppressed convection over the Maritime Continent associated with El Nino; projected to emerge into Phase 3 (Indian Ocean/Bay of Bengal) around 25-27 Sep — after the event window.\n\nCOUNTERVAILING / SUPPRESSION EVIDENCE:\n- Indonesia is running weather-modification (cloud seeding), aerial water-bombing and ~1,000 additional personnel through September; BNPB dispersed 8,000 kg of NaCl over Jambi across eight sorties 26 Aug-2 Sep. President Prabowo visited Riau and South Sumatra. Riau hotspots have already declined markedly.\n- ASMC notes hotspot and haze conditions 'may improve in areas experiencing showers' — isolated showers are forecast for parts of northern Peninsular Malaysia, Sumatra and Borneo.\n- Singapore readings have already returned to Moderate for two consecutive days, showing that transport, not just source strength, gates the outcome day to day.\n\nHISTORICAL ANALOGS (day-by-day where available):\n- 2019 (weak-positive IOD, no full El Nino): first Unhealthy 14 Sep (West 103 @4pm); peak 124 @5-8am 15 Sep; Moderate 16-17 Sep; Unhealthy again 18 Sep; peak 154 @4am 19 Sep (South); Unhealthy again 21-22 Sep; rain 23-25 Sep ended the episode. Unhealthy on roughly 6 of the 10 days from onset; day 13-14 post-onset was clear.\n- 2015 (strong El Nino): Singapore air quality in the unhealthy band across much of Sep-Oct, ~50 days at Very Unhealthy/Hazardous levels at some point; Very Unhealthy on 24 Sep; still entering Very Unhealthy on 24 Oct. Episode persisted far beyond two weeks from onset.\n- 2023: a brief early-October episode (Unhealthy 8 Oct 2023) that faded within days — the immediately preceding Unhealthy reading before 4 Sep 2026.\n- 2016, 2014: short-lived episodes; NEA in Sep 2016 assessed haze likelihood as low once rain reached Sumatra.\n\nSEARCHED FOR BUT NOT FOUND: (a) any prediction market or bookmaker contract on Singapore PSI/haze on Polymarket, Manifold, or via general search — none found; Kalshi's search endpoint returned HTTP 429, so Kalshi is unverified rather than confir",
+   "reference_class": "Two-day windows in mid-to-late September during Indonesian fire seasons that had already produced at least one Unhealthy (>=101) 24-hr PSI day in Singapore earlier that month, ~10-14 days after episode onset (1997, 2006, 2014, 2015, 2019, 2023)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 4,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.9583,
+   "seconds": 273.2,
+   "estimate": 0.62,
+   "reasoning": "Reference class: 2-day windows falling inside an active NEA-advisory Singapore transboundary-haze episode during a strong El Nino / dry-season peak (Sep 2014, Sep-Oct 2015, Sep 2019, Oct 2023). Roughly 35-50% of episode days in that class saw at least one regional 24-h PSI >=101, giving ~0.55 for a correlated 2-day window. Adjustments up: strong El Nino + positive IOD, ASMC Level 3 alert, ~900 hotspots/day, SW monsoon (S/SE winds) running to early October, rains not due until Oct-Nov, and mid-September being the modal window for Singapore's worst haze; the criterion is also lenient (any of 5 regions, any hourly update, either day). Adjustments down: PSI has eased for two straight days (max 93 then 92) on windier conditions, and Sept 17-18 is 9-11 days out - far past any skillful haze forecast horizon, so the specific-window risk is dominated by unforecastable wind/rain variability. Main counterargument: episodes are bursty; a clean 2-day spell in mid-September is entirely plausible even with fires raging, as 2019 showed. No prediction market prices this, so no crowd anchor.",
+   "sources": [
+    "https://www.nea.gov.sg/media/news/advisories/index/haze-situation-update-07-september-2026",
+    "https://www.nea.gov.sg/media/news/advisories/index/haze-situation-update-06-september-2026",
+    "https://www.nea.gov.sg/media/news/advisories/index/haze-situation-update-05-september-2026",
+    "https://www.haze.gov.sg/",
+    "https://neaweather.com/haze",
+    "https://asean.bernama.com/news.php?id=2599580",
+    "https://mothership.sg/2026/09/haze-sep-2026/",
+    "https://mothership.sg/2026/09/nea-daily-haze-advisories-sep-2026/",
+    "https://www.asiaone.com/singapore/haze-situation-7-september-psi-singapore",
+    "https://www.palmoilmagazine.com/hot-news/2026/08/27/bmkg-warns-of-higher-forest-fire-risk-in-september-2026-jambi-among-key-hotspots/",
+    "https://en.tempo.co/read/2116144/indonesia-forecasts-el-nino-to-last-through-first-quarter-of-2027",
+    "https://news.mongabay.com/2026/08/indonesias-wildfire-season-surges-as-haze-spreads-into-malaysia/",
+    "https://www.abc.net.au/news/2026-09-04/causes-of-indonesian-wildfires-and-how-the-government-tackling/107113456",
+    "https://www.malaymail.com/news/singapore/2026/09/04/singapore-haze-tips-air-quality-into-unhealthy-range-for-first-time-since-2023/233833",
+    "https://asmc.asean.org/asmc-alerts/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off NEA's 24-hour PSI published per-region on haze.gov.sg / NEA site / myENV — NOT the 1-hr PM2.5 reading and NOT the 3-hr PSI. Threshold is >=101 for ANY ONE of the five regions (North, South, East, West, Central) at ANY hourly update on either date. The 24-h PSI is a rolling 24-hour average republished hourly, so the relevant quantity is the daily MAXIMUM across 5 regions x 24 hourly updates, which is generally above the 6pm snapshot NEA quotes in its written advisories. Central region has run highest throughout this episode.\n\nEVENT WINDOW: 17 Sep 2026 00:00 SGT -> 18 Sep 2026 23:59 SGT (= 16 Sep 16:00 UTC -> 18 Sep 16:00 UTC) per the criteria. As of Now (2026-09-07T13:26Z), 0% elapsed; the window opens in ~9.1 days and spans 2 calendar days.\n\nSTATUS-QUO OUTCOME: If nothing changes from the last two observed days (6-7 Sep), the daily regional maximum sits in the low 90s and no region reaches 101 — i.e. the no-change path is NO. If nothing changes from the first two episode days (4-5 Sep), the path is YES. The episode is oscillating across the threshold.\n\nOBSERVED DAILY RECORD, CURRENT EPISODE (source: NEA Haze Situation Updates, dated):\n- 3 Sep 2026: no Unhealthy reading reported; episode had not yet crossed.\n- 4 Sep 2026: 24-h PSI crossed 100 in Central at 7am, 105 at 10am, reaching 123 by 10pm; other regions West 89, East 88, North 78, South 75. First Unhealthy-band haze reading since October 2023. NEA began daily haze advisories.\n- 5 Sep 2026: 24-h PSI 78-104 at 6pm ('Moderate - Unhealthy range'); one region above 101. Press reports describe three regions in the Unhealthy range at some point that day.\n- 6 Sep 2026: 73-87 at 6pm; 72-93 at 11pm. Entirely Moderate; described as 'fair and windy'.\n- 7 Sep 2026: Central 92 at 10am; 63-85 at 6pm. Entirely Moderate, second consecutive Moderate day.\nSo across the four days since the episode began, two saw a regional reading at or above 101 and two peaked in the low 90s.\n\nBASE RATES (each with the class it is computed over):\n- Over ALL days of the year in Singapore, 2016-2022: essentially zero days with haze-driven Unhealthy 24-h PSI; the band was reached in 2023 (October), 2019 (September), 2015, 2014, 2013. Unconditional daily rate over the last decade is low single-digit percent.\n- Over EPISODE-DAYS ONLY, i.e. days falling inside an active NEA daily-haze-advisory period: in Sep 2019 the Unhealthy band was reached on roughly 5-7 of ~15 advisory days (episode ran approximately 14-24 Sep 2019); in Sep-Oct 2015 (strong El Nino) it was reached on a clear majority of days across a ~7-week stretch from ~10 Sep to ~26 Oct. In the current 2026 episode the observed rate is 2 of the first 4 days.\n- Over EPISODE-DAYS GIVEN A STRONG EL NINO + POSITIVE IOD dry season specifically (2015 is the cleanest member; 1997 and 2019 partial): the episode-day crossing rate is materially higher than the pooled-episode rate above.\n- Conditioning variable already known: the deciding period falls inside the Southwest Monsoon, which ASMC states continues through early October and which carries southerly/southeasterly flow from Sumatra/Kalimantan toward Singapore. It is NOT in the October inter-monsoon transition.\n\nEVIDENCE — CONDITIONS SUPPORTING CONTINUED HAZE:\n- BMKG (Jul 2026): El Nino forecast to persist to at least early 2027, peaking at 'strong' category, coinciding with a positive Indian Ocean Dipole Sep-Dec 2026 — a combination that suppresses rainfall across Indonesia.\n- BMKG (27 Aug 2026): ~87.19% of Indonesia forecast below-normal rainfall in September 2026; September identified as the month with the broadest fire-risk coverage in the Sep-Nov period. High-risk coverage: South Kalimantan ~96%, Central Kalimantan ~84%, South Sumatra ~76%, Bangka Belitung ~73%; Jambi ~78% moderate risk.\n- ASMC activated a Level 3 alert (its highest transboundary-haze alert) on 27 Aug 2026, still in force.\n- Hotspot counts (ASMC/satellite, 7 Sep 2026, 12:23am SGT): 897 total — Kalimantan 405, Sumatra 347, Thailand 86, Java 40. Indonesian Environment Ministry satellite counts in early Sep: South Sumatra 1,429, West Kalimantan 1,226, Central Kalimantan 811. SiPongi tallied 946 hotspots on 31 Aug 2026.\n- Indonesia's forestry minister (early Sep 2026): 'the field of struggle is right here in September'; at least 200,000 ha burnt not counting August; reporting notes fires will keep burning until rains arrive in October or November.\n- MSS fortnightly outlook (issued ~1 Sep 2026): dry weather to persist, total rainfall for the FIRST fortnight of September below average, max temps 33-35C and above. NOTE: this outlook covers 1-15 September only; the second-fortnight outlook covering 16-30 September had not been issued as of 7 Sep 2026.\n- Every NEA daily advisory 5-7 Sep repeats the same forward wording: 24-h PSI expected to be in the 'high Moderate to low Unhealthy' / 'Moderate to low Unhealthy' range, with prevailing winds from the southeast or south and moderate-to-dense plumes from southern/central Sumatra and West Kalimantan drifting toward Singapore.\n- Climatologically, Singapore's most severe haze days cluster in September and October (1997, 2013 June, 2014 Sep, 2015 Sep-Oct, 2019 Sep, 2023 Oct).\n\nEVIDENCE — CONDITIONS AGAINST:\n- Air quality has improved for two consecutive days (6-7 Sep) with daily maxima falling from 123 to ~93 to ~92, attributed to fair and windy conditions.\n- NEA advisories on 6-7 Sep note showers forecast over Kalimantan, which suppresses part of the source region.\n- BMKG issued an extreme-weather warning for medium-to-heavy rainfall in Aceh, North Sumatra, North Kalimantan and South Sulawesi for 3-5 Sep 2026, showing rain events do occur in-season (though these provinces are mostly north of the main plume source).\n- The 2019 precedent shows episodes are bursty: multi-day Moderate gaps occurred between Unhealthy bursts within the same advisory period.\n- No skillful public forecast exists for regional PSI at a 9-11 day lead; the ",
+   "reference_class": "Two-consecutive-day windows inside an active NEA-advisory transboundary haze episode in Singapore during a strong El Nino / peak dry season (Sep 2014, Sep-Oct 2015, Sep 2019, Oct 2023), asking whether any regional 24-h PSI reached >=101"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "research",
+   "run_index": 1,
+   "spread": 0.1,
+   "threshold": 0.08,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.7783,
+   "seconds": 201.9,
+   "estimate": 0.62,
+   "reasoning": "Episode onset 4 Sep; 17-18 Sep is day 13-14 post-onset, ~10 days beyond any skillful wind/rain forecast. Verified episode record is 2 of 4 days at 101+ (the disputed '103 on 6 Sep' was actually Central at 7pm on 5 Sep). Mixture: ~55% weight on the 1997/2015 template (super El Nino + positive IOD, no rain until October, ASMC Level-3 alert, South Sumatra hotspot surge to 1,583 - the classic Singapore-relevant source under SW monsoon, MJO pulse not until ~25-27 Sep) at ~0.85, and ~45% on the 2019/2023 bursty template at ~0.28 (2019: 6 Unhealthy days in 30). That yields ~0.59; nudged to 0.62 because the criterion is a max over ~240 region-hours of a rolling mean while quoted lull maxima (92-93) sit only ~9 points below threshold, so observed crossing days are likely undercounted. Held down by: national hotspot counts easing (805 on 2 Sep to 674 on 6 Sep), Riau/Jambi at zero, an active suppression campaign, and the demonstration that 21 Aug-3 Sep dense regional smoke produced no Singapore Unhealthy reading at all.",
+   "sources": [
+    "https://www.asiaone.com/singapore/psi-singapore-unhealthy-central-region-haze",
+    "https://www.cnbcindonesia.com/news/20260902115743-4-764301/update-karhutla-2026-hotspot-di-riau-jambi-nol-kalimantan-parah",
+    "https://www.antaranews.com/berita/5725639/bmkg-deteksi-lonjakan-2671-titik-panas-di-pulau-sumatera",
+    "https://kumparan.com/kumparannews/bmkg-titik-panas-di-kalbar-907-kalteng-671-286XU08fRAu",
+    "https://mothership.sg/2026/09/haze-sep-2026/",
+    "https://www.nea.gov.sg/media/news/advisories/index/haze-situation-update",
+    "https://asmc.asean.org/asmc-sub-seasonal-outlook/"
+   ],
+   "reconciliation": "Four runs spanned 0.56-0.66. I ran five targeted checks on the disputed premises. (1) Run 2's '6 Sep: 103 recorded' is wrong - the 103 was Central at 7pm on 5 Sep; 6 Sep ran 72-87, all Moderate. Verified episode rate is 2 of 4 days, not 3 of 4, which cuts against the more bullish runs. (2) Hotspot magnitude settled: Indonesian high-confidence counts were 805 nationally on 2 Sep and 674 on 6 Sep, with BMKG at Kalbar 907 / Kalteng 671. Run 3's 'West Kalimantan 7,377 in one day' is a cumulative-season figure and the Background's 'tens of thousands' is not a daily count - daily fire activity is flat-to-easing, not exploding. (3) Run 1 and Run 4 were both partly right on Sumatra and the resolution favours Run 4's read: Riau and Jambi are at zero hotspots, but BMKG detected a surge of 2,671 across Sumatra with 1,583 in South Sumatra - the source province that drove the 2015 Singapore episode under southwest-monsoon flow. This upgrades Run 1's 'the Sumatran source is quiescent'. (4) Confirmed empty, as all runs reported: NEA's advisory index returned no content and the ASMC subseasonal outlook page 404'd; no published forecast covers 17-18 Sep. Contemporaneous reporting does corroborate the super-El-Nino framing. (5) I did no independent market check; all four runs found no contract on Polymarket, Manifold, Kalshi or with bookmakers, and Run 3 noted Kalshi's endpoint returned HTTP 429 so it is unverified rather than confirmed absent. There is no crowd anchor. The remaining dispute - whether day 13-14 belongs to the 2015 template or the 2019/2023 template - is pure judgment that no available evidence breaks at a 10-day lead; I weight it ~55/45 toward the 2015 template on the El Nino/IOD configuration and the October rain timing, and state that as a bet, not a finding. I did not average the runs: the factual corrections cut both ways (crossing rate down, Sumatran source up) and my 0.62 comes from the mixture (~0.59) plus an upward adjustment for the permissiveness of the instrument - a max over ~240 region-hours of a rolling 24-hour mean, with quoted lull maxima only ~9 index points below the threshold, meaning reported daily maxima are systematically biased low.",
+   "disagreements": [
+    {
+     "claim": "A 24-hr PSI of 103 was recorded on 6 Sep (Run 2) vs 6 Sep was entirely Moderate (Runs 1/3/4)",
+     "kind": "factual",
+     "verdict": "Resolved against Run 2: the 103 was Central at 7pm on 5 Sep; 6 Sep ranged 72-87. Episode crossing record is 2 of 4 days."
+    },
+    {
+     "claim": "Daily hotspot magnitude: ~897/day nationally vs 7,377 in West Kalimantan in one day vs 'tens of thousands'",
+     "kind": "factual",
+     "verdict": "Resolved: 805 high-confidence nationally on 2 Sep, 674 on 6 Sep; BMKG Kalbar 907 / Kalteng 671. Run 3's 7,377 is cumulative-season; the Background figure is not a daily count."
+    },
+    {
+     "claim": "The Sumatran source is quiescent (Riau 0, Jambi 0-4) vs active (South Sumatra 1,000+)",
+     "kind": "factual",
+     "verdict": "Both hold: Riau and Jambi are at zero, but BMKG reported a 2,671-hotspot surge across Sumatra with 1,583 in South Sumatra - the 2015-template source for Singapore. Favours Run 4's read over Run 1's."
+    },
+    {
+     "claim": "A published meteorological outlook covering 17-18 Sep exists",
+     "kind": "factual",
+     "verdict": "Confirmed absent. NEA's advisory index returned no content and ASMC's subseasonal outlook page 404'd; MSS's second-fortnight outlook was unpublished as of 7 Sep."
+    },
+    {
+     "claim": "Day 13-14 post-onset follows the 2015 template (episode persists for weeks) or the 2019/2023 template (bursty, ends by ~day 10)",
+     "kind": "judgment",
+     "verdict": "Unbreakable at a 10-day lead - no forecast has skill here. Weighted ~55/45 toward the 2015 template on the El Nino + positive IOD configuration and the October rain timing; stated as a bet, not a finding."
+    },
+    {
+     "claim": "How much the permissive criterion (5 regions x ~48 hourly updates of a rolling mean) is worth",
+     "kind": "judgment",
+     "verdict": "Resolved upward: quoted lull maxima of 92-93 are single-hour snapshots, so the true max over ~240 region-hours is biased low and the observed 2-of-4 likely undercounts. This is the reason 0.62 sits above the 0.59 the mixture alone implies."
+    },
+    {
+     "claim": "A prediction market prices this event",
+     "kind": "factual",
+     "verdict": "None found by any run on Polymarket, Manifold, Kalshi or with bookmakers; Kalshi unverified due to an HTTP 429. No crowd anchor to blend against."
+    }
+   ],
+   "reference_class": "2-day windows falling 12-15 days after onset of an NEA-advisory transboundary haze episode in Singapore, in Indonesian fire seasons of the last three decades (1997, 2006, 2013, 2014, 2015, 2019, Oct 2023)"
+  }
+ ]
+}

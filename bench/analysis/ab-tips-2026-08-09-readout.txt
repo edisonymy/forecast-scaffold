@@ -1,0 +1,25 @@
+MEMORY SCREEN: 0 cell(s) claim outcome knowledge (none)
+paired questions: 69 (of 69 surviving with any cell)
+skipped 4 non-numeric resolution(s) (multiple-choice labels): [45021, 45007, 45003, 44983]
+
+mean Brier   control 0.1923   treatment 0.1955
+
+delta = Brier(treatment) - Brier(control); NEGATIVE favors the tips
+  1. PRIMARY (all paired)            n=69  mean +0.0032  CI90 [-0.0130,+0.0198]  tips better on 32/69
+  2. GUARD live p<=0.15 & outcome 0  n=32  mean -0.0065  CI90 [-0.0242,+0.0099]  tips better on 16/32   <- flattening tripwire
+  3. TARGETED known loss shapes      n=13  mean +0.0465  CI90 [-0.0180,+0.1091]  tips better on 4/13
+
+4. movement: mean |p_treatment - p_control| = 0.0572 (max 0.2700)
+   flattening diagnostic: moved TOWARD 0.5 on 24/69, AWAY on 35/69, unchanged 10
+   memory-screen exclusions: 0 cell(s); total cost $17.48 over 138 recorded cell(s)
+
+DECISION RULE (preregistered): SHIP only if (a) primary CI90 excludes 0 in the treatment's
+  favor, OR (b) |primary mean| < 0.005 AND guard mean < +0.005 AND targeted mean < -0.02.
+  (a) primary CI90 upper bound +0.0198 < 0 ? no
+  (b) |primary| 0.0032 < 0.005 ? YES;  guard -0.0065 < +0.005 ? YES;  targeted +0.0465 < -0.02 ? no
+  VERDICT: DO NOT SHIP
+  note: the brief's literal guard clause was 'guard mean > -0.005', which any guard loss
+  satisfies and so inverts the tripwire; preregistered above as 'guard mean < +0.005'. Literal
+  reading would score guard fail.
+
+per-question detail -> bench\analysis\ab-tips-2026-08-09-scored.json

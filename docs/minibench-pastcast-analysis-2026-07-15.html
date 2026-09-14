@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MiniBench &amp; Pastcast Audit — 15 July 2026</title>
+  <style>
+    :root {
+      --ink: #17211f;
+      --muted: #60706b;
+      --paper: #f4f1e9;
+      --panel: #fffdf8;
+      --line: #d8d6cc;
+      --forest: #174c43;
+      --teal: #238176;
+      --mint: #d7eee6;
+      --amber: #bc6f21;
+      --amber-soft: #f6e6cc;
+      --red: #a33f37;
+      --red-soft: #f3deda;
+      --blue: #2a638f;
+      --blue-soft: #dce9f2;
+      --shadow: 0 18px 50px rgba(35, 49, 45, .09);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% -10%, rgba(35,129,118,.16), transparent 34rem),
+        radial-gradient(circle at 100% 10%, rgba(188,111,33,.12), transparent 30rem),
+        var(--paper);
+      font: 16px/1.58 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+            "Segoe UI", sans-serif;
+    }
+    a { color: var(--forest); text-underline-offset: 3px; }
+    .shell { max-width: 1180px; margin: 0 auto; padding: 28px 28px 72px; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 430px;
+      padding: 54px 58px;
+      color: #f7f5ee;
+      border-radius: 28px;
+      background: linear-gradient(125deg, #102f2b 0%, #174c43 62%, #20665b 100%);
+      box-shadow: var(--shadow);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 390px; height: 390px; right: -85px; top: -125px;
+      border: 1px solid rgba(255,255,255,.16); border-radius: 50%;
+      box-shadow: 0 0 0 44px rgba(255,255,255,.025),
+                  0 0 0 94px rgba(255,255,255,.025);
+    }
+    .eyebrow {
+      display: inline-flex; gap: 8px; align-items: center;
+      font-size: 12px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase;
+      color: #9bd4c6;
+    }
+    .eyebrow::before { content: ""; width: 24px; height: 2px; background: currentColor; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      position: relative; z-index: 1;
+      max-width: 760px; margin: 23px 0 20px;
+      font: 700 clamp(44px, 7vw, 78px)/.97 Georgia, "Times New Roman", serif;
+      letter-spacing: -.045em;
+    }
+    .lede {
+      position: relative; z-index: 1;
+      max-width: 760px; margin-bottom: 32px; color: #d9e6e1; font-size: 19px;
+    }
+    .meta { position: relative; z-index: 1; display: flex; gap: 22px; flex-wrap: wrap; }
+    .meta span { color: #bcd0ca; font-size: 13px; }
+    .meta strong { display: block; color: #fff; font-size: 16px; }
+    nav {
+      display: flex; gap: 10px; flex-wrap: wrap; margin: 22px 0 42px;
+      position: sticky; top: 12px; z-index: 5;
+    }
+    nav a {
+      padding: 9px 14px; color: var(--forest); background: rgba(255,253,248,.93);
+      border: 1px solid var(--line); border-radius: 999px; text-decoration: none;
+      font-weight: 700; font-size: 13px; box-shadow: 0 5px 18px rgba(35,49,45,.05);
+      backdrop-filter: blur(8px);
+    }
+    section { margin: 0 0 64px; scroll-margin-top: 78px; }
+    .section-kicker { color: var(--teal); font-weight: 800; font-size: 12px;
+      text-transform: uppercase; letter-spacing: .14em; }
+    h2 { margin-bottom: 13px; font: 700 38px/1.08 Georgia, serif; letter-spacing: -.025em; }
+    h3 { font-size: 18px; line-height: 1.25; }
+    .intro { max-width: 790px; color: var(--muted); font-size: 17px; }
+    .grid { display: grid; gap: 18px; }
+    .three { grid-template-columns: repeat(3, 1fr); }
+    .two { grid-template-columns: repeat(2, 1fr); }
+    .card, .panel {
+      border: 1px solid var(--line); border-radius: 20px; background: var(--panel);
+      box-shadow: 0 10px 35px rgba(35,49,45,.055);
+    }
+    .card { padding: 25px; }
+    .card p:last-child { margin-bottom: 0; }
+    .number { display: block; margin: 4px 0 8px; color: var(--forest);
+      font: 700 42px/1 Georgia, serif; letter-spacing: -.035em; }
+    .label { color: var(--muted); font-size: 14px; }
+    .verdict { border-top: 5px solid var(--teal); }
+    .verdict.amber { border-top-color: var(--amber); }
+    .verdict.red { border-top-color: var(--red); }
+    .pill { display: inline-block; padding: 4px 9px; border-radius: 999px;
+      font-size: 11px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+    .pill.green { color: var(--forest); background: var(--mint); }
+    .pill.amber { color: #7a4717; background: var(--amber-soft); }
+    .pill.red { color: #792e28; background: var(--red-soft); }
+    .pill.blue { color: #214e70; background: var(--blue-soft); }
+    .callout {
+      margin-top: 22px; padding: 18px 20px; border-left: 4px solid var(--amber);
+      border-radius: 0 12px 12px 0; color: #5e482e; background: var(--amber-soft);
+    }
+    .panel { padding: 30px; }
+    .chart-title { display: flex; justify-content: space-between; align-items: baseline;
+      gap: 20px; margin-bottom: 24px; }
+    .chart-title p { margin: 0; color: var(--muted); font-size: 13px; }
+    .diverge { display: grid; grid-template-columns: 230px 1fr 54px; gap: 11px 14px;
+      align-items: center; }
+    .qname { font-size: 13px; line-height: 1.25; }
+    .axisbar { position: relative; height: 22px; border-radius: 5px;
+      background: linear-gradient(90deg, #f4ebe6 0 49.7%, #d5d4cd 49.7% 50.3%,
+                                  #e5f2ed 50.3% 100%); }
+    .axisbar::after { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px;
+      width: 1px; background: #8a928f; }
+    .barneg, .barpos { position: absolute; top: 4px; height: 14px; min-width: 2px; }
+    .barneg { right: 50%; background: var(--red); border-radius: 4px 0 0 4px; }
+    .barpos { left: 50%; background: var(--teal); border-radius: 0 4px 4px 0; }
+    .delta { text-align: right; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .delta.neg { color: var(--red); } .delta.pos { color: var(--teal); }
+    .axisnote { grid-column: 2; display: flex; justify-content: space-between;
+      margin-top: -5px; color: var(--muted); font-size: 11px; }
+    .ratio-row { display: grid; grid-template-columns: 185px 1fr 55px; align-items: center;
+      gap: 13px; margin: 12px 0; }
+    .ratio-track { height: 15px; overflow: hidden; border-radius: 999px;
+      background: #e4e2da; position: relative; }
+    .ratio-track::after { content: "community width"; position: absolute; right: 7px;
+      top: -18px; color: var(--muted); font-size: 9px; }
+    .ratio-fill { height: 100%; border-radius: inherit; background: var(--teal); }
+    .ratio-fill.crypto { background: var(--amber); }
+    .ratio-value { text-align: right; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 18px;
+      color: var(--muted); font-size: 12px; }
+    .dot { display: inline-block; width: 9px; height: 9px; margin-right: 6px;
+      border-radius: 50%; background: var(--teal); }
+    .dot.amber { background: var(--amber); }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { color: var(--muted); font-size: 11px; letter-spacing: .08em;
+      text-transform: uppercase; text-align: left; }
+    th, td { padding: 13px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    tr:last-child td { border-bottom: 0; }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+    .statusline { display: grid; grid-template-columns: 112px 1fr; gap: 15px;
+      padding: 17px 0; border-bottom: 1px solid var(--line); }
+    .statusline:last-child { border-bottom: 0; }
+    .statusline p { margin: 0; color: var(--muted); }
+    .meter { display: flex; height: 15px; overflow: hidden; border-radius: 999px;
+      background: #e3e1d9; }
+    .meter span { display: block; }
+    .plain { background: #bcc4c1; } .high { background: var(--teal); }
+    .angles { background: var(--forest); }
+    .telemetry-row { margin: 19px 0; }
+    .telemetry-row header { display: flex; justify-content: space-between; margin-bottom: 7px;
+      font-size: 13px; }
+    .telemetry-row small { color: var(--muted); }
+    .sequence { counter-reset: phase; }
+    .phase { position: relative; padding: 0 0 30px 56px; }
+    .phase::before { counter-increment: phase; content: counter(phase); position: absolute;
+      left: 0; top: 0; width: 34px; height: 34px; border-radius: 50%; display: grid;
+      place-items: center; color: #fff; background: var(--forest); font-weight: 800; }
+    .phase::after { content: ""; position: absolute; left: 16px; top: 39px; bottom: 2px;
+      width: 2px; background: var(--line); }
+    .phase:last-child::after { display: none; }
+    .phase h3 { margin-bottom: 7px; }
+    .phase p { margin-bottom: 8px; color: var(--muted); }
+    code { padding: 2px 5px; border-radius: 5px; background: #eceae2;
+      font: 12px/1.4 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .footer { padding-top: 28px; color: var(--muted); border-top: 1px solid var(--line);
+      font-size: 13px; }
+    .nowrap { white-space: nowrap; }
+    @media (max-width: 900px) {
+      .three, .two { grid-template-columns: 1fr; }
+      .hero { padding: 42px 32px; }
+      .diverge { grid-template-columns: 155px 1fr 50px; }
+    }
+    @media (max-width: 620px) {
+      .shell { padding: 12px 12px 50px; }
+      .hero { border-radius: 20px; min-height: 0; }
+      h1 { font-size: 46px; }
+      nav { position: static; }
+      .panel { padding: 20px 15px; overflow-x: auto; }
+      .diverge { min-width: 560px; }
+      .ratio-row { grid-template-columns: 130px 1fr 46px; }
+      table { min-width: 640px; }
+    }
+    @media print {
+      body { background: white; }
+      .shell { max-width: none; padding: 0; }
+      nav { display: none; }
+      .hero, .card, .panel { box-shadow: none; }
+      section { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<main class="shell">
+  <header class="hero">
+    <div class="eyebrow">Forecast scaffold · diagnostic memo</div>
+    <h1>MiniBench signals, without fooling ourselves</h1>
+    <p class="lede">A forecast-versus-community audit, an adversarial validation of the
+      time-locked pastcasting stack, and a decision-gated path from intriguing patterns to
+      production-worthy changes.</p>
+    <div class="meta">
+      <span><strong>15 July 2026</strong>Analysis date</span>
+      <span><strong>15 updated questions</strong>9 binary · 6 numeric</span>
+      <span><strong>No outcomes yet</strong>Disagreement, not score</span>
+      <span><strong>No prompt change</strong>Safety + measurement PR only</span>
+    </div>
+  </header>
+
+  <nav aria-label="Report sections">
+    <a href="#decision">Decision</a><a href="#binary">Binary</a>
+    <a href="#numeric">Numeric</a><a href="#pastcast">Pastcast audit</a>
+    <a href="#hypotheses">Hypotheses</a><a href="#next">Next gates</a>
+    <a href="#changes">PR scope</a>
+  </nav>
+
+  <section id="decision">
+    <div class="section-kicker">Executive decision</div>
+    <h2>Fix the measurement system; do not recalibrate the bot yet.</h2>
+    <p class="intro">The updated MiniBench panel contains useful signatures, but every
+      question is unresolved and the community snapshots may not be time-matched. The
+      responsible outcome is a targeted research agenda—not a global probability shift.</p>
+    <div class="grid three">
+      <article class="card verdict">
+        <span class="pill green">Hold</span>
+        <span class="number">3 of 9</span>
+        <p class="label">binary questions generate 76.9% of absolute bot–community
+          disagreement.</p>
+        <p>Concentration plus high rank agreement argues against a blanket “raise every YES”
+          correction.</p>
+      </article>
+      <article class="card verdict amber">
+        <span class="pill amber">Test next</span>
+        <span class="number">0.55×</span>
+        <p class="label">median bot/community displayed interval-width ratio across the six
+          current numeric questions.</p>
+        <p>This is a coherent dispersion signature, but UI intervals are not outcome-based
+          calibration evidence.</p>
+      </article>
+      <article class="card verdict red">
+        <span class="pill red">Not validated</span>
+        <span class="number">0 / 71</span>
+        <p class="label">legacy run-0 rows with new semantic evidence-return telemetry.</p>
+        <p>The existing TimeVault tranche cannot establish research parity with a live agentic
+          search system.</p>
+      </article>
+    </div>
+    <div class="callout"><strong>Interpretation boundary.</strong> Community forecasts are a
+      diagnostic comparator, not ground truth. The report uses “difference,” “signature,” and
+      “hypothesis” deliberately; it does not relabel disagreement as model error.</div>
+  </section>
+
+  <section id="binary">
+    <div class="section-kicker">Updated MiniBench · binary</div>
+    <h2>The apparent low bias is real in direction, but highly concentrated.</h2>
+    <p class="intro">Seven of nine bot forecasts sit below the displayed community value
+      (one-sided sign probability 0.090). Yet excluding the single SK Hynix outlier, bot and
+      community probabilities are almost rank-identical: Pearson 0.972 and Spearman 0.958.</p>
+    <div class="panel">
+      <div class="chart-title">
+        <h3>Bot minus community, percentage points</h3>
+        <p>negative = bot lower · bar scale ±50 pp</p>
+      </div>
+      <div class="diverge" role="img" aria-label="Diverging bars of bot minus community forecast">
+        <div class="qname">SK Hynix earnings</div><div class="axisbar"><i class="barneg" style="width:48.8%"></i></div><div class="delta neg">−48.8</div>
+        <div class="qname">NBA investigation</div><div class="axisbar"><i class="barneg" style="width:14.6%"></i></div><div class="delta neg">−14.6</div>
+        <div class="qname">SOL above $85</div><div class="axisbar"><i class="barneg" style="width:13.7%"></i></div><div class="delta neg">−13.7</div>
+        <div class="qname">Ebola case 21</div><div class="axisbar"><i class="barneg" style="width:5.7%"></i></div><div class="delta neg">−5.7</div>
+        <div class="qname">US–Iran talks</div><div class="axisbar"><i class="barneg" style="width:5.5%"></i></div><div class="delta neg">−5.5</div>
+        <div class="qname">Spain LOIA amendment</div><div class="axisbar"><i class="barneg" style="width:4.2%"></i></div><div class="delta neg">−4.2</div>
+        <div class="qname">NVDA above $225</div><div class="axisbar"><i class="barneg" style="width:1.1%"></i></div><div class="delta neg">−1.1</div>
+        <div class="qname">Pogačar Stage 19</div><div class="axisbar"><i class="barpos" style="width:2.7%"></i></div><div class="delta pos">+2.7</div>
+        <div class="qname">Starship Flight 13</div><div class="axisbar"><i class="barpos" style="width:3.9%"></i></div><div class="delta pos">+3.9</div>
+        <div></div><div class="axisnote"><span>bot lower</span><span>same</span><span>bot higher</span></div><div></div>
+      </div>
+    </div>
+    <div class="grid two" style="margin-top:18px">
+      <div class="card">
+        <h3>Why global recalibration fails the evidence test</h3>
+        <p>Eight of nine forecasts agree with the community on the modal side of 50%. Remove
+          SK Hynix and the remaining eight move together closely. A global lift would modify
+          six already-close calls to chase three heterogeneous disagreements.</p>
+      </div>
+      <div class="card">
+        <h3>What the outliers do justify</h3>
+        <p>Audit official scheduling/status retrieval for SK Hynix and the NBA investigation,
+          plus barrier-crossing mechanics for SOL. These are separate failure hypotheses and
+          should remain separate until resolved outcomes say otherwise.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="numeric">
+    <div class="section-kicker">Updated MiniBench · numeric</div>
+    <h2>Location looks ordinary; dispersion looks unusually tight.</h2>
+    <p class="intro">All six bot medians fall inside the displayed community intervals, and
+      all six community medians fall inside the bot intervals. The striking difference is
+      width: every bot interval is narrower, with five fully nested inside the community
+      interval.</p>
+    <div class="panel">
+      <div class="chart-title">
+        <h3>Displayed bot interval width ÷ community interval width</h3>
+        <p>1.00 would be equal width</p>
+      </div>
+      <div class="ratio-row"><span>Wildfire acres</span><div class="ratio-track"><div class="ratio-fill" style="width:60%"></div></div><span class="ratio-value">0.60</span></div>
+      <div class="ratio-row"><span>EUR/USD</span><div class="ratio-track"><div class="ratio-fill" style="width:50%"></div></div><span class="ratio-value">0.50</span></div>
+      <div class="ratio-row"><span>Death Valley max</span><div class="ratio-track"><div class="ratio-fill" style="width:66.7%"></div></div><span class="ratio-value">0.67</span></div>
+      <div class="ratio-row"><span>El Palmito fill</span><div class="ratio-track"><div class="ratio-fill" style="width:71.4%"></div></div><span class="ratio-value">0.71</span></div>
+      <div class="ratio-row"><span>TAC DeFi TVL</span><div class="ratio-track"><div class="ratio-fill crypto" style="width:34.7%"></div></div><span class="ratio-value">0.35</span></div>
+      <div class="ratio-row"><span>Solana RWA</span><div class="ratio-track"><div class="ratio-fill crypto" style="width:45.6%"></div></div><span class="ratio-value">0.46</span></div>
+      <div class="legend"><span><i class="dot"></i>other numeric</span><span><i class="dot amber"></i>crypto / on-chain</span></div>
+    </div>
+    <div class="grid three" style="margin-top:18px">
+      <div class="card"><span class="number">6 / 6</span><p class="label">current bot intervals narrower than community</p></div>
+      <div class="card"><span class="number">8 / 8</span><p class="label">when the prior copper and sulphur rows are added</p></div>
+      <div class="card"><span class="number">0.40×</span><p class="label">mean width ratio for the two current crypto/on-chain rows, versus 0.62× for the other four</p></div>
+    </div>
+    <div class="callout"><strong>Do not widen yet.</strong> Displayed community intervals are
+      rounded and need not represent the same quantiles or aggregation rule as the bot’s
+      distribution. Promotion requires resolved numeric questions scored with CRPS, interval
+      coverage, and sharpness—not width imitation.</div>
+  </section>
+
+  <section id="pastcast">
+    <div class="section-kicker">Pastcasting tool · adversarial validation</div>
+    <h2>The concern about external validity was substantiated.</h2>
+    <p class="intro">The tool passed basic archive retrieval after repair, but the audit found
+      a live-redirect leak, live Wikipedia title-map dependencies, weak reliability under rate limits,
+      legacy telemetry that credited attempts as evidence, and a binary-only outcome path.
+      The paid legacy tranche therefore stays quarantined from decision-making.</p>
+
+    <div class="grid two">
+      <div class="panel">
+        <h3>Security and measurement defects repaired</h3>
+        <div class="statusline"><span><span class="pill red">Critical</span></span><p><strong>Live redirect escape.</strong> A Wayback request could follow a redirect to the live origin while retaining the requested archive stamp. Effective responses must now match an anchored <code>web.archive.org/web/&lt;timestamp&gt;id_/…</code> replay—not a calendar, timemap, or toolbar page.</p></div>
+        <div class="statusline"><span><span class="pill red">Critical</span></span><p><strong>Wikipedia future leak.</strong> OpenSearch, redirects, and even an exact MediaWiki revision query consult today’s title-to-page map before date filtering. MediaWiki is no longer called: the exact title URL must have a cutoff-bounded Wayback capture or it is unavailable.</p></div>
+        <div class="statusline"><span><span class="pill red">Critical</span></span><p><strong>Undated corpus bypass.</strong> Agent calls could opt unparseable crawl dates into results. Undated rows now fail closed and the override is absent from the public tool schema.</p></div>
+        <div class="statusline"><span><span class="pill amber">Validity</span></span><p><strong>Prospective rows skipped.</strong> <code>frozen_at</code> was not accepted as an as-of instant. It now is, with explicit precedence.</p></div>
+        <div class="statusline"><span><span class="pill amber">Validity</span></span><p><strong>False research credit.</strong> Explanatory “unavailable” text counted as a read and source class. New content-free telemetry separates attempts, returned results, unavailable captures, and tool errors.</p></div>
+        <div class="statusline"><span><span class="pill blue">Reliability</span></span><p><strong>Transient failures.</strong> Timeouts, 429s, and selected 5xx responses now retry with bounded backoff. The smoke still found persistent GDELT failure, so this is mitigation—not parity.</p></div>
+      </div>
+
+      <div class="panel">
+        <h3>Post-fix, no-model smoke</h3>
+        <table>
+          <thead><tr><th>Capability</th><th>Result</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>Corpus discovery</td><td class="num">5 / 5</td><td>Dated hits returned for five smoke queries.</td></tr>
+            <tr><td>Wayback page</td><td><span class="pill green">Pass</span></td><td>Snapshot timestamp stayed before cutoff; 8,000 text characters returned.</td></tr>
+            <tr><td>Wikipedia title archive</td><td><span class="pill green">Pass</span></td><td>Exact-title Wayback capture from 2025-09-20 returned 8,000 text characters; the 2023 “X” rename regression returned unavailable at a 2022 cutoff.</td></tr>
+            <tr><td>GDELT news</td><td><span class="pill red">Fail</span></td><td>Backend remained unavailable after bounded retries and was explicitly marked unavailable.</td></tr>
+            <tr><td>Live redirect regression</td><td><span class="pill green">Blocked</span></td><td>Automated regression rejects a live-origin effective URL.</td></tr>
+          </tbody>
+        </table>
+        <p class="label">Final-code inputs and content-free outcomes are frozen in
+          <code>bench/analysis/timevault-smoke-2026-07-15.json</code>.</p>
+        <div class="callout"><strong>Capability verdict: amber/red.</strong> Archive reads can
+          work safely; broad, robust agentic discovery has not been demonstrated.</div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:18px">
+      <div class="chart-title"><h3>What the legacy tranche actually exercised</h3><p>run 0 · only 17 rows/tier had mechanics telemetry</p></div>
+      <div class="telemetry-row"><header><strong>Plain</strong><small>mean 0.29 search attempts · median 0 · 1/17 active</small></header><div class="meter"><span class="plain" style="width:1.7%"></span></div></div>
+      <div class="telemetry-row"><header><strong>High</strong><small>mean 11.06 · median 12 · 14/17 active</small></header><div class="meter"><span class="high" style="width:26.3%"></span></div></div>
+      <div class="telemetry-row"><header><strong>Angles</strong><small>mean 42.00 · median 41 · 17/17 active</small></header><div class="meter"><span class="angles" style="width:100%"></span></div></div>
+      <p class="label">Counts above are attempts, not successful evidence returns. The 71
+        preregistered run-0 rows mix scaffold versions 0.4.18, 0.4.20, and 0.4.21; six
+        nonzero-run rows are ignored. None carries the new semantic telemetry.</p>
+      <table>
+        <thead><tr><th>Substrate proxy</th><th>Observed</th><th>Boundary</th></tr></thead>
+        <tbody>
+          <tr><td>Any linked source surfaced @8 / @25</td><td class="num">18 / 20</td><td>Not teacher-cited or load-bearing recall.</td></tr>
+          <tr><td>Mean cutoff-eligible URLs</td><td class="num">50.6%</td><td>About half the published source set was unavailable by construction.</td></tr>
+          <tr><td>Median “relevant” source set</td><td class="num">9,488.5</td><td>So any-hit is a permissive proxy.</td></tr>
+          <tr><td>Readable Wayback capture</td><td class="num">16 / 18</td><td>Two timed out; unavailable explanatory text is no longer credited.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel" style="margin-top:18px">
+      <h3>Bounded Opus 4.6 capability smoke: no usable model result</h3>
+      <p>Memory screening was run before score inspection and surfaced 0 candidates among 71
+        run-0 legacy rows. A single high-effort, dossier-ablated, TimeVault call was then
+        attempted with concurrency 1 and no Sonnet substitution. The first agent call hit its
+        900-second timeout; the old harness incorrectly began a second full repair attempt.
+        That orphan chain was terminated, no JSON result was written, and no score was read.</p>
+      <p><strong>Spend accounting:</strong> no OpenRouter or AskNews use; no completed paid
+        result. Subscription-equivalent usage for the killed process is unavailable, so it is
+        reported as unknown rather than $0. The PR makes this class of timeout single-shot and
+        reserves the remaining hard budget.</p>
+    </div>
+  </section>
+
+  <section id="hypotheses">
+    <div class="section-kicker">Hypothesis ledger</div>
+    <h2>Separate the mechanisms before touching production.</h2>
+    <div class="panel">
+      <table>
+        <thead><tr><th>Hypothesis</th><th>Evidence now</th><th>Decision</th><th>Next falsifier</th></tr></thead>
+        <tbody>
+          <tr><td><strong>H1 · global binary underprediction</strong></td><td>7/9 below community, but 77% of absolute difference is three questions; 8/9 same modal side.</td><td><span class="pill red">Reject change</span></td><td>Wait for resolved, timestamp-matched score set; test calibration slope/intercept out of sample.</td></tr>
+          <tr><td><strong>H2 · official status/schedule retrieval gap</strong></td><td>SK Hynix and NBA dominate; prior institutional deadline subset had the opposite, over-optimistic tail.</td><td><span class="pill amber">Mechanism audit</span></td><td>Tagged official-status pilot with untouched controls; inspect evidence and step chronology before outcomes.</td></tr>
+          <tr><td><strong>H3 · numeric underdispersion</strong></td><td>6/6 current and 8/8 current+prior displayed intervals narrower; medians remain well located.</td><td><span class="pill amber">Build support</span></td><td>Continuous pastcast/prospective scoring with CRPS, nominal coverage, and sharpness.</td></tr>
+          <tr><td><strong>H4 · crypto jump mechanics omitted</strong></td><td>Two crypto/on-chain interval ratios average 0.40 versus 0.62 for other current numerics.</td><td><span class="pill blue">Exploratory</span></td><td>Pre-register category split; test log-scale volatility and jump scenarios on a larger resolved set.</td></tr>
+          <tr><td><strong>H5 · TimeVault approximates live agentic search</strong></td><td>Archive retrieval works, GDELT does not reliably; plain used almost no search; semantic success absent.</td><td><span class="pill red">Not established</span></td><td>Pass a no-model fact-retrieval gate before any model A/B.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="next">
+    <div class="section-kicker">Decision contracts to freeze before spend</div>
+    <h2>A cheap staircase, with stop rules.</h2>
+    <div class="grid two">
+      <div class="panel sequence">
+        <div class="phase">
+          <h3>18-fact external-validity gate · $0 model spend</h3>
+          <p>Freeze facts spanning official pages, news, Wikipedia, and corpus discovery, with
+            known pre-cutoff answers and load-bearing URLs.</p>
+          <p><strong>Pass only if:</strong> 18/18 prevent post-cutoff leakage; ≥16/18 retrieve a
+            correct pre-cutoff fact; ≥14/18 surface a load-bearing source in the top eight;
+            zero unavailable captures are credited as reads. A security miss is automatic kill.</p>
+        </div>
+        <div class="phase">
+          <h3>Research-parity pilot · maximum $12</h3>
+          <p>Only after gate 1 passes: freeze nine unresolved, contamination-cleared binary
+            questions and launch paired live-web and TimeVault arms within 30 minutes of the
+            same <code>frozen_at</code>; TimeVault is pinned to that instant. Same Opus model,
+            prompt, and concurrency 1. Run two pairs first and stop if projected total exceeds
+            $12.</p>
+          <p><strong>Pass only if:</strong> ≥8/9 valid pairs; zero leaks; median source recall
+            ≥0.50 and TimeVault evidence precision ≥0.80. Two reviewers, blind to arm, label
+            canonical URLs and factual claims; “load-bearing” means removing the claim could
+            move the stated probability by ≥2 pp. Source recall is TimeVault/live intersection
+            divided by live load-bearing URLs; precision is supported TimeVault load-bearing
+            claims divided by all factual claims used in its rationale. Resolve reviewer
+            disagreements while arm labels remain hidden. Single-draw forecast differences are
+            descriptive only until same-tool repeatability is separately bounded.</p>
+        </div>
+        <div class="phase">
+          <h3>Mechanism pilots, not global edits</h3>
+          <p>For official-status/deadline retrieval, prospectively freeze 12 tagged questions
+            plus four untouched controls, excluding the ten motivating holdouts. Score only
+            resolved, paired rows; require ≥10 tagged pairs and all four controls or declare
+            no-decision.</p>
+          <p><strong>Promotion rule:</strong> mean paired Brier improvement
+            <span class="nowrap">Brier(current) − Brier(move)</span> ≥0.015 on tagged rows and
+            mean control degradation &lt;0.003. Kill if control degradation ≥0.005; otherwise
+            no-decision under this pilot. Numeric dispersion gets no promotion rule until the
+            harness emits continuous distributions and CRPS/coverage/sharpness. No production
+            prompt change is part of this PR.</p>
+        </div>
+      </div>
+      <div>
+        <div class="card verdict">
+          <span class="pill green">Already safe to merge</span>
+          <h3 style="margin-top:14px">Leak containment and honest telemetry</h3>
+          <p>These changes improve measurement validity regardless of which forecasting hypothesis
+            eventually wins.</p>
+        </div>
+        <div class="card verdict amber" style="margin-top:18px">
+          <span class="pill amber">Needs explicit approval</span>
+          <h3 style="margin-top:14px">Finish the old tranche</h3>
+          <p>About 49 cells remain, estimated at roughly $40.6—notional spend above the standing
+            $25 approval threshold. The existing file is also version-mixed, so completion has a
+            weak value proposition. Recommendation: do not resume.</p>
+        </div>
+        <div class="card verdict red" style="margin-top:18px">
+          <span class="pill red">Do not do</span>
+          <h3 style="margin-top:14px">Read the incomplete score or broaden a post-hoc rule</h3>
+          <p>The tranche is incomplete and heterogeneous. Existing BTF-2 subgroup diagnostics show
+            the tagged development set near Brier 0.143–0.149, controls 0.199–0.220, but the ten
+            motivating holdouts were all NO and averaged p≈0.79–0.82. That explains a deadline
+            optimism tail; it does not license a universal direction correction.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="changes">
+    <div class="section-kicker">Pull request scope</div>
+    <h2>Measurement infrastructure, reproducible analysis, and this memo.</h2>
+    <div class="grid two">
+      <div class="panel">
+        <h3>Code changes</h3>
+        <ul>
+          <li>Verify Wayback’s effective archive URL and remove every live Wikipedia title-map query.</li>
+          <li>Add bounded transient retries without treating persistent failure as success.</li>
+          <li>Recognize prospective <code>frozen_at</code> cutoffs and null crowd values.</li>
+          <li>Record semantic search/read success, unavailable captures, unique targets, and errors.</li>
+          <li>Correct report/source-class/readability handling for unavailable or null data.</li>
+          <li>Fail closed after a timeout; constrain positive benchmark budgets to serialized native Claude caps.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>Reproducible diagnostics</h3>
+        <ul>
+          <li><code>minibench_2026_07_15.py</code> reproduces binary disagreement and numeric width signatures.</li>
+          <li><code>pastcast_validity.py</code> audits provenance and research mechanics without reading probabilities.</li>
+          <li>Regression tests cover redirect leakage, future title fallback, semantic telemetry, prospective rows, null crowds, and single-shot timeouts.</li>
+          <li>This HTML keeps claims, caveats, costs, nulls, and decision rules in one reviewable artifact.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p><strong>Data provenance.</strong> The 15 MiniBench values were supplied by the operator from
+      the closed-forecast UI on 15 July 2026. Prior numeric comparisons and BTF-2 diagnostics
+      come from repository-frozen analysis artifacts. No updated question in this memo had
+      resolved at analysis time. The journal contains 43 additional July 23–25 MiniBench-like
+      forecasts, but they have neither community snapshots nor outcomes and are excluded from
+      comparative claims.</p>
+    <p><strong>Bottom line.</strong> Merge the safety and auditability repairs. Hold all forecasting
+      behavior changes until the retrieval stack passes its external-validity gate and the
+      proposed mechanism tests satisfy the frozen decision contracts above.</p>
+  </footer>
+</main>
+</body>
+</html>

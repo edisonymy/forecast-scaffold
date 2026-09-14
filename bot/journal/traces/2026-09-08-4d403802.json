@@ -1,0 +1,170 @@
+{
+ "record_id": "2026-09-08-4d403802",
+ "question": "Will Ethereum (ETH/USD) close above $2,550 on September 18, 2026?",
+ "question_id": 45758,
+ "url": "https://www.metaculus.com/questions/45567/",
+ "question_type": "binary",
+ "forecast_at": "2026-09-08T11:26:06+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.8986,
+ "pools": {
+  "pooled_runs": 0.33967910506101895,
+  "phase1": 0.33967910506101895,
+  "phase2": null,
+  "spread_phase1": 0.05,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probability": 0.34
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0956,
+   "seconds": 372.2,
+   "estimate": 0.37,
+   "reasoning": "Spot ~$2,483.5 (Sep 8 11:52Z); $2,550 is +2.6% to +2.8% in log terms, 10.53 days out, resolving on a single dated close. Two independent vol estimates agree: realized daily SD 2.2-2.5% over the post-Aug-20 regime (120d CoinGecko series), and 2.6%/day backed out of Polymarket's September touch ladder via reflection. That gives sigma ~8.5% over the horizon, ~9.3% after adding CPI (Sep 11) and the FOMC decision + dot plot (Sep 16, hold vs a live 25bp hike) inside the window. Driftless lognormal with the -sigma^2/2 term puts the threshold ~0.33 SD away: ~37%. Upward pressure from record ETF inflows ($986.9M last week, 12+ day streak, BlackRock accumulating) is roughly offset by the $2,511-$2,546 resistance band sitting directly under the strike, 3.7:1 small-holder distribution, and the negative skew a hike surprise would impose on a risk asset. No market matches this contract: Polymarket's September ETH market is touch-anytime-through-Oct-1, and the Kalshi $2,650 figure is from Aug 26 - both are evidence, not anchors.",
+   "sources": [
+    "https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=120&interval=daily",
+    "https://www.coingecko.com/en/coins/ethereum/historical_data",
+    "https://usethebitcoin.com/eth/ethereum-price-september-8-2026/",
+    "https://cryptoslate.com/predictions/market/what-price-will-ethereum-hit-in-september-2026/",
+    "https://coingape.com/markets/kalshi-traders-predict-ethereum-price-may-hit-2650-this-month/",
+    "https://fedratecalc.com/fomc-meeting-schedule/september-2026/",
+    "https://bingx.com/en/flash-news/post/sept-etf-flows-bitcoin-etfs-add-btc-in-day-and-btc-in-days-ethereum-etfs-add-eth-in-day",
+    "https://crypto.news/ethereum-etf-blackrock-1-42-billion-nine-day-streak/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the single Yahoo Finance ETH-USD 'Close' cell for the row dated Sep 18, 2026 (CoinGecko as fallback) - NOT an intraday high, NOT a touch, NOT a monthly average, NOT any exchange's own index. Strictly greater than $2,550.00; exactly $2,550.00 resolves NO.\n\nEVENT WINDOW: 2026-09-08T11:10Z (Now) -> the Sep 18 close as stamped at 2026-09-19T00:00:00Z per the criteria. Resolution is a single instant, not an interval, so 0% of the 10.53-day price path to that instant has elapsed as of Now. (Derived from the criteria text; the forecasting-close time plays no role.)\n\nPRICE STATE\n- Spot ETH/USD $2,483.51 as of 2026-09-08T11:52Z (CryptoSlate/Polymarket page). Independent read the same morning: $2,476.41 at 11:09Z (CoinGecko API), $2,472.4 (Coinbase, 'down 0.47% in 24h'), '~$2,500' (usethebitcoin, Sep 8).\n- CoinGecko daily closes (UTC): Aug 30 $2,416.24 | Aug 31 $2,466.57 | Sep 1 $2,417.68 | Sep 2 $2,390.78 | Sep 3 $2,507.65 | Sep 4 $2,456.09 | Sep 5 $2,480.00 | Sep 6 $2,514.01 | Sep 7 $2,489.40. Every close in the last 9 days fell inside $2,391-$2,514.\n- Regime history: ETH bottomed near $1,568 in mid-June 2026, chopped $1,850-$1,950 through July, then gapped +17.5% in one day around Aug 20 ($1,916 -> $2,252) and +7.8% two days later ($2,326 -> $2,515). It has gone sideways since. Aug 2026 was roughly a +30% month. Current level is ~43% below the 2025 peak near $4,300 (all-time high $4,958, Aug 2025).\n\nVOLATILITY / DISPERSION (both computed this run)\n- Realized: SD of daily log returns over the 17 sessions since the Aug 20 jump = 2.20%/day (~42% annualized). Over the full 120-day CoinGecko series the daily SD is materially higher, inflated by the June crash (a -11.2% day, $1,769 -> $1,582) and the two August up-gaps.\n- Implied: inverting Polymarket's September touch ladder with the reflection approximation P(touch) ~= 2*N(-ln(L/S)/sigma*sqrt(T)) over the 23 days to Oct 1 yields sigma_23d of 12.1% at the $2,600 rung, 11.7% at $2,700, 12.2% at $2,800, 12.8% at $2,900, 13.3% at $3,000 - i.e. ~2.6%/day with a mild upward strike skew. This corroborates the realized figure.\n- Scaled to the 10.53 days remaining: sigma ~= 8.4-8.7% before any event-vol adjustment.\n\nMARKETS (contract mismatches noted; no price quoted here)\n- Polymarket 'What price will Ethereum hit in September 2026': TOUCH-anytime market resolving Oct 1, 2026 04:00 UTC. Rungs at $2,400/$2,600/$2,700/$2,800/$2,900/$3,000/$3,100/$4,000. Total volume $1.07M, liquidity $1.03M, open interest $793.02K. Mismatches vs this question: touch not close; Oct 1 not Sep 18; Polymarket's own oracle not Yahoo.\n- Polymarket runs dated 'Ethereum above ___ on September X' markets for early September; searched for a Sep 18, 2026 edition - not found.\n- Kalshi: has ETH price markets (daily ranges, monthly, EOY KXETHY). The only mid-Sept-relevant figure surfaced is a $2,650 month-end sentiment number reported by CoinGape on 2026-08-26 (article-date stale; ETH was $2,451.51 then; different date, different index, no probability or volume disclosed).\n- Kalshi EOY ladder (via secondary reporting): a new 2026 high above $3,500 is priced in the low teens percent; 2026's high so far is ~$3,405 on Jan 14.\n- No bookmaker market found. Harness title search on Polymarket and Manifold returned no candidate.\n\nSCHEDULED CATALYSTS INSIDE THE PATH\n- Aug 2026 CPI: Wed Sep 11, 08:30 ET.\n- FOMC: Sep 15-16, decision Wed Sep 16 14:00 ET, WITH the full Summary of Economic Projections and dot plot. Current target range 3.50%-3.75%, unchanged since Dec 2025. Reporting frames it as hold-vs-25bp-HIKE: softer July employment and retail sales argue hold, inflation above the 2% goal keeps a hike live. This lands 2 days before the resolution date.\n- Yahoo Finance / CoinGecko publish the daily close continuously; no reporting-lag risk for a Sep 18 row.\n\nEVIDENCE FOR UPSIDE\n- US spot ETH ETFs took in $986.9M in the week to ~Sep 5, their strongest 3-week stretch of 2026 ($3.8B total); Sep 7 alone +22,023 ETH (+$55.04M), 7-day +64,879 ETH (+$162.16M); a 12-consecutive-day inflow streak through Sep 1; BlackRock reported as the sole buyer across a $1.42B nine-day run.\n- Over 116,000 ETH (~$300M) withdrawn from exchanges in the 48h to Sep 8 (usethebitcoin).\n- Daily RSI ~62.87 on Sep 8 - positive momentum, not overbought.\n- The weekly chart broke the descending trendline that had capped every rally since the Aug 2025 peak.\n- Sell-side September framing: one outlook cites a $2,800 target with a $2,334-$2,950 range and $2,438 as the level that keeps it constructive.\n\nEVIDENCE FOR DOWNSIDE\n- Resistance is stacked at $2,511-$2,546, immediately beneath the strike; next resistance $2,626; major supply $2,723-$2,822. Support $2,385-$2,431.\n- Distribution ratio ~3.7:1 against price: smaller wallets sold ~307,000 ETH while whales accumulated only ~82,000 ETH.\n- One source reports ETF inflows having 'slowed considerably' vs prior weeks - this directly contradicts the flow figures above; both readings are in the record, unreconciled.\n- Bearish/flat model outputs: Changelly's September span ~$2,283 min / $2,589 max, average ~$2,436; Gov.Capital ~$2,361.\n- A hike or hawkish dot plot on Sep 16 would leave only two sessions before the observation.\n\nBASE RATES (class stated for each)\n- Over ETH 10-11 day forward windows generally: the share ending >2.7% above the start is close to the coin-flip-minus-a-bit implied by a driftless high-vol walk; at the current regime's ~2.5%/day the threshold sits roughly 0.3 standard deviations above spot.\n- Conditional on the current sideways regime specifically (last 9 closes all inside $2,391-$2,514, i.e. none above the strike): zero of the last 9 daily closes cleared $2,550, and the highest close since the Aug 22 peak of $2,514.97 is $2,514.01.\n- Conditional on a jump regime (the class that produced Aug 20 and Aug 22): a single such day covers the required distance several times over; two occurred in the last 20 sessions.\n\nSEARCHED FOR BUT NOT ",
+   "reference_class": "Forward 10-11 day windows for ETH/USD: the fraction that end more than ~2.7% above the window's starting price, estimated from the ETH daily series (120d CoinGecko) and cross-checked against a lognormal at the regime's realized volatility"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.931,
+   "seconds": 273.6,
+   "estimate": 0.32,
+   "reasoning": "ETH sits at $2,471.60 (CoinMarketCap, Sep 8); $2,550 is +3.1% (log +3.09%) away with 10.53 days to the 2026-09-19T00:00Z measurement instant. Reference class of ~10-day forward moves of this size gives ~35%. Realized daily sigma from the last 15 Yahoo closes is 2.05% (calm, range-bound); Polymarket's September one-touch ladder ($2,600 69%, $2,800 31%, $3,000 15%, $2,200 37%) inverts via reflection to a mutually consistent 2.6-2.9% daily, and the Sep 7-13 weekly implies 2.48%. At sigma=2.5%, z=(0.0309+sigma^2/2)/(0.025*sqrt(10.53))=0.42 -> 0.34. Trimmed to 0.32: fat tails thin the shoulders at 0.4 sigma, and $2,550 coincides with the 50-week MA ($2,542) that rejected price three times (Aug 21, Aug 27, Sep 6), with zero closes above $2,550 in 30 sessions. Offsetting bullish: $986.9M weekly ETF inflows ($3.8B over three weeks) and three in-window catalysts (CPI Sep 11, CLARITY vote Sep 15, FOMC Sep 15-16 with dot plot) which widen the distribution two-sidedly. No market matches this contract — Polymarket dailies resolve off Binance ETH/USDT at noon ET and stop at Sep 8; monthly/weekly markets are one-touch, not a dated close; Kalshi's ETH page returned HTTP 429 and could not be checked. Markets therefore inform volatility, not a price anchor.",
+   "sources": [
+    "https://finance.yahoo.com/quote/ETH-USD/history/",
+    "https://www.coingecko.com/en/coins/ethereum",
+    "https://www.coingecko.com/en/coins/ethereum/historical_data",
+    "https://www.investing.com/crypto/ethereum/historical-data",
+    "https://coinmarketcap.com/currencies/ethereum/",
+    "https://polymarket.com/crypto/ethereum",
+    "https://polymarket.com/event/what-price-will-ethereum-hit-in-september-2026",
+    "https://cryptorank.io/news/feed/bf7c2-ethereum-price-september-outlook-2026",
+    "https://crypto.news/ethereum-price-rally-overheats-below-2550-resistance/",
+    "https://fedratecalc.com/fomc-meeting-schedule/september-2026/",
+    "https://www.newsbtc.com/news/ethereum-etfs-positive-inflows-september-trading-opens/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the Yahoo Finance ETH-USD historical-data 'Close' column, row dated Sep 18 2026, strictly > $2,550.00 (2,550.00 exactly resolves NO). Per the fine print this is the 00:00 UTC snapshot ending the UTC calendar day Sep 18. It does NOT resolve off Binance ETH/USDT, off noon-ET prints, off intraday highs, or off any touch of the level. CoinGecko is the named fallback only if Yahoo reports nothing.\n\nEVENT WINDOW: The criteria define a single measurement instant, not a span: 2026-09-19T00:00:00Z. As of Now (2026-09-08T11:10:32Z), 10.53 days remain to that instant; there is no window to be partially elapsed. (The 2026-09-19T00:00Z 'scheduled resolution' coincides with the measurement instant here.)\n\nPRICE STATE (all Sep 8 2026 unless noted):\n- Spot $2,471.60, +0.75% 24h, market cap $301.76B, 24h range $2,463.03-$2,510.54 (CoinMarketCap, Sep 8).\n- CoinGecko Sep 8: $2,472.24, 7-day +1.20%, 30-day +29.3%.\n- Yahoo ETH-USD daily closes: Sep 1 $2,417.84 / Sep 2 $2,391.50 / Sep 3 $2,508.02 / Sep 4 $2,456.08 / Sep 5 $2,480.74 / Sep 6 $2,514.55 / Sep 7 $2,490.96 / Sep 8 (partial) $2,472.64. Aug 24-31: $2,481.83, $2,443.16, $2,506.26, $2,510.41, $2,442.54, $2,457.69, $2,417.94, $2,466.82.\n- Investing.com August closes show the regime break: Aug 8-18 flat at $1,873-$1,918; Aug 19 $2,253.35; Aug 20 $2,327.35; Aug 21 $2,515.33. Roughly +30% in three sessions.\n- 2026 YTD: opened the year at $3,121.90; 2026 range low $1,853.70, high $3,356.50 (blocfolio/CoinScreener). All-time high $4,953.73 (Aug 24 2025).\n\nSERIES DISPERSION (the checklist item): SD of daily log closes over Aug 24-Sep 8 (15 returns, Yahoo) = 2.05%/day; largest single day in that stretch +4.76% (Sep 2->3). Scaling to the 10.53-day horizon: 6.7%. The same computation run over Aug 8-Sep 8 is far larger because of the Aug 19-21 repricing. Forward-looking alternative: Polymarket's September one-touch ladder, inverted through the reflection principle (P(touch) ~ 2*P(terminal beyond)) over the 22 remaining days of September, implies 2.63%/day at the $2,600 strike, 2.63% at $2,800, 2.86% at $3,000, 2.79% at $2,200 down, 2.99% at $2,000 down. The Sep 7-13 weekly market implies 2.48%/day. So realized-recent and market-implied bracket the horizon SD between roughly 6.7% and 9.3%.\n\nEVENT-IN-WINDOW COUNT: Across the last 30 daily Yahoo closes (Aug 8 - Sep 8 2026), the number closing above $2,550 is zero; the maximum close in that span is $2,515.33 (Aug 21). Price has only been in the $2,400s for 19 days (since Aug 21).\n\nTECHNICAL LEVELS AS PUBLISHED (record-only, both directions):\n- $2,550 is repeatedly named as the resistance/confirmation zone and coincides with the 50-week moving average at $2,542 (cryptorank.io, Sep 1 2026). Three closes have stalled just under it: $2,515 (Aug 21), $2,511 (Aug 27), $2,515 (Sep 6).\n- $2,438 (0.618 Fib) is the named support; below it the cited downside references are $2,220 (Supertrend) and $2,000.\n- Upside objective cited on a weekly close above the zone: $2,920 (0.5 Fib), and $3,000 in the crypto.news piece.\n- crypto.news (Aug 25 2026): daily RSI hit 79.12 (overbought) at $2,478 after ~+30% in seven days; liquidity concentrated $2,500-$2,550.\n- cryptorank.io (Sep 1): 'fading daily volume', analyst expecting 'more chop'; a $102.3M 10x whale long with a $2,241 liquidation point sits below.\n- Vendor model ranges cited in the question background: Changelly Sep $2,283-$2,589 (avg ~$2,436); Gov.Capital ~$2,361.\n\nFLOWS: US spot ETH ETFs took $986.9M in the week to ~Sep 4 — the strongest three-week stretch of 2026, $3.8B total (newsbtc, Sep 2026). Sep 4 alone: +10.33K ETH net, BlackRock ETHA +23.06K ETH. The Aug 19-21 move is attributed to an SEC proposed crypto framework, a Treasury long-debt buyback announcement, and >$3B of leveraged liquidations in 24h (short squeeze), plus $697.2M of ETF inflows in the week to Aug 21.\n\nCALENDAR INSIDE THE HORIZON: August CPI release Sep 11. CLARITY Act vote Sep 15. FOMC Sep 15-16 2026, decision 2:00pm ET Wed Sep 16 with the Summary of Economic Projections and dot plot, press conference 2:30pm ET (federalreserve.gov / fedratecalc). At the July 28-29 2026 meeting the FOMC held 3.50-3.75% on a 9-3 vote. All three land 2-7 days before the measurement instant. No ETH protocol upgrade was found scheduled in this window.\n\nMARKETS CHECKED: The harness title-search found no candidate on Polymarket or Manifold. My own check: Polymarket runs ETH markets but none matches this contract — the dated markets are daily and stop at Sep 8, and they resolve off the Binance ETH/USDT 1-minute candle close at noon ET, i.e. a different instrument, a different timestamp and a different date from Yahoo's 00:00 UTC Sep 18 print. The September and Sep 7-13 markets are ONE-TOUCH ('reaches X at any point'), which is a structurally different event from a dated close; total September volume ~$1.07M. Kalshi lists ETH monthly one-touch (kxethmaxmon) and EOY (kxethy) series but the ETH category page returned HTTP 429 and could not be read this run, so no Kalshi price is recorded. No bookmaker line found. Net: no contract-matching market; the touch ladders are usable as a volatility read, not as a price anchor.\n\nINTERNAL CONSISTENCY CAVEAT: The scraped September ladder shows 'dips to $2,400' at 81% as though untriggered, yet Yahoo's Sep 2 close was $2,391.50. Either the Binance ETH/USDT path differed, or that scraped figure is stale. Treat the individual monthly numbers as approximate; the volatility they imply is nonetheless consistent across five separate strikes and with the independent weekly market.\n\nSEARCHED FOR BUT NOT FOUND: any prediction market or bookmaker priced on a Sep 18 2026 dated ETH close; Kalshi's live weekly ETH ladder (429); a clean multi-year table of ETH 10-day rolling return frequencies (dispersion above was computed from the daily closes directly); any scheduled Ethereum protocol event in the Sep 8-19 window; July 2026 daily closes.",
+   "reference_class": "ETH-USD rolling ~10-11 day forward returns exceeding +3.1%, over 2025-2026 windows, conditioned on the current ~2.0-2.6% daily-sigma regime"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.5984,
+   "seconds": 198.6,
+   "estimate": 0.33,
+   "reasoning": "ETH closed Sep 8 at $2,474.16 (Yahoo, the resolution source); YES needs >+3.07% held on the specific Sep 18 daily close, 10.5 days out. Reference class: unconditional 10-day ETH close-to-close returns exceeding +3% run ~37% (sigma_10d ~11% historically, near-zero median drift). Conditioning down: the last 18 sessions are a tight $2,391-$2,515 band with daily SD ~2.3% (sigma_10d ~7.3%), and $2,550 sits above the highest close in the entire 60-day record ($2,515.28, Aug 21) inside a flagged $2,511-$2,546 resistance band — a lognormal walk at that compressed vol gives ~0.33. Conditioning up: the Aug 18-21 +31% breakout snapped a year-long descending trendline, spot ETH ETFs took ~$987M last week on a 12-day inflow streak, and CPI (Sep 11) plus the FOMC decision (Sep 16, two days before resolution) are genuine two-sided vol events that raise breakout odds. These roughly offset, leaving ~0.33. No human market matches this contract (Polymarket/Manifold: none; the one Kalshi writeup found is a stale Aug-26 month-end $2,650 target that missed), so no crowd blend applied.",
+   "sources": [
+    "https://finance.yahoo.com/quote/ETH-USD/history/",
+    "https://www.coingecko.com/en/coins/ethereum/historical_data",
+    "https://usethebitcoin.com/eth/ethereum-price-september-8-2026/",
+    "https://coingape.com/markets/kalshi-traders-predict-ethereum-price-may-hit-2650-this-month/",
+    "https://fedratecalc.com/fomc-meeting-schedule/",
+    "https://ground.news/article/ethereum-etfs-see-positive-inflows-as-september-trading-opens",
+    "https://www.kucoin.com/news/flash/bitcoin-etf-sees-101m-net-inflow-ethereum-etf-records-48-2m-net-outflow",
+    "https://cryptorank.io/price/ethereum/predictions"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the single 'Close' cell in the Yahoo Finance ETH-USD historical table for the row dated Sep 18, 2026 (UTC calendar-day close), strictly greater than $2,550.00 — NOT an intraday high, NOT a weekly/monthly close, NOT an average, NOT a touch-any-time-before criterion. $2,550.00 exactly resolves NO. CoinGecko is the named fallback only if Yahoo has no row.\n\nEVENT WINDOW: the measurement is a point observation on the Sep 18, 2026 UTC close (scheduled resolution 2026-09-19T00:00:00Z) per the criteria text. As of Now = 2026-09-08T11:10:32Z, ~10.5 days remain to the measured close; there is no multi-day window in which an event can 'occur' — only the state of the price on that one date counts.\n\nPRICE FACTS (Yahoo ETH-USD closes, retrieved 2026-09-08; CoinGecko values agree within ~$1-2):\n- Sep 8 (in progress) $2,474.16; Sep 7 $2,490.96; Sep 6 $2,514.55; Sep 5 $2,480.74; Sep 4 $2,456.08; Sep 3 $2,508.02; Sep 2 $2,391.50; Sep 1 $2,417.84.\n- Aug 21 - Aug 31: $2,515.28, $2,424.25, $2,463.82, $2,481.83, $2,443.16, $2,506.26, $2,510.41, $2,442.54, $2,457.69, $2,417.94, $2,466.82.\n- Highest close in the trailing 60 days: $2,515.28 (Aug 21, 2026). Lowest: $1,744.48 (Jul 9, 2026).\n- Regime break: Aug 18 $1,916.46 -> Aug 19 $2,251.46 -> Aug 20 $2,326.38 -> Aug 21 $2,515.28 (+31% in three sessions). All of Jul 13 - Aug 18 traded in roughly $1,750-$1,955.\n- Since Aug 21 (18 sessions) every close has fallen inside $2,391.50 - $2,515.28.\n\nDISTRIBUTIONAL / BASE-RATE DATA (series: Yahoo ETH-USD daily closes):\n- Daily close-to-close SD over the 18-session post-breakout consolidation (Aug 21 - Sep 8): ~2.3%. Same statistic including the Aug 18-21 breakout days: ~2.8-3.5% depending on window. ETH's longer-run daily SD is nearer 3-4%.\n- Overlapping 10-day close-to-close changes across the trailing 60 days (the horizon length that matters here): Jul13->Jul23 +5.8%, Jul20->Jul30 +0.7%, Jul27->Aug6 +0.6%, Aug3->Aug13 +1.4%, Aug10->Aug20 +24.3%, Aug14->Aug24 +32.0%, Aug18->Aug28 +27.5%, Aug21->Aug31 -1.9%, Aug25->Sep4 +0.5%, Aug29->Sep8 +0.7%. The distribution is bimodal: nine-tenths of the mass is within +/-6%, with one clustered breakout episode supplying all the large values.\n- CONDITIONAL vs UNCONDITIONAL, stated separately because the conditioning variable (current regime) is already known: unconditional ETH 10-day moves are wide (sigma ~10-12%); 10-day moves conditional on being inside a low-realized-vol consolidation band like the present one have been materially narrower (the four consolidation-regime observations above span -1.9% to +0.7%); 10-day moves conditional on a fresh trend break have been very large (+24% to +32%).\n- Number of closes above $2,550 in the trailing 60 days: zero. $2,550 is $34.72 (1.4%) above the highest close in that record.\n\nSTATUS-QUO OUTCOME: if the price simply stays inside the band it has occupied for the last 18 sessions, the Sep 18 close prints below $2,550 and the question resolves NO. YES requires a print above the 60-day close ceiling.\n\nCALENDAR INSIDE THE HORIZON:\n- US August CPI release: Sep 11, 2026, 08:30 ET. Prior print cited: July headline 3.4% y/y, core 2.5%.\n- FOMC meeting Sep 15-16, 2026; decision + Summary of Economic Projections Sep 16 at 14:00 ET, press conference 14:30 ET. Current target range 3.50-3.75%, held since Dec 2025. This lands two days before the measured close.\n- Resolution source update timing: Yahoo/CoinGecko post the Sep 18 daily close at the Sep 19 00:00 UTC roll, i.e. essentially at the scheduled resolution moment; no reporting lag risk.\n- Crypto trades 24/7, so no weekend/holiday gap can prevent a Sep 18 row from existing.\n\nEVIDENCE POINTING UP:\n- US spot ETH ETFs drew ~$986.9M over the week ending early September and ran a 12-trading-day net-inflow streak through Sep 1 (+$10.95M that day); Sep 4 saw +10.33K ETH net led by BlackRock ETHA (+23.06K ETH) (ETF flow trackers / KuCoin flash, Sep 2026).\n- The August move broke the descending trendline that had capped every rally since the Aug 2025 peak of $4,958, printing what analysts describe as the first higher high of the cycle (CryptoRank / Yahoo Finance markets commentary, early Sep 2026).\n- Published upside objectives sit above the threshold: 0.5 Fibonacci retracement at $2,919.89; a September target of $2,800 with a stated range $2,334-$2,950; LongForecast month-end $2,959.\n\nEVIDENCE POINTING DOWN:\n- $2,511-$2,546 is the flagged immediate resistance band, with $2,626 the next level above (usethebitcoin TA, Sep 8, 2026); the threshold sits just above that band and above every close of the last 60 days.\n- Sep 6 ($2,514.55) and Aug 21 ($2,515.28) both stalled at essentially the same level, and Aug 27 ($2,510.41) too — three rejections at ~$2,510-2,515.\n- Changelly's September range is ~$2,283-$2,589 with an average near $2,436; Gov.Capital tilts toward ~$2,361; CoinCodex projects a September average of $2,338 — all three averages sit below spot.\n- ETH ETF flows are not uniformly positive: Sep 3 posted a $48.2M net outflow (ETHA -$53.4M, FETH -$26.2M, ETHE -$23.5M).\n- ETH is down roughly $1,845 from a year earlier; the multi-month trend prior to August was down.\n\nMARKET CHECK: no prediction-market contract matching this threshold/date/source was located. Polymarket and Manifold: none found (both a title search and an independent check). Kalshi lists ETH price-band markets, but the only writeup retrievable was dated Aug 26, 2026 and described a $2,650 *August month-end* target — different threshold, different deadline, different settlement source, and the underlying resolved otherwise ($2,466.82 on Aug 31). Aggregator pages (CryptoRank, Robinhood, Oddpool) carry only year-scale ETH milestones such as '$3,000 during 2026' (~51.5%), which share neither threshold nor deadline with this contract.\n\nSEARCHED FOR BUT COULD NOT FIND: a live Kalshi or Polymarket contract on ETH's Sep 18 close or on any ~$2,550 level; ETH options open-interest/implied-vol data for the Sep 18 ",
+   "reference_class": "10-day close-to-close ETH/USD returns exceeding +3%, computed over ETH daily history and conditioned on a low-realized-vol consolidation regime (daily SD ~2.3%, price inside a 5%-wide 18-day band)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.05,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2371,
+   "seconds": 82.3,
+   "estimate": 0.34,
+   "reasoning": "Spot on the resolution source (Yahoo, Sep 8 in-progress) is ~$2,476; $2,550 is +3.0% (log +2.95%) away with 10.53 days to the single dated close. Realized daily SD over the 15-18 session post-breakout consolidation is ~2.2%, but that window is a lower bound: Polymarket's September and Sep 7-13 touch ladders invert (reflection principle) to 2.5-2.9%/day across five strikes, and CPI (Sep 11), the CLARITY vote (Sep 15) and the FOMC decision + dot plot (Sep 16, hold vs a live 25bp hike, two days before the print) all sit inside the path. Forward sigma ~2.4%/day -> 7.8% over the horizon; driftless lognormal puts the strike 0.42 SD out -> ~0.34. Drift is set to zero on purpose: record spot-ETH-ETF inflows (~$987M in the week, 12-day streak, BlackRock-led) and the broken year-long descending trendline are offset by zero closes above $2,550 in 60 sessions, three rejections at $2,510-2,515 with the 50-week MA at $2,542, 3.7:1 small-holder distribution, and a Sep 3 net outflow. Vendor model pages (Changelly, Gov.Capital, CoinCodex, LongForecast) are traffic-driven algorithmic output and carry no weight. Status quo - the 18-session $2,391-$2,515 band simply persisting - resolves NO.",
+   "sources": [],
+   "reconciliation": "Disputes were mostly windowing artifacts, not conflicts. (a) Spot: $2,483.51 / $2,471.60 / $2,474.16 are three timestamps on one intraday path, all inside CMC's $2,463-$2,510 24h range; I anchored on Yahoo (the resolution source) at ~$2,476, which makes the required move +3.0%, not Run 1's +2.6% - that alone explains most of Run 1's 4-point gap. (b) Daily SD: 2.05 / 2.20 / 2.30% are the same closes over 15, 17 and 18 sessions; settled at ~2.2% realized, with the caveat that an 15-18 observation estimate has ~18% standard error and is measured inside a consolidation that followed a +31% three-day break. (c) The zero-closes-above-$2,550-in-60-days fact and the max close $2,514.55-$2,515.33 are unanimous and settled. (d) ETF flows could NOT be settled: the $986.9M weekly figure is specific and appears in all three dossiers, but Run 1 carries an unreconciled 'inflows slowed considerably' claim and Run 3 a $48.2M Sep 3 outflow; with no flow series retrievable this run I let that claim carry its uncertainty and set flow-driven drift to zero rather than crediting it. (e) Market check: all three runs independently found no contract matching threshold, date, and source - Polymarket's September/weekly ladders are one-touch through Oct 1 on its own oracle, its dated dailies settle off Binance ETH/USDT at noon ET and stop Sep 8, and the sole Kalshi figure is a stale Aug-26 August-month-end $2,650 target that resolved wrong. So no crowd blend; the touch ladders were used only as a volatility read, which is the one place a near-miss contract is legitimate evidence. The remaining split is pure JUDGMENT - realized vol (Runs 2/3) vs implied plus event premium (Run 1). No evidence breaks it cleanly, and I would bet on the higher forward vol: three macro events inside a 10.5-day path are not in a trailing realized estimate, and the touch-implied figure agrees across two independent markets. That lifts me above Runs 2/3; the corrected (longer) distance to strike and a ~1-point haircut for thin shoulders at 0.4 SD keep me below Run 1.",
+   "disagreements": [
+    {
+     "claim": "Spot ETH on Sep 8 - $2,483.51 vs $2,471.60 vs $2,474.16",
+     "kind": "factual",
+     "verdict": "Settled: different intraday timestamps on one path, all within CMC's $2,463-$2,510 24h range. Anchored on Yahoo (the resolution source) at ~$2,476, making the required move +3.0% rather than Run 1's +2.6%."
+    },
+    {
+     "claim": "Realized daily SD in the current regime - 2.05% vs 2.20% vs 2.30%",
+     "kind": "factual",
+     "verdict": "Settled: same close series over 15/17/18-session windows. ~2.2%, treated as a lower bound given the short sample and the post-breakout setting."
+    },
+    {
+     "claim": "Number of daily closes above $2,550 in the trailing 30-60 days",
+     "kind": "factual",
+     "verdict": "Settled unanimously at zero; highest close $2,514.55-$2,515.33 (Aug 21 / Sep 6)."
+    },
+    {
+     "claim": "Whether ETH ETF flows are strongly positive or have slowed",
+     "kind": "factual",
+     "verdict": "NOT settled - $986.9M weekly appears in all three dossiers but Run 1 carries a contradicting 'slowed considerably' report and Run 3 a $48.2M Sep 3 outflow; no flow series retrievable this run. Resolved by assigning flows zero net drift rather than picking a side."
+    },
+    {
+     "claim": "Whether any tradeable market anchors this contract",
+     "kind": "factual",
+     "verdict": "Settled: none. Polymarket monthly/weekly are one-touch to Oct 1 on its own oracle; its dated dailies use Binance ETH/USDT at noon ET and end Sep 8; the only Kalshi figure is a stale Aug-26 month-end $2,650 that resolved wrong; Kalshi's live page returned HTTP 429 in two runs and remains unchecked."
+    },
+    {
+     "claim": "Forward sigma - trailing realized ~2.2%/day (Runs 2,3) vs implied-plus-event ~2.6%/day (Run 1)",
+     "kind": "judgment",
+     "verdict": "Resolved toward the higher side (2.4%/day, 7.8% over the horizon): trailing realized cannot contain CPI Sep 11, the CLARITY vote Sep 15, or FOMC-with-dot-plot Sep 16, and the touch-implied read is consistent across five strikes and two separate markets."
+    },
+    {
+     "claim": "Whether the $2,511-2,546 resistance band / $2,542 50-week MA justifies a discount below the lognormal number",
+     "kind": "judgment",
+     "verdict": "Only a small one. Three stalls at ~$2,510-2,515 is a real repeated observation, but the band sits 1.4% under the strike and a driftless walk already prices that distance; offset against the broken descending trendline and sustained inflows, net drift is zero, with ~1 point off for thin shoulders at 0.4 SD."
+    }
+   ],
+   "reference_class": "ETH 10-11 day forward moves needing >+3% held on one specific dated daily close, drawn from the current post-Aug-20 consolidation regime (daily SD ~2.2% realized, ~2.5-2.9% implied)"
+  }
+ ]
+}

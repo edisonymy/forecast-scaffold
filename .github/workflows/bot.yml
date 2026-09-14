@@ -1,0 +1,261 @@
+name: Tournament bot
+
+on:
+  # FutureEval runs on fast "spot" questions that open in weekday waves and close within
+  # hours, so the bot needs a reliable sub-hourly cadence. GitHub's own scheduler is
+  # best-effort and silently DROPS most ticks (measured 2026-07-06/07: ~7 of 23 hourly
+  # ticks fired), so it is NOT used to drive this bot. Instead an external Cloud Scheduler
+  # job ("forecast-bot-kicker", GCP project edison-util-mcp, us-central1) fires
+  # workflow_dispatch every 10 min, 24/7 — a dependable clock GitHub cron can't provide.
+  # Over-firing is safe: the already-forecasted filter no-ops each repeat for pennies,
+  # spend is capped by --budget, and the concurrency group serialises overlapping runs.
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: "LLM billing path"
+        type: choice
+        options: [subscription, openrouter]
+        default: subscription
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false # never kill an in-flight forecasting run
+
+env:
+  # Tournament entries made in-repo, unioned with the TOURNAMENT_ID repository
+  # variable (run_bot takes comma-separated slugs and dedupes cross-listed posts
+  # by id, so overlap with the variable is harmless). The variable stays the
+  # master roster and kill switch — it can't ride a pull request, so rounds
+  # entered by PR land here instead.
+  # Market Pulse Challenge, quarterly rounds of biweekly numeric group questions.
+  # market-pulse-26q3 (Jul 08 - Sep 16): entered 2026-08-19, mid-round — coverage
+  # is per question and the September windows had not opened, so late entry still
+  # competes at full strength on them (operator call after weighing withdrawal).
+  # market-pulse-26q4: PRE-ENTERED before Metaculus creates it (expected ~early
+  # Oct). collect_open_posts tolerates a slug that does not exist yet — it logs
+  # and skips — so the entry arms itself: the first hourly tick after the
+  # tournament appears starts forecasting it. If Metaculus names the slug
+  # differently, update this line. Drop 26q3 here once its round ends.
+  EXTRA_TOURNAMENTS: market-pulse-26q3,market-pulse-26q4
+
+jobs:
+  forecast:
+    if: ${{ vars.TOURNAMENT_ID != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    permissions:
+      contents: write # commits the public journal
+      issues: write # failure alerting (one open issue, not hourly spam)
+    steps:
+      # workflow_dispatch pins github.sha when the tick is queued. Because this workflow's
+      # concurrency group can leave a tick waiting behind a long forecast run, that SHA may
+      # be stale by the time checkout starts (the preceding run has appended to the same
+      # journal). Start from current main so the later append can publish without a guaranteed
+      # rebase conflict. The concurrency group still prevents two Tournament jobs running at
+      # once.
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install
+        # The CLI is pinned: an unattended hourly cron must not pick up a broken (or
+        # compromised) release mid-season — the OpenRouter fallback runs the SAME binary,
+        # so a bad release would take out both provider paths at once. Bump deliberately,
+        # then watch one run.
+        run: |
+          pip install -e .
+          npm install -g @anthropic-ai/claude-code@2.1.236
+          echo "JOB_START=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Run bot (subscription)
+        # Auth: CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`) draws on the Claude
+        # subscription. We deliberately do NOT set ANTHROPIC_API_KEY: if present it takes
+        # precedence and silently bills the API per-token instead. On failure (auth outage,
+        # rate limit, flaky questions) the OpenRouter step below reruns the remainder —
+        # already-forecasted questions are skipped, so nothing is double-submitted.
+        id: primary
+        if: ${{ inputs.provider != 'openrouter' }}
+        continue-on-error: true
+        env:
+          METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # AskNews: competition-licensed research source; absent secret = section silently off
+          ASKNEWS_API_KEY: ${{ secrets.ASKNEWS_API_KEY }}
+          # via env, never interpolated into the shell line (script-injection safe)
+          TOURNAMENT_ID: ${{ vars.TOURNAMENT_ID }}
+        run: |
+          python bot/run_bot.py --tournament "$TOURNAMENT_ID,$EXTRA_TOURNAMENTS" \
+            --limit 50 --budget 24 --refresh-hours 48 --deadline-minutes 85 --provider subscription \
+            --agent-cmd "claude -p --model claude-opus-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch" --comment \
+            | tee "$RUNNER_TEMP/bot-primary.log"
+
+      - name: Run bot (OpenRouter — selected or fallback)
+        # Runs when chosen explicitly, or as the backup after a subscription failure.
+        # Billed to OpenRouter credits; the same claude CLI is pointed at OpenRouter's
+        # Anthropic-compatible endpoint and the model id becomes anthropic/<id>.
+        # Its deadline is whatever actually remains before the job timeout: after a
+        # late primary failure, an 85-minute deadline here would be a guaranteed
+        # mid-flight kill (and a possible submitted-but-unpublished journal line).
+        if: ${{ inputs.provider == 'openrouter' || steps.primary.outcome == 'failure' }}
+        env:
+          METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          TOURNAMENT_ID: ${{ vars.TOURNAMENT_ID }}
+        run: |
+          : "${OPENROUTER_API_KEY:?set the OPENROUTER_API_KEY secret to use the OpenRouter path}"
+          elapsed_min=$(( ( $(date +%s) - JOB_START ) / 60 ))
+          remaining=$(( 100 - elapsed_min ))
+          if [ "$remaining" -lt 15 ]; then
+            echo "only ${remaining}min before the job timeout — leaving the remainder to the next hourly run"
+            exit 0
+          fi
+          deadline=$(( remaining - 10 )); [ "$deadline" -gt 85 ] && deadline=85
+          python bot/run_bot.py --tournament "$TOURNAMENT_ID,$EXTRA_TOURNAMENTS" \
+            --limit 50 --budget 24 --refresh-hours 48 --deadline-minutes "$deadline" --provider openrouter \
+            --agent-cmd "claude -p --model claude-opus-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch" --comment \
+            | tee "$RUNNER_TEMP/bot-fallback.log"
+
+      - name: Bot run summary
+        # Mirrors bench.yml's Report step: a filtered digest of the load-bearing stdout
+        # lines (forecast recorded/submitted, repair retries, dossier truncation, pooling,
+        # SKIPs, floor rejections) in the job summary — no need to open raw logs to see
+        # what a run actually did. if: always() + the trailing `|| true` on grep (which
+        # exits 1 on zero matches, e.g. an empty or missing log) mean this never fails the
+        # job, including when an earlier step never ran and left no log file at all.
+        if: always()
+        run: |
+          {
+            echo "### Bot run digest"
+            echo
+            echo '```'
+            grep -hE "recorded|submitted|repaired on retry|scenario flag|dossier truncated|pooled|SKIP|floor" \
+              "$RUNNER_TEMP"/bot-*.log || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit journal (pre-registration)
+        id: commit
+        # always(): submitted forecasts must be committed even when a later question errored
+        # or the run timed out — the journal commits even when forecasts look bad.
+        if: always()
+        env:
+          LEAK_PATTERNS: ${{ secrets.LEAK_PATTERNS }}
+          METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # This step runs no bot: every secret here exists ONLY so the value scan below can
+          # look for it in the journal about to be published. AskNews was previously listed
+          # with the run steps' "section silently off" comment, exposed but unscanned.
+          ASKNEWS_API_KEY: ${{ secrets.ASKNEWS_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          # Leak-guard the machine-generated journal BEFORE publishing it. The bot ingests
+          # untrusted question text; a personal-data match must block the push, not just fail
+          # a later CI run after the content is already public.
+          # Require the deny-list (fail-closed): never publish an unscanned journal, and keep
+          # the literal pattern out of this file so the ci.yml guard does not match it.
+          : "${LEAK_PATTERNS:?set the LEAK_PATTERNS secret before the bot can publish}"
+          # Scan only the lines THIS run adds. The content-free scanner applies the private
+          # deny-list to every field, with narrow workarounds for the exact pound sign in a
+          # public record and for text Metaculus itself published in the question. If the
+          # deny-list matches an AI-authored reasoning field, or model text inside a trace
+          # file, replace that string with a neutral marker [ADDED 2026-09-09: the same
+          # recovery flow manifold.yml has had since 2026-08; without it one pound sign in
+          # a trace dossier blocked a whole run's journal on 2026-09-07]. Matches in
+          # questions, contracts, sources, metadata, raw JSON, or keys still block
+          # publication. Re-stage and strictly re-scan so the recovery path fails closed.
+          # Snapshot first: whatever the guard withholds below survives in the run artifact.
+          mkdir -p "$RUNNER_TEMP/journal-snapshot" && cp -R bot/journal/. "$RUNNER_TEMP/journal-snapshot/"
+          git add bot/journal/
+          set +e; python scripts/journal_leak_guard.py --redact-model-output bot/journal/; status=$?; set -e
+          if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
+          # [ADDED 2026-09-09] A deny-list hit in a protected field withholds THAT row / trace
+          # from the public journal (kept in the artifact) and never fails the run: the
+          # forecast was submitted long before this step, and the operator's rule is that
+          # the guard may cost a journal line, never a prediction.
+          git add bot/journal/
+          set +e; python scripts/journal_leak_guard.py --quarantine bot/journal/; status=$?; set -e
+          if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
+          git add -A bot/journal/
+          set +e; python scripts/journal_leak_guard.py bot/journal/; status=$?; set -e
+          if [ "$status" -ne 0 ]; then git reset -q; exit "$status"; fi
+          # The pattern list cannot know credential VALUES — but a prompt-injected agent's
+          # visible output (sources, reasoning) lands in exactly the files this step is
+          # about to publish. Check for the values themselves, fail-closed.
+          for secret in "$METACULUS_TOKEN" "$CLAUDE_CODE_OAUTH_TOKEN" "$OPENROUTER_API_KEY" "$ASKNEWS_API_KEY"; do
+            if [ -n "$secret" ] && grep -rqF -- "$secret" bot/journal/; then
+              echo "::error::a credential value appears in the journal — not publishing"; exit 3
+            fi
+          done
+          git config user.name "forecast-scaffold-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add bot/journal/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "bot: journal update $(date -u +%FT%TZ)"
+          # Rebase-and-retry: a concurrent commit must not lose a submitted forecast's
+          # journal line. The tree is clean after the commit, so autostash is unnecessary
+          # and forbidden by the repository's feature-work safety rule.
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push && exit 0
+            git rebase --abort 2>/dev/null || true
+            sleep 3
+          done
+          exit 1
+
+      - name: Preserve withheld journal lines
+        # [ADDED 2026-09-09] the quarantine path above is green by design; the withheld
+        # rows/traces live only here (pre-guard snapshot). Backfill by hand after narrowing
+        # the deny-list: scripts/leak_patterns_tool.py, docs/HANDOVER.md.
+        if: ${{ always() && steps.commit.outputs.quarantined == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: withheld-journal-${{ github.run_id }}
+          path: ${{ runner.temp }}/journal-snapshot/
+          retention-days: 90
+
+      - name: Preserve journal on publish failure
+        # A leak-guard match, push failure, or the 110-minute kill must block PUBLICATION,
+        # not destroy the evidence: a submitted forecast with no journal line anywhere
+        # would be a hole in the public preregistration trail. cancelled() matters — a
+        # job-timeout kill is a cancellation, not a failure, and it is the one path where
+        # submitted-but-uncommitted journal lines can otherwise die with the runner.
+        if: ${{ failure() || cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: unpublished-journal-${{ github.run_id }}
+          path: bot/journal/
+          retention-days: 30
+
+      - name: Alert on trouble (one open issue, never hourly spam)
+        # An unattended cron fails silently otherwise — and "the subscription step failed
+        # so the metered fallback quietly took the whole workload" is invisible in a green
+        # job. While the alert issue stays open, nothing new is filed.
+        if: ${{ always() && (failure() || steps.primary.outcome == 'failure') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PRIMARY_OUTCOME: ${{ steps.primary.outcome }}
+        run: |
+          title="Tournament bot needs attention"
+          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then echo "alert issue #$existing already open"; exit 0; fi
+          {
+            echo "Automated alert from the hourly tournament workflow."
+            echo
+            if [ "$PRIMARY_OUTCOME" = "failure" ]; then
+              echo "The subscription step failed — the OpenRouter fallback may have covered the batch (check openrouter.ai/activity). Common causes: expired CLAUDE_CODE_OAUTH_TOKEN, subscription session limit, a per-question failure that exits nonzero."
+            else
+              echo "The workflow failed — check the run logs (Metaculus API change? leak-guard block? journal push conflict?)."
+            fi
+            echo
+            echo "Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo
+            echo "Close this issue once resolved — the next problem will open a fresh one."
+          } > "$RUNNER_TEMP/alert-body.md"
+          gh issue create --title "$title" --body-file "$RUNNER_TEMP/alert-body.md"

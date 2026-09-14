@@ -1,0 +1,28 @@
+name: List bot forecasts
+
+# Read-only track-record dump: queries the Metaculus API for every forecast this
+# account holds and prints it to the log. Never submits. Manual trigger only.
+on:
+  workflow_dispatch:
+    inputs:
+      tournaments:
+        description: "Extra tournament slugs to sweep (comma-separated), unioned with the forecaster_id sweep"
+        default: "bot-testing-area"
+
+permissions:
+  contents: read
+
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e .
+      - name: List forecasts
+        env:
+          METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
+          TOURNAMENTS: ${{ inputs.tournaments }}
+        run: python bot/list_forecasts.py

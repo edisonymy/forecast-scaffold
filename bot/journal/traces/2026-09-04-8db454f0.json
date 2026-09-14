@@ -1,0 +1,251 @@
+{
+ "record_id": "2026-09-04-8db454f0",
+ "question": "How much will Nvidia's stock price returns exceed Apple's in these biweekly periods of Q3 2026? (Sep 7 - Sep 18)",
+ "question_id": 44689,
+ "url": "https://www.metaculus.com/questions/44535/",
+ "question_type": "numeric",
+ "forecast_at": "2026-09-04T16:56:17+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.8546,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -7.466666666666666,
+    "25": -3.6,
+    "50": 0.5333333333333333,
+    "75": 4.566666666666666,
+    "90": 8.033333333333333
+   },
+   "p_below_lower": 0.025666666666666667,
+   "p_above_upper": 0.026333333333333334
+  },
+  "phase1": {
+   "10": -7.466666666666666,
+   "25": -3.6,
+   "50": 0.5333333333333333,
+   "75": 4.566666666666666,
+   "90": 8.033333333333333
+  },
+  "phase2": null,
+  "spread_phase1": 0.1,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -7.9,
+   "25": -3.6,
+   "50": 0.4,
+   "75": 4.4,
+   "90": 7.9
+  },
+  "p_below_lower": 0.03,
+  "p_above_upper": 0.024
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.9096,
+   "seconds": 253.3,
+   "estimate": {
+    "percentiles": {
+     "10": -6.6,
+     "25": -3.3,
+     "50": 0.5,
+     "75": 4.3,
+     "90": 7.4
+    },
+    "p_below_lower": 0.025,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Anchor is the trailing-year spread: NVDA +35.3% vs AAPL +34.6%, i.e. ~0 drift per biweekly period, so the prior median is 0 and the question is almost entirely about dispersion. Small positive tilt to +0.5: NVDA carries post-earnings drift from the Aug 26 beat and $108B Q3 guide, while Apple faces a heavily-leaked Sep 9 event after a run to within 7% of its record, and Apple's post-event fade is a recurring pattern (AAPL fell 3.3% after the 2025 iPhone 17 event). Offsetting that almost fully: NVDA sits at a 52-week high after +6% in four sessions and ~10% above its 50DMA, and with beta 2.22 vs 1.09 it takes the larger hit from any FOMC or September-seasonality risk-off, which is the main path to a sharply negative spread. Dispersion dominates: spread SD ~6pp over 9-10 trading days. Evidence is thin on direction and I stay near the base rate. No prediction market prices this contract; the nearest real book (Polymarket year-end largest-company) differs on threshold, deadline and instrument. Escape mass ~2.5-3% each side for an AI-capex scare or melt-up that moves NVDA 15%+ against a near-flat Apple.",
+   "sources": [
+    "https://stockanalysis.com/stocks/nvda/",
+    "https://stockanalysis.com/stocks/aapl/",
+    "https://stockanalysis.com/stocks/nvda/statistics/",
+    "https://stockanalysis.com/stocks/aapl/statistics/",
+    "https://stockanalysis.com/stocks/nvda/history/?period=monthly",
+    "https://stockanalysis.com/stocks/aapl/history/?period=monthly",
+    "https://fedratecalc.com/next-fomc-meeting/",
+    "https://www.techrepublic.com/article/news-apple-sept-9-iphone-event/",
+    "https://www.benzinga.com/markets/equities/26/09/61594124/nvidia-8-percent-sp-500-grip-jensen-huang-making-history-commentator",
+    "https://polymarket.com/predictions/nvidia",
+    "https://www.fool.com/investing/2026/08/31/prediction-this-is-where-nvidia-stock-will-be-when/",
+    "marketrebellion.com Mid-session IV Report September 4, 2026 (AAPL 30-day IV)"
+   ],
+   "dossier": "SUBJECT: NVDA price return minus AAPL price return, percentage points, over the Sep 7 - Sep 18 2026 window. Bounds -15/+15, both open.\n\nEVENT WINDOW: Sep 7 2026 -> Sep 18 2026 per the question criteria. As of Now (2026-09-04T16:40Z) 0% elapsed - the window has not begun. Sep 7 is Labor Day (US markets closed), so the window spans 9 trading sessions (Sep 8, 9, 10, 11, 14, 15, 16, 17, 18); if measured from the Sep 4 close it is 10.\n\nRESOLUTION INSTRUMENT: resolves off the two stocks' price returns over the stated dates, not off market capitalisation, not off total return including dividends, and not off which company is larger. AAPL pays a dividend (ex-div dates historically early-to-mid Feb/May/Aug/Nov, so none expected inside this window); NVDA's dividend is negligible.\n\nPRICE / LEVEL FACTS (stockanalysis.com, quotes 2026-09-04 ~12:40 ET):\n- NVDA $231.49, +1.33% on the day; day range 229.82-234.76; 50DMA $210.58; 200DMA $196.68; 52wk range $164.07-$236.54; 20-day avg volume 125.9M.\n- AAPL $320.90-321.04, -2.23% on the day; day range 317.86-328.93 (opened 328.31); 50DMA $315.17; 200DMA $283.88; 52wk range $225.95-$344.57, high set Jul 29 2026; RSI 54.9; 20-day avg volume 37.4M.\n- Market caps per Kobeissi Letter via Benzinga, 2026-09-03: NVDA $5.41T, AAPL $4.74T. NVDA ~8% of S&P 500 total cap.\n\nBASE RATES AND DISPERSION:\n- Over the trailing 52 weeks (class: all NVDA-AAPL pairs over that year), NVDA returned +35.32% and AAPL +34.60% (stockanalysis.com statistics, 2026-09-04) - a 0.7pp gap over ~26 biweekly periods.\n- Conditional on 2026 year-to-date only, the two have traded leadership repeatedly: AAPL passed NVDA in market cap on Jul 17 2026 (CNBC), NVDA retook it after its Aug results (Benzinga 2026-09-03).\n- Realised 2026 monthly returns (stockanalysis.com monthly history): NVDA Jun -1.64%, Jul +2.06%, Aug +10.71%, Sep 1-4 +6.10%. AAPL Jun +2.70%, Jul +15.08%, Aug -4.00%, Sep 1-4 +0.40%. Note the class distinction: Jul and Aug each contained an earnings report for one of the two; the Sep 7-18 window contains none.\n- Option-implied, 2026-09-04: NVDA 30-day IV 32.7% with a 1-year IV percentile of 8 (apexvol/optioncharts via search); AAPL 30-day IV 25 against a 52-week range of 18-33, IV rank ~51% (Market Rebellion mid-session IV report, 2026-09-04), with a note that AAPL realised vol currently exceeds implied.\n- Betas (5-year, stockanalysis.com): NVDA 2.22, AAPL 1.09.\n\nSCHEDULED EVENTS INSIDE THE WINDOW:\n- Apple product event Sep 9 2026, 10:00 PT, 'Surprise and shine': iPhone 18 Pro / Pro Max, first foldable iPhone, new Apple Watches (Bloomberg 2026-09-04; TechRepublic). Foldable reported starting price $2,099-$2,299. Base iPhone 18 and lower-cost models are reported for Q1 2027, not this event. John Ternus became CEO Sep 1 2026 (Tim Cook to executive chairman) and presents his first launch.\n- FOMC meeting Sep 15-16 2026; decision 2:00pm ET Sep 16 with Summary of Economic Projections and dot plot, press conference 2:30pm (fedratecalc.com; financecalendar.com).\n- Sep 18 2026 is the third Friday: quarterly triple-witching expiry and index rebalance effective date.\n- NVDA has no earnings in the window; it reported fiscal Q2 2027 on Aug 26 2026 (revenue $96.22B vs $92.11B consensus, data centre $89B; Q3 guide $108B +/- 2%, ~89% y/y; CFO Kress guided ~70% revenue growth in FY2028, called supply-constrained). Stock rose ~9% the following session. Next report expected ~Nov 2026, outside the window.\n- AAPL has no earnings in the window (fiscal Q4 report expected late Oct 2026).\n\nEVIDENCE POINTING TOWARD NVDA-SIDE STRENGTH:\n- NVDA is +15.7% over the trailing month and trades ~10% above its 50DMA, having closed Sep 3 at $224.41 and Sep 4 near $231.5 (Benzinga; stockanalysis.com).\n- Analyst consensus 'Strong Buy', average target $325.99 (~41% above spot); Deutsche Bank raised its target to $220 (Yahoo Finance headline, undated in result).\n- Raymond James (Simon Leopold) projects NVDA sales approaching $1T annually by FY2029.\n\nEVIDENCE POINTING TOWARD AAPL-SIDE STRENGTH OR NVDA WEAKNESS:\n- AAPL fell 2.23% on Sep 4 into the event, and had risen through late August (~$309.90 -> $313.45 on Aug 26, +1.5% on Aug 28) - the run-up is partly unwound already.\n- Analysts expect the foldable to raise average selling prices and open a margin-growth avenue (invezz/TradingView, 2026-08-28).\n- Analyst consensus on AAPL is 'Buy' with an average target of $324.53, roughly 1% above spot - i.e. the sell side sees the stock as near fair value.\n- Prior-cycle precedent: after the Sep 9 iPhone 17 event, AAPL fell 3.3% on a 'sell the news' reaction to heavily-leaked, incremental hardware (reported in search results; single-instance, not a multi-year base rate).\n- Reported sector context is contradictory across sources: one summary says the PHLX Semiconductor index is up 62% in 2026 while NVDA is up only ~16%; another in the same result set says the index is ~19% below its all-time high. Treat sector-relative claims as unverified.\n- NVDA's ~8% S&P weight and 2.22 beta mean any broad risk-off in the window is asymmetric against it; September is conventionally cited as a weak seasonal month, though I found no dataset quantifying it for this pair.\n\nPREDICTION MARKETS SEARCHED:\n- No contract found on Kalshi, Polymarket, Manifold or any bookmaker matching this question's terms (two-week relative return, Sep 7-18 2026).\n- Polymarket runs 'Largest Company end of December 2026' (>$4.5M volume) covering NVDA, AAPL and GOOGL - different threshold (market-cap rank, not return), different deadline (Dec 31), different instrument.\n- The harness-supplied Manifold market ('Big Tech stock vs Bitcoin over the 2020s', closes 2030) shares no resolution terms with this question.\n- Kalshi has active NVDA-adjacent markets (~$4.4M in GPU/AI-compute contracts, Benzinga 2026-08) but none on this pair's relative return.\n\nSEARCHED FOR BUT NOT FOUND: a published time series of NVDA-AAPL biweekly return spreads; NVDA-AAPL realised return correlation for 2",
+   "reference_class": "Biweekly (~10-trading-day) differences between NVDA and AAPL price returns over the trailing 1-2 years, restricted to windows containing no earnings report for either company"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.7802,
+   "seconds": 259.2,
+   "estimate": {
+    "percentiles": {
+     "10": -7.4,
+     "25": -3.3,
+     "50": 0.6,
+     "75": 4.2,
+     "90": 7.3
+    },
+    "p_below_lower": 0.022,
+    "p_above_upper": 0.014
+   },
+   "reasoning": "Reference class: 9-10 trading-day return spreads between NVDA and AAPL. The spread's SD, not its drift, dominates over two weeks. Option-implied inputs (NVDA 30d IV 32.7% at IV rank 8; AAPL 30d realized 18.1%; pairwise correlation ~0.45-0.55) imply a ~5.0-6.0pp SD for the window, corroborated by the observed ~5pp swing in relative market caps over Aug 28-Sep 3. I widen this with a 25% weight on a vol-expansion regime, since VIX ended August at a 2026 low of 14.2 heading into the historically volatile mid-Aug-to-mid-Oct stretch; that mixture also adds mild left skew because vol spikes are drawdowns and NVDA's beta (2.22) is roughly double Apple's. Median set barely above zero: NVDA carries post-earnings momentum near a 52-week high and higher beta into a market that drifts up more often than down, offset by its +4.6% two-session run immediately before the window, Apple's recent relative strength, and Apple's Sep 9 iPhone 18/foldable event plus new CEO, which is a two-sided catalyst rather than a reliable sell-the-news short. No earnings for either name in the window; FOMC with dot plot on Sep 15-16 is the main shared shock. No prediction market prices this spread; the near-miss contracts I checked (Manifold big-tech-vs-Bitcoin through 2030, Polymarket largest-company-end-of-2026 at ~61% NVDA) differ on underlying, horizon and resolution source, so I treat them as context, not anchors. Escape past +/-15pp requires roughly 2.5 SD in nine sessions, which needs a named shock (AI-capex scare, China export reversal, broad risk-off, or an AI melt-up); I price it at ~3.6% total, tilted to the downside where the concrete mechanisms cluster.",
+   "sources": [
+    "https://www.alphaquery.com/stock/NVDA/volatility-option-statistics/30-day/historical-volatility",
+    "https://www.alphaquery.com/stock/AAPL/volatility-option-statistics/30-day/historical-volatility",
+    "https://stockanalysis.com/stocks/nvda/",
+    "https://247wallst.com/investing/2026/08/28/will-nvidia-or-apple-have-the-bigger-market-cap-by-the-end-of-q3/",
+    "https://www.benzinga.com/markets/equities/26/09/61594124/nvidia-8-percent-sp-500-grip-jensen-huang-making-history-commentator",
+    "https://appleinsider.com/articles/26/08/26/what-to-expect-from-apples-surprise-and-shine-iphone-18-pro-event-on-september-9",
+    "https://fedratecalc.com/fomc-meeting-schedule/september-2026/",
+    "https://www.cnbc.com/2026/08/17/stock-market-volatility-vix-wall-street.html",
+    "https://www.cnbc.com/2026/08/31/santoli-why-investors-should-be-on-high-alert-heading-into-september.html",
+    "https://polymarket.com/predictions/nvidia"
+   ],
+   "dossier": "QUANTITY: NVDA return minus AAPL return, in percentage points, over the stated window. Bounds -15/+15, both OPEN.\n\nEVENT WINDOW: Sep 7 -> Sep 18, 2026 per the resolution criteria; as of 2026-09-04T16:40Z, 0% elapsed (window opens in ~3 days). Sep 7 is Labor Day (US markets closed), so the window contains ~9 trading sessions, Sep 8 through Sep 18. Sep 18 is a quarterly triple-witching expiration. Resolution stamp 2026-09-18T20:00:00Z = 16:00 ET, the closing bell.\n\nRESOLUTION-INSTRUMENT NOTE: resolves off the two stocks' own price returns over the window, not off market caps, not off relative index weights, and not off any earnings figure. Neither company reports earnings inside the window (NVDA reported Q2 FY27 on ~Aug 26, 2026: revenue $96.22B vs $92.11B consensus, +105.8% YoY, Data Center $89.02B, Q3 guide $108B +/-2%; Apple reported its June quarter in late July, revenue +16.36%).\n\nLEVELS AND POSITIONING (dated):\n- NVDA traded $231.11-$231.57 on 2026-09-04 midday, prior close $228.45, intraday range $229.82-$234.76; 52-week range $164.07-$236.54; beta 2.22 (stockanalysis.com, Sep 4 2026).\n- NVDA closed $224.41 on Wed Sep 2, up 3.21% that session (Benzinga, Sep 3 2026).\n- AAPL closed $314.16 in early September 2026; 52-week high $344.57 set July 29, 2026, so roughly 7-9% below it; AAPL +18% YTD by that source's count (search summaries, early Sep 2026).\n- Market caps: NVDA $5.52T vs AAPL $4.59T on Aug 28, 2026 (247wallst); NVDA $5.41T vs AAPL $4.74T on Sep 3, 2026 (Kobeissi Letter via Benzinga). The gap narrowed by roughly $0.4T across those four sessions, then NVDA added 1.37% on Sep 4.\n- Two different sources give conflicting YTD splits at different dates: one says both names were near +22% YTD as of late Aug 2026; another says AAPL +22.5% vs NVDA +10% at a mid-July 2026 reading. The pair has traded leadership repeatedly: NVDA passed AAPL June 2024, AAPL briefly retook the top spot July 17 and again July 27, 2026, NVDA retook it after the August earnings print.\n\nVOLATILITY INPUTS (dated):\n- NVDA 30-day implied volatility 32.7%, IV rank 8 (bottom decile of its own range) as of 2026-09-03; NVDA's own typical band is cited as 30-80%, 40-55% in normal conditions (alphaquery / options-data summaries).\n- NVDA 30-day realized (close-to-close) volatility 44.49% as of 2026-09-03 — this trailing window contains the Aug 26 earnings gap.\n- AAPL 30-day realized (close-to-close) volatility 18.07% as of 2026-09-03. AAPL 30-day IV readings in the 25-31% area, IV rank ~43.\n- VIX closed the week ending Aug 14-17, 2026 at 14.2, its lowest level of 2026, and finished August with a 14-handle (CNBC, Aug 17 and Aug 31 2026). Strategists flagged the mid-August-to-mid-October stretch as the historically most volatile of the year and described sub-15 VIX as complacency territory.\n\nSCHEDULED EVENTS INSIDE THE WINDOW:\n- Apple special event 'Surprise and shine', Tuesday Sep 9, 2026, 10:00 PT / 13:00 ET: iPhone 18 lineup, widely expected first foldable iPhone. John Ternus became Apple CEO on Sep 1, 2026, days before the event.\n- FOMC meeting Sep 15-16, 2026; decision Wed Sep 16 at 14:00 ET with a Summary of Economic Projections and dot plot; press conference 14:30 ET.\n- Sep 18, 2026 is the third Friday: quarterly options/futures expiration.\n- Searched for Nvidia company events inside Sep 7-18: GTC San Jose 2026 and GTC Taipei 2026 had already occurred; no NVDA-hosted keynote or investor event found in the window. Recorded as searched, absent.\n\nBASE RATES / DISPERSION (with the class each is computed over):\n- Over all 9-10 trading-day windows for this pair, the spread's dispersion is set by each name's volatility and their correlation. Using the current option-implied and realized readings above and a pairwise daily correlation in the 0.45-0.55 range, the daily spread SD works out near 1.7-2.0 percentage points, scaling by the square root of ~9 sessions.\n- Conditional on the current low-volatility regime (VIX 14, NVDA IV rank 8, no earnings in window), the implied dispersion is at the narrow end of that range.\n- Conditional on a volatility expansion of the kind seen in Jan 2025 (DeepSeek: NVDA fell ~17% in one session while AAPL rose) or Apr 2025 (tariff shock), single-session spreads of 10-20pp are on record for this exact pair, and 2025-era realized vols were roughly NVDA 50%+ / AAPL 30%.\n- Realized cross-check from the actual tape: relative market caps moved ~5pp in AAPL's favor over the four sessions Aug 28 to Sep 3, 2026, then partially reversed Sep 3-4.\n- Nearest historical analogue for the Apple-event leg: AAPL fell 3.3% on and after the Sep 9, 2025 iPhone 17 launch event, attributed to leaked features and modest hardware changes (search summaries). That is one instance, not a rate; no multi-year average of AAPL's two-week post-event return was locatable.\n\nEVIDENCE POINTING EACH WAY (recorded, not weighed):\n- For NVDA relative strength: Q2 beat and $108B Q3 guide; Vera Rubin cited as ~20% of Q3 Data Center revenue; NVDA is ~8% of S&P 500 market cap, outweighing five sectors combined, so index inflows mechanically favor it; Deutsche Bank raised its price target to $220; Momentum score 75th percentile, Growth 98th; beta 2.22 amplifies any broad market advance.\n- For AAPL relative strength: sits well below its late-July record with room to recover; new CEO plus a foldable launch is a fresh product narrative; commentary frames Apple as the defensive AI expression (R&D $11.73B vs $8.9B, on-device silicon, no gigawatt capex) that outperforms when investors sour on AI capex; one cited framing is that Apple wins the relative trade specifically if something breaks; NVDA sits within ~2% of its 52-week high after a two-session advance of roughly 4.6%; NVDA's China GPU share was described by its own CEO as having gone from 95% to zero, with H200 exports allowed only under conditions and B30 pending approval.\n\nMARKETS SEARCHED: No Polymarket, Kalshi, Manifold or bookmaker contract found on the NVDA-minus-AAPL return sprea",
+   "reference_class": "Two-week (9-10 trading session) differences between NVDA and AAPL total returns, in non-earnings windows, priced off current option-implied and realized volatilities for the pair and the observed dispersion of past same-length windows over 2025-2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.8493,
+   "seconds": 307.5,
+   "estimate": {
+    "percentiles": {
+     "10": -8.4,
+     "25": -4.2,
+     "50": 0.5,
+     "75": 5.2,
+     "90": 9.4
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.035
+   },
+   "reasoning": "Window is 9 trading sessions (Sep 7 is Labor Day) with NO earnings for either name, so the spread is driven by drift plus macro and event noise. Reference class of earnings-free ~9-session NVDA-AAPL spreads centers essentially at zero: ex-earnings, the trailing-30-session mean spread is -0.12pp/day, and NVDA and AAPL are within a few points of each other YTD 2026 (AAPL led ~22.5% vs ~10% into mid-August before NVDA's post-earnings rally closed the gap). I shade the median a touch positive (+0.5pp) for beta differential (2.22 vs 1.09) against a mildly up-drifting market plus post-earnings-announcement drift after NVDA's beat, offset by Apple's Sep 9 foldable-iPhone catalyst, NVDA's short-term-reversal risk at a 52-week high after a ~6% three-day run, and a hawkish-leaning FOMC on Sep 16 (~70% priced for a hike) that would hit the higher-beta name harder. Dispersion dominates the sign: a 9-session SD near 7.5pp means the practical answer is a wide, near-symmetric distribution around zero. Both bounds are open and only ~2 SD away, so I price ~3.5% above +15 (AI-capex/China order shock, dovish Fed surprise, or an Apple event flop/CEO-transition stumble) and ~3.0% below -15 (AI-capex scare or 50bp hawkish shock crushing high-beta NVDA while Apple holds defensively on a strong foldable reception). Evidence is thin on the decisive question - no market prices this spread and the resolution criteria text is empty - so I stay close to the reference class.",
+   "sources": [
+    "https://stockanalysis.com/stocks/nvda/",
+    "https://stockanalysis.com/stocks/nvda/history/",
+    "https://stockanalysis.com/stocks/aapl/",
+    "https://stockanalysis.com/stocks/aapl/history/",
+    "https://www.macrumors.com/2026/08/26/apple-iphone-event-2026/",
+    "https://fedratecalc.com/fomc-meeting-schedule/",
+    "https://www.forbes.com/sites/digital-assets/2026/08/31/cme-fedwatch-provides-a-66-chance-fed-will-hike-rates-in-september/",
+    "https://polymarket.com/event/largest-company-end-of-december-2026",
+    "https://cryptobriefing.com/nvidia-polymarket-apple-market-cap-race/",
+    "https://www.benzinga.com/markets/equities/26/09/61594124/nvidia-8-percent-sp-500-grip-jensen-huang-making-history-commentator",
+    "https://finance.yahoo.com/technology/article/apple-stock-falls-on-weak-revenue-forecast-as-ceo-tim-cook-flags-increasing-impact-from-memory-shortage-130428410.html",
+    "https://semiconductorsinsight.com/us-china-chip-export-controls-h200-2026/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the difference in the two stocks' percentage PRICE returns over the stated window (NVDA minus AAPL, in percentage points) - not market caps, not an index, and the supplied criteria/fine-print sections are EMPTY, so the exact base price (Sep 4 close vs Sep 8 open) and dividend treatment are unstated.\nEVENT WINDOW: Sep 7 2026 -> Sep 18 2026 per the question title and scheduled resolution; as of Now (2026-09-04T16:40Z) 0% elapsed - the window has not begun. Sep 7 is Labor Day and US equity markets are closed, leaving 9 trading sessions (Sep 8, 9, 10, 11, 14, 15, 16, 17, 18). Sep 18 is a quarterly triple-witching expiration.\nSTATUS-QUO OUTCOME: the two stocks' returns over a two-week window differ by a small amount, i.e. a value near zero.\nEVIDENCE:\n- NVDA closed $228.45 on Sep 3 2026 and traded ~$231 intraday Sep 4; 52-week range $164.07-$236.54, beta 2.22, market cap ~$5.5T (stockanalysis.com, Sep 4 2026).\n- AAPL closed $328.21 on Sep 3 2026 and traded $320.79 (-2.26%) on Sep 4; 52-week range $225.95-$344.57, beta 1.09, market cap ~$4.68T (stockanalysis.com, Sep 4 2026).\n- NVDA reported fiscal Q2 in late August 2026: revenue $96.22B vs $92.11B consensus, next-quarter guide ~$100-108B; the stock moved +8.74% on Aug 27 2026 (Benzinga and cnyes, Sep 3 2026; daily closes from stockanalysis.com).\n- AAPL reported fiscal Q3 on ~Jul 30 2026: record revenue $109.4B, +16% y/y, but next-quarter guidance of +9-11% against ~12.1% consensus, with management flagging memory-shortage cost impact; the stock moved -7.35% on Jul 31 2026 (Yahoo Finance; stockanalysis.com).\n- Neither company has a scheduled earnings report inside Sep 7-18 2026 (NVDA next ~November, AAPL next ~late October).\n- Apple product event confirmed for Sep 9 2026, 10am PT at Apple Park: iPhone 18 Pro / Pro Max plus a first foldable model; no lower-priced iPhone 18 this cycle (MacRumors and AppleInsider, Aug 26 2026).\n- John Ternus took over as Apple CEO on Sep 1 2026 (search-surfaced coverage, Sep 2026).\n- Jefferies downgraded AAPL to Sell on Sep 2 2026, citing cancellation of the all-glass iPhone (search-surfaced coverage, Sep 2026).\n- FOMC meets Sep 15-16 2026 with the decision and Summary of Economic Projections / dot plot at 2:00pm ET Sep 16 (fedratecalc.com FOMC schedule). CME FedWatch put a 25bp HIKE (to 3.75-4.00%) at ~66-70% as of Aug 31-Sep 3 2026, up from ~35-40% on Aug 21, after Chair Kevin Warsh's Jackson Hole remarks on Aug 28 citing PCE at 3.7% (12m) and 4.1% (6m); Kalshi showed ~53% hike / ~46% hold (Forbes Aug 31 2026, KuCoin, CNBC Aug 7 2026).\n- BASE RATE, over the 30 sessions Jul 27-Sep 4 2026 INCLUDING both companies' earnings days: mean daily NVDA-AAPL spread +0.51pp/day, SD 3.74pp/day. BASE RATE over the SAME sample EXCLUDING the two earnings days (the conditioning that matches this window): mean -0.12pp/day, SD 2.99pp/day (computed from stockanalysis.com daily closes).\n- BASE RATE, rolling 9-session NVDA-AAPL spreads in that sample: full-sample overlapping range -9.8pp to +23.7pp; restricted to earnings-free windows, about -9.8pp to +7.8pp (same source, overlapping windows so not independent draws).\n- Long-run parameter estimate over a wider class: NVDA annualized vol ~40-45%, AAPL ~22-25%, daily correlation ~0.5-0.55, implying a 9-session spread SD of roughly 6.5-7pp.\n- Year-to-date 2026 through mid-August: AAPL ~+22.5% vs NVDA ~+10%; NVDA's late-August rally has since narrowed that gap to roughly comparable (Polymarket-coverage articles, Aug 2026).\n- Prediction markets: Polymarket's 'Largest company end of December 2026' (>$4.5M volume) prices NVDA 61%, AAPL 23.5%, Alphabet 11%; this is a four-month market-cap-level contract, not a two-week return-spread contract. NO market on any venue (Polymarket, Kalshi, Manifold, bookmakers) was found that prices the NVDA-minus-AAPL return spread over a two-week window; the surfaced Manifold candidate compares big-tech stocks to Bitcoin over the 2020s and closes 2030.\n- Policy backdrop: a Jan 13 2026 Commerce rule permits H200 sales to China under case-by-case licensing with an estimated ~1M-unit cap and a 25% tariff on advanced AI chips; reported Chinese orders exceed 2M units against ~700k inventory (semiconductorsinsight.com and virginiabusiness.com, 2026).\n- AAPL fell 2.26% on Sep 4 2026 while NVDA rose ~1%; the divergence was not attributed to a single confirmed catalyst in the sources retrieved.\nSEARCHED BUT NOT FOUND: any explicit resolution-criteria text or measurement convention for this question; any options-implied volatility quote for either name dated September 2026; a multi-year systematic study of AAPL returns in the two weeks following a September keynote (only one data point retrieved - a 3.3% two-day decline after the Sep 9 2025 iPhone 17 event); any NVDA-specific scheduled corporate event inside Sep 7-18 2026.",
+   "reference_class": "Two-week (9-10 trading session) relative price-return spreads, NVDA minus AAPL, over windows containing no scheduled earnings report for either company, 2024-2026"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0122,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.2791,
+   "seconds": 115.3,
+   "estimate": {
+    "percentiles": {
+     "10": -7.9,
+     "25": -3.6,
+     "50": 0.4,
+     "75": 4.4,
+     "90": 7.9
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.024
+   },
+   "reasoning": "Nine trading sessions (Sep 7 is Labor Day), no earnings for either name, so drift is near zero and the answer is almost entirely a dispersion question. The trailing 52 weeks give NVDA +35.3% vs AAPL +34.6% - about 0.03pp per biweekly period - and leadership has flipped twice in 2026, so I anchor the median at zero and add only +0.4pp for the beta differential (2.22 vs 1.09) in a mildly up-drifting market. NVDA's post-earnings drift after the Aug 26 beat and $108B guide is offset by its stretched position at a 52-week high, ~10% above the 50DMA after +6% in three sessions; Apple's Sep 9 foldable/iPhone 18 event under a new CEO is a two-sided catalyst, not a reliable sell-the-news short on one 2025 data point. Dispersion sets the answer: reconciled 9-session spread SD ~6.2pp, wider than the depressed option-implied reading because VIX at a 2026 low of 14.2 sits in front of a genuinely contested Sep 16 FOMC (reported ~66-70% priced for a hike on FedWatch vs ~53% on Kalshi) plus quarterly triple witching on the resolution date itself. Mild left skew: vol expansions are drawdowns and NVDA carries roughly double Apple's beta. No prediction market prices this spread on any venue - the nearest books differ on underlying, horizon and resolution source, so there is no anchor to blend.",
+   "sources": [],
+   "reconciliation": "Runs agreed on the median (+0.5/+0.6) and disagreed mainly on width (dispersion_90_10 of 14, 14.7, 17.8). I reconciled the underlying vol inputs rather than averaging: Runs 1-2 used option-implied vol (5.6-6.0pp SD), Run 3 used realized/long-run parameters (6.5-7.5pp). Each input has a documented bias visible in the dossiers - NVDA's 30d realized 44.5% includes the Aug 26 earnings gap and overstates an earnings-free window; NVDA's 32.7% IV at IV rank 8 is a post-earnings crush and understates a window containing a contested FOMC and triple witching; Run 3's empirical 2.99pp/day ex-earnings figure is inflated by the Jul 31 AAPL -7.35% session. I landed at 6.2pp SD, inside the runs' range but derived, not split. The Sep 4 AAPL price was disputed three ways; Runs 1 and 3 agree to within 11 cents (~$320.8, -2.2%) so Run 2's $314.16 is stale - immaterial to a spread question. The apparently conflicting YTD figures are different as-of dates across a period when leadership flipped, not a contradiction; I used the trailing-52-week pair as the drift anchor. Run 3's FOMC hike pricing (~66-70%) is uncorroborated and unverifiable without web access, but it is dated, sourced, and self-cross-checked against Kalshi; I accept only that the decision is contested, which is a dispersion fact and direction-neutral - a surprise hold would help high-beta NVDA as much as a hawkish print hurts it. The Jefferies AAPL downgrade appears in one dossier only and I could not confirm it; it carries no weight in the median. All three runs independently found no market pricing this spread, which I treat as settled. Remaining unsettled: the measurement base (Sep 4 close vs Sep 8 open) is unstated in the empty criteria text, which I carry as extra width rather than resolving by fiat. Where judgment could not be broken by evidence - Apple event tilt, NVDA drift vs reversal - I took the neutral reading, which is the bet I would make.",
+   "disagreements": [
+    {
+     "claim": "9-session spread SD is ~5.6-6.0pp (option-implied) vs ~6.5-7.5pp (realized/long-run)",
+     "kind": "factual",
+     "verdict": "Partly settled from the dossiers: both estimates reproduce, but each input is biased - NVDA 30d realized contains the Aug 26 earnings gap, NVDA IV is a post-earnings crush at IV rank 8. Reconciled to ~6.2pp SD, giving a 15.8pp 10-90 width."
+    },
+    {
+     "claim": "A 25bp Fed HIKE was ~66-70% priced for the Sep 16 FOMC inside the window",
+     "kind": "factual",
+     "verdict": "Cannot verify without web access; reported by one run with dated sources and a conflicting Kalshi read (~53%). Accepted only as evidence the decision is contested - widens dispersion, does not move the median in either direction."
+    },
+    {
+     "claim": "AAPL's Sep 4 2026 price",
+     "kind": "factual",
+     "verdict": "Settled: two runs independently give ~$320.8 (-2.2%) from a $328.21 Sep 3 close; the third's $314.16 is stale. Immaterial to a relative-return question."
+    },
+    {
+     "claim": "AAPL led NVDA sharply YTD (+22.5% vs +10%) vs the two being near-identical",
+     "kind": "factual",
+     "verdict": "Not a contradiction - different as-of dates (mid-July vs trailing-52-week to Sep 4) across a period when leadership flipped twice. Trailing-52-week (+35.3 / +34.6) used as the drift anchor."
+    },
+    {
+     "claim": "Jefferies downgraded AAPL to Sell on Sep 2 2026",
+     "kind": "factual",
+     "verdict": "Reported by one run only, uncorroborated. Plausibly explains part of the Sep 4 decline; given no weight in the median."
+    },
+    {
+     "claim": "No prediction market prices the NVDA-minus-AAPL two-week return spread",
+     "kind": "factual",
+     "verdict": "Settled - all three runs searched Polymarket, Kalshi, Manifold and bookmakers independently and found none. Nearest contracts differ on underlying, horizon and resolution source; no anchor to blend."
+    },
+    {
+     "claim": "The Sep 9 Apple event is a sell-the-news setup vs a two-sided catalyst",
+     "kind": "judgment",
+     "verdict": "No evidence breaks the tie - the only datum is a single 2025 instance (-3.3%) and no run located a multi-year study. Taken as two-sided; a first foldable under a new CEO has a real upside tail."
+    },
+    {
+     "claim": "NVDA post-earnings drift outweighs short-term reversal risk at a 52-week high",
+     "kind": "judgment",
+     "verdict": "Unbroken tie; nets to roughly zero. Median left at +0.4pp, sourced from the beta differential rather than from either narrative."
+    },
+    {
+     "claim": "Escape mass past +/-15pp (runs span 1.4%-3.5% per side)",
+     "kind": "judgment",
+     "verdict": "At ~2.4 SD, Gaussian gives ~0.8%/side; fat tails plus named mechanisms justify more. Set 3.0% low / 2.4% high - the downside mechanisms are more concrete and correlate with vol expansion, which hits the higher-beta name."
+    }
+   ],
+   "reference_class": "Earnings-free ~9-10 trading-session NVDA-minus-AAPL price-return spreads, 2025-2026 (both names post-report, no scheduled results in window)"
+  }
+ ]
+}

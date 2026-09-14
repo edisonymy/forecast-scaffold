@@ -1,0 +1,248 @@
+{
+ "record_id": "2026-09-14-67dabf92",
+ "question": "How much will Nasdaq-100 Futures total price returns exceed S&P 500 Futures in these biweekly periods of Q3 2026? (Sep 21 - Oct 2)",
+ "question_id": 44665,
+ "url": "https://www.metaculus.com/questions/44528/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-09-14T17:39:47+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.4142,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -2.0166666666666666,
+    "25": -0.85,
+    "50": 0.16666666666666666,
+    "75": 1.1833333333333333,
+    "90": 2.1666666666666665
+   },
+   "p_below_lower": 0.016666666666666666,
+   "p_above_upper": 0.012666666666666666
+  },
+  "phase1": {
+   "10": -2.0166666666666666,
+   "25": -0.85,
+   "50": 0.16666666666666666,
+   "75": 1.1833333333333333,
+   "90": 2.1666666666666665
+  },
+  "phase2": null,
+  "spread_phase1": 0.2,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -2.15,
+   "25": -0.85,
+   "50": 0.15,
+   "75": 1.2,
+   "90": 2.2
+  },
+  "p_below_lower": 0.018,
+  "p_above_upper": 0.012
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.034,
+   "seconds": 212.2,
+   "estimate": {
+    "percentiles": {
+     "10": -1.9,
+     "25": -0.55,
+     "50": 0.25,
+     "75": 1.1,
+     "90": 2.2
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Reference class: all 10-trading-day windows of NDX minus SPX price return, 2015-2026; drift is small and positive (~+5pp/yr long-run, and 2026 YTD +17.0% vs +12.7-12.9% through Sep 4 = ~+0.25pp per biweekly window), dispersion dominates the mean by ~6x. Window Sep 21-Oct 2 is 10 sessions, none elapsed as of Now. Futures-vs-index carry differences (NQ ~0.6% div yield, ES ~1.2%, single Dec contract post-Sep-18 roll) shift the spread by only ~0.02pp - immaterial. Two-sided case: for NDX, AI earnings breadth (>half of NDX Q2 EPS +20% y/y), Nvidia's FY28 +70% guide, semis +60% YTD, Micron reporting in-window; against NDX, a ~83%-priced Sep 16 hike with the 10y at 4.97% (duration hit lands hardest on high-multiple names), Brent ~$95 helping SPX energy where NDX has none, quarter-end rebalancing out of 2026 winners, and Russell 2000 +20.2% YTD showing the rotation is broadening beyond mega-cap tech. These roughly offset, so I stay near the base-rate drift: median +0.25pp, EV slightly lower for mild negative skew (macro-driven drawdowns hit NDX at ~1.2 beta). Escape mass: an AI-multiple unwind on a 5% 10y (2022-Jan and 2024-Jul precedents both produced ~-5pp two-week spreads) prices 2% below -5; a dovish-surprise or chip-news melt-up prices 1.5% above +5. Evidence is moderately thin and partly conflicting (one Sep-10 piece calls NDX a 2026 laggard stuck in a range while three others document clear YTD outperformance), which is a further reason to sit near the reference class rather than lean. Most sources were read via search-result summaries; only the EBC piece was opened in full.",
+   "sources": [
+    "https://www.ebc.com/forex/qqq-outperformance-2026-10-year-yields",
+    "https://www.fool.com/investing/2026/09/09/this-vanguard-etf-sp-500-nasdaq-100-2026-reckoning/",
+    "https://www.washingtonpost.com/business/2026/09/11/wall-street-stocks-dow-nasdaq/b7beaa5c-ae1d-11f1-b498-8697f35a6743_story.html",
+    "https://www.cnbc.com/2026/08/28/-september-fed-decision-now-a-coin-flip-as-rate-hike-odds-increase.html",
+    "https://www.cnbc.com/2026/08/26/nvidia-nvda-earnings-report-q2-2027-live-updates.html",
+    "https://thehill.com/homenews/house/6063667-house-government-funding-cr-shutdown-midterms/",
+    "https://www.vantagemarkets.com/market-analysis/vix-jumps-28-session-high-oil-inflation-data-september-11-2026/",
+    "https://kalshi.com/markets/kxnasdaq100y/nasdaq-yearly-range/kxnasdaq100y-26dec31h1600",
+    "https://www.fool.com/investing/2026/03/10/this-nasdaq-100-etf-is-outperforming-an-sp-500-one/"
+   ],
+   "dossier": "SUBJECT: NDX-100 futures minus S&P 500 futures price return, window Sep 21 2026 -> Oct 2 2026 20:00 UTC (10 trading sessions). Units: percentage points. Bounds -5/+5, both open.\n\nEVENT WINDOW: Sep 21 2026 -> Oct 2 2026 20:00 UTC per the criteria; as of Now (2026-09-14T17:27Z) 0% elapsed - the window has not begun and starts in ~7 days.\n\nRESOLUTION INSTRUMENT: resolves off FUTURES price returns (NQ vs ES), not cash-index or total-return-with-dividends. Sep 18 2026 is quad-witching, so the entire window sits in a single December contract with no roll inside it. Carry math: NQ dividend yield ~0.6%/yr vs ES ~1.2%/yr against a ~3.5-3.75% funding rate makes the futures spread differ from the cash-index spread by ~0.02pp over 14 calendar days.\n\nSTATUS QUO: the two indices track each other closely; a 10-session window with no regime break produces a small spread near the year's average daily drift, not a large one.\n\nBASE RATES\n- Over ALL overlapping 10-trading-day windows 2015-2026: NDX-SPX mean/median ~+0.25 to +0.3pp; SD ~1.3-2.0pp depending on vol regime (dispersion exceeds the mean by roughly 6x).\n- CONDITIONAL on 2026 YTD pace: NDX +17.0% vs SPX +12.7-12.9% through Sep 4 (EBC/ebc.com Sep 2026; Motley Fool Sep 9 2026) = +4.1-4.3pp over ~170 sessions, i.e. ~+0.25pp per 10 sessions.\n- CONDITIONAL on high-vol/macro-shock windows (2022 rate shock, Jul 2024 unwind, Apr 2025): two-week spreads of -4 to -5pp have occurred; such windows are a small minority of the 2015-2026 sample.\n- CONDITIONAL on current implied vol (VIX 17.84 close Sep 11 2026, a 28-session high; NDX vol runs ~1.2x SPX; daily NDX/SPX correlation ~0.97): implied 10-day spread SD ~1.2-1.4pp before allowing for rotation autocorrelation.\n\nEVIDENCE - supports NDX side\n- Nvidia (8.83% of NDX) Q2 report Aug 26 2026: beat, guided FY2028 revenue growth ~70% vs ~44% consensus; stock +7.4% to +8.7% (CNBC, Aug 26 2026).\n- Over half of Nasdaq-100 companies posted >=20% y/y Q2 EPS growth, described as the broadest in 4.5 years (EBC, Sep 2026).\n- PHLX Semiconductor Index ~+60% YTD as of Sep 3 2026, with underlying earnings up >60% (EBC).\n- NDX has outperformed SPX in 2026 despite the 10y real yield rising from 1.93% to 2.42% and nominal from 4.18% to 4.77% (EBC, Sep 3 2026 data) - the rate headwind has not historically stopped it this year.\n- Micron (4.77% of NDX) and AMD (3.28%) are large 2026 contributors; Micron reports inside the window (late September, fiscal Q4).\n\nEVIDENCE - supports SPX side\n- Fed: rates held at 3.50-3.75% in July on a 9-3 vote with three dissents FOR a hike; after Warsh's Jackson Hole speech, market-implied odds of a 25bp HIKE on Sep 16 2026 moved from ~30% to ~56% (CNBC Aug 28) and are quoted ~83% in early-September coverage. RBC now forecasts three hikes by year-end vs zero previously; fed funds futures imply ~50% odds of 4.00-4.25% by December (UDN, Sep 12 2026).\n- 10y Treasury closed 4.974% on Sep 11 2026, near 5% for the first time in three years; commentary flags 5% yields plus $100 oil as the specific combination that would pressure AI/chip leadership (UDN Sep 12 2026).\n- Brent ~$95.63, WTI ~$91.01 amid US-Iran tension (Sunday Guardian, Sep 13 2026). Energy is ~4% of the S&P 500 and ~0% of the Nasdaq-100.\n- Russell 2000 +20.2% YTD, ahead of both NDX and SPX - the 2026 leadership is broader than mega-cap tech (Motley Fool, Sep 9 2026).\n- At least one Sep 2026 piece characterizes NDX as range-bound and a 2026 laggard on AI-valuation and AI-economic-impact concerns (Motley Fool, Mar 10 2026 piece updated framing) - this conflicts with the YTD numbers above and is flagged as contested, not settled.\n- Quarter-end (Sep 30) falls inside the window: mechanical rebalancing tends to trim the year's winners.\n\nCALENDAR INSIDE OR ADJACENT TO THE WINDOW\n- FOMC decision Sep 16 2026 - five days BEFORE the window opens; only its aftermath (guidance, yield path) is in-window.\n- Quad witching Sep 18 2026 - before the window; contract roll completed.\n- Micron fiscal Q4 earnings, late September; Costco early October - both NDX members.\n- August PCE inflation print, late September.\n- September employment report, Friday Oct 2, 08:30 ET - lands INSIDE the final session, before the 20:00 UTC resolution.\n- Government funding: CR signed Sep 2 2026 funds agencies through Dec 11 2026 (The Hill; NBC News) - no Oct 1 shutdown risk in this window.\n\nMARKET CHECK: no prediction-market contract found on NDX-vs-SPX relative return at any horizon. Kalshi lists Nasdaq-100 absolute level ranges and Fed-decision markets; Polymarket and Manifold title searches returned no candidate. Treat as 'no market anchor'.\n\nRECENT LEVELS (for orientation, not extrapolation): Sep 11 2026 close S&P 500 7,656.98 (+0.9% on the day), Nasdaq Composite 26,333.04 (+1.0%); for the week Sep 7-11 S&P -0.8%, Nasdaq -0.7%, Dow -1.6% (AP via Washington Post, Sep 11 2026). August CPI: core +0.3% m/m, headline +3.4% y/y.\n\nSEARCHED FOR BUT NOT FOUND: (a) any direct time series or published statistic of the NDX-minus-SPX spread over 10-trading-day windows - no downloadable price data was reachable from this environment, so the dispersion figures above are reconstructed from implied vols and the vol/correlation relationship rather than measured; (b) VXN (Nasdaq-100 volatility index) level for September 2026; (c) any news dated after Sep 13 2026; (d) analyst previews specific to the Sep 21-Oct 2 stretch; (e) Micron's exact fiscal-Q4 report date.",
+   "reference_class": "All overlapping 10-trading-day windows of Nasdaq-100 minus S&P 500 price return, 2015-2026 (mean/median ~+0.25 to +0.3pp, SD ~1.3-2.0pp depending on vol regime)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.8318,
+   "seconds": 205.0,
+   "estimate": {
+    "percentiles": {
+     "10": -2.05,
+     "25": -0.95,
+     "50": 0.2,
+     "75": 1.3,
+     "90": 2.25
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.013
+   },
+   "reasoning": "Reference class: all 10-trading-day (two-week) windows of NDX-vs-SPX price-return difference, 2015-2026. That class has a small positive mean (~+0.2pp) and an SD near 1.6-1.9pp, and Sep 21-Oct 2 is exactly 10 trading days. The 2026-specific realized pace is consistent: QQQ +17.0% vs SPY +12.9% YTD through Sep 4 = +4.1pp over ~170 trading days, ~+0.24pp per window. I keep the median just below that drift (+0.20) because the regime cuts both ways: a Fed hike expected Sep 16 with the 10y near 5% and the real 10y up 49bp YTD is a duration headwind for the higher-multiple index, and the AI trade was being rattled on Sep 14 (OpenAI IPO delay, safety-related appeals), while Nvidia's blowout guidance, >20% Q2 EPS growth at over half of NDX names and ~60% YTD semis earnings growth push the other way. Evidence is genuinely conflicting on direction — one July source had the Nasdaq *Composite* at +7.8% vs S&P +9.0% while the QQQ/SPY figures show clear NDX outperformance — which is a reason to stay near the reference-class drift rather than to tilt. Futures-vs-index carry adds a negligible ~+0.02pp to NQ. Escape past +/-5pp needs ~2.9 SD in ten sessions; I price small but nonzero mass on both sides (AI-complex unwind under a hiking Fed on the low side, AI melt-up on the high side).",
+   "sources": [
+    "https://finance.yahoo.com/markets/live/stock-market-today-friday-september-11-dow-sp-500-nasdaq-cpi-inflation-082201751.html (fetched)",
+    "https://www.ebc.com/forex/qqq-outperformance-2026-10-year-yields (fetched)",
+    "https://www.cnbc.com/2026/09/01/big-tech-has-lagged-the-market-nearly-all-year-whats-happening.html (403 on fetch; used search-result summary only)",
+    "https://www.cnbc.com/2026/07/07/traders-on-kalshi-think-the-nasdaq-100-will-end-2026-above-30000.html (search-result summary)",
+    "https://www.cnbc.com/2026/09/10/fear-gauge-vix-hedges-volatility-stocks.html (search-result summary; VIX levels)",
+    "https://www.fool.com/investing/2026/07/29/the-sp-500-and-dow-are-on-track-to-beat-the-nasdaq/ (search-result summary)",
+    "https://www.benzinga.com/markets/equities/26/09/61758310/dow-sp500-nasdaq-futures-us-stock-market-sept-14-2026 (403 on fetch; title/summary only)",
+    "Kalshi market listings: kalshi.com/markets/kxinxy/sp-500-yearly-range and kalshi.com/markets/kxnasdaq100miny/nasdaq100-min (market check)"
+   ],
+   "dossier": "SUBJECT: NQ (Nasdaq-100 futures) minus ES (S&P 500 futures) total price return, percentage points, over Sep 21 - Oct 2 2026.\n\nEVENT WINDOW: Sep 21 2026 -> Oct 2 2026 20:00 UTC per the criteria; as of Now (2026-09-14T17:27Z) 0% elapsed — the window has not begun, and 7 calendar days separate Now from its start. It spans exactly 10 US trading sessions (Sep 21-25, Sep 28-Oct 2).\n\nRESOLUTION INSTRUMENT: resolves off the two futures contracts' price returns, not the cash indices and not total-return (dividend-reinvested) indices. Both NQ and ES roll Sep->Dec at the Sep 17-18 quad witching, before the window opens, so a single Dec contract spans the whole window for each. Futures-vs-index carry differential (r-q on NDX ~0.6% dividend yield vs SPX ~1.2%, financing ~4.5%) contributes on the order of +0.02pp to NQ over 10 sessions.\n\nSTATUS-QUO OUTCOME: the difference lands within roughly a point or two of its recent drift, well inside the -5/+5 range; both indices move together (realized correlation historically ~0.93-0.96).\n\nBASE RATES:\n- Over ALL 10-trading-day windows, NDX minus SPX, 2015-2026: mean roughly +0.2pp, SD roughly 1.6-1.9pp. (Derived from vol/correlation structure and long-run relative drift, not a retrieved dataset — treat as an estimate.)\n- Over 2026 YEAR-TO-DATE specifically: QQQ +17.0% vs SPY +12.9% from 2025-12-31 through 2026-09-04 (EBC Financial Group, using QQQ 614.31 / SPY 681.92 baselines) = +4.1pp over ~170 trading sessions = ~+0.24pp per 10-session window.\n- CONFLICTING measure over Jan-late-Jul 2026: Nasdaq Composite total return +7.8% vs S&P 500 +9.0% vs Dow +9.1% (Motley Fool, 2026-07-29) — i.e. the Composite was BEHIND. Note this is the Composite, not the Nasdaq-100, and is total return; the two figures are not directly reconcilable. The disagreement between the QQQ/SPY and Composite/S&P measures is itself a fact about this question.\n- CONDITIONAL on the rising-real-yield regime: Barclays analysis cited by CNBC (2026-09-01) says Big Tech (Mag7 ex-Tesla) underperformed the S&P for 92% of the year to date and is having its worst year since 2022, with multiple compression named as the primary driver. Same period: energy, materials and consumer staples were the top three S&P sectors; tech and financials lagged.\n\nEVIDENCE — both directions, with source and date:\n- Sep 11 2026: S&P 500 closed 7,640.51 (-0.22% per one recap; another recap for the same session reports +0.86% to 7,656.98 and the Nasdaq Composite +0.96% to 26,333.04 — recaps disagree, verify levels before using). All three major indexes fell on the week after a four-day losing streak. (Yahoo Finance live blog; 24/7 Wall St.)\n- Sep 11 2026: August core CPI +0.3% m/m vs +0.2% expected; headline +3.4% y/y. Market-implied odds of a 25bp Fed HIKE at the Sep 16 meeting jumped to ~87%. Chair is Kevin Warsh. (Yahoo Finance, 2026-09-11)\n- Sep 11 2026: 10-year Treasury yield finished just below 5% (4.974% per one source), near the 5% threshold for the first time in three years. RBC moved from forecasting zero 2026 hikes to three; fed funds futures put ~50% on 4.00-4.25% by December. (Yahoo Finance; UDN, 2026-09-12)\n- Real (inflation-adjusted) 10-year yield rose from 1.93% at end-2025 to 2.42% by 2026-09-03, +49bp — described as a direct valuation headwind for long-duration growth assets. (EBC, Sep 2026)\n- Oil: Brent ~$95.63, WTI ~$91.01 amid US-Iran tension (Sunday Guardian, 2026-09-13). One strategist framing: yields above 5% combined with oil above $100 would be the pressure point for AI/chip leadership.\n- Sep 14 2026 (Monday, pre-window): US equity futures fell after appeals from OpenAI and Anthropic leadership rattled the AI trade; OpenAI delayed its 2026 IPO plans. Both SPY and QQQ lower premarket. (Benzinga headline/summary, 2026-09-14)\n- Nvidia guidance (reported around Sep 11-12) drove a near-6% premarket gain and a projected ~70% revenue growth path to 2028, supporting the AI theme. (Sunday Guardian, 2026-09-13)\n- Earnings backdrop: more than half of Nasdaq-100 companies posted at least 20% y/y earnings growth in Q2 2026; the PHLX Semiconductor Index was up ~60% YTD with earnings up more than 60%. AI capex at Microsoft/Amazon/Alphabet/Meta approaching $800bn in 2026. (EBC; 24/7 Wall St.)\n- Downside precedent within 2026: on Jun 4 2026 the Nasdaq fell 4% — its worst day since April 2025 — as traders fled chip stocks (CNBC). Feb 2026 saw the worst month for the Nasdaq and S&P since March (CNN, 2026-02-27). Large single-session NDX-vs-SPX gaps have occurred this year.\n- Volatility: VIX ~17.62 on 2026-09-14, 15.84 close on 2026-09-11, versus a 2026 low of ~14.2 in August. CNBC (2026-09-10) reports investors buying hedges ahead of a seasonally volatile stretch, citing US midterms and geopolitical risk.\n- UBS view (mid-2026): expects the broad rally to continue in H2 2026 with the possibility that technology is no longer the leader, as investors look beyond tech after the Q2 semiconductor rally.\n- Calendar inside the window: quarter-end Sep 30; Micron earnings (after the bell, late September, prior guidance ~$50.0bn +/- $1.0bn revenue); Costco Q4 on Sep 24; core PCE release; Oct 2 is the first Friday, i.e. a jobs-report morning, and the window closes at 16:00 ET that same day. FOMC (Sep 16) and quad witching / S&P quarterly rebalance (Sep 18) both fall BEFORE the window opens. Nasdaq-100 reconstitution is December, not September.\n- Market check: no prediction market or bookmaker was found pricing this relative spread. Kalshi lists S&P 500 yearly-range and Nasdaq-100 minimum-level contracts for Dec 31 2026 — different underlying, different horizon, level rather than relative return. Polymarket and Manifold: none found (harness title search and independent check).\n\nSEARCHED FOR BUT COULD NOT FIND: a retrieved time series of NDX-minus-SPX 10-trading-day return differences with its 10th-90th percentile spread over 2025-2026; a count of how many recent 10-session windows produced a difference outside +/-5pp; NDX implied ",
+   "reference_class": "All 10-trading-day windows of Nasdaq-100 minus S&P 500 front-month futures price return, 2015-2026 (two-week relative-return differences)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0453,
+   "seconds": 244.7,
+   "estimate": {
+    "percentiles": {
+     "10": -2.1,
+     "25": -1.05,
+     "50": 0.05,
+     "75": 1.15,
+     "90": 2.05
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Reference class: 10-trading-day NDX-minus-SPX price-return spreads, which are roughly symmetric with a mean near the structural NDX drift (~+4-5%/yr, i.e. ~+0.18pp per two weeks) and fat tails. 2026 shows that drift is not reliable: NDX led massively in May (+10.6 vs +5.3), fell behind by late July (7.8% vs 9.0% YTD TR), then led again in the August AI re-ignition; trailing-12m QQQ +21.99% vs SPY +17.28%. I shade the median down from the long-run drift to roughly zero because the live macro setup is the historically worst one for NDX relative performance - a hiking Fed (Sep 16 FOMC, core CPI 3.4%, RBC now at three hikes), 10y at 4.97%, Brent ~$95 favoring energy which is absent from NDX - compounded by the Sep 14 AI-safety shock (NQ -1.72% vs ES -0.70%). Offsetting: AI capex/earnings momentum (Nvidia's 70% growth projection) has repeatedly re-ignited the trade within weeks. The window is clean of the largest scheduled catalysts (FOMC is Sep 16, before it; the Oct 1 shutdown was averted by the Sep 2 CR through Dec 11); it does contain Micron earnings (~Sep 23), quarter-end rebalancing, PCE, and the Oct 2 payrolls print - vol-raising, direction-neutral. Dispersion is the main call: VXN/VIX at 22.3/15.8 is a wide gap, implying ~1.6pp SD over 10 sessions, so I keep a 4.1pp 10-90 width rather than the narrower band a calm-regime prior would give. Slight left skew because NDX beta >1 combines with equity markets' own negative skew. Escape mass is small but real: ~1.5% below -5 (AI-safety regulatory shock, yields through 5.25%, a mega-cap duration crush) and ~1.0% above +5 (an August-style AI melt-up or dovish surprise). No human prediction market prices this spread, so no crowd anchor.",
+   "sources": [
+    "https://stockanalysis.com/etf/qqq/",
+    "https://stockanalysis.com/etf/spy/",
+    "https://www.investing.com/news/economy-news/ai-warnings-knock-nasdaq-futures-pressure-tech-stocks-4898987",
+    "https://www.fool.com/investing/2026/07/29/the-sp-500-and-dow-are-on-track-to-beat-the-nasdaq/",
+    "https://www.fool.com/investing/2026/03/10/this-nasdaq-100-etf-is-outperforming-an-sp-500-one/",
+    "https://www.nasdaq.com/articles/may-2026-review-and-outlook",
+    "https://www.nasdaq.com/products/global-indexes/nasdaq-100/performance",
+    "https://thehill.com/homenews/house/6063667-house-government-funding-cr-shutdown-midterms/",
+    "https://govtschemes.org/government-shutdown-october-2026/",
+    "https://en.macromicro.me/charts/21519/vxn",
+    "https://www.macroradar.io/vix",
+    "https://udn.com/news/story/6811/9750982",
+    "https://sundayguardianlive.com/business/us-stock-market-prediction-dow-jones-sp-500-nasdaq-futures-edge-higher-ahead-of-monday-wall-street-opening-nvidia-earnings-fed-rate-hike-oil-prices-bond-yields-in-focus-check-monday-outlook-284073/",
+    "https://kalshi.com/category/financials/indices",
+    "https://fedratecalc.com/us-economic-calendar/september-2026/",
+    "https://seekingalpha.com/article/4824441-micron-accenture-set-to-report-earnings"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the price return of Nasdaq-100 futures minus the price return of S&P 500 futures over the stated period, not off the cash indices' total returns and not off the Nasdaq Composite. Units are percentage points of difference. Both legs trade the Dec-2026 contract throughout (the September roll occurred ~2026-09-10), so no contract roll falls inside the window; the futures-vs-index carry differential over 11 calendar days is on the order of 0.01-0.02pp given NDX dividend yield ~0.6% vs SPX ~1.2% at a common funding rate.\n\nEVENT WINDOW: 2026-09-21 -> 2026-10-02 per the criteria (10 trading sessions, ending at the 2026-10-02 16:00 ET cash close); as of Now (2026-09-14T17:27Z) 0% elapsed - the window has not opened and begins in ~6.8 days.\n\nSTATUS-QUO OUTCOME: absent a new shock, the spread lands within about +/-2pp, the range that has contained the large majority of 10-session NDX-SPX gaps.\n\nEVIDENCE:\n- 2026-09-14 (Reuters via investing.com): at the US open, Nasdaq-100 E-minis -505.5 pts (-1.72%) vs S&P 500 E-minis -53.25 pts (-0.70%), after Anthropic CEO Dario Amodei called for slowing AI capability development, with Musk and Altman concurring; Nvidia -2% premarket, Intel -6%, AMD -5%, Marvell -6%.\n- 2026-09-11 (UDN, 2026-09-12): August core CPI +0.3% m/m, headline +3.4% y/y; market-implied odds of a Fed HIKE at the Sep 16 FOMC above 80%; RBC moved from zero to three hikes by year-end; fed funds futures ~50% on 4.00-4.25% by December; US 10y closed 4.974%, nearing 5% for the first time in three years.\n- 2026-09-11/13 (Sunday Guardian): S&P 500 cash 7,666.60; Nasdaq Composite 26,217.83; Brent $95.63, WTI $91.01 amid US-Iran tensions; Nvidia guidance implying ~70% revenue growth by 2028.\n- 2026-09-14 (stockanalysis.com, 13:3x ET): QQQ $712.14 (-0.38% on the day); SPY $762.65.\n- Volatility (MacroMicro / market data): VXN 22.32 close 2026-09-09 (20.04 on 2026-09-04); VIX 15.84 close 2026-09-11. The VXN/VIX ratio near 1.4 is wide versus its typical 1.15-1.25.\n- Fiscal calendar: the Oct 1, 2026 funding lapse was averted - a CR passed the Senate 90-6 (Aug 8) and House 370-48 (Sep 1), signed 2026-09-02, funding agencies at current levels through 2026-12-11 (The Hill; NBC News). No shutdown catalyst inside the window.\n- Deciding-body / macro calendar: FOMC decision 2026-09-16 14:00 ET with press conference - BEFORE the window opens; the next FOMC falls after it. Inside the window: September PCE (late Sep), quarter-end 2026-09-30, and September nonfarm payrolls 2026-10-02 08:30 ET (i.e. on the final day, before the 16:00 ET measurement). Micron and Accenture report in late September (Seeking Alpha) - Micron is an NDX member and a memory/AI bellwether, not in the S&P-vs-Nasdaq-common set in weight terms.\n- Sector composition context (as of 2026-09-11): 8 of 11 S&P sectors positive YTD, energy leading at +43% - energy is absent from the Nasdaq-100, so oil-driven moves affect the two indices asymmetrically.\n\nBASE RATES (with the class each is computed over):\n- Over all calendar years 2010-2025 (Nasdaq Global Indexes): Nasdaq-100 Total Return exceeded the S&P 500 in 12 of 16 years; NDX average annual return +18.8%.\n- Over the trailing 12 months ending 2026-09-14 (stockanalysis.com): QQQ total return +21.99% vs SPY +17.28% - a ~4.7pp gap in total-return terms, ~5.3pp adjusting for the dividend-yield difference, i.e. roughly +0.2pp per two-week period on average.\n- Conditional on the 2026 regime specifically: as of 2026-07-29 (Motley Fool) the S&P 500 and Dow were on track to beat the Nasdaq for the first time since 2022, with Nasdaq YTD TR 7.8% vs S&P 500 9.0% - i.e. within 2026 the sign of this spread has been roughly a coin flip, not the historical positive drift.\n- Conditional on AI-led up-legs within 2026 (Nasdaq 'May 2026 Review'): NDX +10.6% vs S&P 500 +5.3% in May alone - a 5.3pp monthly gap, showing the regime supports large single-month spreads.\n- Conditional on AI-negative single sessions in 2026 (2026-09-14, 2026-08-31-type sessions): one-day NQ-minus-ES gaps of 0.9-1.0pp have occurred, implying a daily dispersion around 0.5pp.\n- Series dispersion for this spread: implied-vol-based tracking error from VXN 22.3 / VIX 15.8 at a daily correlation of ~0.95 gives ~8.3-8.7% annualized, or ~1.6-1.7pp standard deviation over a 10-session horizon; using realized rather than implied vols gives ~1.5pp.\n\nDIRECTIONAL EVIDENCE BOTH WAYS - for a wider NDX lead: AI capex and Nvidia's growth guidance remain the market's earnings engine; the August re-ignition produced +5% on the S&P in four sessions with tech leading; NDX beta to SPX is ~1.15-1.25, so any index-level rally mechanically widens the spread. For a narrower/negative spread: a hiking Fed with the 10y at ~4.97% compresses long-duration valuations (the 2022 analogue saw NDX -33% vs S&P -19% over the year); Brent near $95 flatters S&P-only energy weight; the Sep 14 AI-safety intervention is a narrative-level, not earnings-level, hit whose persistence is unknown; quarter-end (Sep 30) pension rebalancing conventionally trims the quarter's winners.\n\nSEARCHED FOR BUT COULD NOT FIND: any prediction market or bookmaker pricing the NDX-minus-SPX relative return (Polymarket and Manifold title searches returned no candidate; Kalshi lists S&P 500 year-end range, monthly-max and index-addition contracts but no relative-performance contract; no bookmaker line located) - none found. Also could not retrieve: a precise NDX (not Composite) YTD 2026 figure as of mid-September; a downloadable NDX/SPX daily history to compute the realized 10-day spread distribution directly (data hosts returned 403/404); the exact Micron earnings date; confirmation of whether the period return is measured from the 2026-09-18 close or the 2026-09-21 close.",
+   "reference_class": "Rolling 10-trading-day differences between Nasdaq-100 and S&P 500 front-month futures price returns, in high-dispersion AI-led regimes (2022-2026), where the spread has an unconditional mean near +0.2pp per two weeks and a standard deviation of roughly 1.5-1.8pp"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0984,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.4211,
+   "seconds": 86.9,
+   "estimate": {
+    "percentiles": {
+     "10": -2.15,
+     "25": -0.85,
+     "50": 0.15,
+     "75": 1.2,
+     "90": 2.2
+    },
+    "p_below_lower": 0.018,
+    "p_above_upper": 0.012
+   },
+   "reasoning": "Window is 10 sessions (Sep 21-Oct 2), 0% elapsed, entirely inside the Dec contract for both legs, so no roll and only ~0.02pp of carry differential. Reference class gives a small positive mean (~+0.2pp) dwarfed by ~1.6-1.75pp dispersion; 2026 YTD pace (QQQ +17.0% vs SPY +12.9% through Sep 4, ~+0.24pp/window) and trailing 12m (+21.99% vs +17.28%) agree. I hold the median near but below that drift at +0.15: the hiking-Fed/5%-10y/$95-Brent headwind is real and energy is absent from NDX, but the same real-yield regime coexisted with a 4pp NDX lead all year, and the Sep 16 hike resolves before the window opens. The Sep 14 AI-safety selloff is a one-day narrative move seven sessions before the window, not an earnings mechanism. Largest catalysts sit outside the window; the ones inside (Micron, quarter-end rebalancing, PCE, Oct 2 payrolls before the 20:00 UTC close) widen the distribution without tilting it. Mild left skew from NDX's >1 beta. No prediction market anywhere prices this spread, so no crowd anchor.",
+   "sources": [],
+   "reconciliation": "In dispute: (a) the QQQ/SPY +4.1pp YTD gap vs Motley Fool's late-July Composite +7.8% vs S&P +9.0% — resolved as not contradictory (Composite is not NDX-100, the dates differ by six weeks, and the August AI re-ignition bridges them), so the ~+0.2pp/10-session drift anchor holds; (b) VIX on Sep 11 quoted as 17.84 by Run 1 vs 15.84 by Runs 2 and 3 — two-of-three plus Run 3's paired VXN datum favour 15.84, and it is immaterial since VXN 22.3 drives the spread vol; (c) Barclays' claim that Mag7 ex-Tesla underperformed the S&P for 92% of YTD alongside NDX leading YTD — reconcilable only if the lead is semi-driven (SOX ~+60% YTD), which is plausible but NOT settleable from the dossiers with no web access this run, so I let it cap confidence in the drift rather than resolve it either way. Pure judgment, no evidence breaking the tie: whether the Sep 14 AI-safety session (NQ -1.72% vs ES -0.70%) should persist seven sessions into the window. I would bet it does not — it is narrative-level with no earnings mechanism — so I do not shade to Run 3's +0.05, but I also do not take the full +0.24 drift given the Barclays tension: +0.15. Dispersion is carried forward from Run 3's implied-vol computation, which I recomputed independently (VXN/VIX at 0.95-0.97 correlation gives 1.6-1.75pp SD over 10 sessions) and set at the upper-middle, 4.35pp, because all three runs' in-window catalyst list is vol-raising. Escape masses sit between the runs' values: precedents for -4 to -5pp two-week spreads exist (2022, Jul 2024, Apr 2025) and require ~3 SD here, so 1.8% below and 1.2% above under fat tails. All three runs independently found no market on this spread; I retrieved nothing myself.",
+   "disagreements": [
+    {
+     "claim": "NDX-100 is ~4pp ahead of the S&P YTD 2026 (QQQ +17.0% vs SPY +12.9%) vs the Nasdaq being behind (Composite +7.8% vs S&P +9.0%)",
+     "kind": "factual",
+     "verdict": "Settled — different index (Composite not NDX-100) and different as-of dates (late July vs Sep 4), bridged by the August AI re-ignition; trailing-12m QQQ +21.99% vs SPY +17.28% corroborates. NDX-100 is ahead; drift anchor ~+0.2pp per 10 sessions stands."
+    },
+    {
+     "claim": "VIX closed 17.84 on Sep 11 2026 (Run 1) vs 15.84 (Runs 2, 3)",
+     "kind": "factual",
+     "verdict": "Settled on the majority reading of 15.84; immaterial to the estimate since VXN (22.32, Sep 9) drives spread dispersion."
+    },
+    {
+     "claim": "Barclays: Mag7 ex-Tesla underperformed the S&P for 92% of YTD 2026, worst year since 2022",
+     "kind": "factual",
+     "verdict": "Could not be settled without web access. Consistent with NDX leading only if the lead is semi-complex-driven. Left as live uncertainty; it is why I do not take the full drift."
+    },
+    {
+     "claim": "Window mechanics: 10 sessions, single Dec contract, FOMC Sep 16 and quad witching Sep 18 outside the window, no Oct 1 shutdown risk (CR signed Sep 2 through Dec 11)",
+     "kind": "factual",
+     "verdict": "Unanimous across all three runs and internally consistent; accepted."
+    },
+    {
+     "claim": "No prediction market or bookmaker prices the NDX-minus-SPX relative return",
+     "kind": "factual",
+     "verdict": "Three independent checks (Polymarket, Manifold, Kalshi) all returned none found; Kalshi's contracts are absolute-level, different horizon, not a near-miss worth anchoring on. No crowd anchor."
+    },
+    {
+     "claim": "The Sep 14 AI-safety selloff should shade the median toward zero (Run 3, +0.05) vs be discounted (Runs 1-2, +0.20/+0.25)",
+     "kind": "judgment",
+     "verdict": "No evidence breaks this. I take the reading I would bet on: a one-day narrative move seven sessions before the window opens, with no earnings mechanism, decays. Median set at +0.15."
+    },
+    {
+     "claim": "A hiking Fed with the 10y near 5% is a live duration headwind for the higher-multiple index",
+     "kind": "judgment",
+     "verdict": "Weighted down: the dossiers show the real 10y rose 49bp YTD 2026 while NDX led by ~4pp, and the Sep 16 hike resolves before the window opens. Real but largely priced."
+    },
+    {
+     "claim": "10-90 dispersion is 4.1 (Runs 1, 3) vs 4.3 (Run 2)",
+     "kind": "factual",
+     "verdict": "Recomputed independently: VXN 22.3 / VIX 15.8 at correlation 0.95-0.97 implies 1.6-1.75pp SD over 10 sessions, i.e. 4.1-4.5pp. Set at 4.35, the upper-middle, for the in-window catalyst stack."
+    }
+   ],
+   "reference_class": "All 10-trading-day windows of Nasdaq-100 minus S&P 500 price return, 2015-2026"
+  }
+ ]
+}

@@ -1,0 +1,1332 @@
+# Changelog
+
+All notable changes to this project are documented here. The format follows
+[Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
+and mirror `.claude-plugin/plugin.json`.
+
+## [0.5.0] - 2026-09-14
+
+**License change: MIT -> PolyForm Noncommercial 1.0.0.** Commercial use now requires a separate
+license from the author; every noncommercial purpose remains free, including use by charities,
+educational institutions, public research organizations, and government institutions regardless
+of funding source. The license's "No Other Rights" section expressly preserves the licensor's
+right to grant other licenses, so commercial terms are available on request.
+
+This is not retroactive and cannot be. Releases through v0.4.28 were distributed under the MIT
+License, which is an irrevocable grant: those versions stay MIT permanently, and anyone holding
+a copy keeps the full MIT rights to it, including redistribution. The boundary is the last MIT
+commit, `f9c341f`. Only v0.5.0 onward carries the new terms.
+
+The vendored numeric-CDF section ported from Metaculus/forecasting-tools (Copyright (c) 2024
+CodexVeritas) **remains MIT-licensed** and is unaffected. MIT permits sublicensing, so it may
+ship inside a work under other terms, but its permission notice must travel with every copy —
+now reproduced in full in the new `THIRD-PARTY-NOTICES.md`, which ships in the sdist and wheel
+via `license-files`. The in-file attribution in `core.py` was updated to point at it rather than
+at the upstream repository's LICENSE file, which no longer suffices now that the project license
+is not itself MIT.
+
+Declarations updated in lockstep: `LICENSE`, `pyproject.toml`, `.claude-plugin/plugin.json`,
+`README.md`. The SPDX identifier is `PolyForm-Noncommercial-1.0.0` (a registered, non-deprecated
+SPDX id; not OSI-approved, by design — it is a source-available, not open-source, license).
+
+## [0.4.28] - 2026-09-04
+
+**Architecture change (operator decision, 2026-09-03): parallel independent research is the
+design.** Medium tier = three full research runs (Angle P, no lens), high = four, low = one;
+research depth is identical at every tier (searches 5, min_sources 3); tiers differ only in
+run count and synthesis. A reconciler ("supervisor") sees every dossier and estimate,
+classifies disagreements factual/judgment, searches only when the runs disagree beyond a
+spread threshold, and issues the submitted number; every pool is journaled beside it so the
+paired counterfactual scores at resolution. Evidence sharing between runs exists but ships
+off. The shared-dossier + lens architecture remains the fallback (`run_angles = []`).
+
+Merge criteria the operator set were met on a live paired test (scratchpad `ab/`, 7 binaries
++ numerics in flight, both arms opus-5 at medium, Metaculus fetches banned in the test
+checkouts): no clear regression (pooled numbers within 0.03 on 6/7 binaries; wider within-arm
+spread where the world was genuinely ambiguous), reasoning traces available (new trace files)
+and sound on review, cost ratio 1.21x for research-only and ≈1.5x-2x with the reconciler
+(binary questions $2.36 → $2.86 → ≈$3.4; numeric single-run $1.4 → ≈$3.5). Two independent
+reviews (correctness; red-team) were applied before merge — see the Review fixes entry.
+`bot.yml` per-tick budget raised 12 → 24 to keep coverage at the higher per-question cost.
+
+### Added
+- **Pooling for continuous and multiple-choice questions** (`core.pool_percentiles`,
+  `core.pool_escape_mass`, `core.pool_mc`; wired in `bot/run_bot.py`). The harness forced
+  `n_runs = 1` for every non-binary type because no pooling rule was preregistered for
+  them, so the measured deficit — continuous questions, 10-90 coverage 70-76% and widths
+  0.62-0.67x the crowd's across four waves — was also the only path that never ensembled.
+  `n_runs` now follows the tier for all types: numeric/discrete/date quantile-average
+  ("Vincentize") their five percentiles across runs, in LOG space when the question carries
+  a `zero_point`, with the declared escape masses averaged over the runs that declared one
+  (a run that omitted the field said nothing about the tail, not that it is zero); MC takes
+  a per-option geometric mean, renormalized (on two options that is exactly
+  `geo_mean_odds`). Be precise about the mechanism: quantile averaging is SHAPE-PRESERVING
+  — it recentres on the runs' consensus and averages their widths — so it is the ensemble
+  lever, not by itself a widening transform. `REASONING_SECTION` is now type-aware
+  (`reasoning_section(qtype)`); the binary text is byte-identical, and non-binary reasoning
+  runs are never asked for `named_scenarios` (the coherence arithmetic behind it is defined
+  only for a single probability).
+- **The single-run counterfactual, journaled** (`run_percentiles`, `run_escapes`,
+  `percentiles_run1`, `run_probabilities`, `probabilities_run1` on `ForecastRecord`; see
+  docs/schema.md). Every pooled record carries the research run's own answer — exactly what
+  the pre-change harness would have submitted — so pooling is scored PAIRED at resolution
+  with no A/B arm and no question spent on a control, the same trick as
+  `percentiles_pre_guard`. Written only when a pool actually happened, so a single-run
+  forecast journals byte-identically to before.
+- **Preregistered scorer** `bench/analysis/pooled_vs_single.py`: rebuilds both arms through
+  the production `percentiles_to_cdf` (pchip, each row's own `cdf_size` and bounds; RUN-1
+  gets `run_escapes[0]`), scores them with the platform's continuous baseline formula, and
+  prints per-wave and pooled paired deltas with a 90% bootstrap CI. **Decision rule, fixed
+  before any data:** after two MiniBench waves (n >= 60 scored continuous rows), KEEP
+  pooling if the paired delta CI90 excludes zero on the positive side; REVERT if the mean
+  is negative; otherwise extend one more wave. MC is explicitly out of scope (the platform
+  scores it with a different formula and the sample cannot power a rule).
+
+- **Two phases on top of parallel research, each behind a tier flag** (`share_evidence`,
+  `supervisor` in `core.DEFAULTS` + `config/forecast.toml`; wired in `bot/run_bot.py`).
+  Angle mode already ran k independent full-research runs and pooled them (phase 1).
+  **Phase 2 — shared evidence, independent judgment:** every angle run also writes the
+  estimate-free dossier, and once they have all finished each run gets ONE reasoning-only
+  call carrying its own dossier plus the other runs' dossiers — evidence, never their
+  numbers, their reasoning or their identities — and the second round is pooled instead.
+  **Phase 3 — supervisor:** one reconciler receives every dossier and every estimate WITH
+  its reasoning, lists the disagreements, classifies each FACTUAL (checkable) or JUDGMENT,
+  settles the factual ones, and issues the final number in the question's own contract plus
+  a `reconciliation` audit string. It is told explicitly not to average, split the
+  difference, or hedge toward 0.5 or the widest member: the harness already computes and
+  journals the pool, so a number that re-derives it adds nothing. Both phases obey the same
+  budget/deadline stops as a run slot (skip the phase, print why, fall back one level), and
+  a supervisor payload that fails validation twice falls back to the pool it consumed.
+- **The supervisor's research budget is conditional on disagreement** (tier
+  `supervisor_search_spread`, probability scale; `supervisor_search_spread_iqr`, continuous,
+  in IQR units). Below the threshold the reconciler runs REASONING-ONLY — `WebSearch` and
+  `WebFetch` denied at the CLI, not merely discouraged in the prompt — because runs that
+  already agree have no factual dispute to settle; at or above it, research-capable with up
+  to the tier's `searches` targeted checks. The spread decides once, before the call, so a
+  question's cost is predictable from numbers the harness already has. `supervisor.mode` and
+  `supervisor.spread` journal which path ran and the number that chose it.
+- **Every phase's pool is journaled beside the number submitted** (`pool_phase1`,
+  `pool_phase2`, `spread_phase1`, `spread_phase2`, `raw_draws_phase1`,
+  `run_percentiles_phase1`, `run_escapes_phase1`, `run_probabilities_phase1`, `supervisor`
+  on `ForecastRecord`; see docs/schema.md). The spreads are journaled deliberately: a
+  variant that halves the ensemble's disagreement without improving accuracy has reproduced
+  Lorenz et al.'s herding result in-bot, and that failure looks like agreement unless a
+  number fixed in advance rules it out.
+- **Preregistered scorer** `bench/analysis/phase_pools.py`: scores PHASE 1 vs PHASE 2 vs
+  SUPERVISOR paired on the same question — log score for binaries, the platform's continuous
+  baseline formula (pchip `percentiles_to_cdf` + `minibench_numeric_tails.score_row`) for
+  numerics, each arm rebuilt with the tails that arm declared — with a bootstrap CI90 on
+  every paired delta, plus the herding check (mean `spread_phase2` / `spread_phase1` beside
+  the paired Brier delta). **Decision rules, fixed before any data:** phase 2 is kept only if
+  its paired delta vs phase 1 is >= 0 AND the spread ratio is not < 0.5 with a non-positive
+  delta; the supervisor is kept only if its paired delta vs the phase it consumed has a CI90
+  excluding zero on the positive side after two MiniBench waves (n >= 40 binaries, or 60
+  mixed). MC is out of scope, as in `pooled_vs_single.py`.
+
+- **Per-question traces** (`bot/journal/traces/<record_id>.json`; `trace_path` on
+  `ForecastRecord`). The journal says what the bot forecast; the trace says what each RUN
+  thought — one object per agent call carrying phase/stage/run index/angle, mode, model,
+  cost, seconds, that run's own estimate, its reasoning, its sources, its dossier, the
+  reconciler's `reconciliation` and `disagreements`, and the first attempt's validation
+  errors when a repair retry happened — plus each phase's pool, the spreads, and what was
+  submitted. At three-to-seven calls a question, the pooled number is the one thing that
+  cannot be reverse-engineered into the reasoning behind it. The dossier (non-angle) path is
+  traced identically, so old-design runs stay readable. Text fields cap at 6 KB and the file
+  at ~60 KB (these are committed hourly); the write happens AFTER the journal append and is
+  fail-open — a trace that cannot be written prints a warning and never costs a forecast.
+  `bot.yml` already stages `bot/journal/` wholesale, so traces are committed with the
+  journal and scanned by the same fail-closed leak guard.
+
+### Changed
+- **Research depth is now uniform across tiers** (operator, 2026-09-03): `searches = 5` and
+  `min_sources = 3` at low, medium and high (was 1/5/12 searches and 1/3/5 sources). A tier
+  states how much independent JUDGMENT a question gets — the run count and what synthesizes
+  it — never how carefully any single run reads the world. The old ladder made a low-tier run
+  research badly on purpose, and that is the one economy the survey evidence contradicts
+  outright: "research sources used" is the strongest measured correlate of bot performance
+  (r = +0.42, p = .006, Fall 2025 FutureEval survey; winners averaged 1.75 sources vs 1.00),
+  while "aggregates multiple forecasts" was not significant. `runs` (1/3/4), `run_angles`
+  ([] / P,P,P / P,P,P,P) and `supervisor` (off/on/on) still ladder.
+- **Cost of a medium question, at opus-5.** Parallel research alone is ~$4.0/question
+  (three independent research runs), against ~$2.2 before parallel research. The supervisor
+  adds ~$0.4 in its reasoning-only mode — ~$4.4 all-in for the shipped default — and
+  ~$1.0-1.5 more only on the questions whose runs actually disagree enough to buy the
+  research-capable call. Phase 2, were it enabled, would add ~$1.3.
+- **`share_evidence` ships OFF at every tier** (operator decision, 2026-09-03): an
+  experiment switch, not production. It is the design with no clean forecasting evidence
+  either way (no published RCT isolates the shared-evidence-pool condition) and a documented
+  failure mode (Lorenz et al. 2011: circulating others' estimates converged a 144-person
+  group and shrank its variance without improving mean accuracy). `supervisor` ships ON at
+  medium/high — the one interactive design with forecasting-specific quantitative evidence
+  (AIA Forecaster: mean-of-10 Brier 0.1140 -> 0.1125 reconciled; Cassi AI uses the pattern),
+  and the design docs/research-notes-multiagent-forecasting-2026-09-03.md recommends testing
+  first.
+- Angle runs write the estimate-free dossier whenever a later phase will consume their
+  evidence (either flag on), so the reconciler has something to reconcile beyond five lines
+  of reasoning apiece. With both flags off the angle runs are byte-for-byte unchanged.
+- **Angle mode is no longer binary-only.** `run_angles` flips the flow to N independent
+  full-research runs on every question type; the angle briefs steer where a run looks,
+  which is type-agnostic, and each type now has a pool. Angle runs are research runs, so
+  MC/continuous ones get the reference-class floor announced in their prompt to match the
+  gate `one_run` already enforced. The aggregation tag names the angles
+  (`quantile_mean(angles=P,P,P)` / `geo_mean_mc(angles=P,P,P)`).
+- `single_run(of N intended)` and the budget/deadline "stopping after N run(s)" line now
+  count runs in each question type's own currency instead of only binary probabilities.
+
+## [0.4.27] - 2026-09-03
+
+Fall-season prep (docs/review-2026-09-03-fall-season-prep.md is the review behind it).
+Production prompt change is record-only; everything numeric stays preregistered.
+
+### Added
+- **Resolutions overlay + season readout** (`bench/sync_resolutions.py`): the journal never
+  learned how a question resolved (all 444 rows were `status: open`), so the calibration
+  layer and any reference-class lookup had nothing to read. The sync writes an append-only
+  overlay `bot/journal/resolutions.jsonl` (platform status/resolution, normalized outcome,
+  our own spot peer / baseline scores — which the API DOES return for our own forecasts —
+  and the PIT of the outcome under our submitted CDF) without ever rewriting the journal,
+  so it cannot race the 10-minute CI commits. `--readout` prints the per-type / tier /
+  model / version / month tables, binary buckets and continuous PIT coverage.
+- **Same-template prior facts** (`bot/priors.py`, wired into the RESEARCH run's brief
+  only): for a question whose stripped title matches an earlier resolved question of the
+  same type (Jaccard >= 0.6 — MiniBench regenerates the same templates every wave), the
+  research run receives the platform outcome, our earlier median/quartiles and the PIT as
+  record-only data. Never blocks a run; reasoning runs do not see it. Motivation: the
+  Spring 2026 bot-maker survey's strongest research correlate was "checks similar
+  questions" (r=+0.34) and "looks up similar resolved questions" split Fall-2025 winners
+  from non-winners 34% vs 0%.
+- **Research checklist, two record-only items** (bot prompt + references/research.md,
+  surface-pinned by tests): the empirical spread of a series' past changes over windows
+  the same length as the remaining horizon, and the empirical count of same-length
+  windows containing an event. Both address the measured width signature (our 25-75
+  interval 0.62-0.67x the crowd's across four waves; 10-90 coverage 70-76%) and the
+  low-bucket binary under-call, without any directional wording.
+- **Seasonal slug auto-discovery** (`--discover`, default on): `MetaculusClient.
+  tournaments()` + `discover_seasonal_slugs()` add any active "FutureEval Bot Tournament"
+  / "AI Forecasting Benchmark Tournament" project to the configured roster, so the Fall
+  season is covered from its first tick without a variable edit. Configured slugs are
+  never removed; discovery failure falls back to the configured list.
+- **Journal alarm** (`scripts/journal_alarm.py`, `.github/workflows/journal-alarm.yml`,
+  hourly): opens one deduplicated issue when no successful bot run exists for 2 h, or
+  when open questions exist and the journal has been silent for 6 h. The 2026-08-01
+  silent day (6 questions missed) had no tripwire.
+- **Platt activation gate on the live record** (`bench/analysis/platt_gate.py`): fit on
+  forecasts before a cutoff, score after, plus 5-fold CV; writes `recalibration.json`
+  only when both help. On the full overlay (130 resolved binaries): temporal test delta
+  +0.006 (cutoff 2026-08-01) / -0.0002 (2026-08-10), 5-fold CV -0.0007 — recalibration
+  STAYS INERT (`bench/analysis/platt-gate-2026-09-03.txt`).
+- **Kernel-smoothed pchip, preregistered** (`bench/analysis/minibench_kernel_vs_pchip.py`):
+  the operator's cusp-and-corners observation is a real pchip artifact (1.56x
+  trough-to-peak swing inside the IQR on the TrendForce DDR5 question). Paired vs plain
+  pchip on 97 resolved continuous rows: +2.20/q, CI90 [-0.11, +4.95], helps on 35/90
+  changed — NOT promotable; decision deferred to the 2026-08-24 wave readout under the
+  rule in the file header (CI excludes zero AND helps on >= 55% AND anchor drift < 0.02).
+
+### Changed
+- `docs/review-2026-09-03-fall-season-prep.md` records the season standing (rank 44 of
+  267, +4.2/q vs leaders' +18/q; continuous questions -399 over 29 q; July -5.6/q vs
+  August +24.8/q) and the ordered proposals with their decision rules.
+
+## [0.4.26] - 2026-08-23
+
+### Added
+- Dispersion contract for continuous questions — the third instance of the
+  announce-in-prompt + enforce-in-the-validate/repair-loop pattern (after the source and
+  reference-class floors). A research run must state `dispersion_90_10` (the 10-90 width,
+  in question units, its OWN dispersion analysis implies — reference-class SD x 2.56,
+  realized vol scaled to the horizon) with the computation named in `dispersion_basis`,
+  BEFORE tuning percentiles; `validate_payload` then rejects, with repairable feedback
+  quoting both numbers, any percentile set whose p90-p10 is under 0.75x the run's own
+  stated width (`DISPERSION_WIDTH_FLOOR`). Skipped when declared escape mass exceeds 5%
+  (conditional-on-inside percentiles are legitimately narrower — the Nino q45299 shape).
+- Motivation: the 2026-08-10 wave's worst numeric (Parana Corrientes q45325, -142.4 spot
+  peer) declared p10 at the shallowest edge of its own stated recession-rate floor and a
+  10-90 width 0.69x its own stated reference-class SD; BTC q45335 wrote "widened slightly
+  for fat tails" while declaring exactly its unwidened sigma. The prose repeatedly holds
+  the right dispersion and the percentiles clip it — a self-consistency failure, which is
+  mechanically checkable. This is NOT width-pushing: a tight forecast passes by stating a
+  tight dispersion (blanket widening remains killed, wave 2), and the fix for genuine
+  tightness is restating the basis, never clipping quietly.
+- Measurement designed in: when the width guard fires and the repair changes the numbers,
+  the attempt-0 percentiles are journaled as `percentiles_pre_guard`, so the wave readout
+  scores the guard's effect PAIRED against the run's own first answer on exactly the
+  questions it fired on — no A/B arm needed. `ForecastRecord` gains `dispersion_90_10`,
+  `dispersion_basis`, `percentiles_pre_guard` (all optional, omitted when absent; prior
+  records serialize byte-identically).
+
+## [0.4.25] - 2026-08-23
+
+### Changed
+- `percentiles_to_cdf` gains `interpolation="linear"|"pchip"`: pchip runs a monotone cubic
+  Hermite (Fritsch-Carlson) through the SAME anchor set the linear construction uses, so
+  the submitted PDF is continuous — peaked in the interior, decaying into the tails —
+  instead of the historical staircase (flat slab between adjacent percentiles, flat thin
+  slabs from p10/p90 all the way to the bounds). Declared quantiles are preserved exactly
+  and everything composes unchanged (open-bound halving, v0.4.23 declared escape mass,
+  min-step and per-bin-cap standardization, discrete cdf_size, log scaling).
+- Production submits pchip: `bot/run_bot.py` passes it explicitly and journals it inside
+  the record's `scaling` dict (`"interpolation": "pchip"`), and the `fsj cdf` CLI defaults
+  to `--interpolation pchip`. The LIBRARY default stays `"linear"` so rebuilding any
+  historical journal row still reproduces the CDF that was actually submitted; rows whose
+  scaling lacks the key predate this change and were linear.
+- Evidence (exploratory backtest, not preregistered — the motivating observation, the
+  operator noticing our submitted PDFs render as staircases, predates seeing the scores):
+  over the 69 resolved numerics of the three MiniBench waves (2026-07-13, -07-27,
+  -08-10), rebuilding every submission with pchip scores +191 total leaderboard-equivalent
+  points, +2.8/question, paired-bootstrap CI90 [+0.3, +5.3] — the only transform tested
+  across three waves whose CI excludes zero — and is positive in each wave separately
+  (+88/+25/+78). Mechanism: our misses cluster just past p10/p90 (PIT 0.90-0.96), where a
+  decaying tail holds substantially more density than a to-the-bound flat slab. Frozen
+  readout: `bench/analysis/minibench-smooth-cdf-readout-2026-08-23.txt`; harness:
+  `bench/analysis/minibench_smooth_cdf.py`.
+- NOT shipped alongside, deliberately: percentile widening (`w=1.15` on top of pchip was
+  +5.6/q, CI90 [+0.7, +11.6], but w was grid-picked post hoc and global widening already
+  has one preregistered negative on file) and kernel smoothing (redundant with pchip).
+  Widening on top of pchip is the preregistered candidate for the 2026-08-24 wave readout.
+
+### Fixed
+- `bench/analysis/minibench_numeric_tails.py` counterfactual rebuilds now honor the
+  journal row's v0.4.23 declared escape masses and the journaled interpolation; before,
+  transform rows for escape-declaring forecasts silently rebuilt as if nothing had been
+  declared.
+
+## [0.4.24] - 2026-08-09
+
+### Added
+- Research checklist, record-only: the deciding-body calendar, the trend-question quintet
+  (level, rate, the rate's own trajectory, one regime-break candidate each way, whether simple
+  continuation exits the range by the deadline), any relevant market with its timestamp, and
+  when the named resolution source next updates. Same four items on both surfaces — the skill's
+  `references/research.md` ("Record these facts") and the bot's research-run prompt
+  (`RESEARCH_CHECKLIST_SECTION`, ~10 lines, research runs only, never the reasoning runs).
+- Every item says what to WRITE DOWN and never which way to move the number — no floors, caps,
+  or directional prose (imperative caution text flattens LLM forecasts toward 50, arXiv
+  2506.01578). `tests/test_source_floor.py::TestResearchChecklist` pins the two surfaces to
+  identical sentences and fails on directional wording; a wrong item costs tokens, not points.
+
+### Not shipped
+- The reasoning TIPS drafted alongside the checklist (`docs/forecasting-tips-draft-2026-08-09.md`)
+  stay out of the live skill and every prompt: the preregistered A/B fired DO NOT SHIP on both
+  clauses — 69 paired binaries, primary +0.0032 Brier (tips worse, CI90 [−0.0130, +0.0198]) and
+  +0.0465 on the targeted loss shapes the tips were written from, better on only 4/13. Readout:
+  `bench/analysis/ab-tips-2026-08-09-readout.txt`. The checklist was not part of that test.
+
+### Changed
+- AskNews was armed in CI the same day (repo secret set; `bot-test.yml` gained a fail-open-proof
+  smoke step, 500a6cb), so the next tournament wave changes the research inputs and this prompt
+  at once — attribute nothing in that wave's scores to either change alone.
+
+## [0.4.23] - 2026-08-09
+
+### Added
+- Numeric/discrete/date forecasts may now declare out-of-bound mass: `p_below_lower` and
+  `p_above_upper`, each in [0, 0.5] (at most 0.6 together) and valid only where that bound
+  is OPEN. The five percentiles then describe the distribution CONDITIONAL on landing
+  inside the range, and `percentiles_to_cdf` puts the declared mass on the endpoint instead
+  of normalizing it away. Carried end to end: the bot's Bounds brief asks for the escape
+  probability before the percentiles, `validate_payload` accepts and range-checks the
+  fields, the CDF built for submission honors them, and the journal record preregisters
+  them. `fsj cdf` / `fsj record` take `--p-below-lower` / `--p-above-upper`.
+- Motivation: the 2026-07-27 MiniBench wave lost BMEX q45012 and bluetongue q44967 to
+  outcomes that landed OUTSIDE the question range. The strictly-inside-bounds contract had
+  nowhere to put a regime break the run had already named — the BMEX journal reads "I would
+  place ~12-15% below the $100k range floor, which the strictly-inside-bounds format
+  compresses into the 10th percentile at $102k" — and the standardization pins an undeclared
+  open tail at the platform's 0.001 floor, so both scored exactly 50·ln(0.001/0.05) = −195.6,
+  the worst payable value. On the same five percentiles, `p_below_lower=0.13` scores +47.8;
+  `tests/test_cdf.py` pins that regression against the platform's own formula.
+- Back-compatible by construction: with both fields absent the CDF is bit-for-bit what
+  v0.4.22 built (asserted for all four bound combinations and against the 201-point CDF
+  actually submitted for q45012), and the two record fields serialize only when set.
+
+## [Unreleased] — marketplace catalog carries the version (2026-07-27)
+
+### Fixed
+- The hourly Manifold workflow no longer turns harmless privacy-deny-list collisions in
+  model-authored reasoning into repeated failed-run emails. It replaces only the matching
+  `reasoning` or `what_would_change_my_mind` field with a neutral marker, then stages and
+  strictly re-scans the result. Matches in public questions/contracts, sources, metadata,
+  raw JSON, keys, or the marker itself still fail closed and block publication.
+- `.claude-plugin/marketplace.json`: the plugin entry now carries `version` and
+  `displayName`, so a surface that renders the catalog before fetching the plugin reports
+  the real version instead of whatever it last cached. Diagnosed from a desktop plugin pane
+  stuck at 0.4.1 (the 2026-07-06 release) while `main` had shipped 0.4.22 since 2026-07-15.
+  The underlying cause is client-side — third-party marketplaces have auto-update off by
+  default, so an added catalog is never refreshed — but the entry was also silent about its
+  version, which left nothing to compare against. README now documents the refresh.
+- Claude Code resolves `plugin.json`'s version first and ignores a disagreeing
+  marketplace-entry version *without warning*, so the two are now pinned together by
+  `tests/test_config.py::test_marketplace_entry_mirrors_the_plugin_manifest`. Version stays
+  at 0.4.22: `skills/` and `src/` are untouched since that release, and `SCAFFOLD_VERSION`
+  is stamped into every journal record — bumping it for a metadata change would split the
+  Brier-scoring cohort for no methodological reason.
+
+### Added
+- `$schema` on both manifests (editor validation; ignored at load time), and `--strict` on
+  the CI `plugin validate` step so a misspelled manifest field fails the build.
+
+## [Unreleased] — tranche1 + research.md v2 A/B verdicts (2026-07-17)
+
+- Tranche1 completed (126 rows, $96): NOTHING PROMOTES OVER HIGH. plain worse by
+  +0.022 mean Brier (high wins 21/37; RES 0.0972 vs 0.0699 — the scaffold buys
+  refinement over plain ReAct); angles null vs high at 3x cost (stays dark); high
+  BEATS the FutureSearch teacher by 0.0136 on the corpus-levelled common set.
+  Substrate audit: 90% discoverability — corpus not the bottleneck.
+  `bench/analysis/tranche1-readout-2026-07-17.txt`; --dedupe first policy added for
+  9 duplicate cells from overlapping resume invocations.
+- research.md v2 A/B (40 fresh high-tier cells from branch ab/research-v2, $25.68):
+  preregistered verdict PROMISING, DO NOT SHIP — RES +0.0180 (target hit; v2 RES at
+  teacher level) but Brier CI90 guard not clean ([-0.0178,+0.0122]); REL +0.0156
+  (bolder, noisier). Next: pool 40 fresh questions (~$45), same rule.
+  `bench/analysis/ab-research-v2-readout-2026-07-17.txt`. Production untouched.
+
+## [Unreleased] — MiniBench full-census diagnosis (2026-07-16)
+
+### Added
+- `docs/minibench-analysis-2026-07-16.md`: full 58-pair census vs the ~125-bot crowd
+  (binary extremity 31/37, p=2e-5; numeric width ratio 0.62, 19/21 narrower) with the
+  top ten gaps adversarially audited against live primary sources the same day. Verdict:
+  the largest gaps are mostly OUR wins via schedule/docket/registry research (SK Hynix,
+  Utah brief, EU GPAI, ECB); confirmed misses are extrapolation overconfidence,
+  institutional-process overdiscount (one resolved-YES same day), interval narrowness,
+  and one conditional-criterion leak.
+- `bench/analysis/minibench_counterfactuals.py`: preregistered (2026-07-16, pre-outcome)
+  counterfactual transforms for the wave — binary logit shrink and numeric widening —
+  scored globally and per outcome-blind reasoning-basis subgroup
+  (`minibench-2026-07-tags.json`), CI-gated decision rules in the docstring.
+- `scripts/backfill_journal.py`: reconstructs submitted-but-unjournaled forecasts from
+  Metaculus `my_forecasts` (platform timestamp = provenance). Backfilled the 6 MiniBench
+  rows lost in the 2026-07-12 git incident, clearly labelled `backfilled: true`.
+- `docs/proposals-research-v2.md` addendum (rides the same approval): schedule-first
+  institutional-deadline rule, no-schedule momentum rule, barrier-question
+  volatility/semantics facts, bottom-up partial aggregates, live registry-count anchor,
+  adjacent-entity disambiguation, opponent-schedule for standings; plus reasoning-side
+  missing-evidence gate and conditional-question guard.
+
+## [0.4.22] - 2026-07-15
+
+### Added
+- `bench/analysis/minibench_2026_07_15.py` reproduces the operator-supplied 15-question
+  bot/community diagnostic without treating unresolved disagreement as error. It exposes
+  the three-row concentration of binary disagreement and the repeated numeric
+  interval-width signature.
+- `bench/analysis/pastcast_validity.py` audits a result file's provenance, tool-use
+  mechanics, and optional substrate proxy before score inspection. It intentionally does
+  not read forecast probabilities.
+- `docs/minibench-pastcast-analysis-2026-07-15.html` records the findings, nulls, spend
+  boundary, and pre-registered external-validity gates in a standalone reviewed memo.
+- `bench/analysis/timevault-smoke-2026-07-15.json` freezes the final-code no-model smoke
+  inputs and content-free outcomes so later changes cannot silently inherit its verdict.
+
+### Fixed
+- TimeVault now requires an exact CDX original and an HTTPS, anchored, stamped `id_`
+  replay—not a live origin, downgrade, calendar/timemap, or toolbar page. Wikipedia retrieves an
+  exact title URL through the same cutoff-bounded archive path; it never calls MediaWiki,
+  whose revision endpoint resolves today's title-to-page mapping before filtering by date.
+  Corpus rows with missing or unparseable crawl dates now fail closed, with no
+  agent-exposed override.
+- Transient archive/GDELT failures receive bounded retries; persistent failures remain
+  explicit. Corpus/Wayback/Wikipedia smoke retrieval passed after repair, while GDELT
+  remained unavailable and is not represented as parity with live search.
+- TimeVault telemetry now distinguishes attempts, successful searches with results,
+  readable pages, unavailable captures, unique targets, and tool errors. Unavailable
+  explanatory text no longer earns a source class or readability success; legacy rows
+  keep semantic fields null rather than being upgraded retroactively.
+- Prospective frozen rows use `frozen_at` as their TimeVault cutoff, null crowd values no
+  longer crash progress/report aggregation, and source aggregation skips null crowds.
+- Benchmark transport errors and timeouts fail closed after one agent call; only a
+  completed malformed output may receive a corrective retry. A positive `run_bench`
+  budget now requires concurrency 1 and the Claude CLI, sends the decreasing native cap
+  to each subprocess, accounts before the next queued job starts, and reserves the full
+  remainder when usage is unknown. Fenced JSON must be an object across forecasting and
+  triage, so malformed paid triage output cannot lose its known cost.
+- The temporary native Tournament/MiniBench cron fallback used during GCP credential
+  rotation has been removed. External `forecast-bot-kicker` dispatches are again the sole
+  clock; the existing concurrency, provider, and per-run budget controls are unchanged.
+- The Manifold cloud workflow now uses reliable hourly dispatches from the external GCP
+  Cloud Scheduler `manifold-bot-kicker` (minute 17 UTC) instead of GitHub's best-effort
+  native cron. A first-step activation gate keeps every setup, secret, Claude, alert,
+  summary, and journal-publication step dormant until `2026-07-15T00:00:00Z`; early
+  dispatches finish green and consume no forecasting credits. The existing $5 cap,
+  subscription-only provider boundary, concurrency serialization, and live policy are
+  unchanged.
+- Tournament OpenRouter budgets are now enforced on every Claude subprocess with the
+  invocation's unspent remainder, rather than only stopping before the next call. A live
+  `--budget 3` recovery run exposed the old behavior by reporting $3.2212 for one question.
+  Triage, repair, verification, and reasoning calls all receive the decreasing native cap;
+  an error or timeout with unknown metered usage reserves the rest and stops further calls.
+  The Claude-subscription path is unchanged.
+- `eval_phase1` counted dry-run bets in the promote/kill movement statistic; live only now.
+- Dry-run would-be bets blocked later LIVE bets on the same market — the position guard
+  now excludes dry-run entries.
+- `open_exposure` was monotone-increasing forever: it now excludes live-resolved markets
+  via a state lookup, fail-closed (an unresolvable state keeps the market counted).
+- `place_bet` failures are journaled as status `"unknown"` and kept as positions (the
+  double-stake guard); the response's bet id is now verified rather than assumed.
+- `manifold.yml`: alert step opens one deduped issue when a `--live` run prints a
+  `BETTING-DISABLED:` marker (degraded to forecast-only while still burning spend);
+  the commit step's dead skip-missing-files no-op is replaced with a real existing-files
+  filter (a zero-market first run no longer trips the leak guard's fail-closed exit).
+- `readout_tranche1`: coverage/attrition/common-set reporting; `--exclude-qid`
+  provenance is self-enforcing.
+- `report.py` prints a banner when fed non-standard tiers or pooled nonzero runs.
+- `evidence_ablation.py`: runnable command (`--leakfree none`); the `resolution` field is
+  stripped from emitted set files.
+- `contamination_probe`: the majority baseline is recomputed over the probed subset.
+- `apply_recalibration` accepts the caller's clamp band, so ACTIVATING recalibration no
+  longer silently tightens the bot's wider [0.01, 0.99] submission band to the DEFAULTS
+  [0.02, 0.98].
+- `score_manifold` docstring: the divergence threshold corrected to the 0.05 constant.
+
+### Changed (documentation)
+- Retro-note: the `market_read` bet-gate was removed by the 2026-07-11 policy amendment —
+  `decide_bet` no longer inspects it (it is journaled as a preregistered hypothesis).
+  Recorded here because the 0.4.17 entry below describes the old behavior.
+
+### Measured / diagnostic
+- On the 9 updated unresolved binary forecasts, 7/9 bot values were below community, but
+  SK Hynix, the NBA investigation, and SOL contributed 76.9% of absolute disagreement.
+  Excluding SK Hynix, Pearson was 0.972 and Spearman 0.958; no global recalibration is
+  promoted.
+- All 6 updated numeric bot intervals were narrower than the displayed community
+  intervals (mean width ratio 0.547, median 0.550), while every bot median remained
+  inside the community interval. With two prior numeric rows, 8/8 were narrower. This is
+  an exploratory dispersion hypothesis with a pre-registered next test, not an
+  outcome-based calibration result.
+- The legacy TimeVault tranche contains 71 run-0 rows across only 24 questions, mixes
+  scaffold versions 0.4.18/0.4.20/0.4.21, and has no semantic evidence-return telemetry.
+  Its plain arm had median zero search/read attempts among the 17 telemetered rows. It is
+  not treated as evidence that frozen retrieval matches live agentic search.
+
+## [0.4.21] - 2026-07-12
+
+### Added
+- **Hourly Manifold cloud runner with a hard subscription-credit boundary.** The scheduled
+  workflow is Claude-OAuth-only (OpenRouter and metered/gateway auth are rejected), caps
+  every run at $5 USD-equivalent usage both cumulatively and through Claude's native
+  remaining-budget flag, reserves unknown usage on failures/timeouts, and stops model work
+  after 45 minutes so the journal can publish before the next tick. The Manifold API key is
+  required before model spend; the existing mana exposure/floor/position gates still bind.
+- **Research-mechanics telemetry for future benchmark A/Bs.** Each time-locked forecast gets
+  a private content-free MCP event sink; rows now carry `n_searches`, `n_full_reads`, bounded
+  exact queries, and model-declared source classes. Angle subruns aggregate telemetry into
+  their pooled row, and concurrent forecasts cannot commingle logs.
+- **Deadline-move preregistration.** A manually audited census partitions all 152 admissible
+  BTF-2 questions into 92 tagged development questions, 10 exact motivating holdouts, and 50
+  non-fired controls. The experiment-only move fetches official status/dockets, enumerates
+  remaining steps, does window arithmetic, and checks institution-specific slippage; no live
+  production prompt changed and no paid A/B has run.
+
+### Fixed
+- Tranche1 analysis now screens and scores only the preregistered `run == 0` cells. The
+  original resume command accidentally let the configured high tier expand to four runs;
+  six paid nonzero-run rows remain preserved as unused raw data, while `--max-runs 1`
+  restores the intended 40 questions x 3 arms = 120-cell design.
+- `memory_screen.py` accepts arbitrary result files and a run filter; the tranche readout
+  rejects duplicate cells and accepts repeatable pairwise memory exclusions.
+- The hourly Manifold runner strips UTF-8 BOM/whitespace framing from its API credential,
+  so a BOM copied from the operator keyfile cannot corrupt the HTTP authorization header.
+  A recognized Claude subscription session-limit 429 now defers cleanly to the next hourly
+  tick while reserving the full $5 allowance; generic 429s and all other failures stay red,
+  and the path remains subscription-only with no OpenRouter fallback.
+- Journal publication no longer dumps a matched private line into Actions logs. A
+  content-free staged-diff scanner keeps the unknown private deny-list intact and permits
+  only an exact pound-sign match in public Metaculus/Manifold question or contract fields;
+  the same match in model-authored output still blocks publication.
+
+### Measured / diagnostic
+- A literal teacher-cited-page recall audit is not reconstructible from the public BTF-2
+  release (no page-read trace or citation-to-URL map). On a frozen first-20
+  question-source-set proxy, production-global search surfaced a linked source for 18/20
+  questions (90%, Wilson 95% CI 70-97%), equal to question-scoped retrieval. Only 50.6% of
+  linked URLs were eligible under the production crawl-time cutoff on average, so corpus
+  discovery is not broadly broken but load-bearing recall remains unverified.
+
+## [0.4.20] - 2026-07-11
+
+### Added
+- **AskNews as an optional, competition-scoped research source** (`bot/asknews.py`):
+  when a key is present (env or `~/.asknews/key[.txt]`), the tournament bot's research
+  and angle runs get a "Recent news" section — hot (`strategy=latest news`, 6 articles)
+  + historical (`news knowledge`, 10) passes, deduped, dated, capped, and explicitly
+  labeled "starting material; verify key claims and search beyond it" (the measured
+  lesson: digests reduce research agency — this seeds, never replaces, self-directed
+  search). No preliminary lean is ever injected (the reference bots' anti-pattern).
+  Ships dark: no key = byte-identical briefs. `ASKNEWS_DISABLE=1` kill switch.
+  **Key usage terms enforced structurally**: the key is licensed for the Metaculus
+  competition only — `run_manifold` has no asknews import and a compliance-guard test
+  keeps it that way. bot.yml passes `ASKNEWS_API_KEY` through (absent secret = off).
+  Suite-wide conftest defaults AskNews off in tests so a developer's keyfile never
+  leaks live calls into CI or local runs.
+
+## [0.4.19] - 2026-07-11
+
+Post-hoc logistic recalibration (Platt scaling) — the highest-value portable lever from a
+sweep of the Metaculus bot ecosystem (their own analysis: Brier −0.016 binary; independent
+test on our pastcast data: 0.1997→0.1761, question-level CV, fitted logit slope 0.573 =
+opus-4-6 overconfident on hard-news questions).
+
+### Added
+- `fsj calibrate-fit`: fits a 2-parameter logistic map `sigmoid(a·logit(p)+b)` from the
+  journal's own resolved binary forecasts, refuses to emit unless n ≥ 40 AND out-of-sample
+  5-fold CV improves, and writes `bot/journal/recalibration.json`. `fit_platt`,
+  `apply_recalibration`, `recalibration_cv`, `load_recalibration`, and the unwired
+  `extremize_logodds` (AIA Forecaster's data-free √3 fallback — opposite sign to our data,
+  an A/B candidate only) in core.py.
+- The bot applies the fitted map to the final pooled binary probability before submission,
+  journaling both `raw_probability` and the recalibrated value. **Ships inert**: with no
+  params file, load returns identity and the path is byte-identical to before — the
+  correction only ever comes from the deployment's OWN resolved history, never a hardcoded
+  direction (the live tournament regime can be under-, not over-, confident; the sign is
+  not portable across model/distribution). `docs/schema.md` updated for `raw_probability`.
+
+## [0.4.18] - 2026-07-11
+
+The research-side answer to "why does FutureSearch beat frontier models" — their own
+paper and a first-party ablation say: research agency (Opus loses 0.022 Brier when denied
+its own search: 0.131→0.153, their measurement) plus evidence-diverse ensembling (+0.005)
+plus a strategy stack (+0.006). Two pieces shipped toward that:
+
+### Added
+- **Corpus-backed discovery for the vault** (committed separately as `b407635`): an
+  8,025,921-row FTS5 index over FutureSearch's published BTF-2 scrape manifest —
+  ranked, date-stamped, question-linked URL discovery, with content still flowing
+  through the time-locked Wayback fetch (the manifest ships no page bodies).
+  RetroSearch-lite: corpus for finding, archive for reading. `timevault_mcp --corpus`,
+  `run_bench --corpus`.
+- **Angle-diverse independent research** (`run_angles` tier knob, ships dark): when set
+  (e.g. `["F","D","A"]`), a tier runs one INDEPENDENT full-research run per angle from
+  `skills/forecast/references/research-angles.md` — fundamentals (market-blind by
+  design, even in sighted mode), decomposition, anomaly hunt — and pools with
+  geo-mean-odds, journaling per-angle probabilities. Measured why: dossier-sharing runs
+  disagree by only ~0.03, so their pool equals the member average; FutureSearch
+  transcripts show members that research independently with assigned angles and
+  deliberately different information diets. Evidence diversity is the pooling
+  prerequisite. The method text ships as skill markdown (portable); the harness only
+  orchestrates.
+
+## [0.4.17] - 2026-07-11
+
+### Added
+- **Manifold Markets bot** (`bot/run_manifold.py`, `bot/score_manifold.py`) — the
+  days-scale feedback channel. Selects liquid binary markets (>=50 bettors, 3-60d close,
+  volume-ranked, meme/self-referential excluded, topic-diversity cap), forecasts each
+  BLIND and SIGHTED in the same run (blind blocks manifold.markets; sighted carries the
+  price under the v0.4.11 judgment framing and must return a checkable
+  `market_read` ∈ informed|herding|thin|stale — only non-"informed" reads may bet).
+  Signals: price movement toward the forecast at t+3/7d, mark-to-market P&L, resolution
+  Brier, paired blind-vs-sighted comparison. Journal: `bot/journal/manifold.jsonl`
+  (committed preregistration).
+- **Operator-approved betting policy with an automatic phase machine**
+  (`docs/manifold-policy.md`, `bot/journal/manifold-phase.json`): phase 0 dry-run →
+  phase 1 flat 25-mana stakes (<=10 bets/run, exposure <=30% of balance, 1,100-mana
+  floor) → phase 2 quarter-Kelly (5%-of-balance cap, convergence exits, adverse-move
+  re-forecasts). Promotions and the kill criterion (n>=50 movement sample, exact
+  binomial test) are evaluated mechanically each run and journaled with their evidence —
+  preregistered phase transitions, no in-the-moment judgment.
+- Daily GitHub Actions workflow (`manifold.yml`, 07:30 UTC) mirroring bot.yml's
+  commit/leak-guard patterns; without the `MANIFOLD_API_KEY` secret it dry-runs.
+- Key lookup: `MANIFOLD_API_KEY` env or `~/.manifold/key(.txt)` — a keyfile outside the
+  repo so the credential never enters git or session transcripts.
+
+## [0.4.16] - 2026-07-10
+
+### Added
+- **Direct OpenRouter transport for tool-less bench calls** (`bench/direct_agent.py`,
+  `--provider openrouter-direct` on the probe and on `run_bench` — the latter guarded
+  to exactly `--tiers zero --leakfree none`). Measured motivation: the claude CLI
+  prepends ~22,000 tokens of agent scaffolding to every call ($0.066 to say "hello";
+  5–10× the cost of the actual probe/arm prompt) and returns an EMPTY result for
+  non-Anthropic models through the Anthropic-compat endpoint (gemini-2.5-pro:
+  `result:"", output_tokens:16`). The direct transport posts the prompt alone to
+  OpenRouter's native API, takes cost from the response's own usage accounting, and
+  makes cross-family models (the `run_models` ensemble lever) probeable and runnable.
+- `contamination_probe --provider {subscription,openrouter,openrouter-direct}` —
+  non-Anthropic models can now be contamination-probed before joining an ensemble.
+
+## [0.4.15] - 2026-07-10
+
+The reasoning-spine A/B harness, and improvement-loop 1's results — the negatives are
+the point of preregistering:
+
+### Added
+- **`run_bench --spine-file`**: the zero tier (dossier-only reasoning cell) doubles as a
+  reasoning-spine A/B harness — same frozen research, no tools, only the method text
+  varies. Rows stamp `arm` + `spine_sha` so no results file is ambiguous about which
+  prompt produced it. Spine variants live in `bench/spines/`.
+- **Memory-claim screen** for pastcast validity: the recall probe under-detects (its own
+  documented caveat) — a probe-cleared ECB question surfaced "high confidence as this
+  event has already occurred" mid-forecast (a confabulated memory: it "remembered" a cut;
+  the ECB held). Screen = mechanical regex shortlist over all arms' reasoning, judged by
+  reading, excluded pairwise. One row in ~350 flagged.
+
+### Measured (loop 1, opus-4.6 on 152 probe-admissible BTF-2 questions, frozen dossiers)
+- **Premortem/perspectives/wildcards spine: null** (−0.0003 ±0.0068, n=47) — it hedges
+  (REL and RES both drop) rather than redistributing mass.
+- **Source-skepticism spine: null** (+0.0037 ±0.0046, n=152) — tranche-1's promise
+  (−0.0076, n=47) regressed on fresh questions; it over-discounts on-schedule
+  institutional events (elections held as scheduled, enforcement that landed).
+- **Extremization of single-run outputs: negative** — train-optimal d=1.0; the test-set
+  Brier curve worsens monotonically in d. Single-run opus is not underconfident.
+- **Method-diversity ensembles (geo-mean-odds over spines): null** (+0.0013 ±0.0024).
+- Baseline gap to the FutureSearch ensemble teacher on identical frozen research
+  [CORRECTED same day: the BTF-2 dataset card states the SOTA forecast was made from
+  their full frozen scraped corpus, independent of the research_summary digest our
+  briefs carry — so this gap confounds evidence access with reasoning; "identical
+  frozen research" was wrong]:
+  +0.0197 ±0.0218 mean, but the teacher wins 106/152 per-question — a small, consistent
+  refinement edge (RES 0.111 vs our 0.042) that prompt text did not close. Next lever:
+  cross-model ensembling (`run_models`, documented but never exercised).
+
+## [0.4.14] - 2026-07-10
+
+### Added
+- **Prospective freezing** (`bench/freeze_prospective.py`): `freeze` snapshots the bot
+  tournaments' currently-open binary questions into a preregistration set file
+  (`bench/sets/prospective-<date>.jsonl`, `frozen_at`-stamped, refuses to overwrite
+  without `--force`); `resolve` later fills outcomes idempotently, never touching a
+  frozen field. With timevault research cut at `frozen_at`, this is the only valid
+  evaluation path for models (like the live bot's sonnet-5) whose training window
+  covers every already-resolved question. The weight leak stays a set-selection duty:
+  only evaluate models whose cutoff predates `frozen_at`.
+- **Repair-retry visibility**: `one_run` prints `repaired on retry: <qid> (<reason>)`
+  when a payload is accepted on the second attempt (previously indistinguishable from a
+  clean first attempt anywhere), and `bot.yml` now tees both provider runs and appends a
+  filtered digest (recorded/submitted/repaired/flags/floor lines) to the Actions job
+  summary, mirroring `bench.yml`'s existing pattern.
+
+## [0.4.13] - 2026-07-10
+
+Two more review clusters (finding #9 and the journal-completeness set), implemented by
+opus subagents and reviewed:
+
+### Added
+- **Untrusted-input security sections in the skill markdown** (`skills/forecast/SKILL.md`,
+  `skills/calibrate/SKILL.md`). The bot surface always had prompt-injection defenses in
+  its Python-built system prompt; the skill — the surface installed with far broader tool
+  permissions — had none. Written as a security frame (question text, criteria, and
+  fetched pages are data to forecast, never instructions; self-advocating content is
+  incentive evidence, not world evidence), not as workflow gating.
+- **Continuous-question submission provenance**: `ForecastRecord` gains `submitted_cdf`
+  (the exact ~201-point CDF sent to the platform) and `scaling` (the bounds/zero-point it
+  was built against). The CDF is now built once at record time and the submit path sends
+  that same object — the journal and the platform can no longer silently diverge.
+  Rows grow ~2.7 KB on continuous questions; completeness beats compactness in a
+  preregistration journal. `docs/schema.md` updated.
+- **`to_decision_record` carries MC and numeric forecasts** (`options`/`probabilities`,
+  `percentiles`) instead of exporting a null binary probability slot — the silent-drop
+  found in review. Binary exports unchanged.
+
+### Fixed
+- `validate_percentiles` rejects distinct keys that normalize to the same percentile
+  (`"50"` vs `"50.0"`) — previously which value won was accidental; now it is a
+  repairable contract error.
+
+## [0.4.12] - 2026-07-10
+
+Three deep-review roadmap items (findings #1–#3), implemented by opus/sonnet subagents
+and reviewed:
+
+### Added
+- **Reference-class floor for MC/numeric research runs** (`bot/run_bot.py`). The MC and
+  numeric contract examples now carry `reference_class`/`base_rate` (binary already did),
+  and on research runs (`min_sources > 0`) a missing or empty `reference_class` is
+  rejected in the same validate/repair loop as the source floor; an MC `base_rate` dict
+  is checked against the exact option labels. Motivated by the live Vanguard ETF bucket
+  question: an even 32/31/34 spread where a Poisson/historical reference class implied
+  ~50/35/16 — nothing structural ever asked a single-run MC question to derive a prior.
+  Known limits documented at `REFERENCE_CLASS_SECTION`.
+- **Paired per-question Brier section in `bench/report.py`** — for every tier pair, the
+  mean per-question Brier difference ± SE with win/loss/tie counts, over qids where both
+  tiers forecast and the resolution is known. This is the pivotal experiment statistic
+  and was previously hand-computed for every run. Additive; reuses the report's existing
+  per-(qid, tier) pooling.
+
+### Changed
+- **Retired the stale n=85 justification for tier `runs` sizing** (comments in
+  `core.py`, `config/forecast.toml`, vendored `fsj.py`). That null measured in-context
+  draws at v0.1.0 — not the independent-runs architecture — and the 2026-07 contamination
+  probe flagged 8/55 of its corpus, so it neither supports nor refutes current sizes.
+  Sizing is now labeled the cost/quality judgment call it is, pending the leak-free
+  re-measurement.
+
+## [0.4.11] - 2026-07-10
+
+Reversal of 0.4.10's harness blend, same day, on operator review — kept here rather
+than history-rewritten because the reasoning is the valuable part:
+
+1. **Determinism**: 0.4.10 blended sometimes-at-the-harness, sometimes-in-the-agent
+   (guard-dependent). Two conditional mechanisms make submitted numbers hard to reason
+   about. One mechanism, owned by the agent, always.
+2. **Contract equivalence cannot be checked mechanically.** The same-question case is
+   easy but rare (Metaculus hides aggregates from bots); in practice the available
+   market is a similarly-worded question on another platform, and "similar wording"
+   with one differing clause legitimately prices 4x away (the repo's own $386k
+   Polymarket/NPM case). Deciding whether a market is THIS contract takes judgment —
+   an agent capability, not an arithmetic one.
+
+### Changed
+- The bot harness never blends, in any mode. The journal still captures the platform
+  aggregate as a benchmark (never shown to the agent — v0.4.2 boundary unchanged).
+- The sighted brief's "Crowd signals" section now makes the market scan a REQUIRED,
+  disclosed research step: report what was found (including "no market found"), and
+  state the contract differences checked before leaning on any market number. Blending
+  is explicitly the agent's judgment call.
+- `blend.crowd_weight` restored to 0.8 — its remaining consumer is the chat/CLI
+  aggregate path where a judged-relevant same-question value is passed explicitly,
+  which is exactly what Halawi's 4:1 optimum was calibrated on.
+
+## [0.4.10] - 2026-07-10
+
+Crowd blend gets a real code path — with a double-count guard. The review found
+blend_with_crowd was never called anywhere: config's crowd_weight was decorative and
+design.md claimed a win the bot could not produce. Operator decision: never blend in
+blind/testing modes (they measure own skill); in prod the sighted agent already reads
+everything, so the harness may blend — but must not count the crowd twice.
+
+### Added
+- **Harness-level crowd blend** on sighted binaries: after pooling, when the platform
+  exposes an aggregate at forecast time, submit blend(pooled, crowd, w) — the agent
+  still never sees the value (the v0.4.2 boundary holds; blending is arithmetic, not
+  anchoring). The journal records the raw pooled number, the crowd, the weight, and
+  the submitted blend, so blended-vs-raw is scoreable at resolution.
+- **Double-count guard (`market_sourced`)**: if the research run's own source list
+  cites a market/aggregator (Polymarket, Manifold, Kalshi, Metaculus, GJ Open, ...),
+  the crowd already entered the estimate cognitively — the sighted brief tells the
+  agent to blend what it finds — and the harness blend is SKIPPED. Effective crowd
+  weight stays ~w instead of compounding to w + a(1-w).
+- Blind mode and the bench NEVER blend (mechanical, not prose).
+
+### Changed
+- `blend.crowd_weight` default 0.8 -> 0.5: Halawi's 4:1-crowd optimum was calibrated
+  on HUMAN crowds; a bot tournament exposes only other bots, of unproven quality. The
+  even split is the prior until blended-vs-raw resolution data says otherwise.
+
+## [0.4.9] - 2026-07-10
+
+Re-forecast policy (review finding: the bot forecast each question exactly once while
+the tournament scores forecasts over time — observed live as the crowd walking away
+from a frozen Vanguard forecast, 55%->62% while the bot sat still).
+
+### Added
+- **`--refresh-hours N`**: a standing forecast qualifies for re-forecasting only once
+  it is at least N hours old (0 = never, the default — behavior unchanged unless armed).
+  The minimum-age condition is the cost gate: the cron fires every 10 minutes and the
+  world rarely moves inside an hour, so ungated updates would re-spend on the same
+  question every tick. Refreshes queue strictly AFTER never-forecasted questions (fresh
+  coverage buys scoring time a standing forecast already has) and spend from the same
+  `--budget`. Each refresh appends a new journal record at its own `forecast_at` —
+  matching how the platform scores standing forecasts through time.
+- `bot.yml` arms it at `--refresh-hours 48` on both provider paths (a dial, not a law:
+  at ~15 open questions that bounds refresh spend at ~7-8 skill runs/day worst case,
+  inside the per-run `--budget 3`).
+
+## [0.4.8] - 2026-07-10
+
+First fixes from the 59-agent deep review (41 raw findings -> 34 adversarially
+confirmed; full roadmap in the review report). The three lowest-risk, highest-value
+confirmed bugs, each with a regression test:
+
+### Fixed
+- **Pooling/scenario disclosure notes now LEAD the reasoning field** (were appended to
+  the tail, where the record's 4000-char head-truncation silently deleted exactly the
+  note saying which pooled number was actually submitted — a disclosure that can be
+  truncated away is no disclosure at all).
+- **Blind-mode denylist now blocks gjopen.com** (Good Judgment Open's actual forecast
+  domain; only goodjudgment.io — the consultancy site — was listed).
+- **Backtest/dry-run provenance**: ForecastRecord gains `dry_run: bool | None`
+  (additive, no schema bump; None on older records = assume live), and `--post`
+  backtests now default to a gitignored `bot/journal/backtests.jsonl` instead of the
+  public preregistration journal — a debugging run can no longer write records that are
+  byte-identical to live submissions into the scored track record.
+
+## [0.4.7] - 2026-07-10
+
+Contamination probe. The one leak timevault cannot close is the model's own weights,
+and admissibility turned out to be empirical, not a model-card lookup: the live bot's
+model (sonnet-5, training data through Jan 2026) fully covers BTF-2's Oct-Dec 2025
+resolutions, and even the original n=85 run's opus-4.6 (stated Aug 2025) sits inside
+the +3-4-month effective-knowledge drift the repo's own evaluation.md cites.
+
+### Added
+- **`bench/contamination_probe.py`** — asks a model directly, with every tool stripped
+  (no --allowed-tools, full --disallowed-tools belt), whether each already-resolved
+  question resolved YES/NO, from memory only, with an explicit unknown-over-guessing
+  honesty contract. Scores recall accuracy on answered items against the majority-class
+  baseline; flags (model, question) pairs as contaminated on confident-correct recall
+  (confidence >= 0.75). Interpretation is DIFFERENTIAL by design: a model whose data
+  covers the window (positive control) should light up; a genuinely earlier model
+  should sit at baseline. Resumable; per-question rows in bench/results/*.probe.jsonl.
+- Documented limit: the probe under-detects (latent knowledge a model does not surface
+  as explicit memory still shapes forecasts) — 'clean' means admissible, never proven.
+
+## [0.4.6] - 2026-07-09
+
+Leak-proof pastcasting. The bench had two open leak paths that made every pastcast score
+suspect: agents ran with LIVE WebSearch/WebFetch on resolved questions (the btf2 brief even
+claimed "web access is disabled" — never enforced), and Read/Glob/Grep reached
+bench/sets/*.jsonl where each question's RESOLUTION field sits in plaintext. Per
+docs/evaluation.md's own standard (date-restricted retrieval leaks the future through
+today's rankings — Paleka et al.), no result produced under those conditions is evidence.
+
+### Added
+- **`bench/timevault.py`** — time-locked research clients with a machine-verifiable
+  no-future-data guarantee, enforced at one choke point (`_assert_pre_cutoff`): Wayback
+  snapshots (CDX `to=` bound + post-redirect stamp re-verification — Wayback's nearest-
+  capture redirect can otherwise serve a LATER snapshot; raw `id_` bytes gunzipped),
+  Wikipedia revisions as-of (`rvstart`/`rvdir=older`, stamp verified), GDELT news
+  discovery in a window ending at the cutoff (date-sorted, not relevance-sorted; strays
+  re-checked client-side; content routed through Wayback, never the live page).
+- **`bench/timevault_mcp.py`** — minimal stdio MCP server exposing the three tools; the
+  cutoff rides in the SERVER's argv, so the agent cannot loosen it; tool descriptions
+  state the cutoff; LeakError surfaces as tool output, never a protocol crash.
+- **`run_bench.py --leakfree {none,timevault}`** — `none` enforces the frozen-dossier
+  contract (no research tools at all); `timevault` allows ONLY the vault's MCP tools with
+  `--strict-mcp-config` (no other MCP server rides along) and one combined
+  `--disallowed-tools` belt covering WebSearch/WebFetch/Read/Glob/Grep/Bash/Write/Edit.
+  Per-question cutoffs from the new structured `as_of` field (btf2 fetcher now writes it;
+  a regex fallback reads existing sets). Result rows stamp `leakfree` so contaminated old
+  results can never be pooled with clean ones.
+- Red-team validated live: a haiku agent in the exact harness config, told to determine
+  the Nov 4, 2025 NYC mayoral result under an Oct 23 cutoff, could not — Wikipedia
+  as-of-cutoff still said `ongoing = yes`, nothing retrievable postdated the cutoff.
+- 23 tests: choke-point enforcement, the redirect trap, MCP protocol, cmd wiring.
+
+### Known limits (documented, not hidden)
+- The model's own weights: pastcast questions must RESOLVE after the model's training
+  cutoff — a set-selection duty the tool cannot enforce.
+- Wikipedia title *search* fallback ranks by today's index (content is still as-of).
+- GDELT rate-limits (~1 req/5s) and can be flaky; `search_news` degrades to an explicit
+  "unavailable" note rather than failing the run — Wayback/Wikipedia carry the guarantee.
+
+## [0.4.5] - 2026-07-08
+
+Research-floor release. An audit of the first live tournament batch (9 questions) found
+the under-research pattern lands exactly on the paths with no research structure: MC and
+numeric questions are hard-wired single-run, so `need_dossier` never fires and nothing
+structural ever asks them to research. The bot's most crowd-divergent calls sat on its
+thinnest evidence — q44381 (Florida MC, mode 65-75% vs crowd's 55-65%) recorded with **zero**
+sources, q44382 (47% on the lowest bucket vs crowd 20%) and q44511 with two. The fix is
+prevention, not a post-hoc gate: the floor is announced in the research run's own prompt
+and enforced in its existing validate/repair loop, so a thin run is re-prompted *before*
+any forecast is accepted, pooled, recorded, or submitted.
+
+Deliberately NOT done, after review: requiring a dossier + CoVe verification on single-run
+questions. The dossier has no consumer when `runs=1` (it exists to feed reasoning runs and
+is never journaled), CoVe verdicts arrive after the payload's number is already final, and
+"emit a dossier so you research" is the behavior-forcing pattern v0.4.0 measured as a
+regression — a source count is a contract field the harness checks in code.
+
+### Added
+- **`tiers.*.min_sources`** (low 1 / medium 3 / high 5): floor on DISTINCT actually-consulted
+  sources the research (full) run must return. Announced via `SOURCE_FLOOR_SECTION` in the
+  research run's system prompt; enforced in `one_run`'s repair loop (`distinct_source_count`,
+  deduplicated after trimming so repeating one URL counts once). Reasoning runs are exempt —
+  `[]` stays an honest answer where a run works from the shared dossier. Configs without the
+  key inherit the defaults; `min_sources = 0` disables the floor.
+- Tests: floor repair-retry on the observed q44381 failure class, duplicate-padding
+  rejection, failure-ledger path, prompt announcement scoping (research run only,
+  reasoning runs never), floor ≤ search budget invariant.
+
+### Changed
+- **Output contract**: the MC and numeric example payloads now show the `sources` field —
+  the prose demanded it for every question type, but the examples the model pattern-matches
+  omitted it on exactly the two types that under-reported. The "empty list is an honest
+  answer" sentence is scoped to runs that genuinely retrieved nothing new (reasoning runs),
+  with the research-run floor called out.
+
+### Known limit
+- A count can be padded with unread URLs. The public journal's per-question source list is
+  the audit trail, and the multi-run path's CoVe premise check remains the partial guard;
+  no mechanical check makes retrieval honest, it only makes skipping it visible.
+
+## [0.4.4] - 2026-07-06
+
+Post-mortem release for the first scored live miss (q44378 Lovable/DeepSeek/Perplexity
+funding: submitted 8%, crowd 31%, cost $2.03). Two compounding failures, both traced to the
+brief's single ambiguous timestamp: the agent read `Closes:` (the forecast-lock time) as the
+event deadline, shrinking the contract's one-month event window to six days — and then held
+8% with ~73 minutes left on the clock it believed, because the brief never told it the
+current time. The dossier carried the misread into every reasoning run (draws 0.07/0.08/0.09
+— tight agreement around a shared wrong frame), and nothing between research and pooling
+re-read the criteria.
+
+### Fixed
+- **`build_brief` timestamps**: the brief now states `Now (UTC)` (the agent previously had
+  no stated clock at all — the bench's AS-OF header never made it to the live bot) and
+  `Scheduled resolution`, and **no longer includes the forecasting-close time at all** —
+  when predictions lock is harness bookkeeping, useless for pricing the event, and it was
+  the misread's raw material. You can't conflate a timestamp that isn't there.
+
+### Added
+- **Event-window line in the dossier contract** (`DOSSIER_SECTION`): the research run must
+  state "event window: ___ → ___ per the criteria; as of <Now> ___% elapsed", derived from
+  the resolution text — so reasoning runs inherit the correct window, not a misread.
+- **Event-window premise in CoVe verification**: `verify_dossier` now receives the contract
+  (criteria + timestamps) and the verifier must always check the dossier's assumed window
+  against it as a text check; a window narrower or wider than the criteria is CONTRADICTED.
+- **Temporal-coherence gate** (`reasoning.md` step 1): mandatory event-window and
+  elapsed-fraction lines; the past portion of a window is a research question, not a
+  forecast; P = P(already happened, unreported) + P(happens in remaining time). A number
+  incoherent with the forecaster's own stated remaining-time arithmetic is the named failure.
+- **Close-time ≠ event-window rule** (`question-hygiene.md`): a platform's lock time is
+  bookkeeping about the forecaster; the event window comes from the criterion text alone.
+- Tests for the new brief lines, the dossier/verify wording, and the version manifests.
+
+## [0.4.3] - 2026-07-06
+
+The tournament-hardening release: a robustness sweep (six-dimension adversarial review +
+owner sign-off) before arming the hourly FutureEval cron. **Owner decision:** entering the
+tournament now supersedes v0.4.0's validation-debt gate — the #8/#9 batteries stay queued
+as in-flight validation while the bot competes; live resolutions are the outer loop anyway.
+No forecasting-methodology changes; everything here is ops, honesty-of-record, and security.
+
+### Fixed
+- **`score --by blind` mislabeled every v0.4.2 bot record as blind.** v0.4.2 pinned
+  `crowd.shown_to_agent` to `false` (correct — the value is never shown), which was also
+  the only blind/sighted signal. Records now carry an explicit `blind` field; grouping
+  prefers it and falls back to the legacy proxy only for pre-0.4.3 records (correct for
+  everything published before the pin). The journal viewer tag follows the same rule.
+- **The journal now records exactly the numbers submitted.** The binary band clamp and the
+  MC floor/renormalize used to run *after* the record was appended, so the public
+  preregistration journal could differ from what Metaculus received.
+- **`validate_payload` returned exceptions instead of errors on non-numeric agent values**
+  (e.g. `"probability": "likely"`), which skipped the repair retry and failed fixable
+  payloads. Same class: optional numeric fields (`base_rate`, `expected_value`,
+  `raw_draws`) now degrade to absent instead of crashing record creation.
+- **MC payloads with invented option labels** passed validation (only *missing* labels were
+  checked), siphoned probability mass, and would 400 at the API after full agent spend.
+- **`open_posts` now follows pagination** up to `--limit`: the already-forecasted filter is
+  client-side, so a single-page fetch silently hid new wave questions once more than a
+  pageful of posts was open.
+- **Transient-retry coverage**: Cloudflare origin blips (520/522/524) retry like 5xx, and a
+  parseable `Retry-After` is honored (capped at 30 s).
+
+### Added
+- **Free skips before any agent spend** for questions the bot cannot submit: unsupported
+  types, closed/upcoming group subquestions, continuous questions without numeric bounds.
+  Skips exit 0 — a deterministic defect no longer re-runs the batch on the paid fallback
+  every hour.
+- **Per-question failure backoff** (`bot/journal/failures.jsonl`, committed with the
+  journal so stateless CI runs see it): after 3 question-content failures in 24 h the
+  question is skipped. Infra failures (auth outage, session limit) deliberately do not
+  count — they are not the question's fault and must not poison the ledger.
+- **Failure alerting in `bot.yml`**: any workflow failure — or a green run whose
+  subscription step failed and silently shifted the workload to the metered fallback —
+  opens a GitHub issue (once; an open alert issue suppresses new ones).
+- **Secret-value guard before journal publication**: the leak-guard patterns cannot know
+  credential values, so the commit step now greps the journal for the actual secrets
+  (fail-closed) — closing the prompt-injection → public-journal exfiltration path.
+- **Always-on `Read` deny for the agent subprocess** (`/proc/**`, `~/.claude/**`): the
+  forecasting agent needs Read for the skill's own files, never for process environments
+  or credential stores. Inert where the paths don't exist.
+- **Deadline discipline**: the repair retry, the CoVe verification call, and
+  still-failing research runs now respect `--deadline-minutes` (previously only gated
+  between questions and after a first success), and the ensemble records
+  `single_run(of N intended)` when it collapses to one run. The OpenRouter fallback step
+  computes its deadline from the time actually remaining before the job timeout.
+- **Fail-fast preflight**: a live run without `METACULUS_TOKEN` exits before any agent
+  spend. On the OpenRouter path a $0 cost envelope is floored at a nominal $0.10/call so
+  `--budget` can never be inert on exactly the metered path.
+- **Test coverage for the live-submission branch** (found by the review: every prior test
+  ran `dry_run=True`) — submitted-equals-journaled for binary/MC, discrete CDF sizing,
+  comment-failure isolation — plus the pre-filters, the ledger, pagination, and retry
+  behavior. 199 tests.
+
+### Changed
+- `@anthropic-ai/claude-code` is version-pinned in all workflows (an unattended hourly
+  cron must not pick up a broken release — the fallback runs the same binary).
+- `pyproject.toml` version now tracks `SCAFFOLD_VERSION` (was stuck at 0.1.0) and the
+  manifest test enforces it.
+
+## [0.4.2] - 2026-07-06
+
+### Fixed
+- **The bot-crowd anchor is removed from production briefs.** The Metaculus API
+  firewalls the human community prediction from bot accounts everywhere — every value
+  `run_bot` can fetch is an aggregate of *other competing bots*, and sighted mode was
+  injecting it into the brief as "## Community prediction". Measured harm in the e2e
+  runs: the sandbox bot-crowd said 0.63 on Dems-House-plurality while real markets sat
+  ~0.82, and the injected anchor pulled a sighted run from 0.79 (blind, ≈ the market)
+  to 0.72 — toward the bots, away from the money. The Halawi crowd-anchor evidence is
+  about human crowds and does not validate anchoring on competitors. Now: the fetched
+  value is journaled as a benchmark only (`shown_to_agent: false`, source relabeled
+  "metaculus bot aggregate"), and sighted briefs instead tell the agent that finding
+  real human markets (Polymarket, Kalshi, Manifold, public Metaculus) is part of
+  research. Blind mode is unchanged.
+
+## [0.4.1] - 2026-07-06
+
+Fixes from the first live end-to-end runs of v0.4.0 (4 real questions: bot-testing-area
+sighted medium + the live FutureEval question blind at high and medium, all dry-run).
+The pipeline itself ran clean — dossier → verification → `named_scenarios`-compliant
+reasoning runs → untrimmed pool → v0.4-stamped journal records, zero failures.
+
+### Fixed
+- **`--agent-cmd` default was a footgun**: bare `claude -p` returns no JSON envelope (cost
+  and model silently record as nothing) and applies no `--allowed-tools` hardening — one
+  bare run did ZERO web searches where the production command did seven on the same
+  question, and the blind answer moved 0.34 → 0.66 on evidence access alone (live
+  corroboration of issue #9's evidence-threshold hypothesis). The local default now
+  mirrors bot.yml's hardened production command exactly.
+- **Scenario-coherence flag gets 0.05 slack**: the live runs flagged a 0.25-vs-0.24
+  "violation" — rounding noise, not the named-then-unpriced failure the check hunts
+  (audited real cases look like 0.14 named vs 0.03 priced). Contract wording also now
+  asks for roughly mutually exclusive, opposite-direction pathways only.
+
+## [0.4.0] - 2026-07-06
+
+The lean-aggregation release. Rolled out on explicit owner decision on plausibility plus the
+PR #11 tail audit (see the issue #10 comment trail), ahead of the preregistered #8/#9
+batteries: the audit found **no** gross outer-bucket overconfidence on resolved outcomes (the
+arbiter extension's motivating premise), found the extreme-drop trim pushing toward the one
+weak real signal (the 0.75–0.90 shoulder), and found the zero-shot ablation showing the same
+tail profile as the full harness. Principle adopted in `docs/design.md`: **the harness owns
+what each context sees; the agent owns what to think.**
+
+### Removed
+- **Crux arbiter** (v0.3.0's disagreement-triggered override). It never fired in the 4-case
+  regression; its probability-space trigger (spread > 0.15) is structurally blind at the tails
+  (0.02 vs 0.10 is a 5× odds disagreement but a 0.08 "spread"); and on firing it replaced the
+  pool with one context's number at exactly the highest-stakes moments. The pool is the
+  aggregator; disagreement stays visible in `raw_draws`.
+- **Extreme-drop trim in `geo_mean_odds`** — now opt-in (`drop_extremes=False` default). A
+  rank-symmetric trim is logit-asymmetric near the boundary: measured on the repo's own cases
+  it moved one-sided pools *toward* the extreme ([0.03, 0.03, 0.05, 0.12]: 0.049 → 0.039;
+  the both-chambers pool: 0.239 → 0.229, deleting the market-closest draw), and at n=4 it
+  kept only the middle two draws. `median` remains the contamination fallback.
+
+### Added
+- **`named_scenarios` in the reasoning-run contract + an arithmetic-only coherence flag.**
+  Each reasoning run must disclose the pathways it considered to the opposite resolution from
+  its lean, with the mass it actually assigns ([] is honest); the harness flags — never
+  overrides — a forecast that leaves less room than the mass its own run named. The audited
+  tail failure was precisely "named the scenario, didn't price it"; support theory (unpacking
+  an implicit residual raises its judged probability) predicts the disclosure alone moves
+  tails the right way. Zero extra agent calls. Flags land in the journal reasoning note.
+
+### Changed
+- **Lenses are suggestions, not assignments** — a reasoning run may swap its angle for a
+  better one (harness = convenience, not railroading). The counter-biasing opposite pair
+  moved to the front of the rotation so lean run counts stay directionally neutral at k ≥ 2.
+- **Leaner tiers:** medium 4 → 3 runs (research + 2 reasoning), high 6 → 4 (research + 3).
+  The measured BTF-2 null (harness − zero-shot = +0.0002 ± 0.0148, n=85) says reasoning
+  multiplicity wasn't paying for itself; the diversity lever that remains is cross-model
+  `run_models`.
+- Prose reason-gates in the skill references reframed as decision aids and paired with the
+  price-what-you-name discipline (the binding checks are now schema-level, where every
+  previously-proven win in this project lives).
+
+### Validation debt (deliberate)
+This version shipped on plausibility by owner decision (2026-07-06), not on the
+resolved-Brier gate the repo normally requires. Issues #8/#9 remain the validation vehicle —
+run their arms on v0.4.0, plus the 4-case regression, before re-enabling the tournament cron.
+
+## [0.3.0] - 2026-07-05
+
+The architecture-review release (see the loop-architecture review artifact + issues #7-#9):
+reallocates effort from reasoning multiplicity toward evidence quality, contract discipline,
+and the scoring loop. The tournament cron remains disabled pending the issue #9 experiment.
+
+### Changed
+- **`crowd_weight` 0.5 → 0.8.** The 0.5 default misquoted its own source: Halawi et al.'s
+  validated optimum is "4x weight for the crowd" (Brier .149 → .146). Known-value tests and
+  docs updated; staleness rule added to the crowd section (a crowd number is evidence as of
+  its timestamp).
+- **Reasoning runs may now fill evidence gaps** (owner decision): up to 2 targeted searches,
+  dossier-first, blind domain blocks still apply — instead of the v0.2.x hard web strip.
+  Matches production practice of interleaving acquisition with reasoning.
+
+### Added
+- **Premise verification (CoVe-shaped)**: after the dossier is written, its 1-3 load-bearing
+  premises are re-checked as isolated questions (blind to any draft, one search each, ≤4
+  items — the measured optimum) and the verdicts are appended so every reasoning run sees
+  them. Non-fatal, budget-guarded. External receipts: CoVe 23-28% relative error reduction;
+  FEVER: retrieval-coupled checks beat introspection ~4:1.
+- **Disagreement-triggered crux arbitration**: when the pooled draws spread more than 0.15,
+  one arbiter run sees the draws + rationales (it is the aggregator — that is its job),
+  identifies the crux, resolves it with ≤3 searches, and overrides the pool; the journal
+  records both (`aggregation: "crux_arbiter(spread=…) over geo_mean_odds(runs=…)"`) and
+  keeps raw_draws. The shape FutureSearch's supervisor and No-Stream's conditional stacking
+  converged on: extra research only where the ensemble located genuine uncertainty.
+- **Fast proxies for slow questions**: binary questions resolving >180 days out ask the
+  research run for up to 2 journal-only sub-questions that resolve within ~8 weeks
+  (`parent_id`/`fast_proxy` linkage) — calibration bandwidth for the scoring loop.
+- **`bench/evidence_ablation.py`** (issue #9's experiment, ready to run): inverted BTF-2 —
+  same questions, same zero-shot reasoning, dossier served at four quality levels
+  (full/half/stub/none) on a cheap parametrically-clean model. Decides whether evidence
+  quality is a cliff, a slope, or flat on this corpus.
+
+## [0.2.3] - 2026-07-05
+
+Hardening release from a four-perspective adversarial review (code correctness, methodology,
+operations, spec coherence) before any live tournament use. The FutureEval cron stays disabled
+until a resolved-Brier lens battery (issue #8) passes.
+
+### Fixed
+- **Lens/model assignment no longer repeats after a failed reasoning run**: the index came
+  from the success count, so any transient failure handed the same lens (and model) to the
+  next slot, silently collapsing ensemble diversity. Now a per-attempt slot counter.
+- **Pooled records no longer narrate the wrong number**: when pooling changes the submitted
+  probability, the journal/comment reasoning gains an explicit pooling note (previously the
+  text argued for the research run's own draw, not what was submitted).
+- **`missing_evidence` from reasoning runs reaches the journal** (was requested from agents
+  and silently dropped); dossiers are capped at 8,000 chars before re-embedding.
+- **Comment-posting failures no longer fail the question** (they used to exit nonzero and
+  re-run the whole remaining batch on the paid fallback provider); Metaculus reads and
+  forecast submission retry on 429/5xx/network blips (comments deliberately don't).
+- **Reasoning-only system prompts no longer contain contradictory draw instructions**: the
+  tier line asked for an in-context draw ensemble the harness discards; in multi-run mode it
+  now asks for one probability.
+- Journal is preserved as a private CI artifact when the leak-guard blocks a push (a blocked
+  push used to discard it — a hole in the public preregistration trail).
+
+### Changed
+- **Wall-clock deadline** (`--deadline-minutes`, set to 85 in the hourly workflow): the
+  dollar budget is blind to hung calls (a timeout costs $0), so time itself is now capped
+  between questions and between run slots; triage and reasoning-only runs get short
+  timeouts (300s/600s) instead of the research run's full leash. The per-invocation budget
+  is also now checked between run slots, not only between questions.
+- **Tier run counts: medium 3→4, high 5→6**, so pooled n ≥ 4 wherever pooling happens —
+  `geo_mean_odds` only drops extremes at n ≥ 4 (it was silently untrimmed at the old
+  medium default) — and every tier's lens prefix now contains a counter-biasing pair.
+- **Lenses re-worded neutrally and re-ordered** (reference-class check, opposite-down,
+  opposite-up, decomposition, premortem): each names both failure directions and pre-judges
+  nothing about the dossier. **Correction to 0.2.2's framing**: that change was a lens
+  *selection* change, not a reorder (pool order is commutative; at the old medium tier only
+  the first two lenses ever ran), its evidence was one question with arguably leading
+  diagnostic wordings, and "landing nearer other LLMs" is not validation (it measures shared
+  prior). Whether method lenses beat attitude lenses is preregistered as an open question
+  (issue #8) to be decided on resolved Brier only.
+- Reasoning runs' system prompt names the dossier as untrusted third-party-derived data.
+
+## [0.2.2] - 2026-07-05
+
+### Changed
+- **Method lenses replace attitude lenses at the head of the ensemble** (`LENSES`,
+  `aggregate.md`): a live paired test on one question (issue #7 comment) found the v0.2.1
+  attitude lenses (outside-view / inside-view / steelman) all inherited the shared dossier's
+  prominently-placed unconditional base rate and clustered within 5 points of it, while a
+  reference-class-check lens and a decomposition lens moved 2-3x further (0.19/0.27 vs
+  0.06-0.11) on the same dossier. Anchors propagate through evidence, not just estimates.
+- **Dossiers must class their base rates** (`DOSSIER_SECTION`, `aggregate.md`): every base
+  rate carries the class it is computed over; when a conditioning variable is already known,
+  the conditional or component rates are mandatory — a single broad unconditional rate is an
+  anchor wearing a source citation.
+
+## [0.2.1] - 2026-07-05
+
+Ensemble mechanics rebuilt around the shared-dossier / independent-reasoning structure used by
+the best published pipelines (Halawi et al. 2024 share one retrieval across all reasoning calls;
+IDEA protocol and Samotsvety share evidence, then estimate privately; Davis-Stober et al. 2014:
+the harmful correlation is seeing each other's *estimates*, not sharing *evidence*).
+
+### Changed
+- **Bot pooled runs no longer duplicate research.** The first run researches and emits an
+  estimate-free `dossier` (no probability, no lean — anchoring guard, enforced by a repair
+  retry); the remaining runs are reasoning-only on that dossier in separate contexts with web
+  tools stripped at the CLI level (`reasoning_only_cmd`), each under one of five assigned
+  analytical lenses (outside-view / inside-view / consider-the-opposite ×2 / premortem, in
+  counter-biasing pairs). Pooled with unextremized `geo_mean_odds` (Satopää: information
+  overlap ≈ 1 ⇒ extremizing factor ≈ none). Cuts multi-run cost roughly in half.
+- **Draws are lens-diverse, not scenario-conditioned** (`aggregate.md`, SKILL.md Step 4): every
+  draw estimates the same unconditional P(X) from a different starting frame. The v0.2.0
+  wording ("assume your premortem story actually happens") produced P(X|scenario) draws, and
+  pooling conditionals as estimates of P(X) is a category error — fixed. Subagent fan-out on a
+  shared dossier is now the *default* Step 4 mechanism on Task-capable surfaces (Claude Code,
+  Cowork), with in-context draws demoted to the degraded mode.
+- **Extremes gate is a reason gate, not a floor** (`reasoning.md`): sub-5%/above-95% still must
+  name the blocking mechanism, but the ~10/90 floor language for political questions is gone —
+  Q4 AIB data shows bots lost more to timid tails (7% where Pros said 2%) than reckless ones,
+  and rounding skilled forecasters' tails measurably hurts (Friedman et al., 888k forecasts).
+- **Resolver risk is first-class in question hygiene**: undefined subjective predicates
+  ("a suit", "an invasion") are resolver risk, not event risk — forecast the text under the
+  resolver's likely reading, think P(event) × P(faithful resolution | event).
+
+### Added
+- `tiers.*.run_models` (config): optional model ids the harness cycles through for runs after
+  the first — cross-model diversity is the strongest documented ensemble lever (tournament
+  winners average ~1.8 model families). Default empty.
+
+## [0.2.0] - 2026-07-04
+
+Also in this release (missed at the 0.2.0 cut): the BTF-2 pastcasting bench
+(`bench/fetch_btf2.py`), `--budget` caps on bench/bot, resolution scoring in the bench report,
+`score --by` grouped Brier anchoring, six audit-driven skill changes (issue #6), harness-side
+pooled independent runs, and the hourly FutureEval tournament cron.
+
+### Added
+- **OpenRouter provider** (`--provider openrouter` in `bot/run_bot.py` and `bench/run_bench.py`):
+  routes the same `claude` CLI through OpenRouter's Anthropic-compatible endpoint (billed to
+  OpenRouter credits), with automatic `anthropic/<id>` model-slug rewriting; `bot.yml` uses it
+  as an automatic fallback when the subscription step fails. New optional `provider` field on
+  `ForecastRecord` (additive, no schema bump).
+- **Internal tier-distillation benchmark** (`bench/`): frozen question sets built from
+  ForecastBench's public market questions (crowd probability included; Manifold/Polymarket
+  refreshed live), paired blind runs of `low`/`medium`/`high`/`auto`, and a report scoring each
+  tier's distance to the crowd and to the `high` tier (|Δp|, RMS, KL, |Δlogit|) per dollar.
+- **`bot/crowd.py`**: reads the human community prediction with a personal-account token
+  (`METACULUS_CP_TOKEN`) for offline measurement — Metaculus firewalls bot accounts from the
+  human crowd on public questions, and this stays deliberately outside the forecasting loop.
+
+### Changed
+- **Effort tiers are now harness-enforced**: `[tiers.*]` config gains `runs` (independent
+  agent runs pooled with geo-mean-of-odds by bench/report; low 1 / medium 3 / high 5) and
+  the tier's `draws`/`searches` are inlined into the bot-mode system prompt. The baseline
+  showed in-context draw instructions are under-executed headlessly (all tiers ≈3
+  correlated draws; tier gaps = rerun noise). Surfaces without independent runs degrade
+  to in-context draws and the skill now says so out loud.
+- **Benchmark contracts are verbatim-or-excluded**: set briefs carry the exact resolution
+  terms fetched from the source platform (Polymarket Gamma description, Manifold creator
+  description, Metaculus criteria + fine print via API); INFER is excluded by default
+  (login-walled terms). Live crowd values gain liquidity floors (Polymarket ≥ $10k volume,
+  Manifold ≥ 20 bettors).
+
+### Fixed
+- The subscription provider path now drops inherited `ANTHROPIC_BASE_URL`/`ANTHROPIC_AUTH_TOKEN`
+  endpoint overrides and empty `ANTHROPIC_API_KEY` artifacts, so ambient shell config cannot
+  silently redirect or break the agent; agent failures now surface the stdout error envelope,
+  not just (often-empty) stderr. `run_bot` exits nonzero when any question fails, enabling
+  workflow-level fallback.
+- OpenRouter provider on a machine with a cached `claude` login: the CLI ignores env auth
+  when a cached OAuth account exists (requests reached OpenRouter with no auth header).
+  The openrouter path now runs the agent under a dedicated empty `CLAUDE_CONFIG_DIR`.
+- Benchmark lessons from the 2026-07-04 baseline run, all in `bench/`:
+  Polymarket/INFER questions carried the literal criteria string "N/A" (their contract
+  lives in `background`) — `build_criteria` now says so explicitly and background is no
+  longer truncated at 4k; stale freeze-time crowd values indicted a correct forecast (the
+  market had since been decided by SCOTUS), so `--refresh-crowd` now drops questions that
+  can't be confirmed live or that trade at extremes; the auto tier defaults to
+  router-only (+report-side imputation from the routed tier); rows now record
+  `raw_draws`/`n_draws`, `reasoning`, and `duration_s` so tier compliance is auditable;
+  the report adds median/bias columns, a per-source table with crowd freshness, and a
+  run-to-run repeatability section; `bench/README.md` gains a preregistration/dev-holdout
+  iteration protocol.
+
+## [0.1.0] - 2026-07-03
+
+### Added
+- **`forecast` skill**: effort-tiered forecasting pipeline (`auto`/`low`/`medium`/`high` with an
+  auto-triage rubric) with progressive-disclosure references: question hygiene, research
+  protocol, the reasoning spine (reference-classes-first, structured debiasing), decomposition
+  and fast proxies, aggregation rules, and multiple-choice/numeric/conditional handling.
+- **`calibrate` skill**: the learning loop — resolve due forecasts, Brier score with direction of
+  miscalibration, post-mortems tagged by pipeline step.
+- **`forecast_scaffold` Python core** (zero dependencies, single file, vendored into each skill):
+  ForecastRecord schema + append-only JSONL journal with idempotent resolve/annul; Brier +
+  folded-confidence calibration report; trimmed-mean / geometric-mean-of-odds / median pooling
+  with crowd blending and clamping; validators for probabilities, percentiles, and
+  multiple-choice sets; percentile→CDF construction with platform-rule repair (ported from
+  MIT-licensed forecasting-tools, attributed); CLI
+  (`record | resolve | due | score | aggregate | validate | cdf | export | config`), including
+  `export --format decision-record` interop.
+- **Metaculus tournament bot** (`bot/`): stdlib API client, headless harness driving the same
+  `forecast` skill with auto-effort triage and a validate-and-repair output contract, public
+  committed journal; GitHub Actions workflows for dry runs and the 20-minute tournament cron.
+- **Evals**: behavioral scenarios + pure graders (`scripts/behavioral_evals.py`,
+  `evals/scenarios.json`) testing conduct (journal side effects), not wording.
+- Plugin + marketplace manifests (installable via
+  `/plugin marketplace add edisonymy/forecast-scaffold`), claude.ai skill bundles
+  (`scripts/build_skill_bundles.sh` → `dist/*.zip`), CI (tests on Python 3.11/3.12, lint, strict
+  types, vendored-copy sync check, personal-data leak guard, plugin validation), and docs
+  (schema spec + DecisionRecord mapping, sourced design rationale, evaluation protocol).

@@ -1,0 +1,282 @@
+<title>FutureEval bot — track record vs the crowd</title>
+<style>
+  :root{
+    --bg:#f4f6f5; --panel:#ffffff; --panel-2:#eef1f0; --ink:#161c1f; --ink-2:#4a555a;
+    --ink-3:#79868c; --line:#dce2e1; --line-2:#c8d0cf;
+    --bot:#c9782f; --bot-soft:#e7a765; --crowd:#5f8598; --crowd-soft:#a8c1cd;
+    --good:#3f8f63; --watch:#c08a1e; --concern:#c15343; --fixed:#4471a8;
+    --shadow:0 1px 2px rgba(20,30,35,.05),0 4px 16px rgba(20,30,35,.05);
+    --mono:ui-monospace,"Cascadia Code","SF Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0d1316; --panel:#141c20; --panel-2:#1a2429; --ink:#e7edec; --ink-2:#a7b4b8;
+      --ink-3:#6f7d82; --line:#243036; --line-2:#33434a;
+      --bot:#d5883f; --bot-soft:#8a5a2a; --crowd:#6f93a6; --crowd-soft:#3c5560;
+      --good:#54ac78; --watch:#d4a53c; --concern:#d76a58; --fixed:#5b8fc9;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 22px rgba(0,0,0,.28);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#f4f6f5; --panel:#ffffff; --panel-2:#eef1f0; --ink:#161c1f; --ink-2:#4a555a;
+    --ink-3:#79868c; --line:#dce2e1; --line-2:#c8d0cf;
+    --bot:#c9782f; --crowd:#5f8598; --good:#3f8f63; --watch:#c08a1e; --concern:#c15343; --fixed:#4471a8;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0d1316; --panel:#141c20; --panel-2:#1a2429; --ink:#e7edec; --ink-2:#a7b4b8;
+    --ink-3:#6f7d82; --line:#243036; --line-2:#33434a;
+    --bot:#d5883f; --crowd:#6f93a6; --good:#54ac78; --watch:#d4a53c; --concern:#d76a58; --fixed:#5b8fc9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;
+    -webkit-font-smoothing:antialiased;font-size:15px}
+  .wrap{max-width:940px;margin:0 auto;padding:40px 22px 72px}
+  h1{font-size:clamp(24px,4.4vw,34px);line-height:1.12;margin:0 0 8px;letter-spacing:-.02em;text-wrap:balance;font-weight:680}
+  .sub{color:var(--ink-2);max-width:66ch;margin:0 0 4px}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--bot);margin:0 0 14px}
+  h2{font-size:12px;font-family:var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);
+    margin:0 0 16px;font-weight:600;display:flex;align-items:center;gap:10px}
+  h2::after{content:"";flex:1;height:1px;background:var(--line)}
+  section{margin-top:40px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px;box-shadow:var(--shadow)}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+  /* caveat banner */
+  .caveat{display:flex;gap:12px;align-items:flex-start;background:var(--panel-2);border:1px solid var(--line);
+    border-left:3px solid var(--watch);border-radius:9px;padding:13px 16px;margin:22px 0 4px;font-size:13.5px;color:var(--ink-2)}
+  .caveat b{color:var(--ink)}
+  .dot-ico{flex:none;width:8px;height:8px;border-radius:50%;background:var(--watch);margin-top:7px}
+
+  /* summary stats */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:15px 16px;box-shadow:var(--shadow)}
+  .stat .n{font-family:var(--mono);font-size:26px;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1}
+  .stat .l{font-size:12px;color:var(--ink-3);margin-top:7px;line-height:1.3}
+  @media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+  /* legend */
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2);margin-bottom:20px;align-items:center}
+  .swatch{display:inline-flex;align-items:center;gap:7px}
+  .swatch i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+  /* diverging bars */
+  .row{display:grid;grid-template-columns:150px 1fr 64px;gap:14px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}
+  .row:first-of-type{border-top:none}
+  .qlabel{font-size:13px;line-height:1.25}
+  .qlabel .tag{font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
+  .bars{display:flex;flex-direction:column;gap:5px}
+  .bar-track{position:relative;height:15px;background:var(--panel-2);border-radius:4px;overflow:hidden}
+  .bar{position:absolute;left:0;top:0;height:100%;border-radius:4px;display:flex;align-items:center}
+  .bar.bot{background:var(--bot)}
+  .bar.crowd{background:var(--crowd)}
+  .bar .v{font-family:var(--mono);font-size:10.5px;color:#fff;padding:0 5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .delta{font-family:var(--mono);font-size:14px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+  .delta.neg{color:var(--crowd)} .delta.pos{color:var(--bot)}
+  .axis{grid-column:2;display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--ink-3);padding-top:4px}
+
+  /* verdict pills */
+  .pill{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;
+    padding:2px 8px;border-radius:20px;border:1px solid;font-weight:600;white-space:nowrap}
+  .pill.earned{color:var(--good);border-color:color-mix(in srgb,var(--good) 45%,transparent);background:color-mix(in srgb,var(--good) 10%,transparent)}
+  .pill.solid{color:var(--ink-2);border-color:var(--line-2);background:var(--panel-2)}
+  .pill.watch{color:var(--watch);border-color:color-mix(in srgb,var(--watch) 45%,transparent);background:color-mix(in srgb,var(--watch) 10%,transparent)}
+  .pill.fixed{color:var(--fixed);border-color:color-mix(in srgb,var(--fixed) 45%,transparent);background:color-mix(in srgb,var(--fixed) 10%,transparent)}
+
+  /* MC grouped */
+  .mc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:680px){.mc-grid{grid-template-columns:1fr}}
+  .mc h3{margin:0 0 3px;font-size:15px}
+  .mc .cap{font-size:12px;color:var(--ink-3);margin:0 0 14px;font-family:var(--mono)}
+  .mcrow{display:grid;grid-template-columns:78px 1fr;gap:10px;align-items:center;margin-bottom:9px}
+  .mcrow .opt{font-size:12px;text-align:right;color:var(--ink-2);line-height:1.15}
+  .grp{display:flex;flex-direction:column;gap:3px}
+  .g-track{height:9px;background:var(--panel-2);border-radius:3px;overflow:hidden;position:relative}
+  .g-fill{height:100%;border-radius:3px}
+  .g-fill.bot{background:var(--bot)} .g-fill.crowd{background:var(--crowd)}
+
+  /* numeric range */
+  .num{display:grid;grid-template-columns:1fr;gap:26px}
+  .nq h3{margin:0 0 2px;font-size:15px} .nq .cap{font-size:12px;color:var(--ink-3);font-family:var(--mono);margin:0 0 18px}
+  .range{position:relative;height:56px;margin:0 6px}
+  .scale{position:absolute;inset:auto 0 0;height:1px;background:var(--line-2)}
+  .tick{position:absolute;bottom:-1px;width:1px;height:6px;background:var(--line-2)}
+  .ticklab{position:absolute;bottom:-20px;transform:translateX(-50%);font-family:var(--mono);font-size:10px;color:var(--ink-3)}
+  .iqr{position:absolute;height:12px;border-radius:3px;opacity:.34}
+  .iqr.bot{background:var(--bot);top:8px} .iqr.crowd{background:var(--crowd);top:30px}
+  .whisk{position:absolute;height:2px;top:13px} .whisk.bot{background:var(--bot);opacity:.5}
+  .med{position:absolute;width:3px;height:16px;border-radius:2px}
+  .med.bot{background:var(--bot);top:6px} .med.crowd{background:var(--crowd);top:28px}
+  .medlab{position:absolute;font-family:var(--mono);font-size:11px;font-weight:600;transform:translateX(-50%)}
+  .medlab.bot{color:var(--bot);top:-10px} .medlab.crowd{color:var(--crowd);top:44px}
+
+  /* table */
+  .tbl{width:100%;border-collapse:collapse;font-size:13px}
+  .tbl th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-3);font-weight:600;padding:0 10px 10px;border-bottom:1px solid var(--line-2)}
+  .tbl td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl td.q{font-weight:550;line-height:1.25}
+  .rdots{letter-spacing:2px;font-size:13px}
+  .rdots .on{color:var(--bot)} .rdots .off{color:var(--line-2)}
+  .note{font-size:12.5px;color:var(--ink-2);line-height:1.4}
+  .scroll{overflow-x:auto}
+
+  footer{margin-top:44px;padding-top:22px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-3);line-height:1.55}
+  footer b{color:var(--ink-2)}
+  a{color:var(--bot)}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Summer 2026 FutureEval · bot vs bot-crowd</p>
+  <h1>Nine live forecasts, none resolved, and where the bot bet against the crowd</h1>
+  <p class="sub"><span class="mono">edisonymy-bot</span> has forecast 9 of the tournament's 191 questions. This is a divergence &amp; reasoning read — not a score. The crowd column is the bot-tournament aggregate from the Metaculus UI; the bot itself never sees it.</p>
+
+  <div class="caveat">
+    <span class="dot-ico"></span>
+    <div><b>Nothing has resolved yet.</b> Every question closes Aug 31–Sep 1 2026 (funding ones early Aug). Divergence from the crowd is a hypothesis about edge, not evidence of it. Verdicts below grade <i>reasoning quality</i>, not correctness.</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="n">9<span style="color:var(--ink-3);font-size:16px">/191</span></div><div class="l">tournament questions forecast</div></div>
+    <div class="stat"><div class="n">11.5<span style="color:var(--ink-3);font-size:15px">pt</span></div><div class="l">mean |Δ| vs crowd, 5 binaries</div></div>
+    <div class="stat"><div class="n" style="color:var(--concern)">−23</div><div class="l">largest gap (Lovable funding) — a fixed bug</div></div>
+    <div class="stat"><div class="n" style="color:var(--bot)">4/5</div><div class="l">binaries below the crowd</div></div>
+  </div>
+
+  <section>
+    <h2>Binary forecasts — bot vs crowd</h2>
+    <div class="legend">
+      <span class="swatch"><i style="background:var(--bot)"></i> bot ("Me")</span>
+      <span class="swatch"><i style="background:var(--crowd)"></i> bot-crowd</span>
+      <span style="color:var(--ink-3)">· sorted by divergence · scale 0–50%</span>
+    </div>
+    <div class="panel" id="bins"></div>
+  </section>
+
+  <section>
+    <h2>Multiple-choice — full distributions</h2>
+    <div class="mc-grid">
+      <div class="panel mc" id="mc-aiact"></div>
+      <div class="panel mc" id="mc-fl"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Numeric — median &amp; spread</h2>
+    <div class="panel num" id="num"></div>
+  </section>
+
+  <section>
+    <h2>Verdict &amp; research depth</h2>
+    <div class="panel scroll">
+      <table class="tbl" id="verdict"></table>
+    </div>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const $=(s)=>document.querySelector(s);
+const esc=(s)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/* ---------- binaries ---------- */
+const bins=[
+  {q:"AI funding — Lovable / DeepSeek / Perplexity",tag:"q44378",bot:8,crowd:31.1},
+  {q:"AI funding — OpenAI / Anthropic / Mistral",tag:"q44379",bot:38.3,crowd:25},
+  {q:"Lebanese Armed Forces deploy to pilot zones",tag:"q44619",bot:19.2,crowd:31.5},
+  {q:"France >1 confirmed Ebola case",tag:"q44383",bot:9.2,crowd:15},
+  {q:"Any SCOTUS retirement before Sep 1",tag:"q44416",bot:12,crowd:15},
+].map(d=>({...d,delta:+(d.bot-d.crowd).toFixed(1)}))
+ .sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta));
+const SC=50; // scale max %
+$("#bins").innerHTML = bins.map(d=>`
+  <div class="row">
+    <div class="qlabel">${esc(d.q)}<br><span class="tag">${d.tag}</span></div>
+    <div class="bars">
+      <div class="bar-track"><div class="bar bot" style="width:${d.bot/SC*100}%"><span class="v">${d.bot}%</span></div></div>
+      <div class="bar-track"><div class="bar crowd" style="width:${d.crowd/SC*100}%"><span class="v">${d.crowd}%</span></div></div>
+    </div>
+    <div class="delta ${d.delta<0?'neg':'pos'}">${d.delta>0?'+':''}${d.delta}</div>
+  </div>`).join('') +
+  `<div class="axis"><span>0%</span><span>25%</span><span>50%</span></div>`;
+
+/* ---------- multiple choice ---------- */
+function mc(el,title,cap,opts,bot,crowd){
+  const mx=Math.max(...bot,...crowd);
+  $(el).innerHTML=`<h3>${title}</h3><p class="cap">${cap}</p>`+
+    opts.map((o,i)=>`
+     <div class="mcrow">
+       <div class="opt">${esc(o)}</div>
+       <div class="grp">
+         <div class="g-track"><div class="g-fill bot" style="width:${bot[i]/mx*100}%"></div></div>
+         <div class="g-track"><div class="g-fill crowd" style="width:${crowd[i]/mx*100}%"></div></div>
+       </div>
+     </div>
+     <div class="mcrow" style="margin-top:-6px;margin-bottom:12px"><div></div>
+       <div class="mono" style="font-size:10.5px;color:var(--ink-3)">
+         <span style="color:var(--bot)">bot ${bot[i]}%</span> · <span style="color:var(--crowd)">crowd ${crowd[i]}%</span></div></div>`).join('');
+}
+mc("#mc-aiact","EU states w/ clear AI-Act surveillance","q44382 · bot piles 47% on the lowest bucket",
+   ["≤9","10 or 11","12 or 13","14 or 15",">15"],[47,33,13,5,2],[20,28.3,26.9,16.2,8.6]);
+mc("#mc-fl","Florida GOP gubernatorial primary","q44381 · bot tilts to a bigger Donalds margin",
+   ["Donalds ≥75%","65–75%","55–65%","≤55%","Donalds loses"],[23,35,28,10,4],[12.9,30.2,34.5,16.2,6.2]);
+
+/* ---------- numeric ---------- */
+function rng(title,cap,unit,lo,hi,ticks,bot,crowd){
+  const T=(v)=>((v-lo)/(hi-lo)*100);
+  return `<div class="nq"><h3>${title}</h3><p class="cap">${cap}</p>
+    <div class="range">
+      <div class="iqr bot" style="left:${T(bot.q1)}%;width:${T(bot.q3)-T(bot.q1)}%"></div>
+      <div class="whisk bot" style="left:${T(bot.p10)}%;width:${T(bot.p90)-T(bot.p10)}%"></div>
+      <div class="med bot" style="left:${T(bot.med)}%"></div>
+      <div class="medlab bot" style="left:${T(bot.med)}%">${bot.med}</div>
+      <div class="iqr crowd" style="left:${T(crowd.lo)}%;width:${T(crowd.hi)-T(crowd.lo)}%"></div>
+      <div class="med crowd" style="left:${T(crowd.med)}%"></div>
+      <div class="medlab crowd" style="left:${T(crowd.med)}%">${crowd.med}</div>
+      <div class="scale"></div>
+      ${ticks.map(t=>`<div class="tick" style="left:${T(t)}%"></div><div class="ticklab" style="left:${T(t)}%">${t}</div>`).join('')}
+    </div>
+    <p class="mono" style="font-size:11px;color:var(--ink-3);margin:26px 0 0">
+      <span style="color:var(--bot)">bot</span> median + IQR (bar) + p10–p90 (line), ${unit} ·
+      <span style="color:var(--crowd)">crowd</span> median + shown interval</p></div>`;
+}
+$("#num").innerHTML =
+  rng("Copper futures — August high","q44511 · 2 searches · bot slightly under, tighter","USD/lb",
+      5.6,6.8,[5.6,6.0,6.4,6.8],
+      {med:6.25,q1:6.05,q3:6.45,p10:5.90,p90:6.72},{med:6.31,lo:6.04,hi:6.58}) +
+  rng("Liquid sulphur (Tampa) — Q3","q44412 · 8 searches · bot ~13% higher, evidence-backed","USD/metric ton",
+      450,1150,[450,650,850,1050],
+      {med:860,q1:740,q3:970,p10:600,p90:1080},{med:761,lo:566,hi:910});
+
+/* ---------- verdict table ---------- */
+const V=[
+  ["AI funding — OpenAI/Anthropic/Mistral","q44379",12,"earned","Bottom-up decomposition (Anthropic 10% / OpenAI 20% / Mistral 22%) → 38%. Genuine view difference with the 25% crowd, not an error."],
+  ["Liquid sulphur — Q3","q44412",8,"earned","Bullish tilt (+13%) rests on cited July Middle-East OSP jumps (+$140) the crowd may not have priced. The one to watch as a possible edge."],
+  ["France >1 Ebola case","q44383",7,"solid","9% built from a real reference class (2014–16: France 0 cases). Tight draws [.08/.12/.08]. Sits just under the crowd."],
+  ["Any SCOTUS retirement","q44416",6,"solid","Single-draw low-effort call; base rate 4.5% lifted on Alito/Thomas age + Polymarket. 12% ≈ crowd 15%."],
+  ["Lebanese Armed Forces deploy","q44619",7,"watch","Draws split hard [.36/.12/.15]; pooled to 19% — below the bot's own base rate (35%) and narrative (36%), which matched the crowd (31.5%). Displayed reasoning argues a different number than the forecast."],
+  ["EU states w/ AI-Act surveillance","q44382",2,"watch","Most extreme MC bet (47% on ≤9) on 2 searches, anchored to a tracker 'last updated June 17'. Exposed if states flip before Aug 31."],
+  ["Florida GOP primary","q44381",0,"watch","Zero searches. Confident margin call (mode 65–75%) from training-data polls; Polymarket win-prob is the wrong instrument for a margin bucket."],
+  ["Copper — August high","q44511",2,"watch","Text says 'centers slightly above the June high (6.65)' but median is 6.25 — a price-vs-monthly-high anchor slip on a 2-search run."],
+  ["AI funding — Lovable/DeepSeek/Perplexity","q44378",8,"fixed","8% vs crowd 31%. Root cause found & fixed in v0.4.4: read the forecast-lock time as the event deadline, shrinking a 1-month window to 6 days. Ran on v0.4.3; all later forecasts on v0.4.4."],
+];
+const pillTxt={earned:"earned",solid:"solid",watch:"watch",fixed:"fixed"};
+$("#verdict").innerHTML =
+  `<thead><tr><th>Question</th><th>Research</th><th>Read</th><th>Why</th></tr></thead><tbody>`+
+  V.map(([q,tag,r,p,note])=>{
+    const dots=Array.from({length:12},(_,i)=>`<span class="${i<r?'on':'off'}">●</span>`).join('');
+    return `<tr>
+      <td class="q">${esc(q)}<br><span class="mono" style="font-size:10.5px;color:var(--ink-3);font-weight:400">${tag}</span></td>
+      <td><span class="rdots" title="${r} searches">${dots}</span><br><span class="mono" style="font-size:10px;color:var(--ink-3)">${r} searches</span></td>
+      <td><span class="pill ${p}">${pillTxt[p]}</span></td>
+      <td class="note">${esc(note)}</td></tr>`;
+  }).join('')+`</tbody>`;
+
+/* ---------- footer ---------- */
+$("#foot").innerHTML=`
+  <p><b>What resolved data exists.</b> Nothing in this tournament — but an 85-question frozen-corpus pastcast (opus-4.6, high tier) scored Brier <span class="mono">0.153</span> vs always-0.5's 0.25 and matched a SOTA baseline (0.154). On that set the scaffold did <b>not</b> beat a bare zero-shot call (paired Δ ≈ 0.0000, 34 W / 37 L), the model mildly over-predicted YES, and was <i>less</i> extreme than the baseline. Caveats: different model (the tournament runs Sonnet-5), old scaffold stamp (0.1.0), and the project's own evaluation.md rules pastcasting "not evidence."</p>
+  <p><b>Structural note.</b> On public tournament questions the bot token gets a null community prediction — confirmed via the API. So none of these forecasts got the crowd-blend the design calls a proven win; every divergence above is a raw, un-anchored model view.</p>
+  <p style="color:var(--ink-3);margin-top:14px">Sources: <span class="mono">bot/journal/forecasts.jsonl</span> (reasoning + submitted values), live Metaculus read via <span class="mono">bot/list_forecasts.py</span>, crowd values from the tournament UI. Generated 2026-07-08.</p>`;
+</script>

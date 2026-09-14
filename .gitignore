@@ -1,0 +1,29 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+dist/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+# local personal journals anywhere in the tree (the bot's public journal IS committed)
+forecasts.jsonl
+!bot/journal/forecasts.jsonl
+# benchmark data: sets embed CC-BY-SA ForecastBench content; results are experiment data
+# (contents-not-directory pattern so the prospective negation below can reach inside)
+bench/sets/*
+bench/results/
+# EXCEPT prospective freezes: a preregistration artifact only binds if committed publicly
+# BEFORE outcomes exist, and it holds Metaculus question text the bot journal already
+# publishes — not ForecastBench content
+!bench/sets/prospective-*.jsonl
+# --post backtests: recorded evidence, never public preregistration
+bot/journal/backtests.jsonl
+# BTF-2 frozen corpus: the 483MB scraped_pages parquet + the sqlite index built from it.
+# cc-by-nc-4.0 (non-commercial) and far too large to commit — never version this data.
+bench/corpus/
+
+# session scratch (analysis inputs are frozen under bench/analysis when load-bearing)
+tmp/
+output/

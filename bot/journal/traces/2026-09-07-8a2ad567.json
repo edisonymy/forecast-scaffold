@@ -1,0 +1,238 @@
+{
+ "record_id": "2026-09-07-8a2ad567",
+ "question": "What will the CME October 2026 live cattle futures contract settle at on September 17, 2026?",
+ "question_id": 45747,
+ "url": "https://www.metaculus.com/questions/45556/",
+ "question_type": "numeric",
+ "forecast_at": "2026-09-07T20:47:37+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.5396,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 204.0,
+    "25": 208.46666666666667,
+    "50": 212.70000000000002,
+    "75": 216.83333333333334,
+    "90": 221.20000000000002
+   },
+   "p_below_lower": 0.010333333333333333,
+   "p_above_upper": 0.006666666666666667
+  },
+  "phase1": {
+   "10": 204.0,
+   "25": 208.46666666666667,
+   "50": 212.70000000000002,
+   "75": 216.83333333333334,
+   "90": 221.20000000000002
+  },
+  "phase2": null,
+  "spread_phase1": 0.5,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 204.2,
+   "25": 208.4,
+   "50": 212.7,
+   "75": 216.6,
+   "90": 220.7
+  },
+  "p_below_lower": 0.008,
+  "p_above_upper": 0.004
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.3522,
+   "seconds": 320.9,
+   "estimate": {
+    "percentiles": {
+     "10": 203.5,
+     "25": 208.0,
+     "50": 212.5,
+     "75": 217.0,
+     "90": 221.8
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Futures are near-martingales over an 8-session horizon, so the last settlement (212.95, Sep 4) is the anchor; I shade the median ~0.5c below it. Bearish: a five-week policy-driven downtrend (224.92 Aug 6 -> 217.22 Aug 19 -> 211.72 Aug 28 -> 212.95 Sep 4, roughly -7c per 9 sessions), the Sept 1 tariff-rate-quota proclamation (300k t lean trim over 90 days, monthly tranches), Choice cutout down $9.46 w/w, cash down ~$5 w/w, post-Labor Day demand lull, DOJ packer probe headlines. Bullish: October futures sit ~$9-10 under cash ($222-223), cash firmed to $223 late Friday, RSI lifted off 25 to 32 after the Sep 3 +4.12 short-covering rally, herd is the smallest in 75 years with record-low July placements, and the 15-year seasonal pattern bottoms in early September into October expiry. These roughly offset. Dispersion is the dominant call: this regime has produced limit-down sessions and 4c single-day swings, so I hold a ~7c SD (10-90 width ~18c) rather than the ~10-12c width a calm-regime live cattle vol would imply. Escape masses are small but real: a 190 print needs ~3 limit-down sessions in 8 (new import/policy shock), a 235 print needs a limit-up short squeeze on a policy reversal against record-tight supply. Evidence is decent on price/cash levels but thin on forward-looking analyst targets, and Barchart/CattleRange/Kalshi pages were blocked (403/429), so I lean close to the random-walk base rate.",
+   "sources": [
+    "https://www.brownfieldagnews.com/market-news/closing-grain-and-livestock-futures-september-4-2026/",
+    "https://www.brownfieldagnews.com/market-news/closing-grain-and-livestock-futures-august-28-2026/",
+    "https://www.brownfieldagnews.com/market-news/closing-grain-and-livestock-futures-august-19-2026/",
+    "https://www.brownfieldagnews.com/market-news/closing-grain-and-livestock-futures-august-14-2026/",
+    "https://www.brownfieldagnews.com/market-news/closing-grain-and-livestock-futures-august-6-2026/",
+    "https://tradingeconomics.com/commodity/live-cattle",
+    "https://www.tradingpedia.com/2026/09/04/grain-weakness-cash-strength-ignite-cme-cattle-rally/",
+    "https://www.agbull.com/trumps-300000-tonne-beef-play-big-politics-smaller-beef-impact/",
+    "https://finance.yahoo.com/markets/commodities/articles/live-cattle-weakness-meets-still-174821157.html",
+    "https://www.nass.usda.gov/Surveys/Guide_to_NASS_Surveys/Cattle_On_Feed/index.php",
+    "https://kalshi.com/markets/kxlcattlemon/live-cattle-monthly/kxlcattlemon-26apr3017"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the Barchart price-history daily settlement ('Last Price') for CME LEV26 (October 2026 live cattle) for the single session of Thu 2026-09-17, in US cents/lb — NOT the front-month generic LE=F quote, NOT the cash fed-cattle price, NOT the boxed beef cutout. Fallback to CME/credible sources if Barchart lacks the date; if no settlement is published that session, the most recent prior daily settlement of LEV26 stands.\n\nEVENT WINDOW: the criteria specify one observation point, the 2026-09-17 session settlement. From Now (2026-09-07T20:30Z) the interval to that reading is 2026-09-08 through 2026-09-17 = 8 CME trading sessions (2026-09-07 is Labor Day, CME livestock closed); 0% of those sessions have elapsed. LEV26 itself stops trading end of October 2026, so this is a mid-life reading, not an expiry print.\n\nOBSERVED LEV26 SETTLEMENT PATH (source: Brownfield Ag News 'Closing Grain and Livestock Futures' dailies, each dated):\n- 2026-08-06: 224.92, change -4.55\n- 2026-08-14: 218.87, change -1.17\n- 2026-08-19: 217.22, change -1.70\n- 2026-08-28: 211.72, change -1.20\n- 2026-09-01: 212.07, change -0.60\n- 2026-09-02: 210.17, change -1.90 (described elsewhere as a new 2026 low set that session)\n- 2026-09-03: 214.30, change +4.12\n- 2026-09-04: 212.95, change -1.35 (latest available settlement as of Now)\nOther same-period contracts on 2026-09-04: Oct feeder cattle 320.15 (-0.95), Oct lean hogs 82.30 (-1.15).\n\nDISPERSION / BASE-RATE DATA:\n- Overlapping 9-session changes computable from the above, over the last month only: 2026-08-06 to 2026-08-19 = -7.70; 2026-08-14 to 2026-08-28 = -7.15; 2026-08-19 to 2026-09-02 = -7.05. All three windows fall in the same policy-news regime; this is a conditional class ('9-session changes given the Aug-Sep 2026 import-policy news flow'), not an unconditional one.\n- Unconditional daily-change scale in the same series: most non-news sessions moved 0.6-1.9 cents; news sessions produced -4.55 and +4.12, and press reports describe at least one session with both Aug and Oct live cattle 'down the daily permissible limit' and front months '-$5.70 to -$6.25' around the 2026-08-20/21 tariff announcement.\n- CME price limits (cmegroup.com price-limits page, effective 2025-06-01): live cattle daily limit $0.0675/lb, expanded limit $0.1075/lb; feeder cattle $0.1375/lb expanded. Expanded limits are triggered after limit settlements, so multi-session moves of >20 cents are mechanically possible within 8 sessions.\n- Longer-horizon context (tradingeconomics live cattle, front-month series, retrieved 2026-09-04 data): all-time high 257.96 set June 2026; front month at 212.95 on 2026-09-04; series down 9.76% over the trailing year. Barchart-reported LEV26 52-week range: 196.75 to 246.55.\n\nSTATUS-QUO OUTCOME: no further move — the 2026-09-17 settlement equals the last observed settlement (2026-09-04, 212.95). Futures over an 8-session horizon are conventionally treated as a random walk around the last settle.\n\nEVIDENCE POINTING LOWER:\n- Presidential proclamation effective 2026-09-01 temporarily expands the tariff-rate quota for lean beef trimmings by 300,000 metric tons over ~90 days, delivered as three monthly tranches of up to 100,000 t; USDA/USTR are directed to monitor whether the product sells 25% below prevailing market price, with the remaining quota withdrawable otherwise (beefmagazine, agbull, 2026-08-21). Follows an 80,000 t expansion earlier in 2026. The waiver expires mid-November.\n- Choice boxed beef cutout reported down $9.46 week-over-week to $376.23 (week ending ~2026-08-28); Choice $377.30 (-1.48) and Select $351.00 (-2.58) on 2026-09-03 (tradingpedia 2026-09-04).\n- Cash fed cattle: trade opened the prior week at $225, $5 lower week-over-week; USDA-reported negotiated volumes 10,015 head on 2026-09-02 vs 20,982 a week earlier; 2026-09-02 averages $217.99 live FOB and $346.28 dressed.\n- DOJ has opened a probe into alleged meatpacker price manipulation; Trump has posted about deregulating direct-to-consumer beef sales and about the four packers controlling ~85% of the market (NBC News; beefmagazine).\n- Post-Labor-Day seasonal demand slowdown as packers finish grilling-season buying (thepigsite/CME dailies, Sept 2026).\n- Tyson guided to $500M-$650M of beef-segment losses for fiscal 2026 and cut its profit forecast again; packer margins are negative, which reduces bid aggressiveness.\n\nEVIDENCE POINTING HIGHER:\n- LEV26 settled well below the concurrent cash market: cash the week ending 2026-09-04 was $222-223 live in the south, $217-219 live and $345-350 dressed in the north mid-week, moving to $223 live in the north late Friday. Convergence pressure runs toward the cash side as October delivery approaches (contract stops trading end of October).\n- Supply is historically tight: beef cow inventory 28.45-28.5 million head, down ~0.7-1% y/y and the smallest July since 1973; 2026 calf crop 32.5 million head, down 2%, the smallest on record with a ninth consecutive annual decline; July placements 1.42 million head, down 11%, lowest July since 1996; July marketings 1.62 million head, down 7%. Total herd ~86 million head, smallest in 75 years (USDA NASS via agbull 2026-08-21; NBC News).\n- Technicals had reached oversold: RSI dipped to 25 earlier in the week of 2026-09-02 and moved to 32 by Thursday; the 2026-09-03 session was attributed to short covering plus a sharp retreat in grain prices and a firmer cash market.\n- Analyst commentary from 2026-08-18 (Yahoo Finance markets) framed a 'corrective or range-bound market through early fall, followed by firmer support' on tighter late-year supplies.\n- A cited 15-year seasonal pattern for live cattle has a significant bottom around September 5 with prices rising into October futures expiration.\n- Analysts are skeptical the import quota changes physical supply much: imported lean trim already trades below domestic product, and the February 2026 Argentine quota expansion was followed by retail ground beef ri",
+   "reference_class": "8-trading-session changes in the nearby CME live cattle futures settlement during the volatile 2026 policy-shock regime (Jun-Sep 2026), anchored on the random-walk prior that the best estimate of a futures settlement 8 sessions out is the last settlement"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.8587,
+   "seconds": 290.7,
+   "estimate": {
+    "percentiles": {
+     "10": 204.5,
+     "25": 209.0,
+     "50": 213.0,
+     "75": 216.8,
+     "90": 221.0
+    },
+    "p_below_lower": 0.008,
+    "p_above_upper": 0.005
+   },
+   "reasoning": "Anchor: LEV26 settled 212.95 on Fri Sep 4; Mon Sep 7 is Labor Day (CME livestock closed), so no newer settlement exists and exactly 8 sessions remain (Sep 8,9,10,11,14,15,16,17). Fed-cattle futures are close to a martingale over two weeks, so the status-quo outcome is a settle near 213 and I put the median there rather than extrapolating the August downtrend. Reference class is 8-trading-session changes in the front/second live cattle contract; the recent realized regime gives sigma ~6.5c (10-90 width ~16.6c), which is what sets my percentiles. Two-sided evidence is genuinely balanced: bearish are the Sep 1 90-day TRQ waiver on 300k t of lean trimmings, the US-Mexico border reopening to feeder imports, Choice cutout slipping to $376.17, the DOJ meatpacker probe, and a broker view that 'cattle doesn't have much going for it'; bullish are a 75-year-low 86M-head herd, cash at $219-223 live South / $344-345 dressed North leaving October futures at a $5-9 discount that must converge by Oct 30 expiry, an oversold 226->210 crash already absorbed, and the market's own two-week 210.17-214.30 stabilization. Cattle on Feed releases Sep 18, one day AFTER the target session, so it adds positioning noise but cannot resolve into the number. No human prediction market exists (Kalshi pulled its ag contracts in June 2026; nothing on Polymarket/Manifold), so there is no anchor to blend and I stay near the futures price. Tails: reaching <190 or >235 needs a ~10-11% move in 8 sessions, roughly 3.5 sigma under normality, but this regime has shown one Truth Social post moving the complex ~7% in days, so I price small non-zero escapes with a mild left skew for further political intervention ahead of the midterms.",
+   "sources": [
+    "https://www.brownfieldagnews.com/market-news/live-cattle-hog-futures-finish-the-week-lower/",
+    "https://www.tradingpedia.com/2026/09/02/cattle-futures-retreat-on-policy-and-trade-pressures/",
+    "https://www.brownfieldagnews.com/market-news/closing-grain-and-livestock-futures-september-4-2026/",
+    "https://www.brownfieldagnews.com/market-news/closing-grain-and-livestock-futures-august-25-2026/",
+    "https://www.nass.usda.gov/Surveys/Guide_to_NASS_Surveys/Cattle_On_Feed/index.php",
+    "https://release.nass.usda.gov/reports/cofd0826.pdf",
+    "https://www.cnbc.com/2026/08/21/trump-ground-beef-import-tariff.html",
+    "https://www.drovers.com/news/ag-policy/trump-announces-deal-slash-ground-beef-prices-25-sends-markets-lower",
+    "https://cattlecurrent.com/cattle-current-daily-aug-24-2026/",
+    "https://www.fb.org/intel/markets/prediction-markets-expand-into-agriculture",
+    "https://kalshi.com/markets/kxlcattlemon/live-cattle-monthly/kxlcattlemon-26apr3017",
+    "https://www.nbcnews.com/business/consumer/trump-doj-meatpacker-investigation-price-fixing-beef-prices-rcna242671"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the single daily settlement ('Last Price') of CME LEV26 for the Thursday 2026-09-17 session as shown on Barchart's LEV26 price-history page, in US cents/lb — NOT a weekly average, NOT cash/negotiated fed cattle, NOT the boxed beef cutout, NOT the front-month LE continuous series. Fine print: if no settlement is published for that session (holiday/halt), it resolves to the most recent prior daily settlement of LEV26.\n\nEVENT WINDOW: last observed settlement 2026-09-04 -> target session 2026-09-17 per the criteria; as of Now (2026-09-07T20:30Z) 3 of 13 calendar days (~23%) elapsed and 0 of the 8 remaining trading sessions (Sep 8, 9, 10, 11, 14, 15, 16, 17) have occurred. Monday 2026-09-07 is Labor Day and CME livestock does not settle, so 212.95 is the newest settlement in existence at Now.\n\nSTATUS-QUO OUTCOME: LEV26 settles on 2026-09-17 at or near its 2026-09-04 settlement of 212.95 cents/lb.\n\nPRICE SERIES (LEV26 daily settlements, Brownfield Ag News 'Closing Grain and Livestock Futures' dailies, Aug-Sep 2026): Aug 6 224.92 (-4.55); Aug 11 226.32 (-0.57); Aug 18 218.92 (+0.15); Aug 20 218.00 (+0.77); Aug 21 217.92 (-0.07); Aug 25 210.95 (-2.65); Aug 26 210.77 (-0.17); Sep 1 212.07 (-0.60, corroborated by Tradingpedia 2026-09-02 at 212.075); Sep 2 210.17 (-1.90); Sep 3 214.30 (+4.12); Sep 4 212.95 (-1.35). Question background gives a 52-week range of roughly 196.75-246.55.\n\nDISPERSION / BASE RATES BY CLASS:\n- Over the 11 sampled sessions Aug 6 - Sep 4 2026, daily settlement changes had RMS ~2.16 cents; the sample omits several large unsampled days (Aug 12-17 fell 226.32->218.92, Aug 21-25 fell 217.92->210.95), so true daily RMS in this regime is ~2.3-2.5 cents (Brownfield dailies).\n- Over 7-8 session windows within this same post-shock regime, observed changes were Aug 11->Aug 21 -8.40, Aug 6->Aug 18 -6.00, Aug 21->Sep 2 -7.75, Aug 25->Sep 4 +2.00; RMS about zero ~6.5 cents. Class = '8-session changes GIVEN the Aug-Sep 2026 policy-shock regime', which is wider than the unconditional live cattle 8-session class (normal-regime live cattle annualized vol ~14-18% implies ~4.8-6.1 cents over 8 sessions on a 213 base).\n- Over the most recent 6 sessions only (Aug 26 - Sep 4), the entire traded settlement range was 210.17-214.30, a 4.13-cent band; class = 'consolidation sub-regime, last 2 weeks'.\n\nEVIDENCE, BEARISH SIDE:\n- Trump announced 2026-08-21 (Truth Social; CNBC 2026-08-21) a 90-day waiver of out-of-quota tariffs on up to 300,000 metric tons of ground-beef 'product', effective 2026-09-01, following an earlier 80,000 t expansion, with a stated commitment the beef sells 25% below market. On the announcement day the complex sold off hard: nearby live cattle -$4/cwt-plus and Friday losses running $5.42 to the $6.50 limit in live cattle, $5.97 to the $8.25 limit in feeders (Drovers; Barchart 'cattle fall the limit on Friday'). Note LEV26 itself finished Aug 21 only -0.07, i.e. deferred months absorbed less than the front.\n- US-Mexico border reopened to feeder cattle imports; livestock movement restrictions lifted in Texas and New Mexico (Tradingpedia 2026-09-02).\n- Choice boxed beef cutout $376.17 on 2026-09-04, down $0.73; Select $355.87 up $5.15; Choice/Select spread $20.30 (Brownfield 2026-09-04). Choice was $378.02 on 2026-09-01 (Tradingpedia).\n- DOJ investigation opened into whether major meatpackers illegally influenced beef markets (AG Bondi; NBC News 2026-09).\n- Brugler Marketing's Austin Schroeder, quoted 2026-09-02: 'In general, cattle doesn't have much going for it,' citing limited fund-manager incentive.\n- Political pressure on beef prices is active ahead of midterms; retail ground beef averaged $6.89/lb in July 2026 (USDA via AgWeb/Yahoo Finance).\n\nEVIDENCE, BULLISH SIDE:\n- US cattle herd at ~86 million head, smallest in 75 years, after drought and wildfires (AgWeb 2026-09; Reuters via search).\n- Cash fed cattle on 2026-09-04: Southern live $219-223 for the week (Friday trade $215-222), Northern dressed $344-345, described as steady to $1 lower week over week; ~50,000 head traded on the week (Brownfield 2026-09-04). Dressed $344-345 is roughly $217-218 live-equivalent. LEV26 at 212.95 therefore sat at a discount of roughly $5-9 to same-week cash, and the contract does not stop trading until end of October 2026, so convergence toward late-October cash is still ahead.\n- Packer margins are negative, not fat: Tyson Foods guided to $500-650M of beef-segment losses in fiscal 2026 (Yahoo Finance 2026-09).\n- Slaughter was curtailed into the holiday: ~97,000 head estimate versus prior week, Saturday kill estimated 17,000 head (Brownfield 2026-09-04).\n- Analysts characterize the 300,000 t action as 'big politics, smaller beef impact' relative to US annual beef supply, and NCBA pushed back publicly (Ag Bull Trading; Drovers). Market response after the initial break included Aug 24 'cooler heads' sessions where live cattle closed an average 78c higher across the board (Cattle Current 2026-08-24), and Sep 3 posted +4.12 on a grain slide and firmer cash.\n- USDA support measures: loans to small meat processors, authorization for grazing on conserved land (Tradingpedia 2026-09-02).\n\nCALENDAR:\n- CME livestock closed Monday 2026-09-07 (Labor Day). Sessions available before resolution: Sep 8, 9, 10, 11, 14, 15, 16, 17.\n- USDA NASS Cattle on Feed releases 2026-09-18 at 3:00pm ET (nass.usda.gov survey schedule; prior report cofd0826.pdf released 2026-08-21) — this is the day AFTER the resolving session, so it cannot enter the Sep 17 settlement except through pre-report positioning.\n- WASDE lands 2026-09-11 (marginal for live cattle). Weekly negotiated cash trade normally develops Wednesday-Friday of each week. Daily boxed beef and daily direct steer/heifer summaries publish each session.\n- CME live cattle daily price limit was $6.50/cwt during the Aug 21 2026 session per contemporaneous reports (expandable); this caps how far a single session can move.\n\nSEARCHED FOR B",
+   "reference_class": "8-trading-session changes in the CME live cattle October/front contract during the Aug-Sep 2026 post-tariff-shock regime (daily RMS ~2.3-2.5 cents, ~15-20% annualized vol), applied to the last observed settlement"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0268,
+   "seconds": 300.8,
+   "estimate": {
+    "percentiles": {
+     "10": 204.0,
+     "25": 208.4,
+     "50": 212.6,
+     "75": 216.7,
+     "90": 220.8
+    },
+    "p_below_lower": 0.008,
+    "p_above_upper": 0.005
+   },
+   "reasoning": "Last known settlement is 212.95 (Fri Sep 4, 2026); 8 CME sessions remain (Sep 7 is Labor Day, CME livestock closed). Futures are near-martingale, so the reference class of 8-trading-day changes in nearby live cattle futures gives a base rate centered on the last settle with a 10-90 spread near 16-17 cents. I shade the median a touch below 212.95 and skew the left tail slightly: the chart has been in liquidation since the May record (~256), Aug 1 Cattle on Feed was +2% y/y, cash 5-area slipped to 217.91, the Sep 1 tariff-rate-quota tranches and the Mexico feeder-import ramp are still feeding through, and post-Labor-Day is seasonally soft. Offsetting that, October already carries a ~5-cent discount to cash, 210 is defended support where the 2026 low was set in late August, Choice cutout is still ~375-378, and screwworm/industry-lobbying headlines are live upside wildcards - so the tilt is small, not directional conviction. Cattle on Feed (Sep 18) falls after the resolution session, removing the biggest scheduled catalyst; WASDE (~Sep 11) is a minor one. No human prediction market prices this contract, so there is no crowd to blend. Escape mass is small but real: reaching sub-190 or 235+ needs roughly a 10% move in 8 sessions, which the 8.50-cent daily limit makes mechanically possible only via a two-day limit cascade on a policy or animal-health shock.",
+   "sources": [
+    "https://www.investing.com/commodities/live-cattle-historical-data",
+    "https://arec.tennessee.edu/extension/tennessee-market-highlights/livestock-comments/",
+    "https://www.tradingpedia.com/2026/09/02/cattle-futures-retreat-on-policy-and-trade-pressures/",
+    "https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXLCATTLEMON",
+    "https://www.thepigsite.com/news/2026/09/cattle-futures-fall-as-bearish-news-continues-to-weigh-cme",
+    "https://www.cattlerange.com/articles/2026/05/cme-group-increases-daily-trading-limits-for-live-cattle-feeder-cattle-futures/",
+    "https://release.nass.usda.gov/reports/cofd0826.pdf",
+    "https://www.agmarkllc.com/markets/fixed.php?page=elivestock"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the CME daily SETTLEMENT of the October 2026 live cattle contract (LEV26) for the Thursday Sep 17, 2026 session, as shown on Barchart's LEV26 price-history page - not the front-month continuous series, not feeder cattle (LE vs GF), not cash fed cattle, not the boxed beef cutout. Fine print: holiday/halt with no settlement rolls back to the most recent prior settlement.\n\nEVENT WINDOW: last known settlement Fri Sep 4, 2026 -> target session Thu Sep 17, 2026. Intervening CME livestock sessions: Sep 8, 9, 10, 11, 14, 15, 16, 17 = 8 sessions. Mon Sep 7 is Labor Day (CME livestock closed). As of Now (2026-09-07T20:30Z), 0 of 8 sessions elapsed (0%).\n\nSTATUS-QUO OUTCOME: the Sep 17 settlement equals the Sep 4 settlement of 212.95 cents/lb, unchanged.\n\nPRICE PATH (Investing.com front-month daily series; note Aug contract expired Aug 31, so Sep 1 onward is LEV26 and the Aug 31->Sep 1 gap is a roll artifact, not a move):\n- Aug 10: 233.27 | Aug 13: 226.23 | Aug 21: 223.05 | Aug 28: 219.25 | Aug 31: 220.75 (all August contract LEQ26)\n- LEV26: Sep 1: 212.075 (-0.60) | Sep 2: 210.18 (-1.90) | Sep 3: 214.30 (+4.125) | Sep 4: 212.95 (-1.35) [Sep 3-4 cross-confirmed by UT Livestock Comments 9/4 and Reuters-via-thepigsite]\n- Late Aug: October contract set new 2026 lows in the Aug 25-26 sessions, then rebounded Aug 27 (CME Group daily video, 8/25/26 and 8/27/26).\n- LEV26 52-week range per the question background: 196.75 - 246.55. Live cattle record high 256.625 set May 2026 (agrolatam).\n\nDISPERSION BASE RATES (name the class):\n- Over all front-month live cattle sessions Aug 7 - Sep 4, 2026 (n=20 daily returns, roll excluded): daily SD 0.89%, mean -0.21%. Annualizes to ~14%.\n- Over the SAME window conditioned on multi-day moves: the largest 9-session move contained in it was -4.4% (233.27 on Aug 10 -> 223.05 on Aug 21); a 6-session move of -1.0% (Aug 21 -> Aug 31) also sits inside it. So realized multi-day dispersion ran above sqrt(t) scaling of the daily SD during a trending phase.\n- Over 2026 as a whole (class: policy-shock regime): agrolatam and Barchart commentary describe repeated 'aggressive price swings tied to geopolitical headlines' from the April/May highs onward - a wider class than the August window.\n- Mechanical cap: CME reset live cattle daily limits effective Jun 1, 2026 to 8.50 cents initial / 12.75 cents expanded (up from 7.25 / 10.75). Two consecutive initial-limit sessions = 17.00 cents.\n\nCASH / PHYSICAL (source: UT-Knoxville Livestock Comments, Sep 4, 2026):\n- 5-area weighted average fed cattle: $217.91 live (-$0.74 w/w), $345.23 dressed (-$0.07). Live basis trade $217-218, dressed $343-346.\n- Prior week (Aug 28 report): 5-area $218.65 live, down $6.64 w/w; $345.30 dressed, down $10.50 w/w - i.e. a sharp break the week before Labor Day, then near-flat.\n- Boxed beef Choice cutout prints in the window: ~$375.03 (Fri Sep 4 midday), ~$377.30 (a Thursday), ~$378.02 (a Tuesday), $388.12 cited on another day; Select $351-370. Choice-Select spread ~$20.80 on Sep 4.\n- Sep 4 companion settlements: Dec LE $214.73 (-1.40), Feb LE $216.58 (-1.15). Oct feeder cattle 315.40 (Sep 1). Feeder commentary cited possible support in the $315-320 zone.\n- Feed cost: corn up ~$1/bu and soybean meal up ~$50/ton since late June, pressuring feeder margins.\n\nPOLICY / SUPPLY EVENTS:\n- Effective Sep 1, 2026, the administration is allowing three monthly tranches of up to 100,000 t of imported lean beef trimmings at the lower tariff rate (300,000 t total over ~90 days), following an 80,000 t expansion earlier in 2026. USDA/USTR are directed to verify the product sells 25% below prevailing market price; remaining quota may be withdrawn if that discount is not achieved.\n- AFBF, Livestock Marketing Association, NCBA and USCA jointly urged the President to reverse the import plan.\n- DOJ opened a probe into alleged meatpacker price manipulation (per question background).\n- US-Mexico border reopened to feeder cattle at Douglas, AZ: ~2,500 head crossed in the first week (under the ~700/day plan); plan allows up to 900/day the following week and 1,300/day the week after. USDA plans ~30 days of work toward opening one New Mexico port, a second 30 days later.\n- New World screwworm: Mexico reported a case within 70 miles of the US border; APHIS confirmed the 48th US NWS animal case (dog, Crockett County, TX) with three active cases.\n- Livestock movement restrictions in parts of Texas and New Mexico were lifted (cited as a bearish driver on Sep 1).\n\nSUPPLY DATA: USDA Cattle on Feed (released Aug 21, 2026) put Aug 1 feedlot inventory (1,000+ head capacity) at 11.1 million head, +2% vs Aug 1, 2025. Broader context: the US cattle herd is at multi-decade lows (AFBF Market Intel).\n\nCALENDAR RELATIVE TO THE DEADLINE:\n- Next USDA Cattle on Feed: Friday Sep 18, 2026, 3:00 PM ET - i.e. AFTER the Sep 17 session settles. It cannot affect the resolving print.\n- WASDE falls in the ~Sep 11 slot (within the window); it carries USDA's fed cattle price forecasts.\n- Weekly cadence inside the window: negotiated cash fed cattle trade typically develops Wed-Fri (Sep 9-11 and Sep 16-17); daily boxed beef cutout AM/PM; weekly Cattle Range / UT Livestock Comments each Friday.\n- CME livestock trading calendar: no exchange holidays between Sep 8 and Sep 17.\n\nTECHNICAL LEVELS CITED IN PUBLISHED COMMENTARY: October futures - downside objective at $210.00 support (also roughly where the 2026 low was set in late August); upside objective at $225.00 resistance. An earlier (higher-price) note put resistance at the 200-day MA near 227.925/230.050. Late-August analyst commentary framed $2.12 as a level being watched.\n\nMARKETS: I checked Kalshi's live cattle series (KXLCATTLEMON) via the Kalshi API - zero open markets returned; the only market page surfaced was an expired Apr 30, 2026 contract. Kalshi launched cattle event contracts in mid-April 2026 (AFBF). The harness title search found no Polymarket or Manifold candidate. No bo",
+   "reference_class": "8-trading-day changes in the nearby CME live cattle futures contract during 2025-2026, a high-price, high-headline regime (realized daily SD ~0.9-1.3%)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0598,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.265,
+   "seconds": 97.9,
+   "estimate": {
+    "percentiles": {
+     "10": 204.2,
+     "25": 208.4,
+     "50": 212.7,
+     "75": 216.6,
+     "90": 220.7
+    },
+    "p_below_lower": 0.008,
+    "p_above_upper": 0.004
+   },
+   "reasoning": "LEV26's last existing settlement is 212.95 (Fri Sep 4); Mon Sep 7 was Labor Day so no newer print exists, and exactly 8 sessions (Sep 8-11, 14-17) separate Now from the resolving session. Fed cattle futures are near-martingale over two weeks, so the status-quo outcome anchors the median. I shade ~0.25c below the last settle: the reconciled cash picture is weaker than one run assumed (5-area weighted average $217.91, so October's discount is ~5c not 9-10c), and Aug 1 on-feed inventory at 11.1M head (+2% y/y) means slaughter-ready supply into October delivery is adequate even though the 86M-head herd is a 75-year low. Bearish: the Sep 1 TRQ waiver on 300k t lean trimmings in monthly tranches, the Mexico feeder-import ramp, Choice cutout easing to ~376, DOJ packer probe, post-Labor-Day demand lull, midterm-season political pressure. Bullish: 210 defended as the 2026 low, RSI off 25, the Sep 3 +4.12 short-covering session, negative packer margins. These roughly offset. Cattle on Feed lands Sep 18, one day after the resolving session, so the window's largest scheduled catalyst cannot enter the print. Left tail slightly fatter because every shock in this regime has come from unscheduled policy headlines and all of them were bearish.",
+   "sources": [],
+   "reconciliation": "Disputes were mostly cosmetic. FACTUAL settled: (a) the cash basis - Run 1's $9-10 discount used the $222-223 southern spot quote while the 5-area weighted average was $217.91, so the true discount is ~5c and the convergence-pull argument is weaker than Run 1 priced; (b) supply - record-low placements/herd and Aug 1 on-feed +2% y/y are both true and describe different horizons, with the +2% governing October delivery and explaining the discount as rational; (c) Cattle on Feed releases Sep 18, after the resolving session, so it contributes positioning noise only - all three runs agreed and I confirm the third-Friday cadence is consistent with the Aug 21 prior release. FACTUAL unsettled: the CME daily limit value (6.75/10.75 vs 6.50 vs 8.50/12.75) could not be checked without web access; it is immaterial since any of those values requires a multi-session cascade to escape [190,235]. The August intermediate price path also could not be reconciled (different sampled dailies, one run splicing front-month across the Aug 31 roll) and does not matter, since all three independently confirm the Sep 1-4 LEV26 chain ending 212.95. JUDGMENT: I took Runs 2/3's ~16.5c width over Run 1's 18c, because 18c double-counts news volatility already contained in the realized 8-session windows, and because sqrt-t scaling of the 0.89% daily SD implies only 13.8c - 16.5 already sits above the calm-regime figure. I carried forward Run 2/3's reference class (8-session changes in nearby live cattle under the current regime) as I agree with it. Median: not an average of the runs - the reconciled basis finding removes some of Run 1's bullish support, but symmetrically implies the August break was fundamentally justified rather than an overshoot due to snap back, so the net stays flat-to-a-hair-below the last settle, which is where a near-martingale belongs. Market check on my own run: no web access, so I inherit rather than verify the three runs' consistent finding that no human market prices this (Kalshi ag contracts delisted ~June 2026; nothing on Polymarket/Manifold; the defunct Kalshi series would in any case have mismatched on date, instrument and resolution source).",
+   "disagreements": [
+    {
+     "claim": "LEV26 trades at a $9-10 discount to cash (Run 1) vs ~$5 (Runs 2/3)",
+     "kind": "factual",
+     "verdict": "Settled for ~$5: Run 1 benchmarked against the $222-223 southern spot quote, but the 5-area weighted average - the standard convergence benchmark - was $217.91 live on Sep 4. Weakens the bullish convergence argument."
+    },
+    {
+     "claim": "CME live cattle daily price limit is 6.75/10.75, 6.50, or 8.50/12.75 cents",
+     "kind": "factual",
+     "verdict": "Could not be settled without web access; the three runs cite different effective dates. Immaterial - under any value, leaving [190,235] in 8 sessions needs a multi-session limit cascade, so escape masses are unchanged."
+    },
+    {
+     "claim": "August intermediate settlement path (e.g. 217.22 vs 217.92 around Aug 19-21)",
+     "kind": "factual",
+     "verdict": "Unresolvable in detail - runs sampled different dailies and Run 3 spliced the LEQ26/LEV26 roll. Irrelevant: all three confirm the Sep 1-4 LEV26 chain ending at 212.95, the only anchor that enters the forecast."
+    },
+    {
+     "claim": "Cattle supply is historically tight (bullish) vs Aug 1 on-feed inventory +2% y/y (bearish)",
+     "kind": "factual",
+     "verdict": "Both true, different horizons. On-feed 11.1M (+2%) governs October delivery-period supply; the 86M-head herd low is a 2027 story. Net near-term tilt mildly bearish, consistent with October trading under cash."
+    },
+    {
+     "claim": "10-90 dispersion is 18 cents (Run 1) vs 16.6-16.7 (Runs 2/3)",
+     "kind": "judgment",
+     "verdict": "Took ~16.5. Run 1's 18c double-counts policy-headline volatility already embedded in the realized 8-session windows; sqrt-t scaling of the daily SD gives only 13.8c, so 16.5 already carries a regime premium."
+    },
+    {
+     "claim": "Whether the Sep 18 Cattle on Feed report can affect the Sep 17 settlement",
+     "kind": "factual",
+     "verdict": "Settled - it releases 3:00pm ET Friday Sep 18, after the resolving session. Only pre-report positioning noise can enter the print; the window's largest scheduled catalyst is excluded."
+    },
+    {
+     "claim": "Median should sit below the last settle of 212.95",
+     "kind": "judgment",
+     "verdict": "No real dispute (212.5/213.0/212.6). Held at 212.7 - a near-martingale with a small bearish shade for the persistent policy-driven downtrend and the absence of any scheduled offsetting catalyst in the window."
+    }
+   ],
+   "reference_class": "8-trading-session changes in the nearby or second-month CME live cattle futures contract, conditioned on the Aug-Sep 2026 policy-shock regime (n~4 overlapping windows plus 20 daily returns)"
+  }
+ ]
+}

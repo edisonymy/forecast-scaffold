@@ -1,0 +1,1293 @@
+"""State-machine tests for forecast_question's multi-run dossier path (v0.2.1+).
+
+run_agent is mocked with scripted responses, so these cover the loop logic the helper
+unit tests can't: dossier retry, research-run failure recovery, reasoning-run failure,
+suggested-angle rotation, named-scenario coherence flags, cross-model cycling, and which
+run's payload feeds the record.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import shlex
+import sys
+import time
+from pathlib import Path
+from typing import Any
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "bot"))
+
+import run_bot  # noqa: E402
+
+from forecast_scaffold.core import (  # noqa: E402
+    DEFAULTS,
+    Journal,
+    geo_mean_odds,
+    percentiles_to_cdf,
+    pool_mc,
+)
+
+
+def config_with_tiers(tiers: dict[str, Any]) -> dict[str, Any]:
+    """A full config (production always merges DEFAULTS) with the tiers under test."""
+    merged = json.loads(json.dumps(DEFAULTS))
+    merged["tiers"] = tiers
+    return merged
+
+
+POST = {"id": 1, "title": "Will X happen?"}
+QUESTION = {
+    "id": 1,
+    "type": "binary",
+    "title": "Will X happen?",
+    "resolution_criteria": "Resolves YES per source S.",
+    "scheduled_close_time": "2026-12-01T00:00:00Z",
+    "scheduled_resolve_time": "2026-12-15T00:00:00Z",
+}
+
+
+def fenced(payload: dict[str, Any]) -> str:
+    return f"```json\n{json.dumps(payload)}\n```"
+
+
+RESEARCH = {"probability": 0.30, "dossier": "- fact A (src, 2026)\n- fact B (src, 2026)",
+            "reasoning": "researched", "sources": ["https://example.com/a"],
+            "reference_class": "class R", "base_rate": 0.2}
+
+
+def reasoning_payload(p: float, **extra: Any) -> dict[str, Any]:
+    """A minimal valid reasoning-run payload (named_scenarios is contract-required)."""
+    return {"probability": p, "reasoning": "x", "sources": [],
+            "named_scenarios": [], **extra}
+
+
+class ScriptedAgent:
+    """Replaces run_bot.run_agent; returns scripted outputs and records every call."""
+
+    def __init__(self, outputs: list[str]) -> None:
+        self.outputs = list(outputs)
+        self.calls: list[dict[str, Any]] = []
+        self.final_spent: float | None = None
+
+    def __call__(self, cmd: str, prompt: str, system: str | None, timeout: int,
+                 provider: str = "subscription",
+                 strict_metering: bool = False) -> tuple[str, float, str]:
+        self.calls.append({"cmd": cmd, "prompt": prompt, "system": system})
+        if not self.outputs:
+            raise RuntimeError("script exhausted")
+        out = self.outputs.pop(0)
+        if out == "AGENT_FAILURE":
+            raise RuntimeError("agent failed (1): boom")
+        if out == "UNPRICED_VALID":
+            return fenced(RESEARCH), run_bot.UNKNOWN_METERED_COST, "claude-sonnet-5"
+        return out, 0.05, "claude-sonnet-5"
+
+
+class StubClient:
+    def community_prediction(self, question: dict[str, Any]) -> None:
+        # No crowd by default: pipeline tests assert raw pooled numbers; blend
+        # behavior gets its own client + tests (TestHarnessCrowdBlend).
+        return None
+
+
+class CrowdClient(StubClient):
+    def __init__(self, value: float = 0.28) -> None:
+        self.value = value
+
+    def community_prediction(self, question: dict[str, Any]) -> float:
+        return self.value
+
+
+class SubmitCaptureClient(StubClient):
+    """Live-mode stub: records what would hit the Metaculus API."""
+
+    def __init__(self, *, comment_error: bool = False) -> None:
+        self.submitted: list[tuple[str, Any]] = []
+        self.comments: list[tuple[int, str]] = []
+        self.comment_error = comment_error
+
+    def submit_binary(self, question_id: int, probability: float) -> None:
+        self.submitted.append(("binary", probability))
+
+    def submit_multiple_choice(self, question_id: int, by_option: dict[str, float]) -> None:
+        self.submitted.append(("mc", by_option))
+
+    def submit_cdf(self, question_id: int, cdf: list[float]) -> None:
+        self.submitted.append(("cdf", cdf))
+
+    def comment(self, post_id: int, text: str, *, private: bool = True) -> None:
+        if self.comment_error:
+            raise RuntimeError("comment API down")
+        self.comments.append((post_id, text))
+
+
+def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
+        config: dict[str, Any] | None = None, effort: str = "medium",
+        question: dict[str, Any] | None = None, budget: float = 0.0,
+        with_verify: bool = False, blind: bool = False, dry_run: bool = True,
+        client: Any = None, deadline: float | None = None,
+        comment: bool = False, provider: str = "subscription",
+        spent_usd: float = 0.0) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
+    agent = ScriptedAgent(outputs)
+    monkeypatch.setattr(run_bot, "run_agent", agent)
+    if not with_verify:  # most tests script only the forecast runs
+        monkeypatch.setattr(run_bot, "verify_dossier", lambda *a, **k: ("", 0.0))
+    args = argparse.Namespace(
+        blind=blind, effort=effort, provider=provider, timeout=60,
+        dry_run=dry_run, comment=comment, budget=budget,
+        agent_cmd=("claude -p --model claude-sonnet-5 --output-format json "
+                   "--allowed-tools Read,Glob,Grep,WebSearch,WebFetch"),
+    )
+    config = config or config_with_tiers(
+        {"medium": {"draws": 5, "searches": 5, "runs": 3}}
+    )
+    journal_path = tmp_path / "j.jsonl"
+    journal = Journal(str(journal_path))
+    spent = {"usd": spent_usd}
+    ok = run_bot.forecast_question(
+        client or StubClient(), POST, question or QUESTION, args, config, journal, spent,
+        deadline,
+    )
+    agent.final_spent = spent["usd"]
+    record = None
+    if journal_path.exists() and journal_path.read_text(encoding="utf-8").strip():
+        record = json.loads(journal_path.read_text(encoding="utf-8").splitlines()[-1])
+    return agent, record, ok
+
+
+class TestHappyPath:
+    def test_three_runs_pool_and_record(self, monkeypatch: pytest.MonkeyPatch,
+                                        tmp_path: Path) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20, reasoning="lens1")),
+            fenced(reasoning_payload(0.40, reasoning="lens2")),
+        ])
+        assert ok and record is not None
+        assert record["raw_draws"] == [0.30, 0.20, 0.40]
+        assert record["probability"] == pytest.approx(geo_mean_odds([0.3, 0.2, 0.4]))
+        assert record["aggregation"] == "geo_mean_odds(runs=3)"
+        # the RECORD payload is the researcher's: its sources/reasoning/base_rate survive
+        assert record["research"]["sources"] == ["https://example.com/a"]
+        # v0.4.8: the pooling disclosure LEADS (truncation-proof); the narrative follows
+        assert record["reasoning"].startswith("[pooled 3 independent runs")
+        assert "researched" in record["reasoning"]
+        assert record["base_rate"] == 0.2
+
+    def test_pooling_note_survives_a_narrative_longer_than_the_record_cap(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # The record head-truncates reasoning to 4000 chars; before v0.4.8 a long
+        # research narrative silently pushed the which-number-was-submitted disclosure
+        # off the end of the journal and the posted comment.
+        long_research = dict(RESEARCH, reasoning="researched " * 400)  # ~4400 chars
+        _, record, ok = run(monkeypatch, tmp_path, [
+            fenced(long_research),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert ok and record is not None
+        assert len(record["reasoning"]) <= 4000
+        assert "pooled 3 independent runs" in record["reasoning"]
+
+    def test_records_carry_dry_run_provenance(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # A --dry-run/--post record never reached the platform; the journal must say so
+        # (pre-0.4.8 records have dry_run=None and are assumed live).
+        _, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ])  # the harness default in these tests is dry_run=True
+        assert ok and record["dry_run"] is True
+        client = SubmitCaptureClient()
+        _, live_record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ], dry_run=False, client=client)
+        assert ok and live_record["dry_run"] is False and client.submitted
+
+    def test_research_run_asks_for_dossier_reasoning_runs_do_not(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, _, _ = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert "Dossier (multi-run mode" in (agent.calls[0]["system"] or "")
+        for call in agent.calls[1:]:
+            assert "Reasoning run (shared dossier)" in (call["system"] or "")
+            assert "Dossier (multi-run mode" not in (call["system"] or "")
+
+    def test_reasoning_runs_get_dossier_and_rotated_angles(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, _, _ = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ])
+        for call in agent.calls[1:]:
+            assert RESEARCH["dossier"] in call["prompt"]
+            # v0.3.0: web stays available for bounded gap-filling (instruction-scoped)
+            assert "Reasoning run (shared dossier)" in (call["system"] or "")
+            # v0.4.0: the angle is suggested, not assigned
+            assert "Suggested angle" in call["prompt"]
+        assert run_bot.LENSES[0].split(":")[0] in agent.calls[1]["prompt"]
+        assert run_bot.LENSES[1].split(":")[0] in agent.calls[2]["prompt"]
+
+    def test_wide_spread_pools_without_a_second_guess(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # v0.4.0: no arbiter — the pool is the aggregator even under wide disagreement;
+        # the spread stays auditable in raw_draws instead of being overridden by one
+        # extra context.
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20, reasoning="low view")),
+            fenced(reasoning_payload(0.50, reasoning="high view")),
+        ])
+        assert ok and record is not None
+        assert len(agent.calls) == 3  # research + 2 reasoning, nothing after the pool
+        assert record["probability"] == pytest.approx(geo_mean_odds([0.3, 0.2, 0.5]))
+        assert record["aggregation"] == "geo_mean_odds(runs=3)"
+        assert record["raw_draws"] == [0.30, 0.20, 0.50]
+
+
+class TestBotCrowdBoundary:
+    """v0.4.2: a bot token only ever sees other bots' aggregates — journal them as the
+    benchmark, never let them into the brief (measured: the injected sandbox bot-crowd
+    pulled a sighted run away from the real market consensus)."""
+
+    def test_sighted_brief_gets_note_not_bot_aggregate(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ], client=CrowdClient(0.5))
+        assert ok and record is not None
+        for call in agent.calls:  # the crowd value must reach no agent context
+            assert "Community prediction" not in call["prompt"]
+        assert "Crowd signals" in agent.calls[0]["prompt"]
+        assert record["crowd"]["value"] == 0.5  # benchmark still journaled
+        assert record["crowd"]["shown_to_agent"] is False
+        assert record["crowd"]["source"] == "metaculus bot aggregate"
+        # 0.4.3: shown_to_agent is pinned False, so the record itself must carry the
+        # mode or `score --by blind` mislabels every sighted tournament record.
+        assert record["blind"] is False
+
+    def test_blind_brief_has_neither_value_nor_note(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ], blind=True, client=CrowdClient(0.5))
+        assert ok and record is not None
+        for call in agent.calls:
+            assert "Community prediction" not in call["prompt"]
+            assert "Crowd signals" not in call["prompt"]
+        assert record["crowd"]["shown_to_agent"] is False
+        assert record["blind"] is True
+        # blind mode NEVER harness-blends: it measures own skill against the crowd
+        assert record["probability"] == pytest.approx(
+            geo_mean_odds([RESEARCH["probability"], 0.20, 0.40]))
+
+
+class TestHarnessNeverBlends:
+    """v0.4.11 (operator decision): the harness never blends, in any mode. Market
+    anchoring is the agent judgment call — contract equivalence across platforms
+    cannot be checked mechanically — and the sighted brief makes the market scan a
+    required, disclosed research step instead."""
+
+    def test_sighted_with_crowd_submits_the_raw_pool(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        _, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ], client=CrowdClient(0.28))
+        assert ok and record is not None
+        assert record["probability"] == pytest.approx(
+            geo_mean_odds([RESEARCH["probability"], 0.20, 0.40]))
+        assert "harness crowd-blend" not in record["reasoning"]
+        assert record["crowd"]["value"] == 0.28  # benchmark still journaled
+
+    def test_sighted_brief_demands_a_disclosed_market_scan(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, _, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ], client=CrowdClient(0.28))
+        assert ok
+        research_prompt = agent.calls[0]["prompt"]
+        assert "REQUIRED research step" in research_prompt
+        assert "judgment call" in research_prompt
+        assert "contract" in research_prompt  # equivalence check, not arithmetic
+
+
+class TestNamedScenarios:
+    def test_missing_named_scenarios_triggers_repair_retry(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        no_disclosure = {"probability": 0.20, "reasoning": "x", "sources": []}
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(no_disclosure),               # attempt 1: no named_scenarios
+            fenced(reasoning_payload(0.20)),     # attempt 2 (repair)
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert ok and record is not None
+        assert 'must include "named_scenarios"' in agent.calls[2]["prompt"]
+        assert record["raw_draws"] == [0.30, 0.20, 0.40]
+
+    def test_incoherent_scenario_mass_is_flagged_never_overridden(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # The audited tail failure (issue #10): p=0.03 while the run's own pathways to
+        # YES total 0.14. The harness flags the arithmetic; the number is untouched.
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.03, named_scenarios=[
+                {"scenario": "named pathway to YES", "p": 0.14}])),
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert ok and record is not None
+        assert record["probability"] == pytest.approx(geo_mean_odds([0.3, 0.03, 0.4]))
+        assert "scenario-coherence" in record["reasoning"]
+        assert "0.14" in record["reasoning"]
+
+    def test_coherent_disclosure_is_not_flagged(self, monkeypatch: pytest.MonkeyPatch,
+                                                tmp_path: Path) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.30, named_scenarios=[
+                {"scenario": "plausible YES pathway", "p": 0.20}])),  # room 0.30 >= 0.20
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert ok and record is not None
+        assert "scenario-coherence" not in record["reasoning"]
+
+    def test_borderline_mass_within_slack_is_not_flagged(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # Live e2e (2026-07-06): 0.25 named vs 0.24 room got flagged — rounding noise.
+        # The 0.05 slack keeps the flag for real violations only.
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.76, named_scenarios=[
+                {"scenario": "NO pathway", "p": 0.25}])),  # room 0.24, within slack
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert ok and record is not None
+        assert "scenario-coherence" not in record["reasoning"]
+
+
+class TestFailureRecovery:
+    def test_missing_dossier_triggers_repair_retry(self, monkeypatch: pytest.MonkeyPatch,
+                                                   tmp_path: Path) -> None:
+        no_dossier = {k: v for k, v in RESEARCH.items() if k != "dossier"}
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(no_dossier),          # attempt 1: valid payload but no dossier
+            fenced(RESEARCH),            # attempt 2 (repair): includes dossier
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert ok and record is not None
+        assert 'requires a non-empty "dossier"' in agent.calls[1]["prompt"]
+        assert record["raw_draws"] == [0.30, 0.20, 0.40]
+
+    def test_research_failure_consumes_a_run_then_recovers(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # run 1 fails both attempts -> iteration 2 retries the FULL run -> 1 reasoning run left
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            "AGENT_FAILURE", "AGENT_FAILURE",   # research run, both attempts
+            fenced(RESEARCH),                    # second iteration: research succeeds
+            fenced(reasoning_payload(0.20)),
+        ])
+        assert ok and record is not None
+        assert record["raw_draws"] == [0.30, 0.20]
+        assert record["aggregation"] == "geo_mean_odds(runs=2)"
+
+    def test_all_research_attempts_fail_skips_question(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, ["AGENT_FAILURE"] * 6)
+        assert not ok and record is None
+
+    def test_reasoning_failure_shrinks_pool(self, monkeypatch: pytest.MonkeyPatch,
+                                            tmp_path: Path) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            "AGENT_FAILURE", "AGENT_FAILURE",   # reasoning run 1 dies
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert ok and record is not None
+        assert record["raw_draws"] == [0.30, 0.40]
+
+    def test_lens_advances_past_failed_slot(self, monkeypatch: pytest.MonkeyPatch,
+                                            tmp_path: Path) -> None:
+        # The lens index must come from an attempt counter, not the success count —
+        # otherwise one transient failure silently hands the SAME lens (and model) to
+        # the next slot and collapses the ensemble's diversity (red-team finding #1).
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            "AGENT_FAILURE", "AGENT_FAILURE",   # slot for LENSES[0] dies
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert ok
+        lens0, lens1 = (lens.split(":")[0] for lens in run_bot.LENSES[:2])
+        assert lens0 in agent.calls[1]["prompt"]          # failed slot used lens 0
+        assert lens1 in agent.calls[3]["prompt"]          # next slot ADVANCED to lens 1
+        assert lens0 not in agent.calls[3]["prompt"]
+
+    def test_budget_stops_new_run_slots(self, monkeypatch: pytest.MonkeyPatch,
+                                        tmp_path: Path) -> None:
+        # Each scripted call costs $0.05; a $0.04 budget is exhausted by the research
+        # run alone, so no reasoning slots may start — but the question still records.
+        agent, record, ok = run(monkeypatch, tmp_path, [fenced(RESEARCH)], budget=0.04)
+        assert ok and record is not None
+        assert len(agent.calls) == 1
+        assert record.get("raw_draws") is None
+
+    def test_openrouter_cap_decreases_across_every_agent_stage(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # Start with $0.20 already spent. Triage, an invalid research attempt, its repair,
+        # dossier verification, and a reasoning run each report $0.05. Every new process
+        # must get only the then-current invocation remainder.
+        invalid = dict(RESEARCH, probability=7.3)
+        agent, record, ok = run(
+            monkeypatch,
+            tmp_path,
+            [
+                fenced({"tier": "medium"}),
+                fenced(invalid),
+                fenced(RESEARCH),
+                fenced({"verification": []}),
+                fenced(reasoning_payload(0.40)),
+            ],
+            config=config_with_tiers(
+                {"medium": {"draws": 5, "searches": 5, "runs": 2}}
+            ),
+            effort="auto",
+            budget=1.0,
+            with_verify=True,
+            provider="openrouter",
+            spent_usd=0.20,
+        )
+        assert ok and record is not None
+        assert len(agent.calls) == 5
+        caps = []
+        for call in agent.calls:
+            tokens = shlex.split(call["cmd"])
+            assert tokens.count("--max-budget-usd") == 1
+            caps.append(float(tokens[tokens.index("--max-budget-usd") + 1]))
+        assert caps == pytest.approx([0.80, 0.75, 0.70, 0.65, 0.60])
+
+    def test_subscription_never_gets_metered_cli_cap(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(
+            monkeypatch,
+            tmp_path,
+            [fenced({"probability": 0.4, "reasoning": "x", "sources": []})],
+            config=config_with_tiers(
+                {"low": {"draws": 1, "searches": 1, "runs": 1}}
+            ),
+            effort="low",
+            budget=1.0,
+        )
+        assert ok and record is not None
+        assert "--max-budget-usd" not in shlex.split(agent.calls[0]["cmd"])
+
+    def test_openrouter_unknown_cost_failure_stops_all_later_calls(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(
+            monkeypatch,
+            tmp_path,
+            ["AGENT_FAILURE", fenced(RESEARCH)],
+            budget=1.0,
+            provider="openrouter",
+        )
+        assert not ok and record is None
+        assert len(agent.calls) == 1
+        assert agent.final_spent == pytest.approx(1.0)
+
+    def test_openrouter_unpriced_success_records_once_and_closes_budget(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(
+            monkeypatch,
+            tmp_path,
+            ["UNPRICED_VALID", fenced(reasoning_payload(0.40))],
+            budget=1.0,
+            provider="openrouter",
+        )
+        assert ok and record is not None
+        assert len(agent.calls) == 1
+        assert agent.final_spent == pytest.approx(1.0)
+        assert record["cost_usd"] == pytest.approx(1.0)
+
+    def test_missing_evidence_reaches_the_record(self, monkeypatch: pytest.MonkeyPatch,
+                                                 tmp_path: Path) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(
+                0.20, missing_evidence="no polling later than March")),
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert ok and record is not None
+        assert record["research"]["missing_evidence"] == ["no polling later than March"]
+
+    def test_pooled_reasoning_carries_the_pooling_note(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # Without the note the journal (and any posted comment) narrates the research
+        # run's own number, not the pooled one that was actually submitted.
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ])
+        assert ok and record is not None
+        assert "pooled 3 independent runs" in record["reasoning"]
+
+
+class TestShapes:
+    def test_single_run_tier_has_no_dossier_section(self, monkeypatch: pytest.MonkeyPatch,
+                                                    tmp_path: Path) -> None:
+        agent, record, ok = run(
+            monkeypatch, tmp_path,
+            [fenced({"probability": 0.30, "reasoning": "x", "sources": []})],
+            config=config_with_tiers({"low": {"draws": 1, "searches": 1, "runs": 1}}),
+            effort="low",
+        )
+        assert ok and record is not None
+        assert "Dossier (multi-run mode" not in (agent.calls[0]["system"] or "")
+        assert record.get("raw_draws") is None
+        assert record.get("aggregation") is None
+
+    def test_multiple_choice_follows_the_tier_like_every_other_type(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # v0.4.28: the old `n_runs = 1 if qtype != "binary"` rule is gone — a medium-tier MC
+        # question runs the tier's 3 runs and asks its research run for a dossier, exactly
+        # like a binary. What each run must EMIT is type-specific (reasoning_section).
+        mc_question = {**QUESTION, "type": "multiple_choice", "options": ["A", "B"]}
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced({"probabilities": {"A": 0.6, "B": 0.4}, "reasoning": "x", "sources": [],
+                    "dossier": "- fact A (src, 2026)"}),
+            fenced({"probabilities": {"A": 0.5, "B": 0.5}, "reasoning": "x", "sources": []}),
+            fenced({"probabilities": {"A": 0.7, "B": 0.3}, "reasoning": "x", "sources": []}),
+        ], question=mc_question)
+        assert ok and record is not None
+        assert len(agent.calls) == 3
+        assert "Dossier (multi-run mode" in (agent.calls[0]["system"] or "")
+        reasoning_system = agent.calls[1]["system"] or ""
+        assert "produce ONE set of option probabilities" in reasoning_system
+        # the binary-only named-scenario contract is not imposed on an MC reasoning run
+        assert "Additionally include \"named_scenarios\"" not in reasoning_system
+
+    def test_verification_verdicts_reach_reasoning_prompts(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # O1: the CoVe premise check runs once after the dossier and its verdicts are
+        # appended so every reasoning run sees them.
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced({"verification": [
+                {"premise": "seat math", "verdict": "confirmed",
+                 "note": "matches official count", "source": "https://example.com/v"},
+            ]}),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ], with_verify=True)
+        assert ok and record is not None
+        assert "Verify every other premise with ONE targeted web search" in (
+            agent.calls[1]["prompt"]
+        )
+        # v0.4.4: the verifier gets the contract so it can text-check the dossier's
+        # assumed event window against the criteria (the q44378 shrunk-window miss).
+        assert "## The contract (for the event-window check only)" in (
+            agent.calls[1]["prompt"]
+        )
+        for call in agent.calls[2:]:
+            assert "Verification (independent premise check" in call["prompt"]
+            assert "CONFIRMED" in call["prompt"]
+
+    def test_fast_proxies_recorded_for_slow_questions(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        slow_q = {**QUESTION, "scheduled_resolve_time": "2027-09-01T00:00:00Z"}
+        research = {**RESEARCH, "fast_proxies": [
+            {"question": "Will the interim report be published by August 15?",
+             "criterion": "per agency site", "resolve_by": "2026-08-20",
+             "probability": 0.7},
+        ]}
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(research),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ], question=slow_q)
+        assert ok and record is not None
+        assert "Fast proxies (slow question)" in (agent.calls[0]["system"] or "")
+        journal_lines = [json.loads(line) for line in
+                         (tmp_path / "j.jsonl").read_text(encoding="utf-8").splitlines()]
+        assert len(journal_lines) == 2
+        proxy = journal_lines[-1]
+        # the parent record is first; the proxy links back to it
+        assert proxy["fast_proxy"] is True
+        assert proxy["parent_id"] == journal_lines[0]["id"]
+        assert proxy["probability"] == 0.7
+
+    def test_run_models_cycle_across_reasoning_runs(self, monkeypatch: pytest.MonkeyPatch,
+                                                    tmp_path: Path) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ], config=config_with_tiers({"medium": {
+            "draws": 5, "searches": 5, "runs": 3,
+            "run_models": ["claude-opus-4-8", "claude-haiku-4-5"],
+        }}))
+        assert ok
+        assert "--model claude-opus-4-8" in agent.calls[1]["cmd"]
+        assert "--model claude-haiku-4-5" in agent.calls[2]["cmd"]
+
+    def test_collapsed_ensemble_is_marked_single_run(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # Both reasoning slots die -> the lone research number is submitted. Right call,
+        # but the journal must say the intended ensemble never happened, or scoring
+        # credits "the ensemble" with a forecast no ensemble made.
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            "AGENT_FAILURE", "AGENT_FAILURE",
+            "AGENT_FAILURE", "AGENT_FAILURE",
+        ])
+        assert ok and record is not None
+        assert record["probability"] == 0.30
+        assert record["aggregation"] == "single_run(of 3 intended)"
+
+
+class TestNonBinaryPooling:
+    """v0.4.28: continuous and MC questions pool independent runs the way binaries always
+    have, and journal the single-run counterfactual (`percentiles_run1` /
+    `probabilities_run1` — the research run's own answer, which is exactly what the old
+    forced-single-run harness would have submitted) so the change is scored PAIRED at
+    resolution by bench/analysis/pooled_vs_single.py."""
+
+    NUMERIC_Q = {
+        **QUESTION, "type": "numeric",
+        "scaling": {"range_min": 0.0, "range_max": 200.0, "zero_point": None},
+        "open_lower_bound": False, "open_upper_bound": True,
+    }
+    LOG_Q = {
+        **QUESTION, "type": "numeric",
+        "scaling": {"range_min": 10.0, "range_max": 10000.0, "zero_point": 0.0},
+        "open_lower_bound": False, "open_upper_bound": False,
+    }
+    MC_Q = {**QUESTION, "type": "multiple_choice", "options": ["A", "B", "C"]}
+    KEYS = ("10", "25", "50", "75", "90")
+
+    @classmethod
+    def pcts(cls, *values: float) -> dict[str, float]:
+        return dict(zip(cls.KEYS, [float(v) for v in values], strict=True))
+
+    @classmethod
+    def numeric(cls, *values: float, **extra: Any) -> dict[str, Any]:
+        return {"percentiles": cls.pcts(*values), "reasoning": "x", "sources": [], **extra}
+
+    def test_three_numeric_runs_pool_by_quantile_mean(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(self.numeric(10, 20, 30, 40, 50, dossier="- fact A (src, 2026)",
+                                p_above_upper=0.1, reasoning="researched")),
+            fenced(self.numeric(20, 30, 40, 50, 60)),
+            fenced(self.numeric(30, 40, 50, 60, 70, p_above_upper=0.2)),
+        ], question=self.NUMERIC_Q)
+        assert ok and record is not None
+        assert len(agent.calls) == 3
+        # per-key arithmetic mean of the three runs
+        assert record["percentiles"] == self.pcts(20, 30, 40, 50, 60)
+        # the single-run counterfactual is the RESEARCH run's own set, journaled verbatim
+        assert record["percentiles_run1"] == self.pcts(10, 20, 30, 40, 50)
+        assert record["run_percentiles"] == [
+            self.pcts(10, 20, 30, 40, 50),
+            self.pcts(20, 30, 40, 50, 60),
+            self.pcts(30, 40, 50, 60, 70),
+        ]
+        # escape mass averages over the runs that DECLARED one (silence is not a zero)
+        assert record["run_escapes"] == [[None, 0.1], [None, None], [None, 0.2]]
+        assert record["p_above_upper"] == pytest.approx(0.15)
+        assert record["aggregation"] == "quantile_mean(runs=3)"
+        assert record["reasoning"].splitlines()[0] == (
+            "[pooled 3 independent runs: medians 30/40/50 -> 40; the narrative below is "
+            "the research run's own view]"
+        )
+        assert record["reasoning"].splitlines()[1] == "researched"
+        # the CDF that would be submitted is built from the POOLED percentiles
+        assert record["submitted_cdf"] == percentiles_to_cdf(
+            self.pcts(20, 30, 40, 50, 60), 0.0, 200.0,
+            lower_open=False, upper_open=True, zero_point=None, cdf_size=201,
+            p_below_lower=None, p_above_upper=record["p_above_upper"],
+            interpolation="pchip",
+        )
+
+    def test_log_scaled_question_pools_in_log_space(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(self.numeric(20, 50, 100, 200, 500, dossier="- fact A (src, 2026)")),
+            fenced(self.numeric(200, 500, 1000, 2000, 5000)),
+            "AGENT_FAILURE", "AGENT_FAILURE",
+        ], question=self.LOG_Q)
+        assert ok and record is not None
+        # geometric, not arithmetic: sqrt(100 * 1000) = 316.2, not the linear mean 550
+        assert record["percentiles"]["50"] == pytest.approx(316.2277, rel=1e-4)
+        assert record["percentiles"]["10"] == pytest.approx(63.2455, rel=1e-4)
+        assert record["aggregation"] == "quantile_mean(runs=2)"
+        assert record["percentiles_run1"] == self.pcts(20, 50, 100, 200, 500)
+
+    def test_mc_runs_pool_by_geometric_mean(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        runs = [{"A": 0.6, "B": 0.3, "C": 0.1},
+                {"A": 0.5, "B": 0.3, "C": 0.2},
+                {"A": 0.7, "B": 0.2, "C": 0.1}]
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced({"probabilities": runs[0], "reasoning": "x", "sources": [],
+                    "dossier": "- fact A (src, 2026)"}),
+            fenced({"probabilities": runs[1], "reasoning": "x", "sources": []}),
+            fenced({"probabilities": runs[2], "reasoning": "x", "sources": []}),
+        ], question=self.MC_Q)
+        assert ok and record is not None
+        expected = pool_mc(runs)
+        assert record["probabilities"] == [pytest.approx(expected[o]) for o in "ABC"]
+        assert sum(record["probabilities"]) == pytest.approx(1.0)
+        assert record["probabilities_run1"] == runs[0]
+        assert record["run_probabilities"] == runs
+        assert record["aggregation"] == "geo_mean_mc(runs=3)"
+        assert record["reasoning"].startswith("[pooled 3 independent runs: 'A' ")
+
+    def test_a_run_that_fails_validation_is_dropped_from_the_pool(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # The middle run answers with non-monotone percentiles on BOTH attempts: it never
+        # enters the pool, and the other two pool without it (never a failed question).
+        broken = {"percentiles": {"10": 90.0, "25": 20.0, "50": 30.0, "75": 40.0,
+                                  "90": 50.0}, "reasoning": "x", "sources": []}
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(self.numeric(10, 20, 30, 40, 50, dossier="- fact A (src, 2026)")),
+            fenced(broken), fenced(broken),
+            fenced(self.numeric(30, 40, 50, 60, 70)),
+        ], question=self.NUMERIC_Q)
+        assert ok and record is not None
+        assert len(record["run_percentiles"]) == 2
+        assert record["percentiles"] == self.pcts(20, 30, 40, 50, 60)
+        assert record["aggregation"] == "quantile_mean(runs=2)"
+
+    def test_collapsed_continuous_ensemble_is_marked_single_run(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(self.numeric(10, 20, 30, 40, 50, dossier="- fact A (src, 2026)")),
+            "AGENT_FAILURE", "AGENT_FAILURE", "AGENT_FAILURE", "AGENT_FAILURE",
+        ], question=self.NUMERIC_Q)
+        assert ok and record is not None
+        assert record["aggregation"] == "single_run(of 3 intended)"
+        # nothing was pooled, so no pooling provenance is journaled at all
+        assert record["percentiles"] == self.pcts(10, 20, 30, 40, 50)
+        assert "percentiles_run1" not in record
+        assert "run_percentiles" not in record and "run_escapes" not in record
+
+    def test_single_run_tier_journals_no_pooling_fields(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        _, record, ok = run(
+            monkeypatch, tmp_path, [fenced(self.numeric(10, 20, 30, 40, 50))],
+            config=config_with_tiers({"low": {"draws": 1, "searches": 1, "runs": 1}}),
+            effort="low", question=self.NUMERIC_Q,
+        )
+        assert ok and record is not None
+        assert record.get("aggregation") is None
+        assert "percentiles_run1" not in record and "run_percentiles" not in record
+
+
+class TestAngleModeNonBinary:
+    """Angle mode (independent full-research runs, one per angle) is no longer binary-only:
+    production runs Angle P replicates on every type and pools them with the same
+    functions the dossier path uses."""
+
+    ANGLES = config_with_tiers(
+        {"medium": {"draws": 5, "searches": 5, "runs": 3, "run_angles": ["P", "P", "P"]}}
+    )
+
+    def test_numeric_angle_runs_pool_and_name_their_angles(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        numeric = TestNonBinaryPooling.numeric
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(numeric(10, 20, 30, 40, 50, reasoning="angle P one")),
+            fenced(numeric(20, 30, 40, 50, 60)),
+            fenced(numeric(30, 40, 50, 60, 70)),
+        ], config=self.ANGLES, question=TestNonBinaryPooling.NUMERIC_Q)
+        assert ok and record is not None
+        assert len(agent.calls) == 3
+        # every angle run is a full-research run: no dossier is asked of any of them
+        assert all("Dossier (multi-run mode" not in (c["system"] or "") for c in agent.calls)
+        assert all("## Angle P" in (c["system"] or "") for c in agent.calls)
+        # the multi-run tier line asks for the shape THIS type can actually produce
+        assert "produce ONE final percentile set" in (agent.calls[0]["system"] or "")
+        assert record["percentiles"] == TestNonBinaryPooling.pcts(20, 30, 40, 50, 60)
+        assert record["percentiles_run1"] == TestNonBinaryPooling.pcts(10, 20, 30, 40, 50)
+        assert record["aggregation"] == "quantile_mean(angles=P,P,P)"
+        assert record["reasoning"].splitlines()[0] == (
+            "[pooled 3 independent research runs (angles P,P,P): medians 30/40/50 -> 40; "
+            "the narrative below is the P-angle run's own view]"
+        )
+
+    def test_mc_angle_runs_pool_by_option(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        runs = [{"A": 0.6, "B": 0.3, "C": 0.1},
+                {"A": 0.5, "B": 0.3, "C": 0.2},
+                {"A": 0.7, "B": 0.2, "C": 0.1}]
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced({"probabilities": r, "reasoning": "x", "sources": []}) for r in runs
+        ], config=self.ANGLES, question=TestNonBinaryPooling.MC_Q)
+        assert ok and record is not None
+        expected = pool_mc(runs)
+        assert record["probabilities"] == [pytest.approx(expected[o]) for o in "ABC"]
+        assert record["probabilities_run1"] == runs[0]
+        assert record["aggregation"] == "geo_mean_mc(angles=P,P,P)"
+
+    def test_angle_research_runs_get_the_reference_class_floor(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # min_sources > 0 makes an angle run a gated research run on non-binary types —
+        # the announced contract must match the mechanical gate in one_run.
+        config = config_with_tiers({"medium": {
+            "draws": 5, "searches": 5, "runs": 3, "min_sources": 1,
+            "run_angles": ["P", "P"],
+        }})
+        payload = {
+            "percentiles": TestNonBinaryPooling.pcts(10, 20, 30, 40, 50),
+            "reasoning": "x", "sources": ["https://example.com/a"],
+            "reference_class": "class R", "base_rate": 30.0,
+            "dispersion_90_10": 40.0, "dispersion_basis": "SD 15.6 x 2.56",
+        }
+        agent, record, ok = run(monkeypatch, tmp_path, [fenced(payload), fenced(payload)],
+                                config=config, question=TestNonBinaryPooling.NUMERIC_Q)
+        assert ok and record is not None
+        assert "Reference-class floor" in (agent.calls[0]["system"] or "")
+        assert "Research floor" in (agent.calls[0]["system"] or "")
+        # the dispersion fields journaled stay the research (first) run's own
+        assert record["dispersion_90_10"] == 40.0
+        assert record["aggregation"] == "quantile_mean(angles=P,P)"
+
+
+class TestLiveSubmission:
+    """dry_run=False — the branch the tournament actually exercises (the review fleet
+    found it had never once run under test). The invariant throughout: the public
+    preregistration journal records exactly the numbers the platform received."""
+
+    LOW = {"low": {"draws": 1, "searches": 1, "runs": 1}}
+
+    def test_binary_journal_records_the_submitted_clamped_number(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        client = SubmitCaptureClient()
+        agent, record, ok = run(
+            monkeypatch, tmp_path,
+            [fenced({"probability": 0.998, "reasoning": "x", "sources": []})],
+            config=config_with_tiers(self.LOW), effort="low",
+            dry_run=False, client=client,
+        )
+        assert ok
+        kind, submitted = client.submitted[0]
+        assert kind == "binary"
+        assert submitted == pytest.approx(0.99)
+        assert record is not None and record["probability"] == pytest.approx(0.99)
+
+    def test_mc_normalized_before_the_record_and_identical_at_submit(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        mc_question = {**QUESTION, "type": "multiple_choice", "options": ["A", "B"]}
+        client = SubmitCaptureClient()
+        agent, record, ok = run(
+            monkeypatch, tmp_path,
+            [fenced({"probabilities": {"A": 0.999, "B": 0.0},
+                     "reasoning": "x", "sources": []})],
+            config=config_with_tiers(self.LOW), effort="low",
+            question=mc_question, dry_run=False, client=client,
+        )
+        assert ok
+        kind, submitted = client.submitted[0]
+        assert kind == "mc"
+        assert submitted["B"] == pytest.approx(0.001)  # floored into the API band
+        assert sum(submitted.values()) == pytest.approx(1.0)
+        assert record is not None
+        assert record["probabilities"] == [pytest.approx(v)
+                                           for v in (submitted["A"], submitted["B"])]
+
+    def test_discrete_submits_a_cdf_sized_by_outcome_count(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        question = {
+            **QUESTION, "type": "discrete", "inbound_outcome_count": 100,
+            "scaling": {"range_min": 0.0, "range_max": 100.0, "zero_point": None},
+            "open_lower_bound": False, "open_upper_bound": False,
+        }
+        client = SubmitCaptureClient()
+        agent, record, ok = run(
+            monkeypatch, tmp_path,
+            [fenced({"percentiles": {"10": 5.0, "25": 20.0, "50": 50.0,
+                                     "75": 75.0, "90": 95.0},
+                     "reasoning": "x", "sources": []})],
+            config=config_with_tiers(self.LOW), effort="low",
+            question=question, dry_run=False, client=client,
+        )
+        assert ok
+        kind, cdf = client.submitted[0]
+        assert kind == "cdf"
+        assert len(cdf) == 101  # inbound_outcome_count + 1
+        assert all(b >= a for a, b in zip(cdf, cdf[1:], strict=False))
+
+    def test_continuous_record_captures_the_submitted_cdf_and_scaling(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # A percentiles-only journal row can't be rebuilt into the object Metaculus scored,
+        # so the record must carry the exact CDF submitted AND the scaling it was built
+        # against (v0.4.12). The journaled CDF is byte-identical to what the platform got.
+        question = {
+            **QUESTION, "type": "numeric",
+            "scaling": {"range_min": 0.0, "range_max": 100.0, "zero_point": None},
+            "open_lower_bound": False, "open_upper_bound": True,
+        }
+        client = SubmitCaptureClient()
+        agent, record, ok = run(
+            monkeypatch, tmp_path,
+            [fenced({"percentiles": {"10": 5.0, "25": 20.0, "50": 50.0,
+                                     "75": 75.0, "90": 95.0},
+                     "reasoning": "x", "sources": []})],
+            config=config_with_tiers(self.LOW), effort="low",
+            question=question, dry_run=False, client=client,
+        )
+        assert ok and record is not None
+        kind, cdf = client.submitted[0]
+        assert kind == "cdf"
+        assert record["submitted_cdf"] == cdf
+        assert len(record["submitted_cdf"]) == 201
+        assert record["scaling"] == {
+            "range_min": 0.0, "range_max": 100.0, "zero_point": None,
+            "lower_open": False, "upper_open": True, "cdf_size": 201,
+            # v0.4.25: the interpolation that shipped is journaled so post-hoc rebuilds
+            # reconstruct the exact submitted object (pre-0.4.25 rows lack the key = linear).
+            "interpolation": "pchip",
+        }
+
+    def test_binary_record_has_no_cdf_or_scaling(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # The provenance fields are continuous-only — absent (dropped as None) on a binary.
+        client = SubmitCaptureClient()
+        _, record, ok = run(
+            monkeypatch, tmp_path,
+            [fenced({"probability": 0.4, "reasoning": "x", "sources": []})],
+            config=config_with_tiers(self.LOW), effort="low",
+            dry_run=False, client=client,
+        )
+        assert ok and record is not None
+        assert "submitted_cdf" not in record
+        assert "scaling" not in record
+
+    def test_comment_failure_never_fails_the_question(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        client = SubmitCaptureClient(comment_error=True)
+        agent, record, ok = run(
+            monkeypatch, tmp_path,
+            [fenced({"probability": 0.4, "reasoning": "why", "sources": []})],
+            config=config_with_tiers(self.LOW), effort="low",
+            dry_run=False, client=client, comment=True,
+        )
+        assert ok  # forecast submitted; the comment is cosmetic
+        assert client.submitted and client.comments == []
+
+
+class TestFailureLedger:
+    """Per-question backoff for the hourly cron: question-content failures count,
+    infra failures (auth outage, session limit) must not poison the ledger."""
+
+    LOW = {"low": {"draws": 1, "searches": 1, "runs": 1}}
+
+    def test_invalid_payload_after_agent_reply_is_ledgered(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        bad = fenced({"probability": 7.3, "reasoning": "x", "sources": []})
+        agent, record, ok = run(monkeypatch, tmp_path, [bad, bad],
+                                config=config_with_tiers(self.LOW), effort="low")
+        assert not ok and record is None
+        entries = [json.loads(line) for line in
+                   (tmp_path / "failures.jsonl").read_text(encoding="utf-8").splitlines()]
+        assert entries[0]["question_id"] == QUESTION["id"]
+        assert "probability" in entries[0]["error"]
+
+    def test_infra_failure_is_not_ledgered(self, monkeypatch: pytest.MonkeyPatch,
+                                           tmp_path: Path) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, ["AGENT_FAILURE"] * 6)
+        assert not ok
+        assert not (tmp_path / "failures.jsonl").exists()
+
+    def test_deadline_already_passed_skips_without_calls_or_ledger(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [fenced(RESEARCH)],
+                                deadline=time.monotonic() - 1)
+        assert not ok and record is None
+        assert agent.calls == []  # the clock ran out — no agent spend
+        assert not (tmp_path / "failures.jsonl").exists()
+
+    def test_recent_failure_counts_respects_window_and_garbage(self, tmp_path: Path) -> None:
+        path = tmp_path / "failures.jsonl"
+        for _ in range(3):
+            run_bot.record_failure(path, 42, "boom")
+        with path.open("a", encoding="utf-8") as fh:
+            fh.write('{"question_id": 42, "at": "2020-01-01T00:00:00+00:00"}\n')
+            fh.write("not json at all\n")
+            fh.write('{"at": "2026-07-06T00:00:00+00:00"}\n')  # no id -> ignored
+        counts = run_bot.recent_failure_counts(path)
+        assert counts == {42: 3}  # the 2020 entry aged out; garbage ignored
+
+
+class ListClient:
+    """main()-level stub: a fixed post list, no already-forecasted state."""
+
+    def __init__(self, posts: list[dict[str, Any]]) -> None:
+        self._posts = posts
+
+    def open_posts(self, tournament: str, *, limit: int = 100) -> list[dict[str, Any]]:
+        return self._posts
+
+    def post_detail(self, post_id: int) -> dict[str, Any]:
+        return next(p for p in self._posts if p.get("id") == post_id)
+
+    questions_of = staticmethod(run_bot.MetaculusClient.questions_of)
+    already_forecasted = staticmethod(run_bot.MetaculusClient.already_forecasted)
+    my_forecast_age_hours = staticmethod(run_bot.MetaculusClient.my_forecast_age_hours)
+
+    def community_prediction(self, question: dict[str, Any]) -> None:
+        return None
+
+
+def run_main(monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+             posts: list[dict[str, Any]],
+             extra: list[str] | None = None) -> tuple[int, list[Any]]:
+    forecasted: list[Any] = []
+    monkeypatch.setattr(run_bot, "MetaculusClient", lambda: ListClient(posts))
+
+    def fake_forecast(client: Any, post: Any, question: Any, args: Any, config: Any,
+                      journal: Any, spent: Any = None, deadline: Any = None) -> bool:
+        forecasted.append(question.get("id"))
+        return True
+
+    monkeypatch.setattr(run_bot, "forecast_question", fake_forecast)
+    code = run_bot.main(["--tournament", "t", "--dry-run",
+                         "--journal", str(tmp_path / "j.jsonl")] + (extra or []))
+    return code, forecasted
+
+
+class TestRefreshGate:
+    """--refresh-hours (v0.4.9): standing forecasts re-forecast only past a minimum age,
+    and always AFTER never-forecasted questions — fresh coverage beats churn, and the
+    10-minute cron must not re-spend on the same question every tick."""
+
+    @staticmethod
+    def posts(stale_age_h: float) -> list[dict[str, Any]]:
+        stale_stamp = time.time() - stale_age_h * 3600
+        return [
+            # standing forecast, closes SOONEST — would win on close time alone
+            {"id": 1, "scheduled_close_time": "2026-08-01T00:00:00Z",
+             "question": {"id": 11, "type": "binary", "title": "stale", "status": "open",
+                          "scheduled_close_time": "2026-08-01T00:00:00Z",
+                          "my_forecasts": {"latest": {"start_time": stale_stamp}}}},
+            # never forecast, closes later — must still be forecast FIRST
+            {"id": 2, "scheduled_close_time": "2026-09-01T00:00:00Z",
+             "question": {"id": 12, "type": "binary", "title": "new", "status": "open",
+                          "scheduled_close_time": "2026-09-01T00:00:00Z"}},
+        ]
+
+    def test_default_never_reforecasts(self, monkeypatch: pytest.MonkeyPatch,
+                                       tmp_path: Path) -> None:
+        code, forecasted = run_main(monkeypatch, tmp_path, self.posts(stale_age_h=100))
+        assert code == 0 and forecasted == [12]
+
+    def test_fresh_forecast_is_not_stale_enough(self, monkeypatch: pytest.MonkeyPatch,
+                                                tmp_path: Path) -> None:
+        code, forecasted = run_main(monkeypatch, tmp_path, self.posts(stale_age_h=2),
+                                    extra=["--refresh-hours", "24"])
+        assert code == 0 and forecasted == [12]
+
+    def test_stale_forecast_refreshes_after_new_questions(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        code, forecasted = run_main(monkeypatch, tmp_path, self.posts(stale_age_h=100),
+                                    extra=["--refresh-hours", "24"])
+        assert code == 0
+        # the stale question closes sooner, but the never-forecasted one still leads
+        assert forecasted == [12, 11]
+
+
+class TestMainPrefilters:
+    """Structurally unforecastable questions must be skipped BEFORE any agent spend —
+    and as skips, not failures: a nonzero exit re-runs the batch on the paid fallback."""
+
+    def test_unsupported_closed_and_unbounded_are_skipped_free(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        posts = [
+            {"id": 1, "question": {"id": 11, "type": "binary", "title": "ok",
+                                   "status": "open"}},
+            {"id": 2, "question": {"id": 12, "type": "conditional", "title": "odd type"}},
+            {"id": 3, "question": {"id": 13, "type": "binary", "title": "closed sub-q",
+                                   "status": "closed"}},
+            {"id": 4, "question": {"id": 14, "type": "numeric", "title": "no bounds",
+                                   "scaling": {}}},
+        ]
+        code, forecasted = run_main(monkeypatch, tmp_path, posts)
+        assert code == 0
+        assert forecasted == [11]
+
+    def test_post_backtests_a_closed_question_in_dry_run(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # --post targets one post via post_detail and bypasses the open-status /
+        # already-forecasted filters, so a CLOSED question (the q44378 backtest case) is
+        # forecast; it must force dry-run so the closed target is never submitted to.
+        posts = [{"id": 99, "question": {"id": 44378, "type": "binary",
+                                         "title": "closed backtest target",
+                                         "status": "closed"}}]
+        forecasted: list[Any] = []
+        seen_args: dict[str, Any] = {}
+        monkeypatch.setattr(run_bot, "MetaculusClient", lambda: ListClient(posts))
+
+        def fake_forecast(client, post, question, args, config, journal,
+                          spent=None, deadline=None):
+            forecasted.append(question.get("id"))
+            seen_args["dry_run"] = args.dry_run
+            return True
+
+        monkeypatch.setattr(run_bot, "forecast_question", fake_forecast)
+        code = run_bot.main(["--post", "99", "--journal", str(tmp_path / "j.jsonl")])
+        assert code == 0
+        assert forecasted == [44378]      # closed question forecast anyway
+        assert seen_args["dry_run"] is True  # never submits
+
+    def test_backoff_after_repeated_failures(self, monkeypatch: pytest.MonkeyPatch,
+                                             tmp_path: Path) -> None:
+        ledger = tmp_path / "failures.jsonl"
+        for _ in range(run_bot.MAX_QUESTION_FAILURES):
+            run_bot.record_failure(ledger, 11, "still failing")
+        posts = [
+            {"id": 1, "question": {"id": 11, "type": "binary", "title": "flaky"}},
+            {"id": 2, "question": {"id": 15, "type": "binary", "title": "fresh"}},
+        ]
+        code, forecasted = run_main(monkeypatch, tmp_path, posts)
+        assert code == 0
+        assert forecasted == [15]
+
+    def test_live_run_without_metaculus_token_fails_before_any_spend(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        monkeypatch.delenv("METACULUS_TOKEN", raising=False)
+        code = run_bot.main(["--tournament", "t",
+                             "--journal", str(tmp_path / "j.jsonl")])
+        assert code == 1
+
+
+class TestPayloadValidation:
+    MC_Q = {**QUESTION, "type": "multiple_choice", "options": ["A", "B"]}
+
+    def test_extra_option_key_is_an_error_not_an_api_400(self) -> None:
+        errors = run_bot.validate_payload(
+            {"probabilities": {"A": 0.5, "B": 0.4, "C": 0.1}}, self.MC_Q)
+        assert errors and "unknown options" in errors[0]
+
+    def test_non_numeric_option_probability_is_an_error_not_a_crash(self) -> None:
+        # An exception here would skip the repair retry and fail a fixable payload.
+        errors = run_bot.validate_payload(
+            {"probabilities": {"A": "likely", "B": 0.4}}, self.MC_Q)
+        assert errors == ["every option probability must be a number"]
+
+    def test_non_numeric_percentile_is_an_error_not_a_crash(self) -> None:
+        q = {**QUESTION, "type": "numeric",
+             "scaling": {"range_min": 0.0, "range_max": 10.0}}
+        errors = run_bot.validate_payload({"percentiles": {"50": "five"}}, q)
+        assert errors == ["every percentile value must be a number"]
+
+    # --- declared escape mass (v0.4.23) ------------------------------------------------
+    NUMERIC_Q = {**QUESTION, "type": "numeric",
+                 "scaling": {"range_min": 0.0, "range_max": 100.0},
+                 "open_lower_bound": True, "open_upper_bound": False}
+    PCTS = {"percentiles": {"10": 10.0, "25": 25.0, "50": 50.0, "75": 75.0, "90": 90.0}}
+
+    def test_escape_mass_on_an_open_bound_is_accepted(self) -> None:
+        assert run_bot.validate_payload({**self.PCTS, "p_below_lower": 0.13},
+                                        self.NUMERIC_Q) == []
+
+    def test_escape_mass_on_a_closed_bound_is_repairable_feedback(self) -> None:
+        errors = run_bot.validate_payload({**self.PCTS, "p_above_upper": 0.13},
+                                          self.NUMERIC_Q)
+        assert errors and "only valid when the upper bound is OPEN" in errors[0]
+
+    def test_out_of_range_escape_mass_is_rejected(self) -> None:
+        errors = run_bot.validate_payload({**self.PCTS, "p_below_lower": 0.9},
+                                          self.NUMERIC_Q)
+        assert errors and "must be in [0, 0.5]" in errors[0]
+
+    def test_non_numeric_escape_mass_is_an_error_not_a_crash(self) -> None:
+        errors = run_bot.validate_payload({**self.PCTS, "p_below_lower": "a lot"},
+                                          self.NUMERIC_Q)
+        assert errors == ["p_below_lower must be a number, got 'a lot'"]
+
+    def test_omitting_escape_mass_stays_valid(self) -> None:
+        assert run_bot.validate_payload(self.PCTS, self.NUMERIC_Q) == []
+
+
+class TestEscapeMassBrief:
+    """The Bounds block has to ASK for the escape probability — that is the elicitation
+    change the -195.6 misses (BMEX q45012, bluetongue q44967) actually needed."""
+
+    NUMERIC_Q = {**QUESTION, "type": "numeric",
+                 "scaling": {"range_min": 0.0, "range_max": 100.0, "zero_point": None},
+                 "open_lower_bound": True, "open_upper_bound": True}
+
+    def test_bounds_block_asks_for_the_escape_probability(self) -> None:
+        brief = run_bot.build_brief({}, self.NUMERIC_Q, None)
+        assert "## Bounds" in brief
+        assert "p_below_lower" in brief and "p_above_upper" in brief
+        assert "CONDITIONAL on landing inside" in brief
+
+    def test_binary_brief_says_nothing_about_bounds(self) -> None:
+        assert "p_below_lower" not in run_bot.build_brief({}, QUESTION, None)
+
+    def test_contract_offers_the_fields_to_the_numeric_forecaster(self) -> None:
+        assert "p_above_upper" in run_bot.CONTRACT
