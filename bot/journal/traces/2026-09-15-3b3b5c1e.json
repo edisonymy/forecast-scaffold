@@ -1,0 +1,232 @@
+{
+ "record_id": "2026-09-15-3b3b5c1e",
+ "question": "[PRACTICE] What will the average \"new forecasters per day\" be on this question before this question closes?",
+ "question_id": 45707,
+ "url": "https://www.metaculus.com/questions/45516/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-09-15T23:48:02+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 7.8446,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 4.4,
+    "25": 5.3999999999999995,
+    "50": 6.433333333333334,
+    "75": 7.566666666666666,
+    "90": 8.700000000000001
+   },
+   "p_below_lower": 0.02,
+   "p_above_upper": 0.04666666666666666
+  },
+  "phase1": {
+   "10": 4.4,
+   "25": 5.3999999999999995,
+   "50": 6.433333333333334,
+   "75": 7.566666666666666,
+   "90": 8.700000000000001
+  },
+  "phase2": null,
+  "spread_phase1": 2.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 5.7,
+   "25": 6.4,
+   "50": 7.0,
+   "75": 7.7,
+   "90": 8.4
+  },
+  "p_above_upper": 0.02
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 2.7556,
+   "seconds": 588.8,
+   "estimate": {
+    "percentiles": {
+     "10": 5.4,
+     "25": 6.5,
+     "50": 7.3,
+     "75": 8.2,
+     "90": 9.1
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Resolves as (unique forecasters shown at close) / (days open), tenth-rounded. Numerator is directly observed and still climbing: 128 on 2026-09-13 (scaffold trace) -> 135 on 2026-09-15 (live page), ~3.2/day; the page's '1.1 forecasters this week' is the aggregate's movement in question units, NOT inflow, so the counter is not saturated. Projecting 12.3 remaining days with mild decay plus the pre-season onboarding surge seen in the Summer analog (bot activity clustered the day before that season started) gives F ~152-205, median ~170. Denominator is the crux and is not published: post-ID adjacency dates creation to ~Sep 5-6 (45516 sits 2 IDs below the MiniBench batch 45518-45577 that my bot began sweeping 2026-09-07T00:36Z, while batch 45286-45326 was swept Aug 24-25), and the adjacent bot-testing twin 45517 closes Sep 5, 2028 - a 2-year window from a Sep 5, 2026 creation. So D ~21-24, median ~22.5, and D cannot exceed ~24 unless that dating is wrong. 170/22.5 = 7.6; I shade to 7.3 and keep a fat left tail because the on-page bot aggregate (5.55, up from ~4.4 a week ago) sits well below me - explicable by the misread activity line pinning others' numerator near 130 and by a lagging recency-weighted mix, but I may simply be wrong about the open date. Market check: no Polymarket, Kalshi, Manifold or bookmaker contract on this or any Metaculus-participation metric - none found; the harness title search also returned nothing. Escape: >10.05 needs F>220 at D=22 (~7/day sustained, 40% above the Summer analog's total) - priced at 3%; <0.95 would need D>180 days, arithmetically impossible, so no lower escape declared.",
+   "sources": [
+    "https://r.jina.ai/https://www.metaculus.com/questions/45516/ (live page 2026-09-15: 135 forecasters, 0 comments, closes Sep 28 2026, activity line '1.1 forecasters this week')",
+    "https://r.jina.ai/https://www.metaculus.com/questions/45516/average-forecasters-for-fall-futureeval/ (verbatim re-read of the same page; no opened/published date shown)",
+    "https://r.jina.ai/https://www.metaculus.com/questions/45517/ (adjacent twin, Bot testing area: 35 forecasters, 'Closes Sep 5, 2028')",
+    "https://r.jina.ai/https://www.metaculus.com/questions/43339/major-state-exits-eu-before-2027/ (Summer 2026 practice question: 156 forecasters, 342 comments, status Closed)",
+    "https://www.metaculus.com/api/posts/43339/ and /api/posts/45516/ (both HTTP 403 / 'API is only available to authenticated users' - open_time unobtainable)",
+    "Local dataset: bot/journal/forecasts.jsonl and bot/journal/resolutions.jsonl in this scaffold (post-ID -> first-forecast-date mapping: 45286-45326 swept Aug 24-25 2026; 45518-45577 swept from Sep 7 00:36Z; post 45516 = question 45707, close_time 2026-09-28T05:59:00Z; recorded count 128 forecasters o",
+    "https://archive.org/wayback/available?url=metaculus.com/questions/45516/ (no archived snapshot)",
+    "https://forum.effectivealtruism.org/posts/ZfLAN557rGWACKtmc/announcing-metaculus-summer-2026-futureeval-bot-tournament (Summer 2026 announced May 1 for a May 18 start; seasons start Jan/May/Sep; Fall questions start opening Sep 28)",
+    "https://github.com/RuizhangZhou/metaculus-bot/issues/57 ('Fall FutureEval published an open practice question before the tournament start date')",
+    "Market check via WebSearch (Kalshi / Polymarket / Manifold / bookmakers): no contract on this or any Metaculus-participation metric - none found"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the FORECASTER count displayed in the Metaculus UI for this post (post 45516, question 45707, slug 'average-forecasters-for-fall-futureeval') on its close date, divided by the number of days the question was open; rounded to the nearest tenth. It does NOT resolve off number of predictions submitted (a bot re-forecasting adds nothing), off comments, off tournament registrations, or off any tournament-wide statistic.\n\nEVENT WINDOW: per the criteria, this question's own open date -> close 2026-09-28T07:00:00Z (the scaffold's API-derived record carries close_time 2026-09-28T05:59:00Z). The open timestamp is NOT published on any anonymous surface: the Metaculus API returns 403 ('only available to authenticated users'), the rendered page contains no 'opened'/'published' string, and the Wayback Machine has no snapshot of the page. It must be inferred (evidence below). If the open date is 2026-09-05, then as of Now (2026-09-15T23:20Z) about 47% of the window has elapsed and 12.3 days remain; if 2026-09-06, about 45%; if 2026-08-28, about 60%.\n\nOBSERVED STATE (time series, both readings of the same UI field):\n- 2026-09-13T22:40Z: 128 forecasters, 0 comments (recorded by this scaffold's own trace, three independent fetches agreeing).\n- 2026-09-15T~23:00Z: 135 forecasters, 0 comments, 'Closes Sep 28, 2026', tournament label 'Fall 2026 FutureEval Bot Tournament' (live page via text-extraction proxy).\n- That is +7 forecasters in ~2.2 days.\n- CAUTION ON A MISREADABLE FIELD: the page also shows a line reading '1.1 forecasters this week' (it read '1 forecasters this week' on Sep 13). Because this question's UNIT is 'forecasters', this line is the community estimate's weekly MOVEMENT expressed in question units - it is not a count of new forecasters. Reading it as inflow implies a saturated counter, which the 128->135 series directly contradicts.\n\nDATING THE OPEN (evidence, both directions):\n- Metaculus post IDs are allocated monotonically at creation; a post cannot open before it is created. This scaffold's forecast journal gives an ID->date map from the dates it first forecast each post: posts 45286-45326 were swept 2026-08-24/25 (a Monday MiniBench batch), and posts 45518-45577 (~60 consecutive IDs, the next biweekly Monday batch) were swept starting 2026-09-07T00:36Z. Post 45516 sits 2 IDs below that batch, i.e. created immediately before it; at the ~15 IDs/day implied between the two batches, that is hours, not days, before the batch.\n- Corroboration: the adjacent twin post 45517 (same title, permanent 'Bot testing area', 35 forecasters) shows 'Closes Sep 5, 2028' - a 2-year window pointing at a 2026-09-05 creation/open.\n- Pointing EARLIER (longer window): Fall 2026 season questions were already live and resolving in late August 2026 (a Fall-feed question resolved Aug 31), so the season's flow predates September; and the Summer precedent had practice material available ~2-3 weeks before the season start.\n- Pointing LATER (shorter window): the MiniBench batch adjacent in ID space did not open until ~Sep 7 00:00Z; this scaffold, which polls the tournament feed, first forecast post 45516 on 2026-09-09 despite forecasting the 45518+ batch from Sep 7.\n\nBASE RATES / COUNTS, WITH THE CLASS EACH IS COMPUTED OVER:\n- Over FutureEval pre-season [PRACTICE] warm-up questions attached to a seasonal tournament (n=1 directly observed): Summer 2026 post 43339 closed with 156 forecasters and 342 comments. Its window is not published; the adjacent-ID Summer announcement notebook 43340 was published 2026-05-01 and the Summer season started 2026-05-18, which if the practice question opened with the announcement implies a ~17-day window (156/17 = 9.2 per day); a window of 23 days instead implies 6.8 per day.\n- Over the SAME question text but conditioned on the permanent unscored bot-testing venue rather than a seasonal tournament: twin post 45517 shows 35 forecasters against a multi-year window - a far thinner venue.\n- Over regular scored questions in the Summer 2026 season (sampled resolved feed): forecaster counts 169, 137, 121, 104, 99, 98, 96, 93, 91, 88, 80, 39 - central tendency ~95-105, top decile ~165.\n- Over tournament ROSTERS: Spring 2026 FutureEval had 173 bots (111 external + 65 in-house) and 10 pro forecasters across 297 scored questions. Each bot contributes at most one to a forecaster count, so the count is bounded by roster size plus new entrants.\n- Over season structure: FutureEval seasons start every January, May and September; 300-500 questions; $50k pool; the Fall 2026 season's own questions start opening 2026-09-28 - the same instant this question closes. MiniBench injects ~60 questions every other Monday (observed batches: Aug 24, Sep 7).\n\nSTRUCTURAL NOTES (carry both):\n- Unique-forecaster counts front-load: a standing cron-driven bot roster sweeping a newly opened tournament question exhausts itself within days, after which a longer window raises the denominator faster than the numerator.\n- Counter-pressure: the stated purpose of the question is warm-up for new entrants, and the Summer analog's page shows a mass of bot comments dated 2026-05-17, the day before that season started - i.e. late entrants arrive in the final days before a season opens, which for this question is inside the remaining window.\n- The author set the range 0.95-10.05 (both bounds open, tenth rounding) while knowing the open and close dates exactly; only the forecaster count was uncertain to them.\n\nMARKET CHECK: no Polymarket, Kalshi, Manifold or bookmaker contract exists on this or any similar Metaculus-participation metric - none found by the harness title search or by independent search.\n\nSEARCHED FOR BUT COULD NOT FIND: (1) the open_time/publish_time of post 45516 - API 403 to anonymous clients, page omits it, no Wayback snapshot, no search-engine snippet referencing the post; (2) any 'Announcing Fall 2026 FutureEval' notebook or forum post that would date the practice-question release; ",
+   "reference_class": "Metaculus FutureEval seasonal pre-season [PRACTICE] warm-up questions: unique forecasters listed at close divided by days the question was open (directly observed n=1: Summer 2026 practice post 43339, 156 forecasters, window inferred ~May 1 -> May 18, 2026)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.799,
+   "seconds": 359.3,
+   "estimate": {
+    "percentiles": {
+     "10": 2.9,
+     "25": 3.9,
+     "50": 5.3,
+     "75": 7.1,
+     "90": 8.7
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.09
+   },
+   "reasoning": "Resolves off the forecaster count in the Metaculus UI on 2026-09-28 divided by days open, rounded to a tenth. Reference class: FutureEval seasonal warm-up questions, where the one documented analogue drew 156 forecasters and the prior season fielded 173 bots; over a nominal three-week warm-up that anchors ~7.4/day. I adjust down because this window is pre-season: the Fall main tournament only starts opening questions at the exact moment this closes, and the warm-up MiniBench opens Sept 21, so a large share of bot-makers deploy after or barely before this question's close, making N a fraction of the full-season population that accumulated the 156. I adjust the denominator toward 14 days: a bot-maker's Sept 14 issue about handling the newly-published pre-start Fall practice question implies a Sept 13-14 open against the Sept 28 07:00 close. Neither leg is confirmed - I could not read open_time or the live forecaster count (Metaculus API is auth-gated, site 403s), so this is inference from third-party traces, and I stay wide accordingly. Counter-case in both directions: if Metaculus's ~65 in-house Metac Bots fire on practice questions before the season, N clears 140 and the outcome escapes above 10.05 (priced at 9%); if the question actually opened in early September, D near 25 drags the ratio to ~4. No human market prices this.",
+   "sources": [
+    "https://github.com/XtremeSavage/forecasting-bot",
+    "https://github.com/RuizhangZhou/metaculus-bot/issues/57",
+    "https://www.greaterwrong.com/posts/wZBbDqzfBjYG58CxK/futureeval-spring-results-pros-beat-bots-but-the-gap-is",
+    "https://www.greaterwrong.com/posts/a82q6yd8zKpYk56cF/ai-forecasting-in-2026-what-11-analyses-say",
+    "https://forum.effectivealtruism.org/posts/ZfLAN557rGWACKtmc/announcing-metaculus-summer-2026-futureeval-bot-tournament"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the forecaster count displayed in the Metaculus UI on the close date, divided by the number of days the question is open, rounded to the nearest tenth - not off forecast/prediction count, not off tournament participant rosters. Both numerator and denominator are platform metadata, not world events.\n\nEVENT WINDOW: open (date not directly verifiable, see below) -> 2026-09-28T07:00Z per the criteria. If the open was 2026-09-14T07:00Z, the window is exactly 14.0 days and as of Now (2026-09-15T23:20Z) ~12% has elapsed.\n\nEVIDENCE:\n- Fall 2026 FutureEval main tournament questions begin opening 2026-09-28 (Mon), described as slow for the first 1-2 weeks then full pace; questions release until a few weeks before 2027-01-01. Source: XtremeSavage/forecasting-bot repo docs, accessed 2026-09-15.\n- The Fall warm-up MiniBench opens 2026-09-21 00:00 UTC, characterized there as the first questions scoreable against. Source: same repo, accessed 2026-09-15.\n- A bot-maker opened GitHub issue #57 'Handle pre-start FutureEval questions' on 2026-09-14, stating Fall FutureEval published an open practice question before the tournament start date. The issue does not state the question's open_time. Source: github.com/RuizhangZhou/metaculus-bot/issues/57.\n- Spring 2026 FutureEval fielded 173 bots total, 111 excluding Metaculus-run bots, plus ~65 in-house Metac Bots running different LLMs on standardized prompts. Source: FutureEval Spring results writeup via greaterwrong, accessed 2026-09-15.\n- Spring 2026 launched 327 questions, 297 scored after 30 annulments; the winning bot forecast on 288 of 297, indicating high per-question coverage among active bots. Source: same writeup.\n- Historical bot counts per tournament: Q3 2024 55, Q4 2024 44, Q1 2025 45, Q2 2025 54; Fall 2025 counted 39 bot makers. The population grew several-fold into 2026. Source: 'AI Forecasting in 2026: What 11 Analyses Say', accessed 2026-09-15.\n- Summer 2026 tournament questions began flowing 2026-05-18; its season closed 2026-09-06. Source: EA Forum Summer 2026 FutureEval announcement.\n- Metaculus maintains a standing bot-testing area (ID 32977 / 'bot-testing-area') with one question of every type, separate from seasonal practice questions - so seasonal practice questions are not bot-makers' only test target. Source: Summer 2026 announcement.\n- Metaculus's public API now returns 403 to unauthenticated clients ('API is only available to authenticated users'), and question pages 403 the fetcher, so this question's open_time and current forecaster count could not be read directly this run.\n\nBASE RATES (with the class each is computed over):\n- Over FutureEval seasonal practice questions specifically: the Summer 2026 practice question (Major state exits EU before 2027) shows 156 forecasters. Its open and close dates are not stated in the accessible sources; its resolution subject runs to 2027, consistent with a long life rather than a two-week window. Computed per-day, this single case yields ~1.2/day if spread over a ~130-day season life, ~11.1/day if compressed into a 14-day window - the class supports both readings and the divisor is the unresolved variable.\n- Over the full seasonal bot population (unconditional): 173 bots in Spring 2026 is the ceiling-ish figure for how many distinct forecasters a Fall tournament question could attract.\n- Conditional on the window being PRE-start (before the season's first scored questions open): no published figure found for what fraction of the eventual population is deployed. Bot-maker behavior documented above (MiniBench on Sept 21, main start Sept 28) means some share of makers deploy only at or after this question's close.\n\nSTATUS QUO: the question is open and unresolved as of Now; forecaster counts on Metaculus are monotonically non-decreasing, accumulating fastest immediately after open (scheduled bots fire on their first run) and flattening afterward, so a longer open window mechanically lowers the ratio unless new entrants keep arriving.\n\nMARKETS: no Polymarket or Manifold candidate found by title search; no Kalshi contract or bookmaker line found for any Metaculus platform-activity metric.\n\nSEARCHED FOR BUT COULD NOT FIND: this question's open_time or current forecaster count; the Summer practice question's open and close dates; an official Fall 2026 announcement notebook stating when practice questions were published; any per-question forecaster-count distribution for FutureEval tournament questions; whether in-house Metac Bots forecast on practice questions before a season starts.",
+   "reference_class": "Metaculus FutureEval seasonal warm-up/practice questions, measured as UI forecaster count divided by days the question was open (Summer 2026 practice question: 156 forecasters; Spring 2026 season bot population: 173)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 2.1455,
+   "seconds": 495.8,
+   "estimate": {
+    "percentiles": {
+     "10": 4.9,
+     "25": 5.8,
+     "50": 6.7,
+     "75": 7.4,
+     "90": 8.3
+    },
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Resolves off the forecaster counter on post 45516 at close divided by days open. Observed counter: 119 (Sep 11), 128 (Sep 13), 135 (Sep 15) - ~4.0/day, mildly decaying; 12.7 days remain, so F at close is ~165-185, capped loosely by the active bot roster (Summer's practice analog ended at 156; Spring had 173 bots). Denominator: open_time is API-gated (403), but post-ID adjacency (45516/45517 sit immediately below the 45518-45560 batch that opened Sep 7), exponential back-extrapolation of the accrual curve (hits zero ~Sep 1-3), and the page's bot estimate tracking current_count/24.3 on both Sep 13 (128/5.29) and Sep 15 (135/5.55) all converge on D ~= 24 days (open ~Sep 3-4). That gives ~173/24.3 ~= 7.1; I shade to 6.7 and fatten the left tail for the world where D is really ~30-34 (a late-August open with a front-loaded sweep), which is the reading under which the bot aggregate of 5.55 is a projection rather than a naive current-count/D division. No prediction market prices this (none found on Polymarket, Kalshi, Manifold, or bookmakers), and the on-site aggregate is bot-only and stale-weighted (it has drifted up +1.1 in a week as the counter grew), so I treat it as a soft floor rather than an anchor. Upper escape 2%: needs a short window plus a >190 final count from a season-start onboarding surge; no mechanism exists for the low side (it would require D>170 days).",
+   "sources": [
+    "https://r.jina.ai/https://www.metaculus.com/questions/45516/average-forecasters-for-fall-futureeval/ (read 2026-09-15: 135 forecasters, closes Sep 28 2026, 0 comments, '1.1 forecasters this week')",
+    "https://r.jina.ai/https://www.metaculus.com/questions/45517/ (bot-testing-area twin, read 2026-09-15: 35 forecasters, '0.1 forecasters this week', closes Sep 5 2028)",
+    "https://github.com/RuizhangZhou/metaculus-bot/issues/57 (issue opened 2026-09-14: 'Fall FutureEval published an open practice question before the tournament start date')",
+    "https://www.metaculus.com/api/posts/45516/ (403: 'The API is only available to authenticated users' - open_time not retrievable)",
+    "local bot journal dataset: bot/journal/resolutions.jsonl and bot/journal/traces/2026-09-11 & 2026-09-13 (observed counter 119 and 128; post_id->first-forecast-date table showing the 45518-45560 batch swept 2026-09-07 and the 45300-45327 batch swept 2026-08-24/25)",
+    "WebSearch result sets for 'Fall 2026 FutureEval bot tournament' and 'Kalshi/Manifold/Polymarket Metaculus forecasters' (2026-09-15) - no market found"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the FORECASTER COUNT displayed in the Metaculus UI for this question (post 45516, slug 'average-forecasters-for-fall-futureeval') on its close date, divided by the number of days the question was open; rounded to the nearest tenth. Not forecast count, not comment count, not a tournament-wide statistic.\n\nEVENT WINDOW: per the criteria the window is this question's own open date -> close 2026-09-28T07:00:00Z. The open date is NOT on any publicly fetchable surface: the Metaculus API returns 403 ('only available to authenticated users') to unauthenticated clients and to r.jina.ai; the rendered page omits it; web.archive.org was unreachable from this environment. As of Now (2026-09-15T23:20Z) there are 12.32 days remaining. Percent elapsed cannot be stated directly; the bounds derived below constrain it.\n\nOBSERVED COUNTER SERIES (Metaculus page 45516 via r.jina.ai render): 119 forecasters on 2026-09-11; 128 on 2026-09-13; 135 on 2026-09-15. Two-day increments: +9, +7. 0 comments throughout.\n\nUI SEMANTICS NOTE (correction of a common misread): the line 'N forecasters this week' on the page is the WEEKLY MOVEMENT OF THE DISPLAYED ESTIMATE in question units, not the number of new forecasters. Evidence: the sibling post 45517 shows '0.1 forecasters this week' alongside 35 forecasters, and 45516 showed the counter rise 119->135 over a week while displaying '1.1 forecasters this week'. The page also displays a bot-only community aggregate; it is withheld from this dossier as an unvalidated anchor.\n\nEVIDENCE ON THE OPEN DATE - LATER OPEN (shorter window):\n- Post-ID adjacency: post IDs are assigned sequentially at creation. 45516/45517 sit immediately below post IDs 45518-45560, a 43-question batch that was live and being forecast on 2026-09-07; the previous batch 45300-45327 was live 2026-08-24/25. Linear ID interpolation between those two batches places 45516's creation ~Sep 5-7 (Metaculus post IDs + local bot journal, read 2026-09-15).\n- Back-extrapolating the observed counter with the measured ~0.78 two-day decay factor reaches zero around Sep 1-3; a sharper-than-exponential day-one spike (typical when a bot roster sweeps a new question) would move that later still.\n- GitHub issue RuizhangZhou/metaculus-bot#57, opened 2026-09-14: 'Fall FutureEval published an open practice question before the tournament start date, so auto:futureeval still resolved only Summer' - i.e. as of Sep 14 the Fall tournament had not started and the practice question was already open.\n\nEVIDENCE ON THE OPEN DATE - EARLIER OPEN (longer window):\n- Fall-season questions were already opening in late August (the Fall tournament feed contained questions resolving Aug 31, 2026).\n- For the prior season, practice questions preceded the season start by roughly 2-3 weeks (Summer 2026 announcement, EA Forum/Metaculus notebook 43340), and the Summer->Fall handover sat in mid-to-late August 2026; a mid/late-August open would make the present ~4/day the tail of an already-passed burst.\n\nBASE RATES AND COUNTS, WITH THE CLASS EACH IS COMPUTED OVER:\n- Over seasonal FutureEval [PRACTICE] warm-up questions (n=1 directly observed): the Summer 2026 practice question, post 43339, closed with 156 forecasters (cited in this question's own Background).\n- Over the same class conditioned on the permanently-open bot-testing-area venue rather than a seasonal tournament: twin post 45517 shows 35 forecasters on 2026-09-15 (14 on Sep 9 per an earlier read) with a close in 2028 - a much thinner venue.\n- Over regular scored questions in the Summer 2026 season (sampled resolved feed): forecaster counts 169, 137, 121, 104, 99, 98, 96, 93, 91, 88, 80, 39 - central tendency ~95-105, top decile ~165.\n- Over tournament ROSTERS: Spring 2026 FutureEval had 173 bots (111 external + 65 in-house) plus 10 pros across 297 scored questions; Summer entrant counts reported higher. This bounds how large the numerator can plausibly get.\n- Season cadence over all FutureEval seasons: new season every September, January and May; ~4-month seasons, 300-500 questions.\n\nSERIES SPREAD (the quantity's own volatility): the counter is monotone non-decreasing, so the only volatility is in the accrual RATE. Observed rates over 2-day windows in the last week: 4.5, 4.5, 3.5 per day. A season-start onboarding wave in the final days before Sep 28 is the named regime-break candidate upward; complete stall (0/day) is the candidate downward.\n\nDERIVED ARITHMETIC (no lean): value = F/D. F is bounded below by 135 (already observed) and realistically by the active bot roster on the high side. The stated range 0.95-10.05 corresponds, for F in 160-190, to D between roughly 16 and 200 days. The observed counter at 119 on Sep 11 rules out any open date after ~Sep 9.\n\nMARKET CHECK: no Polymarket, Kalshi, Manifold or bookmaker contract exists on this or any similar Metaculus-participation metric - none found; the harness title search also returned no candidate.\n\nSEARCHED FOR BUT COULD NOT FIND: (1) the question's open_time/publish_time (API 403; archive.org unreachable; page omits it); (2) any 'Announcing Fall 2026 FutureEval Bot Tournament' post dating the practice-question release or the Fall season start; (3) the open/close dates of the Summer 2026 practice question 43339, which would give a direct precedent for warm-up window length; (4) any prior-season resolved instance of this same self-referential question; (5) any public bot log or repo recording post 45516's open_time.",
+   "reference_class": "Metaculus FutureEval/AI-Benchmark seasonal [PRACTICE] warm-up questions: unique forecasters listed at close divided by days the question was open"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "research",
+   "run_index": 1,
+   "spread": 0.9231,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0599,
+   "seconds": 212.0,
+   "estimate": {
+    "percentiles": {
+     "10": 5.7,
+     "25": 6.4,
+     "50": 7.0,
+     "75": 7.7,
+     "90": 8.4
+    },
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Resolves as forecasters shown at close / days open, tenth-rounded. Numerator verified live this run: 135 on 2026-09-15 (119 Sep 11, 128 Sep 13), accruing 4.5 then 3.5/day with mild decay; 12.3 days remain, giving F~156-192, median ~170, with a season-start onboarding bump before Sep 28 offsetting decay. Denominator is the crux and is not published (API 403, no archive, no local record of open_time), but three lines converge on an open of ~Sep 3-6: post-ID adjacency to the Sep 7 MiniBench batch, the twin post 45517 closing Sep 5 2028 (2-year window), and the bot aggregate tracking count/24.3 at three separate readings. Run 2's D=14 is refuted outright: 119 forecasters existed on Sep 11 and this scaffold forecast the post on Sep 9. 170/24 = 7.1; shaded to 7.0 with a fatter left tail for a late-August open. The on-page bot aggregate of 5.55 is a naive current-count/D calculation that will rise mechanically as the counter grows, so it is a floor, not an anchor.",
+   "sources": [
+    "https://r.jina.ai/https://www.metaculus.com/questions/45516/",
+    "https://r.jina.ai/https://www.metaculus.com/questions/45517/",
+    "https://www.metaculus.com/api/posts/45516/ (HTTP 403, anonymous)",
+    "local dataset: bot/journal/forecasts.jsonl and bot/journal/traces/2026-09-09-e77a3a55.json"
+   ],
+   "reconciliation": "Verified the live counter myself (135 forecasters, 0 comments, closes Sep 28, aggregate 5.55, '1.1 forecasters this week') and the sibling 45517 (35 forecasters, '0.1 forecasters this week', estimate 0.439) — confirming runs 1/3's reading of the UI and killing the 'saturated counter' reading. Metaculus API returned 403 to me as it did to every run; a targeted web search for post 45516's open_time returned nothing. Decisive factual settlement: run 2's Sep 13-14 open (D=14, median 5.3) is impossible — 119 forecasters were counted on Sep 11 and this scaffold's own journal records a forecast on post 45516 on 2026-09-09. I therefore discard run 2's denominator entirely rather than averaging it in. I carry forward runs 1/3's reference class (Summer practice analog, 156 forecasters) and their D≈22-25 triangulation, noting the aggregate-fingerprint argument for D≈24.3 is weakened because the same naive division does not describe the sibling post's aggregate. The residual dispute — final forecaster count, ~170 vs ~173 vs ~152-205 — is pure judgment with no evidence to break it; I take ~170 with the decay observed over the last four days plus a modest pre-season wave. Result 170/24 ~= 7.1, shaded to 7.0, which sits between runs 1 and 3 because their evidence is the surviving evidence, not because it splits a difference.",
+   "disagreements": [
+    {
+     "claim": "The live forecaster count is unreadable (run 2) vs 135 on Sep 15 (runs 1,3)",
+     "kind": "factual",
+     "verdict": "Settled for runs 1/3 — I fetched the page and read 135 forecasters, 0 comments, closes Sep 28"
+    },
+    {
+     "claim": "The question opened ~Sep 13-14, giving D≈14 days (run 2)",
+     "kind": "factual",
+     "verdict": "Refuted — 119 forecasters on Sep 11 and a local journal forecast on this post dated 2026-09-09 put the open at Sep 9 or earlier"
+    },
+    {
+     "claim": "'1.1 forecasters this week' is new-forecaster inflow (implying a saturated counter)",
+     "kind": "factual",
+     "verdict": "Refuted — sibling 45517 shows '0.1 forecasters this week' against 35 forecasters and a 0.439 estimate; it is aggregate movement in question units"
+    },
+    {
+     "claim": "The bot aggregate tracking count/24.3 pins D at ~24.3 (run 3)",
+     "kind": "factual",
+     "verdict": "Partly supported — the fit holds at three readings on 45516, but fails on sibling 45517, so treated as soft corroboration of D≈23-25, not proof"
+    },
+    {
+     "claim": "D ≈ 22.5 (run 1, open ~Sep 5-6) vs D ≈ 24.3 (run 3, open ~Sep 3-4)",
+     "kind": "factual",
+     "verdict": "Not resolvable — open_time is auth-gated, archive unavailable, no public record; carried as a distribution centered ~24"
+    },
+    {
+     "claim": "Final forecaster count at close: ~170 (run 1/3) vs a pre-season population much smaller than the 156 that the Summer analog accumulated (run 2)",
+     "kind": "judgment",
+     "verdict": "Run 2's premise is undercut by the observed 135 already logged with 12 days to run; I take F~170 (10-90: 156-192), capped loosely by the ~173-bot roster"
+    },
+    {
+     "claim": "Whether a human market prices this",
+     "kind": "factual",
+     "verdict": "All three runs and the harness found none; I found none — 'no market found' confirmed"
+    }
+   ],
+   "reference_class": "FutureEval seasonal [PRACTICE] warm-up questions, measured as forecaster count at close divided by days open (n=1 documented: Summer 2026 post 43339, 156 forecasters over an estimated ~17-24 day warm-up)"
+  }
+ ]
+}
