@@ -1,0 +1,237 @@
+{
+ "record_id": "2026-09-16-f881e265",
+ "question": "What will be the ending value of the UST 10Y Yield for these biweekly periods of Q3 2026? (Sep 21 - Oct 2)",
+ "question_id": 44677,
+ "url": "https://www.metaculus.com/questions/44531/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-09-16T17:40:13+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 5.3757,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 4.716666666666667,
+    "25": 4.833333333333333,
+    "50": 4.96,
+    "75": 5.076666666666667,
+    "90": 5.17
+   },
+   "p_above_upper": 0.09666666666666668
+  },
+  "phase1": {
+   "10": 4.716666666666667,
+   "25": 4.833333333333333,
+   "50": 4.96,
+   "75": 5.076666666666667,
+   "90": 5.17
+  },
+  "phase2": null,
+  "spread_phase1": 0.02,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 4.71,
+   "25": 4.83,
+   "50": 4.95,
+   "75": 5.06,
+   "90": 5.15
+  },
+  "p_above_upper": 0.09
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.7357,
+   "seconds": 457.3,
+   "estimate": {
+    "percentiles": {
+     "10": 4.69,
+     "25": 4.82,
+     "50": 4.95,
+     "75": 5.07,
+     "90": 5.17
+    },
+    "p_above_upper": 0.11
+   },
+   "reasoning": "Anchor is the status-quo random walk: 10Y CMT 5.00 on Sep 15, ~4.96-4.97 midday Sep 16 after a 4bp pullback; 12 trading sessions remain to the Oct 2 print. Over 2026 the 12-business-day change distribution is centered near zero with a modest upward drift (+126bp YTD, war/oil driven) and a 10-90 spread of roughly -0.20/+0.35, so I center at ~4.98 unconditional rather than extrapolating the last five sessions' surge. Two-sided catalysts inside the window: today's FOMC (25bp hike ~93% priced, so the risk is guidance/dots, and a credible inflation-fighting hike can cap the long end), Aug PCE ~Sep 25, quarter-end index extension Sep 30, and the Sep jobs report at 8:30 ET on resolution morning Oct 2; upside from Iran/oil escalation ($107 crude, strategist targets to 5.2%), downside from a ceasefire/oil reversal and income buyers who showed up at the 5% round number. The upper bound sits only ~29bp above spot while the lower bound is ~146bp below, so I price 11% above 5.255 (in 2026 roughly one in seven 12-day windows rose >=29bp) and no mechanism for sub-3.50; the reported percentiles are therefore right-truncated, pulling the conditional median ~2bp below spot. Evidence is one-sided toward higher yields in tone (every recent headline is a sell-off story), which is exactly when to stay near the random walk rather than chase.",
+   "sources": [
+    "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value_month=202609",
+    "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value_month=202608",
+    "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value=2026",
+    "https://tradingeconomics.com/united-states/government-bond-yield",
+    "https://www.cnbc.com/2026/09/16/treasury-yield-bond-market-fed-decision.html",
+    "https://www.cnbc.com/2026/09/15/10-year-treasury-yield-rises-to-highest-since-2007.html",
+    "https://api.elections.kalshi.com/trade-api/v2/series?category=Financials",
+    "https://www.usnews.com/news/politics/articles/2026-09-01/us-house-has-enough-votes-to-pass-stopgap-funds-to-prevent-shutdowns-on-oct-1",
+    "https://fedratecalc.com/us-economic-calendar/september-2026/",
+    "https://www.bloomberg.com/news/articles/2026-09-14/strategist-who-foresaw-10-year-treasuries-at-5-says-selloff-isn-t-done-yet"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the ending value of the UST 10Y yield for the biweekly period, i.e. the level on 2026-10-02 at 20:00 UTC (4pm ET) - not an average over the period, not the Treasury 3:30pm CMT unless that is the stated feed; criteria text supplied to forecasters is blank, so the feed (CMT par yield vs a 4pm market quote) is unspecified; the two differ by ~1-3bp. Bounds are open on both sides: range_min 3.495, range_max 5.255, granularity 0.01.\nEVENT WINDOW: 2026-09-21 -> 2026-10-02T20:00Z per the question title and scheduled resolution; as of Now 2026-09-16T17:18Z, 0% elapsed (window opens in 4 days). 12 trading sessions remain between now and the ending print: Sep 17, 18, 21, 22, 23, 24, 25, 28, 29, 30, Oct 1, Oct 2.\nSTATUS QUO OUTCOME: the yield ends the period near where it is now, ~4.96-5.00.\nLEVELS (Treasury Daily Par Yield Curve, 10Y CMT): 08/26 4.37; 08/27 4.38; 08/28 4.48; 08/31 4.49; 09/01 4.79; 09/02 4.79; 09/03 4.77; 09/04 4.78; 09/08 4.80; 09/09 4.83; 09/10 4.95; 09/11 4.96; 09/14 4.97; 09/15 5.00. Intraday high 5.04 on 09/15 (TradingEconomics 52-week high). Midday 09/16: ~4.96-4.967, -2 to -5bp on the session (CNBC 09/16, TradingEconomics 09/16).\nOTHER POINTS ON THE CURVE 09/16 midday: 2Y 4.627 (highest since late July), 30Y 5.348 (CNBC 09/16). 10Y-2Y ~ +34bp.\nYTD PATH: 10Y CMT opened 2026 at 3.74 (01/02), trough 3.51 (02/27), 4.26 by 05/15, 4.45 by 07/31, 5.00 by 09/15 - about +126bp YTD, with >100bp of it since the U.S.-Iran war began in late February (CNBC 09/15).\nDRIVERS ON THE RECORD: WTI/crude ~$107, near a 4-month high, on renewed U.S.-Iran fighting (Fortune 09/14, CNBC 09/16); a dip in oil on 09/16 was cited as the reason yields eased that day (TradingEconomics 09/16); Treasury Secretary Bessent attributed the rise to 'global issues' plus the deficit (TradingEconomics 09/16); Fed Chair Kevin Warsh and Gov. Barr have signalled openness to hiking if inflation does not moderate (CNBC, Sept 2026).\nFED CALENDAR: FOMC decision 2026-09-16 at 18:00 UTC (2pm ET), i.e. ~45 minutes after Now and 4 days before the window opens; market pricing for a 25bp HIKE moved from ~56-57% (Yahoo/Chase, ~09/10-09/14) to ~93% (TradingEconomics, 09/16), with a further move discussed for December. Next FOMC is Oct 27-28, AFTER the resolution date. A hike would be the first since 2023.\nDATA CALENDAR INSIDE THE WINDOW: Aug PCE (BEA, 8:30 ET, late September, ~09/25); Q2/Q3 GDP revision late September; September Employment Situation (BLS, 8:30 ET) on 2026-10-02 - same day as resolution, 7.5 hours before the 20:00 UTC timestamp (FedRateCalc 2026 calendar). Quarter-end is 09/30 (index-extension flows). Treasury 2/5/7yr auction cycle normally falls in the Sep 21-25 week; I could not confirm the exact 2026 dates.\nFISCAL: a continuing resolution was signed 2026-09-02 funding the government through 2026-12-11, so the Oct 1 FY2027 deadline does not bind and federal statistical releases are not at risk (US News 09/01; House 370-48, Senate 90-6).\nBASE RATES - 12-business-day changes in the 10Y CMT: (a) over ALL 2026 overlapping 12-session windows (Jan 2 - Sep 15, n~165, computed from the Treasury CMT series): median ~+0.05pp, 10th-90th roughly -0.20/+0.35pp, largest up-move +0.62pp (window ending 09/15), largest down-move about -0.22pp (window ending mid-February). (b) CONDITIONAL on the window containing an FOMC meeting: 2026 windows around the Jan, Mar, Apr, Jun and Jul meetings moved -0.05 to +0.15pp - note the Sep 16 FOMC falls just BEFORE this window opens, and no FOMC falls inside it. (c) CONDITIONAL on the preceding 12 sessions having risen more than 40bp (momentum regime): the 2026 sample has only two such instances, so this conditional rate is not reliably estimable. (d) Share of 2026 12-session windows with a rise of at least +29bp (what it would take to clear the 5.255 upper bound from ~4.97): roughly one in six to one in seven.\nVOLATILITY: 2026 daily changes in the 10Y CMT have an SD of ~0.05pp including the +30bp jump on 09/01; ICE MOVE is described as elevated but near its 10-year average (CNBC 09/10), implying daily vol of ~6-7bp and a 12-session SD of ~0.22pp.\nBOTH-DIRECTION EVIDENCE - UP: five consecutive sessions of rises into 09/15; oil-driven inflation pass-through (30Y fixed mortgage 6.76%, ICE BofA US HY index 7.42%, both up sharply YTD); Standard Bank's Steven Barrow raised his year-end 10Y target to 5.2% (Bloomberg 09/14); a Bloomberg survey had 57% of participants expecting the 10Y above 5% in 2026; ING's Garvey has sketched a 5.5-6% path if 5% breaks; deficit/term-premium commentary from the Treasury Secretary. DOWN: the 08/2026 Reuters poll median 3-month-ahead 10Y forecast was 4.50 (82% of respondents flagged upside risk to it); Transamerica's 2026 outlook puts year-end near 3.75; the 09/16 session reversed on an oil dip; CNBC ran an 09/14 piece on income investors buying at the 5% level; a Fed hike that is read as inflation-credible historically flattens the curve; quarter-end index extension is a mechanical bid for duration; an Iran de-escalation or Fed QE (a ~$50bn Treasury purchase program was floated by Interactive Brokers' Torres) are the named mechanisms for a sharp fall.\nSEARCHED FOR BUT COULD NOT FIND: live Kalshi prices - the KXTNOTED (daily) and KXTNOTEW (weekly) 10Y-yield series exist and a KX10YUSTSRY series is listed under Financials, but the public API returned empty market arrays and the site returned 429, so no contract for the week ending 2026-10-02 could be priced; no Polymarket or Manifold market (harness title search plus my own check); no confirmed Treasury auction dates for the Sep 21-25 week; no post-decision FOMC statement or dot plot (the decision had not been released as of Now); Treasury CMT values for 09/16 (not yet published).",
+   "reference_class": "12-business-day-ahead changes in the US 10-year Treasury constant-maturity yield, 2026 sample (n~165 overlapping windows, Jan 2 - Sep 15): median change ~+0.05pp, 10th-90th percentile roughly -0.20 / +0.35pp; i.e. the random-walk/status-quo class for a 2.5-week horizon"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.8712,
+   "seconds": 449.6,
+   "validation_errors_first_attempt": [
+    "Invalid control character at: line 11 column 2897 (char 6009)"
+   ],
+   "estimate": {
+    "percentiles": {
+     "10": 4.68,
+     "25": 4.81,
+     "50": 4.96,
+     "75": 5.09,
+     "90": 5.18
+    },
+    "p_above_upper": 0.11
+   },
+   "reasoning": "Anchor is a random walk from spot: DGS10 printed 4.97 on 2026-09-14 and CNBC has the 10Y at 4.967 intraday on 2026-09-16 pre-FOMC, after an intraday poke above 5.00 on Sep 14-15 (first since Oct 2023). Over ~12 business days the reference-class distribution of 12-day changes dominates any view, so the median sits within a couple of bp of spot at 4.96. Two-way risk is unusually live and roughly balanced: upside from the Iran/Hormuz oil shock (crude ~107, 10Y already +100bp since the war began in late February), a hawkish FOMC today (56-70% priced for the first hike since 2023, announced 18:00Z, after the Now timestamp), quarter-end supply and fiscal concern, and a strategist skew toward 5%+ (Barrow 5.2% year-end; two-thirds of 392 Bloomberg Markets Pulse respondents see >5% before year-end); downside from the demonstrated sensitivity to de-escalation (yields fell hard on Aug 3 on Iran de-escalation hopes), round-number exhaustion after the failed 5% break, and the possibility that a credible hike compresses breakevens and the long end. The Sep employment report lands 2026-10-02 08:30 ET, hours before the 20:00Z resolution, adding a genuine last-day jump. Market check: the harness found nothing on Polymarket or Manifold; Kalshi does list 10Y yield ladders (KXTNOTED daily, KXTNOTEW weekly, KXUST10AD), but those settle on single daily/weekly prints rather than this Oct 2 20:00Z reading and I could not retrieve live prices (HTTP 429), so no market anchor is used - treated as no usable contract. Upper bound 5.255 is only ~29bp above spot, ~1.15 SD, so the escape is a real mechanism (Hormuz escalation plus hawkish dots plus supply) and is priced at 11%; the lower bound 3.495 is ~148bp away, over 6 SD, with no 12-day precedent outside a 2020-style crisis, so no lower escape is declared.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10 (daily DGS10, 2025-09-01 to 2026-09-16)",
+    "https://www.cnbc.com/2026/09/16/treasury-yield-bond-market-fed-decision.html",
+    "https://fortune.com/2026/09/14/oil-prices-bond-yields-debt-iran-war/",
+    "https://www.bls.gov/schedule/2026/10_sched_list.htm",
+    "https://kalshi.com/category/financials/treasuries",
+    "https://www.bloomberg.com/news/articles/2026-09-14/strategist-who-foresaw-10-year-treasuries-at-5-says-selloff-isn-t-done-yet",
+    "https://www.businessinsider.jp/article/2609-us-treasury-yield-5-percent-impact/"
+   ],
+   "dossier": "INSTRUMENT: no resolution-criteria text was supplied with this question beyond the title and the scheduled resolution stamp; the quantity is the ending value of the UST 10Y yield for the biweekly period Sep 21 - Oct 2, read at 2026-10-02T20:00:00Z (16:00 ET Friday). Resolves off a 10Y yield quote at that stamp, NOT off an average of the period and NOT off the FRED DGS10 file (DGS10 is a 15:30 ET constant-maturity read published with a lag, and can differ by 1-3bp from a 16:00 ET quote). Units are percent, two decimals. * EVENT WINDOW: 2026-09-21 -> 2026-10-02 per the criteria; as of 2026-09-16T17:18:20Z the window has not opened, 0% elapsed; 16 calendar days / about 12 US trading days from Now to the read. * LEVEL: DGS10 4.97 on 2026-09-14 (FRED). CNBC reports the 10Y at 4.967, down more than 2bp, intraday 2026-09-16 pre-FOMC; 2Y at 4.627, down more than 3bp. The 10Y traded above 5.00 intraday on Sep 14-15, first time since October 2023 (CNBC 2026-09-14; Business Insider Japan 2026-09-15 quotes 4.9895 on Sep 15). * PATH (FRED DGS10): 4.56 on 2026-07-08, 4.69 on 07-24, 4.72 on 08-10, 4.66 on 08-26, 4.75 on 08-31, 4.80 on 09-08, 4.95 on 09-10, 4.96 on 09-11, 4.97 on 09-14. Roughly +40bp over six weeks; the largest single-day move in that stretch is +12bp (09-09 to 09-10). * DRIVER: Brent/WTI near 107, a four-month high, on Iran/Strait of Hormuz supply disruption; Fortune 2026-09-14 reports the 10Y is up more than 100bp since just before the Iran war began in late February, when it was below 4%. * COUNTER-DRIVER, SAME REGIME: CNBC 2026-08-03 headline - US Treasury yields fall as oil prices plunge on Iran de-escalation hopes - i.e. the same channel has already delivered a sizeable downward move once this year. * POLICY: FOMC decision 2026-09-16 at 14:00 ET (18:00Z), after this timestamp. CME FedWatch had a 25bp hike near 56% (Yahoo Finance) and Fortune/CNBC cite roughly 70% by Sep 14; it would be the first hike since 2023. Next FOMC after that is outside the window. * DATA CALENDAR INSIDE THE WINDOW: BLS Employment Situation for September 2026 releases 2026-10-02 at 08:30 ET, the same day as the read and about 7.5 hours before it (BLS October 2026 schedule). September CPI falls after the window. Quarter-end is 2026-09-30. * SUPPLY: quarter-end positioning and Treasury supply are named in tradingeconomics/Fortune coverage as contributors to the September selloff. * SURVEYS: Bloomberg Markets Pulse, 392 respondents - about two-thirds expect the 10Y above 5% before end-2026. Steven Barrow (Standard Bank) raised his year-end 10Y target to 5.2% on 2026-09-14. A Reuters poll from August 2026 carried a median three-month 10Y forecast of 4.50% with 82% of strategists flagging upside risks to it, i.e. the published consensus has already been overtaken by spot. * DISPERSION, SAME SERIES AND SAME WINDOW LENGTH: realized 12-business-day DGS10 changes in the current regime: +13bp (Jul 8-Jul 24), +3bp (Jul 24-Aug 10), -6bp (Aug 10-Aug 26), +30bp (Aug 26-Sep 11), +22bp (Aug 31-Sep 16). Daily SD over Aug-Sep 2026 is roughly 5.5-7bp. * PASS-THROUGH CONTEXT: Freddie Mac 30Y fixed 6.76%, +60bp year-to-date; ICE BofA US High Yield index 7.42%, +89bp year-to-date; DXY 99.55, USDJPY 154.72 ahead of a possible BoJ hike on Friday Sep 18 (Business Insider Japan and SPA/UrduPoint, 2026-09-15). * MANIPULATION/INCENTIVE NOTE: the Business Insider Japan piece quotes sell-side strategists arguing for 5.5-6% and one arguing only an Iran resolution or a roughly $50bn Fed QE program lowers yields; these are positioned commentary, not data. * MARKETS: harness title search found no Polymarket or Manifold candidate. Kalshi lists 10Y yield ladders (KXTNOTED daily, KXTNOTEW weekly, KXUST10AD) but they settle on daily/weekly prints rather than an Oct 2 16:00 ET read; live prices and volume could not be retrieved (HTTP 429). * SEARCHED FOR, NOT FOUND: any market or survey quoting an Oct 2 2026 10Y level specifically; the FOMC outcome and dot plot (announced after this timestamp); confirmation of whether an appropriations lapse threatens the Oct 2 BLS release (the BLS page on revised dates references 2025 and 2026 lapses but returned no 2026 detail); intraday Sep 15-16 high/low ticks.",
+   "reference_class": "12-business-day-ahead levels of the DGS10 10-year Treasury constant-maturity yield under a random-walk anchor, with the change distribution taken from realized 12-business-day DGS10 changes during the 2026 oil-shock/rising-yield regime (Jun-Sep 2026) and the prior year"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.2614,
+   "seconds": 300.6,
+   "estimate": {
+    "percentiles": {
+     "10": 4.78,
+     "25": 4.87,
+     "50": 4.97,
+     "75": 5.07,
+     "90": 5.16
+    },
+    "p_above_upper": 0.07
+   },
+   "reasoning": "Resolves off the 10Y UST yield at the Oct 2, 2026 close, 12 trading days out; at a 2-3 week horizon this series is close to a random walk, so the status-quo anchor is spot ~4.96-4.97 (DGS10 4.97 on Sep 14, intraday 5.04 on Sep 15, highest since 2007). Up-risks: Iran/Hormuz oil shock with crude ~$107, a Warsh Fed starting a hiking cycle (~56% priced for today's 25bp), term-premium/fiscal concerns, five straight up sessions and a technical break of 5% that ING flags as opening 5.5-6%. Down-risks: 5% historically pulls in pension/insurance demand, quarter-end index extension buying Sep 30, a credible hawkish hike can flatten by lowering long-run inflation expectations (2s10s only +34bp), oil has round-tripped 20% twice in 2026 on ceasefire headlines, Reuters-poll strategists' 3-month median is 4.50, and the Sep jobs report prints at 8:30 ET on resolution day itself. These roughly offset, so I set the median at spot plus a hair of momentum drift and keep a right-skewed tail. No human market price obtained (Kalshi 10Y series exists but all pages 429'd; no Polymarket/Manifold contract), so this is unblended.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-06-01",
+    "https://tradingeconomics.com/united-states/government-bond-yield",
+    "https://www.cnbc.com/2026/09/16/treasury-yield-bond-market-fed-decision.html",
+    "https://www.bls.gov/schedule/news_release/current_year.asp",
+    "https://www.businessinsider.jp/article/2609-us-treasury-yield-5-percent-impact/",
+    "https://www.investing.com/news/economy-news/us-treasury-yield-forecasts-creep-up-but-strategists-cling-to-benign-inflation-view-reuters-poll-4606500",
+    "https://www.fedtools.com/blog/government-shutdown-october-2026",
+    "https://kalshi.com/category/financials/treasuries (checked, HTTP 429, no price obtained)"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the level of the US 10Y Treasury constant-maturity yield at the end of the stated biweekly period (Fri Oct 2, 2026 close / 20:00 UTC), not off any average of the period and not off a Fed policy rate. FRED DGS10 vs real-time CNBC/TradingEconomics quotes differ by ~1-3bp on a given day.\nEVENT WINDOW: Sep 21, 2026 -> Oct 2, 2026 per the criteria; as of Now (2026-09-16T17:18Z) 0% elapsed — the window has not begun; 12 trading days separate Now from the resolution print.\nEVIDENCE:\n- FRED DGS10 daily: 4.38 (2026-06-26), 4.75 (2026-07-31), 4.75 (2026-08-31), 4.80 (09-08), 4.83 (09-09), 4.95 (09-10), 4.96 (09-11), 4.97 (09-14). Source: FRED DGS10 CSV, retrieved 2026-09-16.\n- Intraday high 5.04 on 2026-09-15, described as the highest since July 2007; yield ~4.96-4.97 on 09-16 after five consecutive up sessions. Source: TradingEconomics US 10Y page, 2026-09-16; CNBC 2026-09-16.\n- 2Y yield 4.627% on 2026-09-16 (highest since late July); 2s10s ~ +34bp. Source: CNBC 2026-09-16.\n- FOMC decision scheduled 2026-09-16 14:00 ET; CME FedWatch showed ~56% odds of a 25bp hike, which would be the first hike since 2023; several outlets dated 09-16 report a hike to a 3.75-4.00% target range under Chair Kevin Warsh. Source: Yahoo Finance/Chase/Kiplinger summaries and Eastern Herald, 2026-09-15/16.\n- Driver set: US-Iran war ongoing since the July 2026 collapse of the April ceasefire/June MOU; attacks on shipping and Gulf energy infrastructure; crude ~$107, having touched ~$109 in early September. Eurasia Group no longer expects a peace deal by September and pushed de-escalation to year-end. Source: CNBC 2026-08-18, The Hill, TradingEconomics crude news, 2026-09.\n- Oil round-tripped ~20% downward in May 2026 on ceasefire optimism and back up after July, i.e. the inflation impulse driving yields has reversed sharply within weeks more than once in 2026.\n- Mortgage/credit pass-through: 30Y fixed 6.76% (Freddie Mac, week of 2026-09-11, +60bp YTD); ICE BofA US High Yield index yield 7.42% (+89bp YTD). Source: Business Insider Japan, 2026-09-15.\n- Sell-side commentary in circulation cites both a technical path from 5% toward 5.5-6% (ING) and the view that only an Iran resolution or Fed QE would materially lower yields (Interactive Brokers). An August 2026 Reuters strategist poll had a 3-month-ahead median 10Y of 4.50% with 82% flagging upside risk — i.e. consensus was well below the level realized by mid-September.\n- Calendar inside the window: BOJ decision Fri 2026-09-18 (a hike was being discussed; yen at 154.7); quarter-end Wed 2026-09-30 (index duration-extension buying); ISM Oct 1; BLS Employment Situation for September released Fri 2026-10-02 08:30 ET, i.e. ~7.5 hours BEFORE the resolution timestamp. Source: BLS 2026 release schedule.\n- No Oct 1 funding lapse: a CR passed (Senate 90-6 Aug 8; House 370-48) and was signed 2026-09-02, funding the government through Dec 11, 2026, so the Oct 2 data release is not at risk. Source: CRFB Appropriations Watch / FedTools, 2026-09.\nBASE RATES (with class):\n- Over ALL overlapping 12-business-day windows in DGS10 from 2026-06-01 to 2026-09-14 (61 windows): mean change +0.06, min -0.17, max +0.32, SD ~0.12; roughly 5 of 61 windows had a change of +0.28 or larger, all clustered in the current run-up.\n- Over windows CONDITIONAL on the preceding two weeks having risen 15bp+ (the current condition), the same 2026 sample shows continuation more often than reversal, but the sample is small and serially overlapping.\n- Recent daily absolute changes (Sep 2026): mostly 1-4bp with one 12bp day (09-10); daily SD ~4.5-5bp, which scales to ~17bp over 12 trading days under an iid random walk — above the 12bp realized over the same horizon, i.e. the series shows some mean reversion within windows.\n- Prior 5%-handle episode: October 2023, when the 10Y peaked near 5.02 and was lower two weeks later; the 2007 episode is the only other post-GFC-era precedent at this level.\nMARKET INSTRUMENTS: Kalshi lists 10Y-yield range series (daily KXTNOTED, weekly KXTNOTEW, KXUST10AD); pages returned HTTP 429 this run so no strikes, prices, or volumes were obtained. No Polymarket or Manifold contract found.\nSEARCHED FOR BUT NOT FOUND: any live prediction-market price for the Oct 2 10Y level; the actual FOMC statement/dot plot (decision lands after Now); a September 2026 Reuters strategist poll (only the August one surfaced); primary-source confirmation of the reported 3.75-4.00% target range; MOVE-index or 10Y option-implied vol readings for the current horizon.",
+   "reference_class": "Changes in the US 10Y constant-maturity Treasury yield (FRED DGS10) over 12-trading-day windows, measured in the current 2026 high-volatility/rising-yield regime (Jun-Sep 2026, 61 overlapping windows), cross-checked against post-2022 12-day yield changes"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0822,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.4221,
+   "seconds": 95.9,
+   "estimate": {
+    "percentiles": {
+     "10": 4.71,
+     "25": 4.83,
+     "50": 4.95,
+     "75": 5.06,
+     "90": 5.15
+    },
+    "p_above_upper": 0.09
+   },
+   "reasoning": "Spot is 4.96-4.97 midday 2026-09-16 (DGS10 4.97 on 09/14, intraday 5.04 on 09/15, first 5-handle since 2023), with 12 trading sessions to the Oct 2 20:00Z read. At this horizon the series is a random walk, so the median sits at spot; the reference class's +0.05 median 12-day drift (base_rate 5.01) is an artifact of one directional regime and I do not carry it forward. Right-truncation at the open 5.255 bound pulls the conditional median ~2bp below spot to 4.95. Two-sided catalysts are live and roughly offsetting: up from Iran/Hormuz with crude ~$107, hawkish FOMC guidance, quarter-end supply and 5.2% strategist targets; down from demonstrated oil-de-escalation sensitivity (yields fell hard on Aug 3 on exactly this channel), income buyers at the 5% round number, and a credible hike compressing breakevens with 2s10s only +34bp. The Sep employment report prints 7.5h before resolution, a genuine last-day jump. No usable market: Kalshi's 10Y ladders settle on daily/weekly prints rather than an Oct 2 16:00 ET read and were unpriceable (429); no Polymarket or Manifold contract found - unblended.",
+   "sources": [],
+   "reconciliation": "Three disputes mattered. (1) Vol: R1's 12-day SD 0.22 vs R3's 0.17/realized 0.12 is a sample-window difference (all-2026 incl. the +30bp Sep 1 jump vs Jun-Sep only); I take 0.185, which respects the September regime break without pricing the single jump as typical - so I reject R3's 0.38 width as too tight for a window containing FOMC aftermath, PCE, quarter-end and payrolls. (2) Upper-escape frequency: R1's 1-in-6/7 and R3's 5-of-61 are the same overlapping-window statistic over different samples, and both note the qualifying windows all come from the current run-up, so the higher figure double-counts one episode; reconciled to 9%, which also matches 1.6 SD on the settled vol. (3) FOMC hike odds (56% vs 93%) could not be settled from the dossiers - it looks like a timing difference in FedWatch quotes - but it is moot: the decision lands 2026-09-16T18:00Z, four days before the window opens, so it is priced by Sep 21 and only guidance transmits into the period. Settled without dispute: CR signed 2026-09-02 through Dec 11 means no funding lapse and the Oct 2 BLS print is not at risk; no usable human market exists on any venue; the CMT-vs-4pm feed ambiguity is 1-3bp and immaterial. Remaining pure-judgment tie - momentum continuation vs round-number exhaustion - is unbroken by evidence, and the bet I would take is the random walk, not the extrapolation, precisely because every recent headline runs one way.",
+   "disagreements": [
+    {
+     "claim": "Probability of a 25bp hike at the 2026-09-16 FOMC was ~93% (R1) vs 56-70% (R2/R3)",
+     "kind": "factual",
+     "verdict": "Not settleable without web access; most likely a quote-timing difference (FedWatch mid-September vs meeting morning). Moot for this question - the decision precedes the Sep 21 window open, so it enters as priced information and affects the period only via guidance."
+    },
+    {
+     "claim": "12-business-day SD of the 10Y is ~0.22 (R1) vs ~0.12-0.17 (R3)",
+     "kind": "factual",
+     "verdict": "Settled as a sample-period artifact: R1 uses all of 2026 including the +30bp Sep 1 jump, R3 only Jun-Sep. Reconciled to 0.185, giving a 0.47 unconditional 10-90 width."
+    },
+    {
+     "claim": "Frequency of a >=+29bp 12-session move is ~15% (R1) vs ~8% (R3)",
+     "kind": "factual",
+     "verdict": "Settled: both are overlapping-window counts whose qualifying windows are all drawn from the single current run-up, so the 15% figure double-counts. Priced at 9%."
+    },
+    {
+     "claim": "The Oct 2 payrolls release could be disrupted by an FY2027 funding lapse",
+     "kind": "factual",
+     "verdict": "Settled against: R1 and R3 independently cite the CR signed 2026-09-02 funding through Dec 11, so Oct 1 does not bind."
+    },
+    {
+     "claim": "A Kalshi 10Y contract could serve as a market anchor",
+     "kind": "factual",
+     "verdict": "Settled against: all three runs agree the KXTNOTED/KXTNOTEW/KXUST10AD ladders settle on daily/weekly prints, not an Oct 2 20:00Z read, and no live price was retrievable (HTTP 429). Treated as no usable contract; forecast unblended."
+    },
+    {
+     "claim": "Does resolution read the 15:30 ET CMT or a 16:00 ET quote?",
+     "kind": "factual",
+     "verdict": "Unresolvable - the criteria text supplied is blank. Immaterial: the two differ by 1-3bp, inside the noise of a 0.44-wide distribution."
+    },
+    {
+     "claim": "Five straight up sessions imply continuation vs round-number exhaustion at 5%",
+     "kind": "judgment",
+     "verdict": "No evidence breaks the tie; both mechanisms are documented in 2026 (the Aug 3 de-escalation drop and the Sep run-up). Resolved by taking the random-walk median at spot rather than extrapolating either way."
+    },
+    {
+     "claim": "How fat is the right tail given the bound sits only ~29bp above spot",
+     "kind": "judgment",
+     "verdict": "Right-skewed but not as heavy as R1/R2's 11%: the escape requires 1.6 SD and the empirical support for a higher rate is one non-independent episode. Set at 9%."
+    }
+   ],
+   "reference_class": "Overlapping 12-business-day changes in the UST 10Y constant-maturity yield during 2026, weighted to the Jun-Sep high-volatility war/oil regime (n~61-165 overlapping windows depending on start date)"
+  }
+ ]
+}
