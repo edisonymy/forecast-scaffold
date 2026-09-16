@@ -1,0 +1,191 @@
+{
+ "record_id": "2026-09-16-4490a1ba",
+ "question": "What will be the maximum intraday value of the VIX over these biweekly periods in Q3 2026? (Sep 21 - Oct 2)",
+ "question_id": 44684,
+ "url": "https://www.metaculus.com/questions/44534/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-09-16T17:17:51+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.9483,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 16.758553587750857,
+    "25": 18.225336045532252,
+    "50": 20.127189427836896,
+    "75": 23.09813144309217,
+    "90": 27.66566664664986
+   },
+   "p_above_upper": 0.012333333333333333
+  },
+  "phase1": {
+   "10": 16.758553587750857,
+   "25": 18.225336045532252,
+   "50": 20.127189427836896,
+   "75": 23.09813144309217,
+   "90": 27.66566664664986
+  },
+  "phase2": null,
+  "spread_phase1": 1.2,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 16.4,
+   "25": 17.9,
+   "50": 19.9,
+   "75": 22.7,
+   "90": 27.0
+  },
+  "p_above_upper": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.3721,
+   "seconds": 274.4,
+   "estimate": {
+    "percentiles": {
+     "10": 16.5,
+     "25": 17.8,
+     "50": 19.6,
+     "75": 22.8,
+     "90": 27.5
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Spot VIX 17.20 (Sep 15, FRED) after a week of rising rates/oil and an AI-capex repricing; the window (Sep 21-Oct 2, 10 trading days) opens after today's FOMC, where a 25bp hike is ~94% priced, so the dominant path is a post-event vol crush toward 15-16 with the max intraday print set by a single risk-off day. Reference-class median ratio ~1.16x on 17.20 gives ~20.0; I shade the median slightly below that to 19.6 for mean reversion off an elevated spot, then keep a fat right tail because the setup carries genuine regime-break candidates in both directions: 10y through 5%, Brent >$105, a Fed starting a hiking cycle into rich equity valuations, quarter-end on Sep 30, and the September jobs report on Oct 2 at 8:30 ET inside the window. Downside case is bounded: for the max to sit below ~17 VIX must fall and stay sub-16 for two straight weeks, which August showed is possible (max-high/start ratios of 1.04-1.07). No human market prices this contract (Polymarket/Manifold: none found by harness title search; Kalshi KXVIX series: no open markets; no bookmaker), so there is no crowd anchor and nothing to blend. Thin-evidence caveat: I could not retrieve a reliable recent VIX intraday-high series (Cboe CSV truncated, stooq empty, a Yahoo extraction returned values inconsistent with FRED closes and was discarded), so the high-vs-close gap is estimated (~4-7% on the max day) rather than measured.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=VIXCLS",
+    "https://www.macroradar.io/vix",
+    "https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXVIX",
+    "https://www.bls.gov/schedule/",
+    "https://www.cnbc.com/2026/08/28/-september-fed-decision-now-a-coin-flip-as-rate-hike-odds-increase.html",
+    "https://www.thetrading.tools/vix-term-structure",
+    "https://www.crfb.org/blogs/appropriations-watch-fy-2026",
+    "https://www.cnbc.com/2026/09/10/fear-gauge-vix-hedges-volatility-stocks.html"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the MAXIMUM INTRADAY value of CBOE VIX (daily high), not the close, not VIX futures, not VIX3M. Any single tick during the window sets the number.\n\nEVENT WINDOW: Sep 21 2026 -> Oct 2 2026 per the criteria (scheduled resolution 2026-10-02T20:00:00Z = 4pm ET). As of Now 2026-09-16T17:03Z, 0% elapsed; the window opens in ~3 trading days. It contains 10 trading sessions: Sep 21,22,23,24,25,28,29,30 and Oct 1,2.\n\nSTATUS-QUO OUTCOME: VIX oscillates in its 2026 band (roughly 14-19 on closes) and the window max is set by the highest intraday print of an ordinary risk-off session.\n\nEVIDENCE (level and trend):\n- VIX closes (FRED VIXCLS): Sep 15 = 17.20, Sep 14 = 17.10, Sep 11 = 15.84, Sep 10 = 17.84, Sep 3 = 14.32. August ran 14.25-16.50; the June-July range ran 15.03-22.22. 2026 YTD closing max in the retrieved window (Jun 1-Sep 15) = 22.22 (Jun 10); min = 14.25 (Aug 14).\n- macroradar.io/vix (Sep 2026): VIX 10-year percentile 51%, 10-yr average 19.73, 10-yr range 9.14-82.69.\n- Term structure: thetrading.tools reported contango as of Sep 11 close (VIX 15.84 vs VIX3M 18.60, IVTS 0.85, 'day 109 of contango regime'). Not re-verified as of Sep 15-16.\n- Macro, Sep 15 (ifeng/CNBC summary): S&P -0.48%, Nasdaq -0.56%, Philadelphia Semiconductor Index -6% (largest fall since July; NVDA -3%, AMD/AVGO -4%, MU/INTC -5%); cybersecurity names +9-15%. Framed as a repricing of AI capex expectations.\n- Rates: 10y US Treasury printed 5.012% intraday Sep 15, described as the highest since Oct 2023. Brent crude above $105 (quoted $106.48, +1.79%).\n- FOMC: meeting Sep 15-16 2026, statement 2:00pm ET Sep 16, Chair Kevin Warsh press conference 2:30pm ET. Fed funds target held at 3.50-3.75% since Dec 2025. Hike odds moved from ~56% (CNBC, Aug 28, post-Jackson Hole) to ~94.5% on CME FedWatch (Sep 15). The decision lands AFTER this dossier's Now timestamp and BEFORE the window opens.\n- Fiscal: CR signed Sep 2 2026 funding government through Dec 11 2026; the Oct 1 lapse deadline is averted. Next fiscal cliff is Dec 11, outside the window.\n- Calendar inside the window: BLS Employment Situation for September releases Oct 2 2026, 8:30am ET (bls.gov schedule) - i.e. 7.5 hours before resolution. Quarter-end is Sep 30. August PCE conventionally lands in the last week of September (date not verified this run).\n- Election context: US midterms Nov 3 2026, ~4.5 weeks after the window closes; multiple 2026 outlook pieces (Goldman, Morgan Stanley) flag election cycles as historically preceded by a volatility pickup, and a CNBC piece dated Sep 10 2026 describes hedging demand in a 'historically volatile season'.\n\nBASE RATES (with the class each is computed over):\n- Over ALL rolling 10-trading-day windows since 1990: the window's max intraday VIX / spot at window start has approximately 10th ~1.00, median ~1.18, 75th ~1.35, 90th ~1.60, 95th ~1.85.\n- Over windows CONDITIONED on spot being 15-19 at the start (the current condition): similar shape, slightly tighter, median ~1.16.\n- Over the SEVEN non-overlapping 10-day windows actually realized in 2026 Jun 1 - Sep 15 (computed from FRED closes, with an estimated +4-7% close-to-high adjustment): ratios ~1.04, 1.07, 1.07, 1.14, 1.15, 1.25, 1.46 - median ~1.14. This regime has been calmer than the full-history class.\n- Over windows CONDITIONED on containing an FOMC aftermath (window starting 2-4 sessions post-decision): the modal path is implied-vol compression into the following week, which lowers the level but does not remove single-day spikes.\n- Event-in-window count: of the seven 2026 windows above, ONE (Jun 1-12) contained a VIX close above 22; ZERO contained a close above 25.\n- Intraday VIX above 50 has occurred in roughly 8-9 distinct episodes since 1990 (1998, 2001, 2002, 2008-09, 2010 flash crash, 2011, 2015-08, 2018-02, 2020-03, 2024-08), i.e. ~2-3% of all unconditional 10-day windows, and materially rarer conditional on a sub-20 starting spot.\n\nEVIDENCE POINTING UP: Fed likely beginning a hiking cycle into 5% long yields and $106 Brent; AI/semis capex repricing already producing 6% single-day sector drawdowns; equity concentration (top 10 names ~40% of S&P) means single-name disappointments transmit to index vol; quarter-end rebalancing Sep 30; September payrolls Oct 2 inside the window; midterm-October seasonality.\nEVIDENCE POINTING DOWN: term structure in contango as of Sep 11 with a 109-day regime; the largest scheduled catalyst (FOMC) fires BEFORE the window opens, and post-decision IV crush is the standard pattern; the Oct 1 shutdown risk is removed; August demonstrated the market can hold 14-16 for weeks; hike is ~94% priced, so the decision itself is not a surprise vector.\n\nSEARCHED FOR BUT COULD NOT FIND: (a) a reliable recent VIX OHLC series with daily HIGHS - the Cboe VIX_History.csv fetch truncated at 1997, stooq returned empty, and a Yahoo chart extraction returned highs inconsistent with FRED closes and was discarded, so the close-to-high gap here is an estimate, not a measurement; (b) any tradeable market on this quantity - Polymarket and Manifold title search returned no candidate, the Kalshi KXVIX series endpoint returned an empty markets array, no bookmaker found; (c) a verified late-September 2026 PCE release date; (d) live VIX futures curve levels for Sep 16 (vixcentral now redirects to volchart.io, which did not render data); (e) the FOMC outcome itself, which had not been published as of the Now timestamp.",
+   "reference_class": "Rolling 10-trading-day windows since 1990 in which VIX spot was 15-19 at the window's start, measuring the window's maximum intraday VIX as a ratio to that starting spot"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.1651,
+   "seconds": 268.9,
+   "estimate": {
+    "percentiles": {
+     "10": 17.5,
+     "25": 19.0,
+     "50": 20.8,
+     "75": 23.5,
+     "90": 28.0
+    },
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Spot VIX is 16.83 intraday Sep 16 (17.20 close Sep 15); the highest intraday print in the last 12 sessions is 18.17. Reference class: 10-session windows beginning ~4 sessions after a VIX close of 16-18, whose max daily high runs a median ~1.22x spot, implying ~20.5. Two adjustments roughly offset. Down: the window opens after a fully-priced (94.5%) FOMC hike, so short-dated vol typically crushes into Sep 18; the Oct 1 shutdown was defused by the Sep 2 CR; VIX has reverted to 14-16 repeatedly all summer through the same war tape. Up: 10y at 5.012%, Brent $106, SOX -6% on AI-capex repricing, a Fed hiking for the first time since 2023, a documented crowded short-vol/short-dealer-vega setup, plus quarter-end and the Oct 2 payrolls print inside the window and the most volatile seasonal stretch of the year. This is a maximum statistic over 10 sessions, so the distribution is right-skewed: median just above 20, fat right tail through the high 20s. No prediction market prices this question (checked Polymarket, Manifold, Kalshi) and VIX futures are only a near-miss instrument, so no market blending was applied.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=VIXCLS",
+    "https://www.investing.com/indices/volatility-s-p-500-historical-data",
+    "https://www.macroradar.io/vix",
+    "https://djellaldjouad.com/blog/vix-vvix-volmageddon-positioning-july-2026/",
+    "https://www.chase.com/personal/investments/learning-and-insights/article/september-2026-rate-hike-now-expected-amid-energy-shocks",
+    "https://www.usnews.com/news/politics/articles/2026-09-01/us-house-has-enough-votes-to-pass-stopgap-funds-to-prevent-shutdowns-on-oct-1",
+    "https://kalshi.com/category/financials"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the maximum INTRADAY print of the Cboe VIX spot index (daily highs) during the window - not closing values, not VIX futures, not VVIX.\n\nEVENT WINDOW: Sep 21 2026 -> Oct 2 2026 20:00 UTC per the criteria; as of Now (2026-09-16T17:03Z) 0% elapsed - the window has not opened and begins in ~4.1 calendar days (3 trading sessions away). It spans 10 trading sessions (Sep 21,22,23,24,25,28,29,30, Oct 1,2).\n\nSTATUS-QUO OUTCOME: VIX continues the range it has held since Aug 1 (closes 14.25-18.77, no close above 20.66 since Jul 29), producing a window maximum in the high-teens to low-20s.\n\nEVIDENCE:\n- Spot VIX intraday Sep 16 2026: open 16.91, high 17.15, low 16.55, last 16.83 (Investing.com VIX OHLC, Sep 16 2026).\n- Recent closes: Sep 15 17.20, Sep 14 17.10, Sep 11 15.84, Sep 10 17.84, Sep 9 16.46, Sep 3 14.32 (FRED VIXCLS, through Sep 15 2026).\n- Highest intraday VIX print in the last 12 sessions: 18.17 (Sep 10 and Sep 14 2026). 2026 intraday low ~14.18 on Aug 17 (Investing.com; tradingkey, Aug 2026).\n- 2026's only large vol event to date: April spike to 52.33 on tariff/retaliation news, described as a 19-day stress episode (MacroRadar, Sep 2026). VIX 10-yr avg 19.73, 10-yr min 9.14, 10-yr max 82.69; current reading ~51st percentile of the 10-yr distribution.\n- Fed: FOMC decision 2pm ET Wed Sep 16 2026. CME FedWatch put a 25bp HIKE at ~94.5% - would be the first hike since 2023. July FOMC held at 3.50-3.75% on a 9-3 vote with three dissents for a hike (Chase/Kiplinger/CBS, Sep 2026). The decision lands BEFORE the window opens.\n- Rates/commodities: 10y Treasury touched 5.012% intraday Sep 15, highest since Oct 2023; Brent above $105 (futures $106.48, +1.79%) (ifeng/CNBC, Sep 15 2026). Inflation is ~1pp higher than before the Iran conflict began end-Feb 2026; diesel above $6/gal.\n- Equities Sep 15 2026: Dow -0.29%, S&P 500 -0.48%, Nasdaq -0.56%; SOX -5.9% (largest drop since July), NVDA -3%, AMD/AVGO -4%, MU/INTC -5%. Cybersecurity/software rallied hard (CRWD/PANW +13%, ZS +15.3%) - an AI-capex rotation, not a broad de-risking.\n- Fiscal: the Oct 1 shutdown risk is OFF. House passed the CR 370-48 on Sep 1, Senate Aug 8, signed Sep 2 2026; government funded at current levels to Dec 11 2026 (US News, NBC News, CRFB).\n- Positioning: a July 15 2026 vol-structure analysis flagged dealers short ~5.4m vega across the VIX complex, faded index put demand after a ~10% YTD S&P rally, and gamma-inversion risk on a sharp spike; VVIX 93.53 vs VIX 16.23 that day, VIX futures UX1 17.00 / UX4 (Oct expiry) 20.32 - normal contango (djellaldjouad.com, Jul 2026).\n- Hedging demand: CNBC reported Sep 10 2026 that the VIX was attracting hedges 'in historically volatile season' (article body not retrievable, 403).\n- Scheduled in-window catalysts: core PCE ~Sep 25, quarter-end Sep 30, September jobs report Fri Oct 2 at 8:30 ET (inside the window, ~3.5h before the 20:00 UTC resolution), plus post-decision Fedspeak. VIX October futures expiry is Oct 21, outside the window.\n\nBASE RATES:\n- Over all 10-session windows since 1990 lagged ~4 sessions from a day when VIX closed 16-18: max intraday VIX / spot ratios approximately p10 1.03x, p25 1.13x, p50 1.22x, p75 1.38x, p90 1.65x. (Class = conditioned on the 16-18 starting level, which is the known conditioning variable here.)\n- Over 2026's own 8 non-overlapping lagged 10-session windows (Jun-Sep, computed from FRED VIXCLS): max-CLOSE/spot ratios 0.99, 1.13, 1.14, 1.15, 1.20, 1.20, 1.32, 1.39 - median ~1.17. This sub-class is drawn from a quiet summer with anchors at 14.2-16.6.\n- Max-daily-HIGH to max-daily-CLOSE gap within a 10-session window, measured on Sep 1-16 2026 OHLC: 18.17 vs 17.84 = 1.018; single-day high/close ratios in that stretch ranged 1.003 to 1.118 (mean ~1.05).\n- Event-in-window count: of the 10-session windows since Aug 1 2026, zero contained an intraday print above 19; the last close above 20 was Jul 29 (20.66) and the last above 22 was Jun 10 (22.22).\n- Unconditional frequency of VIX touching 30 intraday in a random 2-week window is roughly 8-10% of windows since 1990; touching 50 is on the order of 1%.\n\nMARKETS: no Polymarket, Manifold or Kalshi contract found on VIX levels or ranges for this window (harness title search plus own checks of Kalshi's financials category); no bookmaker line found. The only tradeable proxy is the VIX futures curve, which references a settlement date (Oct 21) outside this window and a 30-day forward expectation rather than a spot intraday maximum.\n\nSEARCHED FOR BUT COULD NOT FIND: the Sep 16 FOMC outcome and statement (decision lands at 18:00 UTC, after Now); current VIX futures curve and VVIX as of mid-September (only the Jul 15 snapshot was retrievable); the CNBC Sep 10 hedging article body (403); a full VIX daily-high series before Aug 31 2026; any prediction market or bookmaker pricing this quantity.",
+   "reference_class": "10-trading-session windows since 1990 (2026 sub-sample checked separately) beginning ~4 sessions after a day on which spot VIX closed between 16 and 18, scored on the maximum intraday VIX high within the window"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.9402,
+   "seconds": 217.4,
+   "estimate": {
+    "percentiles": {
+     "10": 16.3,
+     "25": 17.9,
+     "50": 20.0,
+     "75": 23.0,
+     "90": 27.5
+    },
+    "p_above_upper": 0.012
+   },
+   "reasoning": "VIX sits at 16.83 on Sep 16 ahead of a near-certain first Fed hike since 2023; recent intraday highs have run 18.0-18.2. Reference class (10-trading-day forward max intraday VIX from spot 15-20) implies a median near 19.6-20. Two-sided adjustments roughly offset at the center: FOMC resolves BEFORE the window (post-event vol crush, and the Sep 30 shutdown risk was defused by the Sep 2 CR through Dec 11), versus late-September seasonality, quarter-end, the Oct 2 payrolls print inside the window, and a fragile macro backdrop (10y at 5.01%, Brent $106, Iran war, SOX -6% on AI-capex repricing, a Fed chair who has abolished forward guidance). The right tail is fatter than normal because a yield break above 5% plus a hawkish surprise is a concrete mechanism for a 30+ VIX; I price VIX printing above 50 intraday at ~1.2%. No human prediction market prices this contract (checked Polymarket, Manifold, Kalshi, bookmakers), so no crowd blend was applied.",
+   "sources": [
+    "https://www.investing.com/indices/volatility-s-p-500-historical-data",
+    "https://www.macroradar.io/vix",
+    "https://robomacro.com/notes/VIX_Daily/VIX_Daily_20260901.html",
+    "https://finance.yahoo.com/markets/stocks/articles/stock-market-today-sept-16-133949098.html",
+    "https://www.kucoin.com/blog/september-2026-fomc-decision-will-the-fed-hike-rates-or-hold",
+    "https://www.usnews.com/news/politics/articles/2026-09-01/us-house-has-enough-votes-to-pass-stopgap-funds-to-prevent-shutdowns-on-oct-1",
+    "https://govtschemes.org/government-shutdown-october-2026/",
+    "https://kalshi.com/category/financials",
+    "https://www.macroption.com/vix-all-time-high/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the maximum INTRADAY VIX print (Cboe daily high), not the daily close and not VIX futures. Daily highs have recently run 3-12% above same-day closes (e.g. Sep 11: close 15.84 / high 17.71; Sep 14: close 17.10 / high 18.17).\n\nEVENT WINDOW: Sep 21 -> Oct 2, 2026 per the question title, ending 2026-10-02T20:00Z (16:00 ET, the cash close). 10 US trading sessions. As of Now (2026-09-16T17:03Z) the window has NOT started; 0% elapsed, and it begins 3 trading sessions from now (Sep 17, 18 intervene).\n\nSTATUS QUO: VIX in the mid-to-high teens. Spot 16.83 intraday on Sep 16 (high 17.15, low 16.55), down 2.4% ahead of the Fed. Term structure was in contango with a 70-day streak as of Sep 1; VIX/VIX3M 0.914; 21-day realized vol 10.7% vs implied ~15.8 (variance risk premium ~4.2 pts) [robomacro VIX Daily, 2026-09-01].\n\nEVIDENCE\n- Daily VIX (close / high / low), investing.com, retrieved 2026-09-16: Sep 16 16.83/17.15/16.55; Sep 15 17.20/18.03/16.79; Sep 14 17.10/18.17/16.58; Sep 11 15.84/17.71/15.59; Sep 10 17.84/18.17/16.29; Sep 09 16.46/16.68/15.57; Sep 08 15.72/15.94/15.22; Sep 07 15.30/15.32/14.99; Sep 04 14.53/14.58/13.80; Sep 03 14.32/15.44/14.23; Sep 02 15.20/16.82/15.12; Sep 01 16.34/16.80/14.95. Max intraday over these 12 sessions: 18.17.\n- 2026 VIX path: peak ~31-35 in late March on the Iran war/oil spike; April average 19.31 (close 17.83 on Apr 28); 2026 low 14.25 on Aug 14 [macroption, macroradar, ucapital, 24/7WallSt Apr 20 2026].\n- Positioning as of 2026-09-14: VIX 3-month change +3.9%, 6-month +17.7%, 12-month +17.8%; 10-year percentile 51% — i.e. near its own 10-year median [macroradar.io/vix].\n- FOMC decision lands 2026-09-16 14:00 ET — BEFORE the window opens. Futures priced 92.5% odds of a 25bp hike to 3.75-4.00%, the first hike since 2023; July 2026 vote was 9-3 with three dissents for a hike [Yahoo Finance Sep 16 2026; KuCoin FOMC preview; Chase].\n- Chair Kevin Warsh has scaled back forward guidance; market commentary explicitly ties this to a higher-surprise, higher-volatility reaction function going forward [Yahoo Finance, 2026-09-16].\n- 10-year Treasury yield touched 5.012% intraday on Sep 15, described as its highest since Oct 2023 (one outlet framed it as a 2007-era high); Brent crude above $105-106.48, up 1.79% intraday [ifeng/CNBC recap, 2026-09-15].\n- Philadelphia Semiconductor Index fell ~6% on Sep 15, its largest drop since July (NVDA -3%, AMD/AVGO -4%, MU/INTC -5%), attributed to AI-capex repricing; cybersecurity names rose 9-15% the same day [same recap].\n- Iran war ongoing since roughly early March 2026 (a Seeking Alpha piece was '32 days into the Iran war' on 2026-04-03); oil has been reactive to each geopolitical headline [Wikipedia 2026-2028 oil chronology; Morgan Stanley].\n- Government shutdown risk for Oct 1 is REMOVED: a continuing resolution passed the Senate 90-6 (Aug 8) and House 370-48 (Sep 1) and was signed 2026-09-02, funding the government through Dec 11 [US News 2026-09-01; NBC News; CRFB].\n- Scheduled data inside the window: August PCE (~Sep 25), quarter-end Sep 30, and the September employment report on Fri Oct 2 at 08:30 ET — inside the 20:00Z cutoff. Nothing else of CPI/FOMC magnitude falls in the window (September CPI and the next FOMC are later in October).\n- Seasonality: September and October are documented as the months in which the VIX jumps most after midyear lows [CNBC, 2026-09-10, 'Fear gauge VIX attracts hedges in historically volatile season'].\n\nBASE RATES\n- Over 10-trading-day windows since 1990 with spot VIX 15-20 at the start and a contango curve, the ratio (max intraday VIX in window)/(spot at start) has roughly p10 1.00, p25 1.08, p50 1.17, p75 1.33, p90 1.65, p95 ~1.80. Class: conditional on spot 15-20, NOT the unconditional all-levels ratio (which is more skewed because low-VIX starts have more room to multiply).\n- Unconditional over all VIX levels, the same 10-day forward max ratio has a fatter right tail (p90 nearer 1.9) — the 15-20 conditioning meaningfully tightens it.\n- Realized analogue this month: over the 12 sessions Sep 1-16, max intraday 18.17 against a Sep 1 close of 16.34 — a realized 10-day-ish ratio of ~1.11.\n- Same-calendar-window history (max intraday VIX in the Sep 21 - Oct 2 stretch): 2015 ~29; 2016 ~17; 2017 ~11; 2018 ~15; 2019 ~21; 2020 ~31; 2021 ~26; 2022 ~35; 2023 ~20; 2024 ~20; 2025 ~17-19. Class: the identical calendar window across 11 years, unconditional on the starting VIX level.\n- VIX intraday prints above 50 have occurred in a handful of episodes (Aug 2024 ~65, Apr 2025 ~52, Mar 2020 ~85, 2008); none in 2026, whose high was ~31-35 in March.\n\nSEARCHED FOR BUT NOT FOUND\n- Any human prediction market on this: no Polymarket or Manifold candidate (harness title search); my Kalshi search returned Fed-decision and general financial/index markets but no VIX-level or VIX-maximum contract; no bookmaker line. So there is no price to anchor on and no contract-terms comparison to make.\n- Live VIX futures term structure for Sep 16 (vixcentral now redirects to volchart.io, which served no data; the only dated quote found was a stale Dec 19 2025 snapshot showing the Oct 2026 contract at 22.04 — a pre-war-regime number, not a current one).\n- The Sep 16 FOMC outcome and Warsh's press-conference tone (the decision had not been released as of Now).\n- Cboe primary-source intraday highs (relied on investing.com's high/low column instead).",
+   "reference_class": "10-trading-day windows since 1990 in which spot VIX at window start was 15-20 with a contango term structure; outcome measured as the maximum intraday VIX print within the window"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.2463,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.3891,
+   "seconds": 78.8,
+   "estimate": {
+    "percentiles": {
+     "10": 16.4,
+     "25": 17.9,
+     "50": 19.9,
+     "75": 22.7,
+     "90": 27.0
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Spot ~16.85 (Sep 16 intraday, two independent runs agree); highest intraday print in the last 12 sessions is 18.17. The 10-session forward max-intraday ratio from a 15-20 contango start has a median ~1.18, giving ~19.9; the identical-calendar-window history (2015-2025, median ~20) agrees. The FOMC hike resolves BEFORE the window opens, so the modal path is post-event IV crush with the max set by one risk-off session; the Oct 1 shutdown risk was defused by the Sep 2 CR. Offsetting upside: 10y at 5.01%, Brent $106, SOX -6% on AI-capex repricing, quarter-end Sep 30, and September payrolls inside the window on Oct 2. Right-skewed as a maximum statistic, so a fat tail through the high 20s, but 2026's own peak was ~31-35, not 50+. No human market prices this contract (Polymarket, Manifold, Kalshi KXVIX, bookmakers all checked by the runs: none found), so no blend was applied.",
+   "sources": [],
+   "reconciliation": "No web access on this run, so factual disputes were settled from the dossiers. (1) Anchor level: Runs 2 and 3 independently carry Sep 16 Investing.com OHLC (16.83/17.15/16.55) that Run 1 lacked; anchored at ~16.85 rather than Run 1's 17.20. (2) Close-to-high gap: Run 1 estimated +4-7% and applied it to close-derived base rates; Run 2 measured the relevant statistic (max-high vs max-close WITHIN a window) at 1.018, with per-day gaps averaging ~1.05. The measurement governs, so close-based ratios need only ~2% uplift, which lowers Run 1's implied median. (3) 2026 peak: Run 2's 'April spike to 52.33' conflicts with Runs 1/3 (~31-35 in March/April) and Run 3 separately dates a ~52 print to April 2025 - Run 2 most likely mis-assigned the year, so I hold 2026's high at ~31-35 and keep p_above_upper at 1% rather than inflating it. (4) Contango streak length (109 days as of Sep 11 vs 70 days as of Sep 1) is arithmetically inconsistent and could NOT be settled here; both runs agree the curve is in contango, which is the fact the forecast rests on, so the discrepancy carries no weight. (5) All three independently found no Polymarket/Manifold/Kalshi/bookmaker contract - settled, no anchor. (6) The reference-class median ratio (1.16/1.22/1.17) is unverifiable model recall, a JUDGMENT dispute with no tie-breaker; I took ~1.18, near the cluster, and adopted Run 3's reference class and Run 1/3-style dispersion because I agree with them. The net of the settled facts (later, lower spot; smaller high-vs-close correction; 2026 not a 50-print year) puts me at or just below the lowest run median rather than between them - that is where the reconciled evidence lands, not a compromise. Unresolved and priced as uncertainty: the Sep 16 FOMC outcome and Warsh's press-conference tone, unknown to every run and to me, which sets the level the window opens from.",
+   "reference_class": "10-trading-day forward windows since 1990 starting with VIX spot 15-20 and a term structure in contango; statistic = max intraday VIX in window / spot at window start (median ratio ~1.18)"
+  }
+ ]
+}
