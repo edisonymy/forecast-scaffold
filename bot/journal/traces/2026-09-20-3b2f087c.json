@@ -1,0 +1,252 @@
+{
+ "record_id": "2026-09-20-3b2f087c",
+ "question": "How much will Crude Oil Futures total price returns exceed S&P 500 Futures in these biweekly periods of Q3 2026? (Sep 21 - Oct 2)",
+ "question_id": 44652,
+ "url": "https://www.metaculus.com/questions/44521/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-09-20T19:49:09+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.9217,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -12.833333333333334,
+    "25": -6.833333333333333,
+    "50": -1.5,
+    "75": 4.166666666666667,
+    "90": 9.833333333333334
+   },
+   "p_below_lower": 0.03833333333333334,
+   "p_above_upper": 0.035
+  },
+  "phase1": {
+   "10": -12.833333333333334,
+   "25": -6.833333333333333,
+   "50": -1.5,
+   "75": 4.166666666666667,
+   "90": 9.833333333333334
+  },
+  "phase2": null,
+  "spread_phase1": 1.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -15.0,
+   "25": -8.3,
+   "50": -2.8,
+   "75": 2.7,
+   "90": 9.2
+  },
+  "p_below_lower": 0.045,
+  "p_above_upper": 0.035
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.1267,
+   "seconds": 232.4,
+   "estimate": {
+    "percentiles": {
+     "10": -14.0,
+     "25": -6.5,
+     "50": -1.5,
+     "75": 3.5,
+     "90": 9.5
+    },
+    "p_below_lower": 0.035,
+    "p_above_upper": 0.025
+   },
+   "reasoning": "Reference class: 10-trading-day (Sep 21-Oct 2 = exactly 10 sessions) return differences between front-month WTI futures and S&P 500 futures; long-run median is roughly -0.5 (oil drift ~0, equities ~+0.5%/2wk), and that is my anchor. The 2026 Hormuz-crisis regime widens dispersion enormously without clearly shifting the center: overlapping 10-day WTI windows this quarter ran -7% (early Aug, reopening hopes), +1% (mid-Aug), +22% (Sep 1-15), +14% (Sep 4-18). Center pulled slightly negative by three things: an ~$25-30 geopolitical premium versus analyst Q4-26 Brent targets of $70-90 (JPM $80, EIA ~$90) and a spike catalyst that is visibly being mitigated by Saudi rerouting; negative near-term momentum (3 down sessions, -0.5% on the week); and a probable front-month roll inside the window (CLV26 expires ~Sep 22, curve backwardated in a supply crisis) worth roughly -1% to -2% if the resolver uses unadjusted continuous prices. Offsetting: live war with repeated reignitions, winter demand, record diesel, and an equity leg facing a hiking Fed with the 10y near 5% (a falling S&P widens the spread upward). Those roughly cancel, so I sit just below the base rate with very wide, mildly left-skewed tails. Open bounds are priced: a war-ending deal could collapse the premium (early Aug showed -7% on mere reopening expectation; March-to-August was ~-35%) past -25, and a Hormuz closure or a direct hit on export infrastructure could clear +25 (Feb-Apr ran +58%). Evidence here is decent on prices/levels and thin on forward catalysts inside the window, which argues for staying close to the anchor rather than leaning on any narrative.",
+   "sources": [
+    "https://en.wikipedia.org/wiki/2026%E2%80%932028_world_oil_market_chronology",
+    "https://tradingeconomics.com/commodity/crude-oil",
+    "https://en.wikipedia.org/wiki/2026_Strait_of_Hormuz_crisis",
+    "https://www.aljazeera.com/news/2026/9/6/us-iran-engaged-in-tanker-war-where-is-the-months-long-conflict-headed",
+    "https://kalshi.com/tag/wti",
+    "WebSearch result summaries for CBOE OVX levels Aug-Sep 2026 (Yahoo ^OVX / MacroMicro) - not opened directly",
+    "WebSearch result summaries for VIX close 2026-09-18 (CNBC .VIX / Yahoo ^VIX) - not opened directly",
+    "https://invezz.com/tr/haber/2026/09/18/hazine-getirileri-yukselirken-dow-110-puan-dustu-petrol-100-dolarin-uzerinde-kaldi/"
+   ],
+   "dossier": "SUBJECT: two-week return spread, front-month WTI crude futures minus front-month S&P 500 futures, Sep 21 - Oct 2 2026.\n\nEVENT WINDOW: 2026-09-21 -> 2026-10-02 per the question criteria; as of Now (2026-09-20T19:33Z), 0% elapsed. That is exactly 10 US trading sessions (no US market holidays in the span).\n\nRESOLUTION INSTRUMENT NOTE: resolves off the price return of futures contracts, not spot crude and not the S&P 500 cash index; no dividends enter either leg. Two mechanical facts to check rather than assume: (a) the WTI October contract CLV26 expires ~Sep 22 2026, so a front-month roll falls INSIDE the window - an unadjusted continuous front-month series steps by the Oct/Nov calendar spread, a roll-adjusted series does not; (b) the S&P 500 futures roll already happened on Sep 17-18 (triple witching, per Invezz 2026-09-18), so the equity leg is on the December contract for the whole window and carries no roll step.\n\nPRICE / LEVEL FACTS:\n- WTI settled $100.30 on 2026-09-18, -1.58% on the day; Brent $103.87, -0.91% (Invezz, 2026-09-18).\n- WTI monthly change +18.85%, 12-month change +60.74%; oil fell for a third consecutive session and was -0.5% on the week (TradingEconomics crude page, retrieved 2026-09-20).\n- S&P 500 cash closed 7,647.19 on 2026-09-18 (+0.12%); Dow -0.22%, its third straight weekly decline of ~2% and worst week since March; Nasdaq the only index up on the week (Invezz, 2026-09-18).\n- VIX closed 14.81 on 2026-09-18, down from 15.44 (Sep 17) and 17.71 (Sep 16); CNBC reported a 2026 low for the VIX in August (CNBC .VIX / Yahoo ^VIX summaries, Sep 2026).\n- CBOE OVX: 47.17 on 2026-08-18; peaked ~126 in early April 2026; ~60 mid-2026; 52-week range 28.40-125.99 (Yahoo ^OVX / MacroMicro summaries). No post-Sep-9 print located.\n\nMACRO / POLICY:\n- The Fed raised its target range 25bp to 3.75-4.00% - its first hike in three years. CME FedWatch prices >50% odds of another hike at the October meeting, up from 42.5% a week earlier and 7.2% a month earlier (Invezz, 2026-09-18).\n- US 10-year yield briefly exceeded 5%, settling 4.998%, up >5bp (Invezz, 2026-09-18).\n\nGEOPOLITICS (both directions):\n- Active US-Iran tanker war centered on the Strait of Hormuz since Feb 2026; US resumed strikes on Iranian targets the week of Sep 4 (USNI News, 2026-09-04). Iran struck at least 13 commercial vessels in August; tanker MT Sidr attack killed two seafarers; oil tanker El Gaia abandoned with 2 crew missing on 2026-09-13 (Al Jazeera / Wikipedia Hormuz-crisis timeline).\n- US and Iran have been in war-ending negotiations since June 2026 based on a signed memorandum of understanding, while continuing to exchange strikes (Al Jazeera, 2026-09-06).\n- Treasury Secretary Bessent: ~10 mb/d still transiting Hormuz, 15-17 mb/d on one Tuesday (Al Jazeera, Sep 2026).\n- Mitigation in progress: satellite imagery shows Saudi Arabia moving 2.8 mb/d through the Strait plus ship-to-ship transfers at Ras Tanura, after East-West pipeline losses (TradingEconomics commentary, retrieved 2026-09-20).\n- China asked Iran, via Saudi Arabia, to limit Houthi attacks on Saudi oil infrastructure (Invezz, 2026-09-18).\n- Diesel hit a record $6.06/gal on 2026-09-11, above the $5.82 post-Ukraine-invasion record; US gasoline $4.10 on 2026-08-20 (Wikipedia oil chronology).\n\nFORECAST LEVELS FROM INSTITUTIONS (i.e. where professionals put crude, versus the ~$104 Brent spot):\n- JPMorgan: Brent to average $80 in Q4 2026 ($86 in Q3). EIA STEO: Brent ~$90/b in H2 2026, ~$85 in Q3. Goldman/Morgan Stanley/Citi Q4-26 Brent range $70-80 (search summaries, Sep 2026).\n\nBASE RATES AND THE CLASS EACH IS COMPUTED OVER:\n- Over ALL rolling two-week windows historically, the WTI-minus-S&P price-return spread has a median near -0.5 to 0 (crude drift ~0 over two weeks, equities ~+0.5%) and a 1-sigma width of roughly 5-6 points in a calm regime.\n- CONDITIONAL on the 2026 Hormuz-crisis regime (Feb 2026-present), the observed overlapping 10-session WTI legs alone were: ~-7% (Aug 1-14, on Hormuz-reopening expectations), ~+1% (Aug 14-28), ~+22% (Sep 1-15), ~+14% (Sep 4-18); and over the full crisis, ~$70 -> $111-126 (Feb 28 - early Apr), then back to $82-86 by mid-August, then $100+ by Sep 9. Brent first crossed $100 on 2026-03-08 and peaked at $126.\n- Component decomposition for the same 10-session horizon, from current implied vols: OVX ~47 -> WTI SD ~9.4% per 10 sessions; VIX ~14.8 -> S&P SD ~2.9%. Oil-equity return correlation in a supply-shock regime has historically run modestly negative.\n- Over the last 12 months the S&P 500 leg's two-week moves have been small relative to the oil leg in essentially every window.\n\nSTATUS-QUO OUTCOME (what happens if nothing new occurs): both legs drift, the spread lands within a few points of zero, with the sign determined mostly by whether crude holds the September premium and by any roll step in the crude series.\n\nMARKETS: no Polymarket or Manifold contract on this spread (harness title search). Kalshi lists WTI price-level ladders (KXWTI daily 'WTI oil on day', KXWTIDIRY year-end) - different instrument (absolute level, no S&P leg, different horizon). No bookmaker line found. Kalshi is separately seeking CFTC approval for a perpetual WTI contract (BOE Report, 2026-09-02).\n\nSEARCHED FOR BUT COULD NOT FIND: an OVX print after mid-August 2026; the current WTI Oct/Nov calendar spread (degree of backwardation); a confirmed OPEC+ meeting date falling inside Sep 21 - Oct 2 (the alliance's monthly cadence typically puts the next one in the first days of October, i.e. after the window); the Sep 21 opening prints for either leg; any scheduled US-Iran negotiating round or deadline inside the window; and whether the resolver's crude series is roll-adjusted.",
+   "reference_class": "Two-week (10-trading-day) total price return of front-month WTI crude futures minus front-month S&P 500 futures, over rolling windows in the 2026 Hormuz-crisis oil regime (Feb 2026-present), anchored to the long-run unconditional distribution of the same spread"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0355,
+   "seconds": 261.8,
+   "estimate": {
+    "percentiles": {
+     "10": -14.5,
+     "25": -8.5,
+     "50": -2.0,
+     "75": 5.5,
+     "90": 12.0
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Reference class (10-trading-day WTI-minus-S&P return spreads) has a median near -0.5pt, and conditioning on the known state -- OVX 61, wartime supply disruption -- the SD is ~12-13pt rather than the ~6-7pt unconditional figure. WTI sits at $100.30 (Sep 18), +18.9% on the month and +60.7% on the year, with Houthi strikes on Saudi infrastructure, the East-West pipeline shut since Sep 11, and Hormuz throughput at a trickle; the S&P 500 (7,647) faces a hiking Fed, a 10y near 5%, and the Sep jobs report on Oct 2 inside the window. Center is tilted modestly negative: geopolitical-premium decay absent fresh escalation (crude gave back gains to close below $100 on Sep 18), late-September refinery-maintenance seasonality, and an unresolved roll artifact -- CLV26 expires Sep 22 mid-window with Oct/Nov backwardated ~$4.7 (4.6%), so an unadjusted front-month series books ~-4.6% that an adjusted series does not (weighted ~40/60, worth ~-1.5pt and extra bimodal spread). Offsetting: strong crude momentum and a negative oil/equity correlation that inflates the spread's tails in both directions. Both bounds are open and both have concrete mechanisms -- full Hormuz closure or an Abqaiq-scale strike on the upside, a definitive US-Iran deal unwinding a $25-30/bbl premium on the downside -- each priced at 3%. No market prices this spread (Kalshi's WTI contracts are price-level-only, wrong window, wrong instrument), so no crowd blend was applied.",
+   "sources": [
+    "https://tradingeconomics.com/commodity/crude-oil",
+    "https://finance.yahoo.com/quote/%5EOVX/",
+    "https://www.dtnpf.com/agriculture/web/ag/news/world-policy/article/2026/09/15/oil-steady-100-bbl-escalating-houthi",
+    "https://commodity-board.com/crude-oil-futures-slide-as-forward-curve-softens-and-flattens",
+    "https://en.wikipedia.org/wiki/2026_Strait_of_Hormuz_crisis",
+    "https://kalshi.com/tag/wti",
+    "https://www.schwab.com/learn/story/weekly-traders-outlook",
+    "https://invezz.com/tr/haber/2026/09/18/hazine-getirileri-yukselirken-dow-110-puan-dustu-petrol-100-dolarin-uzerinde-kaldi/",
+    "https://www.cnbc.com/2026/09/18/stock-market-next-week-outlook-for-sept-21-25-2026.html"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the difference between Crude Oil Futures and S&P 500 Futures total price returns over the window, not off spot WTI, not off an energy ETF, and not off Brent. The exact price series is NOT specified in the criteria text provided; this matters because NYMEX WTI Oct-2026 (CLV26) expires Sep 22, INSIDE the window. An unadjusted front-month continuous series books the Oct->Nov roll gap as a return; a back-adjusted series or a single held contract does not. Oct/Nov WTI was quoted ~$101.3 vs ~$96.6 (commodity-board.com, mid-Sep 2026), i.e. ~4.6% backwardation between the two.\n\nEVENT WINDOW: Sep 21 -> Oct 2, 2026 per the criteria; as of 2026-09-20T19:33:48Z, 0% elapsed. 10 US trading days (Sep 21-25, Sep 28-Oct 2). Resolution 2026-10-02T20:00:00Z.\n\nSTATUS-QUO OUTCOME (what happens if nothing new occurs): both legs drift, crude's geopolitical premium neither expands nor unwinds, and the spread lands near its reference-class median, plus or minus whatever the roll convention contributes.\n\nCRUDE LEVEL AND TREND\n- WTI settled $100.30/bbl Sep 18, 2026, -1.58% on the day; Brent $103.87, -0.91% (Invezz/tradingeconomics, Sep 18).\n- WTI weekly change -0.5%; 1-month +18.85%; 1-year +60.74% (tradingeconomics, Sep 18).\n- NYMEX WTI Oct delivery quoted $101.68 and ICE Brent Nov $105.89 mid-September, with a session high of $104.21 (DTN/PF, Sep 15).\n- WTI Oct-2026 contract closed near $85/bbl on Aug 24, 2026, with the forward curve then described as moderately backwardated and flattening (commodity-board.com).\n- Crude closed below $100 on Sep 18 after a volatile session, described as markets adjusting expectations for the supply impact of the Saudi pipeline closure (tradingeconomics).\n\nSUPPLY / GEOPOLITICS (both directions)\n- Saudi East-West Crude Oil Pipeline shut Sep 11, 2026; Houthi strikes on Saudi infrastructure continuing, with Houthi consolidation along Red Sea maritime positions (DTN/PF Sep 15; thehill.com).\n- Analyst estimates cited in mid-Sep coverage put potential additional disruption at 4-5% of global supply if infrastructure damage compounds (DTN/PF).\n- Hormuz throughput described as 'a trickle'; US-Iran 60-day ceasefire lapsed in August with no deal; Tehran seeking control of and tolls on the waterway, Washington opposed (CNBC Aug 17; Wikipedia '2026 Strait of Hormuz crisis'; Euronews Aug 10).\n- China reportedly asked Iran via Saudi Arabia to restrain Houthi attacks on Saudi oil infrastructure (Invezz, Sep 18).\n- Middle East production expected to rise gradually as Hormuz and alternative routes reopen, though output stays below pre-conflict averages into Q2 2027 (tradingeconomics/OPEC coverage).\n- OPEC cut its 2026 world oil demand growth forecast to 580 kb/d. Seven OPEC+ members raised output 188 kb/d from August (Al Jazeera, Jul 6). No OPEC+ ministerial meeting with a confirmed date inside Sep 21-Oct 2 was found; the group's 2026 cadence has been roughly monthly, which would place the next one on or after Oct 4 (searched, no confirmed in-window date).\n\nEQUITY LEG\n- S&P 500 7,647.19 on Sep 18 (+0.12% that day); Dow 51,663.30, third straight weekly decline of ~2% and worst week since March; Nasdaq the only major index up on the week (Invezz, Sep 18).\n- Fed raised the target range 25bp to 3.75%-4.00% on Sep 16 -- first hike since 2023; dot plot shows one more in 2026, fed funds futures ~42% odds of two more; CME FedWatch put >50% on an October hike, up from 42.5% a week earlier and 7.2% a month earlier (Invezz; Schwab).\n- 10-year Treasury yield briefly above 5%, settling 4.998% on Sep 18 (Invezz).\n- 49% of S&P 500 members above their 200-DMA; SPX near support around 7,600 (Schwab).\n- S&P 500 up ~12.8% YTD 2026.\n- Sep 18 was quarterly triple witching. Inside the window: quarter-end Sep 30, weekly EIA inventory reports Sep 23 and Sep 30, September jobs report due Fri Oct 2 (the final day, before the 20:00 UTC resolution), 10+ scheduled Fed speakers, otherwise a thin macro calendar (Schwab; CNBC week-ahead Sep 18). FOMC next meets late October, AFTER the window.\n\nVOLATILITY / DISPERSION BASIS\n- CBOE Crude Oil Volatility Index (OVX) at 61.13, intraday range 59.83-61.92 (Yahoo Finance, mid-Sep 2026). Long-run OVX norm is roughly 30-35. OVX is a 30-day implied vol on oil ETF options.\n- Reference-class base rates for the spread (10-trading-day WTI front-month return minus S&P 500 return): over ALL such periods since 2006, median about -0.5pt with SD roughly 6-7pt. Over the CONDITIONAL subset of periods beginning with OVX above 50 (2008H2, 2020H1, 2022 Q1-Q2, 2026), SD is roughly 11-14pt with a similar median -- the conditioning variable is already known here, so the unconditional SD understates.\n- Realized analogue in this regime: WTI moved from ~$85 (Aug 24) to a $104.21 session high (Sep 15), roughly +22% in three weeks, then round-tripped below $100 within days.\n- Oil/equity correlation is typically negative during supply shocks (an oil spike is an equity headwind), which widens a long-oil-short-equity spread relative to either leg alone.\n\nMARKET CHECK\n- No Polymarket or Manifold market on this spread (harness title search: none found). Kalshi runs WTI markets -- KXWTI (daily WTI price), KXWTIDIRY (year-end price), KXWTIMAX (yearly high) -- all of which resolve on a WTI price LEVEL, with no equity leg and no Sep 21-Oct 2 window; none matches this contract's threshold, deadline, or resolution source. No bookmaker market found.\n\nSEARCHED BUT NOT FOUND\n- The exact price series / roll convention the criteria use for 'Crude Oil Futures' and 'S&P 500 Futures' total price returns (the criteria, fine print and background sections were all supplied empty).\n- A confirmed OPEC+ ministerial date falling inside Sep 21-Oct 2, 2026.\n- A published historical distribution of this specific WTI-minus-S&P biweekly spread; the dispersion figures above are reconstructed from OVX/VIX and the regime subsets, not lifted from a source.\n- Any post-Sep-18 WTI settlement (Sep 21 is the first d",
+   "reference_class": "10-trading-day (biweekly) periods since 2006, front-month WTI crude futures price return minus S&P 500 price return, restricted to periods beginning with OVX above 50 (2008H2, 2020H1, 2022 Q1-Q2, 2026)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.1263,
+   "seconds": 272.4,
+   "estimate": {
+    "percentiles": {
+     "10": -10.0,
+     "25": -5.5,
+     "50": -1.0,
+     "75": 3.5,
+     "90": 8.0
+    },
+    "p_below_lower": 0.05,
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Class median for the biweekly oil-minus-equity spread is ~0 (slightly negative long-run: equities carry positive drift, oil carries roll drag), with normal-regime SD ~6-7pp; 2026's realized mean has been ~+1.8pp/window (oil +60.7% y/y vs S&P ~+12%) with SD roughly double normal. I anchor the median near flat and shade it to -1pp: WTI rejected a four-month high of $106 and fell three consecutive sessions to $100.30 (Sep 18), Saudi Hormuz throughput recovered to 2.8 mb/d over six days vs 700k bpd in August, EIA ($90 H2 Brent) and JPM ($80 Q4 Brent) sit below spot, and the CLV26 expiry (~Sep 22) puts a backwardated roll inside the window. Offsetting: Aramco has told European refiners they get no crude next month, SPR is at its lowest since 1982, diesel is at a record, and the Fed's Sep 16 hike with >50% odds of another in October plus a ~5% 10-year is an equity headwind (Bloomberg, Sep 14: strategist sees S&P -10% on hikes). Direction is close to a coin flip; dispersion is the real content. Escape mass of 5% each side is priced off 2026's own record -- Brent ran $82->$118 in three weeks (March), $70->$100+ in four weeks (late July), and crashed up to 20% in a day on the April 8 ceasefire headline -- so +/-25pp in ten sessions is a live, mechanism-backed outcome in both directions. No prediction market prices this spread (Polymarket/Manifold: none found; Kalshi has WTI level-only contracts, a different underlying), so no crowd blend.",
+   "sources": [
+    "https://tradingeconomics.com/commodity/crude-oil",
+    "https://en.wikipedia.org/wiki/2026_Iran_war_fuel_crisis",
+    "https://tradingeconomics.com/commodity/crude-oil/news/540343",
+    "https://www.aljazeera.com/economy/2026/9/7/oil-prices-surge-as-us-iran-strikes-intensify-in-strait-of-hormuz",
+    "https://seekingalpha.com/article/4948091-the-1-minute-market-report-september-19-2026",
+    "https://www.bloomberg.com/news/articles/2026-09-14/s-p-500-seen-dropping-10-on-fed-hikes-mra-strategist-says",
+    "https://www.eia.gov/outlooks/steo/report/global_oil.php",
+    "https://kalshi.com/markets/kxwti",
+    "https://polymarket.com/predictions/crude-oil-futures",
+    "https://invezz.com/tr/haber/2026/09/18/hazine-getirileri-yukselirken-dow-110-puan-dustu-petrol-100-dolarin-uzerinde-kaldi/"
+   ],
+   "dossier": "QUANTITY: crude oil futures percentage price return minus S&P 500 futures percentage price return, in percentage points, over the window.\n\nEVENT WINDOW: 2026-09-21 -> 2026-10-02 per the question title/criteria; as of Now (2026-09-20T19:33:48Z) 0% elapsed -- the window has not opened. Approximately 10 US trading sessions (Sep 21-25, Sep 28-Oct 2). Quarter-end falls on Sep 30 (index rebalancing). CLV26 (Oct WTI) expires ~Sep 22, inside the window.\n\nRESOLUTION INSTRUMENT: resolves off futures price returns for both legs, not spot crude and not a total-return equity index including dividends. The verbatim criteria text supplied to forecasters is EMPTY, so whether the crude leg is a roll-adjusted continuous series, an unadjusted front-month continuous series, or a single named contract is not specified. In steep backwardation the unadjusted-continuous convention embeds a downward step at roll; the roll-adjusted convention does not. This is an unresolved specification ambiguity worth pricing.\n\nSTATUS-QUO OUTCOME: no new Gulf infrastructure strike and no diplomatic breakthrough -> both legs drift on existing momentum and the spread lands in the single digits either side of zero.\n\nPRICE LEVELS AND DATES:\n- WTI settled $101.91 on 2026-09-17; closed $100.30 on 2026-09-18, -1.58% on the day, third consecutive down session, after touching a four-month high of $106 earlier that week (TradingEconomics crude oil page, accessed 2026-09-20).\n- Brent $103.87 on 2026-09-18, -0.91% (Invezz, 2026-09-18).\n- WTI monthly change +18.85%; yearly change +60.74% (TradingEconomics, 2026-09-20).\n- S&P 500 closed 7,647.19 on 2026-09-18, +0.12% on the day; 7,637 on 2026-09-17, just over 2% below its record close of 2026-08-13; index was -0.8% in the week to Sep 11 and -0.1% in the week to Sep 19 (Invezz 2026-09-18; Seeking Alpha 1-Minute Market Report 2026-09-19).\n- Dow fell ~2% for a third consecutive week to Sep 18 -- its worst weekly run since March; Nasdaq was the only major index up on the week (Invezz, 2026-09-18).\n\nMACRO / RATES:\n- FOMC raised the target range 25bp to 3.75-4.00% on 2026-09-16, the first hike in three years. CME FedWatch puts >50% on another hike at the October meeting, up from 42.5% a week earlier and 7.2% a month earlier (Invezz, 2026-09-18). The October FOMC falls AFTER this window closes.\n- 10-year Treasury briefly above 5%, settling 4.998% on 2026-09-18, +5bp (Invezz, 2026-09-18).\n- CPI unchanged at 3.4%, consistent with four consecutive hikes at 12-week intervals starting September 2026 (Seeking Alpha, Sep 2026).\n- Bloomberg, 2026-09-14: an MRA strategist projects the S&P 500 falling 10% on Fed hikes.\n- 2026-09-18 was quarterly triple witching, which added end-of-session volatility.\n\nSUPPLY-SIDE, BOTH DIRECTIONS:\n- Tightening: three pumping stations on Saudi Arabia's East-West Pipeline were damaged in an attack; the pipeline shut on 2026-09-11. Saudi Aramco has told at least two European refining customers they will receive no crude next month. Saudi Arabia and Houthi forces exchanged fresh cross-border strikes on Thursday 2026-09-17. US SPR is at its lowest level since November 1982 after 172 million barrels of planned drawdown. US diesel averages $5.85/gal, a record, ~60% above a year ago.\n- Loosening: satellite imagery shows Saudi Arabia moved 2.8 million bpd through the Strait of Hormuz over the past six days versus 700,000 bpd in August; Saudi Arabia sold up to 60 million barrels from Ras Tanura for Sept/Oct loading via ship-to-ship transfer outside the strait; markets read the pipeline outage as a softer supply hit than first feared (reporting circulating 2026-09-17 to 2026-09-19). China, via Saudi Arabia, asked Iran to limit Houthi attacks on Saudi oil infrastructure.\n- Forecasts below spot: EIA STEO (September 2026) sees Brent averaging ~$90/b in H2 2026; J.P. Morgan sees Brent averaging $80 in Q4 2026; Goldman raised its Q4 estimate $6 on low OECD stocks while still expecting a surplus.\n\nVOLATILITY AND BASE RATES (note the conditioning class on each):\n- Over ALL biweekly (10-trading-day) windows 2015-2026, the oil-minus-S&P spread has a median near zero (marginally negative: equities carry positive drift, front-month oil carries roll drag in contango) and a standard deviation of roughly 6-7 percentage points.\n- CONDITIONAL on the 2026 war regime, the same quantity is roughly double that dispersion: WTI is +60.7% y/y against the S&P's low-double-digit gain, implying an average biweekly spread of roughly +1.8pp across 2026 to date, with far heavier tails.\n- OVX (30-day crude implied vol) closed 47.17 on 2026-08-18, -10.87% that day; it reached 108 in March 2026, roughly three times its level at the start of the year. No September 2026 OVX print was retrievable.\n- Observed 2026 Brent path, for the spread of same-length moves: ~$80-82 early March -> ~$118 late March peak -> ~$70 on July 1 -> above $100 late July -> $87-97 range through August -> $109 early September -> $103.87 on Sep 18. Several 10-trading-day windows in 2026 contained oil moves of 15-25% in each direction. On the 2026-04-08 ceasefire announcement, global oil prices fell up to 20% intraday.\n- Event-in-window count for |spread| > 25pp: of roughly 26 biweekly windows in 2026 to date, a rough reading of the Brent path puts the count at 3-5 (the late-March spike, the April 8 ceasefire crash, and the late-July rebound); this is estimated from the price path above, not from a settled daily series, so treat the count as approximate.\n\nSTRAIT OF HORMUZ STATUS: a ceasefire was announced 2026-04-08 but traffic stayed far below pre-war levels; the IEA has described the episode as the largest supply disruption in the history of the global oil market, with reporting citing ~20 mb/d of Gulf flows affected at the worst point. As of mid-September, renewed attacks on shipping and energy infrastructure are ongoing and no completed settlement is in force.\n\nMARKET COVERAGE: no prediction market prices this spread. Polymarket and Manifold t",
+   "reference_class": "Biweekly (10-trading-day) windows, 2015-2026, of front-month WTI crude futures percentage price return minus S&P 500 futures percentage price return"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0909,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.5495,
+   "seconds": 147.1,
+   "estimate": {
+    "percentiles": {
+     "10": -15.0,
+     "25": -8.3,
+     "50": -2.8,
+     "75": 2.7,
+     "90": 9.2
+    },
+    "p_below_lower": 0.045,
+    "p_above_upper": 0.035
+   },
+   "reasoning": "Class median is about -0.5pp (equities carry drift, front-month crude does not). Three adjustments move the center below every member run. (1) The crude leg's roll falls inside the window - CLV26 expires ~Sep 22 with Oct/Nov backwardated ~4.6% - and 'Crude Oil Futures' is vendor-series naming, where continuous front-month crude is unadjusted and books that step; at ~62% weight on unadjusted, net of ~+1% roll-yield accrual on the Nov leg over the 8 post-roll sessions, that is ~-1.7pp. The S&P leg rolled at the Sep 17-18 triple witching, so it carries no offsetting step. (2) A modest negative news tilt: Saudi throughput recovered to 2.8 mb/d, Ras Tanura ship-to-ship sales, China pressing Iran on Houthi strikes, WTI rejecting $106 and closing $100.30 on three straight down sessions. (3) Against that, a hiking Fed (Sep 16 +25bp, >50% odds in October), a ~5% 10-year and the Oct 2 jobs report make the equity leg's expected return roughly flat, which offsets part of the drag. Direction is close to a coin flip; dispersion is the content, and with a live Hormuz war both bounds have named mechanisms - a settlement unwinding a $25-30/bbl premium below -25, a Hormuz closure or Abqaiq-scale strike above +25.",
+   "sources": [],
+   "reconciliation": "Disputes were: (a) the September OVX level - 47.17 @ Aug 18 (Runs 1/3, no Sep print) vs 61.13 mid-Sep (Run 2); unsettleable without retrieval, so I took OVX ~55 between them and sized dispersion off that rather than picking a side. (b) The roll convention - the criteria text was empty for all three runs, so nobody could confirm it; I weight unadjusted front-month at ~62% because the question's instrument names are vendor-series names and vendor continuous crude is unadjusted, and Run 2's sourced Oct/Nov quote ($101.3 vs $96.6) sizes the step at ~4.6%, which I net down to ~3% for post-roll roll-yield accrual. This is why my median (-2.8) sits below all three runs (-1.0, -1.5, -2.0): they each haircut the same artifact harder than the evidence supports, and Run 3 did not size it at all. (c) Dispersion 18/23/26 - pure judgment, broken by recomputing from implied vols rather than averaging: 24. (d) Escape mass - set at 4.5%/3.5%, the asymmetry following mechanically from the shifted median, not from a directional view. Settled and uncontested: the equity leg rolled before the window (no ES roll artifact), no OPEC+ meeting confirmed inside Sep 21-Oct 2, and no prediction market matches this contract (Kalshi's WTI markets are price-level only - wrong instrument, wrong window), so no crowd anchor was applied. No prompt-injection attempts were present in the question text or dossiers.",
+   "disagreements": [
+    {
+     "claim": "September 2026 OVX level: ~47 (Aug 18 print) vs 61.13 (mid-Sep)",
+     "kind": "factual",
+     "verdict": "Could not settle - no retrieval this run and only Run 2 claimed an in-September print. Reconciled to OVX ~50-60 and carried the uncertainty into a wider dispersion rather than picking a side."
+    },
+    {
+     "claim": "The crude front-month roll (CLV26 expiry ~Sep 22) enters the measured return",
+     "kind": "factual",
+     "verdict": "Underspecified by design - criteria text was empty for every run. Resolved probabilistically at ~62% unadjusted on the strength of vendor-series naming; drives my center below all three runs."
+    },
+    {
+     "claim": "Oct/Nov WTI backwardation is ~4.6% ($101.3 vs $96.6)",
+     "kind": "factual",
+     "verdict": "Only Run 2 found a term-structure quote; Runs 1 and 3 searched and failed. Adopted at ~4%, net ~3% after post-roll accrual, since it is the sole sourced figure and is consistent with a prompt-barrel squeeze."
+    },
+    {
+     "claim": "The S&P leg carries no roll step because the ES roll happened at the Sep 17-18 triple witching",
+     "kind": "factual",
+     "verdict": "Consistent across runs and with the reported Sep 18 triple witching; accepted."
+    },
+    {
+     "claim": "No OPEC+ ministerial falls inside Sep 21-Oct 2",
+     "kind": "factual",
+     "verdict": "All three searched independently and found no confirmed in-window date; monthly cadence points to Oct 4+. Treated as outside, residual risk left in the tails."
+    },
+    {
+     "claim": "No prediction market prices this spread",
+     "kind": "factual",
+     "verdict": "Settled - three independent checks agree. Kalshi WTI contracts resolve on an absolute price level with no equity leg and a different horizon: near-miss, not an anchor. No crowd blend."
+    },
+    {
+     "claim": "Center should be -1.0 vs -1.5 vs -2.0",
+     "kind": "judgment",
+     "verdict": "Rebuilt from components (martingale roll-adjusted crude, +0.3 equity drift haircut for the Fed, blended roll drag, right-skew median-below-mean) rather than averaged: -2.8."
+    },
+    {
+     "claim": "10-90 dispersion is 18 vs 23 vs 26",
+     "kind": "judgment",
+     "verdict": "Recomputed from OVX/VIX and a -0.2 oil-equity correlation: spread SD ~10pp -> 24. Run 3's 18 understates a live supply war."
+    },
+    {
+     "claim": "Escape mass per side is 2.5% vs 3% vs 5%",
+     "kind": "judgment",
+     "verdict": "Set at 4.5% low / 3.5% high. 2026's own path (Brent $82->$118 in three weeks, -20% intraday on the Apr 8 ceasefire) makes a Gaussian ~1% far too thin; the asymmetry is an arithmetic consequence of the -2.8 median."
+    },
+    {
+     "claim": "WTI's recent high was $106 (Run 3) vs a $104.21 session high (Run 2)",
+     "kind": "factual",
+     "verdict": "Unsettled and immaterial - both describe a rejected early-September high followed by three down sessions to $100.30."
+    }
+   ],
+   "reference_class": "Rolling 10-trading-day return spreads, front-month crude oil futures minus S&P 500 futures (2006-2026), with dispersion conditioned on the high-OVX wartime subset (2008H2, 2020H1, 2022H1, 2026)"
+  }
+ ]
+}
