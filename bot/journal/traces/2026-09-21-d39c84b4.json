@@ -1,0 +1,228 @@
+{
+ "record_id": "2026-09-21-d39c84b4",
+ "question": "How many confirmed 2026 US measles cases will the CDC report in its weekly update closest to October 1, 2026?",
+ "question_id": 45924,
+ "url": "https://www.metaculus.com/questions/45739/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-09-21T01:39:57+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.7866,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 3708.3333333333335,
+    "25": 3769.0,
+    "50": 3822.3333333333335,
+    "75": 3885.0,
+    "90": 3957.6666666666665
+   },
+   "p_below_lower": 0.01,
+   "p_above_upper": 0.015
+  },
+  "phase1": {
+   "10": 3708.3333333333335,
+   "25": 3769.0,
+   "50": 3822.3333333333335,
+   "75": 3885.0,
+   "90": 3957.6666666666665
+  },
+  "phase2": null,
+  "spread_phase1": 6.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 3700.0,
+   "25": 3772.0,
+   "50": 3825.0,
+   "75": 3884.0,
+   "90": 3965.0
+  },
+  "p_below_lower": 0.005,
+  "p_above_upper": 0.012
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.9781,
+   "seconds": 191.1,
+   "estimate": {
+    "percentiles": {
+     "10": 3722.0,
+     "25": 3775.0,
+     "50": 3826.0,
+     "75": 3882.0,
+     "90": 3950.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Resolves off the CDC headline in the Thursday Oct 1, 2026 update — exactly two weekly increments after the Sep 17 level of 3,471. Reference class: two-week changes in the CDC cumulative 2026 count during the current sustained-growth regime. The last three non-overlapping two-week sums were 312, 357 and 337, so the prior anchor is ~3,811. I adjust slightly up (~3,826) rather than down: the growth engines are new, not exhausted — Pennsylvania is adding 91-117/wk at the state level across 38 counties, Ohio jumped 47 in a week (327% over the prior week) with 29 suspected/probable still pending lab confirmation in Wayne County alone, and Wisconsin roughly doubled; the two large 2026 outbreaks that could decelerate the total (South Carolina, closed April 27; Utah, no new cases for 3+ weeks) are already contributing near zero, so their stall is priced into the observed run rate rather than a fresh drag. Counterargument for a lower number: the +211 week of Aug 20 shows increments are lumpy and mean-reverting, PA's Lancaster County core (324 cases) may be approaching saturation, and CDC-to-state reporting lag means a PA peak would show up in the national tally with a delay I cannot observe yet. Calendar risk is clear: Oct 1 is a Thursday exactly 14 days after Sep 17, and the FY2027 shutdown that could have disrupted publication was averted by a CR signed Sep 2 funding agencies through Dec 11. Tails: p_below_lower 1% — a cumulative YTD count only falls via a mass reclassification or methodology change (the CDC is already revising its measles DEATH definition, showing such changes happen); p_above_upper 1.5% — reaching 4,300 needs +829 in two weeks, ~2.4x the largest observed two-week sum, requiring an unprecedented retrospective batch addition. Market check: no contract matches this question's terms; Polymarket's $7.97M year-end market (same CDC source, Dec 31 deadline) implies a ~5,700-5,800 year-end median, i.e. ~150/wk sustained continuation, which corroborates the run-rate assumption without anchoring the two-week number. Kalshi returned HTTP 429.",
+   "sources": [
+    "https://www.cdc.gov/measles/data-research/index.html",
+    "https://www.cidrap.umn.edu/measles/cdc-adds-177-cases-us-measles-total-has-yet-confirm-deaths-pennsylvania",
+    "https://www.cidrap.umn.edu/measles/cdc-adds-211-new-cases-accelerating-us-measles-outbreak",
+    "https://www.cidrap.umn.edu/measles/us-measles-cases-approach-3300-over-1000-more-all-last-year",
+    "https://polymarket.com/event/measles-cases-in-us-in-2026",
+    "https://www.pa.gov/agencies/health/newsroom/pennsylvania-department-of-health-provides-statewide-update-on-m",
+    "https://www.yahoo.com/news/us/articles/ohio-measles-cases-spike-327-150313516.html",
+    "https://www.usnews.com/news/politics/articles/2026-09-01/us-house-has-enough-votes-to-pass-stopgap-funds-to-prevent-shutdowns-on-oct-1",
+    "https://www.medicaldaily.com/cdc-measles-3471-cases-pennsylvania-767-september-2026-478836"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the CDC 'Measles Cases and Outbreaks' page headline sentence ('As of [date], [N] confirmed* measles cases were reported in the United States in 2026'), NOT off Johns Hopkins IVAC, NOT off state health department tallies (which run ahead of CDC), and NOT off any later revision — the figure displayed in the update closest to Oct 1, 2026 stands regardless of subsequent restatement. Ties in closeness resolve to the later update.\n\nEVENT WINDOW: Sep 17, 2026 (last published update, 3,471) -> Oct 1, 2026 (the Thursday update on the target date) per the criteria; as of 2026-09-21T01:26Z, ~29% elapsed. Exactly two weekly increments separate the last known datum from resolution. Oct 1, 2026 falls on a Thursday; no federal holiday intervenes.\n\nOBSERVED SERIES (CDC headline, weekly Thursdays, source: CDC measles data page + CIDRAP weekly write-ups):\n- Jul 23, 2026: 2,318\n- Jul 30, 2026: 2,371 (+53)\n- Aug 6, 2026: 2,465 (+94) [CIDRAP, Aug 7]\n- Aug 13, 2026: 2,566 (+101) [CIDRAP, Aug 21 article citing prior week]\n- Aug 20, 2026: 2,777 (+211) [CIDRAP, Aug 21]\n- Sep 3, 2026: 3,134 (+357 across the two weeks from Aug 20)\n- Sep 10, 2026: 3,294 (+160) [CIDRAP, Sep 11]\n- Sep 17, 2026: 3,471 (+177, +5.37% w/w) [CDC page retrieved 2026-09-21; CIDRAP, Sep 18]\nSep 17 marked the sixth consecutive week of triple-digit increases.\n\nBASE RATES / SPREAD OF CHANGES:\n- Over ALL weekly increments Jul 30 - Sep 17, 2026 (n=8: 53, 94, 101, 211, ~180, ~177, 160, 177): mean ~144, range 53-211.\n- CONDITIONAL on the current triple-digit regime (last 6 weeks only, n=6: 101, 211, 180, 177, 160, 177): mean ~168, SD ~35, range 101-211.\n- Non-overlapping TWO-WEEK sums (the horizon that matters here), Aug 6 -> Sep 17: 312, 357, 337. Earlier two-week sum Jul 23 -> Aug 6: 147.\n- Over the whole year to Jul 23 (first ~29 weeks to 2,318): implied average ~80/wk — i.e. the current regime runs roughly double the year-to-date average.\n\nCOMPOSITION AS OF SEP 17 (CDC): 3,454 cases across 47 jurisdictions plus 17 among international visitors; 95% outbreak-associated (3,296 of 3,471 — 1,920 from outbreaks beginning in 2026, 1,376 from outbreaks that began in 2025); 39 new outbreaks logged in 2026 (up one from the prior week).\n\nSTATE-LEVEL CONTRIBUTORS (CDC tallies as of Sep 17 unless noted):\n- Pennsylvania 767 (+93 in the CDC tally that week); PA DOH reports 767 across 38 counties as of Sep 18, up from 676 across 37 counties on Sep 11, with 117 new cases over the week ending Sep 16 and 150 hospitalizations; Lancaster County holds 324, the largest single-county total, but spread now extends beyond it. PA reports >99% of its cases in unvaccinated or undervaccinated people, and four measles-associated deaths in 2026.\n- South Carolina 670 — its outbreak was officially declared over on Apr 27, 2026; contributes ~0 new cases.\n- Utah 527 — no new cases for more than three weeks as of mid-September.\n- Ohio 180 across 15 counties as of Sep 17, +47 in one week versus 11 the prior week (a 327% increase), 34 of them from Wayne County; Wayne County separately lists 29 suspected or probable cases alongside 5 confirmed, illustrating exposure-to-confirmation lag.\n- Texas 192; Virginia 178; Wisconsin 158-163 (reported +45 in one week; concentrated in Iowa County 52, Lafayette 43, Grant 3; kindergarten MMR coverage 85.1% in 2025-26).\n\nOTHER FACTS ON THE RECORD:\n- National kindergarten MMR coverage has slipped to 92.4%, below the 95% community-immunity threshold [CDC Director Erica Schwartz, cited Sep 19].\n- PAHO reports 52,676 confirmed cases in 17 Americas countries/territories between Jan 1 and Sep 5, 2026, ~4x the same period of 2025, with 61 deaths; PAHO classed regional risk 'very high' in August 2026. US, Guatemala (33,334), Mexico (12,848), Peru (1,997), Canada (1,119) dominate.\n- The federal measles death count remains 0 while Pennsylvania reports 4; the CDC is working on a standardized case definition for measles deaths [US News, Sep 18]. This is a DEATHS methodology issue, not a case-count one, but establishes that CDC definitional revisions are in motion this quarter.\n- A federal panel was scheduled to weigh US measles elimination status in August 2026.\n- Funding/continuity: a continuing resolution passed the Senate Aug 8 and the House Sep 1 (370-48) and was signed Sep 2, 2026, funding federal agencies at current levels through Dec 11, 2026 — the Oct 1 lapse was averted, so no shutdown is scheduled to interrupt the Oct 1 publication.\n- The 2025 full-year US total was 2,289, the most since 1991; 2023 recorded 59 cases for the full year.\n\nMARKETS: No contract found whose resolution terms match this question (threshold-free point estimate, Oct 1 weekly update). The nearest liquid book resolves on the same CDC page but at a Dec 31, 2026 deadline over year-end thresholds; a low-volume Manifold market compares 2027 to 2026. Kalshi's measles page returned HTTP 429 and could not be read this run.\n\nSEARCHED FOR BUT COULD NOT FIND: the exact CDC increments for the Aug 27 and Sep 3, 2026 updates individually (only their combined +357 is recoverable); any CDC statement on a change to weekly publication cadence, format, or case-counting methodology for the remainder of 2026; any instance in 2025-2026 of the CDC headline cumulative count being revised DOWNWARD week-over-week; a readable Kalshi price; any published epidemiological projection of US case counts for late September or October 2026.",
+   "reference_class": "Two-week changes in the CDC's cumulative confirmed 2026 US measles count during the Aug-Sep 2026 sustained-growth regime (non-overlapping two-week sums: 312, 357, 337)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0386,
+   "seconds": 218.9,
+   "estimate": {
+    "percentiles": {
+     "10": 3700.0,
+     "25": 3768.0,
+     "50": 3820.0,
+     "75": 3878.0,
+     "90": 3945.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Verified live on cdc.gov: 3,471 as of Sep 17, 2026. Oct 1 is a Thursday, so exactly two weekly updates remain, and the Sep 2 continuing resolution (funding through Dec 11) removes the shutdown mechanism that could have skipped one. Reference class is the recent CDC weekly-increment regime: five consecutive weeks at ~160-211, mean ~172-181/wk, giving a base anchor of 3,471 + 2x172 = ~3,815. Upward pressure: Pennsylvania (767 cases, 38 counties, +36 in two days, CDC Epi-Aid requested Sep 16) is still expanding into new counties in school season, and CDC batch catch-ups have produced single weeks as high as +211. Downward: PA's 46,000-dose August campaign plus susceptible depletion in the core community, and this same series decelerated sharply in late July (+53, +94) - so a real slowdown is demonstrably possible. Confirmation lag puts a floor under the next two weeks regardless of today's transmission, so I skew slightly right. Escape mass is tiny: below 3,471 needs a downward revision of a cumulative count, above 4,300 needs +829 in two weeks (415/wk, 2.4x the observed max).",
+   "sources": [
+    "https://www.cdc.gov/measles/data-research/index.html",
+    "https://www.pa.gov/agencies/health/newsroom/pennsylvania-department-of-health-provides-statewide-update-on-m",
+    "https://polymarket.com/event/measles-cases-in-us-in-2026",
+    "https://usafacts.org/answers/how-many-measles-cases-are-there-in-the-us/country/united-states/",
+    "https://www.nbcnews.com/data-graphics/track-measles-outbreak-cases-us-map-rcna198932",
+    "https://www.medicaldaily.com/cdc-measles-3471-cases-pennsylvania-767-september-2026-478836"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the CDC 'Measles Cases and Outbreaks' page headline sentence ('As of [date], [N] confirmed* measles cases were reported in the United States in 2026'), NOT off state dashboards, NOT off the Johns Hopkins IVAC tracker (different methodology), NOT off PAHO regional figures. Preliminary figures; later revisions are ignored - the value shown in the resolving update stands.\n\nEVENT WINDOW: last observed CDC update Sep 17, 2026 -> the update dated closest to Oct 1, 2026 per the criteria. Oct 1, 2026 falls on a Thursday (CDC's stated weekly publication day, reflecting cases reported as of 12:00 PM ET Thursday), so two further updates (Sep 24, Oct 1) are expected inside the window. As of Now (2026-09-21T01:26Z), 4 of those 14 days have elapsed = 28.6%.\n\nOBSERVED CDC SERIES, cumulative 2026 confirmed cases by 'as of' date: Jul 23 = 2,318; Jul 30 = 2,371; Aug 6 = 2,465; Aug 13 = 2,566; Aug 20 = 2,777; Sep 3 = 3,134; Sep 10 = 3,294; Sep 17 = 3,471 (verified directly on cdc.gov). Implied weekly increments: +53, +94, +101, +211, then ~+178/wk averaged across the unobserved Aug 27 point, +160, +177.\n\nBASE RATES / DISPERSION, with the class each is computed over:\n- Over all 8 most recent weekly increments (Jul 23 - Sep 17): mean ~144/wk, observed range 53 to 211, SD ~55. Source: CDC weekly page history.\n- Over the 5 weeks GIVEN the post-mid-August regime (Aug 13 - Sep 17): total +905, mean 181/wk, SD ~20, range ~160-211. The conditioning matters: the late-July increments (+53, +94) predate the current outbreak phase.\n- Over the last 4 weeks (Aug 20 - Sep 17): +694, mean 173.5/wk.\n- Over the last 2 observed weeks: +337, mean 168.5/wk.\n- Full-2025 comparison: 2,289 cases for the entire year 2025, exceeded by 2026 before September. USAFacts (updated Sep 11, 2026) states cases in the first 37 weeks of 2026 were up 128% vs the same period of 2025.\n\nEVIDENCE BULLETS:\n- CDC page, as of Sep 17, 2026: 3,454 cases reported by 47 jurisdictions plus 17 among international visitors; 39 new outbreaks logged in 2026; 95% of confirmed cases outbreak-associated (1,920 from outbreaks beginning in 2026, 1,376 from outbreaks beginning in 2025). Source: cdc.gov/measles/data-research, fetched 2026-09-21.\n- Pennsylvania DOH, release dated Sep 18, 2026: 767 confirmed cases across 38 counties, 150 hospitalizations, 4 measles-associated deaths; 36 new cases in the two days since the Sep 16 update; release notes 'daily numbers fluctuate'. Source: pa.gov DOH newsroom.\n- Pennsylvania DOH prior points: 676 cases / 37 counties (Sep 11), 693 / 38 counties, 731 / 38 counties / 141 hospitalizations (Sep 16). Earlier 2026 points in the same release series: 460 / 31 counties, 497 / 34 counties, 624 / 37 counties. PA outbreak began late April 2026.\n- PA is the largest state contributor; state ranking reported as PA 767, South Carolina 671, Utah 519, Texas 192, Virginia 179, Ohio 178. Source: reporting on the Sep 17-18 CDC update.\n- PA DOH began the formal process of requesting a CDC Epi-Aid on Sep 16, 2026. Source: pa.gov release, Sep 18, 2026.\n- PA vaccination response: ~4,800 MMR doses at 148 pop-up clinics since the outbreak began in late April; >6,900 doses by state health center staff in 2026; >46,000 MMR doses administered statewide in August 2026 vs a typical ~25,000/month. Source: pa.gov release, Sep 18, 2026.\n- Kindergarten MMR coverage reported at 92.4% nationally, below the 95% community-immunity threshold. Source: Medical Daily, Sep 19, 2026, citing CDC.\n- Earlier-2026 outbreak centers have already closed out: the South Carolina outbreak that began in Spartanburg County in Oct 2025 was declared over (42 days with no new cases) in spring 2026, and Utah was the epicenter in spring. Source: CIDRAP / AHA News reporting. So the current growth is not the same engine as the year's earlier growth.\n- Federal funding: a continuing resolution passed the Senate 90-6 (Aug 8) and the House 370-48 (Sep 1), signed Sep 2, 2026, funding agencies at current levels through Dec 11, 2026 - the Oct 1 FY2027 lapse was averted. Relevant only because a lapse is the main mechanism that could interrupt the Thursday publication cadence.\n- Regional context: PAHO reported 52,676 confirmed cases across 17 countries in the Americas between the start of 2026 and Sep 5, ~4x the same period of 2025, 61 deaths, regional risk classified 'very high' in Aug 2026; Guatemala 33,334, Mexico 12,848, US 3,134, Peru 1,997, Canada 1,119 as of Sep 5. Source: PAHO via Revista Ana Maria, Sep 20, 2026.\n- Death-count methodology note: PA reports 4 measles-associated deaths in 2026 while the federal tally lists none, attributed to a change in federal death-certificate counting methodology; CDC is reported to be working on a standard definition. Does not affect the case count but signals active methodological churn at CDC. Source: US News, Sep 18, 2026.\n- Mechanical property of the instrument: the figure is cumulative and monotone in practice, and cases with rash onset in preceding weeks continue to be confirmed and added, so the count keeps rising for some weeks after transmission itself would slow.\n\nMARKETS CHECKED: Polymarket has an active CDC-sourced market on the 2026 full-year total (resolves Jan 1, 2027, ~$8M volume) with several threshold brackets; Manifold has a 2027-vs-2026 comparison market with negligible volume (563). Neither contract's threshold, deadline, or resolution timing matches this question's 'weekly update closest to Oct 1' figure. No Kalshi contract and no contract of any venue found that prices a specific weekly CDC measles figure.\n\nSEARCHED FOR BUT COULD NOT FIND: the exact CDC 'as of Aug 27, 2026' headline value (inferred only as lying between 2,777 and 3,134); any CDC or state statement forecasting the next weekly increment; a published machine-readable CDC weekly time series for 2026 (USAFacts references the chart but does not expose the weekly numbers, and refreshes monthly); any post-Sep 18 national update; any epi",
+   "reference_class": "Weekly increments in CDC's cumulative 2026 US measles count during the sustained multi-state outbreak regime of Aug-Sep 2026 (5 consecutive weeks at 160-211/wk)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.2625,
+   "seconds": 307.7,
+   "estimate": {
+    "percentiles": {
+     "10": 3703.0,
+     "25": 3764.0,
+     "50": 3821.0,
+     "75": 3895.0,
+     "90": 3978.0
+    },
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Resolves on the Oct 1, 2026 CDC headline, two reporting weeks past the Sep 17 value of 3,471. Reference class is two-week changes in the CDC's own cumulative 2026 count during the current regime: +312, +357, +337 for the last three same-length windows, so the anchor is ~3,808. I nudge the median slightly above that (+350) because CDC's PA figure (637 on Sep 17) trails PA DOH's (767 on Sep 18), guaranteeing ~130 cases of catch-up, and because the window captures rash onsets from early-September school reopening; the offsetting deceleration force (46k August + 25k early-September MMR doses in PA) mostly bites after Oct 1. Right tail is fatter than left: the SC outbreak showed a single state can add ~150 cases/wk, and CDC reconciliation dumps are lumpy, whereas the floor is near-hard given the existing PA backlog. Publishing risk is low: a Sep 2 CR funds the government to Dec 11, Oct 1 is a Thursday, no holiday intervenes. No market matches this contract; Polymarket's Sep 30 market prices only a 3,500+ threshold at 98% ($11.7k volume, i.e. a +29 hurdle) and the $8M year-end market has 4k+ at ~100% and 5k+ at 68%, consistent with but not binding on a high-3,800s Oct 1 reading. p_above_upper=0.02 for >4,300 (needs ~415/wk, a 2.3x rate jump or a bulk state reconciliation); I see no mechanism for a value strictly below 3,471, since a net decline would require zero new cases plus downward revisions.",
+   "sources": [
+    "https://www.cdc.gov/measles/data-research/index.html",
+    "https://www.cidrap.umn.edu/measles/cdc-adds-211-new-cases-accelerating-us-measles-outbreak",
+    "https://usafacts.org/answers/how-many-measles-cases-are-there-in-the-us/country/united-states/",
+    "https://polymarket.com/event/measles-cases-in-us-in-2026",
+    "https://polymarket.com/predictions/cdc",
+    "https://www.pbs.org/newshour/health/south-carolina-measles-outbreak-hits-nearly-600-new-cases-in-just-over-a-month",
+    "https://www.pa.gov/agencies/health/newsroom/pennsylvania-department-of-health-provides-statewide-update-on-m",
+    "https://www.medicaldaily.com/cdc-measles-3471-cases-pennsylvania-767-september-2026-478836",
+    "https://www.fedtools.com/blog/government-shutdown-october-2026"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the headline cumulative figure on the CDC 'Measles Cases and Outbreaks' page (cdc.gov/measles/data-research/index.html) in the weekly update dated closest to Oct 1, 2026, reflecting cases reported to CDC as of 12:00 PM ET that Thursday. NOT off state health-department tallies (PA's runs ahead of CDC's PA figure), NOT off the Johns Hopkins IVAC tracker (different methodology), NOT off later revisions. Oct 1, 2026 is a Thursday.\n\nEVENT WINDOW: Sep 17, 2026 CDC update -> Oct 1, 2026 CDC update per the criteria (two CDC reporting weeks, Sep 18-Oct 1); as of Now 2026-09-21T01:26Z, ~24% elapsed.\n\nSTATUS QUO: the Sep 17, 2026 update stands at 3,471; CDC has published this headline weekly on Thursdays throughout 2026.\n\nEVIDENCE:\n- CDC page (fetched 2026-09-21): 'As of September 17, 2026, 3,471 confirmed measles cases were reported in the United States in 2026'; 3,454 cases across 47 jurisdictions plus 17 among international visitors; 39 new outbreaks in 2026; 95% outbreak-associated (3,296 of 3,471), split 1,920 from outbreaks beginning in 2026 and 1,376 from outbreaks begun in 2025.\n- Reconstructed CDC weekly series with increments (CDC page; CIDRAP 2026-08-21; Jul 30 figure as cited on Polymarket): Jul 23 2,318; Jul 30 2,371 (+53); Aug 6 2,465 (+94); Aug 13 2,566 (+101); Aug 20 2,777 (+211); Sep 3 3,134 (+357 over two weeks); Sep 10 3,294 (+160); Sep 17 3,471 (+177).\n- BASE RATE, class = two-week changes in the CDC cumulative count within the Aug-Sep 2026 regime: +312 (Aug 6->Aug 20), +357 (Aug 20->Sep 3), +337 (Sep 3->Sep 17). BASE RATE, class = all two-week changes observed since late July 2026 (broader, spans the ramp): range +147 (Jul 23->Aug 6) to +357. BASE RATE, class = single weeks in the last five: 211, ~178, ~178, 160, 177.\n- CIDRAP (2026-08-21) noted the +211 week was 'more than double' the prior +101 week, which followed +94.\n- Pennsylvania DOH: 676 cases / 37 counties as of Sep 11; 731 / 38 counties as of Sep 16 (+117 over the week ending Sep 16; 141 hospitalizations); 767 / 38 counties as of Sep 18 (150 hospitalizations, 4 measles-associated deaths, all unvaccinated). Lancaster County is the largest county cluster (324 as of ~Sep 18; it was 185-197 in late August, when PA statewide was 393 across 29 counties on Aug 27).\n- Divergence between reporters: CDC's state table credited PA with 637 as of Sep 17 while PA DOH reported 767 as of Sep 18 (~130-case gap).\n- CDC 2026 state leaders as of Sep 17: South Carolina 670, Pennsylvania 637, Utah 526. Five states (AR, HI, MS, NV, NH) reported zero 2026 cases.\n- Outbreak-lifecycle datapoint (PBS NewsHour, 2026-01-28): the South Carolina outbreak, onset Sept 2025 and centered in Spartanburg County, added 'nearly 600 new cases in just over a month' to reach 789 cumulative by Jan 28, 2026, including 89 confirmed in one four-day span; officials then said it showed 'little sign of slowing down'. Utah's outbreak began summer 2025 and is described as ongoing with 500+ cases in 2026.\n- Intervention activity in PA (pa.gov; Medical Daily 2026-09-19): >46,000 MMR doses statewide in August 2026 vs ~25,000 in a typical month; >25,000 in the first two weeks of September; ~4,800 doses at pop-up clinics since late April. National kindergarten MMR coverage 92.4%, below the 95% community-immunity threshold.\n- Timing mechanics: the US school year began late Aug/early Sept 2026; cases entering the CDC count between Sep 18 and Oct 1 correspond to rash onsets of roughly Sep 5-25 given typical reporting lag.\n- USAFacts (through Sep 10 data): 2026 cases in the first 37 weeks up 128% vs the same period of 2025; 8% hospitalized; 63% aged 19 or younger; 2025 full-year 2,289; 2024 total 285; 1991 total 9,643.\n- PAHO: 52,676 confirmed cases in 17 Americas countries Jan 1-Sep 5, 2026 (~4x the same 2025 period), 61 deaths, regional risk rated 'very high'; the US reported 3,134 as of Sep 5 in PAHO's tabulation. PAHO deferred its decision on US elimination status to November 2026.\n- Publishing continuity: a continuing resolution signed 2026-09-02 funds the federal government at current levels through Dec 11, 2026, averting an Oct 1, 2026 funding lapse. No federal holiday falls between Sep 17 and Oct 1, 2026.\n- Federal death count for 2026 remains zero in CDC's tally while PA reports four, attributed to a death-certificate methodology gap; CDC is working on a standard definition (US News, 2026-09-18). This affects the deaths line, not the case count.\n\nSEARCHED BUT NOT FOUND: any CDC-published week-by-week increment table or downloadable 2026 weekly series (only the narrative headline plus an epi-curve image); the Sep 24, 2026 update (not published as of Now); CDC state-by-state numbers for Sep 10 to isolate non-PA week-over-week growth; any prediction market whose contract matches the Oct 1 CDC update (Polymarket has a Sep 30 market resolving off the Sep 30 counter and a Dec 31 annual market; Manifold's listed market compares 2027 vs 2026); the Johns Hopkins IVAC tracker page and Contagion Live's Sep 18 update (both HTTP 403); any PA DOH or CDC statement projecting the case trajectory.",
+   "reference_class": "Two-week changes in the CDC's cumulative confirmed 2026 US measles count during the Aug-Sep 2026 outbreak regime (n=3 observed windows, plus the 2026 weekly increment series back to late July), benchmarked against mid-outbreak growth phases of other large recent US measles outbreaks (South Carolina "
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0517,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.4238,
+   "seconds": 81.5,
+   "estimate": {
+    "percentiles": {
+     "10": 3700.0,
+     "25": 3772.0,
+     "50": 3825.0,
+     "75": 3884.0,
+     "90": 3965.0
+    },
+    "p_below_lower": 0.005,
+    "p_above_upper": 0.012
+   },
+   "reasoning": "Resolves off the CDC headline in the Thursday Oct 1, 2026 update - exactly two weekly increments past the Sep 17 value of 3,471. The three non-overlapping two-week changes in the current regime average +335, giving an anchor of ~3,806; I set the median at 3,825 because confirmation lag floors the next two weeks regardless of current transmission, the window captures early-September school-reopening rash onsets, and CDC's state table appears to trail state dashboards (PA DOH 767 on Sep 18 vs a likely CDC PA figure of 637). Weekly increments are flat-to-slightly-declining (211, ~178, ~178, 160, 177) while breadth is rising (Ohio +47 in a week, Wisconsin +45, PA across 38 counties), which nets to continuation near the recent rate rather than acceleration; PA's 46,000-dose August MMR campaign should bite mostly after Oct 1. Publication risk is negligible: Oct 1 is a Thursday, the Sep 2 CR funds agencies through Dec 11, no holiday intervenes. No market matches this contract - Polymarket's Sep 30 threshold book (3,500+ at ~98%, ~$11.7k) and its ~$8M year-end book (4,000+ ~100%, 5,000+ ~68%) resolve off the same CDC page but on thresholds and later dates, implying ~150/wk continuation, corroborating but not anchoring; Manifold's 2027-vs-2026 market (0.50, volume 563) is unrelated; Kalshi was unreadable (HTTP 429).",
+   "sources": [],
+   "reconciliation": "Three disputes mattered. (1) CDC's own Sep 17 figure for Pennsylvania: Run 3 reports 637 against PA DOH's 767, Runs 1 and 2 report 767. Unsettleable without retrieval on this run, but Runs 1 and 2 quote a CDC number identical to the state release - the signature of conflating the two sources - while Run 3's neighbouring values (SC 670, UT 526) match Run 1's independently-reported SC/UT figures. I lean toward the gap being real but refuse to bank it as Run 3 does: CDC trailing state dashboards is a standing property of the instrument, already embedded in the observed 160-211/wk run rate, not an extra bolus on top of it. It survives as a small rightward tilt, which is why my median sits at 3,825 rather than Run 3's implied 3,821-via-+350 or the bare anchor of 3,806. (2) The Aug 27 headline value is unrecoverable in all three dossiers; it is irrelevant, since the anchor uses non-overlapping two-week sums that skip it. (3) Publication continuity and the absence of a matching market were unanimous across runs and internally consistent (Thursday date, CR signed Sep 2 through Dec 11, no holiday); settled by agreement. The remaining split - accelerating (Runs 1, 3) vs decelerating (Run 2) - is pure judgment that the evidence does not break: the weekly series is flat while geographic breadth grows. I take continuation, the reading I would bet on. Where I depart from all three runs is dispersion: their 215-275 over-trusts a three-observation sample of two-week sums. Full-series weekly SD (~55) scaled to a two-week horizon and widened for a series that quadrupled its run rate inside six weeks supports ~265, so my interval is wider than any member's while the central estimate sits within their range.",
+   "disagreements": [
+    {
+     "claim": "CDC's state table showed Pennsylvania at 637 as of Sep 17, ~130 behind PA DOH's 767",
+     "kind": "factual",
+     "verdict": "Could not be settled without web access. Run 3 asserts it and explicitly flags the divergence; Runs 1 and 2 report CDC PA at 767, a figure identical to the state release, suggesting conflation. Treated as probably real but as a standing reporting lag already priced into the run rate, not a one-time catch-up - a mild rightward tilt only."
+    },
+    {
+     "claim": "The CDC headline value for Aug 27, 2026 is unrecoverable; only the combined Aug 20->Sep 3 move of +357 is known",
+     "kind": "factual",
+     "verdict": "Confirmed unsettled by all three runs, and immaterial: the anchor uses non-overlapping two-week changes that do not require the midpoint."
+    },
+    {
+     "claim": "The Oct 1, 2026 update will actually publish on schedule",
+     "kind": "factual",
+     "verdict": "Settled and unanimous: Oct 1 is a Thursday, the continuing resolution signed Sep 2 funds agencies through Dec 11 averting the FY2027 lapse, no federal holiday intervenes."
+    },
+    {
+     "claim": "No prediction market's contract matches this question's resolution terms",
+     "kind": "factual",
+     "verdict": "Settled and unanimous across runs. Polymarket has CDC-sourced threshold markets (Sep 30 and year-end) and Manifold a 2027-vs-2026 comparison; none prices a specific weekly CDC figure. The year-end book implies ~150/wk continuation, which corroborates the run-rate assumption without anchoring the two-week number."
+    },
+    {
+     "claim": "The outbreak is accelerating into new geography (Runs 1, 3) vs decelerating under vaccination campaigns and susceptible depletion (Run 2)",
+     "kind": "judgment",
+     "verdict": "Not broken by the evidence. The weekly increment series is flat-to-slightly-down (211, ~178, ~178, 160, 177) while breadth expands (Ohio +47, Wisconsin +45, PA at 38 counties). I take continuation near the recent rate - the reading I would bet on - with PA's MMR campaign biting mostly after Oct 1 given incubation plus confirmation lag."
+    },
+    {
+     "claim": "Appropriate 10-90 width is 215 (Run 1) vs 245 (Run 2) vs 275 (Run 3)",
+     "kind": "judgment",
+     "verdict": "Resolved against all three, upward to 265, on a computation none performed: three non-overlapping two-week observations badly undersample a series whose weekly rate moved from ~75 to ~180 inside six weeks. Full-series weekly SD ~55, scaled to two weeks and widened for regime-shift and batch-reconciliation risk."
+    }
+   ],
+   "reference_class": "Non-overlapping two-week changes in the CDC cumulative 2026 US confirmed-measles headline count during the Aug-Sep 2026 sustained-growth regime: +312 (Aug 6->Aug 20), +357 (Aug 20->Sep 3), +337 (Sep 3->Sep 17)"
+  }
+ ]
+}
