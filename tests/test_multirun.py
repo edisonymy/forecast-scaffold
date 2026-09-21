@@ -153,6 +153,7 @@ def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
         deadline,
     )
     agent.final_spent = spent["usd"]
+    agent.final_infra = spent.get("infra_failures", 0)
     record = None
     if journal_path.exists() and journal_path.read_text(encoding="utf-8").strip():
         record = json.loads(journal_path.read_text(encoding="utf-8").splitlines()[-1])
@@ -1056,6 +1057,18 @@ class TestFailureLedger:
         agent, record, ok = run(monkeypatch, tmp_path, ["AGENT_FAILURE"] * 6)
         assert not ok
         assert not (tmp_path / "failures.jsonl").exists()
+        # ...but it IS counted as a provider failure: main() exits EXIT_PROVIDER_FAILURE
+        # on it, which is what triggers bot.yml's OpenRouter fallback.
+        assert agent.final_infra == 1
+
+    def test_question_level_failure_is_not_a_provider_failure(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        bad = fenced({"probability": 7.3, "reasoning": "x", "sources": []})
+        agent, record, ok = run(monkeypatch, tmp_path, [bad, bad],
+                                config=config_with_tiers(self.LOW), effort="low")
+        assert not ok
+        assert agent.final_infra == 0  # another provider would fail it the same way
 
     def test_deadline_already_passed_skips_without_calls_or_ledger(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path

@@ -469,3 +469,15 @@ def test_cdf_cli_defaults_to_pchip_and_accepts_linear(
     linear_out = json.loads(capsys.readouterr().out)
     assert default_out == percentiles_to_cdf(WIDE, 0.0, 100.0, interpolation="pchip")
     assert linear_out == percentiles_to_cdf(WIDE, 0.0, 100.0, interpolation="linear")
+
+
+def test_discrete_spike_stays_under_platform_cap_with_margin() -> None:
+    # 2026-09-21, question 45951 (61 outcomes, ~65% of mass on "0"): the builder put a
+    # step exactly AT the platform cap 0.2*200/61 and the platform rejected it 3x as over.
+    cdf = percentiles_to_cdf(
+        {"10": -0.45, "25": -0.25, "50": 0.0, "75": 0.3, "90": 0.75},
+        -0.5, 60.5, upper_open=True, cdf_size=62, p_above_upper=0.004,
+        interpolation="pchip",
+    )
+    platform_cap = MAX_PMF_VALUE * 200.0 / 61
+    assert max(pmf(cdf)) < platform_cap * 0.995

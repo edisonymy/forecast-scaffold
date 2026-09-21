@@ -1269,6 +1269,8 @@ def validate_record(
 DEFAULT_CDF_SIZE = 201
 MAX_PMF_VALUE = 0.2
 MIN_CDF_STEP = 5e-05
+#: Fraction of the platform's per-bin cap the builder actually allows (see percentiles_to_cdf).
+CDF_CAP_MARGIN = 0.99
 
 
 def _scale_location(
@@ -1520,8 +1522,11 @@ def percentiles_to_cdf(
     else:
         cdf = [0.99 * r + 0.01 * x for r, x in zip(rescaled, locations, strict=True)]
 
-    # Cap per-bin mass and rebuild the CDF from the fixed endpoints.
-    cap = min(1.0, MAX_PMF_VALUE * (200.0 / (cdf_size - 1)))
+    # Cap per-bin mass and rebuild the CDF from the fixed endpoints. Build 1% UNDER the
+    # platform cap: a step sitting exactly at it (0.6557377049 on a 61-outcome discrete
+    # question, 2026-09-21) was rejected three times as over it — the platform's own
+    # comparison is stricter than ours, and a question lost at submit is lost for good.
+    cap = min(1.0, MAX_PMF_VALUE * (200.0 / (cdf_size - 1))) * CDF_CAP_MARGIN
     pmf = [b - a for a, b in zip(cdf, cdf[1:], strict=False)]
     pmf = _cap_pmf(pmf, cap, cdf[-1] - cdf[0])
     out = [cdf[0]]

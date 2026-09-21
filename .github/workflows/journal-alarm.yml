@@ -32,7 +32,11 @@ jobs:
         env:
           TOURNAMENT_ID: ${{ vars.TOURNAMENT_ID }}
           GH_TOKEN: ${{ github.token }}
-        run: python scripts/journal_alarm.py | tee "$RUNNER_TEMP/alarm-reason.txt"
+        # pipefail: without it `| tee` exits 0 and this alarm can never fire (it stayed
+        # silent on 2026-09-21 while the bot forecast nothing on an exhausted subscription).
+        run: |
+          set -o pipefail
+          python scripts/journal_alarm.py | tee "$RUNNER_TEMP/alarm-reason.txt"
 
       - name: Alert (one open issue, never hourly spam)
         if: ${{ failure() }}
