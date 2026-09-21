@@ -13,8 +13,12 @@ Two tripwires, either one raises the alarm:
   (a) no *successful* run of the tournament workflow within ``run_gap_hours`` — catches
       a broken workflow (expired token, dependency break, the external kicker going
       quiet) even before it shows up in the journal.
-  (b) there are open tournament questions but the journal has gone quiet for more than
-      ``silence_hours`` — catches a workflow that reports green while doing nothing.
+  (b) an open tournament question still has NO forecast from this bot account
+      ``grace_minutes`` after it opened — catches a workflow that reports green while
+      doing nothing (2026-09-21: 2.5h of green ticks, 0 forecasts, questions missed).
+      [CHANGED 2026-09-22] This used to be "open questions + journal silent for N hours",
+      which never fired (anonymous reads 403 -> "unknown") and, once authenticated,
+      would have fired all day: standing forecasts make journal quiet normal.
 
 Everything here is read-only: no network write, no journal write, no git action. The CLI
 prints its reason and exits 1 to alarm, 0 otherwise, so a workflow step can gate an issue
@@ -79,14 +83,17 @@ def newest_forecast_at(journal_path: str | Path) -> datetime | None:
     return newest
 
 
-def open_question_count(slugs: list[str]) -> int:
-    """Number of open questions across the given tournament slugs.
+def open_question_count(
+    slugs: list[str], *, grace_minutes: float = 120.0, now: datetime | None = None
+) -> int:
+    """Open questions this bot account has NOT forecast, opened over ``grace_minutes`` ago.
 
-    Hits the public ``/posts/`` endpoint (no token required); a ``METACULUS_TOKEN`` in
-    the environment is sent along if present, but nothing here depends on it. Any
-    network or parsing error returns -1 ("unknown") rather than raising — this alarm
-    must survive a flaky or renamed API just as well as it survives a real outage.
+    Needs the bot's ``METACULUS_TOKEN``: Metaculus 403s anonymous ``/posts/`` reads, and
+    ``my_forecasts`` is per-account. A question with no parsable ``open_time`` counts (fail
+    loud). Any network or parsing error returns -1 ("unknown") rather than raising — this
+    alarm must survive a flaky or renamed API just as well as it survives a real outage.
     """
+    now = now or datetime.now(UTC)
     token = os.environ.get("METACULUS_TOKEN", "")
     total = 0
     try:
@@ -110,11 +117,25 @@ def open_question_count(slugs: list[str]) -> int:
                     group = post.get("group_of_questions") or {}
                     questions = group.get("questions") or []
                 total += sum(
-                    1 for q in questions if isinstance(q, dict) and q.get("status") == "open"
+                    1 for q in questions
+                    if isinstance(q, dict) and q.get("status") == "open"
+                    and not (q.get("my_forecasts") or {}).get("latest")
+                    and _opened_minutes_ago(q, now) > grace_minutes
                 )
     except (urllib.error.URLError, TimeoutError, OSError, ValueError, KeyError, TypeError):
         return -1
     return total
+
+
+def _opened_minutes_ago(question: dict, now: datetime) -> float:
+    stamp = question.get("open_time")
+    try:
+        opened = datetime.fromisoformat(str(stamp).replace("Z", "+00:00"))
+    except ValueError:
+        return float("inf")
+    if opened.tzinfo is None:
+        opened = opened.replace(tzinfo=UTC)
+    return (now - opened).total_seconds() / 60.0
 
 
 def last_successful_run_age_hours(workflow: str = "bot.yml") -> float | None:
@@ -167,7 +188,9 @@ def evaluate(
     silence_hours: float = 3.0,
     run_gap_hours: float = 2.0,
 ) -> tuple[bool, str]:
-    """Decide whether the bot looks broken, and why.
+    """Decide whether the bot looks broken, and why. ``newest_at``/``silence_hours`` are
+    kept for the report line only; coverage is judged by ``open_count`` (see
+    open_question_count).
 
     ``open_count == -1`` means the Metaculus check itself failed ("unknown") — in that
     case only the run-age tripwire (a) can raise the alarm; a failed API probe must
@@ -177,14 +200,9 @@ def evaluate(
         return True, f"no successful bot run for {run_age_h:.1f}h"
 
     if open_count != -1 and open_count > 0:
-        if newest_at is None:
-            return True, f"{open_count} open question(s) but no journal row ever"
-        silence_h = (now - newest_at).total_seconds() / 3600.0
-        if silence_h > silence_hours:
-            return (
-                True,
-                f"{open_count} open question(s) but no journal row for {silence_h:.1f}h",
-            )
+        # open_count already means "open, never forecast, past the grace window" — any
+        # such question is a coverage failure whatever the journal says.
+        return True, f"{open_count} open question(s) still have no forecast from the bot"
 
     run_desc = "unknown" if run_age_h is None else f"{run_age_h:.1f}h ago"
     open_desc = "unknown" if open_count == -1 else str(open_count)
@@ -213,6 +231,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--workflow", default="bot.yml")
     parser.add_argument("--silence-hours", type=float, default=3.0)
+    parser.add_argument("--grace-minutes", type=float, default=120.0)
     parser.add_argument("--run-gap-hours", type=float, default=2.0)
     args = parser.parse_args(argv)
 
@@ -223,7 +242,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     newest_at = newest_forecast_at(args.journal)
-    open_count = open_question_count(slugs)
+    open_count = open_question_count(slugs, grace_minutes=args.grace_minutes)
     run_age_h = last_successful_run_age_hours(args.workflow)
 
     alarm, reason = evaluate(

@@ -81,17 +81,21 @@ class TestCollectOpenPosts:
         client = self._client({"season": [{"id": 1}]})
         assert run_bot.collect_open_posts(client, "season,,  ", 100) == [{"id": 1}]
 
-    def test_limit_keeps_the_soonest_closing_not_the_api_order(self) -> None:
-        # 2026-09-21: --limit truncated the API's default (newest-first) order BEFORE the
-        # close-time sort, so with more open posts than the limit the soonest-closing
-        # question could be dropped entirely.
-        client = self._client({"season": [
-            {"id": 3, "scheduled_close_time": "2026-10-03T00:00:00Z"},
-            {"id": 2, "scheduled_close_time": "2026-10-02T00:00:00Z"},
-            {"id": 1, "scheduled_close_time": "2026-09-22T00:00:00Z"},
-        ]})
+    def test_fetch_is_not_truncated_to_limit(self) -> None:
+        # 2026-09-21/22: --limit truncated the API's first page before the close-time sort
+        # and the already-forecasted filter. The fetch now asks for far more than --limit;
+        # main() cuts the work queue instead.
+        asked: list[int] = []
+        client = MetaculusClient(token="t")
+
+        def open_posts(slug: str, *, limit: int = 100) -> list[dict[str, Any]]:
+            asked.append(limit)
+            return [{"id": i} for i in range(5)]
+
+        client.open_posts = open_posts  # type: ignore[method-assign]
         posts = run_bot.collect_open_posts(client, "season", 2)
-        assert [p["id"] for p in posts] == [1, 2]
+        assert len(posts) == 5
+        assert asked == [run_bot.OPEN_POSTS_FETCH_CAP]
 
     def test_unknown_slug_is_isolated_not_fatal(self, capsys: Any) -> None:
         # A pre-entered next-quarter round names its slug before Metaculus creates the

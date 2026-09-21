@@ -85,31 +85,15 @@ def test_evaluate_alarms_on_stale_run() -> None:
     assert "no successful bot run for 5.0h" in reason
 
 
-def test_evaluate_alarms_on_open_questions_with_no_journal_row_ever() -> None:
-    alarmed, reason = alarm.evaluate(None, 4, 0.5, NOW, run_gap_hours=2.0)
+def test_evaluate_alarms_on_unforecast_open_questions_even_with_a_recent_journal() -> None:
+    # open_count means "open, never forecast by the bot, past the grace window": a
+    # coverage failure regardless of how recently some OTHER question was journaled.
+    recent = NOW - timedelta(minutes=5)
+
+    alarmed, reason = alarm.evaluate(recent, 2, 0.5, NOW, run_gap_hours=2.0)
 
     assert alarmed
-    assert "4 open question(s)" in reason
-    assert "no journal row ever" in reason
-
-
-def test_evaluate_alarms_on_journal_silence() -> None:
-    stale = NOW - timedelta(hours=10)
-
-    alarmed, reason = alarm.evaluate(stale, 2, 0.5, NOW, silence_hours=6.0, run_gap_hours=2.0)
-
-    assert alarmed
-    assert "2 open question(s)" in reason
-    assert "10.0h" in reason
-
-
-def test_evaluate_ok_when_journal_recent() -> None:
-    recent = NOW - timedelta(hours=1)
-
-    alarmed, reason = alarm.evaluate(recent, 2, 0.5, NOW, silence_hours=6.0, run_gap_hours=2.0)
-
-    assert not alarmed
-    assert reason.startswith("ok:")
+    assert "2 open question(s) still have no forecast" in reason
 
 
 def test_evaluate_ok_when_no_open_questions_even_if_journal_silent() -> None:
@@ -129,10 +113,8 @@ def test_evaluate_skips_silence_check_when_open_count_unknown() -> None:
     assert "unknown" in reason
 
 
-def test_evaluate_ok_when_run_age_unknown_and_journal_recent() -> None:
-    recent = NOW - timedelta(hours=1)
-
-    alarmed, reason = alarm.evaluate(recent, 2, None, NOW, silence_hours=6.0)
+def test_evaluate_ok_when_run_age_unknown_and_everything_forecast() -> None:
+    alarmed, reason = alarm.evaluate(NOW, 0, None, NOW)
 
     assert not alarmed
     assert "unknown" in reason
@@ -230,3 +212,27 @@ def test_open_question_count_returns_unknown_on_malformed_payload(
     monkeypatch.setattr(alarm.urllib.request, "urlopen", fake_urlopen)
 
     assert alarm.open_question_count(["minibench"]) == -1
+
+
+def test_open_question_count_skips_forecast_and_recently_opened(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    now = datetime(2026, 9, 21, 22, 0, tzinfo=UTC)
+    payload = {"results": [
+        # already forecast by the bot: fine
+        {"question": {"status": "open", "open_time": "2026-09-21T10:00:00Z",
+                      "my_forecasts": {"latest": {"start_time": 1}}}},
+        # opened 30 min ago: inside the grace window, the bot is presumably on it
+        {"question": {"status": "open", "open_time": "2026-09-21T21:30:00Z"}},
+        # opened 3h ago and never forecast: THIS is the Sep 21 failure
+        {"question": {"status": "open", "open_time": "2026-09-21T19:00:00Z"}},
+        # no open_time at all: counts (fail loud)
+        {"question": {"status": "open"}},
+    ]}
+
+    def fake_urlopen(request: object, timeout: float = 30) -> _FakeResponse:
+        return _FakeResponse(payload)
+
+    monkeypatch.setattr(alarm.urllib.request, "urlopen", fake_urlopen)
+
+    assert alarm.open_question_count(["minibench"], grace_minutes=120, now=now) == 2

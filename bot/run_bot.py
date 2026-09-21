@@ -1347,8 +1347,10 @@ def collect_open_posts(
         # transient API failure — must cost only that slug's batch, never the whole run.
         try:
             # Fetch EVERY open post (bounded), not the first `limit` in the API's default
-            # order: --limit used to truncate before the close-time sort, so with more open
-            # posts than the limit the soonest-closing ones could never be fetched at all.
+            # order: --limit used to truncate before the close-time sort and the
+            # already-forecasted filter, so with more open posts than the limit a NEW
+            # question could never be fetched. main() now applies --limit to the work
+            # queue after both.
             fetched = client.open_posts(slug, limit=max(limit, OPEN_POSTS_FETCH_CAP))
         except Exception as exc:  # noqa: BLE001 — isolate the failure to this slug
             print(f"tournament {slug!r} unavailable ({exc}) — skipping this slug")
@@ -1359,10 +1361,6 @@ def collect_open_posts(
         print(f"{len(fetched)} open post(s) in {slug} ({len(new)} new)")
     if len(slugs) > 1:
         print(f"{len(posts)} open post(s) total across {len(slugs)} tournaments")
-    if len(posts) > limit:
-        posts.sort(key=lambda p: str(p.get("scheduled_close_time") or "9999-12-31"))
-        print(f"--limit {limit}: keeping the {limit} soonest-closing of {len(posts)} posts")
-        posts = posts[:limit]
     return posts
 
 
@@ -3075,6 +3073,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{len(refresh)} standing forecast(s) older than {args.refresh_hours:.0f}h "
               "queued for refresh after new questions")
         pending.extend(refresh)
+    if len(pending) > args.limit:
+        print(f"--limit {args.limit}: {len(pending) - args.limit} queued question(s) "
+              "deferred to a later run")
+        pending = pending[:args.limit]
     done = failed = 0
     spent = {"usd": 0.0}
     for post, question in pending:
