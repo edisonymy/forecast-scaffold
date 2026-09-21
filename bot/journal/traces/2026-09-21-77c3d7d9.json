@@ -1,0 +1,234 @@
+{
+ "record_id": "2026-09-21-77c3d7d9",
+ "question": "How many confirmed 2026 measles cases will Iowa HHS report in its October 1, 2026 update?",
+ "question_id": 45964,
+ "url": "https://www.metaculus.com/questions/45779/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-09-21T23:24:14+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 4.2604,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 38.666666666666664,
+    "25": 43.333333333333336,
+    "50": 48.666666666666664,
+    "75": 56.666666666666664,
+    "90": 64.0
+   },
+   "p_above_upper": 0.11333333333333334
+  },
+  "phase1": {
+   "10": 38.666666666666664,
+   "25": 43.333333333333336,
+   "50": 48.666666666666664,
+   "75": 56.666666666666664,
+   "90": 64.0
+  },
+  "phase2": null,
+  "spread_phase1": 3.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 40.0,
+   "25": 44.0,
+   "50": 49.0,
+   "75": 56.0,
+   "90": 65.0
+  },
+  "p_above_upper": 0.09
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.3369,
+   "seconds": 239.0,
+   "estimate": {
+    "percentiles": {
+     "10": 39.0,
+     "25": 44.0,
+     "50": 50.0,
+     "75": 58.0,
+     "90": 64.0
+    },
+    "p_above_upper": 0.1
+   },
+   "reasoning": "Resolution is Iowa HHS's own weekly figure; the page reads 38 dated Sep 17, and exactly two further Thursday updates (Sep 24, Oct 1) fall before resolution. Prior from the reference class: statewide counts in undervaccinated-community outbreaks typically grow ~1.35x over a 2-week window at this stage, giving ~51 as the anchor. Adjustments run both ways and roughly offset: downward for five weeks of active response, 'no exposure locations identified in the last four weeks', a small named susceptible pool (Davis County mobile clinic targeting ~280 people), one already-observed zero-growth week, and the likelihood that part of the +16 was retrospective epi-link case-finding (14 of 38 are epi-linked, not lab-confirmed); upward for cases spread across four HHS districts including the Des Moines metro, 22 of 38 in the 5-19 school-age band with school in session, 36 of 38 unvaccinated/unknown, and an adjacent Wisconsin outbreak at 166 and still adding cases. Distribution is right-skewed: the floor is hard (cumulative counts cannot fall, and a two-week total freeze is a live ~7% branch given Sep 10), while the ceiling is open. 70 corresponds precisely to the most recent weekly increment repeating twice, so sustained-or-accelerating growth puts the outcome outside the range - priced at 10%. A small further pull toward the low end comes from the fine print: if Iowa skips the Oct 1 update (~8%), the Sep 24 figure resolves, capturing one increment instead of two. No Iowa-specific prediction market exists; national Polymarket measles contracts do not match on threshold, geography, or resolution source and were not used as an anchor.",
+   "sources": [
+    "https://hhs.iowa.gov/health-prevention/disease-information/measles",
+    "https://www.kcrg.com/2026/09/18/more-measles-cases-confirmed-iowa-wisconsins-bordering-counties/",
+    "https://www.yahoo.com/news/us/articles/measles-cases-iowa-reach-38-000609974.html",
+    "https://www.cdc.gov/measles/data-research/index.html",
+    "https://hhs.iowa.gov/news-release/2026-08-24/iowa-hhs-issues-latest-measles-outbreak-information-and-additional-exposure-location",
+    "https://www.nbc26.com/news/state/wisconsin-health-officials-confirm-2-new-measles-cases-in-vernon-county-bringing-2026-total-to-166",
+    "https://www.kcrg.com/2026/09/04/iowa-hhs-confirms-three-new-measles-cases/",
+    "https://www.kcrg.com/2026/08/18/davis-county-school-district-taking-steps-fight-measles-cases-grow/",
+    "https://polymarket.com/event/measles-cases-in-us-in-2026"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the 'Total cases 2026 to date' figure printed on the Iowa HHS measles page (hhs.iowa.gov/health-prevention/disease-information/measles) in the update dated Thursday 2026-10-01 - NOT off CDC's national table, NOT off news reporting, NOT off county-level dashboards. Fine print: if Iowa skips the Oct 1 update and the 'Updated' date stays in September through Oct 2, the most recent posted total as of end of day 2026-10-02 US Central is used instead.\n\nEVENT WINDOW: last published figure -> resolution figure = 2026-09-17 -> 2026-10-01 per the criteria (14 days); as of Now 2026-09-21T23:09:54Z, ~29% elapsed. The cumulative accumulation window the figure covers is 2026-01-01 -> 2026-10-01 (273 days), ~96% elapsed as of Now. Two scheduled Thursday updates fall inside the window: Sep 24 and Oct 1.\n\nSTATUS-QUO OUTCOME: the page continues its stated weekly-Thursday cadence and prints 38 plus whatever accrues over two more weekly updates.\n\nEVIDENCE:\n- Iowa HHS page as fetched 2026-09-21: 'Total cases 2026 to date' = 38, Updated September 17, 2026 (hhs.iowa.gov).\n- Same page, breakdown: age <5 = 3, 5-19 = 22, 20+ = 13; unvaccinated-or-unknown = 36, vaccinated = 2; HHS districts 1=0, 2=0, 3=9, 4=17, 5=8, 6=4; exposure source: travel-associated 5, locally acquired with known exposure 30, locally acquired without known exposure 3 (Iowa HHS, 2026-09-17).\n- Same page: 'N/A - At this time, no exposure locations have been identified in the last four weeks' (Iowa HHS, 2026-09-17).\n- Confirmation basis of the 38: 24 lab-confirmed, 14 confirmed by epidemiological link to a lab-confirmed case (Iowa HHS via Yahoo/WHO13, 2026-09-18).\n- Published weekly series of the same 'Total cases 2026 to date' field: Aug 20 = 16; Aug 24 (news release) = 17; Aug 27 = 19; Sep 3 = 22; Sep 10 = 22; Sep 17 = 38. Weekly increments: +3, +3, 0, +16 (Iowa HHS news releases 2026-08-21 and 2026-08-24; KCRG 2026-09-04; Gazette week ending 2026-09-11; Iowa HHS 2026-09-17).\n- All but one of the 38 cases were identified since 2026-08-16; Iowa had 1 case in 2026 before that date and 9 cases total in all of 2025 (Iowa HHS via KCRG, 2026-09-18).\n- Named exposure locations from earlier releases: JR Feed and Supply in Bloomfield (Davis County), Pizza Ranch on Venture Drive in Ottumwa (Aug 14), Natural Grocers and Menards in Clive, Office Depot in West Des Moines (Iowa HHS news releases 2026-08-21, 2026-08-24).\n- Davis Community School District ran a community response including a mobile vaccination site with a stated goal of vaccinating as many as 280 people (KCRG, 2026-08-18). Davis County's total population is roughly 9,000.\n- Iowa HHS response posture since Aug 17: contact tracing with affected families, public notification of exposure venues, community vaccination outreach, provider guidance; the state states counts update weekly on Thursdays with separate press releases when new public exposures pose risk (Iowa HHS, 2026-08-24).\n- Cross-border: Wisconsin confirmed 2 new Vernon County cases on 2026-09-16, bringing Wisconsin's 2026 total to 166; Vernon County is directly across the river from Lansing in Allamakee County, Iowa. Vernon County has the state's lowest MMR rate (42% of two-year-olds with >=1 dose). No known public exposure sites in the Vernon County cases (WI DHS 2026-09-16; NBC26 2026-09-17; KCRG 2026-09-18). Iowa's own District 1 (northeast, containing Allamakee) shows 0 cases as of Sep 17.\n- National context: CDC reported 3,471 confirmed US measles cases for 2026 as of 2026-09-17 (page updated 2026-09-18), 39 new outbreaks, 95% of cases outbreak-associated. CDC's page does not break out Iowa or Wisconsin counts (cdc.gov/measles/data-research).\n\nBASE RATES (with the class each is computed over):\n- Over all US state-level measles outbreaks seeded in a rural undervaccinated community, the statewide cumulative count measured ~4-6 weeks after outbreak declaration typically grows by a multiplier of roughly 1.0x to 2.5x over the following two weeks, median near 1.35x (class: Texas/Gaines 2025, Ohio Amish 2014, Utah 2025, Wisconsin/Oconto 2025, Ontario 2025). Component anchors within that class: Texas/Gaines 2025 ran ~48 -> ~146 over two weeks at the comparable stage (~3x, very large susceptible pool); Wisconsin/Oconto 2025 ran 9 -> 25 over about three weeks (~1.8x over two); Utah 2025 and several 2025 state outbreaks plateaued in the 20-50 band and grew under 1.2x.\n- Conditional on the outbreak having already logged a zero-growth reporting week (as Iowa did on Sep 10), the same class shows materially more mass on small subsequent increments than the unconditional multiplier implies - roughly a one-in-fifteen to one-in-twelve chance that two consecutive weekly updates both add zero.\n- Over this specific outbreak's own four observed weekly increments, the empirical distribution is {0, +3, +3, +16}: mean 5.5/week, median 3/week, max 16/week.\n- Measles serial interval is ~11-14 days, so roughly one generation fits inside the Sep 17 -> Oct 1 window; cases reported in the Sep 17 batch would be expected to generate their secondaries with rash onset in the Sep 17-Oct 1 range, subject to lab and reporting lag that can push a given case into the following Thursday's batch.\n\nSERIES/EVENT-WINDOW CHECK: across 14-day windows in this outbreak to date, observed adds were +6 (Aug 20->Sep 3), +3 (Aug 27->Sep 10), +16 (Sep 3->Sep 17). All three same-length windows in the outbreak period contained at least one new case; the four 14-day windows before Aug 16 contained zero new cases.\n\nDECIDING-BODY CALENDAR: Iowa HHS states on the page itself that data is updated weekly on Thursdays. Searched for any announced pause, holiday schedule, or cadence change around late September / October 1 - none found. No federal or state holiday falls on Sep 24 or Oct 1, 2026.\n\nMARKETS: searched Polymarket, Manifold, Kalshi and bookmakers for a contract on Iowa measles counts - none found. Polymarket carries only national US 2026 measles-c",
+   "reference_class": "US state-level measles outbreaks seeded in a rural undervaccinated community, measured as the statewide cumulative count ~4-6 weeks after outbreak declaration and its growth over the following two weeks (Texas/Gaines 2025, Ohio Amish 2014, Utah 2025, Wisconsin/Oconto 2025, Ontario 2025)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.2256,
+   "seconds": 249.5,
+   "estimate": {
+    "percentiles": {
+     "10": 38.0,
+     "25": 42.0,
+     "50": 47.0,
+     "75": 55.0,
+     "90": 62.0
+    },
+    "p_above_upper": 0.1
+   },
+   "reasoning": "Anchor: 38 as of the 9/17 Iowa HHS update (verified live on the page). Two more weekly updates (9/24, 10/1) land before resolution, so the question is a 2-week increment. Reference class of active US state outbreaks ~5 weeks in at ~40 cases gives a median 2-week multiplier of ~1.25 (base ~48), with a fat right tail. Iowa's own recent 2-week factors are 1.375 (Aug 21->Sep 3) and 1.73 (Sep 3->Sep 17), arguing upward; the lumpy pattern (+3, 0, +16) means a single batch of epi-linked reclassifications can move the number a lot in one Thursday. Downward: no new exposure locations in four weeks, active MMR clinics in Davis County since Aug 18, contacts already under quarantine, and small-settlement susceptible pools deplete fast. Measles serial interval ~14 days means generation 4 onsets (~Sep 24-Oct 5) would be only partially reported by the 10/1 update. Non-trivial point mass at exactly 38 (a zero-growth fortnight already occurred the week of Sep 10). Upper bound is open and only ~33 cases away, less than a single recent weekly jump doubled, so I price 10% above 70. No matching market exists; only national US count markets, which I did not blend.",
+   "sources": [
+    "https://hhs.iowa.gov/health-prevention/disease-information/measles",
+    "https://www.kcrg.com/2026/09/18/more-measles-cases-confirmed-iowa-wisconsins-bordering-counties/",
+    "https://hhs.iowa.gov/news-release/2026-08-24/iowa-hhs-issues-latest-measles-outbreak-information-and-additional-exposure-location",
+    "https://www.ktvo.com/news/local/iowa-hhs-confirms-new-measles-case-in-bloomfield/article_ddc5871d-f383-4f68-b73f-adfe79e19952.html",
+    "https://www.cdc.gov/measles/data-research/index.html",
+    "https://www.kcrg.com/2026/09/04/iowa-hhs-confirms-three-new-measles-cases/",
+    "https://www.kcrg.com/2026/08/18/davis-county-school-district-taking-steps-fight-measles-cases-grow/",
+    "https://polymarket.com/event/measles-cases-in-us-in-2026",
+    "https://kalshi.com/markets/kxmeasles/measles-cases"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the 'Total cases 2026 to date' figure on the Iowa HHS measles page (hhs.iowa.gov/health-prevention/disease-information/measles) in the update dated Thu Oct 1, 2026 - NOT CDC's national table, NOT a news-reported count, NOT a county health department figure. Page states data is updated weekly on Thursdays. Fine print: if HHS skips Oct 1, the most recent posted total as of EOD Oct 2 US Central is used (i.e. the Sep 24 figure would stand).\nEVENT WINDOW: the figure accrues Jan 1 2026 -> the Oct 1 2026 weekly update per the criteria; the operative unknown is the increment across exactly two remaining Thursday updates, Sep 24 and Oct 1. As of Now (2026-09-21T23:09Z), ~4.9 of the 14 days between the Sep 17 and Oct 1 updates have elapsed, ~35%.\nSTATUS QUO OUTCOME: the page's figure is 38 and can only rise or stay flat (no downward revisions observed this outbreak); a fortnight with zero added cases has already occurred once (the Sep 10 update).\n\nEVIDENCE:\n- Iowa HHS page, read live 2026-09-21, 'Updated 9/17/2026': Total cases 2026 to date = 38; 24 confirmed by laboratory testing, 14 confirmed by epidemiologic link to a lab-confirmed case. (hhs.iowa.gov measles page)\n- Same page, vaccination status: 36 unvaccinated-or-unknown, 2 vaccinated (1+ dose >=14 days before rash onset). Age: <5 = 3; 5-19 = 22; 20+ = 13. Source of exposure: 5 travel-associated, 30 locally acquired with known exposure, 3 locally acquired without known exposure. (2026-09-17)\n- Same page, district table: District 1 = 0, District 3 = 9, District 4 = 17, District 5 = 8, District 6 = 4 - i.e. cases in at least four separate HHS districts, not a single-county cluster. (2026-09-17)\n- Same page: 'At this time, no exposure locations have been identified in the last four weeks.' Previously listed public exposure venues have been removed. (2026-09-17)\n- Weekly series of the same 'Total cases 2026 to date' figure: 1 before Aug 16; 16 on Aug 21; 17 on Aug 24; 22 on Sep 3 (KCRG 2026-09-04, 'Iowa HHS confirms three new measles cases'); 22 on Sep 10 (Gazette reported no new cases for the week ending Sep 11); 38 on Sep 17. Weekly increments across the last three updates: +3, 0, +16. (Iowa HHS via KCRG/WHO13)\n- Outbreak was confirmed Aug 17, 2026 in southern Iowa, centered on Bloomfield / Davis County; Iowa HHS release of Aug 24 lists exposure venues incl. Sunnyside Grocery (Bloomfield, Aug 15), Pizza Ranch (Ottumwa), JR Feed and Supply (Bloomfield), and Des Moines-metro retail sites from late July to mid-August. (hhs.iowa.gov news release 2026-08-24)\n- Davis County School District ran a mobile vaccination site on Aug 18, 2026 aiming to vaccinate up to ~280 people, explicitly open to the public and the Amish community - the outbreak's epicenter involves an Amish settlement. (KCRG 2026-08-18)\n- Second geographic focus on the NE border: Wisconsin DHS confirmed two new Vernon County cases Sep 16, 2026, directly across the river from Lansing in Allamakee County, IA; Wisconsin clusters also in Grant, Iowa and Lafayette counties, Grant bordering Dubuque County. No public exposure sites released for the Vernon County cases. Free vaccination events held in Dubuque and Dyersville. (KCRG 2026-09-18)\n- A South Winneshiek Community School District (NE Iowa) 'Proactive Health Notification - Measles Exposure Protocols' page exists, consistent with a NE Iowa exposure concern distinct from the Davis County cluster. (southwinn.com, date not established)\n- National context: CDC reported 3,471 confirmed US cases for 2026 as of Sep 17 (page updated Sep 18), with 39 new outbreaks reported in 2026; CDC does not publish a per-state count on that page. Iowa's kindergarten MMR coverage is 88.8%; Iowa had 9 total cases in all of 2025. (cdc.gov/measles/data-research)\n- Measles serial interval is ~14 days (range ~11-18), so onsets in the Sep 24 - Oct 5 band are the generation that would populate the Sep 24 and Oct 1 updates, and case confirmation typically lags rash onset by several days to a week.\n\nBASE RATES FOUND:\n- Over all active US state/jurisdiction measles outbreaks of 2025-26 observed at ~5 weeks post-confirmation with a ~35-45 case cumulative total (Kansas, New Mexico/Lea, North Dakota, Ohio/Ashtabula, Montana, South Carolina/Spartanburg): the cumulative total two weekly reports later ran roughly 1.0x to 1.6x the base, median near 1.25x, with a small number of outbreaks (Texas/Gaines 2025, Ontario 2025, Ohio Amish 2014) running 2x or more over the same two weeks.\n- Conditional on the outbreak being in a tight-knit undervaccinated religious community (Amish/Mennonite): the historical ceiling is far higher - Ohio's 2014 Amish outbreak reached 383 cases over about four months, Texas/Gaines 2025 exceeded 400 within roughly two months of onset.\n- Conditional on 'no new public exposure locations for four weeks + active vaccination campaign + contacts already under public-health monitoring': outbreaks in this state more often add cases inside known contact networks at a decelerating rate than seed new chains.\n- This outbreak's own realized 2-week growth factors: Aug 21 -> Sep 3 = 22/16 = 1.375; Sep 3 -> Sep 17 = 38/22 = 1.73.\n- Series dispersion, this series, last ~5 weeks: 2-week cumulative increments observed are +6 and +16; 1-week increments are +3, 0, +16.\n- Event-in-window base rate for 'a weekly update adds zero cases': 1 of the last 3 Iowa updates (the Sep 10 one) added zero.\n\nMARKETS: no market was found whose contract matches this resolution (state-level Iowa HHS figure, Oct 1 dated update). Polymarket and Kalshi carry only national 2026 US measles-count contracts; the harness title search of Polymarket and Manifold returned no candidate.\n\nSEARCHED FOR BUT COULD NOT FIND: any Iowa HHS data published after the Sep 17 update (the Sep 24 update had not occurred as of Now); an epi curve by rash-onset week for Iowa; any statement from Iowa HHS on whether the +16 added Sep 17 were newly-onset cases or a retrospective batch of e",
+   "reference_class": "Active US state/jurisdiction measles outbreaks of 2025-2026 observed ~5 weeks after outbreak confirmation at a ~35-45 case cumulative count (Kansas, New Mexico, North Dakota, Ohio/Ashtabula, Montana, South Carolina/Spartanburg), measured as the cumulative state total two weekly reports later"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.1735,
+   "seconds": 276.1,
+   "estimate": {
+    "percentiles": {
+     "10": 39.0,
+     "25": 44.0,
+     "50": 49.0,
+     "75": 57.0,
+     "90": 66.0
+    },
+    "p_above_upper": 0.14
+   },
+   "reasoning": "Verified directly: the Iowa HHS page reads 38, updated Sept 17, 2026 (24 lab-confirmed, 14 epi-linked; 36 unvaccinated/unknown). Two weekly updates (Sep 24, Oct 1) remain. Prior from the Anabaptist-community reference class at the 35-45-case mark implies roughly a doubling in two weeks (~70). I adjust well down because Iowa's realized doubling time is ~5 weeks, not ~1.5: increments ran +3, +3, +0, +16 over Aug 20-Sep 17, an early mass-MMR clinic ran in Davis County in mid-August, HHS reports no public exposure locations identified in four weeks (transmission confined to already-traced contacts), and case confirmation lag pushes part of the next generation past the Oct 1 cutoff into the Oct 8 update. Against that, the +16 week is genuine acceleration in a large susceptible Amish settlement and epi-linked cases can be added in batches without lab lag, so the right tail stays fat. Small extra low-side mass for a skipped Oct 1 update (fine print then uses the Sep 24 figure). No prediction market matches this contract -- Polymarket and Kalshi only price national CDC-counter totals -- so there is no crowd anchor.",
+   "sources": [
+    "https://hhs.iowa.gov/health-prevention/disease-information/measles",
+    "http://www.thegazette.com/news/healthcare/no-new-cases-reported-in-iowa-measles-outbreak/article_29ec142b-6c1e-4bfb-b140-e7e403327ada.html",
+    "https://www.kcrg.com/2026/09/18/more-measles-cases-confirmed-iowa-wisconsins-bordering-counties/",
+    "https://hhs.iowa.gov/news-release/2026-08-24/iowa-hhs-issues-latest-measles-outbreak-information-and-additional-exposure-location",
+    "https://www.kcrg.com/2026/08/18/davis-county-school-district-taking-steps-fight-measles-cases-grow/",
+    "https://wiscnews.com/news/state-regional/wisconsin/article_c5b53687-615f-5352-9ae5-b3d6a0eaa8bb.html",
+    "https://www.wbay.com/2026/09/08/wisconsin-measles-outbreak-grows-151-confirmed-cases/",
+    "https://www.wsaw.com/2026/09/04/136-measles-cases-confirmed-southwestern-wisconsin-outbreak/",
+    "https://www.dhs.wisconsin.gov/news/releases/091626.htm",
+    "https://kalshi.com/markets/kxmeasles/measles-cases",
+    "https://polymarket.com/predictions/measles",
+    "https://localhealthsignal.com/states/iowa/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the 'Total cases 2026 to date' figure on the Iowa HHS measles page (hhs.iowa.gov/health-prevention/disease-information/measles) in the update dated Thursday, Oct 1, 2026 -- NOT off CDC's national counter, not off news reporting, not off county-level dashboards. Page states data is updated weekly on Thursdays. If no Oct 1-dated update appears, fine print uses the most recent total posted as of end of day Oct 2, 2026 US Central.\n\nEVENT WINDOW: Sept 17, 2026 update -> Oct 1, 2026 update per the criteria (14 days, covering exactly two weekly postings: Sep 24 and Oct 1); as of Now (2026-09-21T23:09:54Z) ~29% elapsed, and zero of the two intervening updates have been posted.\n\nCURRENT PAGE STATE (fetched directly 2026-09-21): Total cases 2026 to date = 38; Updated = September 17, 2026. Age: <5 = 3; 5-19 = 22; 20+ = 13. Vaccination: unvaccinated or unknown = 36; vaccinated 1+ doses = 2. Confirmation method: laboratory confirmed = 24; linked to a lab-confirmed case = 14. HHS districts: D1=0, D2=0, D3=9, D4=17, D5=8, D6=4, D7=0. Exposure source: travel-associated = 5; locally acquired with known exposure = 30; locally acquired without known exposure = 3. Page text: 'At this time, no exposure locations have been identified in the last four weeks.'\n\nWEEKLY SERIES (Iowa HHS 'total cases 2026 to date', by update date): Aug 20 ~16; Aug 27 ~19 (Iowa HHS release: 'As of August 27, 19 confirmed cases'); Sep 3 ~22; Sep 10 = 22; Sep 17 = 38. Implied weekly increments over the last four weeks: +3, +3, +0, +16. Pre-outbreak: 1 case in 2026 before Aug 16; 9 cases in all of 2025.\n\nCORROBORATION OF THE STALL: The Gazette, published Sept 14 2026 (updated Sept 15), 'No new cases reported in Iowa measles outbreak' -- reported 21 outbreak-associated cases plus 1 earlier isolated case = 22 total, with no increase shown on the weekly page over the prior week. Same article: 3,294 US confirmed cases nationally as of Sept 11 (CDC).\n\nOUTBREAK SETTING: Centered on Bloomfield / Davis County in southern Iowa, involving the local Amish community. Iowa HHS Aug 24 release names exposure locations in Bloomfield, Ottumwa, and the Des Moines/Clive area, and states HHS 'worked closely with affected families and community leaders.' Exposure site listed: Sunnyside Grocery, 22422 County Road 63, Bloomfield (visit Aug 15). KCRG, Aug 18 2026: Davis Community School District deployed a mobile microgrid to power a mobile vaccination hospital with a stated goal of vaccinating ~280 people, explicitly including the Amish community. Outbreak confirmed Aug 17 2026; all but one 2026 case identified since Aug 16.\n\nREGIONAL COMPARATOR (Wisconsin, separate chain): SW Wisconsin outbreak in Grant, Iowa and Lafayette counties -- 15 confirmed + 6 probable as of Aug 14 2026 (Wausau Pilot); 136 confirmed as of Sep 4 (WSAW); 151 as of Sep 8 (WBAY); 155 confirmed + 6 probable as of Sep 11 (wiscnews); county split at Sep 11: Lafayette 73, Iowa Co 62, Grant 20. Statewide WI 2026 total: 163 (Sep 11) -> 166 (Sep 16). Two lab-confirmed cases announced in Vernon County WI on Sep 16 (WI DHS release 091626) -- Vernon borders Allamakee County, Iowa; Grant borders Dubuque County. Iowa HHS districts 1 and 2 (northern Iowa) currently show 0 cases. Prior WI outbreak: 36 cases in Oconto County in 2025.\n\nBASE RATES, WITH THE CLASS EACH IS COMPUTED OVER:\n- Over US measles outbreaks in under-vaccinated Anabaptist communities, measured from the week cumulative confirmed cases first reached 35-45 to two weeks later: TX Gaines 2025 went 48 (Feb 14) -> 90 (Feb 21) -> 146 (Feb 28); WI Grant/Iowa/Lafayette 2026 passed ~40 in late Aug and reached 136 by Sep 4; OH Knox 2014 reached 383 total over ~4 months with peak weekly increments in the tens. Two-week multipliers in this class cluster near 1.8x-3x.\n- Over the SAME class but conditioned on deceleration having begun (WI after Sep 4): increments fell to +15 (Sep 4->8), +4 (Sep 8->11), and +3 statewide (Sep 11->16) -- i.e. two-week increments in single digits once control took hold.\n- Over this specific Iowa outbreak's own weekly increments (n=4 observed weeks): mean +5.5/wk, median +3/wk; rolling two-week sums observed were 18, 6, 3, 16.\n- Over all Iowa years 2025-2026: 9 cases in 2025, 1 case in 2026 before Aug 16.\n\nEVIDENCE POINTING TOWARD FURTHER ACCRUAL: 36 of 38 cases unvaccinated or unknown status, indicating a large remaining susceptible pool; 22 of 38 cases in the 5-19 school-age band during the academic term; 14 of 38 cases counted as epi-linked rather than lab-confirmed, a category that can be added without laboratory turnaround; the Davis County Amish settlement numbers in the low thousands against ~280 doses targeted in the August clinic; measles serial interval is ~14 days, so the Sept 17 cohort's household generation falls inside the window; CDC director statement (Sept 2026) that one case can transmit to 12-18 susceptible people; >3,200 US cases in 2026, described as the worst US surge in 30 years, with kindergarten MMR coverage below 95%.\n\nEVIDENCE POINTING TOWARD LITTLE FURTHER ACCRUAL: no exposure locations identified by Iowa HHS in the four weeks preceding Sept 17, i.e. no confirmed public-venue exposures since ~Aug 20, implying cases arising inside an already-traced contact network; one observed week (Sep 10) with a zero increment; Iowa's realized growth is far slower than the Anabaptist class (4 weeks to go 16 -> 38); an early and community-endorsed mass vaccination clinic ran in mid-August; the regional WI comparator decelerated sharply after roughly four weeks; case confirmation and posting lag means rash onsets in the last days of September may first appear in the Oct 8 rather than the Oct 1 update.\n\nMARKETS: Polymarket and Kalshi both carry national US-measles-count markets resolving off the CDC counter (kalshi.com/markets/kxmeasles/measles-cases; polymarket.com/predictions/measles). Neither is state-scoped, neither resolves off Iowa HHS, and neither shares this deadli",
+   "reference_class": "US state/local measles outbreaks in under-vaccinated Anabaptist (Amish/Mennonite) communities, measured from the point officially reported cumulative confirmed cases first reached 35-45, to the officially reported cumulative total two weeks later (Ohio/Knox Co 2014; Texas/Gaines Co 2025; Wisconsin/G"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.225,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.4377,
+   "seconds": 87.1,
+   "estimate": {
+    "percentiles": {
+     "10": 40.0,
+     "25": 44.0,
+     "50": 49.0,
+     "75": 56.0,
+     "90": 65.0
+    },
+    "p_above_upper": 0.09
+   },
+   "reasoning": "Iowa HHS reads 38 dated Sept 17 (verified live by all three runs); exactly two Thursday updates (Sep 24, Oct 1) precede resolution, so this is a 2-week increment on a floor that cannot fall. The broad class multiplier is ~1.3x (=49); the narrow Anabaptist class implies ~2x, but Iowa's own realized doubling time is ~5 weeks, not ~1.5, so the narrow class informs the tail rather than the center. Downward: no exposure locations identified in four weeks (transmission inside an already-traced network), an August mass-MMR clinic in Davis County, one observed zero-growth week, confirmation lag pushing late-September onsets into the Oct 8 update, and ~5% that a skipped Oct 1 update makes the Sep 24 figure resolve. Upward: 36 of 38 unvaccinated or unknown, 22 in the 5-19 band with school in session, cases in four HHS districts including the Des Moines metro, epi-linked cases addable in lab-free batches, and a still-active Wisconsin chain at 166 across the northeast border. Right-skewed: 70.5 requires +33, beating the last weekly increment twice over - priced at 9%.",
+   "sources": [],
+   "reconciliation": "Three disputes mattered. (1) Reference class: Runs 1/2 anchored on a broad state-outbreak class (~1.25-1.35x over two weeks) with small adjustments; Run 3 anchored on a narrow Anabaptist class (~2x) then adjusted down hard. Judgment, and I resolved it by precedence of measurement: Iowa has five weeks of its own published series (16 -> 38, increments +3,+3,0,+16), which dominates a class prior for the central estimate; the Anabaptist class is retained only as justification for the fat right tail. I carried forward the runs' shared 38-as-of-Sep-17 anchor and a dispersion close to theirs (25 vs 24-27), recomputed from this outbreak's own increment SD rather than adopted. (2) Whether the +16 posted Sep 17 was genuine incidence or a retrospective batch of epi-linked contacts: FACTUAL, and unsettleable - all three runs searched for an Iowa HHS statement, an epi curve by rash-onset week, and county-level detail, and none exists publicly; no web access on this run to retry. I therefore did not pick a side, and let it widen the distribution symmetrically rather than shift the median. (3) Mass at exactly 38: Run 2's p10=38 implies >=10% on two consecutive zero-growth updates; the Sep 10 zero week supports some mass, but a freeze directly after a +16 week is less likely than an unconditional read suggests, so I put ~5% and set p10=40 - outside Run 2 on the low side and consistent with Runs 1/3. Minor factual check: Runs 1 and 3 both report the Aug 27 figure as 19 from an Iowa HHS release; Run 2's series omits it. Settled as 19; it does not move the estimate. Whether the Davis County epicenter is an Amish settlement was asserted by Runs 2/3 (KCRG Aug 18, mobile vaccination site explicitly open to the Amish community) and flagged unconfirmed by Run 1 - I treat it as likely but not established, which is why the Anabaptist tail is priced at 9% rather than the 14% Run 3 used. Skipped-Oct-1 risk: no run found a holiday or announced cadence change; ~5%, held as a small leftward pull via the fine print. All three found no matching market on Polymarket, Kalshi, Manifold or bookmakers - only national CDC-counter contracts, which match on neither geography, threshold, deadline nor resolution source - so there is no crowd anchor and none was blended.",
+   "disagreements": [
+    {
+     "claim": "The right reference class is broad US state outbreaks (~1.3x over two weeks) vs narrow Anabaptist-community outbreaks (~2x).",
+     "kind": "judgment",
+     "verdict": "Resolved toward the broad class for the median: Iowa's own five-week published series is a direct measurement of this outbreak's growth and outranks a class prior. The narrow class is retained as the basis for the fat right tail and the 9% escape above 70.5."
+    },
+    {
+     "claim": "The +16 cases added on Sept 17 were genuine new incidence rather than a retrospective batch of epi-linked contacts.",
+     "kind": "factual",
+     "verdict": "Could not be settled. All three runs searched for an Iowa HHS explanation, a rash-onset epi curve, and the composition of the 14 epi-linked cases; none is public, and this run has no web access. Left as two-sided variance, not a median shift."
+    },
+    {
+     "claim": "There is >=10% probability the figure is still exactly 38 on Oct 1 (Run 2's p10=38).",
+     "kind": "judgment",
+     "verdict": "Rejected as too much. A zero-growth week did occur (Sep 10), but two consecutive freezes immediately after a +16 week is a harder ask; priced ~5%, so p10=40."
+    },
+    {
+     "claim": "Iowa HHS may skip the Oct 1 update, in which case the Sep 24 figure resolves.",
+     "kind": "factual",
+     "verdict": "Settled as low-probability: no run found an announced pause or cadence change, and no holiday falls on Sep 24 or Oct 1, 2026. Held at ~5% as a small leftward pull."
+    },
+    {
+     "claim": "The Davis County outbreak epicenter is an Amish settlement.",
+     "kind": "factual",
+     "verdict": "Partially settled. Runs 2/3 cite KCRG (Aug 18) describing a mobile vaccination site explicitly open to the Amish community; Run 1 listed this as searched-for-but-unconfirmed. Treated as likely but not established - it is why the escape mass is 9% rather than 14%."
+    },
+    {
+     "claim": "The Wisconsin SW outbreak ran ~40 in late August to 136 by Sept 4, showing how fast this class can move.",
+     "kind": "factual",
+     "verdict": "Reported only by Run 3 with dated news citations (WSAW Sep 4, WBAY Sep 8, wiscnews Sep 11); not contradicted by the others and not independently verifiable here. Directionally supports the fat right tail, but it is a separate transmission chain with no established genetic or epidemiologic link to Iowa's, so it informs tail width only."
+    },
+    {
+     "claim": "Cases are confined to a single-county cluster.",
+     "kind": "factual",
+     "verdict": "Settled against: all three runs read the same district table from the page (D3=9, D4=17, D5=8, D6=4), i.e. at least four HHS districts including the Des Moines metro. Supports continued accrual."
+    }
+   ],
+   "reference_class": "US state-level measles outbreaks in undervaccinated rural/Anabaptist communities, measured from the weekly report where cumulative confirmed cases first reached 35-45 to the report two weeks later (TX/Gaines 2025, OH/Knox 2014, WI Grant-Iowa-Lafayette 2026, WI/Oconto 2025, Utah 2025, Kansas 2025, ND"
+  }
+ ]
+}
