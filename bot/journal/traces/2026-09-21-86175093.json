@@ -1,0 +1,234 @@
+{
+ "record_id": "2026-09-21-86175093",
+ "question": "How many cumulative laboratory-confirmed measles cases will Kerala's IDSP daily report show for 2026 as of the October 1, 2026 report?",
+ "question_id": 45934,
+ "url": "https://www.metaculus.com/questions/45749/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-09-21T08:57:25+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 8.5073,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 462.6666666666667,
+    "25": 484.3333333333333,
+    "50": 505.0,
+    "75": 524.6666666666666,
+    "90": 537.6666666666666
+   },
+   "p_above_upper": 0.2966666666666667
+  },
+  "phase1": {
+   "10": 462.6666666666667,
+   "25": 484.3333333333333,
+   "50": 505.0,
+   "75": 524.6666666666666,
+   "90": 537.6666666666666
+  },
+  "phase2": null,
+  "spread_phase1": 16.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 464.0,
+   "25": 478.0,
+   "50": 500.0,
+   "75": 518.0,
+   "90": 534.0
+  },
+  "p_above_upper": 0.26
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 2.679,
+   "seconds": 666.7,
+   "estimate": {
+    "percentiles": {
+     "10": 455.0,
+     "25": 474.0,
+     "50": 495.0,
+     "75": 515.0,
+     "90": 528.0
+    },
+    "p_above_upper": 0.25
+   },
+   "reasoning": "Reconstructed the Measles row directly from the IDSP PDFs: cum confirmed 308 (Sep 1) -> 350 (Sep 13) -> 377 (Sep 16) -> 420 (Sep 17) -> 423 (Sep 18). The Sep 16->17 step is a back-dated reclassification (+~36 con, -35 sus; the present-month column moved only +7), so true September incidence to the 18th is 80 confirmed. Rate has roughly doubled within September: 3.3/day (Sep 1-13) to 7.4/day (Sep 14-18). Base/status-quo projection from Sep 18 at the September average (4.4/day x 13 days) gives ~481; at the recent 5-day rate ~519. Bottom-up cross-check: baseline non-outbreak statewide ~3.3/day (+43) plus a still-growing Malappuram cluster (63 confirmed of 423 statewide as of Sep 18, 400+ suspected) plausibly adds 55-80, landing ~525. Cases printed by Oct 1 reflect exposures through about Sep 20, i.e. BEFORE the Sep 21 task force and vaccination drives can bite (incubation plus lab lag ~2 weeks), so suppression is unlikely to show in this reading; intensified active case-finding usually pushes detection up instead. Downside: the 7.4/day figure rests on a single 3-day burst (Sep 14-16 was 9/day, Sep 17 +7, Sep 18 +3), and most Kerala districts are flat. Upside/skew: another reclassification batch of +30-40 is a live lumpy mechanism, which is why I price 25% above the open 550 bound. Median implies a 13-day increment of ~72, between the flat-average (63) and continued-growth (96) cases. Small annulment/no-report risk is outside the numeric distribution. Lower bound is effectively dead: the value was already 423 on Sep 18 and the series is monotone apart from revisions.",
+   "sources": [
+    "https://dhs.kerala.gov.in/en/idsp-2",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/09/IDSP-Daily-Report-18.09.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/09/IDSP-Daily-Report-17.09.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/09/IDSP-Daily-Report-16.09.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/09/IDSP-Daily-Report-13.09.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/09/IDSP-Daily-Report-01.09.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/08/IDSP-Daily-Report-01.08.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/07/IDSP-Daily-Report-01.07.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/06/IDSP-Daily-Report-01.06.2026.pdf",
+    "https://www.onmanorama.com/news/kerala/2026/09/18/measles-outbreak-malappuram.html",
+    "https://polymarket.com/market/will-there-be-at-least-5000-measles-cases-in-the-us-in-2026-436-426-345-291 (checked, non-matching contract)"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the 'Con' cell in the Measles row, 'Cumulative 2026' group, of the Kerala DHS IDSP 'Communicable Diseases - Daily Report' PDF dated 01.10.2026 (dhs.kerala.gov.in/en/idsp-2) - NOT off district-level press reporting, NOT off suspected cases, NOT off the present-month column (which resets to October in that report). Figures are preliminary per the report's own note and taken as printed on the resolution date.\n\nEVENT WINDOW: 2026-01-01 -> 2026-10-01 per the criteria (calendar-2026 cumulative as printed in the 01.10.2026 report); as of Now (2026-09-21T08:20Z) 264 of 274 days = ~96.4% elapsed. Last published data point I could retrieve is the 18.09.2026 report, leaving 13 report-days of accumulation.\n\nTABLE STRUCTURE (verified against Chickenpox and ADD rows, where month-delta equals cum-delta exactly): each disease row reads [today Sus][today Con][month Sus][month Con][cum Sus][cum Con][deaths, zeros omitted]. Measles is the row immediately after ADD.\n\nEVIDENCE BULLETS (all figures read directly from the dated IDSP PDFs):\n- 01.06.2026 report: measles cum Sus 385, cum Con 144.\n- 01.07.2026 report: cum Sus 445, cum Con 188 (June increment +44 confirmed).\n- 01.08.2026 report: cum Sus 551, cum Con 241 (July increment +53).\n- 01.09.2026 report: cum Sus 605, cum Con 308, 1 death (August increment +67).\n- 13.09.2026 report: today Sus 13 / Con 1; month Sus 50 / Con 43; cum Sus 655 / Con 350; 1 death.\n- 16.09.2026 report: today Sus 32 / Con 18; month Sus 112 / Con 70; cum Sus 717 / Con 377; 1 death. Internally consistent with 13.09 (cum delta = month delta for both Sus and Con).\n- 17.09.2026 report: month Sus 123 / Con 77 but cum Sus 693 / Con 420. The cumulative confirmed rose 43 while the month column rose only 7, and cumulative SUSPECTED FELL from 717 to 693. This is a back-dated reclassification of roughly 36 suspected cases (from earlier months) into confirmed - a discrete revision, not incidence.\n- 18.09.2026 report: today Sus 11 / Con 3; month Sus 134 / Con 80; cum Sus 704 / Con 423; 1 death. Fully consistent day-over-day with 17.09.\n- Implied September incidence to the 18th: 80 confirmed in 18 days. Split: 43 over Sep 1-13 (3.3/day), 37 over Sep 14-18 (7.4/day, of which 27 fell in Sep 14-16 and only 10 in Sep 17-18).\n- Reports dated 19.09.2026 and 20.09.2026 were not retrievable at the standard wp-content URL pattern as of 2026-09-21; publication cadence is otherwise daily and the archive index listed dates through 18/09/2026.\n- OnManorama, 2026-09-18: Malappuram district has 63 laboratory-confirmed measles cases so far in 2026 with officials suspecting 400+ infections; Valavannur health block accounts for 74 confirmed-plus-suspected; spread to Athavanad and Kalpakanchery; district-wide alert being prepared; District Collector task-force meeting set for 2026-09-21; targeted vaccination camps and awareness drives being organised. Officials attribute the surge to immunisation gaps. For scale, the 2023 Malappuram outbreak recorded 1,304 confirmed and 3 deaths.\n- Malappuram's 63 confirmed is ~15% of the 423 statewide confirmed on 18.09, so the statewide series is not driven by that district alone.\n- Timing mechanics both ways: measles incubation (~10-14 days) plus lab-confirmation lag means cases printed by 01.10 largely reflect exposures on or before ~20.09, i.e. before the task force and vaccination camps could act. Conversely, outbreak-response active case search typically raises detection and laboratory testing volume in the following 1-2 weeks.\n- Weekday effect visible in the series: reporting dips over weekends and catches up (13.09 was a Sunday; 19-20.09 is a weekend).\n\nBASE RATES, with the class each is computed over:\n- Over 2026 monthly increments of this same series (unconditional, Jun-Aug): +44, +53, +67 confirmed per calendar month, i.e. ~19-29 per 13-day window.\n- Over 2026 13-day windows CONDITIONAL on the current accelerated regime (Sep 5-18): ~63 confirmed per 13 days.\n- Conditional on the September-to-date average rate (80 confirmed / 18 days = 4.44/day), a flat 13-day continuation from the 18.09 value of 423 gives 481.\n- Conditional on the most recent 5-day rate (7.4/day), a flat 13-day continuation gives 519.\n- Revision frequency: one cumulative-column reclassification of ~+36 confirmed observed in the ~18 report-days I sampled in September 2026; none detected in the 01.06 / 01.07 / 01.08 / 01.09 month-start snapshots.\n- The lower bound of 350 is already exceeded: the printed value was 423 on 18.09 and the cumulative column is monotone apart from revisions.\n\nMARKETS: searched Polymarket, Kalshi and Manifold. No contract exists on Kerala measles. Polymarket's measles contracts are U.S.-national 2026 case-count thresholds - different geography, different threshold, different resolution source; they say nothing about this quantity.\n\nSEARCHED FOR BUT COULD NOT FIND: the 19.09 or 20.09.2026 IDSP reports (URL pattern returned a 404 page); any district-level measles breakdown inside the IDSP report (measles appears only in the statewide Analysis section, not the district-wise table); Kerala 2025 measles year-end totals for a seasonality comparison; any statement from Kerala DHS on the 17.09 reclassification; any WHO/NCDC bulletin carrying the Kerala statewide 2026 figure; any prediction market on this quantity.",
+   "reference_class": "13-day forward increments of the Kerala IDSP cumulative-confirmed-measles series itself during 2026 (monthly increments 44 in June, 53 in July, 67 in August, 80 in the first 18 days of September), i.e. same-instrument, same-year extrapolation of an accelerating outbreak series"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 2.9899,
+   "seconds": 811.2,
+   "estimate": {
+    "percentiles": {
+     "10": 465.0,
+     "25": 488.0,
+     "50": 509.0,
+     "75": 528.0,
+     "90": 541.0
+    },
+    "p_above_upper": 0.32
+   },
+   "reasoning": "Read the IDSP PDFs directly: cumulative 2026 confirmed measles ran 188 (Jul 1), 241 (Aug 1), 308 (Sep 1), 334 (Sep 8), 350 (Sep 13), 420 (Sep 17), 423 (Sep 18) - already far above the 350 anchor in the background. Prior: trailing 10-day rate (8.9/day) x 13 remaining days = ~+116, i.e. ~539. I shade that down because ~36 of the Sep 13->17 jump was a one-off reclassification of pre-September suspected cases into the confirmed column (Jan-Aug confirmed 307->343, Jan-Aug suspected 605->570, total unchanged), so the underlying new-confirmation rate is ~7-9/day, and only ~34-38% of Kerala's 2026 measles cases are carried as lab-confirmed at any time - a lab-capacity ceiling that caps how fast Con can climb even as suspected explodes. Pushing up: September total case inflow (sus+con) is 214 in 18 days vs 123 for all of August and is accelerating; Malappuram's outbreak was still expanding when the alert was declared ~Sep 18; further backlog-clearing batches like the 36-case one are plausible with 570 pre-September suspected still unconfirmed; and if the Oct 1 report is missing the fallback uses a report dated up to Oct 3, adding days. Market check: no human market prices this - the Polymarket contracts found are U.S.-national 2026 measles totals (different geography, threshold, resolution source and deadline), evidence at best, not an anchor. Net: median ~509 conditional on landing inside the range, with 32% above 550 because the range top corresponds to merely continuing the trailing 10-day pace.",
+   "sources": [
+    "https://dhs.kerala.gov.in/en/idsp-2",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/09/IDSP-Daily-Report-18.09.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/09/IDSP-Daily-Report-17.09.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/09/IDSP-Daily-Report-13.09.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/09/IDSP-Daily-Report-08.09.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/09/IDSP-Daily-Report-01.09.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/08/IDSP-Daily-Report-01.08.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/07/IDSP-Daily-Report-01.07.2026.pdf",
+    "https://cdn.who.int/media/docs/default-source/searo/whe/wherepib/2026_13_searo_epi_bulletin.pdf",
+    "https://www.onmanorama.com/news/kerala/2026/09/18/measles-outbreak-malappuram.html",
+    "https://www.manoramaonline.com/district-news/malappuram/2026/09/18/measles-outbreak-malappuram.html"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the 'Con' cell under the 'Cumulative 2026' grouping in the Measles row of the 'Analysis of Communicable Diseases' table in the dated Kerala DHS IDSP Daily Report PDF - not off district-level laboratory-confirmed counts quoted in news, not off suspected cases, not off WHO/NCDC tabulations. The series is monotone non-decreasing in practice but IS revised retroactively between the suspected and confirmed columns. EVENT WINDOW: 2026-01-01 -> 2026-10-01 per the criteria (a calendar-2026 cumulative as printed in the 01.10.2026 report); as of 2026-09-21T08:20Z about 96% elapsed. Fallback per fine print: latest report dated on or before 2026-10-03; annulment if none.\n\nEVIDENCE (all IDSP figures extracted from the dated PDFs at dhs.kerala.gov.in, read 2026-09-21):\n- Measles is row 13 of the ANALYSIS table; 12 cells per row (Today / Present Month / Cumulative 2026, each as Sus, SusDeath, Con, Death).\n- Cumulative 2026 CONFIRMED by report date: 188 (01.07.2026), 241 (01.08.2026), 308 (01.09.2026), 334 (08.09.2026), 350 (13.09.2026), 420 (17.09.2026), 423 (18.09.2026).\n- Cumulative 2026 SUSPECTED by the same report dates: 445, 551, 605, 627, 655, 693, 704. Cumulative measles deaths: 0 through 01.07 and 01.08 rows, 1 on every September report read.\n- Retroactive reclassification between 13.09 and 17.09: pre-September suspected fell 605 -> 570 and pre-September confirmed rose 307 -> 343, with pre-September Sus+Con essentially unchanged (912 -> 913). The same 570/343 pre-September baseline appears on both 17.09 and 18.09. Roughly 36 earlier-month cases moved from the suspected to the confirmed column in one step.\n- Present-month (September) confirmed: 1 (Sep 1), 27 (Sep 8), 43 (Sep 13), 77 (Sep 17), 80 (Sep 18). Present-month suspected: 0, 22, 50, 123, 134 on those same dates.\n- Same-day 'Today' measles cells: 18.09 -> 11 suspected / 3 confirmed; 17.09 -> 17 suspected / 1 confirmed; 13.09 -> 1 suspected / 0 confirmed; 08.09 -> 6 confirmed.\n- Full-month increments to cumulative confirmed in 2026: July +53, August +67. Total (Sus+Con) case inflow: July +158, August +123, September +214 over its first 18 days.\n- BASE RATES BY CLASS: (a) over all Jan-Aug 2026 as printed on 01.09, 307 of 912 total measles cases (34%) were carried as confirmed rather than suspected; (b) over the same Jan-Aug cases after the mid-September reclassification, 343 of 913 (38%); (c) over September-2026 cases only, as printed on 18.09, 80 of 214 (37%); (d) over the two completed months immediately before the surge, the 13-day-equivalent increment to cumulative confirmed was ~+23 (July) and ~+29 (August); (e) over the Sep 8 -> Sep 18 window, the realised 10-day increment was +89.\n- OnManorama and Manorama Online, 2026-09-18: Malappuram district has 63 laboratory-confirmed measles cases in 2026 with suspected infections above 400; Valavannur health block accounts for 74 confirmed-plus-suspected; spread reported to Athavanad and Kalpakanchery; one suspected death under investigation; awareness drives and targeted vaccination camps being organised; district task-force meeting chaired by the District Collector scheduled for 2026-09-21.\n- Note the scale mismatch to record: the district's 63 lab-confirmed is a small fraction of the 423 statewide confirmed, i.e. most of the 2026 statewide confirmed total accrued outside the current Malappuram cluster and earlier in the year.\n- PUBLICATION CADENCE: at 2026-09-21T08:20Z the IDSP index page's most recent entry is 18/09/2026; the direct URLs for IDSP-Daily-Report-19.09.2026.pdf and 20.09.2026.pdf both return 404 (Sat/Sun). Weekday publication with weekend gaps is the observed pattern. 2026-10-01 is a Thursday; 2026-10-02 is Gandhi Jayanti, a public holiday, and a Friday; 2026-10-03 is a Saturday.\n- Historical scale for the same district: the 2023 Malappuram measles outbreak recorded 1,304 confirmed cases and three deaths (question background).\n- WHO SEARO epidemiological bulletin 2026 no. 13 carries a Bangladesh measles section and an India/Kerala section on shigellosis (273 confirmed, 7 deaths as of 2026-06-29) but contains no Kerala measles figures.\n- STATUS-QUO OUTCOME: the count stands at 423 as printed on 18.09.2026 and has never decreased in the reports read; the status-quo path is 423 plus 13 further days of accrual at whatever daily rate holds.\n- SEARCHED BUT NOT FOUND: any IDSP report dated after 18.09.2026; any Kerala state press release giving a statewide measles total after 13.09.2026; any district-wise measles breakdown inside the IDSP report (measles appears only in the statewide ANALYSIS section); any human prediction market on Kerala measles counts on Polymarket, Kalshi, Manifold or Metaculus (only U.S.-national 2026 measles-total contracts exist, differing in geography, threshold, deadline and resolution source).",
+   "reference_class": "Forward 13-day increments of this same Kerala IDSP cumulative-confirmed measles series during the Jul-Sep 2026 rise, extrapolated from the trailing 10-day reported rate (full-month analogues: +53 in July, +67 in August; Sep 8->18 increment +89)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.8895,
+   "seconds": 515.3,
+   "estimate": {
+    "percentiles": {
+     "10": 468.0,
+     "25": 491.0,
+     "50": 511.0,
+     "75": 531.0,
+     "90": 544.0
+    },
+    "p_above_upper": 0.32
+   },
+   "reasoning": "I pulled the Measles row out of eight IDSP daily PDFs (numeric-token dumps, cross-validated against the Mumps/Chicken-Pox/Influenza rows which move monotonically): cumulative confirmed 188 (01.07), 241 (01.08), 308 (01.09), 346 (10.09), 350 (13.09), 377 (16.09), 420 (17.09), 423 (18.09) — so the latest observed anchor is 423, not the 350 in the background, and 13 days remain to the 01.10 report. Status quo continuation at the September-to-date rate (6.8/day) gives ~511; the last 8 days (9.6/day) give ~548. Decomposing: September-onset confirmations ran 4.6/day over Sep 1-18 and 7.4/day over Sep 13-18, while a single batch on 17.09 reclassified ~36 pre-September suspected cases into confirmed (cum suspected fell 717->693 the same day) — so a sizeable, lumpy reclassification channel sits on top of incident cases, with a 704-case suspected stock still pending. Total (sus+con) accumulation roughly doubled from 8.1/day (Sep 1-10) to 17.6/day (Sep 10-18) and the Malappuram task force / MR campaign only started ~Sep 21, so incubation lags mean control effects land mostly in October, not by Sep 30. Against that: the 2023 analogue and district reporting show the statewide figure is broad-based rather than one cluster, and confirmed counts are lab-throughput-limited and could flatten for a week at a time. Market check: no market prices this — Polymarket's measles contracts are US CDC-count 2026 markets (different jurisdiction, source, threshold, and a 2027-01-01 close), so they are not an anchor; no Kalshi/Manifold/bookmaker contract on Kerala or India measles found. The 550 ceiling sits essentially at the recent-rate extrapolation, which is why I price a third of the mass above it.",
+   "sources": [
+    "https://dhs.kerala.gov.in/en/idsp-2",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/09/IDSP-Daily-Report-18.09.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/09/IDSP-Daily-Report-17.09.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/09/IDSP-Daily-Report-16.09.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/09/IDSP-Daily-Report-13.09.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/09/IDSP-Daily-Report-10.09.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/09/IDSP-Daily-Report-01.09.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/08/IDSP-Daily-Report-01.08.2026.pdf",
+    "https://dhs.kerala.gov.in/wp-content/uploads/2026/07/IDSP-Daily-Report-01.07.2026.pdf",
+    "https://www.onmanorama.com/news/kerala/2026/09/18/measles-outbreak-malappuram.html"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the cell printed in the Kerala DHS IDSP 'Communicable Diseases - Daily Report' PDF dated 01.10.2026 (Measles row, 'Con' column, 'Cumulative 2026' grouping) - not off district health-department figures, press reports, WHO/NCDC tallies, or the suspected-case column.\nEVENT WINDOW: accumulation runs 2026-01-01 -> the figure as printed in the 2026-10-01 report; as of Now (2026-09-21T08:20Z) ~96% of that window has elapsed (263 of 273 days), leaving 13 days between the latest observed report and the resolution report.\n\nEXTRACTED SERIES (Measles row, from the IDSP PDFs themselves; format cum-suspected / cum-confirmed / cum-deaths, with September month-to-date in brackets):\n- 01.07.2026: 445 / 188 / 1 (source: IDSP-Daily-Report-01.07.2026.pdf)\n- 01.08.2026: 551 / 241 (IDSP-Daily-Report-01.08.2026.pdf)\n- 01.09.2026: 605 / 308 / 1 (IDSP-Daily-Report-01.09.2026.pdf)\n- 10.09.2026: 640 / 346 / 1 [month 35 sus, 39 con]\n- 13.09.2026: 655 / 350 / 1 [month 50 sus, 43 con]\n- 16.09.2026: 717 / 377 / 1 [month 112 sus, 70 con]\n- 17.09.2026: 693 / 420 / 1 [month 123 sus, 77 con]\n- 18.09.2026: 704 / 423 / 1 [month 134 sus, 80 con] - latest report retrievable as of Now\n(Parse cross-checked against the adjacent Mumps / Chicken Pox / Influenza rows in the same table, which advance monotonically across all eight dates.)\n\nMECHANICS WORTH NOTING:\n- On 17.09 cumulative suspected FELL 717->693 while cumulative confirmed rose 377->420 and month-to-date confirmed rose only 70->77: ~36 pre-September suspected cases were reclassified as confirmed in one batch. So cumulative confirmed advances through two channels - new incident confirmations and retroactive reclassification of the suspected stock (704 suspected outstanding on 18.09).\n- Cumulative confirmed did not decrease on any of the eight observed 2026 dates; cumulative suspected did.\n- Month-boundary behaviour: the 01.09 report's cumulative equalled the 31-August total plus that day's single confirmed case, so the 01.10 report reflects data through 30 September plus that day's entry.\n- Statewide confirmed deaths: 1 for all of 2026 through 18.09.\n\nBASE RATES (each with the class it is computed over):\n- Over all of 2026 to date: 423 confirmed / 261 days = 1.6 per day.\n- Over the pre-surge regime (1 Jul - 31 Aug): +53 in July, +67 in August = ~2.0 per day.\n- Over the surge regime (1-18 Sep, all channels): +115 = 6.8 per day.\n- Over the most recent 8 days (10-18 Sep, all channels): +77 = 9.6 per day.\n- September-onset confirmations only (month-to-date column, excluding reclassification): 4.6 per day over 1-18 Sep; 7.4 per day over 13-18 Sep.\n- Total cases (sus+con), reclassification-immune: +73 over 1-10 Sep (8.1/day), +141 over 10-18 Sep (17.6/day).\n- Confirmed share of new cumulative total, 1-18 Sep: 115/214 = 54% (37% counting September-onset confirmations only).\n\nSTATUS-QUO OUTCOME: the count continues accruing at the September-to-date rate (6.8/day) with no regime change, giving 423 + 13 days of that rate.\n\nCONTEXT, BOTH DIRECTIONS:\n- Upward: OnManorama (2026-09-18) reports Malappuram at 63 lab-confirmed and >400 suspected for 2026, Valavannur block hardest hit (74 confirmed+suspected), spread to Athavanad and Kalpakanchery, majority of the infected unvaccinated; the 2023 Malappuram outbreak reached 1,304 confirmed and 3 deaths. Statewide confirmed (423) greatly exceeds the district figure, so accumulation is not confined to one cluster. A 704-case suspected backlog remains available for reclassification.\n- Downward: a district task force chaired by the Collector met 2026-09-21 with targeted vaccination and awareness drives; measles incubation is ~10-14 days, so campaign effects appear with a lag. Confirmed counts are lab-throughput-limited and the daily series is lumpy (daily confirmed of 5, 0, 18, 1, 3 on 10/13/16/17/18 Sep) - week-long flat stretches occur.\n\nPUBLICATION CADENCE: reports were retrieved at the standard URL pattern (dhs.kerala.gov.in/wp-content/uploads/YYYY/MM/IDSP-Daily-Report-DD.MM.2026.pdf) for 01.07, 01.08, 01.09, 10.09, 13.09 (a Sunday), 16.09, 17.09, 18.09 - i.e. daily including weekends. The IDSP listing page showed dates through 18/09/2026 when checked on 2026-09-21.\n\nSEARCHED FOR BUT NOT FOUND: reports dated 19.09 or 20.09.2026 at the standard filename pattern (returned no report content); any prediction market, exchange or bookmaker contract on Kerala or India measles counts (the only measles markets located are US-CDC-count 2026 contracts on Polymarket, different jurisdiction/source/threshold/close); any Kerala DHS district-wise measles breakdown (measles does not appear in the report's district-wise table, only in the statewide Analysis section); any published completion date or coverage target for the Malappuram MR vaccination drive; any WHO/NCDC bulletin carrying an independent Kerala 2026 measles figure.",
+   "reference_class": "Kerala IDSP cumulative-confirmed-measles 13-day increments observed within 2026, conditioned on the current (September) outbreak regime rather than the full-year average"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.3967,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.8663,
+   "seconds": 222.7,
+   "validation_errors_first_attempt": [
+    "the supervisor must include \"reconciliation\": what was in dispute between the runs, what you checked, and what settled it"
+   ],
+   "estimate": {
+    "percentiles": {
+     "10": 464.0,
+     "25": 478.0,
+     "50": 500.0,
+     "75": 518.0,
+     "90": 534.0
+    },
+    "p_above_upper": 0.26
+   },
+   "reasoning": "All three runs independently extracted the same Measles row series from the IDSP PDFs, so the anchor is 423 as printed on 18.09.2026 (not the 350 in the background), with 13 report-days to the 01.10 report. The pre-surge reference class implies only ~+25 (=448); September is running far hotter, so the question is which September rate to carry forward. Cumulative confirmed advances through two channels: incident confirmations (present-month column: 4.4/day over Sep 1-18, 7.4/day over Sep 13-18, but only +7 and +3 on the last two observed days) and retroactive reclassification of the suspected stock (one ~+36 batch on 17.09, with ~570-704 suspected still outstanding). Carrying ~5.5-6.5/day of incident confirmation plus a partial expectation for further batch reclassification gives a 13-day increment near +77, i.e. ~500 conditional on staying inside the range. The Sep 21 task force and MR campaign cannot bite by Oct 1 given ~10-14 day incubation plus lab lag, while outbreak-response active case-finding usually raises detection; that asymmetry plus the lumpy reclassification channel is why the right tail is fat. No human market prices this: the Polymarket contracts found are U.S.-national CDC 2026 case-count thresholds closing 2027-01-01 - different geography, threshold, resolution source and deadline, so evidence at best, not an anchor.",
+   "sources": [],
+   "reconciliation": "The three runs agreed on every retrieved fact: the same eight IDSP data points (188 on 01.07, 241 on 01.08, 308 on 01.09, 346 on 10.09, 350 on 13.09, 377 on 16.09, 420 on 17.09, 423 on 18.09), the ~36-case suspected-to-confirmed reclassification on 17.09 (cum suspected fell 717->693 while month-to-date confirmed moved only +7), one measles death, no reports after 18.09 retrievable, and no matching prediction market. So there was no factual dispute about the instrument, the anchor value, or the remaining window. The single live disagreement was a JUDGMENT one: which September rate to extrapolate. Run 1 projected mainly off September-onset incident confirmations (4.4/day average, treating the 7.4/day recent figure as a single 3-day burst) for a median of 495; Runs 2 and 3 projected off the all-channel cumulative rate (6.8-9.6/day) for medians of 509-511. I checked the internal consistency of each and side with a position between them but nearer Run 1's rate logic, for three reasons visible in the shared data: (a) the all-channel rate double-counts the one-off +36 batch as if it recurred every 13 days, which the runs' own evidence does not support - none of the month-start snapshots for 01.06/01.07/01.08/01.09 showed a comparable revision; (b) the two most recent observed days (17.09 +7, 18.09 +3 on the month column) are slower, not faster, than the 9/day Sep 14-16 burst the higher rates lean on; (c) Runs 2 and 3 declared a 0.32 escape above 550 AND a conditional median of ~510, which together imply an unconditional median near 530, i.e. sustaining the fastest 8-day all-channel rate for the full 13 days - more aggressive than their own dossiers' caveats about lab-throughput limits and week-long flat stretches. Against that, the runs are right that the suspected backlog (several hundred pending) and intensified case-finding give a genuine fat right tail, so I keep a substantial escape mass. Two factual points could NOT be settled without web access and are carried as uncertainty rather than resolved: whether reports dated 19-20.09 exist (the 404s may reflect a weekend gap - Run 3 retrieved 13.09, a Sunday, so the weekend-gap explanation Run 2 offers is not established), and whether another reclassification batch is scheduled. Annulment/no-report risk sits outside the numeric distribution. Net: median 500, with 26% above the open 550 bound.",
+   "disagreements": [
+    {
+     "claim": "Which September rate should be extrapolated over the remaining 13 days - September-onset incident confirmations (~4.4/day) or the all-channel cumulative rate (6.8-9.6/day)",
+     "kind": "judgment",
+     "verdict": "Settled toward the incident-confirmation rate plus a partial, not full, expectation of further reclassification: the all-channel rate embeds a one-off +36 batch not seen in any prior month-start snapshot, and the two most recent observed days were slower than the burst the high rates rely on. Median increment ~+77, giving ~500."
+    },
+    {
+     "claim": "Cumulative confirmed stood at 423 in the report dated 18.09.2026, not 350 as stated in the background",
+     "kind": "factual",
+     "verdict": "Confirmed - all three runs independently extracted 423 from the 18.09 PDF and the intermediate points agree across runs; the 350 in the background is the 13.09 value."
+    },
+    {
+     "claim": "The 16.09->17.09 jump (+43 confirmed) was a back-dated reclassification, not incidence",
+     "kind": "factual",
+     "verdict": "Confirmed by all three runs from the same internal evidence: cumulative suspected fell 717->693 the same day while the present-month confirmed column rose only +7, so ~36 pre-September suspected cases moved columns."
+    },
+    {
+     "claim": "Whether IDSP publishes on weekends (bearing on whether the 19-20.09 404s mean a gap or a lag, and on whether the 01.10 report will exist)",
+     "kind": "factual",
+     "verdict": "Could not be settled without retrieval. Run 2 asserts weekday-only publication with weekend gaps; Run 3 reports successfully retrieving the 13.09 report, which was a Sunday. The two claims conflict and neither is checkable here; left as uncertainty, with any no-report scenario falling under annulment rather than inside the numeric distribution."
+    },
+    {
+     "claim": "How much mass sits above the open 550 bound",
+     "kind": "judgment",
+     "verdict": "Runs priced 0.25-0.32. I take 0.26: reaching 550 needs ~9.8/day sustained, which requires either continued acceleration or a second large reclassification batch - both live mechanisms with a large pending suspected stock, but neither is the status-quo path."
+    },
+    {
+     "claim": "Whether any human market anchors this quantity",
+     "kind": "factual",
+     "verdict": "Settled and unanimous across runs: no Polymarket/Kalshi/Manifold/Metaculus contract on Kerala or India measles. The listed Polymarket contracts are U.S.-national CDC 2026 totals with a 2027-01-01 close - different geography, threshold, source and deadline; evidence, not an anchor."
+    }
+   ],
+   "reference_class": "Monthly increments to Kerala's own IDSP cumulative-2026 confirmed measles count in the pre-surge regime (Jul +53, Aug +67), i.e. ~23-29 per 13-day window, applied to the last printed value of 423 on 18.09.2026"
+  }
+ ]
+}
