@@ -8,7 +8,18 @@ name: Journal alarm
 on:
   schedule:
     - cron: "17 * * * *"
+  # [ADDED 2026-09-22] GitHub cron drops most ticks (observed ~6 runs/day), so an outage
+  # was detected in 3-6h, not 1h. workflow_run fires reliably after every Tournament bot
+  # run (i.e. every 10 min while the Cloud Scheduler kicker is alive); the cron above stays
+  # as the backstop that notices the kicker itself going dark (tripwire (a)).
+  workflow_run:
+    workflows: ["Tournament bot"]
+    types: [completed]
   workflow_dispatch:
+
+concurrency:
+  group: journal-alarm
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -31,21 +42,45 @@ jobs:
         continue-on-error: false
         env:
           TOURNAMENT_ID: ${{ vars.TOURNAMENT_ID }}
+          # Keep in sync with bot.yml's EXTRA_TOURNAMENTS.
+          EXTRA_TOURNAMENTS: market-pulse-26q3,market-pulse-26q4
+          # [ADDED 2026-09-21] Metaculus 403s unauthenticated /posts/ reads, so without the
+          # token the open-question count was always "unknown" and the journal-silence
+          # tripwire could never fire — exactly the green-but-empty shape of Sep 21.
+          METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
           GH_TOKEN: ${{ github.token }}
         # pipefail: without it `| tee` exits 0 and this alarm can never fire (it stayed
         # silent on 2026-09-21 while the bot forecast nothing on an exhausted subscription).
+        # The job stays GREEN while alarming (the issue is the signal): with workflow_run
+        # firing after every bot tick, a red run per alarm meant a failure email every
+        # ~10 min. The alarm verdict travels in the step output instead.
         run: |
-          set -o pipefail
+          set +e -o pipefail
           python scripts/journal_alarm.py | tee "$RUNNER_TEMP/alarm-reason.txt"
+          status=$?
+          echo "alarm=$([ "$status" -eq 1 ] && echo 1 || echo 0)" >> "$GITHUB_OUTPUT"
+          # 1 = alarm (handled by the Alert step); anything else nonzero is a crash: fail.
+          if [ "$status" -ne 0 ] && [ "$status" -ne 1 ]; then exit "$status"; fi
+          exit 0
 
       - name: Alert (one open issue, never hourly spam)
-        if: ${{ failure() }}
+        if: ${{ steps.check.outputs.alarm == '1' || failure() }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           title="Bot alarm: journal silence"
-          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')
-          if [ -n "$existing" ]; then echo "alert issue #$existing already open"; exit 0; fi
+          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number,updatedAt --jq '.[0] // empty')
+          if [ -n "$existing" ]; then
+            # An open issue must not swallow later alarms: comment, at most once an hour.
+            number=$(echo "$existing" | python -c "import json,sys; print(json.load(sys.stdin)['number'])")
+            age_min=$(echo "$existing" | python -c "import json,sys,datetime as d; u=d.datetime.fromisoformat(json.load(sys.stdin)['updatedAt'].replace('Z','+00:00')); print(int((d.datetime.now(d.timezone.utc)-u).total_seconds()//60))")
+            if [ "$age_min" -ge 60 ]; then
+              gh issue comment "$number" --body "Still alarming: $(cat "$RUNNER_TEMP/alarm-reason.txt") — $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            else
+              echo "alarm issue #$number updated ${age_min}m ago — not commenting again yet"
+            fi
+            exit 0
+          fi
           {
             echo "Automated alert from the journal-alarm workflow."
             echo

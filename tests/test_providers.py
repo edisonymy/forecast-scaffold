@@ -124,6 +124,46 @@ class TestOpenrouterCreditCap:
         )
         assert cost == run_bot.UNKNOWN_METERED_COST
 
+    def test_exit_zero_error_envelope_is_a_failed_call(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(run_bot, "agent_environment", lambda provider: {})
+        stdout = json.dumps({"is_error": True, "result": "Credit balance is too low"})
+        monkeypatch.setattr(
+            run_bot.subprocess, "run",
+            lambda *args, **kwargs: SimpleNamespace(returncode=0, stdout=stdout, stderr=""),
+        )
+        with pytest.raises(RuntimeError, match=r"^agent failed \(0\): Credit balance"):
+            run_bot.run_agent("claude -p", "prompt", None, 30)
+
+    def test_failed_call_detail_leads_with_the_envelope_message(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(run_bot, "agent_environment", lambda provider: {})
+        stdout = json.dumps({"is_error": True, "usage": {"x": "y" * 800},
+                             "result": "You've hit your limit"})
+        monkeypatch.setattr(
+            run_bot.subprocess, "run",
+            lambda *args, **kwargs: SimpleNamespace(returncode=1, stdout=stdout, stderr=""),
+        )
+        with pytest.raises(RuntimeError, match=r"^agent failed \(1\): You've hit your limit"):
+            run_bot.run_agent("claude -p", "prompt", None, 30)
+
+    @pytest.mark.parametrize(
+        ("message", "transient"),
+        [
+            ("POST /questions/forecast/ -> HTTP 503: down", True),
+            ("GET /posts/ -> HTTP 429: slow down", True),
+            ("POST /questions/forecast/ -> [Errno 104] Connection reset", True),
+            ("POST /questions/forecast/ -> HTTP 400: CDF Invalid", False),
+        ],
+    )
+    def test_transient_platform_errors_do_not_strike_the_ledger(
+        self, message: str, transient: bool
+    ) -> None:
+        assert run_bot.is_transient_platform_error(run_bot.MetaculusError(message)) is transient
+        assert run_bot.is_transient_platform_error(ValueError(message)) is False
+
     @pytest.mark.parametrize(
         ("stdout", "expected"),
         [

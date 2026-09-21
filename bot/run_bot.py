@@ -40,7 +40,7 @@ sys.path.insert(0, str(ROOT / "bot"))  # so sibling bot modules (asknews) import
 import asknews  # optional AskNews research source (dark by default; no key -> no-op)
 import markets  # harness-side Polymarket/Manifold candidate lookup (record-only, sighted only)
 import priors  # same-template prior outcomes from the resolutions overlay (record-only)
-from metaculus import MetaculusClient
+from metaculus import MetaculusClient, MetaculusError
 
 from forecast_scaffold.core import (
     MAX_TOTAL_ESCAPE_MASS,
@@ -95,6 +95,24 @@ FAILURE_WINDOW_HOURS = 24.0
 # (subscription out of credit, auth outage, rate limit). bot.yml reruns on OpenRouter only
 # on this code; 1 (question-level failures only) alerts but does not re-spend elsewhere.
 EXIT_PROVIDER_FAILURE = 75  # sysexits EX_TEMPFAIL
+# Per-call --max-budget-usd on the OpenRouter path. A call whose cost is unknown (failed,
+# timed out, unpriced envelope) is charged exactly this much against --budget — the CLI
+# enforces it — so one transient error costs one call's cap, not the tick. A medium research
+# run measures ~$1.3-2.5 on opus-5; 6 leaves headroom for a long high-effort run.
+OPENROUTER_PER_CALL_CAP_USD = 6.0
+# A never-forecast question closing within this many hours cannot safely wait for a later
+# run: the next tick reaches the k-th deferred question ~20k min after the ceiling break,
+# so 2h also covers a cluster closing together. The --budget ceiling is waived for it
+# (operator, 2026-09-22: coverage beats budget when the deadline is that close). It still
+# runs under a fresh per-question allowance so the OpenRouter CLI keeps a finite
+# --max-budget-usd.
+URGENT_CLOSE_HOURS = 2.0
+URGENT_HEADROOM_USD = 30.0
+# One question costing more than this raises an ops alert (max seen Sep 4-21: $9.71 over
+# 153 forecasts). Alerts never stop a forecast — they open an issue for a human/Claude.
+PER_QUESTION_ALERT_USD = 15.0
+# Per-tournament ceiling on open posts fetched before the close-time sort and --limit cut.
+OPEN_POSTS_FETCH_CAP = 500
 # Secrets withheld from the forecasting agent's subprocess env — it runs on untrusted
 # question text and needs none of these (submission + leak-guard are pure Python).
 # OPENROUTER_API_KEY is stripped too: when that provider is selected the key re-enters
@@ -975,6 +993,9 @@ def run_agent(
         raise RuntimeError(f"agent failed ({result.returncode}): {detail}")
     try:
         envelope = json.loads(result.stdout)
+        if isinstance(envelope, dict) and envelope.get("is_error"):
+            # Exit 0 with an error envelope is still a failed call — never a payload.
+            raise RuntimeError(f"agent failed (0): {str(envelope.get('result'))[:300]}")
         if isinstance(envelope, dict) and "result" in envelope:
             model = _primary_model(envelope.get("modelUsage"), agent_cmd)
             cost = float(envelope.get("total_cost_usd") or 0.0)
@@ -1299,6 +1320,14 @@ def record_failure(path: Path, question_id: Any, error: str) -> None:
         fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
+def is_transient_platform_error(exc: BaseException) -> bool:
+    """A Metaculus 429/5xx or network failure — the platform's fault, not the question's."""
+    if not isinstance(exc, MetaculusError):
+        return False
+    message = str(exc)
+    return bool(re.search(r"-> HTTP (429|5\d\d):", message)) or "-> HTTP " not in message
+
+
 def close_time_key(pair: tuple[dict[str, Any], dict[str, Any]]) -> str:
     """Sort key: the question's close time (ISO strings compare chronologically).
 
@@ -1328,7 +1357,12 @@ def collect_open_posts(
         # first tick after the tournament appears). An unknown slug — or one tournament's
         # transient API failure — must cost only that slug's batch, never the whole run.
         try:
-            fetched = client.open_posts(slug, limit=limit)
+            # Fetch EVERY open post (bounded), not the first `limit` in the API's default
+            # order: --limit used to truncate before the close-time sort and the
+            # already-forecasted filter, so with more open posts than the limit a NEW
+            # question could never be fetched. main() now applies --limit to the work
+            # queue after both.
+            fetched = client.open_posts(slug, limit=max(limit, OPEN_POSTS_FETCH_CAP))
         except Exception as exc:  # noqa: BLE001 — isolate the failure to this slug
             print(f"tournament {slug!r} unavailable ({exc}) — skipping this slug")
             continue
@@ -1351,6 +1385,25 @@ SEASONAL_TOURNAMENT_RE = re.compile(
 # A warmup/practice/testing round can carry the same naming ahead of the real season —
 # never auto-add one of those (this bot has nothing to gain from forecasting on it).
 SEASONAL_EXCLUDE_RE = re.compile(r"(?i)(warmup|practice|testing)")
+
+
+def ops_alert(message: str) -> None:
+    """Raise an operator alert without stopping anything: a GitHub ::warning:: annotation
+    plus a line in $OPS_ALERTS_FILE, which bot.yml turns into an issue."""
+    print(f"::warning::ops alert: {message}")
+    if path := os.environ.get("OPS_ALERTS_FILE"):
+        with contextlib.suppress(OSError), open(path, "a", encoding="utf-8") as fh:
+            fh.write(f"{_utc_now()} {message}\n")
+
+
+def closes_within_hours(post: dict[str, Any], question: dict[str, Any], hours: float,
+                       now: datetime | None = None) -> bool:
+    """True when the question's close time is known and less than ``hours`` away."""
+    closes = _parse_iso_z(question.get("scheduled_close_time")
+                          or post.get("scheduled_close_time"))
+    if closes is None:
+        return False
+    return (closes - (now or datetime.now(UTC))) < timedelta(hours=hours)
 
 
 def _parse_iso_z(value: Any) -> datetime | None:
@@ -1438,31 +1491,31 @@ def forecast_question(
         args.provider == "openrouter" and math.isfinite(budget) and budget > 0
     )
     run_cost = 0.0
-    metered_spend_uncertain = False
+    last_call_cap = 0.0  # the --max-budget-usd handed to the most recent metered call
     # One entry per forecasting agent call, in the order they ran — see write_trace.
     trace_calls: list[dict[str, Any]] = []
 
     def fail_closed_metered() -> None:
-        """Reserve the unknown remainder and forbid later paid calls this invocation."""
-        nonlocal metered_spend_uncertain, run_cost
-        if metered_spend_uncertain:
-            return
-        metered_spend_uncertain = True
-        # Charge the unknown call the entire remaining allowance. This makes both the
-        # invocation ledger and the journal conservative while avoiding double-counting
-        # successful calls whose cost is already in run_cost.
-        run_cost += max(0.0, budget - (spent["usd"] if spent else 0.0) - run_cost)
+        """Charge a metered call of unknown cost its full per-call cap.
+
+        The CLI enforces --max-budget-usd on the process, so the call cannot have billed
+        more than the cap it was given — reserving exactly that keeps the invocation-wide
+        hard cap true. [CHANGED 2026-09-21] It used to reserve the ENTIRE remaining budget
+        and forbid all later calls, so one OpenRouter 502 or timeout on the first question
+        ended the fallback tick with nothing forecast."""
+        nonlocal run_cost
+        run_cost += last_call_cap
 
     def metered_cmd(cmd: str) -> str | None:
-        """Cap this OpenRouter subprocess at the invocation's unspent remainder."""
+        """Cap this OpenRouter subprocess at min(per-call cap, unspent remainder)."""
+        nonlocal last_call_cap
         if not hard_cap_openrouter:
             return cmd
-        if metered_spend_uncertain:
-            return None
         remaining = budget - (spent["usd"] if spent else 0.0) - run_cost
         if remaining <= 0:
             return None
-        return with_credit_cap(cmd, remaining)
+        last_call_cap = min(remaining, OPENROUTER_PER_CALL_CAP_USD)
+        return with_credit_cap(cmd, last_call_cap)
 
     # The Metaculus API firewalls the HUMAN community prediction from bot accounts
     # everywhere: any value a bot token can read is an aggregate of other competing bots.
@@ -1573,17 +1626,14 @@ def forecast_question(
                 strict_metering=hard_cap_openrouter,
             )
         except (RuntimeError, subprocess.TimeoutExpired) as exc:
+            # Triage only picks a tier: a failed call must not cost the question.
             fail_closed_metered()
-            if spent is not None:
-                spent["usd"] += run_cost
-            print(f"  metered triage failed with unknown usage; budget closed: {exc}")
-            return False
+            tier, triage_cost = "medium", 0.0
+            print(f"  metered triage failed ({str(exc)[:160]}); cap reserved, tier medium")
         if triage_cost == UNKNOWN_METERED_COST:
             fail_closed_metered()
-            if spent is not None:
-                spent["usd"] += run_cost
-            print("  metered triage returned unknown usage; budget closed")
-            return False
+            triage_cost = 0.0
+            print("  metered triage returned unknown usage; per-call cap reserved")
         run_cost += triage_cost
 
     # Tier shape must be known before the system prompt is built: in multi-run mode the
@@ -1639,7 +1689,7 @@ def forecast_question(
         "sources" is legitimately [] (it reconciles what the runs found) but whose number is
         the one that gets submitted, so it must satisfy the same reference-class and
         dispersion contracts as the run whose number it replaces."""
-        nonlocal run_cost, agent_responded
+        nonlocal run_cost, agent_responded, provider_error
         errors: list[str] = []
         first_error: str | None = None
         candidate: dict[str, Any] | None = None
@@ -1747,20 +1797,24 @@ def forecast_question(
                 else:
                     run_cost += attempt_cost
                 agent_responded = True
+                provider_error = False
                 candidate = extract_json(output)
             except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
                 errors = [str(exc)]
+                # The LATEST call's outcome decides infra-vs-question: quota running out
+                # mid-question (after an earlier reply) is still the provider's fault.
+                # A timeout counts too: a hanging provider must fall back, not burn every
+                # 85-minute tick on stalled calls (audit, 2026-09-22).
+                provider_error = isinstance(exc, subprocess.TimeoutExpired) or (
+                    isinstance(exc, RuntimeError) and str(exc).startswith("agent failed"))
                 if hard_cap_openrouter and isinstance(
                     exc, (RuntimeError, subprocess.TimeoutExpired)
                 ):
                     # A failed/timed-out CLI process may still have been billed, but gives
-                    # us no trustworthy usage envelope. Reusing the apparent remainder in
-                    # a retry could exceed the invocation cap, so reserve it and stop paid
-                    # work for this invocation. ValueError is different: run_agent returned
-                    # successfully, and its known cost was added before JSON parsing.
+                    # no usage envelope: charge it its whole per-call cap (the CLI enforces
+                    # it) and let the retry run under a fresh cap. ValueError is different:
+                    # run_agent returned, and its known cost was added before JSON parsing.
                     fail_closed_metered()
-                    errors.append("metered usage unknown; budget closed")
-                    break
                 continue
             errors = validate_payload(candidate, question)
             if need_dossier and not str(candidate.get("dossier") or "").strip():
@@ -1907,6 +1961,7 @@ def forecast_question(
             slow_question = (date.fromisoformat(resolve_iso) - date.today()).days > 180
     payload: dict[str, Any] | None = None
     model_used = ""
+    provider_error = False  # the latest agent call died on the provider (quota/auth/rate)
     agent_responded = False  # any successful agent reply — separates question-content
     # failures (ledger-worthy: hourly retries won't converge) from infra failures
     # (auth outage, session limit: the QUESTION is fine, back off nothing).
@@ -2402,7 +2457,12 @@ def forecast_question(
         spent["usd"] += run_cost
     if payload is None:
         print(f"  SKIP (invalid after retry): {errors}")
-        if agent_responded:
+        if provider_error and spent is not None:
+            # The last call errored on the provider (quota, auth, rate limit), even if an
+            # earlier one answered: not the question's fault. main() exits
+            # EXIT_PROVIDER_FAILURE so bot.yml reruns the remainder on OpenRouter.
+            spent["infra_failures"] = spent.get("infra_failures", 0) + 1
+        elif agent_responded:
             # The model answered and still couldn't produce a valid payload — that's a
             # question-content failure the backoff ledger should count. Pure infra
             # failures (every call errored) are not the question's fault.
@@ -2410,10 +2470,6 @@ def forecast_question(
                 failures_path(str(journal.path)), question.get("id"),
                 "invalid payload after retry: " + "; ".join(errors)[:200],
             )
-        elif spent is not None:
-            # Every call errored (quota, auth, rate limit): the provider's fault. main()
-            # exits EXIT_PROVIDER_FAILURE so bot.yml reruns the remainder on OpenRouter.
-            spent["infra_failures"] = spent.get("infra_failures", 0) + 1
         return False
     aggregation_note: str | None = None
     # Runs that produced a usable number, in this question type's own currency.
@@ -2912,6 +2968,10 @@ def main(argv: list[str] | None = None) -> int:
                              "spend from the same --budget; each refresh appends a new "
                              "journal record at its own forecast_at, matching how the "
                              "platform scores forecasts over time")
+    parser.add_argument("--refresh-budget", type=float, default=0.0,
+                        help="spend after which this invocation stops starting REFRESHES of "
+                             "standing forecasts (0 = use --budget). Never-forecast questions "
+                             "ignore it: only --budget, the catastrophe ceiling, stops them")
     parser.add_argument("--include-forecasted", action="store_true",
                         help="re-forecast questions this account already forecast")
     parser.add_argument("--budget", type=float, default=0.0,
@@ -3044,26 +3104,61 @@ def main(argv: list[str] | None = None) -> int:
     # time a stale-but-standing forecast already has.
     pending.sort(key=close_time_key)
     refresh.sort(key=close_time_key)
+    # Operator policy (2026-09-22): outside a catastrophe, finishing questions beats any
+    # per-run limit. --limit and --refresh-budget therefore only ever cut REFRESHES of
+    # standing forecasts; a never-forecast question is stopped by nothing but the
+    # catastrophe ceiling (--budget) and the wall-clock deadline (the next tick resumes).
+    new_count = len(pending)
+    refresh_slots = max(0, args.limit - new_count)
+    if len(refresh) > refresh_slots:
+        print(f"--limit {args.limit}: {len(refresh) - refresh_slots} refresh(es) deferred; "
+              f"all {new_count} new question(s) kept")
+        refresh = refresh[:refresh_slots]
     if refresh:
         print(f"{len(refresh)} standing forecast(s) older than {args.refresh_hours:.0f}h "
               "queued for refresh after new questions")
         pending.extend(refresh)
+    refresh_budget = args.refresh_budget if args.refresh_budget > 0 else args.budget
     done = failed = 0
     spent = {"usd": 0.0}
-    for post, question in pending:
-        if args.budget > 0 and spent["usd"] >= args.budget:
-            print(f"budget cap ${args.budget:.2f} reached (${spent['usd']:.2f} spent); "
-                  f"{len(pending) - done - failed} question(s) left for the next session")
+    for index, (post, question) in enumerate(pending):
+        # Operator policy (2026-09-22): a NEW question closing too soon to wait for a later
+        # run ignores the budget entirely. It still gets a finite per-question allowance
+        # (URGENT_HEADROOM_USD past what is spent), because the OpenRouter path needs a
+        # hard cap to hand the CLI; that allowance is always fresh, never exhausted.
+        urgent = index < new_count and closes_within_hours(post, question, URGENT_CLOSE_HOURS)
+        question_args = args
+        if urgent and args.budget > 0 and spent["usd"] >= args.budget - URGENT_HEADROOM_USD:
+            question_args = argparse.Namespace(
+                **{**vars(args), "budget": spent["usd"] + URGENT_HEADROOM_USD})
+            print(f"  closes within {URGENT_CLOSE_HOURS:g}h: budget ceiling waived "
+                  f"(${spent['usd']:.2f} spent)")
+            ops_alert(f"budget ceiling ${args.budget:.0f} waived for urgent question "
+                      f"{question.get('id')} (${spent['usd']:.2f} spent this run)")
+        if not urgent and args.budget > 0 and spent["usd"] >= args.budget:
+            print(f"CATASTROPHE budget ceiling ${args.budget:.2f} reached "
+                  f"(${spent['usd']:.2f} spent); {len(pending) - done - failed} "
+                  "question(s) left for the next session")
+            ops_alert(f"budget ceiling ${args.budget:.0f} reached with "
+                      f"{len(pending) - index} question(s) still queued")
+            break
+        if index >= new_count and refresh_budget > 0 and spent["usd"] >= refresh_budget:
+            print(f"refresh budget ${refresh_budget:.2f} reached; "
+                  f"{len(pending) - index} refresh(es) left for a later run")
             break
         if deadline is not None and time.monotonic() > deadline:
             print(f"deadline reached after {args.deadline_minutes:.0f} min; "
                   f"{len(pending) - done - failed} question(s) left for the next run")
             break
         print(f"- {question.get('title', post.get('title'))!r}")
+        before = spent["usd"]
         try:
             ok = forecast_question(
-                client, post, question, args, config, journal, spent, deadline
+                client, post, question, question_args, config, journal, spent, deadline
             )
+            if (cost := spent["usd"] - before) > PER_QUESTION_ALERT_USD:
+                ops_alert(f"question {question.get('id')} cost ${cost:.2f} "
+                          f"(alert threshold ${PER_QUESTION_ALERT_USD:.0f})")
             done += ok
             failed += not ok
             # A False return already wrote its own ledger entry (and only when the
@@ -3072,7 +3167,11 @@ def main(argv: list[str] | None = None) -> int:
             failed += 1
             # Reaching here means agent runs succeeded and the failure was downstream
             # (CDF build, submit 4xx) — question-level, so the backoff ledger counts it.
-            record_failure(ledger, question.get("id"), str(exc))
+            # A platform outage (5xx / network after the client's own retries) is NOT
+            # the question's fault: three ticks of Metaculus trouble must not bench a
+            # question for 24h, which on MiniBench means missing it.
+            if not is_transient_platform_error(exc):
+                record_failure(ledger, question.get("id"), str(exc))
             print(f"  ERROR: {exc}")
     print(f"forecast {done} question(s), {failed} failed, ${spent['usd']:.2f} notional spend")
     if infra := spent.get("infra_failures", 0):

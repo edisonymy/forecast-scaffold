@@ -81,6 +81,22 @@ class TestCollectOpenPosts:
         client = self._client({"season": [{"id": 1}]})
         assert run_bot.collect_open_posts(client, "season,,  ", 100) == [{"id": 1}]
 
+    def test_fetch_is_not_truncated_to_limit(self) -> None:
+        # 2026-09-21/22: --limit truncated the API's first page before the close-time sort
+        # and the already-forecasted filter. The fetch now asks for far more than --limit;
+        # main() cuts the work queue instead.
+        asked: list[int] = []
+        client = MetaculusClient(token="t")
+
+        def open_posts(slug: str, *, limit: int = 100) -> list[dict[str, Any]]:
+            asked.append(limit)
+            return [{"id": i} for i in range(5)]
+
+        client.open_posts = open_posts  # type: ignore[method-assign]
+        posts = run_bot.collect_open_posts(client, "season", 2)
+        assert len(posts) == 5
+        assert asked == [run_bot.OPEN_POSTS_FETCH_CAP]
+
     def test_unknown_slug_is_isolated_not_fatal(self, capsys: Any) -> None:
         # A pre-entered next-quarter round names its slug before Metaculus creates the
         # tournament; that slug erroring must cost only its own batch, never the run.
@@ -203,3 +219,14 @@ class TestTournaments:
         client = MetaculusClient(token="t")
         client._request = lambda *a, **k: None  # type: ignore[method-assign]
         assert client.tournaments() == []
+
+
+def test_closes_within_hours() -> None:
+    from datetime import UTC, datetime
+    now = datetime(2026, 9, 21, 22, 0, tzinfo=UTC)
+    soon = {"scheduled_close_time": "2026-09-21T23:00:00Z"}
+    later = {"scheduled_close_time": "2026-09-22T12:00:00Z"}
+    assert run_bot.closes_within_hours({}, soon, 3, now=now)
+    assert not run_bot.closes_within_hours({}, later, 3, now=now)
+    assert run_bot.closes_within_hours(soon, {}, 3, now=now)  # post-level fallback
+    assert not run_bot.closes_within_hours({}, {}, 3, now=now)  # unknown close: not urgent

@@ -82,6 +82,8 @@ class ScriptedAgent:
         out = self.outputs.pop(0)
         if out == "AGENT_FAILURE":
             raise RuntimeError("agent failed (1): boom")
+        if out == "AGENT_TIMEOUT":
+            raise run_bot.subprocess.TimeoutExpired(cmd, timeout)
         if out == "UNPRICED_VALID":
             return fenced(RESEARCH), run_bot.UNKNOWN_METERED_COST, "claude-sonnet-5"
         return out, 0.05, "claude-sonnet-5"
@@ -516,7 +518,7 @@ class TestFailureRecovery:
         assert ok and record is not None
         assert "--max-budget-usd" not in shlex.split(agent.calls[0]["cmd"])
 
-    def test_openrouter_unknown_cost_failure_stops_all_later_calls(
+    def test_openrouter_unknown_cost_failure_cannot_exceed_a_small_budget(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
         agent, record, ok = run(
@@ -529,6 +531,25 @@ class TestFailureRecovery:
         assert not ok and record is None
         assert len(agent.calls) == 1
         assert agent.final_spent == pytest.approx(1.0)
+
+    def test_openrouter_failure_reserves_one_call_cap_not_the_tick(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # 2026-09-21 audit: one failed call used to reserve the WHOLE --budget, so a single
+        # OpenRouter blip ended the fallback tick. Now it costs one per-call cap and the
+        # retry runs.
+        agent, record, ok = run(
+            monkeypatch, tmp_path, ["AGENT_FAILURE", fenced(RESEARCH)],
+            config=config_with_tiers({"low": {"draws": 1, "searches": 1, "runs": 1}}),
+            effort="low", budget=24.0, provider="openrouter",
+        )
+        assert ok and record is not None
+        assert len(agent.calls) == 2
+        cap = run_bot.OPENROUTER_PER_CALL_CAP_USD
+        assert agent.final_spent == pytest.approx(cap + 0.05)
+        for call in agent.calls:
+            tokens = shlex.split(call["cmd"])
+            assert float(tokens[tokens.index("--max-budget-usd") + 1]) <= cap
 
     def test_openrouter_unpriced_success_records_once_and_closes_budget(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
@@ -1060,6 +1081,28 @@ class TestFailureLedger:
         # ...but it IS counted as a provider failure: main() exits EXIT_PROVIDER_FAILURE
         # on it, which is what triggers bot.yml's OpenRouter fallback.
         assert agent.final_infra == 1
+
+    def test_provider_error_after_a_reply_is_still_a_provider_failure(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # Quota runs out on the repair retry: the model DID answer once, but the question
+        # failed because of the provider — fall back, don't strike the ledger.
+        bad = fenced({"probability": 7.3, "reasoning": "x", "sources": []})
+        agent, record, ok = run(monkeypatch, tmp_path, [bad, "AGENT_FAILURE"],
+                                config=config_with_tiers(self.LOW), effort="low")
+        assert not ok
+        assert agent.final_infra == 1
+        assert not (tmp_path / "failures.jsonl").exists()
+
+    def test_hanging_provider_is_a_provider_failure(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # Every call times out: fall back (exit 75), never strike the ledger.
+        agent, record, ok = run(monkeypatch, tmp_path, ["AGENT_TIMEOUT"] * 6,
+                                config=config_with_tiers(self.LOW), effort="low")
+        assert not ok
+        assert agent.final_infra == 1
+        assert not (tmp_path / "failures.jsonl").exists()
 
     def test_question_level_failure_is_not_a_provider_failure(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
