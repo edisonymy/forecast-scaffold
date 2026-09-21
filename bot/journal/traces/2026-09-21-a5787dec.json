@@ -1,0 +1,54 @@
+{
+ "record_id": "2026-09-21-a5787dec",
+ "question": "Will the September 2026 US jobs report show year-over-year average hourly earnings growth of 3.1% or higher?",
+ "question_id": 45950,
+ "url": "https://www.metaculus.com/questions/45765/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "binary",
+ "forecast_at": "2026-09-21T15:52:36+00:00",
+ "effort": "low (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "dossier",
+ "angles": null,
+ "share_evidence": false,
+ "supervisor_enabled": false,
+ "aggregation": null,
+ "cost_usd": 0.71,
+ "pools": {
+  "pooled_runs": 0.66,
+  "phase1": null,
+  "phase2": null,
+  "spread_phase1": null,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probability": 0.66
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "dossier_research",
+   "mode": "research",
+   "run_index": 1,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.6257,
+   "seconds": 116.3,
+   "estimate": 0.66,
+   "reasoning": "Threshold decomposes to a cents-level question: Sep 2025 AHE = $36.70, so a 3.1% print requires Sep 2026 >= $37.82, i.e. a MoM gain of at least +$0.07 from August's $37.75. Recent increments average +$0.080 over 6 months and +$0.096 over 12, and 15 of the last 19 months (79%) cleared +$0.07 — the required move is slightly BELOW trend, which favors YES. The Sep 2025 base month itself rose +$0.08 (exactly trend), so there is no adverse base effect this month. TradingEconomics shows a 3.1% consensus for the Oct 2 release. Against that: the labor market is cooling, the last two 6-month increments include two +$0.06 months, and the threshold sits only ~0.03pp below the trend-continuation value, so one soft month flips it. Treating Sep level as ~N($37.83, $0.04) gives ~0.64; the empirical frequency gives ~0.73-0.79; I settle at 0.66, discounting the raw frequency for decelerating wage growth. No prediction market prices this contract (Polymarket/Manifold/Kalshi searched, none found). Shutdown delay risk is timing-only per the fine print.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=CES0500000003",
+    "https://www.bls.gov/news.release/empsit.nr0.htm",
+    "https://tradingeconomics.com/united-states/average-hourly-earnings-yoy",
+    "https://www.cnbc.com/2026/09/04/jobs-report-august-2026.html",
+    "https://www.foxbusiness.com/economy/us-jobs-report-august-2026"
+   ],
+   "reference_class": "Monthly changes in the seasonally adjusted level of private-sector average hourly earnings (CES0500000003), Jan 2025 - Aug 2026 (19 observations), asking how often the one-month gain was >= $0.07"
+  }
+ ]
+}
