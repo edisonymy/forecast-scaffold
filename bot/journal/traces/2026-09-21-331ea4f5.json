@@ -1,0 +1,238 @@
+{
+ "record_id": "2026-09-21-331ea4f5",
+ "question": "What will the Brent crude front-month futures settlement price be on September 30, 2026?",
+ "question_id": 45943,
+ "url": "https://www.metaculus.com/questions/45758/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-09-21T12:32:13+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 4.628,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 89.5,
+    "25": 94.5,
+    "50": 100.10000000000001,
+    "75": 105.5,
+    "90": 111.33333333333333
+   },
+   "p_below_lower": 0.008,
+   "p_above_upper": 0.016666666666666666
+  },
+  "phase1": {
+   "10": 89.5,
+   "25": 94.5,
+   "50": 100.10000000000001,
+   "75": 105.5,
+   "90": 111.33333333333333
+  },
+  "phase2": null,
+  "spread_phase1": 1.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 91.0,
+   "25": 95.5,
+   "50": 100.3,
+   "75": 105.0,
+   "90": 110.5
+  },
+  "p_below_lower": 0.007,
+  "p_above_upper": 0.015
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.3193,
+   "seconds": 248.1,
+   "estimate": {
+    "percentiles": {
+     "10": 90.5,
+     "25": 95.0,
+     "50": 100.5,
+     "75": 105.5,
+     "90": 110.5
+    },
+    "p_below_lower": 0.004,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Anchor is the martingale prior: an individual futures contract's settlement 7 trading sessions out is best centered on its own current price (~$101.2 for Nov-26), not on the backwardated curve or on analyst 2H26 averages (EIA ~$90, BofA ~$83) which describe months, not this contract. Reference class is short-horizon front-month Brent changes in a high-volatility geopolitical-premium regime; the 2026 crisis-regime base rate gives a ~0 median drift with ~6.5% SD over 7 sessions. Adjustments: (1) Barchart CB*0 on 09/30 may roll to Dec-26, which trades ~$4 below Nov-26 in steep backwardation — I put ~20-25% on that print, shifting the center down ~$0.5 and fattening the left tail; (2) two-sided catalysts inside the window — UNGA Iran diplomacy and G7 emergency-stock-release talk on the downside (a credible ceasefire could unwind a large part of a ~$30+ risk premium fast), Saudi zero October allocations to European refiners, six-week pipeline repair estimates and further strikes on the upside. These roughly offset, so I keep the median at the spot anchor less the roll drag. Evidence is reasonably rich but fast-moving and the Sept 21 settlement itself was not yet known at forecast time.",
+   "sources": [
+    "https://tradingeconomics.com/commodity/brent-crude-oil",
+    "https://www.investing.com/commodities/brent-oil-historical-data",
+    "https://oilprice.com/futures/brent/",
+    "https://www.ice.com/products/219/brent-crude-futures/expiry",
+    "https://en.wikipedia.org/wiki/2026%E2%80%932028_world_oil_market_chronology",
+    "https://www.riotimesonline.com/oil-markets-latam-monday-september-21-2026/",
+    "https://manifold.markets/prismatic/will-brent-crude-settle-at-or-above",
+    "https://www.barchart.com/ondemand/faq",
+    "https://www.eia.gov/outlooks/steo/",
+    "https://www.energyconnects.com/news/oil/2026/september/opecplus-keeps-output-policy-unchanged-for-october"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the Barchart continuous front-month Brent page (CB*0) 'Last' figure in the row dated 09/30/2026 — not off spot Brent, not off Dated Brent, not off WTI. Fallback to credible reporting of the ICE Brent front-month settlement for that session.\n\nEVENT WINDOW: the criteria name a single trading session, 2026-09-30 (ICE settles ~19:30 London); scheduled resolution 2026-10-01T12:00Z. As of Now (2026-09-21T12:15Z) there are 7 ICE Brent sessions left to observe: Sep 22, 23, 24, 25, 28, 29, 30.\n\nCONTRACT MECHANICS (load-bearing):\n- ICE Brent November 2026 is the current front month; its LAST TRADING DAY is September 30, 2026, delivery period begins Oct 1 (ICE expiry table, retrieved 2026-09-21). The resolution date is therefore the expiring contract's final session.\n- Curve is steeply backwardated: Nov-26 $101.21, Dec-26 $97.12, Jan-27 $94.15 (oilprice.com futures strip, 2026-09-21 07:09). A Nov-vs-Dec print differs by roughly $4 at current spreads.\n- Barchart's documented convention for a '*0' continuous is the nearest UNEXPIRED contract (Barchart OnDemand FAQ); whether the 09/30 row carries Nov or Dec is not directly verifiable from the page (the price-history page did not render on fetch).\n\nPRICE HISTORY (Investing.com front-month Brent closes, retrieved 2026-09-21): Sep 2 95.63; Sep 3 95.52; Sep 4 96.28; Sep 7 97.00; Sep 8 97.92; Sep 9 101.21 (+3.36%); Sep 10 107.63 (+6.34%); Sep 11 104.61; Sep 14 105.68; Sep 15 108.75; Sep 16 105.83; Sep 17 104.82; Sep 18 103.87; Sep 20 103.41; Sep 21 101.23 intraday/close print (-2.11%). TradingEconomics shows ~$101.18 mid-session Sep 21; AK&M reported Nov-26 at $101.88 at 09:46 MSK.\n\nDISPERSION BASE RATES (class stated for each): over the 15 sessions Sep 2-21 2026 (crisis regime), daily return SD = 2.42%. Over the same window, realized 7-session changes: Sep 2->Sep 11 +9.4%, Sep 4->Sep 15 +13.0%, Sep 9->Sep 18 +2.6%, Sep 10->Sep 21 -5.9%. Over calmer pre-conflict 2025 conditions, 7-session Brent moves were roughly a third that wide. Conditioning variable already known: the conflict regime is active and Hormuz transits are still depressed, so the crisis-regime numbers are the applicable class, not the all-history one.\n\nBEARISH-DIRECTION EVIDENCE:\n- Satellite data show Saudi moved ~2.8 mb/d through Hormuz over six days vs ~0.7 mb/d in August — highest in six months (CNBC/TradingEconomics, Sep 17-21).\n- Five consecutive down sessions into Sep 21 on diplomacy hopes (TradingEconomics, Sep 21).\n- Pezeshkian leads an Iranian delegation to UNGA in New York Sept 22; US granted visas to senior Iranian officials; Trump says he is open to meeting and is convening Gulf leaders on the sidelines (Axios Sep 16, NBC, CNBC Sep 21). UNGA runs Sept 22-26, inside the window.\n- Macron pushed G7 allies toward another coordinated emergency stock release (Rio Times, Sep 21).\n- Institutional H2-2026 averages sit well below current spot: EIA STEO ~$90/b for 2H26 citing gradually increasing Hormuz flows; BofA ~$83/b H2-2026.\n- OPEC+ core eight kept October output policy unchanged at the Sep 6 virtual meeting; next full meeting Oct 4 — after the resolution date.\n\nBULLISH-DIRECTION EVIDENCE:\n- Saudi Aramco told at least two European refiners (incl. Orlen) their October allocations would be ZERO after the Sep 10 drone attack on the 1,200 km Petroline damaged three pumping stations (Bloomberg/Reuters via Daily Caller, Sep 20).\n- Repair-time dispute: US Energy Secretary Wright said Sep 15 the outage would be brief; Lipow Oil Associates and Atlantic Council's Ellen Wald estimate six weeks or more with only partial bypass capacity.\n- US SPR at its lowest since 1982 (285 mb, week ending Sep 11); refineries running 96.8%; distillate stocks 13% below the five-year average; US diesel hit a record $6.06/gal on Sep 11 (Daily Caller, EIA).\n- Hormuz commodity-vessel traffic still far below normal (~4 vessels on Sep 17 vs a 10-day average near 16, per the question background).\n- Steep backwardation itself signals physical tightness at the front of the curve.\n- Tail commentary on record: Citi has assigned 30% odds to a $150 Brent spike; Wood Mackenzie has said $200 is not impossible if Gulf losses approach 15 mb/d.\n\nMARKETS: a Manifold market asks about a $100 threshold on the same date and resolves off the official ICE front-month settlement (not Barchart) — 43 trades, 14 holders, ~Ṁ404 liquidity, price driven largely by one bot revising after the early-September spike. Kalshi hosts a Brent commodities category and Polymarket a crude-oil category, but I could not retrieve any contract on either venue matching this date + settlement source (Kalshi returned HTTP 429; Polymarket listings were category-level only).\n\nSEARCHED FOR BUT COULD NOT FIND: the Barchart CB*0 price-history page content itself (fetch returned empty/blocked), so the historical roll behavior on a prior Brent last-trading-day (e.g. the Oct-26 contract's LTD on 2026-08-31) is unverified; Kalshi/Polymarket contracts matching these exact terms; the confirmed Sep 21 ICE settlement (session had not settled as of Now); any announced US-Iran meeting actually on the calendar as opposed to signalled openness; official ICE or Aramco statements confirming or denying the six-week Petroline repair timeline.",
+   "reference_class": "Front-month ICE Brent settlements 7 trading sessions ahead of spot during active geopolitical supply-disruption regimes (2026 Hormuz crisis months; analogues: 2022 Ukraine invasion, 2019 Abqaiq, 1990-91 Gulf), where the conditional distribution is centered on the current front-month price with regim"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.327,
+   "seconds": 310.9,
+   "estimate": {
+    "percentiles": {
+     "10": 89.5,
+     "25": 95.0,
+     "50": 100.3,
+     "75": 105.5,
+     "90": 111.5
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Anchor is the martingale: front-month Nov'26 Brent at ~$101.2 (Sep 21, down 2.1-2.7% intraday, 4th consecutive losing session). Over 7 remaining ICE sessions the reference class of 7-day-ahead front-month changes in this regime implies ~8-9% dispersion, so the distribution is wide but centered near spot. I shade the median marginally below spot for three reasons: (1) an identified downside catalyst window - Pezeshkian at the UNGA Sep 23, Trump open to a meeting - and this market has repeatedly shed 7-10% in days on de-escalation headlines (Aug 1 cancelled strike, Aug 10 Bessent 'deal soon', April ceasefire); (2) Julius Baer calls the Saudi Petroline outage 'less significant than feared' and Saudi is offering more crude via Hormuz; (3) Sep 30 is Nov'26's expiry and the Dec'26 contract sits ~$4 lower, so there is roughly a 1-in-4 chance Barchart's CB*0 row for 09/30 prints the December contract. Offsetting: seven months of stalled diplomacy is the base rate (Iran's seven conditions unmet, Hormuz transits still ~4-8 vessels vs ~12-16 normal, Aramco cancelling October European cargoes), and escalation has repeatedly produced fast +6-7% weeks, giving a fat right tail. Net: median just above $100, right-skewed, with escape mass priced for a comprehensive deal (<$70) or an Abqaiq-scale strike (>$140). The thin Manifold market implies more upside than my mixture; I gave it modest weight given 14 holders and staleness.",
+   "sources": [
+    "https://en.wikipedia.org/wiki/2026%E2%80%932028_world_oil_market_chronology",
+    "https://oilprice.com/futures/brent/",
+    "https://tradingeconomics.com/commodity/brent-crude-oil",
+    "https://www.thenationalnews.com/business/energy/2026/09/21/oil-prices-slide-on-hopes-diplomacy-at-un-will-help-end-iran-conflict/",
+    "https://discoveryalert.com/analysis/brent-crude-price-prediction-september-2026/",
+    "https://manifold.markets/prismatic/will-brent-crude-settle-at-or-above",
+    "https://tradingeconomics.com/commodity/brent-crude-oil/news/540988",
+    "https://www.barchart.com/trader/help/symbols/futures_symbol.php"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the settlement in the row dated 09/30/2026 on Barchart's continuous CB*0 Brent price-history page - not off spot Brent, not off WTI, not off Dated Brent physical. Fine print defines front-month as 'the nearest-to-expiry actively traded Brent contract as reflected by Barchart's continuous CB*0 quote on that date'.\nEVENT WINDOW: the single ICE Brent trading session dated 2026-09-30 (ICE Brent settlement period ends 19:30 London) -> per the criteria; as of 2026-09-21T12:15Z that session has not begun, 0% elapsed, with 7 ICE trading sessions remaining (Sep 22, 23, 24, 25, 28, 29, 30).\nCONTRACT MECHANICS: ICE Brent expires on the last business day of the second month preceding the contract month, so the Nov'26 contract's last trading day is Wed 2026-09-30 - the resolution date is an expiry date. Curve as of 2026-09-21 (oilprice.com futures page): Nov'26 $101.21 (-2.53%, day range 100.20-104.90, vol 131.1K), Dec'26 $97.12, Jan'27 $94.15, Feb'27 $91.66, Mar'27 $89.64 - steep backwardation, Nov-Dec spread ~$4.09. Whether Barchart's CB*0 row for 09/30 carries the expiring Nov contract or the rolled Dec contract is unverified; Barchart help describes '*0' as the current active/nearest contract, '*1' as front month.\nPRICE PATH (Wikipedia 2026-2028 world oil market chronology; AK&M; Al-Bayan; The National): Aug 7 close $83.55; Aug 14 $88.52; Aug 20 $93.73 (Treasury 'toughest sanctions in history' on Iran, UAE ends Iran trade); Aug 28 $89.31 (week -5%); Sep 4 $95.29 (+6% on renewed US-Iran fighting); Sep 9 $101.21 (highest close since May 22); Sep 14-15 $107.82-108.75 (highest closes since May 19) after an Iranian tanker was attacked in the strait and the Saudi East-West Petroline was hit Sep 10-11; Sep 17 lower on reports Saudi would offer more crude via Hormuz; week ending Sep 18 settled $103.87 (one outlet reports $104.82); Sep 21 intraday $101.1-101.9, fourth consecutive down session, lowest in a week. Earlier 2026 regime points: pre-conflict sub-$70; >$119 during the March blockade; ~$96 on Apr 10 after a ~12% weekly drop on ceasefire talks; ~$86 in late August on reopening hopes.\nSUPPLY / PHYSICAL: Strait of Hormuz effectively closed to commercial traffic - straits.live tracker counts day 204 as of ~Sep 20; ~8 ships transited Sep 13 vs ~85/day normal; one account cites 4 commodity vessels Sep 17 vs a 10-day average near 16, another 6 vessels Sep 9 vs a typical 12. Saudi Aramco told at least two European buyers including Orlen it will not supply October crude under long-term contracts (Bloomberg/Reuters via Daily Caller, Sep 20). Petroline (1,200 km, three pumping stations damaged): US Energy Secretary Wright said Sep 15 the outage would be brief; Lipow Oil Associates and Atlantic Council's Ellen Wald estimate six weeks or more for repair with partial bypass capacity. Julius Baer's Norbert Rucker said Sep 21 the pipeline disruption looks 'less significant than feared' after one week. US SPR at 285 Mb as of week ending Sep 11, lowest since 1982; US refinery utilization 96.8%; distillate stocks 13% below the five-year average; US diesel hit a record $6.06/gal Sep 11.\nDIPLOMACY CALENDAR: Pezeshkian is leading an Iranian delegation to the UN General Assembly and is scheduled to address it Wednesday Sep 23; the US granted visas to senior Iranian officials; Trump has said he is open to meeting Pezeshkian while simultaneously threatening to destroy Iran's economy absent a deal (CNBC, Fox live blogs Sep 18-21). Iran has passed seven conditions to Washington via Qatar; three are public - end of the war on all fronts, release of frozen assets, end of the US naval blockade. Reporting as of mid-September describes multilateral talks to reopen the strait as stalled; Hormuz is described as the most plausible starting point for a limited deal after ~7 months of war. Prior false dawns in this conflict: Trump called off a planned strike Aug 1; a >7% selloff followed Bessent's Aug 10 CNBC comment that a Hormuz opening deal 'could come soon'; Brent fell >10% on a five-day pause of strikes; an April US-Iran ceasefire did not reopen the strait.\nOPEC+: the seven-country group left October quotas at September levels and holds its next monthly meeting on October 4 - after the resolution date. September output had been raised 188 kb/d, completing the phased rollback of the 1.65 mb/d 2023 cut.\nBASE RATES AND DISPERSION: over all 7-trading-day windows this is a random walk around the prevailing front-month price; conditional on the 2026 Hormuz-crisis regime, weekly (5-session) point-to-point moves in Aug 7 - Sep 21 were +5.9%, +5.9%, -4.7%, +6.7%, ~+6-9%, ~+0.5%, giving a weekly SD near 4.6% around a positive drift; conditional on the wider Mar-Sep 2026 sample the same statistic is materially larger (a -12% week in April, a March round trip from ~$119 to ~$86). Event-in-window check: of the ~7 same-length (7-session) windows since Aug 1, essentially every one contained a move of at least 4% in one direction, and roughly half contained a headline-driven single-day move of 3%+.\nANALYST LEVELS ON RECORD: Bank of America $83 for H2 2026 and $75 for 2027; Julius Baer near-term $77.50; Citi puts 30% on a spike to $150; Goldman Sachs and J.P. Morgan flag $120-130 with possible $150; Wood Mackenzie says $200 'is not outside the realms of possibility' if Gulf losses stay near 15 mb/d; a resolution path is argued to take Brent to ~$80 by end-2026 and $65 in 2027 against 2.4 mb/d of non-OPEC supply growth.\nSEARCHED BUT NOT FOUND: Barchart's CB*0 quote and price-history pages returned no content to the fetcher, so the current CB*0 contract mapping and its historical behaviour on past Brent expiry dates could not be verified; Kalshi's Brent category page returned HTTP 429 so no regulated-exchange strike ladder for Sep 30 was obtained (Kalshi does list daily KXBRENTD Brent markets); no ICE document confirming the Nov'26 last trading day was retrieved directly, only the general expiry rule; no Polymar",
+   "reference_class": "7-trading-day-ahead changes in the ICE Brent front-month settlement during the 2026 Hormuz-crisis regime (March-September 2026), applied to the current front-month price as a random-walk anchor"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.4196,
+   "seconds": 339.1,
+   "estimate": {
+    "percentiles": {
+     "10": 88.5,
+     "25": 93.5,
+     "50": 99.5,
+     "75": 105.5,
+     "90": 112.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.025
+   },
+   "reasoning": "Anchor is the no-change random walk on the front-month futures: Nov-26 Brent was ~$101 on Sep 21 (TradingEconomics $101.25; oilprice.com $101.09; AK&M $101.88), with 7 ICE sessions left. The main non-price adjustment is contract identity: Nov-26 expires ON Sep 30, and the criteria's 'nearest-to-expiry actively traded... per Barchart CB*0' could resolve to either the expiring Nov print or a rolled Dec print ~$4 lower in this ~$4/month backwardation; at ~65/35 Nov/Dec this drags the median to ~$99.5 and adds left skew. Dispersion is the dominant term: this regime has printed $84-$110 within one month and 2-3% daily moves, so a 7-session 10-90 band near $24 is justified, not conservatism. Evidence is genuinely two-sided inside the window - Saudi Hormuz flows recovering to 2.8 mb/d and possible Trump-Pezeshkian UNGA contact against Aramco's October European supply cancellation, 6+ week Petroline repairs, SPR at a 1982 low. Markets: Manifold's $100/Sep-30 market at 0.72 matches the instrument but has 405 volume and predates the four-session slide, so I give it only a ~$0.4 upward nudge; Kalshi KXBRENTD settles off the Pyth 24/7 spot index (implying ~$97) and is not the same instrument; no Polymarket contract found. Escapes: below $70 needs a comprehensive Hormuz-reopening deal plus full risk-premium collapse in 7 sessions (~1%); above $140 needs an Abqaiq-scale strike or full strait closure, beyond the $119 March 2026 peak (~2.5%).",
+   "sources": [
+    "https://tradingeconomics.com/commodity/brent-crude-oil",
+    "https://oilprice.com/futures/brent/",
+    "https://en.wikipedia.org/wiki/2026%E2%80%932028_world_oil_market_chronology",
+    "https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXBRENTD&limit=100&status=open",
+    "https://api.elections.kalshi.com/trade-api/v2/series/KXBRENTD",
+    "https://www.ice.com/products/219/Brent-Crude-Futures",
+    "https://www.eia.gov/outlooks/steo/",
+    "https://www.business-standard.com/markets/commodities/oil-slips-as-investors-assess-saudi-export-recovery-despite-houthi-attacks-126092100037_1.html",
+    "https://www.akm.ru/news/fyuchers_na_syruyu_neft_marki_brent_upal_na_1_92/",
+    "https://manifold.markets/prismatic/will-brent-crude-settle-at-or-above"
+   ],
+   "dossier": "EVIDENCE DIGEST - ICE Brent front-month settlement for the session dated 2026-09-30.\n\n1. Front-month is the ICE Brent Nov-2026 contract. On 2026-09-21 it traded $101.09 at 07:09 (oilprice.com), $101.25 (TradingEconomics, 2026-09-21), $101.88 per AK&M (2026-09-21), and $102.09 per Business Standard (2026-09-21) - a fourth consecutive lower session; the session was still open at research time, so no Sep 21 settlement was confirmable.\n2. Forward curve on 2026-09-21 (oilprice.com): Nov-26 $101.09; Dec-26 $97.02; Jan-27 $94.06; Feb-27 $91.53 - roughly $4/month backwardation at the front.\n3. ICE contract rule: Brent trading ceases on the last Business Day of the second month preceding the contract month, so Nov-2026 expires Wednesday 2026-09-30 (ice.com contract rules/procedures). The 09/30 session is that contract's final settlement; Dec-26 becomes front-month afterwards.\n4. RESOLUTION-INSTRUMENT NOTE: resolves off the ICE Brent front-month FUTURES settlement printed for the 09/30/2026 session (Barchart CB*0 'Last'), not off a spot/CFD Brent index and not off Dec-26 unless the continuation has rolled. Barchart's published CB*0 roll rule could not be located. Relevant contrast: Kalshi's daily Brent series (KXBRENTD) switched on 2026-08-31 to settle off the Pyth Brent Crude Oil 24/7 index, and its 2026-09-22 strike ladder (API pull, 2026-09-21) implies a level several dollars BELOW the Nov futures - 24/7 'spot Brent' indices appear to track the deferred contract.\n5. EVENT WINDOW: the criteria measure a single trading session, 2026-09-30, with the prior-session fallback if it is not a trading day. As of Now (2026-09-21T12:15Z), 7 ICE sessions remain: Sep 22, 23, 24, 25, 28, 29, 30.\n6. Settlement path (Wikipedia '2026-2028 world oil market chronology'; Al Bayan 2026-09-19): Aug 7 $83.55; Aug 14 $88.52; Aug 20 $93.73; late Aug $89.31; Sep 4 $95.29; Sep 9 $101.21 (highest since May 22); Sep 11 ~$104.61; Sep 15 $108.75 (highest close since May 19); Sep 17 $104.82; Sep 18 $103.87.\n7. SERIES DISPERSION - over Aug 7-Sep 18 2026 weekly Brent closes the SD of weekly log changes is ~5.8%, and the trailing 30-day range was $84.20-$109.97 with daily moves of 2-3% routine (TradingEconomics, 2026-09-21). Unconditionally across Brent's history the comparable 7-session SD is ~3-4%; CONDITIONAL on an active Middle East supply-disruption regime it has run roughly double that. Earlier in this same crisis Brent spiked above $119 (March 2026 blockade) and fell back to ~$86 by late August - >15% moves in both directions within weeks.\n8. Supply-recovery evidence: satellite tracking showed Saudi Arabia moving ~2.8 mb/d through Hormuz over the six days to ~Sep 20, vs ~0.7 mb/d in August (Business Standard, 2026-09-21). EIA September 2026 STEO: Middle East production is forecast to rise on gradually increasing Hormuz flows and alternative routes.\n9. Diplomatic calendar: UN General Assembly high-level week runs from Sep 21 in New York. Trump said he would 'probably' be open to meeting Iranian President Pezeshkian on its sidelines this week; Qatar's PM said US-Iran messages are being exchanged and urged Gulf cooperation (Business Standard, 2026-09-21). Separately, multilateral talks to reopen Hormuz were reported stalled as of mid-September 2026.\n10. Supply-stress evidence: Saudi Aramco told at least two European buyers including Poland's Orlen it will not supply October crude under long-term contracts, after a Sep 10 attack damaged three Petroline pumping stations; US Energy Secretary Wright said Sep 15 the outage would be brief, while Lipow Oil Associates and the Atlantic Council put repairs at six weeks or more. US SPR at 285 Mb for the week ending Sep 11, lowest since 1982; refinery utilisation 96.8%; distillate stocks 13% below the five-year average (Daily Caller summarising Bloomberg/Reuters, 2026-09-20). Hormuz commodity-vessel transits were ~4 on Sep 17 vs a 10-day average near 16.\n11. Shut-ins: regional crude production shut-ins averaged 6.7 mb/d in August vs 5.0 mb/d in July (EIA September 2026 STEO).\n12. Institutional levels (horizons longer than this question): EIA STEO has Brent averaging ~$90/b across 2H2026; Goldman Sachs $85 for Dec-2026; Bank of America $83 average for H2-2026. Tail scenarios without stated horizons: Citi ~30% on a $150 spike; Wood Mackenzie says $200 is 'not outside the realms of possibility' if Gulf losses hold near 15 mb/d.\n13. Human markets checked: Manifold hosts one low-volume market on whether Brent settles at or above a round threshold on 2026-09-30 (closes 2026-09-30, volume 405). Kalshi lists daily Brent markets but the API returned no event for 2026-09-30 as of 2026-09-21, and the series settles off a 24/7 spot index rather than a futures settlement. No Polymarket Brent contract for this date was located; Polymarket's commodities pages surface WTI-based markets.\n14. STATUS-QUO OUTCOME: the 09/30 front-month settlement equals the prevailing front-month level, unchanged, with the prompt backwardation premium intact.\n15. Searched but not found: an ICE 2026 expiry-calendar PDF confirming Sep 30 directly (the rule was confirmed from contract rules instead); Barchart's CB*0 roll methodology; any liquid dated market on the Sep 30 settlement; a confirmed Sep 21 settlement print.",
+   "reference_class": "Front-month ICE Brent futures settlements 7 trading sessions ahead of the observation date, during active Middle East supply-disruption regimes (1990-91 Gulf, 2022 Ukraine, 2026 Hormuz crisis): median outcome is the prevailing front-month price with ~7-8% dispersion over that horizon"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0909,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.4756,
+   "seconds": 108.7,
+   "estimate": {
+    "percentiles": {
+     "10": 91.0,
+     "25": 95.5,
+     "50": 100.3,
+     "75": 105.0,
+     "90": 110.5
+    },
+    "p_below_lower": 0.007,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Martingale on the contract itself: Nov-26 traded ~$101.1-102.1 intraday Sep 21 (oilprice $101.09, TradingEconomics $101.25, AK&M $101.88), a fifth consecutive lower session, with 7 ICE sessions left (Sep 22, 23, 24, 25, 28, 29, 30). The only structural adjustment is contract identity: Sep 30 is Nov-26's last trading day and Dec-26 sits $4.1 lower in steep backwardation, so I model a 75/25 Nov/Dec mixture for the Barchart CB*0 row, which drags the median to ~$100.3 and adds left weight. Catalysts inside the window are genuinely two-sided - Pezeshkian at UNGA Sep 23, Trump signalling openness, Saudi Hormuz flows back to 2.8 mb/d, G7 stock-release talk on one side; Aramco's zero October allocations to European refiners, six-week Petroline repair estimates, SPR at a 1982 low and ~4-8 vessel Hormuz transits on the other - so no net shade beyond the roll. Analyst 2H26 averages ($83-90) are horizon-mismatched and not used as an anchor.",
+   "sources": [],
+   "reconciliation": "Three runs agreed on the martingale anchor (~$101.2) and on the ICE rule making Sep 30 the Nov-26 expiry; their medians (99.5/100.3/100.5) differed only through the assumed Nov/Dec roll weight and skew. FACTUAL disputes: (a) Barchart CB*0 contract identity on 09/30 - Run 1 cites the OnDemand FAQ as 'nearest unexpired', Run 2 cites help text calling *1 the front month; none loaded the page, so this could NOT be settled and is carried as a ~25% Dec-26 weight rather than resolved by fiat; (b) the anchor - Run 1's 'Sep 20 103.41' falls on a Sunday and is not a settlement, so the live quotes of $101.09-102.09 govern; (c) Nov-26 LTD = Sep 30 confirmed by the ICE rule plus the calendar (Wednesday, last business day of September); (d) Petroline repair time (Wright 'brief' vs Lipow/Wald 'six weeks+') is unsettleable from the dossiers and left as two-sided uncertainty. The Manifold $100 market at 0.72 was checked and found stale, not informative: it was priced when Brent sat at $105-108, where a martingale itself implies ~0.7 for that threshold, and it has 405 volume with 14 holders; my mixture implies ~0.52 at today's anchor, and I give the market only a token nudge. Kalshi KXBRENTD settles off the Pyth 24/7 index, a different instrument. JUDGMENT dispute on width: Runs 2 and 3 ($21.5-$23.5) stack weekly-SD dispersion plus jump premium plus the mixture; the direct computation (2.42% daily SD x sqrt(7) x 2.56 = $16.6, widened for jumps and the mixture) gives ~$20, which is where I land - between Run 1 and Run 2 because the evidence puts it there, not as a compromise.",
+   "disagreements": [
+    {
+     "claim": "Barchart CB*0's 09/30/2026 row prints the expiring Nov-26 contract rather than the rolled Dec-26 (~$4.1 lower)",
+     "kind": "factual",
+     "verdict": "UNSETTLED - conflicting second-hand readings of Barchart docs across runs, page never loaded by any run; carried as a 75/25 Nov/Dec mixture, which is the single largest structural term in the median"
+    },
+    {
+     "claim": "Nov-26 is front month and its last trading day is 2026-09-30, making the resolution session an expiry session",
+     "kind": "factual",
+     "verdict": "SETTLED - the ICE rule (last business day of the second month preceding the contract month) plus the calendar; all three runs concur independently"
+    },
+    {
+     "claim": "The anchor price on 2026-09-21 is ~$101.2 (Run 1 additionally cites a 'Sep 20' close of $103.41)",
+     "kind": "factual",
+     "verdict": "SETTLED at ~$101.2 - Sep 20, 2026 is a Sunday, so that figure is not an ICE settlement; four independent quotes bracket $101.09-102.09 intraday. The Sep 21 settlement itself was not knowable to any run"
+    },
+    {
+     "claim": "The Manifold market (0.72 for >=$100 on Sep 30) implies more upside than a martingale at today's price",
+     "kind": "factual",
+     "verdict": "SETTLED as stale, not informative - it was priced at a $105-108 spot level where a martingale itself gives ~0.7 for that threshold; 405 volume, 14 holders, bot-driven. Token weight only"
+    },
+    {
+     "claim": "Petroline repairs are brief (Wright, Julius Baer) vs six weeks or more (Lipow, Wald)",
+     "kind": "factual",
+     "verdict": "COULD NOT BE SETTLED from the dossiers - no Aramco or ICE statement retrieved; left as two-sided uncertainty contributing to width rather than to the center"
+    },
+    {
+     "claim": "10-90 width should be ~$19.5 (Run 1) vs ~$23.5 (Run 3)",
+     "kind": "judgment",
+     "verdict": "Resolved at ~$20 by direct computation: crisis-regime daily SD 2.42% x sqrt(7) = $6.5, x2.56 = $16.6, widened for jump risk and the contract mixture. The wider figures double-count the same volatility through weekly-SD and jump-premium channels"
+    },
+    {
+     "claim": "The median should be shaded below the spot anchor for the UNGA de-escalation window",
+     "kind": "judgment",
+     "verdict": "No - the downside catalysts (UNGA, Saudi flows to 2.8 mb/d, G7 stock release) are offset by the base rate of seven months of stalled diplomacy plus Aramco's cancelled October European cargoes and a 1982-low SPR. No evidence breaks the tie, so the only shade applied is the roll effect"
+    }
+   ],
+   "reference_class": "ICE Brent front-month settlements 7 trading sessions ahead of the anchor date, during an active Middle East supply-disruption regime (2026 Hormuz crisis; March 2026 blockade round trip; prior Gulf-disruption episodes) - i.e. a no-drift random walk off the contract's own current price with crisis-reg"
+  }
+ ]
+}
