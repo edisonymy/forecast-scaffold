@@ -102,8 +102,9 @@ EXIT_PROVIDER_FAILURE = 75  # sysexits EX_TEMPFAIL
 OPENROUTER_PER_CALL_CAP_USD = 6.0
 # A never-forecast question closing within this many hours cannot safely wait for a later
 # run (next tick: <=10 min dispatch + ~2 min setup + ~15-20 min for a medium forecast, so
-# ~30 min; 1h leaves margin), so the --budget ceiling is waived for it (operator, 2026-09-22: "fuck budget
-# constraints" when the deadline is that close). It still runs under a fresh per-question
+# ~30 min; 1h leaves margin), so the --budget ceiling is waived for it (operator,
+# 2026-09-22: coverage beats budget when the deadline is that close). It still runs under
+# a fresh per-question
 # allowance so the OpenRouter CLI always has a finite --max-budget-usd.
 URGENT_CLOSE_HOURS = 1.0
 URGENT_HEADROOM_USD = 30.0
