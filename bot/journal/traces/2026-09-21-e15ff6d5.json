@@ -1,0 +1,230 @@
+{
+ "record_id": "2026-09-21-e15ff6d5",
+ "question": "What will the US unemployment rate be for September 2026, as reported by the BLS on October 2, 2026?",
+ "question_id": 45953,
+ "url": "https://www.metaculus.com/questions/45768/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-09-21T18:14:35+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.8413,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 3.9883333333333333,
+    "25": 4.064333333333333,
+    "50": 4.134333333333333,
+    "75": 4.210666666666667,
+    "90": 4.280666666666666
+   }
+  },
+  "phase1": {
+   "10": 3.9883333333333333,
+   "25": 4.064333333333333,
+   "50": 4.134333333333333,
+   "75": 4.210666666666667,
+   "90": 4.280666666666666
+  },
+  "phase2": null,
+  "spread_phase1": 0.01,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 3.99,
+   "25": 4.06,
+   "50": 4.13,
+   "75": 4.2,
+   "90": 4.27
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.2892,
+   "seconds": 262.8,
+   "estimate": {
+    "percentiles": {
+     "10": 3.99,
+     "25": 4.06,
+     "50": 4.13,
+     "75": 4.2,
+     "90": 4.27
+    }
+   },
+   "reasoning": "Prior from the reference class: one-month U-3 changes in non-recession months have near-zero drift and SD ~0.10-0.11pp, so the random-walk anchor is August's unrounded 4.141% (7031/169777), not the rounded 4.1. That placement is decisive: the level is 0.009pp from the 4.15 cut, so a literally flat month still prints 4.1 but any small rise prints 4.2. Adjusting off the anchor: four months of downward drift (4.337->4.296->4.189->4.090) argue lower, as do claims at 196k with continuing claims 1.73M (lowest since Jan 2024), Challenger YTD cuts at a four-year low, and a labor force down 973k y/y that mechanically suppresses the rate; against that, August's +0.05 reversal, a 12-month payroll trend of only ~31k/mo, weak ADP (+38k), and AI-driven information-sector losses argue higher. Net: median ~4.13, slightly below the anchor. Exact-match Polymarket contracts (thin, $1-4k volume) normalize to ~0.36/0.32/0.16/0.11 on 4.1/4.2/4.0/4.3, closely matching my independent fit. The Sept 6-12 reference week and its collection week are already closed, so residual uncertainty is sampling and seasonal-adjustment noise, not news; a shutdown delay is off the table (CR funds through Dec 11) and would not change the value anyway per the fine print. AskNews items describing a December report at 4.4% are mis-stamped Dec-2025 data and were discarded.",
+   "sources": [
+    "https://www.bls.gov/news.release/empsit.nr0.htm",
+    "https://www.bls.gov/news.release/empsit.t01.htm",
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=UNRATE",
+    "https://www.federalreserve.gov/monetarypolicy/fomcprojtabl20260916.htm",
+    "https://verifiedinvesting.com/blogs/us-economic-metrics/jobless-claims-week-ending-september-12-2026",
+    "https://polymarket.com/market/will-the-september-2026-unemployment-rate-be-4pt1",
+    "https://www.challengergray.com/wp-content/uploads/2026/09/Challenger-Report-August-2026.pdf",
+    "https://www.bls.gov/schedule/2026/10_sched_list.htm"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the seasonally adjusted U-3 rate for the September 2026 reference month as printed to one decimal in the FIRST BLS Employment Situation release (scheduled 2026-10-02 08:30 ET). NOT off any revision, not off the unrounded CPS ratio, not off payrolls, not off state/LAUS data. Later revisions are explicitly excluded. A delay pauses resolution but does not change the value.\n\nEVENT WINDOW: The measured object is the September 2026 CPS reference week = the week containing the 12th = 2026-09-06 to 2026-09-12; field collection ran the following week (approx 09-13 to 09-19). As of Now (2026-09-21T18:00:21Z) that window is 100% elapsed and collection has closed. The outcome is already determined in unpublished survey data; residual uncertainty is sampling error and seasonal-adjustment factors, not future economic events.\n\nSTATUS-QUO OUTCOME: The August 2026 print repeats (4.1), since the rate printed 4.1 in both July and August 2026.\n\nEVIDENCE (source, date):\n- BLS Employment Situation, Aug 2026 (rel. 2026-09-04): U-3 4.1%; unemployed 7,031k; civilian labor force 169,777k; employed 162,746k; LFPR 61.6%; EPOP 59.1%; nonfarm payrolls +162,000. Implied UNROUNDED rate = 7031/169777 = 4.1413%, i.e. 0.009pp below the 4.15 cut between a 4.1 and a 4.2 print. (bls.gov/news.release/empsit.t01.htm)\n- Unrounded rates computed the same way from BLS Table A-1: Apr 2026 4.337 (7373/169995), May 4.296 (7307/170078), Jun 4.189 (7094/169358), Jul 4.090 (6916/169094), Aug 4.141. Month-over-month unrounded changes: -0.041, -0.107, -0.099, +0.051.\n- Rounded FRED UNRATE history 2026: Jan 4.3, Feb 4.4, Mar 4.3, Apr 4.3, May 4.3, Jun 4.2, Jul 4.1, Aug 4.1. 2025: Jan 4.0, Feb 4.2, Mar 4.2, Apr 4.2, May 4.3, Jun 4.1, Jul 4.3, Aug 4.3, Sep 4.4, Oct missing (shutdown), Nov 4.5, Dec 4.4. (FRED series UNRATE, accessed 2026-09-21)\n- Labor force composition: August's civilian labor force rose 683k m/m after falling 264k in July; the labor force is approx 973k below its year-ago level and approx 688k below its January 2026 level, consistent with contracting labor supply. (BLS Aug 2026 release; Staffing Industry Analysts, Sept 2026)\n- Payroll trend: August's +162k compares with a prior-12-month average monthly gain of approx 31k per the same release. Aug gains concentrated in leisure/hospitality (+62k), government (+35k), health and social assistance (+28.4k); the information industry lost jobs, reported in coverage as AI-related.\n- Initial jobless claims: 196,000 for the week ending 2026-09-12 (rel. 2026-09-17), vs approx 207-208k expected; prior week 206,000. Four-week moving average 203,250, first sustained break below the 2026 approx 205k baseline. Reported caveat: Labor Day holiday volatility.\n- Continuing claims: 1,730,000, down 39,000 w/w, lowest since January 2024. (DOL via verifiedinvesting.com, 2026-09-17)\n- Challenger, Gray & Christmas, August 2026 report (2026-09-03): August announcements 52,881, the lowest August since 2022; YTD-through-August announcements 529,914, lowest YTD since 2022; announced hiring plans through August the highest since 2023.\n- ADP National Employment Report, August 2026 (rel. 2026-09-02): +38,000, below the approx +47,000 consensus and the slowest since January; education/health +45k, leisure/hospitality +16k, construction +12k, manufacturing -17k, professional/business services -16k. (US News, 2026-09-02)\n- FOMC Summary of Economic Projections, 2026-09-16: median unemployment rate 4.1 for Q4-2026, Q4-2027 and Q4-2028; 2026 central tendency 4.1-4.2, full range 4.0-4.3. Median 2026 real GDP 2.3%, PCE inflation 3.7%. The Committee raised the target range 25bp at that meeting, its first hike since 2023, describing job gains as keeping pace with the workforce and the unemployment rate as little changed.\n- Macro backdrop cited in claims coverage: US-Israeli conflict with Iran raising oil prices and inflation; businesses described as hesitant to add headcount while also not laying off.\n- Release logistics: a continuing resolution signed 2026-09-02 funds the government through 2026-12-11, so the October 1 fiscal deadline passed without lapse; the BLS October 2026 schedule lists the September Employment Situation on Friday 2026-10-02. No delay mechanism is currently live.\n\nBASE RATES (with the class each is computed over):\n- Over ALL one-month changes in the seasonally adjusted U-3 first print, non-recession expansion months (2015-2019, 2022-2026): the modal change is 0.0, changes of exactly +/-0.1 are common, and moves of 0.2 or more are uncommon; the SD of the underlying unrounded monthly change is roughly 0.10-0.11pp.\n- Over the 22 usable one-month changes in the 24 months Sep 2024 - Aug 2026 specifically (Oct 2025 missing due to the shutdown): unchanged 7, -0.1 eight, +0.1 four, +0.2 two, -0.2 one.\n- CONDITIONED on the prior month's unrounded rate lying in the top decile of its rounding bucket (as August 2026 does at 4.141 vs a 4.15 cut): the unchanged-print rate is materially lower and the next-bucket-up rate materially higher than the unconditional figures above, because a flat unrounded month leaves almost no headroom.\n- Over the last four months of 2026 specifically: mean unrounded drift of -0.049pp/month, with residual SD around that drift of roughly 0.07-0.08pp on a 4-observation sample.\n- BLS's own stated precision: the 90% confidence interval for the month-to-month change in the unemployment rate is approximately +/-0.2pp, implying a sampling standard error on the change near 0.12pp before accounting for the 75% month-to-month CPS sample overlap.\n\nMARKETS: Exact-terms binary contracts on this same September 2026 print, closing 2026-10-02, exist on Polymarket across the 4.0/4.1/4.2/4.3 buckets plus <=3.8% and >=4.6% tails; volumes are small (roughly $0.8k-$4.4k per bucket) and three intermediate buckets are unlisted, so the quoted set carries an overround. No Kalshi contract on the specific September 2026 monthly print was located (only year-end-2026 scen",
+   "reference_class": "One-month changes in the seasonally adjusted U-3 unemployment rate (first print) during non-recession expansion months, conditioned on the prior month's UNROUNDED rate rather than its rounded print"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0989,
+   "seconds": 253.8,
+   "estimate": {
+    "percentiles": {
+     "10": 3.985,
+     "25": 4.063,
+     "50": 4.133,
+     "75": 4.212,
+     "90": 4.282
+    }
+   },
+   "reasoning": "Anchor is the unrounded August 2026 level, 7,031k/169,777k = 4.141% (BLS Table A-1), not the rounded 4.1 headline. From that anchor the rounding bands are badly asymmetric: only +0.009pp rounds up to 4.2, while -0.091pp is needed to reach 4.0. With a random walk of sigma ~0.10pp/month this yields roughly 4.1 ~36%, 4.2 ~31%, 4.0 ~16%, 4.3 ~11%, tails ~6%. Drift set a whisker below zero: the Sept 6-12 CPS reference week saw initial claims fall to 196k and continuing claims hit a 2-year low (1.774M), and 2026's trend has been downward (4.4 Feb -> 4.1 Jul/Aug) on shrinking labor supply; offsetting that, August's unrounded rate rose 0.05pp, the level sits at the bottom of the 2026 range, and information-sector job losses are a live upward risk. The exact-terms Polymarket bucket book (normalized: 4.1 .34, 4.2 .30, 4.0 .15, 4.3 .11, ~$14.5k volume, 16% overround and an incoherent 4.4/4.5 tail) matches my model closely, so I blended ~50/50 and smoothed its noisy tails. Critically, the reference week is already fully elapsed - the number exists and is merely unpublished - so no widening for future news is warranted. No escape mass: exiting 3.65-4.65 requires a one-month move of +/-0.5pp, unprecedented outside 2020.",
+   "sources": [
+    "https://www.bls.gov/news.release/empsit.nr0.htm",
+    "https://www.bls.gov/news.release/empsit.t01.htm",
+    "https://fred.stlouisfed.org/data/UNRATE.txt",
+    "https://fred.stlouisfed.org/data/UNEMPLOY.txt",
+    "https://fred.stlouisfed.org/data/CLF16OV.txt",
+    "https://polymarket.com/market/will-the-september-2026-unemployment-rate-be-4pt1",
+    "https://tradingeconomics.com/united-states/unemployment-rate",
+    "https://www.bloomberg.com/news/articles/2026-09-17/us-jobless-claims-fall-to-196-000-continuing-applications-drop"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the FIRST published BLS Employment Situation value for September 2026 (seasonally adjusted U-3, one decimal), released 2026-10-02 08:30 ET; NOT off later revisions, NOT off ADP, NOT off state-level LAUS. Fine print annuls only on permanent cessation of publication.\nEVENT WINDOW: the data-generating window is the CPS reference week = the week containing the 12th of the month, i.e. 2026-09-06 -> 2026-09-12 per the criteria's reference to the September 2026 rate; as of Now (2026-09-21T18:00Z) that window is 100% elapsed. The surveys are already collected; only publication remains.\nSTATUS-QUO OUTCOME: the rate prints the same as last month, 4.1.\n\nEVIDENCE\n- BLS, 2026-09-04 release (bls.gov/news.release/empsit.nr0.htm): August 2026 U-3 = 4.1%, unchanged; nonfarm payrolls +162,000; unemployed 7.0 million; LFPR 61.6% (down 0.5pp since January); employment-population ratio 59.1%. Employment rose in food services and local government education; the information industry LOST jobs.\n- BLS Table A-1 (bls.gov/news.release/empsit.t01.htm), August 2026 SA levels: labor force 169,777k, employed 162,746k, unemployed 7,031k. Implied UNROUNDED rate = 4.141%. Distance to the 4.15 rounding line: 0.009pp. Distance to the 4.05 line: 0.091pp.\n- FRED UNEMPLOY / CLF16OV, Mar-Aug 2026, implied unrounded rates: Mar 4.256, Apr 4.337, May 4.296, Jun 4.189, Jul 4.090, Aug 4.141. Month-over-month changes: +0.081, -0.041, -0.108, -0.099, +0.051.\n- FRED UNRATE rounded series: Nov-2025 4.5, Dec-2025 4.4, Jan-2026 4.3, Feb-2026 4.4, Mar 4.3, Apr 4.3, May 4.3, Jun 4.2, Jul 4.1, Aug 4.1. (Oct-2025 is missing from the series.) 2026 high was 4.4.\n- Household-survey internals for August 2026 (TradingEconomics summary of the BLS release): household employment +569,000 and labor force +683,000 in a single month - an unusually large swing in a series whose monthly moves are normally an order of magnitude smaller; the unemployed count still rose ~115k.\n- Bloomberg, 2026-09-17: initial jobless claims fell 10,000 to 196,000 in the week ended Sept 12 - the lowest since July - and recurring (continuing) claims dropped to a more-than-two-year low. That week IS the September CPS reference week.\n- DOL/verifiedinvesting, week ended 2026-09-05: initial claims 206,000, down 1,000 from a revised 207,000. Continuing claims 1,774,000 for the week ended Aug 29, insured unemployment rate 1.2%.\n- Consensus context (CNBC/PNC, 2026-09-04): August payrolls of +162k beat a consensus of ~+53k by a wide margin; the unemployment rate print of 4.1% was in line. Question background notes an earlier-cycle analyst median near 4.2 for September - that figure predates the August data.\n- Regime context (Kalshi newsroom, Sept 2026): market discussion centres on a Fed HIKE debate, not cuts; separate Kalshi contracts price the 2026 maximum U-3 and long-horizon spikes. Traders also reacted to 'record AI-driven information-sector losses' in the August report.\n- Release-calendar check: September 2026 Employment Situation confirmed for 2026-10-02 08:30 ET on the BLS site. Federal funding is in place through 2026-12-11, so no shutdown-delay mechanism is currently visible; the criteria in any case wait for the eventual first release.\n- Data-hygiene flag: newswire items circulating with 2026-09-19/20 publish dates describing a 'December employment report' at 4.4% with October/November revisions are stale or mis-dated content about December 2025 data; BLS's own site confirms August 2026 is the most recent published month.\n\nBASE RATES\n- Over ALL months of US SA U-3 in non-recessionary regimes (2015-2019, 2023-2026): roughly 45% of months print the same rounded value as the prior month, roughly 46% move exactly one tenth (split near-evenly up/down), and under 10% move two tenths or more. Source: BLS UNRATE monthly series.\n- Over the SAME months CONDITIONED on where the unrounded rate sits inside its rounding band: the unchanged share is much lower when the prior unrounded value sits within 0.01pp of a band edge, as it does here (4.141 vs the 4.15 edge), and the one-tenth move concentrates on the near side of that edge.\n- Dispersion, over one-month horizons: SD of the change in the unrounded rate is ~0.085pp across Mar-Aug 2026 and ~0.10-0.12pp across the broader 2015-2019 / 2023-2026 window.\n- Over the last 12 same-length (one-month) windows: the rounded rate moved by a tenth or more in 7 of 12 and was unchanged in 5 of 12 (Nov-2025 4.5 through Aug-2026 4.1, FRED UNRATE).\n\nBOTH DIRECTIONS\n- Downward-pointing: initial claims at 196k in the reference week itself; continuing claims at a two-year low with a 1.2% insured rate; a six-month declining trend in the rate driven by both rebounding job growth and a labor force that has shed 0.5pp of participation since January; August payrolls tripled consensus.\n- Upward-pointing: the unrounded rate ROSE 0.05pp in August; the level sits at the bottom of its 2026 range with mean-reversion pull; unemployed rose ~115k month-over-month; August's +683k labor-force jump is the kind of household-survey outlier that frequently partially reverses; the information sector is shedding jobs and is being discussed as an AI-driven structural loss; the policy debate is about a Fed HIKE, i.e. restrictive conditions.\n\nMARKETS: an exact-terms bucket series exists on Polymarket (same U-3 definition, same 2026-10-02 resolution, buckets from '<=3.8' to '>=4.6'), total volume around $14,500 - thin. Its prices are NOT reproduced here. Diagnostic worth knowing: the quoted Yes prices across the mutually exclusive buckets sum to about 116 cents (a 16% overround requiring normalization), and the 4.4 bucket is quoted BELOW the 4.5 bucket, which is internally incoherent and marks the book as stale in the tails. No Kalshi contract matches this question's terms - Kalshi lists a 2026-maximum U-3 market and long-horizon spike markets only. TradingEconomics publishes a mechanical model projection for the next print, which is a model ou",
+   "reference_class": "One-month-ahead SA U-3 prints in non-recessionary US labor markets, conditioned on the prior month's UNROUNDED rate (random-walk anchor, sigma ~0.10pp per month); equivalently, the distribution of month-over-month U-3 changes in 2015-2019 and 2023-2026, where ~45% of months print unchanged and ~46% "
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.8459,
+   "seconds": 208.6,
+   "estimate": {
+    "percentiles": {
+     "10": 3.99,
+     "25": 4.07,
+     "50": 4.14,
+     "75": 4.22,
+     "90": 4.29
+    }
+   },
+   "reasoning": "Anchor: the unrounded U-3 implied by Table A-1 for Aug 2026 is 7,031/169,777 = 4.14%, sitting just 0.01pp under the 4.15 boundary that prints 4.2 and 0.09pp above the 4.05 boundary that prints 4.0 - so 4.1 and 4.2 are close to coin-flip neighbours and the distribution is skewed toward 4.0 rather than 4.3 only mildly. Reference class (one-month-ahead U-3 in a low-volatility regime) gives SD ~0.12pp, essentially all sampling noise plus small true drift. Direction of drift is genuinely two-sided: claims in the Sept 6-12 CPS reference week were 196k with continuing claims at a two-year low and participation still eroding (both push down), while the rate already ticked up in unrounded terms Jul->Aug, August's 683k labor-force surge signals re-entry that can outrun an ~80k/month hiring pace, and 2026 payroll revisions have skewed negative (both push up). I therefore kept the center essentially at the August level with no meaningful drift. Market check: Polymarket's ladder closing 2026-10-02 - whose rules text I verified matches this question on source, month, initial-release-only and one-decimal precision - prices 4.1 at 40c, 4.2 at 34c, 4.0 at 17c, 4.3 at 12c, <=3.8 at 1c on ~$14k volume; the book implies slightly thinner tails than my model, and I blended ~55/45 toward it. Note the measurement window (reference week Sept 6-12, collected Sept 13-19) is fully elapsed as of 2026-09-21, so the value is already fixed and unpublished - my uncertainty is purely epistemic.",
+   "sources": [
+    "https://www.bls.gov/news.release/empsit.nr0.htm",
+    "https://www.bls.gov/news.release/empsit.t01.htm",
+    "https://www.cnbc.com/2026/09/04/jobs-report-august-2026.html",
+    "https://tradingeconomics.com/united-states/unemployment-rate",
+    "https://www.washingtontimes.com/news/2026/sep/17/claims-unemployment-benefits-fall-196000-lowest-since-mid-july/",
+    "https://polymarket.com/market/will-the-september-2026-unemployment-rate-be-4pt1"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the FIRST published BLS Employment Situation for September 2026 (Oct 2, 2026, 8:30 a.m. ET, bls.gov/news.release/empsit.nr0.htm), seasonally adjusted U-3, to one decimal place - NOT off later revisions, NOT off the annual benchmark/seasonal-factor revisions (those land with the January report), and NOT off the establishment-survey payroll number. A delayed release means the question waits, not that the value changes.\n\nEVENT WINDOW: the criteria fix the measured month as September 2026. The CPS household-survey reference week is the week containing the 12th -> Sept 6-12, 2026, with collection the following week (Sept 13-19). As of Now (2026-09-21T18:00:21Z) that window is 100% elapsed and collection is complete; the figure exists and is unpublished, so no post-Now economic news can alter it.\n\nEVIDENCE\n- BLS Employment Situation for Aug 2026, released 2026-09-04: U-3 4.1% seasonally adjusted, unchanged from July; unemployed 7,031k; civilian labor force 169,777k; LFPR 61.6%; employment-population ratio 59.1%; nonfarm payrolls +162,000. (bls.gov/news.release/empsit.nr0.htm)\n- Consensus going into that August report was +53,000 payrolls and 4.1% unemployment; payrolls beat substantially, the rate was in line. (CNBC, 2026-09-04)\n- Unrounded rates computed from BLS Table A-1 levels (bls.gov/news.release/empsit.t01.htm): Jun 2026 7,094/169,358 = 4.19%; Jul 2026 6,916/169,094 = 4.09%; Aug 2026 7,031/169,777 = 4.14%. The reported Aug value of 4.1 therefore sits about 0.01pp below the 4.15 cut that would print 4.2, and about 0.09pp above the 4.05 cut that would print 4.0.\n- Published 2026 rounded path: May 4.3, Jun 4.2, Jul 4.1, Aug 4.1; Aug 2025 was 4.3; the 2026 high was 4.4 early in the year. No single published month-over-month move in this stretch exceeded 0.1pp. (BLS Table A-1; Trading Economics)\n- In August the civilian labor force rose 683,000 and employment rose 569,000; LFPR went 61.4 -> 61.6. Over the longer arc LFPR is down about 0.5pp since January 2026 and about 0.7pp from Aug 2025's 62.3% - a shrinking denominator that has been a mechanical drag on the rate independent of hiring. (BLS)\n- U-6 fell to 7.7% in August from 7.9% in July. (Trading Economics, 2026-09-04)\n- Initial jobless claims, week ending Sept 12, 2026 (the CPS reference week): 196,000, down 10,000 from 206,000, versus market expectations of 208,000, and the lowest since the 189,000 print in July. Continuing claims 1,730,000, lowest since January 2024. (Washington Times 2026-09-17; Trading Economics)\n- 2026 hiring pace to date has averaged roughly 80,000 jobs/month, versus roughly 9,700/month in 2025 and roughly 166,000/month across 2023-2024. (Trading Economics, Sept 2026)\n- Trading Economics' own next-release model forecast is 4.1%, with its longer-run path drifting toward 4.3% by end-Q3 2026 and 4.3% in 2027.\n\nBASE RATES AND DISPERSION\n- Over ALL months: BLS states the 90% confidence interval on the month-to-month change in the unemployment rate is about +/-0.2 percentage point, implying an SD of roughly 0.12pp per month on the unrounded rate from sampling error alone. This is the unconditional figure across all regimes.\n- CONDITIONAL on a non-recessionary, low-layoff regime (2015-2019, 2023-2026 - the condition that holds here, given claims near multi-decade lows): realized rounded month-over-month changes are 0.0 or +/-0.1 in the overwhelming majority of months, and the realized SD of unrounded monthly changes runs nearer 0.10pp than 0.12pp. The two 2026 changes I can compute directly are -0.10pp (Jun->Jul) and +0.05pp (Jul->Aug).\n- CONDITIONAL on the starting unrounded rate sitting within 0.02pp of a rounding boundary (as here): the reported value is close to a coin flip between the two adjacent tenths regardless of which way the underlying rate drifts - the rounding geometry, not the economics, dominates.\n- Event-in-window count: across the published 2026 monthly series I could retrieve, zero one-month windows contained a reported move of 0.2pp or more.\n\nEVIDENCE POINTING DOWN: claims at or near 60-year lows in the reference week; continuing claims at a two-year low; participation and labor force still structurally eroding through 2026; August payrolls beat consensus by more than 100k; the rate has already fallen 0.3pp from the 2026 high.\nEVIDENCE POINTING UP: the unrounded rate already rose Jul->Aug (4.09 -> 4.14); August's 683k labor-force surge indicates re-entry that an ~80k/month average hiring pace may not absorb; the 2026 hiring pace is less than half the 2023-24 average; payroll revisions through 2026 have repeatedly been negative.\n\nSCHEDULE RISK: federal funding is in place through December 11, 2026, and the BLS October 2026 schedule lists the release for Oct 2; no announced delay was found.\n\nSEARCHED FOR BUT COULD NOT FIND: a published median economist survey (WSJ / Dow Jones / Reuters) for the SEPTEMBER 2026 unemployment rate dated after Sept 10, 2026 - the 4.1% survey figures in circulation are the August-report consensus; September Challenger job-cut announcements; September ADP; any BLS notice of a CPS sample, methodology, or collection change affecting the September reference month; a complete month-by-month 2025-2026 unrounded U-3 table to count large moves exactly.\n\nDATA-QUALITY CAUTION: an AskNews item dated 2026-09-20 describing a 'December employment report' with 4.4% unemployment, +50,000 payrolls and LFPR 62.4% is inconsistent with the published 2026 series (Aug 2026 LFPR 61.6%, U-3 4.1%) and appears to be a stale or misdated republication from a prior cycle. It is not evidence about September 2026.",
+   "reference_class": "One-month-ahead changes in the seasonally adjusted U-3 unemployment rate in non-recessionary, low-layoff regimes (2015-2019 and 2023-2026), where the reported rate is the unrounded rate rounded to one decimal and monthly changes are dominated by CPS sampling error (BLS 90% CI on the monthly change ~"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0683,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.5234,
+   "seconds": 120.3,
+   "estimate": {
+    "percentiles": {
+     "10": 3.99,
+     "25": 4.06,
+     "50": 4.13,
+     "75": 4.2,
+     "90": 4.27
+    }
+   },
+   "reasoning": "The reference week (Sept 6-12) and its collection week are fully elapsed, so the value already exists unpublished; residual uncertainty is sampling and seasonal-adjustment noise, not news. Rounding geometry dominates: August's unrounded 4.141 sits 0.009pp under the 4.15 cut, so a flat month prints 4.1 but any small rise prints 4.2, while 4.0 needs -0.09pp. Drift set a whisker negative (-0.011) on the four-month downward path (4.337->4.296->4.189->4.090), 196k initial claims in the reference week itself and continuing claims at 1.73M (lowest since Jan 2024); offset upward by August's +0.05 unrounded uptick, an ~80k/mo 2026 hiring pace against a 12-month payroll trend of ~31k, and the likelihood that August's +683k labor-force outlier partly reverses (which mechanically raises the rate). Sigma 0.11 gives 4.0 ~18%, 4.1 ~34%, 4.2 ~29%, 4.3 ~12%. No escape mass: exiting 3.65-4.65 needs a +/-0.5pp one-month move, unseen outside 2020.",
+   "sources": [],
+   "reconciliation": "No web access on this run; reconciled from the three dossiers. FACTUAL disputes settled internally: (a) the continuing-claims figure - Run 2's reasoning called 1.774M a two-year low, but its own dossier dates 1,774k to the week ended Aug 29, while Runs 1 and 3 give 1,730k for the reference-week-adjacent report of Sept 17; I use 1,730k, and the direction is unaffected either way. (b) the Polymarket quote - Run 3's raw 40c vs Runs 1-2's normalized 34-36c is arithmetic, not contradiction: the harness ladder (4.1 .39 / 4.2 .34 / 4.0 .17 / 4.3 .12 / <=3.8 .01) omits the 3.9, 4.4 and 4.5 buckets, so the book sums to ~1.05-1.08 and normalizes to ~.36/.31/.16/.11, implying a center near 4.14. (c) contract match - only Run 3 verified the rules text against source/month/initial-release-only/one-decimal; I accept that, with the caveat that ~$14.5k volume and a 4.4-quoted-below-4.5 tail make it evidence rather than an anchor. (d) All three independently searched for and failed to find a post-Sept-10 economist consensus for this print, and all three independently flagged the circulating 'December report at 4.4%' items as misdated Dec-2025 content - I treat both as settled by concurrence and discard the stale items. JUDGMENT disputes, no evidence available to break them: drift (Run 3 zero vs Runs 1-2 slightly negative) and sigma (0.105 vs 0.12). I take drift modestly negative because the reference-week claims data is the most window-relevant hard evidence there is, but hold it small because the market's own implied center says zero drift and the August labor-force outlier is an upward-reverting risk; sigma I set at 0.11, between the BLS-stated ~0.12 and the realized 2026 ~0.08. I carry forward the runs' shared reference class (random walk off the unrounded 4.141, not the rounded headline) because it is correct and decisive here. My median of 4.13 sits inside the runs' 4.13-4.14 span not by splitting it but because the reconciled evidence - a genuine but small downward pull, capped by an exact-terms market implying none - puts it there.",
+   "disagreements": [
+    {
+     "claim": "Continuing claims near the CPS reference week were 1,730k (Runs 1,3) vs 1,774k described as the two-year low (Run 2 reasoning)",
+     "kind": "factual",
+     "verdict": "Settled from Run 2's own dossier: 1,774k is the week ended Aug 29; 1,730k (reported Sept 17) is the reference-week-adjacent figure and the two-year low. Both point the same direction, so no effect on the estimate."
+    },
+    {
+     "claim": "Polymarket prices the 4.1 bucket at 40c (Run 3) vs ~34-36c normalized (Runs 1,2)",
+     "kind": "factual",
+     "verdict": "Not a contradiction - raw vs normalized. Harness raw ladder omits the 3.9/4.4/4.5 buckets and sums to ~1.05-1.08; normalizing gives 4.1 ~.36, 4.2 ~.31, 4.0 ~.16, 4.3 ~.11, an implied center of ~4.14."
+    },
+    {
+     "claim": "The Polymarket contract matches this question on source, month, initial-release-only and one-decimal precision",
+     "kind": "factual",
+     "verdict": "Only Run 3 verified the rules text; accepted as the best available evidence. Treated as corroboration rather than an anchor given ~$14.5k volume and an internally incoherent 4.4-below-4.5 quote."
+    },
+    {
+     "claim": "The September 2026 CPS reference week (Sept 6-12) and its collection week are fully elapsed as of Now",
+     "kind": "factual",
+     "verdict": "All three runs concur; the value is already determined and merely unpublished. No widening for future news."
+    },
+    {
+     "claim": "A published economist-survey median exists for the September 2026 unemployment rate",
+     "kind": "factual",
+     "verdict": "All three searched independently and found none; the background's 'median near 4.2' predates the August release. Treated as absent."
+    },
+    {
+     "claim": "Newswire items dated Sept 19-20, 2026 describing a 4.4% rate and a 'December employment report' are evidence about September 2026",
+     "kind": "factual",
+     "verdict": "Refuted by all three runs against the published 2026 series (Aug 2026 LFPR 61.6%, U-3 4.1%); misdated Dec-2025 content, discarded."
+    },
+    {
+     "claim": "Drift in the unrounded rate from August to September is zero (Run 3) or slightly negative (Runs 1,2)",
+     "kind": "judgment",
+     "verdict": "Could not be settled by evidence. I take slightly negative (-0.011pp): the four-month path and reference-week claims argue down, but August's +0.05 uptick, the weak payroll trend, the reverting +683k labor-force outlier, and a market implying no drift cap the adjustment."
+    },
+    {
+     "claim": "SD of the one-month unrounded change is ~0.105 (Runs 1,2) vs ~0.12 (Run 3)",
+     "kind": "judgment",
+     "verdict": "Split on the underlying computations, not by fiat: BLS's stated +/-0.2pp 90% CI implies ~0.12, realized 2026 changes imply ~0.08; I use 0.11, giving a 10-90 width of 0.28."
+    },
+    {
+     "claim": "Escape mass past the 3.65 / 4.65 open bounds should be declared",
+     "kind": "judgment",
+     "verdict": "All three declared none and I agree: a +/-0.5pp one-month move is unprecedented outside 2020, and the survey is already collected. No mechanism, so both fields omitted."
+    }
+   ],
+   "reference_class": "One-month changes in the seasonally adjusted U-3 first print during non-recessionary regimes (2015-2019, 2023-2026), applied as a near-zero-drift random walk to the August 2026 UNROUNDED level of 4.141% (7,031k/169,777k, BLS Table A-1), not to the rounded 4.1 headline."
+  }
+ ]
+}
