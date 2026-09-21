@@ -180,7 +180,7 @@ def last_successful_run_age_hours(workflow: str = "bot.yml") -> float | None:
                 f"--workflow={workflow}",
                 "--status", "success",
                 "--limit", "1",
-                "--json", "createdAt",
+                "--json", "updatedAt",
             ],
             capture_output=True,
             text=True,
@@ -197,7 +197,8 @@ def last_successful_run_age_hours(workflow: str = "bot.yml") -> float | None:
         return None
     if not isinstance(rows, list) or not rows:
         return None
-    stamp = rows[0].get("createdAt") if isinstance(rows[0], dict) else None
+    # updatedAt = completion time: a long (85-min) tick started 2h ago is not an outage.
+    stamp = rows[0].get("updatedAt") if isinstance(rows[0], dict) else None
     if not isinstance(stamp, str):
         return None
     try:
@@ -214,7 +215,7 @@ def evaluate(
     now: datetime,
     *,
     silence_hours: float = 3.0,
-    run_gap_hours: float = 2.0,
+    run_gap_hours: float = 3.0,
 ) -> tuple[bool, str]:
     """Decide whether the bot looks broken, and why. ``newest_at``/``silence_hours`` are
     kept for the report line only; coverage is judged by ``open_count`` (see
@@ -261,7 +262,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--silence-hours", type=float, default=3.0)
     parser.add_argument("--grace-minutes", type=float, default=360.0)
     parser.add_argument("--imminent-minutes", type=float, default=90.0)
-    parser.add_argument("--run-gap-hours", type=float, default=2.0)
+    parser.add_argument("--run-gap-hours", type=float, default=3.0)
     args = parser.parse_args(argv)
 
     slugs = (

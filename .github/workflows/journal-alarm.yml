@@ -51,12 +51,20 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         # pipefail: without it `| tee` exits 0 and this alarm can never fire (it stayed
         # silent on 2026-09-21 while the bot forecast nothing on an exhausted subscription).
+        # The job stays GREEN while alarming (the issue is the signal): with workflow_run
+        # firing after every bot tick, a red run per alarm meant a failure email every
+        # ~10 min. The alarm verdict travels in the step output instead.
         run: |
-          set -o pipefail
+          set +e -o pipefail
           python scripts/journal_alarm.py | tee "$RUNNER_TEMP/alarm-reason.txt"
+          status=$?
+          echo "alarm=$([ "$status" -eq 1 ] && echo 1 || echo 0)" >> "$GITHUB_OUTPUT"
+          # 1 = alarm (handled by the Alert step); anything else nonzero is a crash: fail.
+          if [ "$status" -ne 0 ] && [ "$status" -ne 1 ]; then exit "$status"; fi
+          exit 0
 
       - name: Alert (one open issue, never hourly spam)
-        if: ${{ failure() }}
+        if: ${{ steps.check.outputs.alarm == '1' || failure() }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

@@ -101,12 +101,12 @@ EXIT_PROVIDER_FAILURE = 75  # sysexits EX_TEMPFAIL
 # run measures ~$1.3-2.5 on opus-5; 6 leaves headroom for a long high-effort run.
 OPENROUTER_PER_CALL_CAP_USD = 6.0
 # A never-forecast question closing within this many hours cannot safely wait for a later
-# run (next tick: <=10 min dispatch + ~2 min setup + ~15-20 min for a medium forecast, so
-# ~30 min; 1h leaves margin), so the --budget ceiling is waived for it (operator,
-# 2026-09-22: coverage beats budget when the deadline is that close). It still runs under
-# a fresh per-question
-# allowance so the OpenRouter CLI always has a finite --max-budget-usd.
-URGENT_CLOSE_HOURS = 1.0
+# run: the next tick reaches the k-th deferred question ~20k min after the ceiling break,
+# so 2h also covers a cluster closing together. The --budget ceiling is waived for it
+# (operator, 2026-09-22: coverage beats budget when the deadline is that close). It still
+# runs under a fresh per-question allowance so the OpenRouter CLI keeps a finite
+# --max-budget-usd.
+URGENT_CLOSE_HOURS = 2.0
 URGENT_HEADROOM_USD = 30.0
 # One question costing more than this raises an ops alert (max seen Sep 4-21: $9.71 over
 # 153 forecasts). Alerts never stop a forecast — they open an issue for a human/Claude.
