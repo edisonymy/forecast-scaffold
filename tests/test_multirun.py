@@ -1181,14 +1181,14 @@ class TestRefreshGate:
         stale_stamp = time.time() - stale_age_h * 3600
         return [
             # standing forecast, closes SOONEST — would win on close time alone
-            {"id": 1, "scheduled_close_time": "2026-08-01T00:00:00Z",
+            {"id": 1, "scheduled_close_time": "2030-08-01T00:00:00Z",
              "question": {"id": 11, "type": "binary", "title": "stale", "status": "open",
-                          "scheduled_close_time": "2026-08-01T00:00:00Z",
+                          "scheduled_close_time": "2030-08-01T00:00:00Z",
                           "my_forecasts": {"latest": {"start_time": stale_stamp}}}},
             # never forecast, closes later — must still be forecast FIRST
-            {"id": 2, "scheduled_close_time": "2026-09-01T00:00:00Z",
+            {"id": 2, "scheduled_close_time": "2030-09-01T00:00:00Z",
              "question": {"id": 12, "type": "binary", "title": "new", "status": "open",
-                          "scheduled_close_time": "2026-09-01T00:00:00Z"}},
+                          "scheduled_close_time": "2030-09-01T00:00:00Z"}},
         ]
 
     def test_default_never_reforecasts(self, monkeypatch: pytest.MonkeyPatch,
@@ -1347,3 +1347,97 @@ class TestEscapeMassBrief:
 
     def test_contract_offers_the_fields_to_the_numeric_forecaster(self) -> None:
         assert "p_above_upper" in run_bot.CONTRACT
+
+
+def _open_post(pid: int, close: str = "2030-01-01T00:00:00Z") -> dict[str, Any]:
+    return {"id": pid, "scheduled_close_time": close,
+            "question": {"id": pid * 10, "type": "binary", "title": f"q{pid}",
+                         "status": "open", "scheduled_close_time": close}}
+
+
+class TestMainOpsExits:
+    """Exit paths added after the 2026-09-21 outage audits."""
+
+    def test_rejected_token_is_not_a_green_empty_tick(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        class DeadToken(ListClient):
+            def open_posts(self, tournament: str, *, limit: int = 100) -> list[dict[str, Any]]:
+                raise run_bot.MetaculusError("GET /posts/ -> HTTP 403: invalid token")
+
+        monkeypatch.setattr(run_bot, "MetaculusClient", lambda: DeadToken([]))
+        code = run_bot.main(["--tournament", "t", "--dry-run",
+                             "--journal", str(tmp_path / "j.jsonl")])
+        assert code == 2
+
+    def test_missing_slug_stays_benign(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        class NoSuchSlug(ListClient):
+            def open_posts(self, tournament: str, *, limit: int = 100) -> list[dict[str, Any]]:
+                raise run_bot.MetaculusError("GET /posts/ -> HTTP 400: does not exist")
+
+        monkeypatch.setattr(run_bot, "MetaculusClient", lambda: NoSuchSlug([]))
+        code = run_bot.main(["--tournament", "t", "--dry-run",
+                             "--journal", str(tmp_path / "j.jsonl")])
+        assert code == 0
+
+    def test_provider_streak_stops_early_and_exits_75(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        calls: list[Any] = []
+        monkeypatch.setattr(run_bot, "MetaculusClient",
+                            lambda: ListClient([_open_post(i) for i in range(1, 6)]))
+
+        def dead_provider(client: Any, post: Any, question: Any, args: Any, config: Any,
+                          journal: Any, spent: Any = None, deadline: Any = None) -> bool:
+            calls.append(question["id"])
+            spent["infra_failures"] = spent.get("infra_failures", 0) + 1
+            return False
+
+        monkeypatch.setattr(run_bot, "forecast_question", dead_provider)
+        code = run_bot.main(["--tournament", "t", "--dry-run",
+                             "--journal", str(tmp_path / "j.jsonl")])
+        assert code == run_bot.EXIT_PROVIDER_FAILURE
+        assert len(calls) == run_bot.PROVIDER_FAILURE_STREAK  # the rest left to the fallback
+
+    def test_closed_since_tick_start_is_skipped(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        code, forecasted = run_main(monkeypatch, tmp_path, [
+            _open_post(1, "2020-01-01T00:00:00Z"), _open_post(2)])
+        assert forecasted == [20]
+
+    def test_urgent_question_ignores_the_ceiling(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        from datetime import UTC, datetime, timedelta
+        soon = (datetime.now(UTC) + timedelta(minutes=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        seen: list[tuple[Any, float]] = []
+        monkeypatch.setattr(run_bot, "MetaculusClient",
+                            lambda: ListClient([_open_post(1, soon), _open_post(2, soon),
+                                                _open_post(3)]))
+
+        def pricey(client: Any, post: Any, question: Any, args: Any, config: Any,
+                   journal: Any, spent: Any = None, deadline: Any = None) -> bool:
+            seen.append((question["id"], args.budget))
+            spent["usd"] += 5.0
+            return True
+
+        monkeypatch.setattr(run_bot, "forecast_question", pricey)
+        alerts = tmp_path / "alerts.txt"
+        monkeypatch.setenv("OPS_ALERTS_FILE", str(alerts))
+        code = run_bot.main(["--tournament", "t", "--dry-run", "--budget", "4",
+                             "--journal", str(tmp_path / "j.jsonl")])
+        # both urgent questions ran past the $4 ceiling; the non-urgent one did not
+        assert [qid for qid, _ in seen] == [10, 20]
+        assert seen[1][1] == pytest.approx(5.0 + run_bot.URGENT_HEADROOM_USD)
+        assert code == 0
+        assert "waived" in alerts.read_text(encoding="utf-8")
+
+
+def test_call_budget_stop_is_recognized() -> None:
+    envelope = ('agent failed (1): {"type":"result","subtype":"error_max_budget_usd",'
+                '"is_error":true}')
+    assert run_bot.is_call_budget_stop(RuntimeError(envelope))
+    assert not run_bot.is_call_budget_stop(RuntimeError("agent failed (1): rate limited"))

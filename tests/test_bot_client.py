@@ -230,3 +230,7 @@ def test_closes_within_hours() -> None:
     assert not run_bot.closes_within_hours({}, later, 3, now=now)
     assert run_bot.closes_within_hours(soon, {}, 3, now=now)  # post-level fallback
     assert not run_bot.closes_within_hours({}, {}, 3, now=now)  # unknown close: not urgent
+
+    past = {"scheduled_close_time": "2026-09-21T21:00:00Z"}
+    assert run_bot.closes_within_hours({}, past, 0.0, now=now)  # already closed
+    assert not run_bot.closes_within_hours({}, soon, 0.0, now=now)

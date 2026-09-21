@@ -95,6 +95,8 @@ FAILURE_WINDOW_HOURS = 24.0
 # (subscription out of credit, auth outage, rate limit). bot.yml reruns on OpenRouter only
 # on this code; 1 (question-level failures only) alerts but does not re-spend elsewhere.
 EXIT_PROVIDER_FAILURE = 75  # sysexits EX_TEMPFAIL
+# Consecutive questions failing on the provider before the primary run stops early.
+PROVIDER_FAILURE_STREAK = 2
 # Per-call --max-budget-usd on the OpenRouter path. A call whose cost is unknown (failed,
 # timed out, unpriced envelope) is charged exactly this much against --budget — the CLI
 # enforces it — so one transient error costs one call's cap, not the tick. A medium research
@@ -146,7 +148,9 @@ BLIND_DISALLOWED = (
 # or the CLI's credential/config store — which is exactly where the auth the subprocess
 # must keep (its own OAuth) would be readable. A rule that matches nothing is inert, so
 # this is safe on platforms without /proc.
-ALWAYS_DISALLOWED = "Read(//proc/**),Read(~/.claude/**),Read(~/.claude.json)"
+# .git/**: actions/checkout stores the job's push token in .git/config (audit, 2026-09-22).
+ALWAYS_DISALLOWED = ("Read(//proc/**),Read(~/.claude/**),Read(~/.claude.json),"
+                     "Read(**/.git/**),Grep(**/.git/**),Glob(**/.git/**)")
 # A runaway research dossier is re-embedded into EVERY reasoning run's prompt; cap it.
 MAX_DOSSIER_CHARS = 8000
 
@@ -1339,7 +1343,8 @@ def close_time_key(pair: tuple[dict[str, Any], dict[str, Any]]) -> str:
 
 
 def collect_open_posts(
-    client: MetaculusClient, tournament: str, limit: int
+    client: MetaculusClient, tournament: str, limit: int,
+    errors: list[str] | None = None,
 ) -> list[dict[str, Any]]:
     """Open posts across one or more comma-separated tournament slugs, deduped by post id.
 
@@ -1365,6 +1370,11 @@ def collect_open_posts(
             fetched = client.open_posts(slug, limit=max(limit, OPEN_POSTS_FETCH_CAP))
         except Exception as exc:  # noqa: BLE001 — isolate the failure to this slug
             print(f"tournament {slug!r} unavailable ({exc}) — skipping this slug")
+            # Only "this tournament does not exist (yet)" is benign. A dead token (401/403)
+            # or a Metaculus outage skipped silently here made a green tick with zero
+            # forecasts (audit, 2026-09-22): report it so main() exits nonzero and alerts.
+            if errors is not None and not re.search(r"-> HTTP (400|404):", str(exc)):
+                errors.append(f"{slug}: {str(exc)[:200]}")
             continue
         new = [p for p in fetched if p.get("id") not in seen]
         seen.update(p.get("id") for p in fetched)
@@ -1385,6 +1395,13 @@ SEASONAL_TOURNAMENT_RE = re.compile(
 # A warmup/practice/testing round can carry the same naming ahead of the real season —
 # never auto-add one of those (this bot has nothing to gain from forecasting on it).
 SEASONAL_EXCLUDE_RE = re.compile(r"(?i)(warmup|practice|testing)")
+
+
+def is_call_budget_stop(error: BaseException) -> bool:
+    """The CLI stopped at its --max-budget-usd (error_max_budget_usd envelope)."""
+    compact = "".join(str(error).split())
+    return (str(error).startswith("agent failed (")
+            and '"subtype":"error_max_budget_usd"' in compact)
 
 
 def ops_alert(message: str) -> None:
@@ -1807,6 +1824,12 @@ def forecast_question(
                 # 85-minute tick on stalled calls (audit, 2026-09-22).
                 provider_error = isinstance(exc, subprocess.TimeoutExpired) or (
                     isinstance(exc, RuntimeError) and str(exc).startswith("agent failed"))
+                if is_call_budget_stop(exc):
+                    # The call ran and spent its whole per-call cap: the QUESTION is too
+                    # expensive, not the provider down. Ledger it (backoff) instead of
+                    # re-spending the cap on the fallback every tick.
+                    provider_error = False
+                    agent_responded = True
                 if hard_cap_openrouter and isinstance(
                     exc, (RuntimeError, subprocess.TimeoutExpired)
                 ):
@@ -3035,6 +3058,7 @@ def main(argv: list[str] | None = None) -> int:
     Path(args.journal).parent.mkdir(parents=True, exist_ok=True)
     journal = Journal(args.journal)
 
+    fetch_errors: list[str] = []  # tournament fetches that failed for a non-benign reason
     single = args.post is not None
     if single:
         posts = [client.post_detail(args.post)]
@@ -3057,7 +3081,7 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 print(f"no active seasonal tournament discovered (configured: "
                       f"{args.tournament})")
-        posts = collect_open_posts(client, args.tournament, args.limit)
+        posts = collect_open_posts(client, args.tournament, args.limit, fetch_errors)
     ledger = failures_path(args.journal)
     failure_counts = recent_failure_counts(ledger)
     pending = []
@@ -3120,6 +3144,7 @@ def main(argv: list[str] | None = None) -> int:
         pending.extend(refresh)
     refresh_budget = args.refresh_budget if args.refresh_budget > 0 else args.budget
     done = failed = 0
+    provider_streak = 0
     spent = {"usd": 0.0}
     for index, (post, question) in enumerate(pending):
         # Operator policy (2026-09-22): a NEW question closing too soon to wait for a later
@@ -3150,8 +3175,15 @@ def main(argv: list[str] | None = None) -> int:
             print(f"deadline reached after {args.deadline_minutes:.0f} min; "
                   f"{len(pending) - done - failed} question(s) left for the next run")
             break
+        if closes_within_hours(post, question, 0.0):
+            # The queue was built at tick start; an 85-minute tick outlives short windows.
+            # A closed question can only 405 at submit after a full forecast's spend.
+            print(f"skip (closed since this run started): "
+                  f"{question.get('title', post.get('title'))!r}")
+            continue
         print(f"- {question.get('title', post.get('title'))!r}")
         before = spent["usd"]
+        infra_before = spent.get("infra_failures", 0)
         try:
             ok = forecast_question(
                 client, post, question, question_args, config, journal, spent, deadline
@@ -3161,6 +3193,16 @@ def main(argv: list[str] | None = None) -> int:
                           f"(alert threshold ${PER_QUESTION_ALERT_USD:.0f})")
             done += ok
             failed += not ok
+            if spent.get("infra_failures", 0) > infra_before:
+                provider_streak += 1
+            elif ok:
+                provider_streak = 0
+            if provider_streak >= PROVIDER_FAILURE_STREAK:
+                # A dead/hanging provider: stop now so the fallback step gets the time a
+                # full 85-minute tick of timeouts would otherwise eat (audit, 2026-09-22).
+                print(f"{provider_streak} questions in a row failed on the provider — "
+                      "stopping early for the fallback")
+                break
             # A False return already wrote its own ledger entry (and only when the
             # failure was the question's fault, not an infra outage).
         except Exception as exc:  # noqa: BLE001 - one bad question must not kill the run
@@ -3178,6 +3220,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"provider failure: every agent call errored on {infra} question(s) — "
               f"exit {EXIT_PROVIDER_FAILURE} so the workflow reruns on its fallback provider")
         return EXIT_PROVIDER_FAILURE
+    if fetch_errors:
+        print(f"tournament fetch failed for {len(fetch_errors)} slug(s): {fetch_errors}")
+        return 1 if done or failed or posts else 2
     # Nonzero on any failure so the workflow alerts. Question-level failures (bad payload,
     # submit 4xx) do NOT trigger the provider fallback: another provider would re-spend on
     # a question that fails for its own reasons. Already-forecasted questions are skipped

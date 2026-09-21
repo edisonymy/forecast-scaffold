@@ -275,3 +275,16 @@ def test_open_question_count_skips_a_slug_that_does_not_exist_yet(
     monkeypatch.setattr(alarm.urllib.request, "urlopen", fake_urlopen)
 
     assert alarm.open_question_count(["minibench", "market-pulse-26q4"]) == 1
+
+
+def test_rejected_token_is_an_alarm_not_unknown(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_urlopen(request: object, timeout: float = 30) -> _FakeResponse:
+        raise urllib.error.HTTPError(request.full_url, 403, "forbidden",  # type: ignore[attr-defined]
+                                     {}, None)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(alarm.urllib.request, "urlopen", fake_urlopen)
+
+    count = alarm.open_question_count(["minibench"])
+    assert count == alarm.AUTH_REJECTED
+    alarmed, reason = alarm.evaluate(NOW, count, 0.5, NOW)
+    assert alarmed and "401/403" in reason
