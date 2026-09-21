@@ -1,0 +1,220 @@
+{
+ "record_id": "2026-09-21-f37481ef",
+ "question": "How many confirmed measles cases will Pennsylvania report on its measles dashboard in the update closest to October 1, 2026?",
+ "question_id": 45949,
+ "url": "https://www.metaculus.com/questions/45764/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-09-21T15:42:49+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.5235,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 886.0,
+    "25": 914.6666666666666,
+    "50": 943.3333333333334,
+    "75": 975.6666666666666,
+    "90": 1016.0
+   },
+   "p_above_upper": 0.006666666666666667
+  },
+  "phase1": {
+   "10": 886.0,
+   "25": 914.6666666666666,
+   "50": 943.3333333333334,
+   "75": 975.6666666666666,
+   "90": 1016.0
+  },
+  "phase2": null,
+  "spread_phase1": 32.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 872.0,
+   "25": 906.0,
+   "50": 937.0,
+   "75": 972.0,
+   "90": 1014.0
+  },
+  "p_above_upper": 0.005
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.1447,
+   "seconds": 230.4,
+   "estimate": {
+    "percentiles": {
+     "10": 872.0,
+     "25": 902.0,
+     "50": 930.0,
+     "75": 963.0,
+     "90": 1005.0
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Anchor: PA DOH dashboard stood at 767 on Sept 18 (38 counties, 150 hospitalizations, 4 deaths). Trailing 14-day accrual has been near-constant at ~196-199 cases (Aug 31->Sep 14: 196; Sep 4->Sep 18: 199), so naive status-quo continuation gives ~936 at a 12-day horizon (Sep 30 update) and ~964 at 14 days (Oct 2 update). I shade slightly below naive continuation: the reference class of large US undervaccinated-community outbreaks typically decelerates around month 5 (this one began late April), the most recent 7-day increment (91) sits below the 108 and ~113 before it, county spread has been flat at 38 for four consecutive updates, and MMR uptake nearly doubled (46,000 doses in August) with 148 pop-up clinics. Offsetting upward: reporting lags mean the next two weeks of confirmations reflect infections already occurring, new metro clusters (CHOP ICU exposure, Pittsburgh Children's), school-term seasonality, and a CDC Epi-Aid requested Sept 16 whose enhanced surveillance could batch-add backlog cases. Which update resolves is genuinely ambiguous (Sep 30 vs Oct 2 are equidistant from Oct 1; the tie-break text says later, the scheduled resolution timestamp implies earlier), so I blend the two ~50/50. No PA-specific prediction market exists; only national-total contracts, which do not match this resolution source. Left tail is hard-truncated at 767 since the count is cumulative and monotonic; right tail is fatter (reacceleration or a reconciliation batch).",
+   "sources": [
+    "https://www.pa.gov/agencies/health/newsroom/pennsylvania-department-of-health-provides-statewide-update-on-m",
+    "https://www.cidrap.umn.edu/measles/us-measles-cases-approach-3300-over-1000-more-all-last-year",
+    "https://www.pa.gov/agencies/health/diseases-conditions/infectious-disease/measles",
+    "https://polymarket.com/predictions/measles",
+    "https://www.medicaldaily.com/cdc-measles-3471-cases-pennsylvania-767-september-2026-478836",
+    "https://www.cnn.com/2026/08/28/health/measles-outbreak-pennsylvania-amish-country",
+    "https://www.pa.gov/agencies/health/newsroom/pa-department-of-health-provides-statewide-update-on-measles-out3"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the 'Total Cumulative Cases' figure on the PA DOH measles dashboard (pa.gov/measles), not the CDC national tracker, not case counts by rash-onset date, not probable/suspected cases, not hospitalizations. DOH newsroom statewide-update releases carry the same figure and are the fallback. CDC's national tracker has NOT been recording PA's 4 deaths, so CDC-sourced PA figures can diverge from DOH's.\n\nEVENT WINDOW: cumulative accrual window is 2026-01-01 -> the dashboard update nearest 2026-10-01 per the criteria; as of 2026-09-21T15:30Z that is ~96.6% elapsed. Note Oct 1 2026 is a Thursday and the dashboard posts Mon/Wed/Fri afternoons, so Sept 30 (Wed) and Oct 2 (Fri) are exactly equidistant; the criteria text breaks the tie toward the later update, while the question's scheduled resolution timestamp (2026-10-02T00:00Z = Oct 1 8pm ET) falls before an Oct 2 afternoon posting exists. Last observed update before Now: Friday Sept 18.\n\nSTATUS-QUO OUTCOME: the dashboard continues its Mon/Wed/Fri cadence and the cumulative figure continues accruing at its trailing rate; no reclassification, no cadence change, no cessation of publication.\n\nOBSERVED SERIES (PA cumulative confirmed, DOH):\n- ~400 statewide, ~197 in Lancaster (CNN, Aug 27-28 2026)\n- 497, 34 counties (DOH release, ~Aug 31 2026)\n- ~568 (back-derived: CIDRAP Sept 11 states '108 cases in the past seven days' against 676)\n- 624, 37 counties (DOH release, Sept 8 basis)\n- 676, 37 counties (DOH release, Sept 11)\n- 693, 38 counties (DOH release, Sept 14)\n- 731, 38 counties (DOH release, Sept 16)\n- 767, 38 counties, 150 hospitalizations, 4 deaths (DOH release, Sept 18; '36 new since Sept 16')\n- ABC News, Sept 19: 'at least 767' — no update newer than Sept 18 located as of Now.\n\nBASE RATES / ACCRUAL RATES (state which class each is over):\n- Over 14-day windows within THIS outbreak, Aug 31 onward: Aug 31->Sep 14 = +196; Sep 4->Sep 18 = +199. Two observations, source DOH releases.\n- Over 7-day windows within THIS outbreak: Aug 31->Sep 7 ~ +113; Sep 4->Sep 11 = +108 (CIDRAP, Sept 11); Sep 11->Sep 18 = +91 (DOH releases). Per-update net additions mid-September ranged 17 to 52.\n- Over 2-day inter-update gaps, Sept 14-18: +38, +36.\n- Over all large US undervaccinated-community measles outbreaks (unconditional): final sizes have ranged ~380 (Ohio Amish 2014, ~4 months) to ~760 (Texas 2025, ~5 months) to ~650 (NYC Orthodox 2018-19, ~11 months).\n- Over that same class CONDITIONAL on being ~5 months past onset (this outbreak began late April 2026, so ~5 months elapsed): Texas 2025 and Ohio 2014 had passed peak weekly incidence and were decelerating by that point; NYC 2018-19 was still accruing at a substantial rate at month 5. Mixed.\n- National context: US 2026 total 3,294 on Sept 11 and 3,471 on Sept 17 (CIDRAP / CDC), i.e. +177 in a week and a fifth consecutive week of triple-digit national increases; PA leads all states, ahead of South Carolina (671), Utah (519), Texas (192), Virginia (179), Ohio (178).\n\nEVIDENCE POINTING TOWARD CONTINUED OR FASTER ACCRUAL:\n- Geographic seeding into major metros: reported measles exposure at Children's Hospital of Philadelphia (including its ICU) and a 21-day quarantine case tied to Children's Hospital of Pittsburgh (ABC News, Sept 19-20).\n- DOH formally requested a CDC Epi-Aid on Sept 16; enhanced surveillance/active case-finding can surface previously uncounted cases in batches.\n- School term is underway; national curve has not turned down.\n- Hospitalization rate ~19-20% (150/767), roughly double the national ~8%, consistent with intense transmission in a susceptible community rather than incidental detection.\n- Confirmation lags infection by roughly 1-2 weeks, so cases reported through early October largely reflect transmission that has already occurred.\n\nEVIDENCE POINTING TOWARD SLOWER ACCRUAL:\n- County count has been flat at 38 across four consecutive updates (Sept 14, 16, 18) after rising 34 -> 37 -> 38 in the prior two weeks.\n- MMR administration surged: >46,000 doses in August vs a ~25,000/month baseline; 148 pop-up clinics delivering ~4,800 doses.\n- Susceptible depletion in the epicenter: Lancaster County alone accounts for ~324 of 767 (Sept 18 basis), with Mifflin 93 and Chester 72.\n- Trailing 7-day increments have stepped down across the last three weekly windows (113 -> 108 -> 91), though 14-day increments have not.\n- Historical precedent that outbreaks in closed undervaccinated communities burn out once the local susceptible pool is exhausted (Ohio 2014, Texas 2025).\n\nMANIPULATION / POLITICAL NOISE SIGNAL (about the information environment, not the count): HHS Secretary RFK Jr. has publicly suggested PA's deaths may have been fabricated; Gov. Shapiro has accused him of misinformation; CDC has not incorporated PA's 4 deaths into national data. This affects death-count reporting and federal-state data reconciliation; no evidence located that it affects DOH's confirmed-CASE tabulation or dashboard publication.\n\nMARKETS: no Pennsylvania-specific case-count contract found on Polymarket or Manifold (harness title search plus direct check of Polymarket's measles hub); Kalshi has a national 'Measles cases this year?' family. Existing contracts resolve on US national totals, a different threshold, deadline, and resolution source than this question.\n\nSEARCHED FOR BUT COULD NOT FIND: (a) any dashboard update after Friday Sept 18 — the Monday Sept 21 update had not posted as of Now (15:30Z / 11:30 ET; updates post in the afternoon); (b) the dashboard's underlying data feed or a machine-readable time series, since the pa.gov measles page renders the dashboard in an embed that did not return numeric content on fetch; (c) PA case counts broken out by rash-onset date rather than report date, which would distinguish real deceleration from reporting noise; (d) any DOH statement forecasting a peak, projecting case totals, or announcing a change to the Mon/Wed/Fri cadence; (e) any PA-specific",
+   "reference_class": "Large US measles outbreaks in undervaccinated communities (TX/NM 2025, Ohio Amish 2014, NYC Orthodox 2018-19, SC/UT 2026), specifically the distribution of ~2-week-ahead cumulative growth measured from a known count at a comparable ~5-month point in the epidemic curve; operationalized as trailing 14"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.9318,
+   "seconds": 188.6,
+   "estimate": {
+    "percentiles": {
+     "10": 888.0,
+     "25": 914.0,
+     "50": 938.0,
+     "75": 966.0,
+     "90": 998.0
+    },
+    "p_above_upper": 0.005
+   },
+   "reasoning": "Anchor: PA DOH dashboard stood at 767 on 2026-09-18. The target update is Sep 30 or Oct 2 (equidistant from Oct 1; criteria say later, but scheduled resolution precedes the Oct 2 afternoon post), i.e. ~12-14 days of growth. Recent weekly adds are 127, 108, 99, 91 - a plateau with mild deceleration - so ~90-100/week continuation gives 767 + ~165-190 = 930-960. Reference class of 5-month-old US Anabaptist-community outbreaks (Ohio 2014, Texas 2025, NY 2018-19) is heterogeneous: two burned out near this stage, one ran for months, which argues for wide bands rather than a shifted median. Upside risks: Mifflin County is a fresh, fast-growing focus (74 on Sep 15 -> 93 on Sep 18), schools are in session, and the requested CDC Epi-Aid could clear a reporting backlog into one update. Downside: 46,000+ MMR doses in August and 148 pop-up clinics, plus susceptible depletion in Lancaster (~324 cases). No PA-specific prediction market exists; national Polymarket/Kalshi contracts differ on subject, threshold, deadline and source, so they are context only. >1400 needs ~340/week (3.5x current) and realistically only a definition change or mass retrospective confirmation, priced at 0.5%.",
+   "sources": [
+    "https://www.pa.gov/agencies/health/newsroom/pennsylvania-department-of-health-provides-statewide-update-on-m",
+    "https://www.pa.gov/agencies/health/newsroom/pa-department-of-health-provides-statewide-update-on-measles-out",
+    "https://www.pa.gov/agencies/health/diseases-conditions/infectious-disease/measles",
+    "https://www.cdc.gov/measles/data-research/index.html",
+    "https://en.wikipedia.org/wiki/2026_Pennsylvania_measles_outbreak",
+    "https://www.medicaldaily.com/cdc-measles-3471-cases-pennsylvania-767-september-2026-478836"
+   ],
+   "dossier": "PA DOH measles dashboard / statewide-update press releases, cumulative confirmed 2026 cases: 393 (Aug 25); 497 (Aug 31); 577 (Sep 4, 98 hospitalizations, 2 deaths, 37 counties; '+80 since Aug 31'); 624 (Sep 9, 37 counties); 676 (Sep 11, 37 counties); 693 (Sep 14-15, 38 counties, 133 hospitalizations); 731 (Sep 16, 38 counties, 141 hospitalizations); 767 (Sep 18, 38 counties, 150 hospitalizations, 4 deaths, '+36 since Sep 16').\n- Resolution instrument: resolves off the 'Total Cumulative Cases' figure on the PA DOH Power BI measles dashboard (pa.gov/measles), not off CDC's national table and not off probable/suspect counts; DOH newsroom releases have carried the same figure on the same days.\n- Update cadence: Monday/Wednesday/Friday afternoons. Sep 2026 press-release dates observed: Sep 4 (Fri), 9 (Wed), 11 (Fri), 14 (Mon), 16 (Wed), 18 (Fri) - cadence held with no missed posts in the observed span.\n- Event window: 2026-09-18 (last published value, 767) -> the update nearest 2026-10-01 per the criteria, which is Sep 30 (Wed) or Oct 2 (Fri), the two being equidistant; as of 2026-09-21T15:30Z roughly 22-26% of that window has elapsed. No update later than Sep 18 was published at the time of this research (Monday Sep 21 update not yet posted as of 15:30 UTC).\n- Base rate, class = weekly increments of THIS outbreak in its current phase (source: DOH release series): +127 in the 8 days to Sep 8; +108 in the week before Sep 11; +99 Sep 4->11; +91 Sep 11->18.\n- Base rate, class = this outbreak over all months since late-April onset (source: DOH + PublicSource/History of Vaccines reporting): ~330 cases in August alone, more than the first seven months combined; ~+252 over Sep 1-18.\n- Base rate, class = 12-14 day cumulative increments during the Aug-Sep phase (source: DOH series): roughly 160-210 cases per 12-13 day span.\n- Base rate, class = prior large US outbreaks in undervaccinated Anabaptist communities, conditioned on being ~5 months past onset: Ohio 2014 reached 383 cases and stopped after about four months; the 2025 Texas/Southwest outbreak peaked near months 2-3 and was declining by month 5; the 2018-19 NY (Rockland/Brooklyn) outbreak passed 900 cases and kept growing for roughly 11 months (sources: Wikipedia outbreak articles, CDC).\n- National context (CDC, as of Sep 17, 2026): 3,471 confirmed US cases across 47 jurisdictions, up 177 from 3,294 the prior week; 95% outbreak-associated; PA leads all states. US 2025 full-year total was 2,289; US total was 2,371 as of Jul 30, 2026.\n- County distribution (DOH, mid-Sept): Lancaster ~296-324, Mifflin 74 (Sep 15) rising to ~93 (Sep 18), Chester ~65-72; spread across 38 counties, i.e. an established primary focus plus at least one newer fast-growing focus.\n- Containment activity (DOH): ~4,800 MMR doses at 148 pop-up clinics since late April; providers gave 46,000+ MMR doses statewide in August vs a typical ~25,000/month; state health centers 6,900+ doses in 2026. CDC kindergarten MMR coverage reported at 92.4%, below the 95% herd-immunity threshold.\n- Surveillance capacity: on Sep 16 DOH began formally requesting a CDC Epi-Aid for outbreak response; Epi-Aid deployments can change case ascertainment and the timing of when confirmed cases post.\n- Political/data friction: CDC's national count had not incorporated PA's four deaths; HHS Secretary Kennedy questioned the deaths and Gov. Shapiro disputed that publicly. This concerns deaths, not the confirmed-case figure, but it is context on federal-state data reconciliation.\n- Prediction markets: no Pennsylvania-specific contract found on Polymarket or Manifold (harness title search plus own search). Polymarket runs US-2026 measles-count markets and Kalshi runs a national 'measles cases this year' market; both differ from this question on subject (national vs PA), threshold, deadline (year-end) and resolution source (CDC), so neither is a matching instrument.\n- Searched for but not found: any published epidemiological projection or modeling of PA case counts through October; PA rash-onset-date epidemic curve (only report-date cumulative totals are public); a post-Sep-18 dashboard value; archived dashboard snapshots showing whether cumulative counts have ever been revised downward; outbreaknewstoday's Sep 18 PA update (HTTP 403).",
+   "reference_class": "Large single-state US measles outbreaks in undervaccinated Anabaptist/close-knit communities, ~5 months after onset, projected forward two weeks at their observed sustained growth rate (Ohio 2014, Texas/Southwest 2025, NY Rockland-Brooklyn 2018-19)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.9258,
+   "seconds": 217.5,
+   "estimate": {
+    "percentiles": {
+     "10": 898.0,
+     "25": 928.0,
+     "50": 962.0,
+     "75": 998.0,
+     "90": 1045.0
+    },
+    "p_above_upper": 0.005
+   },
+   "reasoning": "Baseline is 767 confirmed (PA DOH, Sept 18 update). Reference class: state measles dashboards in sustained community transmission, where the count 12-14 days out = current + trailing-3-week mean daily rate x horizon; that mean rate is ~14.6/day (7-day increments 91/122/91), giving a status-quo anchor of ~942 (Sept 30) or ~971 (Oct 2). I used median ~15/day, a slight upward tilt: the two most recent updates both ran 18/day, the outbreak is still seeding new counties (Mifflin at 93 from near zero in August, CHOP ICU exposures), and measles' ~12-day generation interval means cases reported Sept 30-Oct 2 were largely infected before the Sept 16 CDC Epi-Aid request and the MMR surge could bite. Countervailing: 46k MMR doses in August vs 25k typical, susceptible depletion in Lancaster (324 cases), and confirmed-case lag/lumpiness. The dominant non-epidemiological uncertainty is which update resolves - Sept 30 and Oct 2 are exactly equidistant from Oct 1, the criteria pick the later, the scheduled resolution timestamp precedes it; I split 50/50, which widens the distribution by ~30 cases. No PA-specific prediction market exists; national measles markets differ on source, geography and deadline, so I did not blend. Escape above 1400 needs ~48/day (3x current) via batch reclassification or explosive new spread: priced at 0.5%.",
+   "sources": [
+    "https://www.pa.gov/agencies/health/newsroom/pennsylvania-department-of-health-provides-statewide-update-on-m",
+    "https://www.pa.gov/agencies/health/newsroom/department-of-health-provides-statewide-update-on-measles-outbre",
+    "https://en.wikipedia.org/wiki/2026_Pennsylvania_measles_outbreak",
+    "https://www.pa.gov/agencies/health/diseases-conditions/infectious-disease/measles",
+    "https://www.medicaldaily.com/cdc-measles-3471-cases-pennsylvania-767-september-2026-478836",
+    "https://polymarket.com/event/measles-cases-in-us-in-2026",
+    "https://kalshi.com/markets/kxmeasles/measles-cases",
+    "https://www.cidrap.umn.edu/measles/fourth-measles-associated-death-reported-pennsylvania"
+   ],
+   "dossier": "SUBJECT: PA DOH cumulative confirmed 2026 measles cases, value shown in the dashboard update dated nearest 2026-10-01.\n\nRESOLUTION INSTRUMENT: resolves off the 'Total Cumulative Cases' figure on the PA DOH measles dashboard (pa.gov/measles), NOT the CDC national tracker, NOT county dashboards, NOT probable/suspected cases, NOT hospitalizations. Dashboard updates Monday, Wednesday and Friday afternoons; DOH has issued a matching newsroom press release with each update through Sept 18. Fallback is the DOH newsroom release or credible reporting citing the DOH figure. Annulled only if DOH permanently ceases publishing the cumulative figure on both surfaces.\n\nEVENT WINDOW: cases accumulate over the calendar year, 2026-01-01 -> the update nearest 2026-10-01 per the criteria; as of Now (2026-09-21T15:30Z) ~75% of that year window elapsed. The UNOBSERVED increment window runs from the last published update, 2026-09-18, to 2026-09-30 or 2026-10-02; as of Now ~3.1 days have elapsed, i.e. ~26% of a 12-day window or ~22% of a 14-day window.\n\nCALENDAR MECHANICS (found, verified): 2026-10-01 is a Thursday. The M/W/F updates bracketing it are Wed 2026-09-30 and Fri 2026-10-02, exactly one day either side — equidistant. The criteria text says that on a tie the LATER update is used. The question's scheduled resolution timestamp is 2026-10-02T00:00:00Z (= Oct 1, 8pm ET), which falls before the Friday afternoon post. No US federal holiday falls in the window.\n\nSTATUS-QUO OUTCOME: the dashboard continues its observed M/W/F cadence and the cumulative count continues rising at its trailing rate; the figure is monotone non-decreasing by construction (downward revision would require de-duplication, not observed to date).\n\nOBSERVED SERIES (PA DOH releases; Wikipedia timeline for pre-Aug points):\n- 2026-05-01: 3 cases (Lebanon County) — outbreak origin late April.\n- 2026-06-26: 84 cases (Lancaster-Lebanon region).\n- 2026-08-25: 393 cases; first 2 deaths announced (Lancaster County), first PA measles deaths in 35 years.\n- 2026-08-28: 460 cases, 31 counties, 83 hospitalizations, 2 deaths; release states +36 since Aug 26.\n- 2026-08-31: 497 cases, 34 counties.\n- 2026-09-03: 540 cases.\n- 2026-09-08/09: 624 cases, 37 counties.\n- 2026-09-11: 676 cases, 37 counties.\n- 2026-09-14: 693 cases, 38 counties, 133 hospitalizations, 4 deaths (+17 from Sept 11).\n- 2026-09-16: 731 cases, 38 counties, 141 hospitalizations (+38).\n- 2026-09-18: 767 cases, 38 counties, 150 hospitalizations, 4 deaths (+36 since Sept 16). This is the most recent published value as of Now.\n\nSERIES DISPERSION (the record-only item): realized 7-day increments over the last three weeks, from the DOH series above: Aug 28->Sep 4 ~+94, Sep 4->Sep 11 ~+122, Sep 11->Sep 18 +91. Per-update (2-3 day) increments since Aug 28: +37, +43, +84(6d), +52, +17, +38, +36. Implied daily rates by update interval range from 5.7/day (Sep 11->14) to ~19/day (Sep 14->16). Trailing 3-week mean is ~14.6/day; trailing 10-day mean 14.3/day; trailing 4-day mean 18.5/day.\n\nBASE RATES / CLASSES:\n- Over the whole 2026 PA outbreak (late Apr -> Sep 18, ~21 weeks): mean ~37 cases/week. Over the last 3 weeks only: ~102 cases/week. The unconditional whole-outbreak rate and the conditional recent-regime rate differ by ~3x; the outbreak passed through a steep acceleration in July-August.\n- Conditional on the last three weeks specifically, cumulative growth has been close to LINEAR (roughly constant cases/day), not exponential: 7-day increments 94 / 122 / 91.\n- Comparison class, Texas/New Mexico South Plains outbreak 2025 in an undervaccinated community: that outbreak peaked in incidence roughly 2-3 months in and then declined over ~3 months, ending near 760 confirmed cases. PA reached 767 in ~5 months and is the largest US state outbreak of 2026.\n\nUPWARD-DIRECTION EVIDENCE:\n- Geographic spread still expanding: 31 counties (Aug 28) -> 37 (Sep 8) -> 38 (Sep 14-18). Mifflin County is at 93 cases (Sept 18 breakdown) having been negligible in August — a newer cluster with a fresh susceptible pool. Lancaster 324, Chester 72 (Sept 18).\n- Possible measles exposure reported at Children's Hospital of Philadelphia, including its ICU (ABC News, 2026-09-19); a separate exposure at Children's Hospital of Pittsburgh produced a 21-day quarantine for an infant.\n- Measles serial interval is ~11-14 days, so most cases that will be reported Sep 30 - Oct 2 were infected before interventions announced Sept 16 could take effect.\n- School year in session and indoor season beginning.\n- CDC Epi-Aid team requested 2026-09-16; enhanced case-finding and surveillance can raise detected/confirmed counts.\n- Nationally, US total ~3,471 (mid-Sept, CDC via Medical Daily) vs 2,289 in all of 2025; CIDRAP describes the national picture as still climbing. PA leads the nation, ahead of South Carolina (671), Utah (519), Texas (192), Virginia (179), Ohio (178).\n\nDOWNWARD-DIRECTION EVIDENCE:\n- MMR uptake surged: >46,000 doses administered statewide in August 2026 vs ~25,000 typical monthly; DOH cited >400 doses in two days during the week of Sept 18.\n- Susceptible depletion in the Lancaster epicentre (324 cases concentrated in a defined community).\n- CDC Epi-Aid assistance and active containment/quarantine measures from mid-September.\n- The Sep 11 -> Sep 14 interval added only 17 cases (5.7/day), showing that low-increment updates do occur within the current regime.\n- Hospitalization rate ~19-20% (150/767) is roughly double the national ~8%, which some reporting attributes to severity in this population; it does not by itself bear on case counts.\n\nCONTEXT / NOISE FACTORS:\n- Political dispute: CDC's national tracker had not incorporated PA's 4 deaths as of mid-September; HHS Secretary Robert F. Kennedy Jr. questioned whether the deaths occurred, and Gov. Josh Shapiro accused him of misinformation. This concerns the DEATH count and the federal tracker, not the PA DOH confirmed-case figure, which is the resolution instrument. Note as a ma",
+   "reference_class": "US state-level measles outbreak dashboards during sustained community transmission: cumulative confirmed count 12-14 days ahead = current count + (trailing 3-week mean daily case rate x horizon), the status-quo linear-continuation class"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.5246,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.4384,
+   "seconds": 87.7,
+   "estimate": {
+    "percentiles": {
+     "10": 872.0,
+     "25": 906.0,
+     "50": 937.0,
+     "75": 972.0,
+     "90": 1014.0
+    },
+    "p_above_upper": 0.005
+   },
+   "reasoning": "Anchor: 767 confirmed on the Sep 18 DOH update (38 counties, 150 hospitalizations, 4 deaths). Recomputing the weekly increments directly from DOH release values gives 127 (Aug 31->Sep 8), 99 (Sep 4->11), 91 (Sep 11->18) - a plateau with mild deceleration at ~13.0 cases/day, correcting Run 3's 14.6/day (its +122 week does not reconcile with DOH's Sep 4 = 577). Status-quo continuation yields ~923 at the Sep 30 update and ~949 at Oct 2; the criteria's explicit tie-break ('if two updates are equally close, the later one is used') points to Oct 2, so I weight that reading 60/40 rather than the runs' 50/50, landing the median at 937. Upside: reporting lags ~1-2 weeks so early-October confirmations reflect pre-intervention transmission, Mifflin is a fresh focus (74 -> 93 in three days), CHOP/Pittsburgh metro exposures, and a CDC Epi-Aid that could batch-clear a backlog. Downside: 46,000+ MMR doses in August vs ~25,000 baseline, 148 pop-up clinics, susceptible depletion in Lancaster (~324 cases), and county count flat at 38 for four straight updates. Exceeding 1400 needs ~49 cases/day, ~3.7x the current rate, realistically only via mass retrospective reclassification: 0.5%.",
+   "sources": [],
+   "reconciliation": "Three disputes mattered. (1) FACTUAL - the trailing weekly rate. Run 3's 122-case week (Sep 4->11) does not reconcile with the DOH values all three dossiers report (577 on Sep 4, 676 on Sep 11 = +99); Run 1's Sep 4->18 = +199 likewise should be 190 (767-577), since its Sep 4 anchor was back-derived rather than a DOH release. Settled on the DOH release series: weeklies 127/99/91, trailing rate 13.0/day, 14-day increment 190. This pulls the central rate below Run 3's 15/day and makes Run 3's 962 median too high. (2) FACTUAL/interpretive - which update resolves. Oct 1 2026 is a Thursday; Sep 30 and Oct 2 are exactly equidistant. The criteria text's tie-break is unambiguous (later update), and the harness states the event window comes from the criteria verbatim with no other timestamp defining it; the countervailing fact is that the scheduled resolution stamp (Oct 1 8pm ET) precedes any Friday-afternoon post. I could not settle this without web access, so rather than the runs' 50/50 I weight 60/40 toward the Oct 2 (14-day) reading and let the residual widen the distribution - it is worth ~26 cases. (3) JUDGMENT - dispersion. Run 2's 105-wide band prices reporting lumpiness but not rate-regime drift or the resolution-date mixture; decomposing those three sources gives SD ~55 and a 10-90 width of ~140, between Runs 1 and 3. No run found a PA-specific prediction market, and I retrieved nothing new this run; national Polymarket/Kalshi measles contracts resolve off CDC year-end national totals, a different geography, deadline and source, so they are context and not an anchor. The political dispute over PA's death count (RFK Jr. vs Gov. Shapiro, CDC not incorporating the 4 deaths) touches deaths and the federal tracker, not the DOH confirmed-case figure that resolves this question, and I treated the runs' notes on it as data, not direction.",
+   "disagreements": [
+    {
+     "claim": "Trailing 7-day increment is ~91 (13.0/day) vs Run 3's implied ~14.6/day from a 122-case week",
+     "kind": "factual",
+     "verdict": "Settled against Run 3: DOH values 577 (Sep 4) -> 676 (Sep 11) give +99, and 676 -> 767 (Sep 18) gives +91. Trailing rate 13.0/day; weekly sequence 127/99/91 shows mild deceleration."
+    },
+    {
+     "claim": "Run 1's Sep 4 -> Sep 18 increment of +199",
+     "kind": "factual",
+     "verdict": "Corrected to +190 (767-577). Run 1's Sep 4 anchor was back-derived (~568) rather than taken from a DOH release; the error is small and did not change its median materially."
+    },
+    {
+     "claim": "The resolving update is Sep 30 (12 days) vs Oct 2 (14 days)",
+     "kind": "factual",
+     "verdict": "Not fully settleable without web access. Oct 1 is a Thursday and the two posts are equidistant; the criteria's explicit tie-break selects the later (Oct 2) and the harness says the criteria text alone defines the window, but the scheduled resolution timestamp precedes an Oct 2 afternoon post. Weighted 60/40 toward Oct 2 instead of the runs' 50/50; ~26 cases of spread retained."
+    },
+    {
+     "claim": "Accrual is decelerating vs holding steady/accelerating into October",
+     "kind": "judgment",
+     "verdict": "Mild deceleration, on the recomputed weeklies (127/99/91) plus flat county count at 38 across four updates and the August MMR surge - but only mildly, because ~12-day generation interval and confirmation lag mean early-October reports reflect infections predating the Sep 16 Epi-Aid request. Took ~12.5-13.5/day."
+    },
+    {
+     "claim": "10-90 width of 105 (Run 2) vs 128 (Run 1) vs 145 (Run 3)",
+     "kind": "judgment",
+     "verdict": "Run 2 is too tight: it prices per-update reporting noise but not rate-regime drift or the resolution-date mixture. Decomposed SD ~55 -> width 140."
+    },
+    {
+     "claim": "Any prediction market prices this question",
+     "kind": "factual",
+     "verdict": "All three runs independently found no PA-specific contract on Polymarket, Manifold or Kalshi; national measles markets differ on geography, deadline and resolution source. Treated as context only, no blend. I retrieved nothing new this run."
+    }
+   ],
+   "reference_class": "State health-department measles dashboards during sustained community transmission, projected as current cumulative count + trailing 7-day reported rate x horizon; anchored on the PA DOH release series itself (497 Aug 31, 577 Sep 4, 676 Sep 11, 767 Sep 18) plus prior large US undervaccinated-communi"
+  }
+ ]
+}
