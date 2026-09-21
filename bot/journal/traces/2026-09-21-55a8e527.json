@@ -1,0 +1,226 @@
+{
+ "record_id": "2026-09-21-55a8e527",
+ "question": "How many of Tokyo's 31 health-center districts will exceed the influenza \"alert\" threshold (10 cases per sentinel institution) in the most recent weekly surveillance report as of October 2, 2026?",
+ "question_id": 45944,
+ "url": "https://www.metaculus.com/questions/45759/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-09-21T13:25:45+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 8.5991,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 10.666666666666666,
+    "25": 15.200000000000001,
+    "50": 20.166666666666668,
+    "75": 24.233333333333334,
+    "90": 27.099999999999998
+   }
+  },
+  "phase1": {
+   "10": 10.666666666666666,
+   "25": 15.200000000000001,
+   "50": 20.166666666666668,
+   "75": 24.233333333333334,
+   "90": 27.099999999999998
+  },
+  "phase2": null,
+  "spread_phase1": 5.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 11.0,
+   "25": 14.5,
+   "50": 19.0,
+   "75": 23.0,
+   "90": 26.0
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 3.1151,
+   "seconds": 711.4,
+   "estimate": {
+    "percentiles": {
+     "10": 10.5,
+     "25": 14.0,
+     "50": 19.5,
+     "75": 24.5,
+     "90": 27.0
+    }
+   },
+   "reasoning": "Reference class anchors: Tokyo 2026 W37 citywide 9.53 -> 14/31 districts >10.0, and Tokyo 2026 W4 citywide 13.83 -> 23/31. Fitting those two points gives a lognormal district spread (sigma~0.48) that reproduces both exactly and lets me map any citywide value to a district count. I reconstructed W37's actual 31-district vector from raw per-health-center case counts (weeklyhc.do) plus the 14 published values, confirming districts are densely packed at 6-10, so counts move fast with the citywide level. Growth: national +68.3% W36->W37 (3.29->5.54), Tokyo 1.49 (W34) -> 9.53 (W37); I take ~1.40x for W38 -> citywide ~13.3 -> ~22-24 districts. But the operative report is more likely W39 (Sep 21-27): the weekly index flags only W38 as delayed (Mon Sep 28) and states a default Thursday cadence, putting W39 at Thu Oct 1, inside the cutoff. W39 has three weekday holidays (Sep 21/22/23); Ehime's 2025-26 New Year weeks (1190 -> 443 -> 661) imply a reporting factor ~0.5 at ~2 open days, ~0.65 scaled to 2.5 open days, which roughly cancels one week of growth and lands W39 near 16-18 districts. No prediction market prices this contract (checked Polymarket/Kalshi/Manifold; only US-CDC influenza markets exist), so no crowd anchor. Main downside risk: a bigger holiday suppression or an early plateau of this unusually early AH1pdm09 wave; main upside risk: W38 being the operative report with growth still near 1.6x.",
+   "sources": [
+    "https://idsc.tmiph.metro.tokyo.lg.jp/weekly/",
+    "https://survey.tmiph.metro.tokyo.lg.jp/epidinfo/weeklyhc.do",
+    "https://survey.tmiph.metro.tokyo.lg.jp/epidinfo/weeklygender.do",
+    "https://www.hokeniryo.metro.tokyo.lg.jp/information/press/2026/09/2026091702",
+    "https://resemom.jp/article/2026/09/18/87597.html",
+    "https://idsc.tmiph.metro.tokyo.lg.jp/diseases/flu/flu/",
+    "https://www.pref.ehime.jp/site/kanjyo/124151.html",
+    "https://news.yahoo.co.jp/articles/ff3dd1030b024b963171ba3fe366f35f66442f45",
+    "https://www.city.kodaira.tokyo.jp/kurashi/117/117078.html",
+    "https://www.city.itabashi.tokyo.jp/kenko/kansensho/1014886.html"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the count of Tokyo's 31 health-center (保健所) districts with influenza 定点当たり報告数 strictly greater than 10.0 in the SINGLE most recent 東京都感染症週報 PDF at https://idsc.tmiph.metro.tokyo.lg.jp/weekly/ as of 2026-10-02 23:59 JST — not off the citywide figure, not off any earlier week's report, not off the national MHLW series. A TMG press release for that SAME reporting week stating the 保健所 count would govern instead.\nEVENT WINDOW: per the criteria the operative instant is 2026-10-02T23:59 JST (= 2026-10-02T14:59Z); the latest report published as of Now (2026-09-21T12:50Z) is Week 37, and neither Week 38 nor Week 39 data exists anywhere yet — 0% of the ~11.1-day publication window has elapsed.\nPUBLICATION CALENDAR (checked 2026-09-21, idsc.tmiph.metro.tokyo.lg.jp/weekly/): index states '原則として、毎週、木曜日の夕方に掲載されます'. Week 37 (9/7~) is posted. Week 38 (9/14~) carries a ※ note: '第38週分は9月28日(月)夕方に掲載予定です'. Weeks 39 (9/21~) and 40 (9/28~) are listed with NO note and no date. Observed lag pattern: Week 34 data (Aug 17-23) surfaced in the Aug 27 epidemic-start announcement; Week 37 data (Sep 7-13) surfaced in the Sep 17 press release — i.e. Thursday of the following week, a 4-day lag. Week 38's move to Monday Sep 28 coincides with the Sep 21/22/23 holidays blocking the Mon-Wed sentinel->保健所->都 reporting chain. Week 39's chain (Mon Sep 28 - Thu Oct 1) is unimpeded.\nJAPANESE HOLIDAYS IN PLAY: Sep 21 (敬老の日, Mon), Sep 22 (国民の休日, Tue), Sep 23 (秋分の日, Wed) 2026 — a 5-day run Sep 19-23. Reporting Week 38 = Mon Sep 14 - Sun Sep 20 (contains NO weekday holiday). Reporting Week 39 = Mon Sep 21 - Sun Sep 27 (contains three weekday holidays; clinic-open days Thu 24, Fri 25, Sat 26 only).\nWEEK 37 BASELINE (TMG press release 2026-09-17; resemom 2026-09-18): Tokyo citywide 9.53 per sentinel; 14 of 31 保健所 districts above 10.0, covering 47.87% of Tokyo's population; 0 districts at the 警報 (30.0) level. Published district values: Machida 17.31, Arakawa 13.71, Kita 13.45, Koto 13.43, Nakano 13.40, Bunkyo 12.86, Shibuya 12.71, Tama-Fuchu 11.55, Toshima 11.38, Edogawa 10.68, Taito 10.57, Itabashi 10.56, Nerima 10.52, Tama-Kodaira 10.48.\nWEEK 37 FULL DISTRIBUTION (raw per-health-center case counts, survey.tmiph.metro.tokyo.lg.jp/epidinfo/weeklyhc.do, retrieved 2026-09-21): 3,991 total cases over 419 sentinels. Districts NOT above 10.0 carry 1,641 cases over ~223 sentinels (~7.4 per sentinel average); reconstructing them gives a dense cluster of roughly seven districts in the 7.9-9.6 band and another seven in the 6.0-7.3 band, with the Izu Islands near 1.0 as the sole far outlier. Implication to carry: the step from '14 above' to '24 above' spans only about a 1.4x change in the citywide level.\nBASE RATES / MAPPING (class = Tokyo weekly reports, citywide level -> count of 31 districts above 10.0): 2026 W37, citywide 9.53 -> 14. 2026 W4 (Jan 19-25), citywide 13.83 -> 23, with 3 districts at 警報 level. A two-point lognormal fit (sigma ~0.48 across districts) reproduces both and yields: citywide 11 -> ~18, 12 -> ~20, 13 -> ~22, 14 -> ~23, 15 -> ~25, 9 -> ~13, 8 -> ~10, 7 -> ~7.\nGROWTH, RISING DIRECTION (MHLW / CB news via Yahoo, week of 2026-09-17): national W36 = 3.29 per sentinel (12,299 cases); national W37 = 5.54 (20,697 cases), +68.3% week-on-week and 7.6x the same week last year; 46 of 47 prefectures above the 1.0 epidemic-start line (only Okayama below). Prefectural W37: Okinawa 16.61, Ibaraki 9.85, Tokyo 9.53, Kanagawa 9.45, Saitama 9.10. Tokyo's own trajectory: epidemic start declared Aug 27 2026 off W34 = 1.49; seven consecutive weeks of increase to W37 = 9.53 (~1.9x/wk average, with the implied weekly ratios decaying toward the national 1.68). Subtype AH1pdm09 = 85.7% of Tokyo detections. 107 school class/grade closures in Tokyo Aug 31 - Sep 13, 88 of them elementary schools. Alert crossed more than a month earlier than the prior season (2025 W43).\nGROWTH, FALLING/SUPPRESSING DIRECTION: multi-holiday weeks mechanically depress 定点当たり報告数 because the denominator is sentinels, not clinic-days; MHLW explicitly cautions that 年末年始 医療機関の休診・受診控え produce an apparent drop. Ehime 2025/26 weekly patient totals (pref.ehime.jp/site/kanjyo/124151.html): W50 2,037 -> W51 1,728 -> W52 1,190 -> W1 443 -> W2 661 -> W3 719; the W52->W1 ratio is 0.37 against an underlying trend of ~0.75/wk, implying a reporting factor near 0.50 for a week with roughly 2 open clinic-days, with a ~1.5x rebound the following week. Week 39 2026 has ~2.5 open clinic-days versus ~5.5 in a normal week. Separately, three days of school closure (Sep 21-23) removes the main amplification setting for school-age children, and with a 1-2 day incubation some of that shows up in the same week's Thu-Sat diagnoses. Also note Okinawa, the earliest-starting prefecture this season, is at 16.61 — a ceiling reference for how high an early-season wave has run so far this year.\nSEARCHED FOR BUT NOT FOUND: Tokyo citywide values for W35 and W36 individually (the TMIPH survey interface only serves the current week; the 週報 PDFs are image/compressed and did not yield text; ward pages quote only W37); any Week 38 or Week 39 data (does not exist yet — W38 ended Sep 20, one day before Now); any published TMIPH statement on when Week 39 will post; any prediction market on this question (Polymarket, Manifold title searches by the harness returned nothing; my own search found only US-CDC-based influenza contracts on Polymarket and no Kalshi or bookmaker line on Japanese/Tokyo influenza surveillance) — no market anchor exists; a Japanese sentinel-surveillance analogue for a mid-season week containing three consecutive weekday holidays during an active epidemic (the last Silver Week of this shape was 2015, when influenza activity was near zero).",
+   "reference_class": "Tokyo 東京都感染症週報 week-over-week transitions during an ascending influenza wave, mapping the citywide 定点当たり報告数 to the number of the 31 health-center districts above 10.0 (calibration weeks: 2026 W37 = 9.53 -> 14; 2026 W4 = 13.83 -> 23), combined with Japanese prefectural sentinel series in multi-holida"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 2.7343,
+   "seconds": 710.3,
+   "estimate": {
+    "percentiles": {
+     "10": 7.5,
+     "25": 13.0,
+     "50": 18.0,
+     "75": 23.0,
+     "90": 26.5
+    }
+   },
+   "reasoning": "Resolution almost certainly reads Week 39 (Sep 21-27), not Week 38: Tokyo IDSC posts Thursday of the following week (W37 ended Sep 13, posted Thu Sep 17), W38 is flagged for Mon Sep 28 only because its compilation week holds the holidays, and W39 has no delay note so falls on Thu Oct 1 - exactly the W18(Mon May 11)/W19(Thu May 14) precedent. I put ~88% on W39, ~10% on W38, ~2% on W37 (=14) if W38 slips. Week 39 contains the Sep 21/22/23 holidays (first 5-day Silver Week since 2015), leaving ~2.5 clinic-day-equivalents vs 5.5; the structurally identical GW week W19-2026 cut national ARI 57.69 to 36.32 (x0.63) against a rising trend, and a day-weighted model with weekly growth decaying from 1.745 to ~1.45 plus a ~1.15 post-holiday pile-up puts W39 citywide near 10.5 (W38 near 13.5). Mapping citywide to district count with a curve anchored on W37-2026 (9.53 -> 14) and sloped on W43-2025 (10.37 -> 14) / W4-2026 (13.83 -> 23) gives ~17 for W39 and ~25 for W38. Main counterargument: if the pile-up compensates more than GW-ARI suggests, or growth holds at 1.6-1.75, W39 citywide clears 14 and the count runs 25+; conversely a strong artifact plus deceleration drops it below W37's 14. No prediction market prices this (checked Polymarket/Manifold via harness, Kalshi/bookmakers via search - none found).",
+   "sources": [
+    "https://idsc.tmiph.metro.tokyo.lg.jp/weekly/",
+    "https://www.metro.tokyo.lg.jp/information/press/2026/09/2026091719",
+    "https://www.metro.tokyo.lg.jp/information/press/2026/01/2026012911",
+    "https://idsc.tmiph.metro.tokyo.lg.jp/diseases/flu/flu/",
+    "https://www.city.kodaira.tokyo.jp/kurashi/117/117078.html",
+    "https://www.metro.tokyo.lg.jp/information/press/2025/10/2025103014",
+    "https://topics.smt.docomo.ne.jp/article/rescuenow/nation/rescuenow-00000018394159",
+    "https://news.yahoo.co.jp/articles/18c07d8066a6861584f7ffa8231fd0b451b3c0fb",
+    "https://shukujitsu.jp/silver-week/2026/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the single most recent 東京都感染症週報 PDF at https://idsc.tmiph.metro.tokyo.lg.jp/weekly/ as of 2026-10-02 23:59 JST (section 定点把握対象疾患 定点医療機関当たり報告数【保健所別】), counting districts with influenza value strictly >10.0 - NOT off the citywide figure, NOT off a fixed week number, and NOT off the WEB感染症発生動向 live system. A same-week Tokyo press release stating the 保健所 count overrides the PDF.\n\nEVENT WINDOW: observation instant 2026-10-02T23:59 JST (2026-10-02T14:59Z) per the criteria; the data week is whichever report is latest. As of Now (2026-09-21T12:50Z): Week 38 (Sep 14-20) is 100% elapsed with data not yet published; Week 39 (Sep 21-27) is ~0% elapsed. Remaining to the observation instant: ~11.1 days.\n\nPUBLICATION MECHANICS (idsc.tmiph.metro.tokyo.lg.jp/weekly/, read 2026-09-21):\n- Stated rule: 「原則として、毎週、木曜日の夕方に掲載されます」. W37 (ended Sep 13) is posted; the only Thursday between is Sep 17, i.e. a 4-day lag - the question background's '10-11 days' is not what the index implies.\n- Only weeks 1, 6, 17, 18, 38 carry ※ exception notes for 2026: W1 -> Fri Jan 9; W6 -> Fri Feb 13; W17 -> Fri May 1; W18 -> Mon May 11; W38 -> Mon Sep 28 evening. Weeks 39 and 40 carry no note.\n- Precedent pair: W18 posted Mon May 11 after Golden Week, W19 posted on the normal Thursday May 14 (3 days later, no note).\n- 2026-10-01 is a Thursday; 2026-10-02 is a Friday.\n- The index warns that facilities/health centers submit corrections after publication, and the web system carries the newest data.\n\nCALENDAR (jalan/shukujitsu/JAL holiday pages, read 2026-09-21): Sep 21 2026 = 敬老の日 (Mon), Sep 22 = 国民の休日 (Tue), Sep 23 = 秋分の日 (Wed); Sep 19(Sat)-23(Wed) is a 5-day シルバーウィーク, first since 2015. Week 38 (Sep 14-20) contains no holiday; Week 39 (Sep 21-27) has clinics open only Thu Sep 24, Fri Sep 25 and Sat Sep 26 (half).\n\nCURRENT SERIES (Tokyo, 定点当たり, 419 sentinels): W34 (Aug 17-23) 1.49 = epidemic start; W36 (Aug 31-Sep 6) 5.46; W37 (Sep 7-13) 9.53 (W36->W37 ratio 1.745). Seven consecutive weeks of increase. Tokyo press release 2026-09-17: 14 of 31 保健所 above 10.0, 47.87% of population, none at 警報 (30). W37 district values, all 14 above threshold: 町田 17.31, 荒川区 13.71, 北区 13.45, 江東区 13.43, 中野区 13.40, 文京 12.86, 渋谷区 12.71, 多摩府中 11.55, 豊島区 11.38, 江戸川 10.68, 台東 10.57, 板橋区 10.56, 練馬区 10.52, 多摩小平 10.48 (15th district is below 10.0).\n\nBASE RATES / PRIOR WEEKS, with the class each is computed over:\n- Over all Tokyo weekly reports in 2025-26 and 2026-27 whose citywide value fell in 9.5-14: three observations - W43-2025 citywide 10.37 -> 14 districts (top: 文京 19.29, 中野区 18.90, 池袋 18.50; 14th 八王子市 10.33; Tokyo press release 2025-10-30); W37-2026 citywide 9.53 -> 14 districts; W4-2026 citywide 13.83 -> 23 districts (top 町田 25.38, 八王子 24.56, 中野区 23.20; Tokyo press release 2026-01-29). Implied slope across the 2025-26 pair: ~31 districts per log-unit of citywide value.\n- Over those same three weeks conditioned on a TIGHT district spread (the 2026-27 condition now known to hold): W37-2026's 14 above-threshold values span only 10.48-17.31, a narrower log-spread than W43-2025 (10.33-19.29) or W4-2026 (10.33-25.38); a tight spread makes the district count more responsive to a given change in the citywide figure in either direction.\n- Over holiday reporting weeks with Mon-Tue-Wed holidays: national 急性呼吸器感染症 定点当たり W17-2026 56.35 -> W18-2026 57.69 (Apr 29 and May 3 holidays, ~4.5 clinic days, 34 prefectures still increasing) -> W19-2026 36.32 (May 4/5/6 holidays, ~2.5 clinic days), a x0.63 step that the reporting service attributed explicitly to 「連休中に医療機関を受診する患者が減少したことに伴う見かけ上の減少」 (rescuenow, 2026-05). Clinic-day ratio over that same pair was 2.5/4.5 = 0.556.\n\nBOTH-DIRECTION FACTORS:\n- Upward: seven straight weeks of growth at 1.7-2.0x; the 2025-26 analogue crossed from the 10-line (W43, Oct 2025) to the 警報 line (>30 citywide) within about three weeks (Tokyo press release 2025-11-13); Tokyo's Sep 17 advisory raises testing/consultation propensity; holiday gatherings over Sep 19-23 add transmission whose cases present from ~Sep 23; schools are in session through Sep 18.\n- Downward: Week 39 loses Mon-Wed clinic days entirely; schools closed Sep 21-23 removes the main transmission setting for three days; the citywide denominator (419 sentinels) is not adjusted for closures; Sat Sep 19 (in Week 38) opens the 5-day break so some Week 38 sentinels close early; public advisory may reduce mixing; the 15th-ranked district in W37 is below 10.0 and its value is unpublished, so the lower half of the distribution is unobserved.\n\nSEARCHED FOR BUT NOT FOUND: any Week 38 or Week 39 2026 Tokyo data (Week 38 ended Sep 20, nothing published anywhere as of Now); W35-2026 Tokyo citywide value; the per-district values for the 17 districts below 10.0 in W37; the Tokyo 週報 PDF text (machine extraction of 37.pdf failed - scanned/encoded); Tokyo week-by-week tables for the 2025-26 season; any prediction market on this quantity (Polymarket and Manifold title searches by the harness returned nothing; my own searches found no Kalshi or bookmaker contract).",
+   "reference_class": "Tokyo weekly 東京都感染症週報 reports in the 2025-26 and 2026-27 seasons with a published citywide 定点当たり in the 9.5-14 range, and the count of the 31 保健所 districts above 10.0 in each (W43-2025: 10.37 -> 14; W37-2026: 9.53 -> 14; W4-2026: 13.83 -> 23)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 2.1541,
+   "seconds": 565.9,
+   "estimate": {
+    "percentiles": {
+     "10": 14.0,
+     "25": 18.6,
+     "50": 23.0,
+     "75": 25.2,
+     "90": 27.8
+    }
+   },
+   "reasoning": "Two observed 2026 pairs (citywide 9.53 -> 14 districts in wk37; 13.83 -> 23 at the winter peak wk4) are both reproduced by a normal across-district distribution with CV 0.435, giving N = 31*Phi((mu-10)/0.435mu); this saturates slowly, so counts near 31 require citywide ~25+ and are very unlikely. Status quo is 14. Tokyo grew 5.46 -> 9.53 (x1.75) into wk37 with national at x1.68, so a wk38 report (full school week, no holidays) plausibly lands near citywide 14 -> ~23 districts. If instead the wk39 report (Sep 21-27) is the latest one posted by Oct 2 - which the site's stated Thursday-evening cadence makes somewhat more likely than not - two more weeks of growth are offset by three lost clinic weekdays over the 5-day Silver Week, giving a similar median but a much fatter left tail (a genuine reported dip below the current 14 is possible). Small residual mass sits on the wk38 report itself slipping past Oct 2, which would leave wk37's 14 standing. No prediction market prices this.",
+   "sources": [
+    "https://idsc.tmiph.metro.tokyo.lg.jp/weekly/",
+    "https://idsc.tmiph.metro.tokyo.lg.jp/",
+    "https://idsc.tmiph.metro.tokyo.lg.jp/diseases/flu/flu/",
+    "https://idsc.tmiph.metro.tokyo.lg.jp/assets/weekly/2026/37.pdf",
+    "https://www.metro.tokyo.lg.jp/information/press/2026/09/2026091719",
+    "https://www.metro.tokyo.lg.jp/information/press/2026/01/2026012911",
+    "https://news.yahoo.co.jp/expert/articles/2b25ea95f8c314eba2ab96a5dc3d4c32ce9c88b0",
+    "https://www.city.itabashi.tokyo.jp/kenko/kansensho/1014886.html",
+    "https://www.city.kodaira.tokyo.jp/kurashi/117/117078.html"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the single most recent 東京都感染症週報 PDF at https://idsc.tmiph.metro.tokyo.lg.jp/weekly/ as of 2026-10-02 23:59 JST, counting how many of 31 health-center districts show influenza >10.0 in the 【保健所別】 table - not off citywide figures, not off national MHLW data, not off earlier weeks. A TMG press release for that SAME reporting week stating the number of 保健所 above 10人/定点 overrides the PDF.\n\nEVENT WINDOW: the reporting week covered by whichever weekly report is newest at 2026-10-02 23:59 JST -> candidates are week 38 (Sep 14-20) or week 39 (Sep 21-27) per the criteria. As of Now (2026-09-21T12:50Z / 21:50 JST) week 38 is 100% elapsed and unpublished; week 39 is ~0% elapsed.\n\nSTATUS QUO (no new report posted in time): the week 37 PDF stands, showing 14 of 31 districts above 10.0.\n\nPUBLICATION SCHEDULE\n- Weekly index, verbatim: 「原則として、毎週、木曜日の夕方に掲載されます。」 and 「第38週分は9月28日(月)夕方に掲載予定です。」 (idsc.tmiph.metro.tokyo.lg.jp/weekly/, read 2026-09-21). IDSC homepage carries the same week-38 notice with 「9月28日(月)午後」.\n- Week 37 (ended Sun Sep 13) PDF is live as of 2026-09-21; IDSC homepage 更新日 2026-09-18; Itabashi-ku and Kodaira-shi pages citing week 37 Tokyo figures both updated 2026-09-18.\n- No published notice found for the week 39 (Sep 21-27) posting date. Thursday Oct 1 and Friday Oct 2 are ordinary working days in Japan.\n- Index note: 「週報発行後に、医療機関、保健所から追加、訂正報告がある場合があります。」\n\nOBSERVED SERIES (Tokyo citywide 定点当たり報告数, 2026-27 season)\n- wk34 (Aug 17-23) 1.49 - epidemic-start threshold crossed, >1 month earlier than prior season (TMG press release 2026-08-27).\n- wk36 (Aug 31-Sep 6) 5.46.\n- wk37 (Sep 7-13) 9.53 -> x1.75 vs wk36; x~1.9/week over wk34-36.\n- National wk37: 5.54, x1.68 vs wk36; ~6x the same week last year; Okinawa 16.61 (Yahoo expert column, Kurahara Yu, 2026-09-18/19).\n- Tokyo alert declared at the earliest timing since 1999, tied with 2023 (same column).\n\nDISTRICT-LEVEL DATA\n- wk37 (TMG press release 2026-09-17): 14 of 31 health centers above 10.0, covering 47.87% of Tokyo population; none at warning (30.0). Named values: Machida 17.31, Arakawa 13.71, Kita 13.45, Koto 13.43, Nakano 13.40, Bunkyo 12.86, Shibuya 12.71, Tama-Fuchu 11.55, Toshima 11.38, Edogawa 10.68, Taito 10.57, Itabashi 10.56, Nerima 10.52, Tama-Kodaira 10.48. The 17 unlisted districts are each below 10.0 and, given citywide 9.53, average roughly 7.\n- Prior-season anchor pair (TMG press release 2026-01-29, week 4, Jan 19-25 2026): citywide 13.83 -> 23 of 31 above 10.0; top districts Machida 25.38, Hachioji 24.56, Nakano 23.20.\n- These two pairs are the only same-instrument (citywide, count) observations located. Conditional structure they imply: at a citywide value ~5% above 10, about 45% of districts clear 10; at a citywide value ~38% above 10, about 74% do. Equivalently a cross-district coefficient of variation near 0.43 in both weeks, with no district within 5 points of 30.0 in wk37.\n\nCALENDAR / TRANSMISSION\n- Sep 19 (Sat), Sep 20 (Sun), Sep 21 (敬老の日), Sep 22 (国民の休日), Sep 23 (秋分の日) = five consecutive non-working days ('Silver Week'). Week 38 contains none of these as weekdays; week 39 contains three of them (Mon-Wed), leaving Thu Sep 24, Fri Sep 25 and Sat Sep 26 as clinic days.\n- Sentinel denominator is reporting institutions, so closed clinics reporting zero patients enter the average; Japanese holiday weeks (year-end/New Year) are the standard analogue for holiday-week distortion of 定点当たり values.\n- Schools were in session throughout week 38 and closed Sep 19-23; the season to date has been described as school-age driven.\n- Expert commentary (Yahoo, 2026-09-18/19) flags increased movement and contact over the long holiday as a transmission risk; most municipal subsidised vaccination programmes start Oct 1, after both candidate reporting weeks.\n- Tokyo has 419 internal-medicine/paediatric influenza sentinels across the 31 districts (uneven sentinel counts per district, so citywide is sentinel-weighted, not a simple district mean).\n\nBOTH-DIRECTION EVIDENCE\n- Upward: sustained x1.68-1.9 weekly growth nationally and in Tokyo; 14 districts already over and several more implied to sit in the 8-10 band; long-holiday mixing; current level still far below historical Tokyo winter peaks (30-50).\n- Downward: week 39 loses three clinic weekdays and five days of school transmission; the prior season's winter peak stalled at citywide 13.83 with 8 districts still under 10.0; eight districts stayed below 10.0 even at that peak, so the count has an empirical ceiling well under 31 unless dispersion compresses; publication could slip again.\n\nMARKETS: searched Polymarket, Manifold, Kalshi and bookmaker coverage for any contract on Japanese/Tokyo sentinel influenza surveillance or health-center alert counts - none found. Polymarket's influenza markets are US CDC-based and match neither the threshold, the resolution source, nor the deadline.\n\nSEARCHED FOR BUT NOT FOUND: week 38 or week 39 Tokyo or national figures (not yet published; national week 38 due from MHLW around Sep 25); week 35 Tokyo citywide value; the individual values of the 17 sub-10.0 districts in wk37 (the week 37 PDF text could not be extracted); any announced posting date for the week 39 report; any past Tokyo weekly report showing the size of a Silver-Week reporting artifact during an active influenza epidemic; archived snapshots of the weekly index for Sep 18-20 2026 (Wayback has none).",
+   "reference_class": "Consecutive weekly Tokyo 感染症週報 reports during a rising influenza wave, anchored on the observed citywide-to-district-count mapping for Tokyo's 31 health-center districts (2026 wk37 and 2026 wk4 pairs), with persistence of the last published count as the naive anchor"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.5535,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.4987,
+   "seconds": 114.2,
+   "estimate": {
+    "percentiles": {
+     "10": 11.0,
+     "25": 14.5,
+     "50": 19.0,
+     "75": 23.0,
+     "90": 26.0
+    }
+   },
+   "reasoning": "Status quo is 14 districts (W37, citywide 9.53). The operative report is most likely Week 39 (Sep 21-27): all three runs independently read the index's 『原則として、毎週、木曜日の夕方に掲載されます』 plus a ※ note delaying only W38 to Mon Sep 28, and W37 (ended Sep 13) did post Thu Sep 17 — a 4-day lag, contradicting the background's '10-11 days'. W19-2026 posting on its normal Thursday three days after the Golden-Week-delayed W18 is a direct precedent, so W39 on Thu Oct 1 clears the Oct 2 cutoff (~80%). W38 alone would be strongly up: ~1.45x growth on 9.53 -> citywide ~13.5-14 -> ~22-24 districts. But W39 contains three weekday holidays (Sep 21/22/23, first 5-day Silver Week since 2015), leaving ~2.5 clinic-day-equivalents against an unadjusted 419-sentinel denominator; the structurally identical W19-2026 national ARI week ran x0.63 against a flat trend, so ~1.3x underlying growth times ~0.62 artifact gives W39/W38 ~0.8, citywide ~11 -> roughly 18-19 districts. Median 19 therefore sits between the strong-up W38 branch and a suppressed W39 print, with a real left tail (a reported dip at or below 14 needs only the artifact at its strong end, ~20% of mass) and a right tail capped by the fact that 8 districts stayed under 10.0 even at last winter's 13.83 peak — 28+ would require a citywide level above any Tokyo week this season and above Okinawa's 16.61. Market check: I have no retrieval this run; all three runs searched Polymarket, Manifold, Kalshi and bookmakers and found no contract on Japanese/Tokyo sentinel surveillance (Polymarket's flu markets are US-CDC-based, matching neither threshold, source, nor deadline) — no crowd anchor, so none applied.",
+   "sources": [],
+   "reconciliation": "Four substantive disputes. (1) Which report is operative. Runs 1 and 2 put W39 clearly ahead (Run 2 ~88%); Run 3 said only 'somewhat more likely than not'. The factual core — index cadence text, the W38 ※ note for Mon Sep 28, W37 posted Thu Sep 17, W18(Mon May 11)/W19(Thu May 14) precedent, no note on W39 — is reported identically by all three and contradicts the question background's '10-11 day' lag claim; I side with the index text the runs actually read and set W39 ~80%, W38 ~16%, W37-stands ~4%, slightly below Run 2's 88% because no run could find an announced W39 date and a second slip cannot be excluded without retrieval. (2) Size of the Silver-Week reporting artifact. Run 2's national ARI W18->W19 x0.63 (3 weekday holidays, clinic-day ratio 0.556) and Run 1's Ehime New Year reconstruction (~0.5 at ~2 open days) are independent and agree on 0.5-0.7; Run 3 acknowledged the mechanism but let growth dominate its median anyway. I treat the artifact as real and material — this is the main reason my median sits below Run 3's 23. (3) The citywide->district-count slope. Run 1's reconstructed W37 district vector (dense cluster at 7.9-9.6) implies ~4-5 districts per unit citywide; Run 2's W43-2025 point (10.37 -> 14, same count as 9.53 -> 14) implies almost none locally. This is FACTUAL but unsettleable here: Run 1's vector is a reconstruction, not published district values, and the two anchors come from different seasons with different dispersion. I did not pick a side — I used an intermediate slope and let the disagreement widen the distribution rather than shift it. (4) Whether the count can print below 14. Run 3's 10th percentile of 14 effectively denies it; Run 2's 7.5 requires citywide falling below W37. Reconciled: W39/W38 ~0.8 means a print below 14 needs the artifact at its strong end together with weak W38 growth — possible but not the modal path, so ~20% of mass at <=14 and a 10th percentile of 11 rather than Run 2's 7.5 or Run 3's 14. Both bounds are closed; no escape mass declared.",
+   "disagreements": [
+    {
+     "claim": "The Week 39 (Sep 21-27) report will be published by 2026-10-02 23:59 JST, making it the operative report rather than Week 38.",
+     "kind": "factual",
+     "verdict": "Settled toward yes (~80%) on evidence all three runs report consistently: index states Thursday-evening cadence, W37 (ended Sep 13) posted Thu Sep 17, only W38 carries a delay note (Mon Sep 28), W39 and W40 carry none, and the W18/W19 2026 pair shows a normal-Thursday post 3 days after a holiday-delayed one. Not fully settleable — no run found an announced W39 date — so ~16% is left on W38 and ~4% on W37 still standing."
+    },
+    {
+     "claim": "The question background's statement that PDFs appear '10-11 days after each reporting week ends' is accurate.",
+     "kind": "factual",
+     "verdict": "Contradicted. W37 ended Sep 13 and was live by Sep 17-18 (IDSC 更新日 Sep 18, ward pages citing W37 updated Sep 18) — a 4-day lag. W38's Sep 28 date is an 8-day exception, not the norm. Runs 1 and 2 both flagged this; Run 3's retrieved index text agrees."
+    },
+    {
+     "claim": "Week 39's three weekday holidays will mechanically suppress the reported 定点当たり value by roughly a third relative to trend.",
+     "kind": "factual",
+     "verdict": "Supported by two independent analogues retrieved by different runs: national ARI W18->W19 2026 x0.63 against a flat trend with an explicit official attribution to holiday consultation decline, and Ehime's New Year weeks implying ~0.5 at ~2 open clinic days. Applied at ~0.62 against ~1.3x underlying growth. Run 3's near-dismissal of this is not supported by any counter-evidence in its own dossier."
+    },
+    {
+     "claim": "How steeply the district count responds to a change in the citywide figure near 10-12 per sentinel.",
+     "kind": "factual",
+     "verdict": "Could not be settled without retrieval. Run 1's reconstructed W37 district vector implies a steep ~4-5 districts per citywide unit; Run 2's W43-2025 anchor (10.37 -> 14, identical count to 9.53 -> 14) implies a nearly flat local slope. Run 1's vector is reconstructed rather than published, and the anchors span different seasons. I used an intermediate slope and widened the distribution instead of choosing."
+    },
+    {
+     "claim": "Week 38's growth ratio over Week 37 (9.53).",
+     "kind": "judgment",
+     "verdict": "No real dispute: Run 1 ~1.40, Run 2 ~1.45 decaying, Run 3 ~1.47 implied. Carried forward at ~1.45 (citywide ~13.8), consistent with the observed decay from 1.745 and the national 1.68."
+    },
+    {
+     "claim": "Whether the reported count can fall below the current 14.",
+     "kind": "judgment",
+     "verdict": "Yes, but it is not the modal path. Reconciled W39/W38 ratio of ~0.8 puts W39 citywide near 11, above W37's 9.53; a sub-14 print needs the artifact at its strong end plus weak W38 growth. I take the reading I would bet on: ~20% of mass at 14 or below, so a 10th percentile of 11 — above Run 2's 7.5 and well below Run 3's 14."
+    },
+    {
+     "claim": "Whether any prediction market prices this contract.",
+     "kind": "factual",
+     "verdict": "None found — three independent searches (Polymarket, Manifold, Kalshi, bookmakers) plus the harness title search all returned nothing on Japanese/Tokyo sentinel influenza surveillance. No crowd anchor exists; no blending performed."
+    }
+   ],
+   "reference_class": "Tokyo 東京都感染症週報 weekly reports mapped from citywide 定点当たり報告数 to the count of the 31 保健所 districts above 10.0 (W37-2026 9.53->14; W43-2025 10.37->14; W4-2026 13.83->23), combined with Japanese multi-holiday reporting weeks in sentinel surveillance (national ARI W18->W19 2026 x0.63 on a flat trend; Ehi"
+  }
+ ]
+}
