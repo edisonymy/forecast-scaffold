@@ -91,6 +91,10 @@ SUPPORTED_TYPES = ("binary", "multiple_choice", *CONTINUOUS)
 # still see earlier runs' failures.
 MAX_QUESTION_FAILURES = 3
 FAILURE_WINDOW_HOURS = 24.0
+# main()'s exit status when at least one question failed because EVERY agent call errored
+# (subscription out of credit, auth outage, rate limit). bot.yml reruns on OpenRouter only
+# on this code; 1 (question-level failures only) alerts but does not re-spend elsewhere.
+EXIT_PROVIDER_FAILURE = 75  # sysexits EX_TEMPFAIL
 # Secrets withheld from the forecasting agent's subprocess env — it runs on untrusted
 # question text and needs none of these (submission + leak-guard are pure Python).
 # OPENROUTER_API_KEY is stripped too: when that provider is selected the key re-enters
@@ -962,6 +966,12 @@ def run_agent(
         # `--output-format json` reports errors (e.g. auth 401s) in the stdout envelope
         # with an empty stderr — include both so failures are diagnosable from logs.
         detail = result.stderr.strip()[:500] or result.stdout.strip()[:500]
+        with contextlib.suppress(json.JSONDecodeError, TypeError, ValueError):
+            # The envelope's usage block fills the first 500 chars; lead with its message
+            # ("credit balance too low", "rate limit") so the cause survives truncation.
+            envelope = json.loads(result.stdout)
+            if isinstance(envelope, dict) and envelope.get("result"):
+                detail = f"{str(envelope['result'])[:300]} | {detail}"
         raise RuntimeError(f"agent failed ({result.returncode}): {detail}")
     try:
         envelope = json.loads(result.stdout)
@@ -2400,6 +2410,10 @@ def forecast_question(
                 failures_path(str(journal.path)), question.get("id"),
                 "invalid payload after retry: " + "; ".join(errors)[:200],
             )
+        elif spent is not None:
+            # Every call errored (quota, auth, rate limit): the provider's fault. main()
+            # exits EXIT_PROVIDER_FAILURE so bot.yml reruns the remainder on OpenRouter.
+            spent["infra_failures"] = spent.get("infra_failures", 0) + 1
         return False
     aggregation_note: str | None = None
     # Runs that produced a usable number, in this question type's own currency.
@@ -3061,8 +3075,14 @@ def main(argv: list[str] | None = None) -> int:
             record_failure(ledger, question.get("id"), str(exc))
             print(f"  ERROR: {exc}")
     print(f"forecast {done} question(s), {failed} failed, ${spent['usd']:.2f} notional spend")
-    # Nonzero on any failure so a workflow can rerun with a fallback provider; already-
-    # forecasted questions are skipped on rerun, so the retry only mops up the failures.
+    if infra := spent.get("infra_failures", 0):
+        print(f"provider failure: every agent call errored on {infra} question(s) — "
+              f"exit {EXIT_PROVIDER_FAILURE} so the workflow reruns on its fallback provider")
+        return EXIT_PROVIDER_FAILURE
+    # Nonzero on any failure so the workflow alerts. Question-level failures (bad payload,
+    # submit 4xx) do NOT trigger the provider fallback: another provider would re-spend on
+    # a question that fails for its own reasons. Already-forecasted questions are skipped
+    # on a rerun, so a fallback only mops up what the provider dropped.
     return 1 if failed else 0
 
 
