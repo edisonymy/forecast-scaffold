@@ -1,0 +1,227 @@
+{
+ "record_id": "2026-09-21-e3b0f0cd",
+ "question": "How many port calls will IMF PortWatch record at Ukraine's three main Black Sea ports over the latest reported week as of October 1, 2026?",
+ "question_id": 45951,
+ "url": "https://www.metaculus.com/questions/45766/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-09-21T16:51:06+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 5.2683,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -0.405,
+    "25": -0.244,
+    "50": 0.008333333333333337,
+    "75": 0.301,
+    "90": 0.8846666666666666
+   },
+   "p_above_upper": 0.006000000000000001
+  },
+  "phase1": {
+   "10": -0.405,
+   "25": -0.244,
+   "50": 0.008333333333333337,
+   "75": 0.301,
+   "90": 0.8846666666666666
+  },
+  "phase2": null,
+  "spread_phase1": 0.25,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -0.45,
+   "25": -0.25,
+   "50": 0.0,
+   "75": 0.3,
+   "90": 0.75
+  },
+  "p_above_upper": 0.004
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.7397,
+   "seconds": 442.2,
+   "estimate": {
+    "percentiles": {
+     "10": -0.385,
+     "25": -0.212,
+     "50": 0.075,
+     "75": 0.363,
+     "90": 0.844
+    },
+    "p_above_upper": 0.005
+   },
+   "reasoning": "The resolution instrument, not the war, dominates. PortWatch's own feed shows combined Odessa+Chornomorsk+Pivdennyi portcalls collapsing from ~210-264/month (Jan-Sep 2024) to 71 in Oct 2024 and then 0-4/month continuously through Sep 2026 - 9 calls in all of 2025 and 9 in 2026 to date - because corridor vessels sail AIS-dark and the region is jammed. The HDX Ukraine CSV is a straight slice of that same feed (same port IDs, latest row 2026-09-11, all three ports zero). Reference-class prior: 0.21 calls per 7-day window, ~80% of weeks at zero. The current regime pushes lower still: 49 consecutive zero days (25 Jul - 11 Sep) and independent reporting that no ships entered Greater Odesa in September. Upside routes are (a) one stray AIS-visible call, ~9%, and (b) a PortWatch methodology fix/backfill or a ceasefire restoring both sailings and AIS inside the ~19-25 Sep window, which is very unlikely in 10 days and would anyway reveal a heavily suppressed week. If no update lands before 1 Oct, the fallback window (5-11 Sep) is already known to be 0.",
+   "sources": [
+    "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/Daily_Ports_Data/FeatureServer/0/query (IMF PortWatch Daily_Ports_Data feature service: distinct UKR ports; monthly/yearly portcall sums 2019-2026; nonzero-day query since 2026-05-01)",
+    "https://data.humdata.org/dataset/8b2ce809-6bd1-448f-b193-66c45c94c3c2/resource/3094a317-7900-499f-b0a7-52083799b886/download/ukraine-daily-port-activity-data-and-shipment-estimates.csv (HDX resource, last modified 2026-09-16 11:06 UTC, 44,977 rows, coverage 2019-01-01 to 2026-09-11)",
+    "https://data.humdata.org/api/3/action/package_show?id=ukraine-daily-port-activity-data-and-shipment-estimates",
+    "https://portwatch.imf.org/pages/data-and-methodology",
+    "https://www.kyivpost.com/post/84658",
+    "https://www.agbull.com/the-black-sea-goes-dark-port-war-halts-grain-trade-at-the-peak-of-harvest/",
+    "https://www.osw.waw.pl/en/publikacje/analyses/2026-07-28/ukraine-suspension-shipping-to-black-sea-ports-and-associated-risks",
+    "https://www.hapag-lloyd.com/en/services-information/offices-localinfo/local-news/2026/07/ukraine--temporary-suspension-of-feeder-calls-to-odesa-region-po.html",
+    "https://maritime-executive.com/article/shipping-suspended-on-ukraine-s-black-sea-corridor-due-to-increased-attacks"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the portcalls field in IMF PortWatch's 'Ukraine: Daily Port Activity Data and Shipment Estimates' CSV on HDX, NOT off USPA/Ukrainian government ship-call reports, NOT off Lloyd's List or Kpler/MarineTraffic counts, and NOT off tonnage. Verified this run: the HDX file is a country slice of PortWatch's global 'Daily_Ports_Data' ArcGIS feature service - identical 29-column schema and identical port IDs (Odesa appears under portname 'Odessa', portid port843; Chornomorsk port489; Pivdennyi port1419). CSV is sorted date-descending; top row is 2026-09-11.\n\nEVENT WINDOW: the seven latest dated rows per port available as of 2026-10-01 23:59 UTC, per the criteria (not the forecast close). HDX resource last modified 2026-09-16 11:06 UTC with coverage through 2026-09-11 (~5-day lag); PortWatch documents weekly refreshes on Tuesdays ~09:00 ET, so updates are due Tue 2026-09-22 and Tue 2026-09-29, implying an expected window of ~2026-09-19 -> 2026-09-25. As of Now 2026-09-21T16:30Z that expected window is ~33% elapsed. If no further update lands before resolution, the window is the already-published 2026-09-05 -> 2026-09-11.\n\nEVIDENCE (source, date):\n- PortWatch feature service, queried 2026-09-21: combined portcalls for Odessa+Chornomorsk+Pivdennyi by month, 2024: Jan 210, Feb 263, Mar 264, Apr 253, May 220, Jun 217, Jul 219, Aug 219, Sep 205, Oct 71, Nov 1, Dec 1.\n- Same source: 2025 monthly combined totals: Jan 1, Feb 1, Mar 0, Apr 0, May 2, Jun 0, Jul 2, Aug 0, Sep 1, Oct 0, Nov 1, Dec 1 (annual 9). 2026: Jan 2, Feb 0, Mar 0, Apr 2, May 0, Jun 1, Jul 4, Aug 0, Sep (1-11) 0.\n- Same source: annual combined totals 2019 3,521 / 2020 3,324 / 2021 3,202 / 2022 1,155 / 2023 652 / 2024 2,143 / 2025 9 / 2026 9.\n- Same source: every dated row for all three ports from 2026-07-25 through 2026-09-11 is 0 (49 consecutive days). The only nonzero days since 2026-05-01 are 2026-06-07 Chornomorsk 1, 2026-07-02 Chornomorsk 1, 2026-07-03 Pivdennyi 1, 2026-07-16 Odessa 1, 2026-07-24 Chornomorsk 1.\n- Same source, 2026-08-30 to 2026-09-11 across all 15-16 Ukrainian ports in the file: only Reni (3 calls 2026-09-11; 1 each on 09-01, 09-03, 09-08) and Izmail (1 on 09-06) register anything; the Danube ports remain nonzero while the deep-sea trio read zero.\n- PortWatch methodology page: counts are derived from satellite AIS; PortWatch itself flags GPS jamming and AIS spoofing as data-quality issues in this region. vesseltracker/Port of Odesa background: vessels have been instructed to switch AIS off when sailing to Odesa, Chornomorsk and Yuzhnyy - i.e. AIS-derived counts can read near zero while berths are working.\n- Hapag-Lloyd customer advisory (Jul 2026): feeder calls to Chornomorsk, Odesa and Pivdennyi suspended until further notice on security grounds.\n- OSW analysis (2026-07-28) and Maritime Executive: corridor sailings suspended after the 22 Jul 2026 escalation; Ukrainian officials said corridor traffic was zero for the first time since 2023.\n- Ag Bull Trading (Sep 2026): 4-5 ships entered Ukrainian ports on 21 Jul 2026, then zero on 22 Jul; shipments down ~76% y/y through August; Kyiv says no ships at all have entered the Greater Odesa ports so far in September; 2026-27 grain-export projection cut to 38-40 Mt from 43 Mt.\n- Lloyd's List (2026-09-17, via question background): grain-carrier calls down 92% in August; overall commercial shipping at Ukraine's Black Sea ports down ~90% y/y. CSIS (2026-09-11): traffic largely halted since 22 Jul 2026.\n- Kyiv Post / Ukrainian Ports Association (2026-09-21): attacks on Odesa, Chornomorsk and Pivdennyi intensified since July 2026, targeting commercial vessels; 300+ vessels damaged since 2022. Russian strikes hit Odesa and cargo ships at Chornomorsk mid-September 2026.\n- Counter-direction: Turkey and regional players have pushed for a maritime ceasefire and wheat futures eased in mid-September on ceasefire hopes; the corridor has restarted from a standstill before (Aug 2023 unilateral corridor, which went on to move 197 Mt of cargo). Ukrainian ports remain physically operable - the 2026 halt is an insurance/security decision by operators, not a loss of berth capacity. Danube ports (Reni, Izmail) continue to register calls in the same dataset, so the feed is live for Ukraine.\n- Counter-direction: the Oct/Nov 2024 discontinuity in this series is abrupt (205 -> 71 -> 1) and coincides with no corresponding real-world event, so it is a coverage/methodology change that could in principle be revised or backfilled.\n\nBASE RATES:\n- Over ALL ~97 seven-day windows since the Nov-2024 break (Nov 2024 - 11 Sep 2026), PortWatch-recorded combined portcalls at the three ports total 20, i.e. mean 0.21 per window, SD ~0.45; roughly 80 of those ~97 windows contained zero calls (source: PortWatch feature service, queried 2026-09-21).\n- CONDITIONAL on the post-22-July-2026 halt (1 Aug - 11 Sep 2026, six full seven-day windows): 0 calls, 0 of 6 windows contained a call.\n- CONDITIONAL on 2026 before the halt (1 Jan - 21 Jul 2026, ~29 windows): 9 calls, mean ~0.31 per window.\n- Over seven-day windows in Jan-Sep 2024, BEFORE the coverage break: ~48-58 calls per window (205-264 per month across the three ports).\n- Event-in-window count: of the 12 most recent seven-day windows (21 Jun - 11 Sep 2026), 4 contained at least one recorded call, all of them in the 2 Jul - 24 Jul span; the 7 windows since 25 Jul contained none.\n\nSEARCHED FOR BUT NOT FOUND: any prediction market or bookmaker contract on this quantity (harness title search of Polymarket and Manifold returned nothing; my own searches of Kalshi/Polymarket/bookmakers found no matching or near-miss contract). No PortWatch statement, changelog, release note or methodology erratum explaining or announcing a fix for the Oct/Nov-2024 collapse in Ukrainian Black Sea coverage. No post-2026-09-11 PortWatch rows are published yet, so no direct observation of the likely window exists. HDX's CKAN datastore API is authentication",
+   "reference_class": "Weekly (7-day) totals of PortWatch-recorded portcalls at Odessa + Chornomorsk + Pivdennyi across the ~97 weekly windows since PortWatch's Nov-2024 Ukraine Black Sea coverage break (Nov 2024 - 11 Sep 2026)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.4923,
+   "seconds": 349.5,
+   "estimate": {
+    "percentiles": {
+     "10": -0.45,
+     "25": -0.32,
+     "50": -0.15,
+     "75": 0.15,
+     "90": 0.85
+    },
+    "p_above_upper": 0.003
+   },
+   "reasoning": "Resolution is off PortWatch's recorded 'portcalls' field, not off real-world traffic, and that instrument has been reading ~zero at Odessa/Chornomorsk/Pivdennyi since Jan 2025: 9 recorded calls in all of 2025 and 9 in 2026 through 11 Sep, versus 2,143 in 2024. This is instrument-specific, not a regional data outage - Romania (4,204 in 2025), Ukraine's Danube ports (Izmail 374, Reni 102) and Kerch (3,286) register normally, matching PortWatch's stated GPS-jamming/AIS-spoofing caveat for these polygons. Over the 619 days since the break there are 18 nonzero port-days, all with value exactly 1, clustered into ~15 weeks; ~83% of 7-day windows summed to 0. Every day from 1 Aug 2026 to 11 Sep 2026 is 0. The dataset updates Tuesdays 18:00 UTC on a ~4-day lag (max date now 2026-09-11), so the seven latest rows as of 1 Oct should cover ~19-25 Sep - squarely inside the post-22-July standstill described by Lloyd's List and CSIS, with no ceasefire in force. The July 2026 escalation therefore adds little: the series was already at the floor. No prediction market prices this question on any venue I checked, so there is no crowd anchor. Main upside mechanism is a PortWatch methodology fix or backfill restoring 2024-era detection (~41 calls/week) or 2019-era (~68/week), which alone could clear the open upper bound - but that requires both a data fix and a traffic restart inside 10 days, hence the ~0.3% escape mass.",
+   "sources": [
+    "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/ArcGIS/rest/services/Daily_Ports_Data/FeatureServer/0/query (IMF PortWatch Daily Ports Data; queried for UKR/ROU port-day portcalls, 2019-2026)",
+    "https://bookr.basbakker.us/5-Data/7_PortWatch.html (PortWatch API endpoints and field list)",
+    "https://portwatch.imf.org/pages/data-and-methodology (update cadence: weekly, Tuesdays 09:00 ET)",
+    "https://api.github.com/repos/OCHA-DAP/hdx-portwatch-viz (HDX PortWatch CSV pipeline: per-country files refreshed Tuesdays 18:00 UTC)",
+    "https://data.humdata.org/dataset/ukraine-daily-port-activity-data-and-shipment-estimates (returned HTTP 403 to automated fetch; not read)",
+    "https://www.maritime-executive.com/article/shipping-suspended-on-ukraine-s-black-sea-corridor-due-to-increased-attacks",
+    "https://www.osw.waw.pl/en/publikacje/analyses/2026-07-28/ukraine-suspension-shipping-to-black-sea-ports-and-associated-risks",
+    "https://euromaidanpress.com/2026/08/14/ukraine-russia-black-sea-truce/",
+    "https://www.hapag-lloyd.com/en/services-information/offices-localinfo/local-news/2026/07/ukraine--temporary-suspension-of-feeder-calls-to-odesa-region-po.html"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the value in IMF PortWatch's 'portcalls' field for the ports Odessa (port843), Chornomorsk (port489), Pivdennyi (port1419) - NOT off real-world vessel movements, berth records, USPA figures, or grain-export tonnage. The HDX CSV is generated from PortWatch's Daily_Ports_Data feature service; the HDX dataset page rejects automated fetches (HTTP 403) but the feature service is open.\n\nEVENT WINDOW: per the criteria the window is 'the seven latest dated rows present in the dataset as of 2026-10-01 23:59 UTC', not a fixed calendar week. As of Now (2026-09-21T16:30Z) the dataset's max date is 2026-09-11 (verified by max(date) query). PortWatch refreshes Tuesdays (09:00 ET / HDX files 18:00 UTC) on an observed ~4-day lag (the 2026-09-15 refresh carried data through 2026-09-11). Two refreshes fall before resolution: 2026-09-22 (expected coverage to ~09-18) and 2026-09-29 (expected coverage to ~09-25). So the seven rows that resolve this are most likely 2026-09-19 to 2026-09-25; if the 09-29 refresh slips, they are 2026-09-12 to 2026-09-18; if both slip, 2026-09-05 to 2026-09-11. 0% of the expected window has elapsed as of Now.\n\nDATA FACTS (all from the PortWatch Daily_Ports_Data feature service, queried 2026-09-21):\n- Combined annual recorded portcalls, the three ports: 2019 = 3,521; 2020 = 3,324; 2021 = 3,202; 2022 = 1,155; 2023 = 652; 2024 = 2,143; 2025 = 9; 2026 through 09-11 = 9.\n- Per port 2024 -> 2025 -> 2026-YTD: Chornomorsk 893 -> 2 -> 3; Odessa 743 -> 4 -> 2; Pivdennyi 507 -> 3 -> 4.\n- Complete list of nonzero port-days at the three ports since 2025-01-01 (18 in 619 days, every value exactly 1): 2025-01-27 Odessa, 2025-02-13 Odessa, 2025-05-23 Chornomorsk, 2025-05-31 Pivdennyi, 2025-07-25 Pivdennyi, 2025-07-26 Odessa, 2025-09-28 Chornomorsk, 2025-11-08 Odessa, 2025-12-16 Pivdennyi, 2026-01-28 Odessa, 2026-01-30 Pivdennyi, 2026-04-15 Pivdennyi, 2026-04-24 Pivdennyi, 2026-06-07 Chornomorsk, 2026-07-02 Chornomorsk, 2026-07-03 Pivdennyi, 2026-07-16 Odessa, 2026-07-24 Chornomorsk.\n- Rows are present for every calendar day for every port (no missing-row sparsity); the zeros are recorded zeros, not absent data.\n- Every day from 2026-08-01 through 2026-09-11 is 0 at all three ports.\n- 2026 pre-escalation months are also at the floor: 2026-06-01 to 06-30 combined = 1; 2026-07-01 to 07-21 (before the 22 July escalation) combined = 2.\n\nBASE RATES, stated with the class each is computed over:\n- Over ALL 7-day windows 2019-2024 (pre-break): the three ports averaged ~40-68 combined portcalls per week depending on year (2019 ~67.7/wk; 2024 ~41.2/wk).\n- Over 7-day windows CONDITIONAL on being after the 2025 detection break (2025-01-01 to 2026-09-11, ~88 windows): mean ~0.20 combined calls per window; ~83% of windows summed to 0, ~14% summed to 1, ~3% summed to 2; no window has exceeded 2.\n- Over 7-day windows CONDITIONAL on being after the 2026-07-22 escalation (52 days to 09-11): 1 recorded call total (2026-07-24), i.e. ~0.13 per window; the most recent 42 consecutive days are all 0.\n\nIS THE BREAK REAL-WORLD OR INSTRUMENTAL? Evidence it is instrument-side and specific to these three port polygons: Romania's national total is unbroken (2024 = 4,268; 2025 = 4,204; 2026-YTD = 2,619). Ukraine's own Danube ports still register (Izmail 839 -> 374 -> 64; Reni 324 -> 102 -> 62 for 2024/2025/2026-YTD), as does Kerch (382 -> 3,286 -> 681) and Sebastopol (4 -> 148 -> 22). PortWatch's published caveat states the region is affected by GPS jamming and AIS spoofing, which can affect data quality. Evidence the break is partly real-world: Ukrainian grain exports via the corridor were reported down sharply through 2026, feeder operators suspended calls to all three ports from July 2026, and grain-carrier calls were reported down 92% in August 2026 (Lloyd's List, 2026-09-17). Note the two explanations are not exclusive; the 2025 step-change (2,143 -> 9) predates the July 2026 escalation by 18 months and has no corresponding 2025 real-world collapse.\n\nSITUATION EVIDENCE, BOTH DIRECTIONS:\n- Hapag-Lloyd customer advisory, July 2026: feeder operators temporarily suspended vessel calls to Chornomorsk, Odesa and Pivdennyi until further notice.\n- OSW analysis, 2026-07-28: suspension of shipping to Ukraine's Black Sea ports; Ukrainian officials reported no traffic on the corridor on 2026-07-23, a first since 2023.\n- Reuters via Euromaidan Press, 2026-08-14: Kyiv proposed a mutual halt to attacks on Black Sea civilian targets; Russia dismissed it. Corridor remains formally open.\n- CSIS, 2026-09-11: vessel traffic largely halted since 2026-07-22; Russia rerouting grain to Baltic ports.\n- Kyiv Post / Ukrainian Ports Association (Dmytro Barinov), 2026-09-21: attacks on Odesa, Chornomorsk and Pivdennyi intensified since July 2026, targeting commercial vessels; 300+ vessels damaged since 2022.\n- Russian strikes reported on Odesa and on cargo ships at Chornomorsk, mid-September 2026; Russian MoD claimed two supply ships hit (Lenta.ru / Ridus, 2026-09-21). Treat combatant claims as claims.\n- Counter-direction: Turkey and regional players have called for a new maritime ceasefire and wheat futures eased mid-September 2026 on ceasefire hopes; no arrangement had taken hold as of mid-September. Ukraine's corridor was never formally closed.\n- Counter-direction: the series is not strictly monotone - isolated single-call days appeared at these ports as recently as 2026-07-16 and 2026-07-24, i.e. after the escalation began, and in 2026-06 and 2026-04 during the quiet period.\n\nSEARCHED FOR BUT COULD NOT FIND: (a) any prediction market on any venue pricing Ukrainian port calls - Polymarket, Manifold (harness title search) and my own checks of Kalshi returned nothing; Kalshi has run PortWatch-referenced contracts on Strait of Hormuz transits but no Ukraine equivalent; (b) any PortWatch/IMF announcement of a methodology change, port-polygon revision, or planned backfill affecting Ukrainian Black Sea ports; (c) any",
+   "reference_class": "Weekly (7-day) sums of IMF PortWatch recorded 'portcalls' at Odessa + Chornomorsk + Pivdennyi combined, over the 88 weeks from 2026-01-01... i.e. 2025-01-01 to 2026-09-11, the period after PortWatch's detection at these three ports collapsed"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.5276,
+   "seconds": 369.5,
+   "estimate": {
+    "percentiles": {
+     "10": -0.38,
+     "25": -0.2,
+     "50": 0.1,
+     "75": 0.39,
+     "90": 0.96
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Resolution runs off IMF PortWatch Daily_Ports_Data (same layer behind the HDX Ukraine CSV; its max date 2026-09-11 matches the background's 16 Sep note). Direct query shows the three ports' combined portcalls collapsed at the start of 2025 - 2,143 in 2024, then 9 in all of 2025 and 9 in 2026 to date - i.e. 18 months BEFORE the July 2026 escalation, while Kerch jumped 382->3,286. That is a measurement/polygon artifact (plus Black Sea GPS jamming and AIS-dark sailings), so the series is pinned near zero regardless of actual traffic. Every day from 2026-07-25 to 2026-09-11 is 0 at all three ports; only 18 nonzero port-days exist in 619 days, each of value 1, giving lambda=0.20 per week. The current regime is at or below that rate: no ceasefire (Russia rejected the truce offer 14 Aug), feeder calls suspended, strikes ongoing per Kyiv Post 21 Sep. Two HDX updates (22 and 29 Sep) land before the 1 Oct cutoff, so the window will be ~19-25 Sep; if the update stalls, the fallback 5-11 Sep window is also all zeros. No prediction market prices this. Modest upper tail priced for a PortWatch revision/reassignment that restores these polygons.",
+   "sources": [
+    "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/ArcGIS/rest/services/Daily_Ports_Data/FeatureServer/0/query (IMF PortWatch Daily_Ports_Data layer: Ukraine daily rows, per-port annual/monthly portcalls sums, nonzero-day listing)",
+    "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/ArcGIS/rest/services?f=json (IMF PortWatch ArcGIS service directory)",
+    "https://bookr.basbakker.us/5-Data/7_PortWatch.html (IMF PortWatch API endpoint documentation)",
+    "https://euromaidanpress.com/2026/08/14/ukraine-russia-black-sea-truce/",
+    "https://www.kyivpost.com/post/84658"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: Resolves off the IMF PortWatch 'portcalls' field for the ports named Odessa, Chornomorsk and Pivdennyi in the HDX Ukraine daily file - NOT off real-world vessel movements, USPA/Ukrainian Sea Ports Authority tonnage, Lloyd's List grain-carrier counts, or news reports of sailings. The HDX country CSV is a country split of PortWatch's global Daily_Ports_Data ArcGIS layer (services9.arcgis.com/weJ1QsnbMYJlCHdG/.../Daily_Ports_Data/FeatureServer/0); the two agree (layer max date 2026-09-11 matches the background's statement that HDX on 16 Sep 2026 covered through 11 Sep 2026).\n\nEVENT WINDOW: Per the criteria, the window is the SEVEN LATEST DATED ROWS PER PORT present as of 2026-10-01 23:59 UTC - a data-availability window, not a calendar window; it is not defined by the forecasting close. As of Now (2026-09-21T16:30Z) the latest dated row is 2026-09-11, so the window as it currently stands is 2026-09-05 to 2026-09-11. PortWatch/HDX refreshes Tuesdays (~18:00 UTC), so refreshes on 2026-09-22 and 2026-09-29 fall before the cutoff; the 2026-09-15 refresh delivered data through 2026-09-11 (4-day lag). Annulment clause only if PortWatch permanently ceases publishing.\n\nDIRECT DATA PULLED THIS RUN (IMF PortWatch Daily_Ports_Data, queried 2026-09-21):\n- Every dated row for Odessa, Chornomorsk and Pivdennyi from 2026-07-25 through 2026-09-11 inclusive has portcalls = 0. That is 49 consecutive days x 3 ports with no recorded call.\n- The only nonzero port-days in 2026 to date: 2026-01-28 Odessa 1; 2026-01-30 Pivdennyi 1; 2026-04-15 Pivdennyi 1; 2026-04-24 Pivdennyi 1; 2026-06-07 Chornomorsk 1; 2026-07-02 Chornomorsk 1; 2026-07-03 Pivdennyi 1; 2026-07-16 Odessa 1; 2026-07-24 Chornomorsk 1. Total 9 for the year through 11 Sep. Every nonzero value observed is exactly 1.\n- The only nonzero port-days in 2025: 2025-01-27 Odessa 1; 2025-02-13 Odessa 1; 2025-05-23 Chornomorsk 1; 2025-05-31 Pivdennyi 1; 2025-07-25 Pivdennyi 1; 2025-07-26 Odessa 1; 2025-09-28 Chornomorsk 1; 2025-11-08 Odessa 1; 2025-12-16 Pivdennyi 1. Total 9 for the full year.\n- Combined annual portcalls for the three ports: 2019 = 3,521; 2020 = 3,324; 2021 = 3,202; 2022 = 1,155; 2023 = 652; 2024 = 2,143; 2025 = 9; 2026-to-11-Sep = 9. Per-port 2024 -> 2025: Odessa 743 -> 4, Chornomorsk 893 -> 2, Pivdennyi 507 -> 3.\n- The collapse in this series dates to the start of 2025, roughly 18 months BEFORE the July 2026 escalation described in the question background, and coincides with large opposite moves at other Ukrainian ports in the same dataset: Kerch 382 (2024) -> 3,286 (2025); Sebastopol 4 -> 148; Mariupol 4 -> 65. Other Ukrainian ports remain nonzero in 2026: Izmail 64, Reni 62, Kerch 681, Sebastopol 22, Mariupol 16 (year to 11 Sep).\n- Sample day 2026-09-11, all 16 Ukrainian ports in the dataset: only Reni nonzero (3); Odessa, Chornomorsk, Pivdennyi, Mykolaiv, Olvia, Izmail, Kherson and the rest all 0.\n- Pre-war control: Odessa alone recorded 76-107 portcalls per month through every month of 2021. Romania's Constantza recorded 3,382 portcalls in 2025 in the same dataset, so the pipeline is functioning for neighbouring Black Sea ports.\n\nBASE RATES (state the class each is over):\n- Over ALL 7-day windows since 2025-01-01 (the current PortWatch measurement regime for these three ports): 18 recorded calls across 619 port-days => 0.204 calls per 7-day window; ~81% of rolling 7-day windows contain zero calls, ~18% contain exactly one, ~1% contain two.\n- Over 7-day windows in 2024 ONLY (the last year the series tracked visible traffic): 2,143/52 => ~41 calls per week.\n- Over 7-day windows in 2021 (pre-invasion): 3,202/52 => ~62 calls per week.\n- Over 7-day windows since the 2026-07-22 escalation specifically: 1 recorded call (2026-07-24 Chornomorsk) across 52 days x 3 ports.\n- Event-in-window check: of the ~88 non-overlapping 7-day blocks since 2025-01-01, 18 contained at least one recorded call (each contributing exactly 1).\n\nSTATUS-QUO OUTCOME: If nothing changes in either the dataset's treatment of these ports or in vessel traffic, the seven latest rows per port continue to read 0 and the sum is 0.\n\nBOTH DIRECTIONS - toward higher counts: Turkey and regional actors have pressed for a maritime ceasefire and wheat futures eased in mid-September on ceasefire hopes; Ukraine formally offered Russia a Black Sea truce in August; PortWatch does revise and reprocess historical data, and the 2024->2025 discontinuity plus the simultaneous Kerch/Sebastopol jumps indicate a port-polygon or assignment change that could in principle be reverted or corrected, which would restore two-digit weekly counts; Ukraine's corridor remains officially open; two dataset refreshes (22 and 29 Sep) occur before the cutoff, each an opportunity for revised values.\nBOTH DIRECTIONS - toward lower counts: Russia's Foreign Ministry dismissed the Black Sea ceasefire idea on 2026-08-14 and no arrangement had taken hold as of mid-September; Hapag-Lloyd and other feeder operators suspended all calls to Odesa, Chornomorsk and Pivdennyi until further notice (Jul 2026); Lloyd's List (17 Sep 2026) put grain-carrier calls down 92% in August and overall commercial activity at these ports down ~90% y/y; CSIS (11 Sep 2026) described traffic as largely halted since 22 Jul 2026; Kyiv Post (21 Sep 2026, Ports Association head Dmytro Barinov) reports strikes on Odesa, Chornomorsk and Pivdennyi intensifying since July with 300+ vessels damaged; Russian MoD claims strikes on ships at Ukrainian ports as of 21 Sep; PortWatch itself warns that regional GPS jamming and AIS spoofing degrade data quality, and vessels sailing AIS-dark for safety are not detected.\n\nSEARCHED FOR BUT NOT FOUND: any prediction market on any venue referencing PortWatch port-call counts (Polymarket, Kalshi, Manifold, bookmakers - none found; only generic Ukraine ceasefire/territory markets, whose contracts do not match this resolution source); the HDX dataset landing page and its CKAN package_show API both ret",
+   "reference_class": "Rolling 7-day windows of combined IMF PortWatch daily portcalls at Odesa + Chornomorsk + Pivdennyi since 2025-01-01, i.e. the period under PortWatch's current measurement regime for these ports (619 port-days, 18 total recorded calls, ~88 non-overlapping weeks)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.4587,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.42,
+   "seconds": 70.7,
+   "estimate": {
+    "percentiles": {
+     "10": -0.45,
+     "25": -0.25,
+     "50": 0.0,
+     "75": 0.3,
+     "90": 0.75
+    },
+    "p_above_upper": 0.004
+   },
+   "reasoning": "Resolution runs off PortWatch's recorded portcalls field, not off real vessel movements, and that field collapsed in Oct-Nov 2024 (monthly combined 205 -> 71 -> 1) and has stayed at the floor: 20 recorded calls across ~22 months, 9 in all of 2025 and 9 in 2026 through 11 Sep, versus 2,143 in 2024. The break is polygon/AIS-specific - Romania, the Danube ports and Kerch register normally - so the series is pinned near zero regardless of traffic. Every day from 2026-07-25 to 2026-09-11 is 0 at all three ports (49 consecutive days), and the post-22-July standstill (feeder suspensions, no truce after Russia's 14 Aug rejection, strikes through 21 Sep) puts the current rate below the 0.20/week unconditional base rate, call it 0.10-0.12. All three plausible resolution windows (19-25 Sep, 12-18 Sep, or the already-published 5-11 Sep) sit inside that standstill. Upside is one stray AIS-visible call (~10%); a PortWatch backfill restoring 2024-era detection would need both a data fix and a traffic restart within 10 days.",
+   "sources": [],
+   "reconciliation": "The three runs pulled the same ArcGIS feature service and agree on every load-bearing figure; their apparent conflicts are arithmetic, not factual. Break date: Run 1's monthly 2024 series (Sep 205, Oct 71, Nov 1) settles it at Oct-Nov 2024, consistent with Runs 2/3's annual 2,143 and their 'start of 2025' shorthand. Call counts: Run 1's 20-since-Nov-2024 minus Runs 2/3's 18-since-Jan-2025 is exactly Nov+Dec 2024, so no dispute. 'Max window = 2' vs 'every value is exactly 1' are both true - adjacent single-call days (2025-07-25/26, 2026-07-02/03) fall in one rolling window. Artifact-vs-real-halt is judgment and non-exclusive, and is moot because the recorded field reads 0 under either explanation. The one live judgment call is how far below the 0.20/week base rate the post-22-July regime sits; with 49 straight zero days, suspended feeder calls and no truce, I take ~0.10-0.12 and land at P(0)=0.89, P(1)=0.08. No web access this run; nothing required retrieval to settle. I carry forward the runs' reference class and dispersion basis because I agree with them, and I price the open upper bound at 0.4% - clearing 60 needs a methodology backfill AND a near-2019-level traffic restart, since even 2024 detection was ~41/week.",
+   "disagreements": [
+    {
+     "claim": "The PortWatch series for these three ports broke in Oct/Nov 2024 (Run 1) vs at the start of 2025 (Runs 2/3).",
+     "kind": "factual",
+     "verdict": "Settled for Oct-Nov 2024 on Run 1's monthly 2024 data (205 -> 71 -> 1), which is consistent with all runs' annual 2024 total of 2,143. Immaterial: the floor has held continuously since."
+    },
+    {
+     "claim": "20 recorded calls since Nov 2024 (Run 1) vs 18 since 2025-01-01 (Runs 2/3).",
+     "kind": "factual",
+     "verdict": "Not a conflict - the difference is Nov 2024 (1) and Dec 2024 (1). Both imply ~0.20 calls per 7-day window."
+    },
+    {
+     "claim": "Some 7-day windows summed to 2 (Run 2) vs every nonzero value is exactly 1 (Runs 1/3).",
+     "kind": "factual",
+     "verdict": "Both true; adjacent single-call days fall inside one rolling window. Weekly distribution ~83/14/3 percent for 0/1/2."
+    },
+    {
+     "claim": "The collapse is a measurement/polygon artifact (Run 3 emphasis) vs a mix of artifact and real halt (Runs 1/2).",
+     "kind": "judgment",
+     "verdict": "Non-exclusive and moot for this question - resolution reads the recorded field, which is 0 under either account. Kerch 382->3,286 and intact Romanian/Danube coverage do favour a detection change."
+    },
+    {
+     "claim": "Which seven dated rows resolve the question.",
+     "kind": "factual",
+     "verdict": "All runs agree: Tuesday refreshes on 22 and 29 Sep at a ~4-5 day lag make 2026-09-19 to 09-25 most likely, with 09-12 to 09-18 or the published 09-05 to 09-11 as fallbacks. All three windows lie inside the standstill and the fallback is already known to be 0, so the ambiguity does not move the estimate."
+    },
+    {
+     "claim": "How far below the 0.20/week base rate the post-22-July-2026 regime sits.",
+     "kind": "judgment",
+     "verdict": "No evidence breaks the tie - 7 post-escalation windows at zero is too small a sample to pin lambda. I take ~0.10-0.12, halfway between the unconditional base rate and the zero-observed conditional, giving P(0)=0.89."
+    },
+    {
+     "claim": "Whether any market prices this quantity.",
+     "kind": "factual",
+     "verdict": "Confirmed none found - all three runs checked Polymarket, Manifold, Kalshi and bookmakers independently, as did the harness title search. No crowd anchor exists."
+    }
+   ],
+   "reference_class": "Rolling 7-day windows of combined IMF PortWatch 'portcalls' at Odessa (port843), Chornomorsk (port489) and Pivdennyi (port1419) since the Oct-Nov 2024 detection break"
+  }
+ ]
+}
