@@ -1181,14 +1181,14 @@ class TestRefreshGate:
         stale_stamp = time.time() - stale_age_h * 3600
         return [
             # standing forecast, closes SOONEST — would win on close time alone
-            {"id": 1, "scheduled_close_time": "2026-08-01T00:00:00Z",
+            {"id": 1, "scheduled_close_time": "2030-08-01T00:00:00Z",
              "question": {"id": 11, "type": "binary", "title": "stale", "status": "open",
-                          "scheduled_close_time": "2026-08-01T00:00:00Z",
+                          "scheduled_close_time": "2030-08-01T00:00:00Z",
                           "my_forecasts": {"latest": {"start_time": stale_stamp}}}},
             # never forecast, closes later — must still be forecast FIRST
-            {"id": 2, "scheduled_close_time": "2026-09-01T00:00:00Z",
+            {"id": 2, "scheduled_close_time": "2030-09-01T00:00:00Z",
              "question": {"id": 12, "type": "binary", "title": "new", "status": "open",
-                          "scheduled_close_time": "2026-09-01T00:00:00Z"}},
+                          "scheduled_close_time": "2030-09-01T00:00:00Z"}},
         ]
 
     def test_default_never_reforecasts(self, monkeypatch: pytest.MonkeyPatch,

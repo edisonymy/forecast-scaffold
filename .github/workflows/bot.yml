@@ -40,6 +40,9 @@ env:
   # run_bot.ops_alert() appends here (budget ceiling waived/reached, one question over the
   # per-question cost threshold); the "Ops alerts" step turns it into an issue comment.
   OPS_ALERTS_FILE: ${{ github.workspace }}/../ops-alerts.txt
+  # Live logs: piped through `tee`, Python block-buffers stdout, so a tick's progress only
+  # appeared when it ended (85 min later).
+  PYTHONUNBUFFERED: "1"
 
 jobs:
   forecast:
@@ -59,6 +62,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
+          # [ADDED 2026-09-22] The agent runs in this checkout with Read/Grep/WebFetch on
+          # untrusted question text; a persisted token in .git/config would be one prompt
+          # injection away from a push to main. Credentials are added in the commit step.
+          persist-credentials: false
 
       - uses: actions/setup-python@v5
         with:
@@ -190,6 +197,7 @@ jobs:
           LEAK_PATTERNS: ${{ secrets.LEAK_PATTERNS }}
           METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          PUSH_TOKEN: ${{ github.token }}
           # This step runs no bot: every secret here exists ONLY so the value scan below can
           # look for it in the journal about to be published. AskNews was previously listed
           # with the run steps' "section silently off" comment, exposed but unscanned.
@@ -236,6 +244,9 @@ jobs:
           done
           git config user.name "forecast-scaffold-bot"
           git config user.email "bot@users.noreply.github.com"
+          # Checkout ran with persist-credentials: false — authenticate only now, after the
+          # agent has exited.
+          git remote set-url origin "https://x-access-token:${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git add bot/journal/
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "bot: journal update $(date -u +%FT%TZ)"

@@ -84,6 +84,11 @@ def newest_forecast_at(journal_path: str | Path) -> datetime | None:
     return newest
 
 
+#: open_question_count's verdict when Metaculus rejects the token (401/403). The bot uses the
+#: same token, so it is blind too — a total outage that must alarm, not read as "unknown".
+AUTH_REJECTED = -2
+
+
 def open_question_count(
     slugs: list[str],
     *,
@@ -134,6 +139,10 @@ def open_question_count(
                     and (_opened_minutes_ago(q, now) > grace_minutes
                          or _closes_in_minutes(q, post, now) < imminent_minutes)
                 )
+        except urllib.error.HTTPError as exc:
+            if exc.code in (401, 403):
+                return AUTH_REJECTED  # a dead token blinds the bot too: alarm, never "unknown"
+            continue
         except (urllib.error.URLError, TimeoutError, OSError, ValueError, KeyError,
                 TypeError, AttributeError):
             # HTTPError included: a 400/404 slug that does not exist yet has nothing to
@@ -228,6 +237,8 @@ def evaluate(
     if run_age_h is not None and run_age_h > run_gap_hours:
         return True, f"no successful bot run for {run_age_h:.1f}h"
 
+    if open_count == AUTH_REJECTED:
+        return True, "Metaculus rejects METACULUS_TOKEN (401/403): the bot cannot see questions"
     if open_count != -1 and open_count > 0:
         # open_count already means "open, never forecast, past the grace window" — any
         # such question is a coverage failure whatever the journal says.
