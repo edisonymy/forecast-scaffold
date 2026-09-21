@@ -75,6 +75,27 @@ jobs:
           npm install -g @anthropic-ai/claude-code@2.1.236
           echo "JOB_START=$(date +%s)" >> "$GITHUB_ENV"
 
+      - name: OpenRouter key credit
+        # [ADDED 2026-09-21] The fallback is only as good as the credit behind it. Reads THIS
+        # key's own limit/usage (GET /api/v1/key — not the account balance), prints numbers
+        # only, and warns under $15 so a drained backup is visible before it is needed.
+        # Never fails the job.
+        continue-on-error: true
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ -z "$OPENROUTER_API_KEY" ]; then echo "::warning::OPENROUTER_API_KEY unset — no fallback"; exit 0; fi
+          curl -sS -4 --max-time 20 -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+            https://openrouter.ai/api/v1/key > "$RUNNER_TEMP/or-key.json" || { echo "::warning::OpenRouter key check failed"; exit 0; }
+          python - "$RUNNER_TEMP/or-key.json" <<'PY'
+          import json, sys
+          d = (json.load(open(sys.argv[1])) or {}).get("data") or {}
+          limit, usage, left = d.get("limit"), d.get("usage"), d.get("limit_remaining")
+          print(f"OpenRouter key: limit={limit} usage={usage} remaining={left}")
+          if left is not None and float(left) < 15:
+              print(f"::warning::OpenRouter fallback key has only ${float(left):.2f} left")
+          PY
+
       - name: Run bot (subscription)
         # Auth: CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`) draws on the Claude
         # subscription. We deliberately do NOT set ANTHROPIC_API_KEY: if present it takes
