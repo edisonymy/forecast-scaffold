@@ -1,0 +1,242 @@
+{
+ "record_id": "2026-09-21-83a6dc3b",
+ "question": "What will Japan's national influenza cases per sentinel institution be in the MHLW weekly report published around October 2, 2026?",
+ "question_id": 45938,
+ "url": "https://www.metaculus.com/questions/45753/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-09-21T11:27:21+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 7.367,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 6.333333333333333,
+    "25": 7.733333333333333,
+    "50": 9.366666666666667,
+    "75": 11.466666666666667,
+    "90": 13.866666666666667
+   },
+   "p_below_lower": 0.02,
+   "p_above_upper": 0.04
+  },
+  "phase1": {
+   "10": 6.333333333333333,
+   "25": 7.733333333333333,
+   "50": 9.366666666666667,
+   "75": 11.466666666666667,
+   "90": 13.866666666666667
+  },
+  "phase2": null,
+  "spread_phase1": 1.9,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 6.8,
+   "25": 8.4,
+   "50": 10.0,
+   "75": 11.9,
+   "90": 14.2
+  },
+  "p_below_lower": 0.01,
+  "p_above_upper": 0.04
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 2.0527,
+   "seconds": 407.4,
+   "estimate": {
+    "percentiles": {
+     "10": 5.6,
+     "25": 6.9,
+     "50": 8.6,
+     "75": 10.7,
+     "90": 13.2
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Resolution covers epi week 39 (Sep 21-27), two weeks beyond the last published value (wk37 = 5.54). Pure continuation at the observed ascent rate (~1.6-1.7x/wk, base rate from Japanese NESID pre-peak growth) would put wk39 near 14, and wk38 near 8.5-9. But week 39 contains three consecutive national holidays (Sep 21/22/23, Silver Week), leaving sentinel institutions open only Thu-Sat: roughly 2.5 of 5.5 normal clinic-days. Japanese sentinel series show large holiday artifacts (Ehime 2025/26: wk1 = 0.37x wk52, rebounding 1.5x in wk2), partly offset here because the holidays sit at the START of the reporting week, so deferred visits land on Thu/Fri within the same week; I apply a factor of ~0.7 with wide spread (0.5-0.9). Combining decelerating-but-strong growth with the reporting discount centres the median near 8.6, i.e. up from 5.54 but likely below a naive extrapolation. Upside tail: last season demonstrated 2.0-2.4x weekly jumps (6.29 -> 14.90 -> ~51 in three weeks), so a regime break plus a milder-than-expected artifact could exceed 20 (priced 5%); downside below 3 needs both a growth stall and a severe artifact (2%). No human prediction market prices this contract (checked Polymarket/Kalshi/Manifold/bookmakers - none found).",
+   "sources": [
+    "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/kenkou/kekkaku-kansenshou01/houdou_00025.html",
+    "https://www.mhlw.go.jp/content/001750835.pdf",
+    "https://news.yahoo.co.jp/expert/articles/2b25ea95f8c314eba2ab96a5dc3d4c32ce9c88b0",
+    "https://www.pref.ehime.jp/site/kanjyo/124151.html",
+    "https://kashikapedia.com/influenza-trend/",
+    "https://idsc.tmiph.metro.tokyo.lg.jp/diseases/flu/flu/",
+    "https://www.v-plat.jp/influenza/epidemics/",
+    "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/houkokusuunosuii_00007.html",
+    "https://resemom.jp/article/2026/09/04/87422.html",
+    "https://bestcalendar.jp/2026/9/holidays",
+    "https://ts-biosecurity.github.io/flujp2026/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the 総数 row of the 'インフルエンザ定点当たり報告数・都道府県別' table in the MHLW Friday press-release PDF (インフルエンザの発生状況について), NOT off JIHS/IDWR's Tuesday weekly report, NOT off prefecture pages, and NOT off total case counts. The figure is a first-publication (初出) value; later weeks' PDFs revise it, but the question takes the report published on/around 2026-10-02.\n\nEVENT WINDOW: event window: 2026-09-21 -> 2026-09-27 (epidemiological week 39, Mon-Sun JST) per the criteria; as of Now (2026-09-21T11:03Z = 2026-09-21 20:03 JST) roughly 12% elapsed. Publication lag is 5 days from week end: MHLW released wk35 on Fri 2026-09-04, wk36 on Fri 2026-09-11, wk37 on Fri 2026-09-18; Fri 2026-10-02 therefore falls due for wk39.\n\nOBSERVED SERIES, 2026/27 season, national 定点当たり報告数 (source: MHLW Friday press releases, via H-CRISIS/ReseMom/Yahoo-expert summaries):\n- wk34 (Aug 17-23): 1.11, 4,094 cases — season declared started; second-earliest since 1999 (after 2009).\n- wk35 (Aug 24-30): 1.76, 6,543 cases; 39 of 47 prefectures rising (ReseMom, 2026-09-04).\n- wk36 (Aug 31-Sep 6): 3.29, 12,299 cases; 1.87x prior week; 128 school/class closures (nippon.com, 2026-09-11).\n- wk37 (Sep 7-13): 5.54, ~20,697 cases; 1.68x prior week (Yahoo expert Kurahara Yu, 2026-09-18).\n- Implied week-over-week factors this season: 1.59, 1.87, 1.68.\n- Prefecture markers, wk37: Okinawa 16.61 (above the 10 alert level; was 10.34 in wk36), Tokyo 9.53 (Tokyo issued its 注意報 on 2026-09-17), Nagoya City 7.30, Hokkaido/Takikawa district 18.75, Hokkaido prefecture 2.96 in wk37, Miyagi 5.35 in wk37. National case load ~6x the same calendar week of 2025 (wk36 2025 = 0.50, wk36 2024 = 0.45).\n\nSTATUS-QUO OUTCOME: the series has risen every week since wk34 with no observed decline; mechanical continuation at the recent average factor is the status-quo path, and the prior published value the resolver will see one week earlier is the wk38 figure due Fri 2026-09-25 (not yet public as of Now).\n\nCALENDAR FACT BEARING ON WEEK 39: Japan's 2026 Silver Week runs Sat 2026-09-19 through Wed 2026-09-23 — 敬老の日 Mon 09-21, 国民の休日 Tue 09-22 (sandwiched-day rule), 秋分の日 Wed 09-23; first such 5-day September run since 2015 (bestcalendar.jp, jalan). Week 39 therefore contains 3 public holidays on Mon/Tue/Wed, leaving Thu 09-24, Fri 09-25 and Sat 09-26 (half-day for most clinics) as sentinel reporting days — about 2.5 of a normal week's ~5.5 clinic-day equivalents. Schools are also closed Sat 09-19 through Wed 09-23. The holidays sit at the START of the reporting week, so visits deferred from the holidays can still fall inside week 39.\n\nBASE RATES / REFERENCE-CLASS NUMBERS:\n- Ascent-phase weekly growth, over Japanese NESID pre-peak weeks generally: factors of roughly 1.5-1.8 are typical; over the 2025/26 season's own November ascent specifically the factors were larger — 6.29 -> 14.90 (2.37x) in early Nov 2025, and the series reached 51.24 by wk47 and 44.99 by wk48 before declining. Over the current 2026/27 ascent only: 1.59 / 1.87 / 1.68.\n- Holiday-week reporting factor, over Japanese sentinel weeks containing the New Year closure (~1.5-2 clinic days of 5.5): national wk52 2025 = 33.99 -> wk1 2026 = 10.34, ratio 0.30. Ehime prefecture same period: wk50 411, wk51 441, wk52 304, wk1 113 (0.37x), wk2 169 (rebound 1.50x), wk3 184 (wk3 itself contained the Mon 成人の日 holiday).\n- Holiday-week reporting factor, over weeks with Mon-Wed holidays during a DECLINING epidemic (structurally the closest match to week 39): Ehime 2026 wk17 91.89 -> wk18 (Apr 27-May 3, GW start) 30.53 (0.33x) -> wk19 (May 4-10, holidays Mon/Tue/Wed) 17.89 (0.59x), against an underlying seasonal decline of unknown size in the same weeks.\n- Comparator levels: national teiten of 1.0 = season start, 10.0 = 注意報 alert, 30.0 = 警報 warning. 2025/26 season same-calendar-week value: wk39 2025 = 1.04.\n\nEVIDENCE POINTING UP: growth has not decelerated across four consecutive published weeks; Tokyo and Okinawa are already at/above alert level with most prefectures still low, leaving room for national spread; the Yahoo expert piece (2026-09-18) notes the holiday will increase travel and contact and that infections could spread further during the break; school terms resumed nationally in early September and class closures are running ~6x year-ago; 2025/26 demonstrated that this system can sustain >2x weekly factors for multiple weeks.\n\nEVIDENCE POINTING DOWN: week 39 loses roughly 3 of 5.5 sentinel reporting days to national holidays, and Japanese sentinel series show large measured dips in such weeks (numbers above); schools are shut Sat 09-19 through Wed 09-23, removing the principal transmission setting for part of the week; the epidemic's leading prefectures (Okinawa at 16.61, Tokyo at 9.53) have the most depleted susceptible pools, so the national factor is a mix of fast-slowing leaders and slower followers; MHLW notes that values from wk15 of 2025 onward are not directly comparable to earlier seasons because the sentinel-site designation criteria changed (sentinel count moved from roughly 5,000 to roughly 3,000).\n\nMARKETS: harness title search found no candidate on Polymarket or Manifold; my own search of Polymarket, Kalshi, Manifold and bookmakers found no contract on Japan's weekly sentinel figure — none found. (Polymarket hosts US-flu markets only; a 2026 preprint reports prediction-market flu forecasts underperforming standard benchmarks.)\n\nSEARCHED FOR BUT COULD NOT FIND: the wk38 (Sep 14-20) national figure — not published until Fri 2026-09-25, after Now; any machine-readable national week-by-week table (MHLW publishes the trend only as a 10.4MB PDF, and the ts-biosecurity.github.io/flujp2026 dashboard and Tokyo IDSC render values in client-side graphs); the full text of the 2026-09-18 press-release PDF (retrieved as binary, not parseable in this run); 2023 national weeks 17-19 values, which would give a Golden Week artifact measurement during an active epidemic; any MHLW statement on whe",
+   "reference_class": "National weekly influenza cases-per-sentinel (定点当たり報告数) in Japan's NESID system, two-week-ahead values during the pre-peak exponential ascent of a season, with the ascent-phase week-over-week growth factor distribution taken from Japanese seasons since 1999 and specifically the observed 2026/27 and "
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 2.1896,
+   "seconds": 432.2,
+   "estimate": {
+    "percentiles": {
+     "10": 7.4,
+     "25": 9.0,
+     "50": 10.5,
+     "75": 12.5,
+     "90": 14.8
+    },
+    "p_above_upper": 0.04
+   },
+   "reasoning": "Latest published figure is week 37 = 5.54 (20,697 cases, MHLW 2026-09-18), after 1.11/1.76/3.29 in weeks 34-36 - three consecutive weekly ratios of 1.59, 1.87, 1.68. Target is week 39, two steps ahead. Reference class (national rate two weeks after a week at 5-6 during an autumn ascent) implies a ~2.3x multiplier, i.e. ~13; I adjust down for three things. (1) Week 39 is Sep 21-27 and contains three national holidays (Silver Week Sep 19-23), leaving sentinels only Thu/Fri/Sat open - a mechanical reporting suppression I put at ~0.85, softened because the holidays fall at the START of the week so deferred consultations still count inside it. (2) Schools are closed Sep 19-23, directly thinning the infection window (~Sep 16-25) that feeds week-39 diagnoses. (3) The growth ratio already stepped down 1.87 -> 1.68, and Okinawa (16.61) plus Tokyo (~9.5, 注意報 issued Sep 17) are the leading prefectures approaching saturation. Composite: week 38 ~8.3-9.0 (normal reporting week), then a week-39 observed ratio near 1.15-1.25 -> ~10.5. Upside case is real: unbroken 1.7x growth with a negligible holiday effect gives 5.54*1.7^2 = 16, and 1.87^2 gives 19.4, which is why I price 4% above the open upper bound. Downside is a late-September plateau plus a harsher holiday artifact, giving a roughly flat 7-8. No prediction market prices this (checked Polymarket/Manifold/Kalshi - none found), so no crowd anchor.",
+   "sources": [
+    "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/kenkou/kekkaku-kansenshou01/houdou_00025.html",
+    "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/kenkou/kekkaku-kansenshou01/houdou_00023.html",
+    "https://weathernews.jp/news/202609/180201/",
+    "https://news.yahoo.co.jp/expert/articles/2b25ea95f8c314eba2ab96a5dc3d4c32ce9c88b0",
+    "https://kashikapedia.com/influenza-trend/",
+    "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/houkokusuunosuii_00007.html",
+    "https://idsc.tmiph.metro.tokyo.lg.jp/diseases/flu/flu/",
+    "https://hotelbank.jp/lifestyle/silver-week-2026-5days-hotel-price-guide/",
+    "https://resemom.jp/article/2026/09/18/87597.html",
+    "https://www.mhlw.go.jp/content/001750835.pdf"
+   ],
+   "dossier": "SUBJECT: Japan MHLW national influenza 定点当たり報告数 (cases per sentinel institution), 総数 row, for the week covered by the press release published Fri 2026-10-02.\n\nRESOLUTION INSTRUMENT\n- Resolves off the 総数 cell of the 'インフルエンザ定点当たり報告数・都道府県別' table in the MHLW Friday press-release PDF - NOT off JIHS/IDWR 速報 data, NOT off prefectural dashboards, NOT off case counts. Value is reported to 2 decimals.\n- MHLW publication lag is 5 days: the release of Fri 2026-09-18 covered epi week 37 (Sep 7-13). A Fri 2026-10-02 release therefore covers epi week 39 (Sep 21-27).\n- Note a live archive-page quirk: the URL named in the criteria (houdou_00023.html) is the 2025/2026-season index; the 2026/2027-season releases are now posted at houdou_00025.html, which as of 2026-09-21 lists only the 2026-09-11 and 2026-09-18 PDFs. The Aug 28 and Sep 4 releases remain on the 00023 page.\n- Denominator is the number of reporting sentinels (~3,000-5,000 nationwide). MHLW carries a standing caveat that figures from 2025 week 15 onward are not directly comparable to earlier seasons because sentinel designation criteria changed with the start of acute respiratory infection surveillance.\n\nEVENT WINDOW\n- Event window: 2026-09-21 -> 2026-09-27 (epi week 39) per the criteria's 'most recent completed epidemiological week'. As of Now (2026-09-21T11:03Z = 20:03 JST), approximately 12% elapsed.\n\nOBSERVED SERIES THIS SEASON (national 定点当たり, MHLW weekly releases)\n- Week 34 (Aug 17-23): 1.11 (~4,094 cases). MHLW declared national epidemic onset on 2026-08-28 on this figure; second-earliest onset since the Infectious Diseases Control Law took effect in 1999 (only 2009 was earlier). [MHLW press release 2026-08-28]\n- Week 35 (Aug 24-30): 1.76. [MHLW press release 2026-09-04]\n- Week 36 (Aug 31-Sep 6): 3.29 (12,299 cases). [MHLW press release 2026-09-11]\n- Week 37 (Sep 7-13): 5.54 (20,697 cases), +~8,400 cases week-on-week. [MHLW press release 2026-09-18, mhlw.go.jp/content/001750835.pdf; Weathernews 2026-09-18]\n- Implied week-on-week ratios: wk34->35 = 1.59, wk35->36 = 1.87, wk36->37 = 1.68.\n- Week 38 (Sep 14-20) data does not exist yet anywhere: the week closed Sun 2026-09-20 and MHLW publishes it Fri 2026-09-25. Prefectural bodies (Tokyo IDSC etc.) publish week 38 on Thu 2026-09-24.\n\nPREFECTURAL / SUB-NATIONAL, WEEK 37\n- Okinawa 16.61, highest prefecture, above the 10.0 注意報 (alert) threshold; it was 10.34 in week 36. [MHLW wk37 release]\n- Tokyo ~9.53 and the metropolitan government issued an influenza 注意報 on 2026-09-17, its earliest since 1999 alongside 2023, more than a month earlier than the prior year. [Tokyo IDSC; ReseMom 2026-09-18]\n- Kagoshima/Amami reached 注意報 level mid-September. [KYT via Infoseek 2026-09-17]\n- Over 600 schools nationwide had class or grade closures (学級・学年閉鎖) as of the week-37 reporting period. [Weathernews 2026-09-18]\n- National case count in week 37 is ~6-7.6x the same calendar week of 2025 (last season's national figure did not reach 1.04 until week 39 of 2025).\n\nCALENDAR FACTS BEARING ON WEEK 39\n- 2026 Silver Week is Sat 2026-09-19 through Wed 2026-09-23, a five-day run of public holidays: 敬老の日 Mon Sep 21, 国民の休日 Tue Sep 22 (a weekday sandwiched between two holidays), 秋分の日 Wed Sep 23. First such five-day September break since September 2015. [Japanese holiday law; Jalan/HotelBank 2026 calendars]\n- Consequence for the event window: of week 39's seven days, Mon-Wed are public holidays and Sun is a normal closure, leaving Thu Sep 24, Fri Sep 25 and Sat Sep 26 as ordinary outpatient days for sentinel clinics. In a normal week the same clinics have five weekdays plus Saturday. The holidays sit at the START of week 39, so consultations deferred from Sep 21-23 fall on Sep 24-26, i.e. still inside week 39.\n- Japanese schools' second term is in session from around Sep 1; schools are closed Sep 19-23. The infection window feeding week-39 diagnoses is roughly Sep 16-25, so it straddles both school days and the holiday.\n- By contrast, week 38 (Sep 14-20) is an ordinary reporting week: Mon Sep 14 - Fri Sep 18 are all working days.\n- Publicly subsidised influenza vaccination in most municipalities does not begin until Oct 1, i.e. after the event window. [Kurahara Yu, Yahoo Expert, 2026-09-17]\n\nBASE RATES AND HISTORICAL COMPARATORS (with the class each is computed over)\n- Over all Japanese seasons 1999/2000-2025/26, the national figure ordinarily does not reach ~5 until November; the official 注意報 level is 10.0 and 警報 is 30.0, with 1.0 the epidemic-onset threshold.\n- Over autumn/early-winter ascents specifically (i.e. conditional on the national figure being in the 5-6 band and rising), the two-week-later multiplier has historically clustered around 2-3x. Worked examples: 2025/26 season, 6.29 -> 14.90 in a single week in early November 2025 (ratio 2.37), peaking at 51.24 in week 47; 2024/25 season, week 49 = 9.05 -> week 50 = 19.08 -> week 51 = 42.74 -> week 52 = 64.43 (season peak, a record since 1999). [kashikapedia influenza-trend compilation; MHLW releases]\n- Those ascent-phase multipliers are all drawn from November/December crossings under full winter conditions; there is no post-1999 precedent for a national ascent through the 5-10 band occurring in September, other than 2009.\n- Over holiday-containing reporting weeks (the conditional class that matters here): 2024/25 week 52 (Dec 23-29, largely a normal working week) printed 64.43, and the following New Year week printed a large decline - but that coincided with the genuine season peak, so the holiday artifact cannot be cleanly separated from the turn in the epidemic. MHLW's own guidance flags that the reporting sentinel count can fall during year-end/New Year closures, which affects interpretation of both numerator and denominator.\n- 2009 is the only earlier-onset season since 1999 and is the sole prior case of an ascending national flu wave meeting an identically structured Silver Week (Sep 19-23, 2009). Its 2009 weekly national values for weeks 35-40 could not be r",
+   "reference_class": "Japan national influenza 定点当たり報告数 two weeks after the week the national figure first exceeded 5.0 during the autumn/early-winter ascending phase, NESID seasons 1999/2000-2025/26"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 2.4745,
+   "seconds": 457.9,
+   "estimate": {
+    "percentiles": {
+     "10": 6.0,
+     "25": 7.3,
+     "50": 9.0,
+     "75": 11.2,
+     "90": 13.6
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Week 37 is 5.54 with three consecutive weekly ratios of 1.59/1.87/1.68, so the no-holiday counterfactual for wk39 is ~5.54 x 2.4 = ~13. But wk39 (Sep 21-27) is Japan's first 5-day Silver Week in 11 years: Mon 9/21, Tue 9/22 and Wed 9/23 are all national holidays, leaving only Thu/Fri plus a half Saturday of sentinel clinic days. Aichi's public-health institute names week 39 explicitly as a holiday-distorted week; the New Year analogue (64.39 -> 33.82) shows mechanical closure is only partly offset by deferred Thursday/Friday visits, implying a reporting factor near 0.65-0.75, plus a modest true-incidence brake from schools being shut 9/19-9/23 in a school-driven pediatric wave. 13 x ~0.70 gives ~9 - i.e. the Oct 2 report should read as an apparent plateau against wk38's likely ~8.5-9. Against that: growth showed zero deceleration through wk37, last season jumped 6.29 -> 14.90 in one week at this exact level, and holiday travel raises mixing, so the upside tail is real; 3% above 20 requires the artifact to be nil and growth to hold at ~1.9x/week. No prediction market prices this contract.",
+   "sources": [
+    "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/kenkou/kekkaku-kansenshou01/houdou_00025.html",
+    "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/kenkou/kekkaku-kansenshou01/houdou.html",
+    "https://news.yahoo.co.jp/expert/articles/2b25ea95f8c314eba2ab96a5dc3d4c32ce9c88b0",
+    "https://weathernews.jp/news/202609/180201/",
+    "https://www.pref.aichi.jp/eiseiken/2f/teiten.html",
+    "https://shukujitsu.jp/silver-week/2026/",
+    "https://www.watch.impress.co.jp/docs/topic/2048266.html",
+    "https://c7service.co.jp/virus/influenza-spread-september-2026",
+    "https://www.japantimes.co.jp/news/2025/11/04/japan/science-health/influenza-season-start/",
+    "https://resemom.jp/article/2025/01/15/80265.html",
+    "https://idsc.tmiph.metro.tokyo.lg.jp/diseases/flu/flu/",
+    "https://www.v-plat.jp/influenza/epidemics/",
+    "https://reaitimenews.com/entry/flu-epidemic-2009-comparison-2026"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the 総数 row of the prefecture table in MHLW's Friday press release PDF 'インフルエンザの発生状況について' — a sentinel-reported count divided by number of reporting sentinel institutions, NOT a modelled incidence estimate and NOT adjusted for how many days clinics were open. The criteria text links the 2025/26 season index (houdou_00023.html); the live 2026/27 index is houdou_00025.html (MHLW, accessed 2026-09-21). MHLW states releases are made every Friday 14:00 JST from September through April (MHLW houdou.html).\n\nEVENT WINDOW: the Oct 2 report covers epidemiological week 39 = 2026-09-21 -> 2026-09-27 per the criteria; as of Now (2026-09-21T11:03Z = 20:03 JST) ~12% elapsed. Publication lag is 5 days: the Sept 18 release covered wk37 (Sep 7-13), Sept 25 will cover wk38 (Sep 14-20).\n\nOBSERVED SERIES (national 定点当たり, 2026/27 season):\n- wk34 (Aug 17-23): 1.11, ~4,094 cases — season officially declared started, announced Aug 28 (MHLW; c7service summary 2026-09).\n- wk35 (Aug 24-30): 1.76 (same source).\n- wk36 (Aug 31-Sep 6): 3.29, 12,299 cases — published Sept 11 (MHLW 001748443.pdf; v-plat.jp).\n- wk37 (Sep 7-13): 5.54, 20,697 cases — published Sept 18 (MHLW 001750835.pdf; Weathernews 2026-09-18; Yahoo expert piece by Kurahara Yu, 2026-09).\n- Implied week-over-week ratios: 1.59, 1.87, 1.68.\n- Prefecture detail wk37: Okinawa 16.61, Tokyo 9.53 (Tokyo issued an alert below the usual 10.0 threshold) — Kurahara, 2026-09.\n- 600+ schools nationwide under closure/class-suspension measures as of the Sept 18 release; roughly 6-7x same-week-last-year case counts (Weathernews 2026-09-18).\n\nCALENDAR FACT (applies inside the event window): Sept 19-23, 2026 is Japan's first 5-day 'Silver Week' since 2015. Mon Sep 21 = 敬老の日, Tue Sep 22 = 国民の休日 (triggered by Art.3(3) of the holiday law), Wed Sep 23 = 秋分の日 (shukujitsu.jp; Impress Watch 2026). All three fall inside week 39; Thu Sep 24 and Fri Sep 25 are ordinary weekdays, Sat Sep 26 is a half-day for many clinics.\n\nRESOLUTION-INSTRUMENT CAVEAT, OFFICIAL: Aichi Prefectural Institute of Public Health states that in weeks containing 年末年始 (wk52-1), ゴールデンウィーク (~wk18), お盆 (~wk33) and シルバーウィーク (~wk39), the 定点当たり報告数 falls because many institutions are closed, producing a 見かけ上の減少 (apparent decrease) even absent a real decline — interpretation requires care (pref.aichi.jp/eiseiken/2f/teiten.html).\n\nBASE RATES, WITH THE CLASS EACH IS COMPUTED OVER:\n- Over all autumn growth-phase weeks in this season (2026 wk34->37, n=3 transitions): weekly ratio geometric mean 1.71, range 1.59-1.87.\n- Over the same level (~6 per sentinel) in the PRIOR season, unconditional on holidays: 2025 wk44 (to Oct 26) = 6.29 -> wk45 = 14.90, a 2.37x single-week jump; wk47 = 37.73 -> wk48 = 51.12 (1.35x) (Japan Times 2025-11-04; Nippon.com; Scientific American).\n- Over the same level CONDITIONAL on a multi-day national holiday inside the week: no direct same-level case found; the nearest measured holiday-week transition is 2024 wk52 = 64.39 -> 2025 wk1 (Dec 30-Jan 5) = 33.82, a 0.525 ratio, in a week with ~1-1.5 open clinic-days out of ~5.9 — i.e. the realised reported figure was roughly 2x what pure open-day arithmetic would predict, because deferred visits concentrate on the days clinics do open (ResMom 2025-01-15 citing MHLW; 2024 wk1 comparator was 12.66). That New Year week was also at/near the true epidemic peak, so closure and genuine decline are not separable in it.\n- Mechanical open-capacity arithmetic for wk39 2026 (weighting Mon 1.2, Tue-Fri 1.0 each, Sat 0.7): open days Thu+Fri+half-Sat ~2.7 of ~5.9 = 0.46 before any deferral catch-up.\n- Season-timing class: 2009 H1N1 crossed 1.0 in wk33 and peaked at 39.7 in wk48 — 15 weeks from threshold to peak; 2026 crossed 1.0 in wk34, one week behind 2009's pace, but without a novel antigenic shift (reaitimenews comparison piece, 2026).\n\nEVIDENCE POINTING BOTH WAYS (no lean implied):\n- Upward: three consecutive weeks of ratios >1.5 with no deceleration; school term in session on Thu/Fri of the window; the 5-day holiday increases population movement and contact (Kurahara explicitly flags 人の移動や接触機会の増加 as a transmission risk); Okinawa and Tokyo already at or above alert levels, so multiple prefectures can contribute large numbers; vaccination campaigns do not begin until October, too late to affect this window.\n- Downward: three of five weekdays are clinic-closed inside the window, directly reducing the numerator while the denominator (reporting institutions) is unchanged; schools are shut Sat 9/19 through Wed 9/23, removing the principal transmission setting of a pediatric-driven wave for most of the window; 600+ schools already under closure measures, a brake that scales with incidence; holiday emergency clinics that absorb some demand are largely not sentinel sites.\n\nMARKETS: no Polymarket, Manifold, Kalshi or bookmaker contract on this quantity was found (harness title search plus own search, 2026-09-21). No crowd anchor exists.\n\nSEARCHED FOR BUT COULD NOT FIND: (a) the 2009 week-by-week national 定点 values for wk37-wk41 — the identical Silver Week calendar (Sep 19-23, 2009) fell inside a rapidly growing pandemic wave and would be the single best analogue, but the NIID IDWR 2009 archive pages returned 404 and no secondary source reproduced the weekly table; (b) any national 定点 value for wk38 2026 — it is not published until Sept 25; (c) the MHLW multi-year weekly table PDF (001748410.pdf, 404) and the 10.4MB 定点当たり報告数の推移 PDF, either of which would have given Golden Week dip magnitudes directly; (d) any MHLW or JIHS statement quantifying the expected Silver Week reporting effect.",
+   "reference_class": "Japanese national weekly influenza teiten-atari-hokokusu two weeks after a reading of ~5-6 during an autumn growth phase (2009 pandemic wk37-39, 2023 autumn, 2025/26 wk44-46), before holiday-calendar adjustment"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.5089,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.5635,
+   "seconds": 145.6,
+   "estimate": {
+    "percentiles": {
+     "10": 6.8,
+     "25": 8.4,
+     "50": 10.0,
+     "75": 11.9,
+     "90": 14.2
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.04
+   },
+   "reasoning": "Resolves on epi week 39 (Sep 21-27), two weeks past the last published value (wk37 = 5.54). Observed weekly ratios 1.59/1.87/1.68 (geo mean 1.71) show no deceleration; unadjusted continuation gives ~16. I shade the true-incidence path to ~2.5x (~14) because schools are shut Sep 19-23 during the infection window feeding late-week-39 diagnoses, and the leading prefectures (Okinawa 16.61, Tokyo 9.53) are furthest through their susceptible pools. Week 39 then loses Mon/Tue/Wed to Silver Week holidays, leaving Thu/Fri plus a half Saturday; naive open-day arithmetic says 0.46, but the holidays fall at the START of the week so the normal Monday backlog shifts to Thursday and stays inside week 39, and the New Year analogue printed ~0.52 on ~25% of capacity. Reconciled reporting factor ~0.75, giving a median of 10.0 - an apparent plateau that is mostly artifact. No human market prices this quantity (Polymarket, Kalshi, Manifold, bookmakers - none found by the harness or by any run).",
+   "sources": [],
+   "reconciliation": "Three runs agreed on every retrievable fact: the series (1.11/1.76/3.29/5.54 for weeks 34-37), the five-day publication lag fixing the Oct 2 release on week 39, the Silver Week calendar placing three national holidays inside the window, and the absence of any prediction market. Their medians (8.6/9.0/10.5) diverged on one judgment: the holiday reporting factor (0.70 / 0.65-0.75 / 0.85). I settled toward ~0.75 on two structural grounds the runs raised but under-weighted - the holidays fall at the start of week 39, so the Sat-Sun backlog that normally presents Monday 9/21 shifts to Thursday 9/24 and is still counted in week 39; and the New Year analogue printed ~0.52 on roughly a quarter of normal open-day capacity, implying deferral compensation of about 2x over mechanical arithmetic even before netting out the genuine post-peak decline in that week. Offsetting: non-sentinel holiday emergency clinics capture Mon-Wed onsets that will not wait three days for antivirals, and Aichi's public-health institute names week 39 explicitly as a distortion week, so the effect is official and non-trivial. The one apparent FACTUAL conflict - Run 1's New Year ratio 33.99->10.34 (0.30x) against Run 3's 64.39->33.82 (0.525x) - is not a conflict: they are the 2025/26 and 2024/25 New Years respectively, so the class spans 0.30-0.53, both contaminated by real epidemic decline and therefore a loose lower bound on the artifact, not a point estimate. On the growth counterfactual the runs' 2.3-2.4x already embedded a deceleration assumption not visible in the data (the observed geometric mean is 1.71/week, i.e. 2.92x over two weeks); I used 2.5x, crediting a real but modest brake from the Sep 19-23 school closure in a pediatric-driven wave. 14 x 0.75 = 10.0. The archive-page URL quirk flagged by Runs 2 and 3 (2026/27 releases now at houdou_00025.html rather than the 00023.html named in the criteria) is real but immaterial: the fine print admits credible sources for the same figure. I retrieved nothing myself on this run - no web access - so sources is empty by design, not by omission.",
+   "disagreements": [
+    {
+     "claim": "Magnitude of the Silver Week reporting suppression on the week-39 figure (Run 1: ~0.70; Run 2: ~0.85; Run 3: ~0.65-0.75).",
+     "kind": "judgment",
+     "verdict": "Settled at ~0.75 on structure, not by averaging: the holidays sit at the start of the week so the normal Monday backlog stays inside week 39, and the New Year precedent shows deferral compensation of roughly 2x over open-day arithmetic - both argue against the 0.65 end; non-sentinel holiday clinics and finite Thu/Fri capacity argue against the 0.85 end."
+    },
+    {
+     "claim": "The no-holiday two-week growth multiplier from wk37's 5.54 (runs used 2.3-2.4x, i.e. ~13).",
+     "kind": "factual",
+     "verdict": "The factual input is agreed and unambiguous across all three dossiers - ratios 1.59/1.87/1.68, geometric mean 1.71, implying 2.92x unadjusted. The runs' 2.3-2.4x is a deceleration judgment layered on top, not a measured figure. I used 2.5x (~14), crediting the school-closure brake but not a larger unexplained haircut."
+    },
+    {
+     "claim": "The New Year holiday-week ratio: 0.30x (Run 1) versus 0.525x (Run 3).",
+     "kind": "factual",
+     "verdict": "Not a contradiction - different seasons (Dec 2025->Jan 2026 and Dec 2024->Jan 2025 respectively). Both stand; the class spans 0.30-0.53 for a week with ~1-1.5 open days, and neither separates closure artifact from genuine post-peak decline, so both function as loose lower bounds for a week-39 week that keeps 2.5-3 open days."
+    },
+    {
+     "claim": "Whether Okinawa (16.61) and Tokyo (9.53) nearing saturation implies national deceleration by week 39.",
+     "kind": "judgment",
+     "verdict": "Accepted as a mild brake only. The national figure of 5.54 is far from saturation and the wave is still broadening into low-incidence prefectures, so leader saturation trims the multiplier rather than breaking the trend. No evidence in the dossiers breaks this tie; this is the reading I would bet on."
+    },
+    {
+     "claim": "Whether any human prediction market prices this quantity.",
+     "kind": "factual",
+     "verdict": "Settled: none. Harness title search plus all three runs' independent checks of Polymarket, Kalshi, Manifold and bookmakers returned nothing. No crowd anchor exists, so no blending was performed."
+    },
+    {
+     "claim": "Whether the archive URL in the criteria (houdou_00023.html) still hosts the 2026/27 releases, which Runs 2 and 3 say have moved to houdou_00025.html.",
+     "kind": "factual",
+     "verdict": "Cannot be verified on this run (no web access), but immaterial to the number: two of three runs independently report the move, and the fine print permits credible sources for the same figure if the archive page is unavailable."
+    },
+    {
+     "claim": "The week-38 (Sep 14-20) figure, which would sharply narrow this forecast.",
+     "kind": "factual",
+     "verdict": "Genuinely does not exist yet - all three runs confirm MHLW publishes it Fri 2026-09-25, after Now (2026-09-21T11:03Z). The uncertainty it would have removed is carried in the distribution's width rather than resolved."
+    }
+   ],
+   "reference_class": "Japanese national NESID weekly sentinel influenza rate (teiten-atari hokokusu) two weeks after a week printing 5-6 during an uninterrupted autumn/early-winter ascent, before adjustment for holiday-week reporting suppression"
+  }
+ ]
+}

@@ -1,0 +1,232 @@
+{
+ "record_id": "2026-09-21-2578c9ee",
+ "question": "How many total measles cases in 2026 will Wisconsin DHS report on its outbreaks page as of early October 2026?",
+ "question_id": 45939,
+ "url": "https://www.metaculus.com/questions/45754/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-09-21T11:38:53+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.2844,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 168.33333333333334,
+    "25": 170.33333333333334,
+    "50": 173.66666666666666,
+    "75": 179.0,
+    "90": 188.66666666666666
+   },
+   "p_above_upper": 0.018333333333333333
+  },
+  "phase1": {
+   "10": 168.33333333333334,
+   "25": 170.33333333333334,
+   "50": 173.66666666666666,
+   "75": 179.0,
+   "90": 188.66666666666666
+  },
+  "phase2": null,
+  "spread_phase1": 1.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 169.0,
+   "25": 171.0,
+   "50": 174.0,
+   "75": 178.0,
+   "90": 187.0
+  },
+  "p_above_upper": 0.015
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.9517,
+   "seconds": 184.4,
+   "estimate": {
+    "percentiles": {
+     "10": 169.0,
+     "25": 171.0,
+     "50": 174.0,
+     "75": 179.0,
+     "90": 186.0
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Baseline is locked: DHS outbreaks page today reads 167 as of Sep 18 (158 confirmed + 6 probable in the SW outbreak now including Vernon, plus 1 Marathon travel case). The question is only how much accrues by the last update posted on or before Oct 1 — with the observed Tue/Fri cadence that is likely a Sep 29 update, ~11 days of data, not the full 13. Reference class: US state measles outbreaks ~6 weeks in whose weekly increments have already fallen under ~3% of cumulative — these typically add a few percent over the next 11 days, giving ~174. Recent realized rate agrees: +8 over Sep 8-18 (0.8/day), down from 7/day in the Sep 1-8 week. Upside risks are real but bounded on this horizon: wastewater still positive in Iowa/Grant/Lafayette, Vernon County newly folded into the outbreak, national burden is high (3,471 US cases, CDC Sep 17) so fresh travel introductions run ~1-2/week, and a new low-vax community cluster (cf. Oconto 2025) could add double digits. Downside: an update that adds 0-2, or no new update at all, leaves it at 167-169. Distribution is right-skewed off a hard 167 floor. No Wisconsin-specific market exists; national Polymarket/Kalshi measles contracts differ on source, geography and threshold, so I did not blend. Thin, one-sided spot-checks on very recent days (nothing found after Sep 20) kept me near the reference-class anchor.",
+   "sources": [
+    "https://www.dhs.wisconsin.gov/outbreaks/index.htm",
+    "https://www.dhs.wisconsin.gov/immunization/measles.htm",
+    "https://www.cdc.gov/measles/data-research/index.html",
+    "https://wausaupilotandreview.com/2026/09/18/no-new-measles-cases-in-marathon-county-wisconsin-total-reaches-166/",
+    "https://www.wxow.com/news/health/southwest-wisconsin-measles-outbreak-continues-to-grow/article_f5a050ea-50b2-4d92-ba76-8ccd9c43ce4a.html",
+    "https://www.wispolitics.com/2026/dept-of-health-services-update-on-measles-outbreak-in-southwest-wisconsin-4/",
+    "https://polymarket.com/event/measles-cases-in-us-in-2026",
+    "https://www.yahoo.com/news/articles/measles-cases-oconto-county-rise-200921103.html"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the statewide '2026 so far' measles total printed on the Wisconsin DHS 'Outbreaks, Recalls, and Investigations' page (dhs.wisconsin.gov/outbreaks/index.htm) in the most recent update posted on or before 2026-10-01, read 2026-10-01 17:00 CT. NOT the SW-outbreak-only count, NOT the CDC national counter, NOT a county health department figure. Fallback is the DHS measles immunization page or credible sources citing DHS; annulled if DHS stops publishing a statewide 2026 total.\n\nEVENT WINDOW: the counter covers calendar year 2026 (Jan 1 -> the last DHS update on or before Oct 1); first 2026 Wisconsin cases were reported 2026-08-11. As of Now (2026-09-21T11:27Z), ~96% of the Jan 1 -> Oct 1 calendar window and ~80% of the Aug 11 -> Oct 1 outbreak window have elapsed; ~10 days remain to the Oct 1 read, and with the observed update cadence the operative data cutoff is likely ~2 days earlier than that.\n\nSTATUS QUO OUTCOME: the page is not updated again and the figure read on Oct 1 is the same 167 posted for Sep 18.\n\nEVIDENCE (source, date):\n- DHS outbreaks page, fetched 2026-09-21: 'As of September 18, 2026, the Wisconsin Department of Health Services (DHS) has confirmed 167 cases of measles in Wisconsin so far in 2026.' Composition: Southwest Wisconsin outbreak (Grant, Iowa, Lafayette, AND Vernon counties) 158 confirmed + 6 probable; Marathon County 1 confirmed, acquired out of state, unrelated.\n- Vernon County was NOT in the outbreak county list as of Sep 15 (WTMJ 2026-09-15/09-16 reported 2 lab-confirmed Vernon cases 'under investigation' for connection); by the Sep 18 DHS page it is folded into the SW outbreak.\n- Marathon County: 1 case, travel-acquired; Wausau Pilot & Review 2026-09-18 reported no new Marathon cases since.\n- DHS measles page (fetched 2026-09-21) states its dashboard (cases by week, age, county) 'will be updated twice a week'; the same twice-weekly cadence was described in 2025 coverage. Observed posting dates in this series: Sep 1 (Tue), Sep 4 (Fri), Sep 8 (Mon), Sep 11 (Fri), Sep 15 (Tue), Sep 16, Sep 18 (Fri). Oct 1, 2026 is a Thursday.\n- County split as of Sep 11 (wxow / medicaldaily): Lafayette 73 confirmed + 6 probable, Iowa 62 confirmed, Grant 20 confirmed. Iowa County was flat at 62 between two consecutive updates.\n- Wastewater: measles virus detected in municipal wastewater in Lafayette, Iowa and Grant counties through samples collected the week of Aug 24; Wausau Pilot & Review 2026-09-18 notes 'no recent detections at any other monitoring site in the state.'\n- Vaccination context: ~60% of Lafayette County 2-year-olds had >=1 MMR dose in 2025 vs ~81% in Iowa County (medicaldaily, Sep 2026). 166 of 167 Wisconsin cases are in unvaccinated people; 5 hospitalizations. DHS and local health departments have been running vaccination messaging since mid-August.\n- National context: CDC (page updated 2026-09-18, data as of noon Thu 2026-09-17) reports 3,471 confirmed US measles cases in 2026 across 47 jurisdictions, 37 outbreaks, ~94% outbreak-associated. CDC updates Thursdays at noon and does not publish a per-state Wisconsin number on that page. Large 2026 state totals: Pennsylvania 767, South Carolina 670, Utah 527, Texas 192. Neighbors: Iowa 22, Illinois 17, Minnesota 18, Michigan 15.\n- Prior-year anchor: Wisconsin reported 36 total measles cases in all of 2025, 25 of them a single Oconto County cluster (Sep 2025) — i.e. this state has previously seeded a second, geographically separate low-vaccination cluster within one year.\n- Markets: no Wisconsin-specific contract found on Polymarket, Manifold, or via search of Kalshi; the only measles contracts are US-wide calendar-2026 CDC-counter thresholds, which differ from this question on geography, source, and threshold.\n\nSERIES BASE RATES — reported statewide 2026 total by date (DHS, via DHS releases and contemporaneous coverage): Aug 25: 61 | Aug 28: 98 | Sep 1: 108-110 | Sep 4: 136-142 | Sep 8: 159 | Sep 11: 163 | Sep 15: 164 | Sep 16: 166 | Sep 18: 167.\nObserved increments over windows the same length as the ~11-day remaining horizon, in this same series:\n  - over the growth phase: Aug 28 -> Sep 8 = +61; Sep 1 -> Sep 11 = +53.\n  - over the current phase: Sep 8 -> Sep 18 = +8 (0.8/day); Sep 11 -> Sep 18 (7 days) = +4; Sep 15 -> Sep 18 (3 days) = +3.\nConditional framing: the unconditional class 'US state measles outbreaks' has a very wide final-size distribution (Wisconsin's own 2025 = 36; 2026 Texas = 192, Utah = 527, PA = 767). The relevant conditioning variable is already known — this outbreak is ~6 weeks old and its weekly increment has fallen from ~+49 (week to Sep 8) to ~+5 (week to Sep 15). Conditional on that decline pattern, past outbreak tails add a low single-digit percent of cumulative over ~11 days; conditional on a NEW introduction into a separate low-vaccination community (which happened in this state in 2025 and produced 25 cases in weeks), the 11-day addition can be an order of magnitude larger.\nComponent rates to keep separate: (a) SW outbreak local transmission, currently ~+3 to +5/week and falling; (b) sporadic travel-associated introductions elsewhere in the state, which produced Marathon and Vernon cases within a single week against a national backdrop of 3,471 cases.\nMeasles mechanics: 10-21 day incubation, ~14-day generation interval, so cases posted between now and Oct 1 reflect infections from roughly Sep 4-17; one full generation, not two, fits inside the remaining horizon.\n\nSEARCHED FOR BUT COULD NOT FIND: any DHS update posted after 2026-09-18 (nothing newer was published as of Now); the DHS dashboard's epidemic-curve-by-week values (rendered inside an embedded dashboard, not extractable), so whether symptom-onset counts have peaked is unconfirmed from the primary source; any per-state Wisconsin figure on the CDC page; any explicit DHS statement of a fixed update schedule or of the outbreak being contained / nearing the 42-day close-out; any Wisconsin-specific pre",
+   "reference_class": "Reported cumulative case totals of established US state measles outbreaks at ~6 weeks in, after weekly increments have fallen below ~3% of the cumulative total, projected 11 days forward off the last published figure"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.012,
+   "seconds": 237.1,
+   "estimate": {
+    "percentiles": {
+     "10": 168.0,
+     "25": 170.0,
+     "50": 173.0,
+     "75": 179.0,
+     "90": 191.0
+    },
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Resolution instrument reads 167 as of 2026-09-18 on the DHS outbreaks page; dashboard updates twice weekly (observed Mon/Fri), so the Oct 1 read is most likely the Sep 28 or Oct 1 post, ~10-13 days of additional accrual. Weekly increments have decelerated monotonically and sharply: +46 (Aug 28-Sep 4), +19 (Sep 4-11), +4 (Sep 11-18). Of that last +4, three cases were outside the original outbreak (Marathon travel, two Vernon); the core Grant/Iowa/Lafayette confirmed count moved only 155->156 in a week, i.e. the primary outbreak has largely stalled as the susceptible pool depletes and MMR uptake rises. Prior from post-peak state-outbreak tails implies ~+4% over 12 days (~174); I shade the median slightly below that to 173 for the stall, and keep a fat right tail. Upside mechanisms: Vernon County has the state's lowest MMR coverage (42% of two-year-olds, >=1 dose) and two cases confirmed Sep 16 now folded into the outbreak, plus continued travel introductions amid 3,471 US cases in 47 states, plus occasional retrospective batch additions (a +49 week occurred in early September). But the 10-21 day incubation puts most Vernon secondary cases after Oct 1, which caps the pre-deadline upside. No market matching this contract exists on Polymarket, Manifold, or Kalshi (Polymarket's US-total-2026 measles event differs on geography, threshold and resolution source, so it is evidence not an anchor); p_above_upper of 1.5% prices a return to the late-August pace compressed into the pre-deadline window.",
+   "sources": [
+    "https://www.dhs.wisconsin.gov/outbreaks/index.htm",
+    "https://www.dhs.wisconsin.gov/immunization/measles.htm",
+    "https://www.dhs.wisconsin.gov/news/releases/091626.htm",
+    "https://www.medicaldaily.com/lafayette-county-leads-wisconsin-measles-outbreak-478647",
+    "https://wausaupilotandreview.com/2026/09/18/wisconsin-health-officials-hopeful-encouraging-measles-vaccination-can-stop-growing-outbreak/",
+    "https://polymarket.com/event/measles-cases-in-us-in-2026",
+    "https://www.fox6now.com/news/measles-wisconsin"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the number stated on the DHS 'Outbreaks, Recalls, and Investigations' page (dhs.wisconsin.gov/outbreaks/index.htm) as the 'total ... cases in Wisconsin so far in 2026' — NOT the southwest-outbreak subtotal, NOT the CDC national tracker, NOT a confirmed-only figure where a total is given. The read is the most recent update posted on or before 2026-10-01, viewed 2026-10-01 US Central.\n\nEVENT WINDOW: cases counted span all of calendar 2026 up to the snapshot; the snapshot date is 2026-10-01 22:00 UTC per the criteria. Measured from the first reported Wisconsin cases on 2026-08-11 to that snapshot = 51 days; as of Now (2026-09-21T11:27Z), 41 days elapsed = ~80%. From the current page's data date (2026-09-18) to the snapshot = 13 days, but the page updates twice weekly on an observed Mon/Fri rhythm (Sep 4, 8, 11, 15, 18), so the operative snapshot is most likely the Mon Sep 28 or Thu Oct 1 post.\n\nSTATUS-QUO OUTCOME: the page continues stating 167 with only incremental additions from the twice-weekly updates.\n\nEVIDENCE:\n- DHS outbreaks page, fetched 2026-09-21, last updated 2026-09-18: '167 cases of measles in Wisconsin so far in 2026'; outbreak section lists 158 confirmed + 6 probable across Grant, Iowa, Lafayette AND Vernon counties, plus one Marathon County travel case listed separately. (dhs.wisconsin.gov/outbreaks/index.htm)\n- DHS immunization/measles page states the case dashboard 'will be updated twice a week' and that all data are provisional and subject to change. (dhs.wisconsin.gov/immunization/measles.htm)\n- Reported statewide 2026 totals by date: 98 (Aug 28), 110 (Sep 1), ~144 (Sep 4), 159 (Sep 8), 163 (Sep 11), 164 (Sep 15), 166 (Sep 16), 167 (Sep 18). Implied 7-day increments: +46 (Aug 28-Sep 4), +19 (Sep 4-11), +4 (Sep 11-18). (DHS page; Fox6 Milwaukee measles tracker; Medical Daily, Sep 15)\n- Composition of the Sep 11-18 increment: three of the four additions were outside the original three-county outbreak — one Marathon County travel case (DHS release 2026-09-15) and two Vernon County cases (DHS release 2026-09-16). The Grant/Iowa/Lafayette confirmed count moved 155 -> 156 over that week.\n- County split as of Sep 11: Lafayette 73 confirmed + 6 probable, Iowa 62 confirmed, Grant 20 confirmed. Iowa County recorded no new confirmed cases for the week ending Sep 11; Grant went 9 -> 20 over the prior 10 days. (Medical Daily, 2026-09-15)\n- Vernon County has the lowest MMR coverage in Wisconsin: 42% of two-year-olds with at least one dose last year; Lafayette tied for second-lowest at 60%. (Medical Daily, Sep 2026)\n- DHS release 2026-09-16 on the two Vernon cases: investigators were 'working to determine if they are connected to any previously confirmed cases in the state'; no public exposure locations identified. By the Sep 18 page update Vernon is listed within the outbreak counties.\n- Wisconsin measles wastewater detections cited in coverage are dated Aug 19 (Grant), Aug 25 (Lafayette), Aug 26 and Aug 31 (Iowa). No September-dated detections located.\n- Dr. Ryan Westergaard (DHS) said the Vernon County cases make it 'difficult for public health leaders to predict how much longer the disease will be circulating'; he also noted federal CDC field support has ended. Stephanie Schauer reported local health departments seeing 'new interest in the vaccine from people who were previously unvaccinated,' with school and community clinics expanding access. (Wausau Pilot & Review, 2026-09-18)\n- Five hospitalizations statewide in 2026; 166 of 167 cases in unvaccinated or unknown-status individuals; largest age group 5-17 at 47.9%. (DHS; Beloit Daily News 2026-09-20)\n- National context per CDC as of ~Sep 20: 3,471 cases in 47 states in 2026; Pennsylvania 767, South Carolina 670, Utah 527, Texas 192; neighboring Illinois 17, Iowa 22, Minnesota 18, Michigan 15. Wisconsin's 2025 full-year total was 36. Ongoing national circulation is the source pool for new travel-related introductions into Wisconsin.\n- Measles incubation is ~10-21 days, so cases reported in any given update reflect transmission from 1.5-3 weeks earlier.\n\nBASE RATES FOUND:\n- Over ALL US state measles outbreaks in undervaccinated communities tracked by state health departments 2025-2026 (Texas/Gaines 2025, Utah, South Carolina, Pennsylvania 2026): cumulative totals continue rising for weeks after the peak weekly increment, with the tail phase adding small single-digit-percent increments per week rather than stopping abruptly.\n- Over that same class CONDITIONAL on the most recent week having added under 3% to the cumulative total (the condition that holds here: +4 on 163 = 2.5%): 10-13 day continuations in the Texas DSHS 2025 tail phase ran roughly +2 to +28 cases, i.e. low-single-digit percent growth with occasional jumps when spread reached a new county.\n- Over that class CONDITIONAL on a NEW county with distinctly lower vaccination coverage recording its first cases within the prior 10 days: the second cluster's own case generation typically becomes visible in reported counts one incubation period (10-21 days) after the index cases are confirmed, not sooner.\n- Component rate, travel-related introductions: Wisconsin logged three non-outbreak introductions (Marathon 1, Vernon 2 before reclassification) in the Sep 15-16 window alone, against a national pool of 3,471 cases.\n\nMARKETS: no prediction-market contract matching this question's threshold, deadline or resolution source was found on Polymarket, Manifold, or Kalshi. Polymarket runs a US-national-2026 measles case-count event with substantial volume, but it differs on geography, threshold and resolution source. Wisconsin has active litigation against Kalshi, Polymarket, Robinhood, Coinbase and Crypto.com, so state-accessible venues are limited.\n\nSEARCHED FOR BUT COULD NOT FIND: (a) any DHS update dated after 2026-09-18 — the Sep 20 news coverage cites the Sep 18 page figure, so no post-Sep-18 data point exists as of Now; (b) an explicit DHS st",
+   "reference_class": "Post-peak cumulative case totals of US state-health-department-tracked measles outbreaks in undervaccinated communities (Texas 2025 Gaines County, Utah/South Carolina/Pennsylvania 2026), measured 10-13 days after a week that added under 3% to the cumulative total"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.8256,
+   "seconds": 183.5,
+   "estimate": {
+    "percentiles": {
+     "10": 168.0,
+     "25": 170.0,
+     "50": 174.0,
+     "75": 179.0,
+     "90": 189.0
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "DHS outbreaks page reads 167 confirmed as of its Sep 18, 2026 update (unchanged in Sep 20 press coverage). Dashboard updates twice weekly, so resolution likely reads a Sep 29-30 figure: ~11-12 days of accrual. Prior from the reference class of US state measles outbreaks ~6 weeks in and 2-3 weeks past their reporting peak (TX/NM 2025, UT/SC 2026): ~4-6% of cumulative added per 12 days, giving ~175. Local evidence pulls slightly below that: the Grant/Iowa/Lafayette core was flat at 161 confirmed+probable from Sep 11 to Sep 18, and recent growth (+3/week) came from separate introductions (Marathon travel case, two Vernon cases), while MMR demand is up and susceptibles in the core are depleting. Upside tail is real but timing-limited: Vernon County has 42% MMR coverage in 2-year-olds with one locally-acquired case, wastewater remains positive in Iowa/Grant/Lafayette, schools are in session, and CDC Epi-Aid support was lost — but a 10-21 day incubation means a Vernon-seeded cluster mostly surfaces after Oct 1. Non-trivial mass sits on 168-170 (including the case where the count barely moves or the last pre-deadline update is stale). No matching prediction market exists (Polymarket prices only US-national 2026 measles counts; no Kalshi/Manifold Wisconsin contract found), so no crowd anchor was used. Escape above 240 (+73 in 12 days) needs a full second exponential leg detected en masse or a definitional change: priced at 3%.",
+   "sources": [
+    "https://www.dhs.wisconsin.gov/outbreaks/index.htm",
+    "https://www.dhs.wisconsin.gov/immunization/measles.htm",
+    "https://www.wpr.org/news/wisconsin-health-officials-encouraging-measles-vaccination-stop-outbreak",
+    "https://urbanmilwaukee.com/2026/09/18/wisconsin-measles-outbreak-grows-as-officials-push-vaccination/",
+    "https://www.beloitdailynews.com/news/local-news/residents-urged-to-check-vaccination-status-as-measles-cases-rise/article_b327db9d-866e-4c06-ab6b-900f38caa5f9.html",
+    "https://www.dhs.wisconsin.gov/news/releases/091626.htm",
+    "https://polymarket.com/event/measles-cases-in-us-in-2026",
+    "https://www.dshs.texas.gov/news-alerts/measles-outbreak-2025"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the figure the Wisconsin DHS 'Outbreaks, Recalls, and Investigations' page (dhs.wisconsin.gov/outbreaks) states as the total measles cases in Wisconsin so far in 2026, in the most recent update posted on or before Oct 1, 2026 (read Oct 1, US Central) — NOT the Southwest-outbreak subtotal, NOT CDC's national count, NOT news tallies. Fallback: DHS measles immunization page or credible sources citing DHS.\nEVENT WINDOW: the resolving value accrues between the last DHS update (2026-09-18) and 2026-10-01T22:00Z per the criteria; as of Now (2026-09-21T11:27Z) ~23% of that 13-day span has elapsed. DHS states its measles dashboard 'will be updated twice a week', so the resolving read most likely reflects a Sep 29-30 posting, i.e. ~11-12 days of case accrual after Sep 18.\nEVIDENCE:\n- DHS outbreaks page, updated Sep 18, 2026: '167 cases of measles in Wisconsin so far in 2026' (confirmed). Same page: Grant/Iowa/Lafayette/Vernon counties 158 confirmed + 6 probable; Marathon County 1 confirmed (travel-related).\n- Headline statewide 2026 series with dates: 98 (Aug 28), 110 (Sep 1), 159 (Sep 8), 163 (Sep 11), 164 (Sep 15), 166 (Sep 16), 167 (Sep 18). Beloit Daily News, Sep 20, 2026: still 167 confirmed statewide, 5 hospitalizations, 166 of 167 unvaccinated.\n- Core-outbreak subtotal (Grant/Iowa/Lafayette): 155 confirmed + 6 probable on Sep 11 and Sep 15; Urban Milwaukee/WPR (Sep 18) describe 161 confirmed+probable in those three counties. The three additions in the Sep 15-18 window were separate introductions: Marathon (travel, DHS release 091526) and two Vernon (one resident, one out-of-state visitor; DHS release 091626).\n- Outbreak onset: first cases Aug 11, 2026; as of Now the outbreak is ~6 weeks old.\n- MMR coverage among 2-year-olds (WPR/Urban Milwaukee, Sep 18): Vernon 42%, Lafayette 60%, Grant 64%, Iowa 81%; statewide ~80%.\n- DHS state epidemiologist Ryan Westergaard (Sep 18): 'we're not treating it as inevitable that we're going to have a much larger outbreak'; also noted Vernon County cases mean investigators 'start the process over', and that CDC Epi-Aid support has ended.\n- DHS/local health departments report new vaccine demand among previously unvaccinated people, with doses given in schools; school nurses checking immunization records. Wisconsin schools are in session.\n- Measles virus continued to be detected in wastewater in Iowa, Grant, and Lafayette counties during the outbreak.\n- Incubation 10-21 days: cases reported in a given week reflect transmission 2-3 weeks earlier; secondary cases from the mid-September Vernon introductions would largely have rash onset late September to early October.\n- National context (CDC via Beloit Daily News, Sep 17-20, 2026): 3,471 US cases in 47 states in 2026; PA 767, SC 670, UT 527, TX 192; neighbors IA 22, IL 17, MN 18, MI 15. Wisconsin's 2025 full-year total was 36.\nBASE RATES:\n- Over US state measles outbreaks of 100+ cases measured ~6 weeks after onset (all such cases, unconditional): cumulative totals were still rising, typically adding on the order of 10-25% of the running total per 12 days.\n- Over the SAME class conditioned on the epicenter county's weekly count having already flattened (which matches the current Grant/Iowa/Lafayette picture): 12-day additions run far lower, roughly 3-7% of the running total.\n- Over the same class conditioned on a NEW low-coverage county recording a locally-acquired case (matches Vernon): a minority of such episodes produced a second exponential leg, and where they did, the leg showed up in official counts 2-4 weeks after the index case, not within 2 weeks.\n- This outbreak's own 11-12-day increments: +98 in the first 17 days (Aug 11-28), +61 (Aug 28-Sep 8), +8 (Sep 8-Sep 20).\n- Texas/New Mexico 2025 comparator (TX DSHS): 159 cases at ~6 weeks (Mar 4); 753 by early July; 762 by Aug 12 (+9 over ~5 weeks in the tail); outbreak declared over Aug 18, 2025 after Gaines County lost 'outbreak county' status in early July.\nSEARCHED FOR BUT NOT FOUND: any prediction market matching this question (harness title search of Polymarket and Manifold returned nothing; my own search found only US-national 2026 measles-count markets on Polymarket and no Kalshi or bookmaker contract — note Wisconsin has sued Kalshi/Polymarket, so state-specific listings are unlikely); a DHS epidemic curve by rash-onset week (the dashboard exists with by-week/age/county breakdowns but its figures were not retrievable as text); a stated DHS update schedule for the outbreaks page itself (only the dashboard's 'twice a week' note); any DHS statement of a 42-day outbreak-closure countdown; wastewater data dated after mid-September; any DHS announcement of a change to how the 2026 total is displayed.",
+   "reference_class": "12-day increments in state-reported cumulative measles totals for US state outbreaks of 100+ cases, measured ~6 weeks after outbreak onset and 1-3 weeks after the weekly-case peak (Texas/New Mexico 2025, Utah/South Carolina/Pennsylvania 2026)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1154,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.4114,
+   "seconds": 77.7,
+   "estimate": {
+    "percentiles": {
+     "10": 169.0,
+     "25": 171.0,
+     "50": 174.0,
+     "75": 178.0,
+     "90": 187.0
+    },
+    "p_above_upper": 0.015
+   },
+   "reasoning": "DHS outbreaks page reads 167 as of its Sep 18 update; resolution reads the last post on or before Oct 1, most likely Sep 28-29 given the observed early-week/Friday cadence, so ~10-12 days of accrual. Reference class: US state measles outbreaks ~6 weeks post-onset whose latest weekly increment is under 3% of cumulative add roughly 3-6% over the following 11-12 days, implying ~175. Local evidence pulls slightly below that: the Grant/Iowa/Lafayette core moved only 155->156 confirmed in the week to Sep 18, so three of the last four additions were separate introductions (Marathon travel, two Vernon), MMR demand is up, and no September-dated wastewater detection was found by any run. Upside is real but timing-limited: Vernon has the state's lowest MMR coverage (42% of 2-year-olds) and its index cases were confirmed Sep 16, so a 10-21 day incubation puts most secondary cases after the Oct 1 read; national burden (3,471 US cases, 47 jurisdictions) keeps travel introductions running ~1-2/week. Downside is a near-stale update leaving 167-169. No matching prediction market on Polymarket, Manifold, or Kalshi (national 2026 CDC-count contracts differ on geography, source and threshold), so no crowd anchor was used.",
+   "sources": [],
+   "reconciliation": "Baseline (167 as of the Sep 18 DHS outbreaks page) was undisputed across all three dossiers, as was the absence of any DHS update after Sep 18 and the absence of any Wisconsin-specific prediction market. Four disputes: (1) update cadence - Run 1 said Tue/Fri, Run 2 Mon/Fri, Run 3 Sep 29-30; the shared observed posting dates (Sep 1, 4, 8, 11, 15, 18) fit early-week-plus-Friday, so the resolving post is ~Sep 28-Oct 1 and accrual is 10-12 days rather than the full 13. (2) Wastewater recency - Run 3's undated 'continued to be detected' loses to Run 1's dated claim (samples collected week of Aug 24, no other site positive) corroborated by Run 2's explicit null for September; I take the last confirmed detections as late August. (3) Vernon acquisition route - Run 3 calls one case locally acquired, Run 2 reports DHS declined to confirm linkage; this could NOT be settled from the dossiers and I let it carry its uncertainty, which matters less than it looks because 10-21 day incubation puts Vernon-seeded secondary cases largely past the Oct 1 read either way. (4) A minor arithmetic gap - two dossiers report 158 confirmed + 6 probable + 1 Marathon = 165 against a 167 headline; unresolvable here and irrelevant, since the headline total is the resolving instrument. The remaining disagreement is pure judgment - how much weight the Vernon introduction and continued travel seeding deserve against a core outbreak that added one confirmed case in a week. I took the decelerating-core reading, which lands my median at 174 and my p90 at 187, tighter on the right than Runs 2 and 3 because the incubation clock, not the susceptible pool, is what caps the pre-deadline upside. I carried forward Run 1's series and Run 3's conditional reference class, which I agree with; my dispersion is computed from this series' own tail-phase increment variability rather than the unconditional outbreak class.",
+   "disagreements": [
+    {
+     "claim": "The DHS outbreaks page reads 167 statewide for 2026 as of its Sep 18 update, with no later update existing as of Now.",
+     "kind": "factual",
+     "verdict": "Agreed by all three dossiers and corroborated by Sep 20 press coverage citing 167; settled, and it is a hard floor for the resolving value."
+    },
+    {
+     "claim": "The resolving post will be a Sep 28/29 update (~11 days of accrual) vs a Sep 30-Oct 1 update (~13 days).",
+     "kind": "factual",
+     "verdict": "Observed posting dates shared by all runs (Sep 1 Tue, 4 Fri, 8 Mon, 11 Fri, 15 Tue, 18 Fri) imply early-week plus Friday; Oct 1 is a Thursday, so the last pre-deadline post is most likely Sep 28-29. Accrual window set at 10-12 days. Effect on the median is under one case."
+    },
+    {
+     "claim": "Measles wastewater detections in Iowa/Grant/Lafayette are ongoing into September.",
+     "kind": "factual",
+     "verdict": "Settled against: Run 1 dates the last detections to samples collected the week of Aug 24 and notes no other positive site statewide; Run 2 searched and found no September-dated detection. Run 3's assertion was undated. Mildly reduces the second-leg weight."
+    },
+    {
+     "claim": "At least one Vernon County case was locally acquired rather than imported.",
+     "kind": "factual",
+     "verdict": "Could NOT be settled from the dossiers - Run 3 asserts local acquisition, Run 2 reports DHS explicitly still investigating linkage with no public exposure sites named. The claim carries its uncertainty; its forecast impact is limited by incubation timing regardless of which way it falls."
+    },
+    {
+     "claim": "The primary Grant/Iowa/Lafayette outbreak has effectively stalled (155->156 confirmed over the week to Sep 18).",
+     "kind": "factual",
+     "verdict": "Consistent across all three dossiers' county numbers and with the Sep 11 and Sep 15 subtotals both reading 155+6; settled as true, and it is the main reason my median sits at the low end of the reference-class implication."
+    },
+    {
+     "claim": "How much of the remaining accrual comes from new introductions and a possible Vernon-seeded cluster (Run 2/3's fatter right tail) versus a continued tail-off (Run 1's tighter one).",
+     "kind": "judgment",
+     "verdict": "No evidence breaks this tie. I took the reading I would bet on: three introductions arriving in the single Sep 15-16 window is a burst against a ~1-2/week background, and Vernon secondaries mostly surface after the Oct 1 read, so I kept the right tail real but tighter than Runs 2 and 3 (p90 = 187)."
+    },
+    {
+     "claim": "Probability the count escapes above 240 (+73 in ~11 days).",
+     "kind": "judgment",
+     "verdict": "Runs spanned 1% to 3%. This requires a full second exponential leg detected en masse or a definitional/batch change; the early-September +49 single-update jump shows batching is possible in this series, but it occurred during exponential growth of the core, not a stall. Priced at 1.5%."
+    },
+    {
+     "claim": "No prediction market matches this contract.",
+     "kind": "factual",
+     "verdict": "All three runs independently searched Polymarket, Manifold, and Kalshi and found only US-national 2026 CDC-counter contracts, which differ on geography, resolution source, and threshold. Harness title search also found none. Settled: no anchor, evidence only."
+    }
+   ],
+   "reference_class": "US state measles outbreaks in undervaccinated communities, observed ~6 weeks after onset and 2+ weeks past peak weekly reporting, with the most recent week adding under 3% of cumulative (TX/NM 2025 tail, UT/SC/PA 2026): 11-12 day additions of ~3-6% of the running total"
+  }
+ ]
+}
