@@ -2937,6 +2937,10 @@ def main(argv: list[str] | None = None) -> int:
                              "spend from the same --budget; each refresh appends a new "
                              "journal record at its own forecast_at, matching how the "
                              "platform scores forecasts over time")
+    parser.add_argument("--refresh-budget", type=float, default=0.0,
+                        help="spend after which this invocation stops starting REFRESHES of "
+                             "standing forecasts (0 = use --budget). Never-forecast questions "
+                             "ignore it: only --budget, the catastrophe ceiling, stops them")
     parser.add_argument("--include-forecasted", action="store_true",
                         help="re-forecast questions this account already forecast")
     parser.add_argument("--budget", type=float, default=0.0,
@@ -3069,20 +3073,32 @@ def main(argv: list[str] | None = None) -> int:
     # time a stale-but-standing forecast already has.
     pending.sort(key=close_time_key)
     refresh.sort(key=close_time_key)
+    # Operator policy (2026-09-22): outside a catastrophe, finishing questions beats any
+    # per-run limit. --limit and --refresh-budget therefore only ever cut REFRESHES of
+    # standing forecasts; a never-forecast question is stopped by nothing but the
+    # catastrophe ceiling (--budget) and the wall-clock deadline (the next tick resumes).
+    new_count = len(pending)
+    refresh_slots = max(0, args.limit - new_count)
+    if len(refresh) > refresh_slots:
+        print(f"--limit {args.limit}: {len(refresh) - refresh_slots} refresh(es) deferred; "
+              f"all {new_count} new question(s) kept")
+        refresh = refresh[:refresh_slots]
     if refresh:
         print(f"{len(refresh)} standing forecast(s) older than {args.refresh_hours:.0f}h "
               "queued for refresh after new questions")
         pending.extend(refresh)
-    if len(pending) > args.limit:
-        print(f"--limit {args.limit}: {len(pending) - args.limit} queued question(s) "
-              "deferred to a later run")
-        pending = pending[:args.limit]
+    refresh_budget = args.refresh_budget if args.refresh_budget > 0 else args.budget
     done = failed = 0
     spent = {"usd": 0.0}
-    for post, question in pending:
+    for index, (post, question) in enumerate(pending):
         if args.budget > 0 and spent["usd"] >= args.budget:
-            print(f"budget cap ${args.budget:.2f} reached (${spent['usd']:.2f} spent); "
-                  f"{len(pending) - done - failed} question(s) left for the next session")
+            print(f"CATASTROPHE budget ceiling ${args.budget:.2f} reached "
+                  f"(${spent['usd']:.2f} spent); {len(pending) - done - failed} "
+                  "question(s) left for the next session")
+            break
+        if index >= new_count and refresh_budget > 0 and spent["usd"] >= refresh_budget:
+            print(f"refresh budget ${refresh_budget:.2f} reached; "
+                  f"{len(pending) - index} refresh(es) left for a later run")
             break
         if deadline is not None and time.monotonic() > deadline:
             print(f"deadline reached after {args.deadline_minutes:.0f} min; "
