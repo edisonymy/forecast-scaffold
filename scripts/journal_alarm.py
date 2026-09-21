@@ -15,7 +15,8 @@ Two tripwires, either one raises the alarm:
       quiet) even before it shows up in the journal.
   (b) an open tournament question still has NO forecast from this bot account
       ``grace_minutes`` (6h) after it opened, or within ``imminent_minutes`` of closing —
-      catches a workflow that reports green while doing nothing (2026-09-21: 2.5h of green ticks, 0 forecasts, questions missed).
+      catches a workflow that reports green while doing nothing (2026-09-21: 2.5h of
+      green ticks, 0 forecasts, questions missed).
       [CHANGED 2026-09-22] This used to be "open questions + journal silent for N hours",
       which never fired (anonymous reads 403 -> "unknown") and, once authenticated,
       would have fired all day: standing forecasts make journal quiet normal.
