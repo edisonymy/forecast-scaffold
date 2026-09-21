@@ -1,0 +1,225 @@
+{
+ "record_id": "2026-09-21-b61f96e9",
+ "question": "What will the FAO Cereal Price Index value be for September 2026?",
+ "question_id": 45937,
+ "url": "https://www.metaculus.com/questions/45752/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-09-21T11:02:37+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 5.4875,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 117.10000000000001,
+    "25": 118.43333333333334,
+    "50": 119.66666666666667,
+    "75": 120.86666666666667,
+    "90": 122.06666666666666
+   },
+   "p_above_upper": 0.04
+  },
+  "phase1": {
+   "10": 117.10000000000001,
+   "25": 118.43333333333334,
+   "50": 119.66666666666667,
+   "75": 120.86666666666667,
+   "90": 122.06666666666666
+  },
+  "phase2": null,
+  "spread_phase1": 1.7,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 117.5,
+   "25": 118.7,
+   "50": 119.7,
+   "75": 120.8,
+   "90": 122.0
+  },
+  "p_above_upper": 0.03
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.9102,
+   "seconds": 368.8,
+   "estimate": {
+    "percentiles": {
+     "10": 117.4,
+     "25": 119.1,
+     "50": 120.6,
+     "75": 121.9,
+     "90": 123.2
+    },
+    "p_above_upper": 0.08
+   },
+   "reasoning": "Reference class first: m/m changes in the FAO Cereal Price Index have a median near zero, so the outside-view anchor is a carry-forward of August's 116.3. Two conditioning facts move it up. (1) IGC GMR580 (17 Sep 2026) puts its export-quotation sub-indices at wheat +6%, maize +5%, rice +3% over four weeks, GOI at a three-year peak. Weighting those by FAO's approximate cereal shares (wheat ~0.42, maize ~0.31, rice ~0.21, other coarse ~0.06) gives ~+4.7%. (2) The 24-28 Aug CBOT spike (wheat +12.1% on the week to 784c) fell at the very end of August, so August's monthly average largely missed it while September's average inherits it in full. Calibrating the damping on August itself - FAO cereals +2.2% against an IGC GOI move of ~3% - implies a FAO/IGC ratio of ~0.75-0.85, which maps ~+4.7% to roughly +3.5-4.0%, i.e. ~120.5-121. Offsetting: wheat has fallen three straight weeks into 21 Sep on ceasefire expectations (front month ~$7.20 vs a $7.95 intraday high on 2 Sep), and FAO's rice leg is sticky (+0.5% in August against IGC rice moves), so the basket could come in nearer +2%. Corn pulls the other way, up 8.5% month-to-date and still rising. No prediction market exists on this series, so there is no crowd anchor. I discarded one set of Russian-FOB quotes ($210-215/t) as stale/mis-dated, since they contradict the confirmed +15% y/y wheat level. Median 120.6 with 8% priced above the open upper bound for a less-damped pass-through plus a final-week Black Sea escalation; no mechanism for the open lower bound, since two-thirds of September's observed quotes already sit above August's average.",
+   "sources": [
+    "https://www.fao.org/worldfoodsituation/foodpricesindex/en/",
+    "https://www.fao.org/newsroom/detail/supply-concerns-drive-fao-food-price-index-higher/en",
+    "https://www.igc.int/en/gmr_summary.aspx",
+    "https://tradingeconomics.com/commodity/wheat",
+    "https://tradingeconomics.com/commodity/corn",
+    "https://tradingeconomics.com/world/cereals-price-index",
+    "https://www.cnbc.com/2026/08/28/corn-and-wheat-prices-jump-to-highest-prices-in-more-than-three-years.html",
+    "https://www.3tres3.com/en-af/latest_swine_news/fao-cereal-price-index-up-in-july-2026_677/",
+    "https://blog.pricegroup.com/2026/09/18/grains-report-09-18-2026/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the September 2026 FAO Cereal Price Index as printed in the FAO Food Price Index release of 2 Oct 2026 (initial print; later revisions do not count) - NOT off CBOT futures, not off the headline FAO Food Price Index, and not off a revised figure. The FAO Cereal Price Index is a trade-weighted average of export QUOTATIONS (IGC wheat sub-index built from ~10 origins, the IGC maize/coarse-grain quotes, and 16 rice quotations), 2014-2016 base = 100, reported to one decimal. Approximate component weights: wheat ~0.42, maize/coarse grains ~0.37, rice ~0.21. The index is a CALENDAR-MONTH AVERAGE of daily quotations, not a month-end snapshot.\n\nEVENT WINDOW: 2026-09-01 -> 2026-09-30 per the criteria (the September reference month whose quotations are averaged); as of 2026-09-21T10:43:55Z, ~68% elapsed. FAO's 2026 release calendar: 9 Jan, 6 Feb, 6 Mar, 3 Apr, 8 May, 5 Jun, 3 Jul, 7 Aug, 4 Sep, 2 Oct, 6 Nov, 4 Dec - the 2 Oct release lands before the scheduled resolution time.\n\nSTATUS-QUO OUTCOME: the August 2026 value, 116.3, carried forward unchanged.\n\nSERIES (FAO Cereal Price Index, points): Feb 2026 108.6; Mar 110.4; Apr 111.3; Jun ~110.0; Jul 113.8 (+3.8 pts, +3.4% m/m, +6.9% y/y); Aug 116.3 (+2.5 pts, +2.2% m/m, highest since May 2024). Sources: FAO Food Price Index page and FAO newsroom releases of 7 Aug 2026 and 4 Sep 2026.\n\nBASE RATES:\n- Over ALL months of the FAO Cereal Price Index 1990-2026: median m/m change ~0%, SD of m/m % change ~2.3-2.5% in the 2024-2026 regime (~2.7-2.9 points at today's level). Absolute monthly moves above 4% occur but are uncommon outside supply-shock regimes (2007-08, 2010-11, 2022).\n- Over the 2026 months observed so far (a shock-tinged regime): Mar +1.7%, Apr +0.8%, Jun -3.7%, Jul +3.4%, Aug +2.2% - i.e. the conditional spread in THIS regime is wider than the long-run unconditional one.\n- CONDITIONAL on the prior month having risen 2%+ AND the mid-month IGC export-quotation grain sub-indices having risen 5%+ over the preceding four weeks: this is the class that matters here, and it is thin - such alignments cluster in 2007-08, 2010-11 and 2022.\n- FAO-to-IGC pass-through, measured on August 2026: FAO cereals +2.2% against an IGC GOI four-week move of ~+3%.\n\nEVIDENCE - UPWARD DIRECTION:\n- IGC Grain Market Report GMR580, 17 Sep 2026: GOI climbed 6% over four weeks to a three-year peak, +20% y/y. Wheat sub-index +6% (Black Sea shipping bottlenecks); maize +5% (tightening US supply outlook, Ukrainian export disruption); rice +3% (slow producer selling, firmer Thai/Indian/US export prices).\n- CBOT wheat settled 784c/bu on Fri 28 Aug 2026, +12.1% on the week (largest weekly gain since Mar 2022), intraday 790.25c - highest since 14 Feb 2023 (CNBC, 28 Aug 2026). This spike occurred in the final days of August, so it entered August's monthly average for only ~2 trading days.\n- Front-month CBOT wheat posted a 3.5-year intraday high of $7.95 on 2 Sep 2026 (Trading Economics, retrieved 21 Sep 2026).\n- Corn: +8.49% month-to-date during September and +11.52% over the trailing month, at ~$5.27-5.33/bu on 18-21 Sep, near the highest since mid-2023 (Trading Economics, 21 Sep 2026). USDA's 11 Sep report cut the 2026/27 US corn yield to 178.5 bu/ac from 180.7, production to 15.8bn bu, ending stocks to 1.567bn bu (DTN, 9-11 Sep 2026).\n- FAO's August commentary cited a weaker US dollar as a driver; the index is USD-denominated, so dollar weakness mechanically lifts quotations.\n- Ukraine's grain exports fell ~58% y/y in August (Ukrainian agriculture ministry). Russia damaged an Odesa-region rail bridge that Ukrzaliznytsia says will significantly limit grain movement to Danube ports (week of 15-18 Sep 2026).\n- FAO forecasts 2026 global cereal production at ~2,980 Mt, down ~2.0% y/y (wheat ~810.7 Mt), still the second largest on record.\n\nEVIDENCE - DOWNWARD DIRECTION:\n- Front-month CBOT wheat fell to ~$7.13 on 18 Sep, a three-week low, on renewed Russia-Ukraine ceasefire hopes; it was ~$7.20-7.22 on 21 Sep, roughly 9% below the 2 Sep high, and posting a third consecutive weekly decline.\n- Week ending 18 Sep: December SRW fell 50c on the week to $7.34; December HRW fell 42c to $8.02.25 (Price Group grains report, 18 Sep 2026). A Trump post indicating Russia and Ukraine had agreed to halt attacks on energy infrastructure knocked wheat ~18c lower intraday before a partial recovery on reports of further strikes near Odesa.\n- Euronext wheat fell for a second consecutive session on Fri 18 Sep, tracking CBOT weakness (19 Sep 2026).\n- USDA cut 2026/27 export forecasts for Russia (-3 Mt to 43 Mt) and Ukraine (-1 Mt to 12.5 Mt) - a demand-side reallocation rather than a pure bullish tightening.\n- Russia has suspended grain export duties through end-2026, and SovEcon has RAISED its Russian wheat export forecasts.\n- Rice is the softest leg: FAO's All Rice index rose only 0.5% in August. As of 21 Sep 2026, Thai 5% broken was $477-481/t, Indian 5% broken $375-379/t, Vietnamese 5% broken fragrant $470-480/t - broadly flat-to-firm, with commentary that global rice prices remain under pressure in 2026 from exporter competition and a strong baht curbing Thai exports.\n- The FAO cereal basket is materially damped relative to CBOT: in August, FAO wheat printed +2.6% in the same month CBOT wheat had a +12.1% week.\n- Nine quotation days (22-30 Sep) remain unobserved as of Now.\n\nMARKET CHECK: no prediction market or bookmaker contract on the FAO Food Price Index or any of its sub-indices was found on Polymarket, Kalshi, or Manifold (harness title search plus own searches, 21 Sep 2026). There is no crowd anchor for this question.\n\nSEARCHED FOR BUT COULD NOT FIND: (a) the full FAO monthly Cereal Price Index CSV/Excel series - the FAO page links downloadable files but the CSV URL 404s and MacroMicro returns 403, so the 2024-2025 monthly series could not be retrieved directly and only the 2026 points above are confirmed from release text; (b) the September 2026 AMIS Market Moni",
+   "reference_class": "Month-over-month changes in the FAO Cereal Price Index (1990-2026 monthly series), narrowed to months whose mid-month IGC export-quotation grain sub-indices had risen 5%+ over the preceding four weeks"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.0888,
+   "seconds": 247.8,
+   "estimate": {
+    "percentiles": {
+     "10": 117.0,
+     "25": 118.0,
+     "50": 118.9,
+     "75": 119.9,
+     "90": 120.9
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Base rate is persistence: the index one month ahead equals the prior month (116.3) with SD ~2%. The strong adjustment is mechanical: the index is a calendar-month average, August's average was depressed by a weak first half (CBOT wheat ~$6.50 on 11 Aug) before the 28 Aug spike, and September has traded almost entirely above that August mean — CBOT wheat +5.6/6.1% and corn +8.5% on the trailing month as of 21 Sep. Calibrating on August, where FAO's sub-indices moved roughly a third to a half as much as CBOT monthly averages, implies ~+2 to +3% trade-weighted (wheat ~40 / coarse ~35 / rice ~25, rice near flat) -> ~118.5-119.5. Counterargument, and why I did not go higher: ceasefire talks stripped part of the Black Sea premium mid-month, the dollar hit a seven-week high (a drag on USD quotations), EU wheat fell, and FAO's wheat basket is heavy in Russian/EU FOB that likely lagged Chicago. Evidence on FAO's actual September export quotations is thin — I could not retrieve the September AMIS Monitor, the IGC GOI page, or dated Russian FOB quotes — so I stay near the mechanical estimate with wide-ish bars rather than pushing toward the top of the range.",
+   "sources": [
+    "https://tradingeconomics.com/commodity/wheat",
+    "https://tradingeconomics.com/commodity/corn",
+    "https://www.fao.org/worldfoodsituation/foodpricesindex/en/",
+    "https://fred.stlouisfed.org/series/PMAIZMTUSDM",
+    "https://www.foodsecurityportal.org/sites/default/files/2026-07/AMIS_Market_Monitor_July_2026.pdf",
+    "https://www.world-grain.com/articles/23226-igc-grain-production-falls-but-goi-prices-rise",
+    "https://kalshi.com/markets/kxfaofpi/fao-food-price-index-in-month"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the September 2026 FAO Cereal Price Index as shown in FAO's INITIAL release scheduled 2 Oct 2026 (one decimal, points, 2014-16 base = 100). It is a monthly AVERAGE of international export price quotations (IGC-derived wheat and coarse-grain sub-indices plus FAO's own rice quotations) — NOT a month-end futures settlement, NOT the headline FAO Food Price Index, and NOT any later revision. Trading Economics' World Cereals Price Index page is an accepted mirror.\n\nEVENT WINDOW: 2026-09-01 -> 2026-09-30 per the criteria (the quantity IS the September monthly average); as of 2026-09-21T10:43Z, ~68% elapsed by calendar days (~75% by trading days).\n\nSTATUS QUO OUTCOME: the index is unchanged from its August level, 116.3 points.\n\nEVIDENCE:\n- FAO Cereal Price Index Aug 2026 = 116.3 pts, +2.5 pts (+2.2%) m/m, highest since May 2024 (FAO, released 5 Sep 2026).\n- Aug 2026 components: wheat +2.6% m/m and +15.0% y/y; maize +2.5%; rice +0.5% (FAO, 5 Sep 2026).\n- Headline FFPI Aug 2026 = 133.3, +1.9% m/m, +2.5% y/y, highest since Nov 2022; sugar +11.9%, veg oils at a Jun-2022 high, dairy +2.3%, meat +1.0% (FAO / Xinhua, 5 Sep 2026).\n- Index path: months through June 2026 near 108-112; July 2026 = 113.8; Aug 2026 = 116.3 (FAO).\n- CBOT wheat 2026: ~$6.50/bu on 11 Aug; 3.5-year high $7.67 on 28 Aug; ~$7.65 in the first days of September; three-week low ~$7.13 on 18 Sep; $7.20-7.23 on 19-21 Sep. Trailing-month change reported at +5.6% to +6.1%, y/y +41% (TradingEconomics, 21 Sep 2026). One source gives an August CBOT wheat figure of $685.63 (cents/bu).\n- CBOT corn 2026: $5.21 on 1 Sep (highest in 3+ years), dipped below $5.10 mid-month, $5.275 on 18 Sep, $5.33 on 21 Sep; trailing-month +8.5%, y/y +26% (TradingEconomics, 21 Sep 2026).\n- September WASDE cut US 2026/27 corn yield to 178.5 bu/ac from 180.7, production to 15.8bn bu from 16.013bn, ending stocks to 1.567bn from 1.653bn; USDA projects a global corn deficit near 30 Mt for 2026/27, the largest in 30+ years. US corn 57% good/excellent mid-September; harvest 8% complete on 13 Sep (TradingEconomics/USDA, Sep 2026).\n- Bearish-side September developments: Russia-Ukraine ceasefire expectations removed part of the Black Sea risk premium (UkrAgroConsult, Sep 2026; Bloomberg 4 Sep 'Wheat Edges Lower on Peace Hopes'); the US dollar hit a seven-week high mid-September; European wheat prices fell on 19 Sep under Chicago pressure (Voice of Emirates).\n- Bullish-side September developments: Ukraine grain exports down ~58% y/y in August; Black Sea attacks continuing; Russia suspended grain export duties through end-2026 and signalled no basis to revive the grain deal; lower EU production after European heat. IGC GOI +3% vs the July report, at a more-than-two-year high and ~20% above Sep 2025, with net gains across all components (World Grain, Sep 2026).\n- Trump-Xi meeting set for 24 Sep; Beijing reportedly pledged at least $17bn of US farm purchases. US wheat export sales 12m bu in the week to 10 Sep, up 68% w/w.\n- Rice: FAO rice component +0.5% in August; Asian export prices mixed through 2026 — India stable on ample supply, Thailand/Vietnam/Pakistan firmer; 2026/27 exports projected India 25.0 Mt, Vietnam 8.0, Thailand 7.5, Pakistan 5.0 (Milling MEA; Procurement Resource, 2026). Thai 100%B was USD 485/t in the July AMIS Monitor (+5.4% m/m, +23.7% y/y).\n- July 2026 AMIS benchmarks for context: US HRW wheat USD 278/t (-4.8% m/m, +21.9% y/y); US No.2 Yellow maize USD 195/t (-5.2% m/m). IMF global corn benchmark (FRED PMAIZMTUSDM): Jun 2026 195.78, Jul 2026 213.19 USD/t.\n- Supply outlook: FAO 2026 global cereal production ~2,980 Mt, -2.0% y/y, second-largest on record; wheat ~810.7-810.9 Mt vs ~844 Mt the prior season; IGC sees 2026/27 total grains production, trade and consumption all down y/y.\n\nBASE RATES (with the class each is computed over):\n- Over ALL months of the FAO Cereal Price Index, 2015-2026: median m/m change ~0%, SD of m/m change ~2%; a pure persistence anchor is the previous published level, 116.3.\n- Over months FOLLOWING a >=2% m/m rise with futures still trading above the prior month's average: same-direction continuation is the more common outcome, typical magnitude of the order of 1-3%.\n- Over the SPECIFIC mapping observed in Aug 2026 (FAO export quotations vs CBOT monthly averages): FAO's wheat sub-index moved +2.6% while the CBOT wheat monthly average rose roughly 4-5%, and FAO's maize sub-index +2.5% against a larger CBOT corn monthly-average move — i.e. FAO quotation averages moved on the order of a third to a half of the CBOT monthly-average move.\n- Component weights (trade-weighted, implied by reconciling the August components +2.6 / +2.5 / +0.5 to the published +2.2%): wheat ~40%, coarse grains ~35%, rice ~25%.\n\nMECHANICAL NOTE (not a lean, an arithmetic property): the index is a full-calendar-month average. August's average incorporated only about two sessions of the 28 Aug spike and was weighted down by an early-August trough; September's observed sessions to date have all printed above the August monthly averages for both wheat and maize.\n\nSEARCHED FOR BUT COULD NOT FIND: any prediction market on the FAO CEREAL sub-index (Kalshi runs a KXFAOFPI series on the HEADLINE FAO Food Price Index only — different basket; its page returned HTTP 429 so no live bracket prices were obtained; the harness's Polymarket and Manifold title search found no candidate); the September 2026 AMIS Market Monitor (latest retrievable is No. 140, July 2026); the IGC GOI live page (HTTP 404); FAO's monthly CSV history beyond the August figure; dated Russian 12.5% FOB wheat quotations for September 2026 — search returned undated $210-215/t figures inconsistent with the reported +15% y/y wheat move, so they should be treated as stale and unverified.",
+   "reference_class": "One-month-ahead values of the FAO Cereal Price Index conditional on the prior month's published level (random-walk persistence over the 2015-2026 monthly series), sub-classed on months where futures traded above the prior month's average for most of the month"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 1.8103,
+   "seconds": 335.1,
+   "estimate": {
+    "percentiles": {
+     "10": 116.9,
+     "25": 118.2,
+     "50": 119.5,
+     "75": 120.8,
+     "90": 122.1
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Base: Aug 2026 = 116.3; the 2025-26 reference class of m/m changes implies a ~+0.5% drift anchor (~116.9). Adjusting on observed September prices: CBOT wheat averaged well above August (Aug 6 $6.31 -> Aug 28 $7.67 high -> $7.13-7.5 through Sept, $7.21 on Sep 21), corn +8.4% m/m near mid-2023 highs, and the IGC GOI rose ~6% between its August and September reports with net increases across all crops. Rebuilding with FAO's own weights (wheat .39/maize .32/rice .20/barley .06/sorghum .03, which reproduce August's +2.2% exactly) at wheat +4%, maize +4%, rice ~0%, barley/sorghum +3% gives ~+3% -> ~119.7. I shade slightly to 119.5 because Russian FOB 12.5% wheat has fallen (~$235-241 mid-July to ~$214 in September) as the Novorossiysk strikes bottle grain inside Russia, so FAO's origin-weighted composite rises materially less than CBOT - exactly the pattern that held August's wheat print to +2.6% against a much bigger Chicago move. Downside: rice under exporter-competition pressure, US harvest pressure, and any Russia-Ukraine diplomatic break in the last week. No market prices this question.",
+   "sources": [
+    "https://www.fao.org/worldfoodsituation/foodpricesindex/en/",
+    "https://www.fao.org/newsroom/detail/supply-concerns-drive-fao-food-price-index-higher/en",
+    "https://tradingeconomics.com/commodity/wheat",
+    "https://tradingeconomics.com/commodity/corn",
+    "https://www.marinelink.com/news/russian-wheat-export-prices-soar-amidst-541359",
+    "https://www.bairdmaritime.com/shipping/dry-cargo/bulkers/russian-wheat-prices-hold-as-storms-snarl-black-sea-shipments",
+    "https://www.world-grain.com/articles/23226-igc-grain-production-falls-but-goi-prices-rise",
+    "https://www.graincentral.com/markets/daily-market-wire-18-september-2026/",
+    "https://www.spglobal.com/energy/en/news-research/latest-news/agriculture/081226-russian-grain-exports-disrupted-after-novorossiysk-terminals-attack",
+    "https://tradingeconomics.com/commodity/rice"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the FAO Cereal Price Index value for September 2026 as shown in the INITIAL release on the FAO Food Price Index page (scheduled 2 Oct 2026), in points to one decimal; later revisions do not count. It resolves off FAO's own origin-weighted composite of international EXPORT QUOTATIONS, not off CBOT futures and not off the headline FAO Food Price Index. Trading Economics' mirror is the fallback source.\n\nEVENT WINDOW: the quantity is the September 2026 monthly average, so the window is 2026-09-01 -> 2026-09-30 per the criteria; as of Now (2026-09-21T10:43:55Z) ~67% elapsed. The 2 Oct release date is the publication event, not the window.\n\nINDEX MECHANICS / WEIGHTS: August 2026 sub-index changes were wheat +2.6%, maize +2.5%, all-rice +0.5%, sorghum +3.9%, barley +2.6%, and the headline was +2.2% (FAO, 5 Sep 2026). Those reproduce with approximate 2014-2016 trade-share weights wheat .39, maize .32, rice .20, barley .06, sorghum .03.\n\nLEVEL HISTORY (FAO Cereal Price Index, points): Mar 2026 110.4; Apr 111.3; May 114.3; Jun 110.2; Jul 113.8; Aug 116.3 (highest since May 2024). Implied m/m changes: +0.8%, +2.7%, -3.6%, +3.3%, +2.2%. Base rate over ALL months 2025-26: median m/m change near zero, SD of m/m change ~2.7% (~3.1 index points). Base rate CONDITIONAL on the current disrupted-Black-Sea regime (Jul-Aug 2026): the two observed prints were +3.3% and +2.2%; conditional on the pre-disruption months of 2026 (Mar-Jun), the prints were +0.8%, +2.7%, -3.6%.\n\nEVIDENCE - UPWARD:\n- CBOT wheat: $6.3125 settle on 6 Aug 2026; 3.5-year high $7.67 on 28 Aug; $7.13 three-week low 15-18 Sep; $7.21-7.22 on 21 Sep; +5.8% vs one month earlier, +41% y/y (Trading Economics, 21 Sep 2026). The entire September range sits above the early/mid-August range.\n- CBOT corn: $5.33/bu on 21 Sep 2026, +8.4% vs one month earlier, +24% y/y, described as near highest since mid-2023 (Trading Economics, 21 Sep 2026).\n- IGC Grains and Oilseeds Index rose ~6% between its August and September 2026 reports, with net increases across all crops; GOI ~20% above September 2025 (World Grain coverage of the September IGC GMR, ~18 Sep 2026). Note GOI also contains soybeans and rapeseed, which are not in the FAO cereal basket.\n- Ukraine strikes on Novorossiysk terminals (12 Aug 2026) disrupted Russian grain export infrastructure; repairs estimated at one to four months (S&P Global, 12 Aug 2026; Moscow Times, 17 Aug 2026). Russia zeroed its wheat export duty.\n- USDA cut 2026/27 export forecasts for Russia by 3 Mt to 43 Mt and Ukraine by 1 Mt to 12.5 Mt; USDA cut US corn production 213 m bu, yield -2.2 bu/ac to 178.5 (Grain Central wires, Sep 2026).\n- FAO forecasts 2026 global cereal production ~2,980 Mt, ~2.0% below 2025 (second-largest on record); wheat ~810.7 Mt.\n- Asian buyers shifted at least 500 kt of demand to Australian and Argentine wheat as Black Sea reliability deteriorated (Grain Central, Sep 2026).\n- USD weakness was cited by FAO as a support for August dollar-denominated quotations.\n\nEVIDENCE - DOWNWARD / OFFSETTING:\n- Russian 12.5% protein FOB has moved OPPOSITE to Chicago: ~$232-236 (Feb 2026), ~$231-235 (late Jun), $235 IKAR / $238-241 SovEcon (mid-Jul), Platts Black Sea milling marker $222 on 11 Aug, ~$215 late Aug, ~$214 in September (Reuters/marinelink, S&P Global, Grain Central). The export bottleneck depresses the FOB quotation of the world's largest wheat exporter.\n- Grain Central noted Chicago had built a sizeable premium to world cash values; Chicago wheat fell 18.25c, Kansas -12.75c, Minneapolis -6c on one September session as that premium unwound.\n- Wheat set three-week lows on 15 and 18 Sep before a partial rebound tied to US-China trade optimism ahead of a Trump-Xi summit; Russia-Ukraine peace-negotiation headlines are an active two-way driver into month-end.\n- Ukraine's wheat harvest finished at 98% of sown area for a 24.91 Mt crop and weekly grain exports jumped 80% w/w to 433,700 t as shippers routed around the disruption.\n- Argentina on track for record corn exports, ~10 Mt shipped across August-September. US corn harvest advancing.\n- Rice: Thai 5% broken $453-457/t and 100% broken $366-370/t (early Sep); Vietnamese 5% broken fragrant $440-445/t, Jasmine $526-530/t, quoted as stable into late September. Thai 2026 exports seen falling ~11% to 7 Mt; trade press describes rice under pressure from exporter competition and Philippine import cuts. Rice carries ~20% of the cereal index weight.\n\nMARKETS: no prediction market or bookmaker contract on this quantity was located on Polymarket, Manifold, or Kalshi.\n\nSTATUS-QUO OUTCOME: the index repeats its August level, 116.3 points, i.e. a 0.0% month-on-month change.\n\nSEARCHED FOR BUT COULD NOT FIND: (a) a daily settlement series for CBOT wheat/corn covering all of August and September 2026, so August and September monthly averages have to be reconstructed from scattered dated quotes; (b) the IGC September 2026 GMR wheat/maize/rice SUB-index percentages (igc.int and amis-outlook.org returned 403/empty; snippets gave conflicting figures of 3% vs 6% for the GOI and a '2% vs mid-July' wheat figure that may belong to the August issue); (c) an AMIS Market Monitor issue later than No. 140 (July 2026); (d) a dated IKAR/SovEcon weekly print from the second half of September 2026; (e) any FAO pre-announcement or third-party published forecast of the September cereal index.",
+   "reference_class": "Month-over-month changes in the FAO Cereal Price Index, 2025-2026 (recent prints: Mar 110.4, Apr 111.3, May 114.3, Jun 110.2, Jul 113.8, Aug 116.3), evaluated conditional on two-thirds of the pricing month already observed"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.6986,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.592,
+   "seconds": 161.4,
+   "estimate": {
+    "percentiles": {
+     "10": 117.5,
+     "25": 118.7,
+     "50": 119.7,
+     "75": 120.8,
+     "90": 122.0
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Status quo is 116.3 carried forward (median m/m change ~0). The adjustment is mechanical and largely locked: the FAO index is a calendar-month average of export quotations, August's average was dragged down by a weak first half (CBOT wheat ~$6.31 on 6 Aug) and caught only ~2 sessions of the 28 Aug spike, and every September session has traded above that August mean (wheat avg ~$7.35 vs ~$6.86, corn ~+6-7%). Calibrating pass-through on August itself (FAO wheat +2.6% against a CBOT monthly-average move of 4-5%) gives a ratio near 0.5. Rebuilt at FAO's own weights - wheat +2.75%, maize +4.5%, rice +0.75%, barley/sorghum ~+3% - that is +2.9%, or 119.7. I damp the wheat leg below the maize leg because Russian 12.5% FOB has decoupled downward (~$235-241 mid-July to ~$214 in September as Novorossiysk damage bottles grain inside Russia); I accept that series over the runs that discarded it, since its supposed inconsistency with FAO wheat +15% y/y dissolves once you note CBOT is +41% y/y. Downside is bounded: a ceasefire break in the last nine days moves only a third of the averaging window. Upside tail is Black Sea escalation plus fuller pass-through. No prediction market prices this series.",
+   "sources": [],
+   "reconciliation": "Three disputes mattered. (1) IGC's reported move (+6% four-week vs +3% vs the July report) could not be settled without web access, but the resolvable half is definitional: IGC prints a point-in-time index and FAO prints a calendar-month average, so Run 1's near-full mapping of a mid-Aug-to-mid-Sep point change onto the monthly average overstates the rise. (2) The Russian FOB dispute I settled in Run 3's favour: Run 1 and Run 2 discarded the ~$214 quotes as inconsistent with FAO wheat +15% y/y, but with CBOT +41% y/y a flat-to-down Russian leg is fully compatible with a +15% y/y trade-weighted composite, and Run 3's markers are dated and mechanism-backed. This damps the wheat leg. (3) The pass-through ratios only looked divergent because the three runs used different denominators (IGC point change vs CBOT monthly average); on the like-for-like monthly-average base, August calibrates the ratio near 0.5. I carried forward Run 3's weight vector, which reproduces August's published +2.2% exactly from its components, and Run 2's cited August CBOT average ($685.63c). The Thai rice quote conflict ($477-481 vs $453-457) is unresolved and immaterial at 0.20 weight on a near-flat leg. Dispersion: Run 1's 5.8 is too wide for a month two-thirds observed; Run 2's 3.8 is too tight given the unresolved source conflicts above - 4.4 reflects both.",
+   "disagreements": [
+    {
+     "claim": "IGC GOI/sub-indices rose ~6% over four weeks (wheat +6%, maize +5%) vs ~3% versus the July report",
+     "kind": "factual",
+     "verdict": "Could not be settled without web access; Run 3 flags the same 3%/6% conflict. Partially dissolved as a definitional issue - point-in-time index change is not the calendar-month-average change FAO publishes, so even the +6% reading maps to a smaller FAO move."
+    },
+    {
+     "claim": "Russian 12.5% protein FOB is ~$214/t in September, down from $235-241 in mid-July",
+     "kind": "factual",
+     "verdict": "Accepted (Run 3). Run 1/2's grounds for discarding it - inconsistency with FAO wheat +15% y/y - fail because CBOT is +41% y/y, so dispersed origins reconcile both. Damps the wheat leg to ~+2.75%."
+    },
+    {
+     "claim": "FAO-to-futures pass-through is 0.75-0.85 (of IGC) vs 0.33-0.5 (of CBOT monthly average)",
+     "kind": "judgment",
+     "verdict": "Different denominators, not a real gap. On the like-for-like monthly-average base, August (FAO wheat +2.6% vs CBOT monthly avg +4-5%) pins the ratio near 0.5."
+    },
+    {
+     "claim": "Thai 5% broken rice is $477-481/t vs $453-457/t",
+     "kind": "factual",
+     "verdict": "Unsettled. Immaterial: rice is the flat leg under either quote (~0.2 pt effect on the composite)."
+    },
+    {
+     "claim": "August's monthly average largely missed the 28 Aug CBOT spike while September inherits it in full",
+     "kind": "factual",
+     "verdict": "Agreed by all three runs and arithmetically sound; it is the dominant driver and gives the estimate a hard floor near +2%."
+    },
+    {
+     "claim": "The final nine days pose material two-way risk (ceasefire headlines vs Black Sea escalation)",
+     "kind": "judgment",
+     "verdict": "Real but bounded - only ~32% of the averaging window remains, which is why I use a narrower width than Run 1 and price the open upper tail at 3% rather than 8% or 1%."
+    }
+   ],
+   "reference_class": "Months of the FAO Cereal Price Index in which the prior month rose >=2% m/m and the current month's export quotations, two-thirds observed, are averaging above the prior month's average (2015-2026 regime; median unconditional m/m change ~0%, SD ~2.5%)"
+  }
+ ]
+}
