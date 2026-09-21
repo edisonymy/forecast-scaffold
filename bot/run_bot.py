@@ -100,6 +100,8 @@ EXIT_PROVIDER_FAILURE = 75  # sysexits EX_TEMPFAIL
 # enforces it — so one transient error costs one call's cap, not the tick. A medium research
 # run measures ~$1.3-2.5 on opus-5; 6 leaves headroom for a long high-effort run.
 OPENROUTER_PER_CALL_CAP_USD = 6.0
+# Per-tournament ceiling on open posts fetched before the close-time sort and --limit cut.
+OPEN_POSTS_FETCH_CAP = 500
 # Secrets withheld from the forecasting agent's subprocess env — it runs on untrusted
 # question text and needs none of these (submission + leak-guard are pure Python).
 # OPENROUTER_API_KEY is stripped too: when that provider is selected the key re-enters
@@ -1344,7 +1346,10 @@ def collect_open_posts(
         # first tick after the tournament appears). An unknown slug — or one tournament's
         # transient API failure — must cost only that slug's batch, never the whole run.
         try:
-            fetched = client.open_posts(slug, limit=limit)
+            # Fetch EVERY open post (bounded), not the first `limit` in the API's default
+            # order: --limit used to truncate before the close-time sort, so with more open
+            # posts than the limit the soonest-closing ones could never be fetched at all.
+            fetched = client.open_posts(slug, limit=max(limit, OPEN_POSTS_FETCH_CAP))
         except Exception as exc:  # noqa: BLE001 — isolate the failure to this slug
             print(f"tournament {slug!r} unavailable ({exc}) — skipping this slug")
             continue
@@ -1354,6 +1359,10 @@ def collect_open_posts(
         print(f"{len(fetched)} open post(s) in {slug} ({len(new)} new)")
     if len(slugs) > 1:
         print(f"{len(posts)} open post(s) total across {len(slugs)} tournaments")
+    if len(posts) > limit:
+        posts.sort(key=lambda p: str(p.get("scheduled_close_time") or "9999-12-31"))
+        print(f"--limit {limit}: keeping the {limit} soonest-closing of {len(posts)} posts")
+        posts = posts[:limit]
     return posts
 
 

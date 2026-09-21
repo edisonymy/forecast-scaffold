@@ -81,6 +81,18 @@ class TestCollectOpenPosts:
         client = self._client({"season": [{"id": 1}]})
         assert run_bot.collect_open_posts(client, "season,,  ", 100) == [{"id": 1}]
 
+    def test_limit_keeps_the_soonest_closing_not_the_api_order(self) -> None:
+        # 2026-09-21: --limit truncated the API's default (newest-first) order BEFORE the
+        # close-time sort, so with more open posts than the limit the soonest-closing
+        # question could be dropped entirely.
+        client = self._client({"season": [
+            {"id": 3, "scheduled_close_time": "2026-10-03T00:00:00Z"},
+            {"id": 2, "scheduled_close_time": "2026-10-02T00:00:00Z"},
+            {"id": 1, "scheduled_close_time": "2026-09-22T00:00:00Z"},
+        ]})
+        posts = run_bot.collect_open_posts(client, "season", 2)
+        assert [p["id"] for p in posts] == [1, 2]
+
     def test_unknown_slug_is_isolated_not_fatal(self, capsys: Any) -> None:
         # A pre-entered next-quarter round names its slug before Metaculus creates the
         # tournament; that slug erroring must cost only its own batch, never the run.
