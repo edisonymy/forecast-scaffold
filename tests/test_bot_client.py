@@ -219,3 +219,14 @@ class TestTournaments:
         client = MetaculusClient(token="t")
         client._request = lambda *a, **k: None  # type: ignore[method-assign]
         assert client.tournaments() == []
+
+
+def test_closes_within_hours() -> None:
+    from datetime import UTC, datetime
+    now = datetime(2026, 9, 21, 22, 0, tzinfo=UTC)
+    soon = {"scheduled_close_time": "2026-09-21T23:00:00Z"}
+    later = {"scheduled_close_time": "2026-09-22T12:00:00Z"}
+    assert run_bot.closes_within_hours({}, soon, 3, now=now)
+    assert not run_bot.closes_within_hours({}, later, 3, now=now)
+    assert run_bot.closes_within_hours(soon, {}, 3, now=now)  # post-level fallback
+    assert not run_bot.closes_within_hours({}, {}, 3, now=now)  # unknown close: not urgent

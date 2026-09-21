@@ -82,6 +82,8 @@ class ScriptedAgent:
         out = self.outputs.pop(0)
         if out == "AGENT_FAILURE":
             raise RuntimeError("agent failed (1): boom")
+        if out == "AGENT_TIMEOUT":
+            raise run_bot.subprocess.TimeoutExpired(cmd, timeout)
         if out == "UNPRICED_VALID":
             return fenced(RESEARCH), run_bot.UNKNOWN_METERED_COST, "claude-sonnet-5"
         return out, 0.05, "claude-sonnet-5"
@@ -1087,6 +1089,16 @@ class TestFailureLedger:
         # failed because of the provider — fall back, don't strike the ledger.
         bad = fenced({"probability": 7.3, "reasoning": "x", "sources": []})
         agent, record, ok = run(monkeypatch, tmp_path, [bad, "AGENT_FAILURE"],
+                                config=config_with_tiers(self.LOW), effort="low")
+        assert not ok
+        assert agent.final_infra == 1
+        assert not (tmp_path / "failures.jsonl").exists()
+
+    def test_hanging_provider_is_a_provider_failure(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # Every call times out: fall back (exit 75), never strike the ledger.
+        agent, record, ok = run(monkeypatch, tmp_path, ["AGENT_TIMEOUT"] * 6,
                                 config=config_with_tiers(self.LOW), effort="low")
         assert not ok
         assert agent.final_infra == 1

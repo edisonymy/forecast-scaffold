@@ -100,6 +100,15 @@ EXIT_PROVIDER_FAILURE = 75  # sysexits EX_TEMPFAIL
 # enforces it — so one transient error costs one call's cap, not the tick. A medium research
 # run measures ~$1.3-2.5 on opus-5; 6 leaves headroom for a long high-effort run.
 OPENROUTER_PER_CALL_CAP_USD = 6.0
+# A never-forecast question closing within this many hours cannot safely wait for a later
+# run, so the --budget ceiling is waived for it (operator, 2026-09-22: "fuck budget
+# constraints" when the deadline is that close). It still runs under a fresh per-question
+# allowance so the OpenRouter CLI always has a finite --max-budget-usd.
+URGENT_CLOSE_HOURS = 3.0
+URGENT_HEADROOM_USD = 30.0
+# One question costing more than this raises an ops alert (max seen Sep 4-21: $9.71 over
+# 153 forecasts). Alerts never stop a forecast — they open an issue for a human/Claude.
+PER_QUESTION_ALERT_USD = 15.0
 # Per-tournament ceiling on open posts fetched before the close-time sort and --limit cut.
 OPEN_POSTS_FETCH_CAP = 500
 # Secrets withheld from the forecasting agent's subprocess env — it runs on untrusted
@@ -1376,6 +1385,25 @@ SEASONAL_TOURNAMENT_RE = re.compile(
 SEASONAL_EXCLUDE_RE = re.compile(r"(?i)(warmup|practice|testing)")
 
 
+def ops_alert(message: str) -> None:
+    """Raise an operator alert without stopping anything: a GitHub ::warning:: annotation
+    plus a line in $OPS_ALERTS_FILE, which bot.yml turns into an issue."""
+    print(f"::warning::ops alert: {message}")
+    if path := os.environ.get("OPS_ALERTS_FILE"):
+        with contextlib.suppress(OSError), open(path, "a", encoding="utf-8") as fh:
+            fh.write(f"{_utc_now()} {message}\n")
+
+
+def closes_within_hours(post: dict[str, Any], question: dict[str, Any], hours: float,
+                       now: datetime | None = None) -> bool:
+    """True when the question's close time is known and less than ``hours`` away."""
+    closes = _parse_iso_z(question.get("scheduled_close_time")
+                          or post.get("scheduled_close_time"))
+    if closes is None:
+        return False
+    return (closes - (now or datetime.now(UTC))) < timedelta(hours=hours)
+
+
 def _parse_iso_z(value: Any) -> datetime | None:
     """Parse a Metaculus timestamp (ISO-8601, optionally with a trailing 'Z')."""
     if not value:
@@ -1773,8 +1801,10 @@ def forecast_question(
                 errors = [str(exc)]
                 # The LATEST call's outcome decides infra-vs-question: quota running out
                 # mid-question (after an earlier reply) is still the provider's fault.
-                provider_error = isinstance(exc, RuntimeError) and str(exc).startswith(
-                    "agent failed")
+                # A timeout counts too: a hanging provider must fall back, not burn every
+                # 85-minute tick on stalled calls (audit, 2026-09-22).
+                provider_error = isinstance(exc, subprocess.TimeoutExpired) or (
+                    isinstance(exc, RuntimeError) and str(exc).startswith("agent failed"))
                 if hard_cap_openrouter and isinstance(
                     exc, (RuntimeError, subprocess.TimeoutExpired)
                 ):
@@ -2438,7 +2468,6 @@ def forecast_question(
                 failures_path(str(journal.path)), question.get("id"),
                 "invalid payload after retry: " + "; ".join(errors)[:200],
             )
-        # Otherwise (timeouts only): neither a ledger strike nor a provider fallback.
         return False
     aggregation_note: str | None = None
     # Runs that produced a usable number, in this question type's own currency.
@@ -3091,10 +3120,25 @@ def main(argv: list[str] | None = None) -> int:
     done = failed = 0
     spent = {"usd": 0.0}
     for index, (post, question) in enumerate(pending):
-        if args.budget > 0 and spent["usd"] >= args.budget:
+        # Operator policy (2026-09-22): a NEW question closing too soon to wait for a later
+        # run ignores the budget entirely. It still gets a finite per-question allowance
+        # (URGENT_HEADROOM_USD past what is spent), because the OpenRouter path needs a
+        # hard cap to hand the CLI; that allowance is always fresh, never exhausted.
+        urgent = index < new_count and closes_within_hours(post, question, URGENT_CLOSE_HOURS)
+        question_args = args
+        if urgent and args.budget > 0 and spent["usd"] >= args.budget - URGENT_HEADROOM_USD:
+            question_args = argparse.Namespace(
+                **{**vars(args), "budget": spent["usd"] + URGENT_HEADROOM_USD})
+            print(f"  closes within {URGENT_CLOSE_HOURS:g}h: budget ceiling waived "
+                  f"(${spent['usd']:.2f} spent)")
+            ops_alert(f"budget ceiling ${args.budget:.0f} waived for urgent question "
+                      f"{question.get('id')} (${spent['usd']:.2f} spent this run)")
+        if not urgent and args.budget > 0 and spent["usd"] >= args.budget:
             print(f"CATASTROPHE budget ceiling ${args.budget:.2f} reached "
                   f"(${spent['usd']:.2f} spent); {len(pending) - done - failed} "
                   "question(s) left for the next session")
+            ops_alert(f"budget ceiling ${args.budget:.0f} reached with "
+                      f"{len(pending) - index} question(s) still queued")
             break
         if index >= new_count and refresh_budget > 0 and spent["usd"] >= refresh_budget:
             print(f"refresh budget ${refresh_budget:.2f} reached; "
@@ -3105,10 +3149,14 @@ def main(argv: list[str] | None = None) -> int:
                   f"{len(pending) - done - failed} question(s) left for the next run")
             break
         print(f"- {question.get('title', post.get('title'))!r}")
+        before = spent["usd"]
         try:
             ok = forecast_question(
-                client, post, question, args, config, journal, spent, deadline
+                client, post, question, question_args, config, journal, spent, deadline
             )
+            if (cost := spent["usd"] - before) > PER_QUESTION_ALERT_USD:
+                ops_alert(f"question {question.get('id')} cost ${cost:.2f} "
+                          f"(alert threshold ${PER_QUESTION_ALERT_USD:.0f})")
             done += ok
             failed += not ok
             # A False return already wrote its own ledger entry (and only when the

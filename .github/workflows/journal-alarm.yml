@@ -8,7 +8,18 @@ name: Journal alarm
 on:
   schedule:
     - cron: "17 * * * *"
+  # [ADDED 2026-09-22] GitHub cron drops most ticks (observed ~6 runs/day), so an outage
+  # was detected in 3-6h, not 1h. workflow_run fires reliably after every Tournament bot
+  # run (i.e. every 10 min while the Cloud Scheduler kicker is alive); the cron above stays
+  # as the backstop that notices the kicker itself going dark (tripwire (a)).
+  workflow_run:
+    workflows: ["Tournament bot"]
+    types: [completed]
   workflow_dispatch:
+
+concurrency:
+  group: journal-alarm
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -50,8 +61,18 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           title="Bot alarm: journal silence"
-          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')
-          if [ -n "$existing" ]; then echo "alert issue #$existing already open"; exit 0; fi
+          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number,updatedAt --jq '.[0] // empty')
+          if [ -n "$existing" ]; then
+            # An open issue must not swallow later alarms: comment, at most once an hour.
+            number=$(echo "$existing" | python -c "import json,sys; print(json.load(sys.stdin)['number'])")
+            age_min=$(echo "$existing" | python -c "import json,sys,datetime as d; u=d.datetime.fromisoformat(json.load(sys.stdin)['updatedAt'].replace('Z','+00:00')); print(int((d.datetime.now(d.timezone.utc)-u).total_seconds()//60))")
+            if [ "$age_min" -ge 60 ]; then
+              gh issue comment "$number" --body "Still alarming: $(cat "$RUNNER_TEMP/alarm-reason.txt") — $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            else
+              echo "alarm issue #$number updated ${age_min}m ago — not commenting again yet"
+            fi
+            exit 0
+          fi
           {
             echo "Automated alert from the journal-alarm workflow."
             echo

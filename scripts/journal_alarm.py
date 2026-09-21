@@ -14,8 +14,8 @@ Two tripwires, either one raises the alarm:
       a broken workflow (expired token, dependency break, the external kicker going
       quiet) even before it shows up in the journal.
   (b) an open tournament question still has NO forecast from this bot account
-      ``grace_minutes`` after it opened — catches a workflow that reports green while
-      doing nothing (2026-09-21: 2.5h of green ticks, 0 forecasts, questions missed).
+      ``grace_minutes`` (6h) after it opened, or within ``imminent_minutes`` of closing —
+      catches a workflow that reports green while doing nothing (2026-09-21: 2.5h of green ticks, 0 forecasts, questions missed).
       [CHANGED 2026-09-22] This used to be "open questions + journal silent for N hours",
       which never fired (anonymous reads 403 -> "unknown") and, once authenticated,
       would have fired all day: standing forecasts make journal quiet normal.
@@ -84,47 +84,74 @@ def newest_forecast_at(journal_path: str | Path) -> datetime | None:
 
 
 def open_question_count(
-    slugs: list[str], *, grace_minutes: float = 120.0, now: datetime | None = None
+    slugs: list[str],
+    *,
+    grace_minutes: float = 360.0,
+    imminent_minutes: float = 90.0,
+    now: datetime | None = None,
 ) -> int:
-    """Open questions this bot account has NOT forecast, opened over ``grace_minutes`` ago.
+    """Open questions this bot account has NOT forecast that look like a coverage failure:
+    closing within ``imminent_minutes`` (about to be missed), or open for more than
+    ``grace_minutes`` (a healthy bot works through even a big wave well inside that).
 
-    Needs the bot's ``METACULUS_TOKEN``: Metaculus 403s anonymous ``/posts/`` reads, and
-    ``my_forecasts`` is per-account. A question with no parsable ``open_time`` counts (fail
-    loud). Any network or parsing error returns -1 ("unknown") rather than raising — this
-    alarm must survive a flaky or renamed API just as well as it survives a real outage.
+    Needs the bot's ``METACULUS_TOKEN`` (Metaculus 403s anonymous ``/posts/`` reads) and
+    ``with_cp=true`` — without it the API omits ``my_forecasts`` and EVERY question would
+    look unforecast. A question with no parsable ``open_time`` counts as old (fail loud).
+    Each slug is isolated: a slug that does not exist yet (HTTP 400/404, e.g. a
+    pre-entered next-quarter round) is skipped; any other failure makes that slug
+    unknown. Returns -1 ("unknown") only when no slug could be read at all.
     """
     now = now or datetime.now(UTC)
     token = os.environ.get("METACULUS_TOKEN", "")
     total = 0
-    try:
-        for raw_slug in slugs:
-            slug = raw_slug.strip()
-            if not slug:
-                continue
-            query = urllib.parse.urlencode(
-                {"tournaments": slug, "statuses": "open", "limit": 100}
-            )
-            request = urllib.request.Request(f"{BASE_URL}/posts/?{query}")
-            request.add_header("User-Agent", USER_AGENT)
-            if token:
-                request.add_header("Authorization", f"Token {token}")
+    read_any = False
+    for raw_slug in slugs:
+        slug = raw_slug.strip()
+        if not slug:
+            continue
+        query = urllib.parse.urlencode(
+            {"tournaments": slug, "statuses": "open", "limit": 100, "with_cp": "true"}
+        )
+        request = urllib.request.Request(f"{BASE_URL}/posts/?{query}")
+        request.add_header("User-Agent", USER_AGENT)
+        if token:
+            request.add_header("Authorization", f"Token {token}")
+        try:
             with urllib.request.urlopen(request, timeout=30) as response:
                 payload = json.loads(response.read().decode("utf-8"))
+            count = 0
             for post in payload.get("results") or []:
                 if post.get("question"):
                     questions = [post["question"]]
                 else:
                     group = post.get("group_of_questions") or {}
                     questions = group.get("questions") or []
-                total += sum(
+                count += sum(
                     1 for q in questions
                     if isinstance(q, dict) and q.get("status") == "open"
                     and not (q.get("my_forecasts") or {}).get("latest")
-                    and _opened_minutes_ago(q, now) > grace_minutes
+                    and (_opened_minutes_ago(q, now) > grace_minutes
+                         or _closes_in_minutes(q, post, now) < imminent_minutes)
                 )
-    except (urllib.error.URLError, TimeoutError, OSError, ValueError, KeyError, TypeError):
-        return -1
-    return total
+        except (urllib.error.URLError, TimeoutError, OSError, ValueError, KeyError,
+                TypeError, AttributeError):
+            # HTTPError included: a 400/404 slug that does not exist yet has nothing to
+            # cover, and any other failure leaves just this slug unknown.
+            continue
+        read_any = True
+        total += count
+    return total if read_any else -1
+
+
+def _closes_in_minutes(question: dict, post: dict, now: datetime) -> float:
+    stamp = question.get("scheduled_close_time") or post.get("scheduled_close_time")
+    try:
+        closes = datetime.fromisoformat(str(stamp).replace("Z", "+00:00"))
+    except ValueError:
+        return float("inf")
+    if closes.tzinfo is None:
+        closes = closes.replace(tzinfo=UTC)
+    return (closes - now).total_seconds() / 60.0
 
 
 def _opened_minutes_ago(question: dict, now: datetime) -> float:
@@ -231,7 +258,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--workflow", default="bot.yml")
     parser.add_argument("--silence-hours", type=float, default=3.0)
-    parser.add_argument("--grace-minutes", type=float, default=120.0)
+    parser.add_argument("--grace-minutes", type=float, default=360.0)
+    parser.add_argument("--imminent-minutes", type=float, default=90.0)
     parser.add_argument("--run-gap-hours", type=float, default=2.0)
     args = parser.parse_args(argv)
 
@@ -242,7 +270,9 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     newest_at = newest_forecast_at(args.journal)
-    open_count = open_question_count(slugs, grace_minutes=args.grace_minutes)
+    open_count = open_question_count(
+        slugs, grace_minutes=args.grace_minutes, imminent_minutes=args.imminent_minutes
+    )
     run_age_h = last_successful_run_age_hours(args.workflow)
 
     alarm, reason = evaluate(

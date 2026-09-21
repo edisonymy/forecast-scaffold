@@ -236,3 +236,42 @@ def test_open_question_count_skips_forecast_and_recently_opened(
     monkeypatch.setattr(alarm.urllib.request, "urlopen", fake_urlopen)
 
     assert alarm.open_question_count(["minibench"], grace_minutes=120, now=now) == 2
+
+
+def test_open_question_count_flags_imminent_unforecast_and_sends_with_cp(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    now = datetime(2026, 9, 21, 22, 0, tzinfo=UTC)
+    urls: list[str] = []
+    payload = {"results": [
+        # opened 20 min ago but closes in 30: about to be missed
+        {"question": {"status": "open", "open_time": "2026-09-21T21:40:00Z",
+                      "scheduled_close_time": "2026-09-21T22:30:00Z"}},
+        # opened 20 min ago, closes tomorrow: a healthy bot is still on it
+        {"question": {"status": "open", "open_time": "2026-09-21T21:40:00Z",
+                      "scheduled_close_time": "2026-09-22T22:00:00Z"}},
+    ]}
+
+    def fake_urlopen(request: object, timeout: float = 30) -> _FakeResponse:
+        urls.append(request.full_url)  # type: ignore[attr-defined]
+        return _FakeResponse(payload)
+
+    monkeypatch.setattr(alarm.urllib.request, "urlopen", fake_urlopen)
+
+    assert alarm.open_question_count(["minibench"], now=now) == 1
+    # without with_cp the API omits my_forecasts and everything looks unforecast
+    assert "with_cp=true" in urls[0]
+
+
+def test_open_question_count_skips_a_slug_that_does_not_exist_yet(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def fake_urlopen(request: object, timeout: float = 30) -> _FakeResponse:
+        if "market-pulse-26q4" in request.full_url:  # type: ignore[attr-defined]
+            raise urllib.error.HTTPError(request.full_url, 400, "no such tournament",  # type: ignore[attr-defined]
+                                         {}, None)  # type: ignore[arg-type]
+        return _FakeResponse({"results": [{"question": {"status": "open"}}]})
+
+    monkeypatch.setattr(alarm.urllib.request, "urlopen", fake_urlopen)
+
+    assert alarm.open_question_count(["minibench", "market-pulse-26q4"]) == 1
