@@ -31,6 +31,12 @@ jobs:
         continue-on-error: false
         env:
           TOURNAMENT_ID: ${{ vars.TOURNAMENT_ID }}
+          # Keep in sync with bot.yml's EXTRA_TOURNAMENTS.
+          EXTRA_TOURNAMENTS: market-pulse-26q3,market-pulse-26q4
+          # [ADDED 2026-09-21] Metaculus 403s unauthenticated /posts/ reads, so without the
+          # token the open-question count was always "unknown" and the journal-silence
+          # tripwire could never fire — exactly the green-but-empty shape of Sep 21.
+          METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
           GH_TOKEN: ${{ github.token }}
         # pipefail: without it `| tee` exits 0 and this alarm can never fire (it stayed
         # silent on 2026-09-21 while the bot forecast nothing on an exhausted subscription).

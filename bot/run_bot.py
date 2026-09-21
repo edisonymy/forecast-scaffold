@@ -40,7 +40,7 @@ sys.path.insert(0, str(ROOT / "bot"))  # so sibling bot modules (asknews) import
 import asknews  # optional AskNews research source (dark by default; no key -> no-op)
 import markets  # harness-side Polymarket/Manifold candidate lookup (record-only, sighted only)
 import priors  # same-template prior outcomes from the resolutions overlay (record-only)
-from metaculus import MetaculusClient
+from metaculus import MetaculusClient, MetaculusError
 
 from forecast_scaffold.core import (
     MAX_TOTAL_ESCAPE_MASS,
@@ -95,6 +95,11 @@ FAILURE_WINDOW_HOURS = 24.0
 # (subscription out of credit, auth outage, rate limit). bot.yml reruns on OpenRouter only
 # on this code; 1 (question-level failures only) alerts but does not re-spend elsewhere.
 EXIT_PROVIDER_FAILURE = 75  # sysexits EX_TEMPFAIL
+# Per-call --max-budget-usd on the OpenRouter path. A call whose cost is unknown (failed,
+# timed out, unpriced envelope) is charged exactly this much against --budget — the CLI
+# enforces it — so one transient error costs one call's cap, not the tick. A medium research
+# run measures ~$1.3-2.5 on opus-5; 6 leaves headroom for a long high-effort run.
+OPENROUTER_PER_CALL_CAP_USD = 6.0
 # Secrets withheld from the forecasting agent's subprocess env — it runs on untrusted
 # question text and needs none of these (submission + leak-guard are pure Python).
 # OPENROUTER_API_KEY is stripped too: when that provider is selected the key re-enters
@@ -975,6 +980,9 @@ def run_agent(
         raise RuntimeError(f"agent failed ({result.returncode}): {detail}")
     try:
         envelope = json.loads(result.stdout)
+        if isinstance(envelope, dict) and envelope.get("is_error"):
+            # Exit 0 with an error envelope is still a failed call — never a payload.
+            raise RuntimeError(f"agent failed (0): {str(envelope.get('result'))[:300]}")
         if isinstance(envelope, dict) and "result" in envelope:
             model = _primary_model(envelope.get("modelUsage"), agent_cmd)
             cost = float(envelope.get("total_cost_usd") or 0.0)
@@ -1299,6 +1307,14 @@ def record_failure(path: Path, question_id: Any, error: str) -> None:
         fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
+def is_transient_platform_error(exc: BaseException) -> bool:
+    """A Metaculus 429/5xx or network failure — the platform's fault, not the question's."""
+    if not isinstance(exc, MetaculusError):
+        return False
+    message = str(exc)
+    return bool(re.search(r"-> HTTP (429|5\d\d):", message)) or "-> HTTP " not in message
+
+
 def close_time_key(pair: tuple[dict[str, Any], dict[str, Any]]) -> str:
     """Sort key: the question's close time (ISO strings compare chronologically).
 
@@ -1438,31 +1454,31 @@ def forecast_question(
         args.provider == "openrouter" and math.isfinite(budget) and budget > 0
     )
     run_cost = 0.0
-    metered_spend_uncertain = False
+    last_call_cap = 0.0  # the --max-budget-usd handed to the most recent metered call
     # One entry per forecasting agent call, in the order they ran — see write_trace.
     trace_calls: list[dict[str, Any]] = []
 
     def fail_closed_metered() -> None:
-        """Reserve the unknown remainder and forbid later paid calls this invocation."""
-        nonlocal metered_spend_uncertain, run_cost
-        if metered_spend_uncertain:
-            return
-        metered_spend_uncertain = True
-        # Charge the unknown call the entire remaining allowance. This makes both the
-        # invocation ledger and the journal conservative while avoiding double-counting
-        # successful calls whose cost is already in run_cost.
-        run_cost += max(0.0, budget - (spent["usd"] if spent else 0.0) - run_cost)
+        """Charge a metered call of unknown cost its full per-call cap.
+
+        The CLI enforces --max-budget-usd on the process, so the call cannot have billed
+        more than the cap it was given — reserving exactly that keeps the invocation-wide
+        hard cap true. [CHANGED 2026-09-21] It used to reserve the ENTIRE remaining budget
+        and forbid all later calls, so one OpenRouter 502 or timeout on the first question
+        ended the fallback tick with nothing forecast."""
+        nonlocal run_cost
+        run_cost += last_call_cap
 
     def metered_cmd(cmd: str) -> str | None:
-        """Cap this OpenRouter subprocess at the invocation's unspent remainder."""
+        """Cap this OpenRouter subprocess at min(per-call cap, unspent remainder)."""
+        nonlocal last_call_cap
         if not hard_cap_openrouter:
             return cmd
-        if metered_spend_uncertain:
-            return None
         remaining = budget - (spent["usd"] if spent else 0.0) - run_cost
         if remaining <= 0:
             return None
-        return with_credit_cap(cmd, remaining)
+        last_call_cap = min(remaining, OPENROUTER_PER_CALL_CAP_USD)
+        return with_credit_cap(cmd, last_call_cap)
 
     # The Metaculus API firewalls the HUMAN community prediction from bot accounts
     # everywhere: any value a bot token can read is an aggregate of other competing bots.
@@ -1573,17 +1589,14 @@ def forecast_question(
                 strict_metering=hard_cap_openrouter,
             )
         except (RuntimeError, subprocess.TimeoutExpired) as exc:
+            # Triage only picks a tier: a failed call must not cost the question.
             fail_closed_metered()
-            if spent is not None:
-                spent["usd"] += run_cost
-            print(f"  metered triage failed with unknown usage; budget closed: {exc}")
-            return False
+            tier, triage_cost = "medium", 0.0
+            print(f"  metered triage failed ({str(exc)[:160]}); cap reserved, tier medium")
         if triage_cost == UNKNOWN_METERED_COST:
             fail_closed_metered()
-            if spent is not None:
-                spent["usd"] += run_cost
-            print("  metered triage returned unknown usage; budget closed")
-            return False
+            triage_cost = 0.0
+            print("  metered triage returned unknown usage; per-call cap reserved")
         run_cost += triage_cost
 
     # Tier shape must be known before the system prompt is built: in multi-run mode the
@@ -1639,7 +1652,7 @@ def forecast_question(
         "sources" is legitimately [] (it reconciles what the runs found) but whose number is
         the one that gets submitted, so it must satisfy the same reference-class and
         dispersion contracts as the run whose number it replaces."""
-        nonlocal run_cost, agent_responded
+        nonlocal run_cost, agent_responded, provider_error
         errors: list[str] = []
         first_error: str | None = None
         candidate: dict[str, Any] | None = None
@@ -1747,20 +1760,22 @@ def forecast_question(
                 else:
                     run_cost += attempt_cost
                 agent_responded = True
+                provider_error = False
                 candidate = extract_json(output)
             except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
                 errors = [str(exc)]
+                # The LATEST call's outcome decides infra-vs-question: quota running out
+                # mid-question (after an earlier reply) is still the provider's fault.
+                provider_error = isinstance(exc, RuntimeError) and str(exc).startswith(
+                    "agent failed")
                 if hard_cap_openrouter and isinstance(
                     exc, (RuntimeError, subprocess.TimeoutExpired)
                 ):
                     # A failed/timed-out CLI process may still have been billed, but gives
-                    # us no trustworthy usage envelope. Reusing the apparent remainder in
-                    # a retry could exceed the invocation cap, so reserve it and stop paid
-                    # work for this invocation. ValueError is different: run_agent returned
-                    # successfully, and its known cost was added before JSON parsing.
+                    # no usage envelope: charge it its whole per-call cap (the CLI enforces
+                    # it) and let the retry run under a fresh cap. ValueError is different:
+                    # run_agent returned, and its known cost was added before JSON parsing.
                     fail_closed_metered()
-                    errors.append("metered usage unknown; budget closed")
-                    break
                 continue
             errors = validate_payload(candidate, question)
             if need_dossier and not str(candidate.get("dossier") or "").strip():
@@ -1907,6 +1922,7 @@ def forecast_question(
             slow_question = (date.fromisoformat(resolve_iso) - date.today()).days > 180
     payload: dict[str, Any] | None = None
     model_used = ""
+    provider_error = False  # the latest agent call died on the provider (quota/auth/rate)
     agent_responded = False  # any successful agent reply — separates question-content
     # failures (ledger-worthy: hourly retries won't converge) from infra failures
     # (auth outage, session limit: the QUESTION is fine, back off nothing).
@@ -2402,7 +2418,12 @@ def forecast_question(
         spent["usd"] += run_cost
     if payload is None:
         print(f"  SKIP (invalid after retry): {errors}")
-        if agent_responded:
+        if provider_error and spent is not None:
+            # The last call errored on the provider (quota, auth, rate limit), even if an
+            # earlier one answered: not the question's fault. main() exits
+            # EXIT_PROVIDER_FAILURE so bot.yml reruns the remainder on OpenRouter.
+            spent["infra_failures"] = spent.get("infra_failures", 0) + 1
+        elif agent_responded:
             # The model answered and still couldn't produce a valid payload — that's a
             # question-content failure the backoff ledger should count. Pure infra
             # failures (every call errored) are not the question's fault.
@@ -2410,10 +2431,7 @@ def forecast_question(
                 failures_path(str(journal.path)), question.get("id"),
                 "invalid payload after retry: " + "; ".join(errors)[:200],
             )
-        elif spent is not None:
-            # Every call errored (quota, auth, rate limit): the provider's fault. main()
-            # exits EXIT_PROVIDER_FAILURE so bot.yml reruns the remainder on OpenRouter.
-            spent["infra_failures"] = spent.get("infra_failures", 0) + 1
+        # Otherwise (timeouts only): neither a ledger strike nor a provider fallback.
         return False
     aggregation_note: str | None = None
     # Runs that produced a usable number, in this question type's own currency.
@@ -3072,7 +3090,11 @@ def main(argv: list[str] | None = None) -> int:
             failed += 1
             # Reaching here means agent runs succeeded and the failure was downstream
             # (CDF build, submit 4xx) — question-level, so the backoff ledger counts it.
-            record_failure(ledger, question.get("id"), str(exc))
+            # A platform outage (5xx / network after the client's own retries) is NOT
+            # the question's fault: three ticks of Metaculus trouble must not bench a
+            # question for 24h, which on MiniBench means missing it.
+            if not is_transient_platform_error(exc):
+                record_failure(ledger, question.get("id"), str(exc))
             print(f"  ERROR: {exc}")
     print(f"forecast {done} question(s), {failed} failed, ${spent['usd']:.2f} notional spend")
     if infra := spent.get("infra_failures", 0):

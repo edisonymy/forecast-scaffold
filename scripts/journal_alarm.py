@@ -164,7 +164,7 @@ def evaluate(
     run_age_h: float | None,
     now: datetime,
     *,
-    silence_hours: float = 6.0,
+    silence_hours: float = 3.0,
     run_gap_hours: float = 2.0,
 ) -> tuple[bool, str]:
     """Decide whether the bot looks broken, and why.
@@ -212,7 +212,7 @@ def main(argv: list[str] | None = None) -> int:
         help="Comma-separated slugs (default: $TOURNAMENT_ID,$EXTRA_TOURNAMENTS plus minibench)",
     )
     parser.add_argument("--workflow", default="bot.yml")
-    parser.add_argument("--silence-hours", type=float, default=6.0)
+    parser.add_argument("--silence-hours", type=float, default=3.0)
     parser.add_argument("--run-gap-hours", type=float, default=2.0)
     args = parser.parse_args(argv)
 
