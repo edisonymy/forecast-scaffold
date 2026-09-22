@@ -960,6 +960,30 @@ def agent_environment(provider: str = "subscription") -> dict[str, str]:
     return env
 
 
+#: Token usage of the most recent successful run_agent call (the CLI envelope's `usage`
+#: plus num_turns), so traces can show WHY a call cost what it did — e.g. subscription vs
+#: OpenRouter on the same work. Reset on every call; empty when no envelope was parsed.
+LAST_CALL_USAGE: dict[str, Any] = {}
+
+
+def _usage_summary(envelope: dict[str, Any]) -> dict[str, Any]:
+    usage = envelope.get("usage") or {}
+    cache = usage.get("cache_creation") or {}
+    tools = usage.get("server_tool_use") or {}
+    return {
+        "num_turns": envelope.get("num_turns"),
+        "input": usage.get("input_tokens"),
+        "cache_read": usage.get("cache_read_input_tokens"),
+        "cache_write": usage.get("cache_creation_input_tokens"),
+        "cache_write_1h": cache.get("ephemeral_1h_input_tokens"),
+        "output": usage.get("output_tokens"),
+        "thinking": (usage.get("output_tokens_details") or {}).get("thinking_tokens"),
+        "web_search": tools.get("web_search_requests"),
+        "web_fetch": tools.get("web_fetch_requests"),
+        "duration_api_ms": envelope.get("duration_api_ms"),
+    }
+
+
 def run_agent(
     agent_cmd: str, prompt: str, system: str | None, timeout: int,
     provider: str = "subscription", strict_metering: bool = False,
@@ -979,6 +1003,7 @@ def run_agent(
     # The agent forecasts on untrusted third-party question text (see build_brief), so keep
     # secrets it does not need out of its environment. Submission is pure Python and happens
     # after the agent returns — the agent never needs METACULUS_TOKEN or the leak-guard list.
+    LAST_CALL_USAGE.clear()  # a failed call must not inherit the previous call's usage
     agent_env = agent_environment(provider)
     result = subprocess.run(
         cmd, input=prompt, capture_output=True, text=True, encoding="utf-8",
@@ -1001,6 +1026,8 @@ def run_agent(
             # Exit 0 with an error envelope is still a failed call — never a payload.
             raise RuntimeError(f"agent failed (0): {str(envelope.get('result'))[:300]}")
         if isinstance(envelope, dict) and "result" in envelope:
+            LAST_CALL_USAGE.clear()
+            LAST_CALL_USAGE.update(_usage_summary(envelope))
             model = _primary_model(envelope.get("modelUsage"), agent_cmd)
             cost = float(envelope.get("total_cost_usd") or 0.0)
             if provider == "openrouter" and cost <= 0.0:
@@ -1729,6 +1756,8 @@ def forecast_question(
                 "cost_usd": round(run_cost - cost_before, 4),
                 "seconds": round(time.monotonic() - started, 1),
             }
+            if LAST_CALL_USAGE:
+                entry["usage"] = dict(LAST_CALL_USAGE)
             if attempt0_errors:
                 entry["validation_errors_first_attempt"] = [
                     str(e)[:300] for e in attempt0_errors
