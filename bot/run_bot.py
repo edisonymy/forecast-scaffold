@@ -938,11 +938,6 @@ def agent_environment(provider: str = "subscription") -> dict[str, str]:
         env["ANTHROPIC_AUTH_TOKEN"] = key
         env["ANTHROPIC_API_KEY"] = ""
         env.pop("CLAUDE_CODE_OAUTH_TOKEN", None)
-        # The subscription gets 1-hour prompt caching automatically; an API-key endpoint
-        # defaults to 5 minutes (CLI help: "5 minutes unless ENABLE_PROMPT_CACHING_1H=1").
-        # Measured 2026-09-22 on the same question: OpenRouter cost 1.8x the subscription
-        # with FEWER turns, all of the gap in cache writes (54.7k at 5m vs 26.8k at 1h).
-        env.setdefault("ENABLE_PROMPT_CACHING_1H", "1")
         # A machine with a cached `claude` login ignores env auth entirely (the CLI
         # rightly refuses to send its OAuth bearer to a third-party host, so requests
         # arrive with NO auth header -> 401 "Missing Authentication header"). A fresh,
