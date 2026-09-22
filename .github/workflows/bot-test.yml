@@ -32,6 +32,9 @@ on:
       model:
         description: "Model for the agent (cheap models for diagnostics)"
         default: "claude-opus-5-5"
+      parallel_runs:
+        description: "Research runs per question to run concurrently (1 = sequential)"
+        default: "1"
       provider:
         description: "LLM billing path"
         type: choice
@@ -96,6 +99,7 @@ jobs:
           INPUT_PROVIDER: ${{ inputs.provider }}
           INPUT_EFFORT: ${{ inputs.effort }}
           INPUT_MODEL: ${{ inputs.model }}
+          INPUT_PARALLEL_RUNS: ${{ inputs.parallel_runs }}
         run: |
           # Single-post backtest (--post, forces dry-run) or a tournament sweep — the target
           # comes via env, never interpolated into the command line. A dispatch with NO
@@ -114,6 +118,7 @@ jobs:
             --provider "${INPUT_PROVIDER:-subscription}" \
             --effort "${INPUT_EFFORT:-auto}" \
             --budget 8 \
+            --parallel-runs "${INPUT_PARALLEL_RUNS:-1}" \
             ${{ inputs.dry_run && '--dry-run' || '' }} \
             ${{ inputs.blind && '--blind' || '' }} \
             ${{ inputs.include_forecasted && '--include-forecasted' || '' }} \

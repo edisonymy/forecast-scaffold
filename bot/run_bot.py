@@ -18,6 +18,7 @@ Env:
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import contextlib
 import json
 import math
@@ -27,7 +28,10 @@ import shlex
 import subprocess
 import sys
 import tempfile
+import threading
 import time
+import urllib.error
+import urllib.request
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -976,11 +980,27 @@ def agent_environment(provider: str = "subscription") -> dict[str, str]:
 #: Token usage of the most recent successful run_agent call (the CLI envelope's `usage`
 #: plus num_turns), so traces can show WHY a call cost what it did — e.g. subscription vs
 #: OpenRouter on the same work. Reset on every call; empty when no envelope was parsed.
-LAST_CALL_USAGE: dict[str, Any] = {}
+#: THREAD-LOCAL: parallel research runs each need their own (see --parallel-runs).
+_CALL_USAGE = threading.local()
+
+
+def last_call_usage() -> dict[str, Any]:
+    """This thread's most recent call usage (empty when none was parsed)."""
+    return getattr(_CALL_USAGE, "usage", None) or {}
+
+
+def _set_call_usage(usage: dict[str, Any] | None) -> None:
+    _CALL_USAGE.usage = dict(usage or {})
 
 
 def _usage_summary(envelope: dict[str, Any]) -> dict[str, Any]:
     usage = envelope.get("usage") or {}
+    # Server-side WebSearch is billed per request with its own uncached input, and it is
+    # NOT in usage.server_tool_use (that reads 0 on both providers) — modelUsage carries
+    # the real count. Searches are a large, invisible share of a call's cost.
+    model_usage = envelope.get("modelUsage") or {}
+    searches = sum(int((v or {}).get("webSearchRequests") or 0)
+                   for v in model_usage.values() if isinstance(v, dict))
     cache = usage.get("cache_creation") or {}
     tools = usage.get("server_tool_use") or {}
     return {
@@ -991,7 +1011,8 @@ def _usage_summary(envelope: dict[str, Any]) -> dict[str, Any]:
         "cache_write_1h": cache.get("ephemeral_1h_input_tokens"),
         "output": usage.get("output_tokens"),
         "thinking": (usage.get("output_tokens_details") or {}).get("thinking_tokens"),
-        "web_search": tools.get("web_search_requests"),
+        "web_search": searches or tools.get("web_search_requests"),
+        "cost_usd_envelope": envelope.get("total_cost_usd"),
         "web_fetch": tools.get("web_fetch_requests"),
         "duration_api_ms": envelope.get("duration_api_ms"),
     }
@@ -1016,7 +1037,7 @@ def run_agent(
     # The agent forecasts on untrusted third-party question text (see build_brief), so keep
     # secrets it does not need out of its environment. Submission is pure Python and happens
     # after the agent returns — the agent never needs METACULUS_TOKEN or the leak-guard list.
-    LAST_CALL_USAGE.clear()  # a failed call must not inherit the previous call's usage
+    _set_call_usage(None)  # a failed call must not inherit the previous call's usage
     agent_env = agent_environment(provider)
     result = subprocess.run(
         cmd, input=prompt, capture_output=True, text=True, encoding="utf-8",
@@ -1039,8 +1060,7 @@ def run_agent(
             # Exit 0 with an error envelope is still a failed call — never a payload.
             raise RuntimeError(f"agent failed (0): {str(envelope.get('result'))[:300]}")
         if isinstance(envelope, dict) and "result" in envelope:
-            LAST_CALL_USAGE.clear()
-            LAST_CALL_USAGE.update(_usage_summary(envelope))
+            _set_call_usage(_usage_summary(envelope))
             model = _primary_model(envelope.get("modelUsage"), agent_cmd)
             cost = float(envelope.get("total_cost_usd") or 0.0)
             if provider == "openrouter" and cost <= 0.0:
@@ -1364,6 +1384,41 @@ def record_failure(path: Path, question_id: Any, error: str) -> None:
         fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
+def openrouter_spend_usd(timeout: float = 20.0) -> float | None:
+    """This OpenRouter key's cumulative spend, or None when it cannot be read.
+
+    `usage` covers credit spend, `byok_usage` the bring-your-own-key path — the bot may be
+    on either, so both are summed. This is what OpenRouter actually billed: a call measured
+    2026-09-22 matched the CLI's own estimate to the cent on one request, and was 12% BELOW
+    it on another, which is why the journal records the estimate and this separately.
+    """
+    key = os.environ.get("OPENROUTER_API_KEY", "")
+    if not key:
+        return None
+    request = urllib.request.Request(
+        "https://openrouter.ai/api/v1/key",
+        headers={"Authorization": f"Bearer {key}", "User-Agent": "forecast-scaffold-bot/0.1"},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            data = (json.loads(response.read().decode("utf-8")) or {}).get("data") or {}
+    except (urllib.error.URLError, TimeoutError, OSError, ValueError, TypeError):
+        return None
+    total = 0.0
+    for field in ("usage", "byok_usage"):
+        with contextlib.suppress(TypeError, ValueError):
+            total += float(data.get(field) or 0.0)
+    return total
+
+
+def record_provider_spend(journal_path: str, entry: dict[str, Any]) -> None:
+    """Append a run-level spend row next to the journal (never fails a run)."""
+    path = Path(journal_path).parent / "provider_spend.jsonl"
+    ctx = contextlib.suppress(OSError, TypeError, ValueError)
+    with ctx, path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(entry, ensure_ascii=False) + chr(10))
+
+
 def is_transient_platform_error(exc: BaseException) -> bool:
     """A Metaculus 429/5xx or network failure — the platform's fault, not the question's."""
     if not isinstance(exc, MetaculusError):
@@ -1548,7 +1603,14 @@ def forecast_question(
         args.provider == "openrouter" and math.isfinite(budget) and budget > 0
     )
     run_cost = 0.0
-    last_call_cap = 0.0  # the --max-budget-usd handed to the most recent metered call
+    # Budget-only reservations for calls whose real cost is unknown (failed/unpriced).
+    # They gate further spend but are NOT cost: booking them as cost_usd put a phantom
+    # $6.00 in the journal on 2026-09-22 (a $7.55 question was recorded as $13.55).
+    run_reserved = 0.0
+    # Per-THREAD cap of the call in flight: with --parallel-runs several research runs share
+    # this closure, and a single shared value would let one run reserve another's cap.
+    call_caps: dict[int, float] = {}
+    state_lock = threading.Lock()
     # One entry per forecasting agent call, in the order they ran — see write_trace.
     trace_calls: list[dict[str, Any]] = []
 
@@ -1560,19 +1622,23 @@ def forecast_question(
         hard cap true. [CHANGED 2026-09-21] It used to reserve the ENTIRE remaining budget
         and forbid all later calls, so one OpenRouter 502 or timeout on the first question
         ended the fallback tick with nothing forecast."""
-        nonlocal run_cost
-        run_cost += last_call_cap
+        nonlocal run_reserved
+        with state_lock:
+            run_reserved += call_caps.get(threading.get_ident(), 0.0)
 
     def metered_cmd(cmd: str) -> str | None:
         """Cap this OpenRouter subprocess at min(per-call cap, unspent remainder)."""
-        nonlocal last_call_cap
         if not hard_cap_openrouter:
             return cmd
-        remaining = budget - (spent["usd"] if spent else 0.0) - run_cost
-        if remaining <= 0:
-            return None
-        last_call_cap = min(remaining, OPENROUTER_PER_CALL_CAP_USD)
-        return with_credit_cap(cmd, last_call_cap)
+        with state_lock:
+            remaining = (budget - (spent["usd"] if spent else 0.0)
+                         - (spent.get("reserved_usd", 0.0) if spent else 0.0)
+                         - run_cost - run_reserved)
+            if remaining <= 0:
+                return None
+            cap = min(remaining, OPENROUTER_PER_CALL_CAP_USD)
+            call_caps[threading.get_ident()] = cap
+        return with_credit_cap(cmd, cap)
 
     # The Metaculus API firewalls the HUMAN community prediction from bot accounts
     # everywhere: any value a bot token can read is an aggregate of other competing bots.
@@ -1769,8 +1835,8 @@ def forecast_question(
                 "cost_usd": round(run_cost - cost_before, 4),
                 "seconds": round(time.monotonic() - started, 1),
             }
-            if LAST_CALL_USAGE:
-                entry["usage"] = dict(LAST_CALL_USAGE)
+            if usage_now := last_call_usage():
+                entry["usage"] = usage_now
             if attempt0_errors:
                 entry["validation_errors_first_attempt"] = [
                     str(e)[:300] for e in attempt0_errors
@@ -1797,6 +1863,8 @@ def forecast_question(
                         break
             else:
                 entry["errors"] = [str(e)[:300] for e in run_errors]
+            # Appended in FINISH order; parallel runs finish out of order, so the trace is
+            # sorted back into (phase, run_index) order before it is written.
             trace_calls.append(entry)
 
         # Attempt-0 percentiles kept ONLY when the dispersion-width guard was among the
@@ -1854,7 +1922,8 @@ def forecast_question(
                 if attempt_cost == UNKNOWN_METERED_COST:
                     fail_closed_metered()
                 else:
-                    run_cost += attempt_cost
+                    with state_lock:
+                        run_cost += attempt_cost
                 agent_responded = True
                 provider_error = False
                 candidate = extract_json(output)
@@ -2065,16 +2134,15 @@ def forecast_question(
         # run's own forecast changes; it just also writes down what it found.
         min_sources = max(0, int(tier_params.get("min_sources", 0) or 0))
         angle_need_dossier = share_evidence or use_supervisor
+        # [ADDED 2026-09-22] Independent research runs can run CONCURRENTLY: they share no
+        # state by design (that is the point of the parallel-research architecture), so the
+        # only thing serialising them was this loop. At medium a question drops from ~4
+        # sequential calls (~20 min on opus) to ~1 call of wall clock plus the supervisor.
+        # Cost is unchanged except that simultaneous starts each write the prompt prefix
+        # instead of sharing one run's cache write (a few cents).
+        parallel = max(1, int(getattr(args, "parallel_runs", 1) or 1))
+        specs: list[dict[str, Any]] = []
         for slot_index, letter in enumerate(run_angles, start=1):
-            over_budget = budget > 0 and (spent["usd"] if spent else 0.0) + run_cost >= budget
-            past_deadline = deadline is not None and time.monotonic() > deadline
-            if over_budget or past_deadline:
-                what = "budget" if over_budget else "deadline"
-                if payload is not None:
-                    print(f"  {what}: stopping after {pooled_so_far()} angle run(s)")
-                else:
-                    errors = errors or [f"{what} exhausted before a valid angle run"]
-                break
             # Angle F is market-blind BY DESIGN even in sighted mode — the blind denylist on
             # its command, the blind section in its system, and no crowd-scan in its brief.
             # Every other angle follows the ambient (--blind) mode.
@@ -2100,12 +2168,60 @@ def forecast_question(
                 + (FAST_PROXY_SECTION if slow_question else "")
                 + angle_brief_section(letter, angle_sections[letter])
             )
-            candidate, model, errors = one_run(
-                run_cmd, run_brief + prior_facts + news, run_system, angle_need_dossier,
+            specs.append({
+                "slot_index": slot_index, "letter": letter, "run_blind": run_blind,
+                "cmd": run_cmd, "prompt": run_brief + prior_facts + news,
+                "system": run_system,
+            })
+
+        def launch(spec: dict[str, Any]) -> tuple[dict[str, Any] | None, str, list[str]]:
+            return one_run(
+                spec["cmd"], spec["prompt"], spec["system"], angle_need_dossier,
                 args.timeout, min_sources=min_sources,
                 trace_meta={"phase": 1, "stage": "angle_research", "mode": "research",
-                            "run_index": slot_index, "angle": letter, "blind": run_blind},
+                            "run_index": spec["slot_index"], "angle": spec["letter"],
+                            "blind": spec["run_blind"]},
             )
+
+        results: list[tuple[dict[str, Any] | None, str, list[str]]] = []
+        if parallel > 1 and len(specs) > 1:
+            # Gate ONCE up front: the runs start together, so a per-slot budget/deadline
+            # check between them has nothing left to stop.
+            over_budget = (budget > 0 and (spent["usd"] if spent else 0.0)
+                           + run_cost + run_reserved >= budget)
+            past_deadline = deadline is not None and time.monotonic() > deadline
+            if over_budget or past_deadline:
+                errors = errors or [
+                    f"{'budget' if over_budget else 'deadline'} exhausted before the "
+                    "angle runs"
+                ]
+                specs = []
+            else:
+                print(f"  running {len(specs)} angle run(s) in parallel "
+                      f"(max {parallel})")
+                with concurrent.futures.ThreadPoolExecutor(
+                    max_workers=min(parallel, len(specs))
+                ) as pool:
+                    results = list(pool.map(launch, specs))
+        else:
+            for spec in specs:
+                over_budget = (budget > 0 and (spent["usd"] if spent else 0.0)
+                               + run_cost + run_reserved >= budget)
+                past_deadline = deadline is not None and time.monotonic() > deadline
+                if over_budget or past_deadline:
+                    what = "budget" if over_budget else "deadline"
+                    if payload is not None:
+                        print(f"  {what}: stopping after {pooled_so_far()} angle run(s)")
+                    else:
+                        errors = errors or [f"{what} exhausted before a valid angle run"]
+                    break
+                results.append(launch(spec))
+
+        # Post-processing stays in slot order, so pooling and traces are order-stable
+        # whether the runs were sequential or concurrent.
+        for spec, (candidate, model, run_errors) in zip(specs, results, strict=False):
+            letter, run_blind = spec["letter"], spec["run_blind"]
+            errors = run_errors
             if candidate is None:
                 continue
             used_angles.append(letter)
@@ -2133,7 +2249,8 @@ def forecast_question(
         # stop starting new slots once it's exhausted; whatever pooled so far records.
         # This must hold even while payload is still None: a research run that keeps
         # failing would otherwise retry up to n_runs times with no cost or clock cap.
-        over_budget = budget > 0 and (spent["usd"] if spent else 0.0) + run_cost >= budget
+        over_budget = (budget > 0 and (spent["usd"] if spent else 0.0)
+                       + run_cost + run_reserved >= budget)
         past_deadline = deadline is not None and time.monotonic() > deadline
         if over_budget or past_deadline:
             what = "budget" if over_budget else "deadline"
@@ -2520,6 +2637,8 @@ def forecast_question(
         print(f"  warning: phase 2/3 skipped ({exc}); pooling the independent runs")
     if spent is not None:  # budget accounting counts failed attempts too — they cost money
         spent["usd"] += run_cost
+        if run_reserved:
+            spent["reserved_usd"] = spent.get("reserved_usd", 0.0) + run_reserved
     if payload is None:
         print(f"  SKIP (invalid after retry): {errors}")
         if provider_error and spent is not None:
@@ -2932,7 +3051,8 @@ def forecast_question(
                     ("p_above_upper", record.p_above_upper),
                 ) if value is not None
             },
-            "calls": trace_calls,
+            "calls": sorted(trace_calls,
+                            key=lambda c: (c.get("phase") or 0, c.get("run_index") or 0)),
         })
     except Exception as exc:  # noqa: BLE001 — a trace must never cost a forecast
         print(f"  warning: trace not written ({exc})")
@@ -2999,7 +3119,16 @@ def main(argv: list[str] | None = None) -> int:
                         "bypasses the open-status and already-forecasted filters")
     parser.add_argument("--dry-run", action="store_true", help="record locally, never submit")
     parser.add_argument("--limit", type=int, default=50)
+    parser.add_argument("--skip-posts", default=os.environ.get("SKIP_POSTS", ""),
+                        help="comma-separated post OR question ids never to forecast "
+                             "(default: $SKIP_POSTS). For a question that is not worth its "
+                             "cost — e.g. the Fall practice question, $13.55 on one tick.")
     parser.add_argument("--effort", default="auto", choices=["auto", "low", "medium", "high"])
+    parser.add_argument("--parallel-runs", type=int, default=1,
+                        help="run this many of a question's independent research runs at "
+                             "once (1 = sequential, the historical behaviour). They share "
+                             "no state; concurrency only changes wall clock, and the "
+                             "supervisor still runs after them")
     parser.add_argument(
         "--agent-cmd",
         # The bare "claude -p" default was a measured footgun (e2e, 2026-07-06): no JSON
@@ -3101,6 +3230,9 @@ def main(argv: list[str] | None = None) -> int:
     journal = Journal(args.journal)
 
     fetch_errors: list[str] = []  # tournament fetches that failed for a non-benign reason
+    # Post/question ids never worth forecasting (operator ban list), e.g. a practice
+    # question whose answer costs more than it teaches.
+    banned = {t.strip() for t in str(args.skip_posts or "").split(",") if t.strip()}
     single = args.post is not None
     if single:
         posts = [client.post_detail(args.post)]
@@ -3124,6 +3256,11 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"no active seasonal tournament discovered (configured: "
                       f"{args.tournament})")
         posts = collect_open_posts(client, args.tournament, args.limit, fetch_errors)
+        if banned:
+            kept = [p for p in posts if str(p.get("id")) not in banned]
+            if dropped := len(posts) - len(kept):
+                print(f"skip: {dropped} banned post(s) (--skip-posts)")
+            posts = kept
     ledger = failures_path(args.journal)
     failure_counts = recent_failure_counts(ledger)
     pending = []
@@ -3150,6 +3287,9 @@ def main(argv: list[str] | None = None) -> int:
                     # submit time otherwise, after the journal record is written.
                     print(f"skip (continuous without numeric bounds): {title!r}")
                     continue
+            if str(question.get("id")) in banned:
+                print(f"skip (banned question id): {title!r}")
+                continue
             if failure_counts.get(question.get("id"), 0) >= MAX_QUESTION_FAILURES:
                 print(f"skip (failed {MAX_QUESTION_FAILURES}x in the last "
                       f"{FAILURE_WINDOW_HOURS:.0f}h — backing off): {title!r}")
@@ -3188,6 +3328,9 @@ def main(argv: list[str] | None = None) -> int:
     done = failed = 0
     provider_streak = 0
     spent = {"usd": 0.0}
+    # Exact provider billing (OpenRouter only — a subscription bills nothing per call, so
+    # its cost_usd is and stays a list-price ESTIMATE).
+    billed_before = openrouter_spend_usd() if args.provider == "openrouter" else None
     for index, (post, question) in enumerate(pending):
         # Operator policy (2026-09-22): a NEW question closing too soon to wait for a later
         # run ignores the budget entirely. It still gets a finite per-question allowance
@@ -3195,9 +3338,13 @@ def main(argv: list[str] | None = None) -> int:
         # hard cap to hand the CLI; that allowance is always fresh, never exhausted.
         urgent = index < new_count and closes_within_hours(post, question, URGENT_CLOSE_HOURS)
         question_args = args
-        if urgent and args.budget > 0 and spent["usd"] >= args.budget - URGENT_HEADROOM_USD:
+        committed = spent["usd"] + spent.get("reserved_usd", 0.0)
+        if urgent and args.budget > 0 and committed >= args.budget - URGENT_HEADROOM_USD:
+            # Budget-only reservations count against the metered remainder, so the fresh
+            # allowance sits ABOVE them — otherwise a few failed calls earlier in the tick
+            # would leave an urgent question with nothing to spend.
             question_args = argparse.Namespace(
-                **{**vars(args), "budget": spent["usd"] + URGENT_HEADROOM_USD})
+                **{**vars(args), "budget": committed + URGENT_HEADROOM_USD})
             print(f"  closes within {URGENT_CLOSE_HOURS:g}h: budget ceiling waived "
                   f"(${spent['usd']:.2f} spent)")
             ops_alert(f"budget ceiling ${args.budget:.0f} waived for urgent question "
@@ -3259,6 +3406,33 @@ def main(argv: list[str] | None = None) -> int:
                 record_failure(ledger, question.get("id"), str(exc))
             print(f"  ERROR: {exc}")
     print(f"forecast {done} question(s), {failed} failed, ${spent['usd']:.2f} notional spend")
+    if billed_before is not None and (done or failed):
+        # The counter updates per request, each with its own lag, so the FIRST increase
+        # is a partial total (measured 2026-09-22: $0.3773 recorded vs $0.8418 real).
+        # Poll until two consecutive reads agree after an increase, up to ~4 minutes;
+        # record whatever it says then (None is journaled as-is, never guessed).
+        billed_after = openrouter_spend_usd()
+        previous = None
+        for _ in range(12):
+            settled = (billed_after is not None and billed_after > billed_before
+                       and previous is not None and abs(billed_after - previous) < 1e-6)
+            if settled:
+                break
+            previous = billed_after
+            time.sleep(20)
+            billed_after = openrouter_spend_usd()
+        entry = {
+            "at": _utc_now(), "provider": "openrouter",
+            "questions_forecast": done, "questions_failed": failed,
+            "estimate_usd": round(spent["usd"], 4),
+            "reserved_usd": round(spent.get("reserved_usd", 0.0), 4),
+            "billed_usd": (None if billed_after is None
+                           else round(billed_after - billed_before, 4)),
+        }
+        record_provider_spend(str(journal.path), entry)
+        if entry["billed_usd"] is not None:
+            print(f"OpenRouter billed ${entry['billed_usd']:.4f} this run "
+                  f"(CLI estimate ${entry['estimate_usd']:.2f})")
     if infra := spent.get("infra_failures", 0):
         print(f"provider failure: every agent call errored on {infra} question(s) — "
               f"exit {EXIT_PROVIDER_FAILURE} so the workflow reruns on its fallback provider")
