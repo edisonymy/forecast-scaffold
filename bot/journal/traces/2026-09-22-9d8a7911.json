@@ -1,0 +1,229 @@
+{
+ "record_id": "2026-09-22-9d8a7911",
+ "question": "Will the September 2026 US jobs report show nonfarm payrolls rose by more than 100,000?",
+ "question_id": 45966,
+ "url": "https://www.metaculus.com/questions/45781/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "binary",
+ "forecast_at": "2026-09-22T09:56:44+00:00",
+ "effort": "medium",
+ "model": "claude-opus-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": true,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 7.1963,
+ "pools": {
+  "pooled_runs": 0.4199780968784848,
+  "phase1": 0.4199780968784848,
+  "phase2": null,
+  "spread_phase1": 0.02,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probability": 0.43
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 2.3405,
+   "seconds": 415.1,
+   "usage": {
+    "num_turns": 26,
+    "input": 28,
+    "cache_read": 978943,
+    "cache_write": 66520,
+    "cache_write_1h": 66520,
+    "output": 23059,
+    "thinking": 15323,
+    "web_search": 18,
+    "cost_usd_envelope": 2.3405275,
+    "web_fetch": 0,
+    "duration_api_ms": 454198
+   },
+   "estimate": 0.42,
+   "reasoning": "2026's true payroll run rate is ~80k/month (RBC; Sept 2026 FOMC statement), not the 31k trailing-12-month figure the background quotes, which is dragged by a very weak 2025 H2. Centering September's first print near 70-80k with a residual SD of ~90k (2026 first-print residuals; consensus-error SD ~100k) puts >100k at roughly 36-40%. Pushing up: 5 of 8 2026 first prints exceeded 100k, claims are at 196k with continuing claims the lowest since Jan-2024, Challenger Jan-Aug cuts the lowest since 2022, federal cuts down 92% y/y, diffusion index highest since Dec-2024. Pushing down: the 100k threshold sits above both trend and any plausible consensus (~50-60k), the >100k months clustered in the stronger Jan-May stretch (3-month trend is 71k), and TD flags August's leisure/hospitality and local-government gains plus a freak +35k federal print as overstated and reversion-prone. Kalshi's exact-terms contract (same threshold, same initial-print instrument, closes at release) trades 0.38/0.44, last 0.45, ~16.7k contracts; I sit just above its mid. Release risk is negligible - the Oct 1 shutdown was averted by a CR through Dec 11.",
+   "sources": [
+    "https://www.bls.gov/news.release/archives/empsit_09042026.htm",
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=PAYEMS",
+    "https://www.bls.gov/opub/ted/2026/total-nonfarm-payroll-employment-changed-little-in-june-2026.htm",
+    "https://www.investing.com/economic-calendar/nonfarm-payrolls-227",
+    "https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXPAYROLLS",
+    "https://economics.td.com/us-employment",
+    "https://www.cnbc.com/2026/09/16/fed-rate-decision-september-2026.html",
+    "https://www.challengergray.com/blog/challenger-report-august-job-cuts-up-58-consumer-products-food-lead/",
+    "https://mediacenter.adp.com/2026-09-02-ADP-National-Employment-Report-Private-Sector-Employment-Increased-by-38,000-Jobs-in-August",
+    "https://thehill.com/homenews/house/6063667-house-government-funding-cr-shutdown-midterms/",
+    "https://www.clearbrookglobal.com/weekly-market-commentary-september-21-2026/",
+    "https://www.rbc.com/en/economics/us-analysis/us-featured-analysis/how-to-monitor-the-persistent-tightness-in-the-us-labor-market/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the seasonally adjusted over-the-month change in total nonfarm payroll employment for September 2026 as printed in the INITIAL BLS Employment Situation release (2026-10-02 13:00Z / 8:30am ET), not the revised figure, not private trackers, not the household survey. Threshold is strictly greater than +100,000; +100,000 exactly resolves NO. Delay past the window annuls.\n\nEVENT WINDOW: the measured quantity is the payroll level change from the pay period including Aug 12, 2026 to the pay period including Sep 12, 2026 per CES methodology implied by the criteria. That September reference period closed on 2026-09-12, i.e. 100% of the measured interval had already elapsed as of Now (2026-09-22T09:37Z); only collection, seasonal adjustment and publication remain.\n\nEVIDENCE\n- Aug 2026 print (BLS, rel. 2026-09-04): +162,000, vs Dow Jones consensus 53-55k; unemployment 4.1%; participation 61.6%; avg hourly earnings +0.3% m/m, +3.1% y/y.\n- Same release: June revised +20k->+31k, July revised -23k->+21k (net +55k upward revision to the prior two months).\n- Aug composition (BLS / TD Economics, Sep 2026): leisure & hospitality +62k (food services +59k), local government +50k (local gov education +42k), health care & social assistance +28k, construction +22k, manufacturing +16k, information -23k, federal government +35k. TD Economics wrote that the leisure & hospitality and local-government strength was \"likely overstated.\"\n- Diffusion index 55.6% in August, highest since Dec 2024 (TD Economics, Sep 2026).\n- 3-month average payroll gain rose to 71k in August from 38k in July (TD Economics).\n- 2026 first prints by data month (investing.com economic calendar, actual vs consensus): Jan +130 vs 66; Feb -92 vs 58; Mar +178 vs 65; Apr +115 vs 65; May +172 vs 85; Jun +57 vs 114; Jul -23 vs 85; Aug +162 vs 55. Dec 2025: +50 vs 66.\n- Current-vintage PAYEMS monthly changes 2026 (FRED, pulled 2026-09-22): Jan +160, Feb -156, Mar +214, Apr +148, May +63, Jun +31, Jul +21, Aug +162. Sep-Dec 2025: +76, -140, +41, -17.\n- Initial jobless claims: 196,000 for the week ending 2026-09-12 (down 10k from 206k); 4-week average ~206k; continuing claims fell 39k to 1,730,000, lowest since January 2024 (DOL weekly claims).\n- Challenger, Gray & Christmas (Aug 2026 report): 52,881 announced cuts in August, up from 33,429 in July but -38.5% y/y and the lowest August since 2022; Jan-Aug total 529,914, -41% y/y, lowest Jan-Aug since 2022; government-announced cuts 1,477 in August, 22,229 YTD, -92% vs 295,273 through Aug 2025.\n- ADP National Employment Report (rel. 2026-09-02): private employment +38,000 in August, below the 47k estimate and down from 46k in July, slowest since January. September ADP is scheduled for 2026-09-30, i.e. after this writing and before resolution.\n- FOMC 2026-09-16 raised the funds target to 3.75-4.00%, first hike since July 2023, unanimous; statement/coverage cited the economy \"near maximum employment,\" unemployment 4.1%, \"employers adding an average of 80,000 jobs each month this year,\" and claims near all-time lows; inflation above target was the stated driver.\n- RBC Economics (2026-09-21): 2026 average monthly job gains ~80,000 vs under 10,000/month in 2025; estimated breakeven employment pace ~20,000/month (St. Louis Fed range 15k-87k) because of retirements and slowed immigration; layoffs near all-time lows; labor force shrinking; aggregate weekly hours +1.2% y/y.\n- Release risk: the Oct 1, 2026 funding lapse was averted - a continuing resolution passed the Senate 90-6 and the House 370-48 and was signed 2026-09-02, funding the government through Dec 11, 2026. No BLS publication blackout is pending for the Oct 2 release.\n- Labor actions in September 2026 were small and localized (1,300 Encore Boston Harbor casino workers; a one-day West Anaheim Medical Center nurses strike Sep 3-4; a strike-authorization vote, not a strike, at SEIU Local 1000 in California). A viral claim of a nationwide trucker strike starting Oct 1 was debunked (Snopes, 2026-09-17). No large national work stoppage overlapped the Sep 6-12 reference week. For contrast, a health-care strike is the widely cited cause of the Feb 2026 negative print.\n\nBASE RATES (with the class each is computed over)\n- Over the 8 data-months of 2026, first prints exceeding +100k: 5 of 8 (Jan, Mar, Apr, May, Aug). Mean first print 87k, median ~122k; SD of first prints around an 80k trend ~90k.\n- Over the 12 data-months through Aug 2026 (i.e. including the weak Sep-Dec 2025 stretch), first prints exceeding +100k: roughly 6 of 12; the trailing 12-month average gain stated by BLS in the August release was +31k.\n- Over the 3 most recent data-months only (Jun, Jul, Aug 2026): 1 of 3 first prints exceeded +100k; average of the three revised values 71k.\n- Conditional on the prior month printing above +150k (Mar->Apr, May->Jun within 2026): the following month exceeded +100k in 1 of 2 cases.\n- Consensus-error class (2026 data-months): actual minus consensus mean about +6k, SD about 100k; individual errors ranged -150k to +113k.\n\nBOTH DIRECTIONS\n- For a high print: 2026 run rate ~80k with a ~20k breakeven; claims and continuing claims at multi-year lows; announced layoffs at four-year lows; federal-sector drag has collapsed versus 2025; broad-based August hiring (diffusion 55.6%); persistent pattern of large upside surprises versus consensus in 2026; recent revisions have been upward.\n- For a low print: the threshold sits above both the 2026 trend and every consensus figure located; August's gain was concentrated in three reversion-prone components (food services +59k, local government education +42k, federal +35k); ADP private hiring is running 38-47k; the 2026 series is bimodal, with three of eight months printing between -92k and +57k; September's seasonal factors for education hiring are historically among the noisiest of the year; the labor force is shrinking and the Fed has just tightened.\n\nSEARCHED BUT NOT FOUND\n- No publish",
+   "reference_class": "Monthly first-print (as-first-reported) seasonally adjusted change in US total nonfarm payrolls, over the 12 data-months through August 2026, asked whether the print exceeded +100k"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 2.2009,
+   "seconds": 349.2,
+   "usage": {
+    "num_turns": 28,
+    "input": 30,
+    "cache_read": 1056469,
+    "cache_write": 65868,
+    "cache_write_1h": 65868,
+    "output": 20697,
+    "thinking": 13566,
+    "web_search": 16,
+    "cost_usd_envelope": 2.2008785,
+    "web_fetch": 0,
+    "duration_api_ms": 396126
+   },
+   "estimate": 0.41,
+   "reasoning": "Reference class: monthly BLS first-print nonfarm payroll changes in 2026 (Jan-Aug). At least 4 of 8 first prints exceeded +100k (Mar ~178k, Apr ~115k, May 172k, Aug 162k), against weak prints in Jun (+20k), Jul (-23k) and Feb — a bimodal distribution with little mass in the 70-140k middle, so the base rate near 50% is the right anchor, not the trailing 12-month average of +31k. Three forces pull that down for September: Capital Economics forecasts +50k; ADP's August private gain of 38k was the slowest since January; and August's beat was concentrated in food services (+59k vs 12k avg) and local government education (+42k), both classic candidates for seasonal payback. Pulling up: initial claims 196k (week to Sept 12), near July's 60-year low of 189k, continuing claims at a two-year low, Challenger Jan-Aug cuts down 41% to the lowest since 2022 with government cuts down 92%, a low break-even pace (~20k, RBC/St. Louis Fed), and a Street consensus that has been badly biased in 2026 (Aug surprise +109k, May +92k). A liquid, exactly-matching Kalshi contract (>100,000, first print, Sept reference month, confirmed against the settled Aug series) prices 0.38/0.43 with last 0.45 on 16.7k volume. My consensus-plus-surprise-SD model gives ~33%, my first-print base rate ~48%; the market sits between them, so I land essentially at the market mid with a small downward tilt for the August-composition payback.",
+   "sources": [
+    "https://www.bls.gov/news.release/empsit.nr0.htm",
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=PAYEMS",
+    "https://api.elections.kalshi.com/trade-api/v2/markets?series_ticker=KXPAYROLLS",
+    "https://tradingeconomics.com/united-states/non-farm-payrolls",
+    "https://www.bls.gov/bls/news-release/empsit.htm",
+    "https://www.cnbc.com/2026/06/05/jobs-report-may-2026.html",
+    "https://mediacenter.adp.com/2026-09-02-ADP-National-Employment-Report-Private-Sector-Employment-Increased-by-38,000-Jobs-in-August",
+    "https://www.challengergray.com/wp-content/uploads/2026/09/Challenger-Report-August-2026.pdf",
+    "https://www.bloomberg.com/news/articles/2026-09-17/us-jobless-claims-fall-to-196-000-continuing-applications-drop",
+    "https://www.capitaleconomics.com/publication-group/us-employment-report-preview",
+    "https://thehill.com/homenews/house/6063667-house-government-funding-cr-shutdown-midterms/",
+    "https://www.rbc.com/en/economics/us-analysis/us-featured-analysis/how-to-monitor-the-persistent-tightness-in-the-us-labor-market/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the seasonally adjusted over-the-month change in total nonfarm payrolls for September 2026 as stated in the INITIAL BLS release of Oct 2, 2026 (bls.gov/news.release/empsit.nr0.htm) — not off later revisions, not off the household survey, not off ADP. Delay beyond the window annuls.\n\nEVENT WINDOW: the measured change is Aug 2026 -> Sep 2026 payroll levels, captured in the establishment survey's reference pay period containing the 12th of September. As of Now (2026-09-22T09:37Z) that reference period has fully elapsed (~100%); what remains is collection, seasonal adjustment and publication on 2026-10-02.\n\nSTATUS QUO: the most recent published print (August 2026, released 2026-09-04) was +162,000, with unemployment 4.1% (BLS, empsit.nr0.htm).\n\nBASE RATES:\n- Over all eight 2026 reference months, FIRST-PRINT payroll changes above +100k occurred in: March (~+178k), April (~+115k), May (+172k), August (+162k). Below: June (+20k), July (-23k), February (negative), January (not verified). Source: BLS releases / CNBC release coverage, 2026. (4+ of 8.)\n- Over the same months in CURRENT vintage (FRED PAYEMS, pulled 2026-09-22): Jan +160, Feb -156, Mar +214, Apr +148, May +63, Jun +31, Jul +21, Aug +162. Mean +80k, median +105k. Note almost no observations land between +63k and +148k.\n- Conditional on the prior month printing above +150k (May after April, August after July does not qualify): the 2026 sample is too small to compute a stable rate; May (+172k) followed April (+179k as revised then).\n- Trailing 12-month average monthly gain as stated in the August release: +31,000 (BLS, 2026-09-04). June-August average on current vintage: +71,000 (PNC Economics, 2026-09-04).\n\nEVIDENCE — SOFTER SIDE:\n- Capital Economics published a September forecast of +50,000, citing continued slimming of the federal workforce limiting a private-payroll rebound (Capital Economics US Employment Report Preview, Sept 2026).\n- ADP private payrolls rose 38,000 in August 2026, the least since January and the fourth consecutive slowdown; manufacturing, professional services and information shed jobs (ADP Media Center, 2026-09-02).\n- August's headline was concentrated: food services and drinking places +59,000 against a 12,000 prior-12-month average; local government education +42,000; information -23,000 (BLS empsit, 2026-09-04). Both of the large contributors are categories with documented Aug/Sep seasonal-adjustment volatility.\n- Average hourly earnings rose 3.1% y/y in August, the slowest of 2026 (BLS, 2026-09-04).\n- JOLTS coverage circulating in September 2026 reported job openings at 7.1 million, down about 11% year over year (InvestingChannel summary; NOTE: this item's publish date and its stated reference month are mutually inconsistent and it may be a misdated re-run of an older article — treat with caution).\n\nEVIDENCE — FIRMER SIDE:\n- Initial jobless claims fell 10,000 to 196,000 in the week ended Sept 12, 2026, the least since the 60-year low of 189,000 in July; continuing claims fell 39,000 to 1,730,000, lowest since January 2024 (Bloomberg, 2026-09-17). A later week ending Sept 21 came in at 218,000 versus a 225,000 consensus.\n- Challenger, Gray & Christmas: 52,881 announced cuts in August 2026, down 38.5% y/y and the lowest August since 2022; Jan-Aug total 529,914, down 41% y/y and lowest since 2022; government-sector cuts down 92% y/y; announced hiring plans up about 25% y/y (Challenger report, Sept 2026).\n- Unemployment has fallen from a 2026 high of 4.4% to 4.1% as job growth outpaced labor-supply growth; labor force participation rose 0.2pp in August (PNC Economics, 2026-09-04).\n- Break-even payroll pace is unusually low — St. Louis Fed range cited at 15,000-87,000, RBC's own estimate about 20,000/month for 2026, driven by retirements and slowed immigration; 2026 average monthly gain ~80,000 (RBC Economics, Sept 2026).\n- Forecaster misses in 2026 have been large in both directions: August actual +162k vs Dow Jones consensus +53k (+109k surprise); May actual +172k vs consensus +80k (+92k surprise); June and July both printed far below consensus. Reported August forecaster range spanned roughly -25k to +121k.\n- Revision behaviour cuts both ways: large first prints have been revised down (May +172k -> +63k; April +179k -> +148k) while small first prints have been revised up (June +20k -> +31k; July -23k -> +21k), i.e. the FIRST PRINT — the resolving figure — is more dispersed than the settled series.\n\nCALENDAR / RELEASE RISK:\n- BLS schedule confirms the September 2026 Employment Situation for Friday, Oct 2, 2026, 8:30 a.m. ET.\n- A continuing resolution was signed 2026-09-02 (House 370-48, Senate 90-6) funding the government at current levels through Dec 11, 2026, averting an Oct 1 shutdown. No funding-lapse delay mechanism is live for the Oct 2 release.\n- ADP's September national employment report lands ~Sept 30, before the BLS print.\n- Fed: the Sept 15-16, 2026 FOMC met amid market pricing of roughly 60% odds of a 25bp HIKE (CME FedWatch via CNBC, 2026-09-03), i.e. policy debate is about tightening, not easing.\n\nMARKETS: a US regulated exchange lists a contract whose threshold, first-print rule and reference month match this question exactly (verified against the same series' settled August contract, which settled on the 162,000 print on 2026-09-04); it carries five-figure contract volume and five-figure open interest at the 100,000 strike. Title searches on Polymarket and Manifold returned no candidate market.\n\nSEARCHED FOR BUT COULD NOT FIND: a published Dow Jones / Reuters / WSJ median consensus specifically for the September 2026 reference month (only a single house forecast was located); the September 2026 ADP report (not yet released); any evidence of a major strike, hurricane, or federal RIF effective date falling in the September establishment-survey reference pay period; January and February 2026 first-print values.",
+   "reference_class": "Monthly BLS first-print seasonally adjusted nonfarm payroll changes, 2026 (Jan-Aug), and the distribution of consensus-vs-actual surprises in that same period"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 2.1511,
+   "seconds": 319.9,
+   "usage": {
+    "num_turns": 26,
+    "input": 28,
+    "cache_read": 958918,
+    "cache_write": 59530,
+    "cache_write_1h": 59530,
+    "output": 20108,
+    "thinking": 11001,
+    "web_search": 15,
+    "cost_usd_envelope": 2.151111,
+    "web_fetch": 0,
+    "duration_api_ms": 360130
+   },
+   "estimate": 0.43,
+   "reasoning": "Resolves on the FIRST print of the Sept 2026 Employment Situation (Oct 2), not revised data — and 2026 first prints have exceeded 100k in 5 of 8 months (avg ~+87k), far above the revised-basis trend of ~31k that the background cites. Over the last 12 months (incl. weak late-2025) roughly 5 of 12 first prints cleared 100k, giving a ~42% unconditional anchor. Adjusting: downward for a well-identified mechanism — August's +162k was ~two-thirds food services (+59k vs +12k 12-mo avg) and local govt education (+42k), both seasonal-calendar artifacts expected to partially reverse in September; ex-those, August was ~+58k, and ADP August private was +38k vs BLS +127k. Upward for firm September flow: claims 196k in the survey week (lowest since mid-July), Challenger August cuts lowest since 2022 with hiring plans highest since 2022, postings at a 15-month high, unemployment down 4.4%->4.1%, Fed debating a hike. Net central estimate ~85-90k first print with SD ~80-90k (2026 consensus-surprise SD is ~100k), giving ~43%. A matching Kalshi/Robinhood contract sits at ~45c with a non-monotone (thin) strike ladder implying ~38-45%; that corroborates rather than drives the number. Annulment risk is negligible — the Sept 2 CR funds government through Dec 11.",
+   "sources": [
+    "https://www.bls.gov/news.release/archives/empsit_09042026.htm",
+    "https://www.investing.com/economic-calendar/nonfarm-payrolls-227",
+    "https://robinhood.com/us/en/prediction-markets/economics/events/jobs-numbers-in-sep-2026-oct-02-2026/",
+    "https://piedmontcrescentcapital.com/august-employment-report-not-the-blowout-report-it-appears-to-be/",
+    "https://verifiedinvesting.com/blogs/us-economic-metrics/non-farm-payroll-august-2026",
+    "https://www.challengergray.com/blog/challenger-report-august-job-cuts-up-58-consumer-products-food-lead/",
+    "https://mediacenter.adp.com/2026-09-02-ADP-National-Employment-Report-Private-Sector-Employment-Increased-by-38,000-Jobs-in-August",
+    "https://www.detroitnews.com/story/business/2026/09/17/us-weekly-jobless-claims-unexpectedly-fall/91805887007/",
+    "https://www.chase.com/personal/investments/learning-and-insights/article/labor-market-2026-jobs-unemployment-wage-growth-trends",
+    "https://www.cnbc.com/2026/09/04/jobs-report-august-2026.html",
+    "https://govtschemes.org/government-shutdown-october-2026/",
+    "https://www.rbc.com/en/economics/us-analysis/us-featured-analysis/how-to-monitor-the-persistent-tightness-in-the-us-labor-market/"
+   ],
+   "dossier": "RESOLUTION INSTRUMENT: resolves off the seasonally adjusted over-the-month total nonfarm payroll change for September 2026 as stated in the INITIAL BLS Employment Situation release of Oct 2, 2026, 8:30 a.m. ET — not off revised data, not off the household survey, not off ADP. Later revisions are explicitly excluded. Threshold is strictly greater than 100,000; exactly 100,000 resolves NO.\n\nEVENT WINDOW: the measured period is the Aug-2026-to-Sep-2026 change, i.e. calendar September 2026 (Sept 1 -> Sept 30) per the criteria, with the CES establishment-survey reference period being the pay period including the 12th (week of Sept 6-12, 2026). As of Now (2026-09-22T09:37Z), ~71% of the reference month has elapsed and the establishment-survey reference week has fully elapsed; the data are collected but unpublished.\n\nFIRST-PRINT SERIES (as first reported, thousands; source: Investing.com economic calendar release history, retrieved 2026-09-22): Dec-25 +50 (rel. Jan 9), Jan-26 +130 (rel. Feb 11), Feb-26 -92 (rel. Mar 6), Mar-26 +178 (rel. Apr 3), Apr-26 +115 (rel. May 8), May-26 +172 (rel. Jun 5), Jun-26 +57 (rel. Jul 2), Jul-26 -23 (rel. Aug 7), Aug-26 +162 (rel. Sep 4).\n\nCONSENSUS AT THE TIME (same source): Jan 66, Feb 58, Mar 65, Apr 65, May 85, Jun 114, Jul 85, Aug 55. Surprises (actual minus consensus): +64, -150, +113, +50, +87, -57, -108, +107 — mean about +13k, standard deviation about 100k.\n\nBASE RATES, WITH THE CLASS EACH IS COMPUTED OVER:\n- Over all 8 first prints Jan-Aug 2026: 5 exceeded 100k (Jan, Mar, Apr, May, Aug).\n- Over the 3 most recent first prints (Jun, Jul, Aug 2026): 1 of 3 exceeded 100k.\n- Over the ~12 months Sept 2025-Aug 2026: roughly 5 of 12, since calendar-2025 monthly gains averaged about 10k (Chase, Jul 14 2026) and late-2025 prints were low; Dec-25 first print was +50k.\n- Over the CURRENTLY REVISED 2026 monthly figures rather than first prints: only 3 of 8 months show gains above 100k (the question background's framing). The first-print and revised-basis counts differ materially: 2026 year-to-date first prints averaged about 92k as of June (Chase), while the trailing-12-month revised average stated in the Aug release is 31k.\n- Conditional on the prior month's first print exceeding 150k (Mar-26 +178 -> Apr-26 +115; May-26 +172 -> Jun-26 +57): 1 of 2 following months exceeded 100k.\n- Over months following a prior month whose first print was negative (Feb -92 -> Mar +178; Jul -23 -> Aug +162): 2 of 2 exceeded 100k.\n\nAUGUST 2026 REPORT COMPOSITION (BLS release 2026-09-04): total +162k; private +127k, government +35k; unemployment rate 4.1% (unchanged); labor force participation rose 0.2pp to 61.6%; average hourly earnings $37.75; prior-12-month average monthly gain 31k. Sector detail: food services and drinking places +59k (12-month average +12k), local government education +42k, construction +22k, manufacturing +16k, health care +13k, information -23k. Revisions: June +20k -> +31k, July -23k -> +21k, combined +55k.\n\nCOMPOSITION CRITIQUE (Piedmont Crescent Capital, Sept 2026; Verified Investing, Sept 2026): leisure & hospitality (+62k) plus local education (+41.9k) accounted for 104k of the 162k. Excluding both, August payrolls rose about 58k. Restaurants shed 700 workers unadjusted yet printed +59.2k seasonally adjusted. Summer 2026 ran May 25 to Sept 7 (late Labor Day), pulling hiring forward and widening seasonal swings in both categories; these analysts state September carries the second half of the calendar distortion, including school-district payroll reversal. Leisure & hospitality was -13k over the three months through August. Rolling 3-month average payroll gain: 71k.\n\nHIGH-FREQUENCY DATA COVERING THE SEPTEMBER REFERENCE PERIOD:\n- Initial jobless claims week ending Sept 12 (the survey week): 196,000, down 10,000, vs 208,000 expected (Reuters poll); lowest since mid-July; 4-week moving average 203,250 (Labor Dept via Detroit News/Bloomberg, Sept 17 2026). Claims week ending Sept 5: 206,000. Commentators note the drop may partly reflect Labor Day holiday volatility.\n- ADP private payrolls August 2026: +38,000, below the +47,000 Dow Jones consensus and the weakest since January; education/health +45k, leisure/hospitality +16k, construction +12k; manufacturing -17k, professional/business services -16k. The gap vs BLS private (+127k) is large. ADP's September report is due Sept 30, 2026, 8:15 a.m. ET — before the BLS release but after Now.\n- Challenger, Gray & Christmas August 2026: 52,881 announced cuts, up 58% m/m but the lowest August total since 2022; YTD announcements 529,914, down 41% y/y; technology leads YTD at 155,126; AI cited in 116,175 cuts YTD (~22%). Announced hiring plans 12,325, down 23% m/m but up 725% y/y and the highest August since 2022.\n- Job postings 6.63 million in August 2026, highest since June 2025; engineering the top growth category for a third month on data-center/AI buildout; full-time median salary $62,400, +6.3% y/y.\n- JOLTS as of the July reference month: layoffs and discharges 1.7 million, characterised as a low-hiring, low-layoff market.\n- RBC (Sept 21, 2026): 2026 monthly payroll growth has averaged about 80k vs under 10k monthly in 2025; the breakeven pace of employment has fallen — St. Louis Fed range 15k-87k, RBC estimate around 20k for 2026 — because of retirements and slowed immigration; layoffs near all-time lows; aggregate weekly hours +1.2% y/y; labor force shrinking.\n- Labor force participation fell from 62.3% (mid-2025) to 61.5% in June 2026, roughly 2 million workers exiting since December 2025, then rose 0.2pp in August to 61.6%.\n\nMACRO/POLICY CONTEXT: unemployment peaked at 4.4% in 2026 and has fallen to 4.1%. Annual wage growth cooled to about 3.1%. The August report moved Fed pricing toward a RATE HIKE at the Sept 15-16 FOMC (Polymarket repriced hike odds from 40.5% to 52.5% within an hour of the release; 'no change' odds later quoted at 18% on Sept 11). Cleveland Fed's Hammack argued policy is not restrictive enou",
+   "reference_class": "Monthly US nonfarm payroll changes as FIRST reported (initial BLS Employment Situation print), Sept 2025 - Aug 2026"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.02,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5",
+   "cost_usd": 0.5037,
+   "seconds": 79.3,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 32177,
+    "cache_write": 33934,
+    "cache_write_1h": 33934,
+    "output": 5932,
+    "thinking": 2441,
+    "web_search": 0,
+    "cost_usd_envelope": 0.5037385,
+    "web_fetch": 0,
+    "duration_api_ms": 73633
+   },
+   "estimate": 0.43,
+   "reasoning": "Resolves on the FIRST print (Oct 2), which in 2026 has exceeded +100k in 5 of 8 months (Jan +130, Mar +178, Apr +115, May +172, Aug +162) and averaged ~+87k — well above the +31k trailing-12-month revised figure the background cites. Over the trailing 12 months including weak late-2025, roughly 5 of 12 cleared it. True run rate is ~80k/month against a ~20k breakeven (RBC; the Sept FOMC statement cited ~80k). Centering September near 80-85k with a first-print residual SD of ~90k (2026 consensus-surprise SD ~100k) puts >100k at ~41-45%. Downward: August's beat was ~104k of 162k from food services (+59k vs +12k average) and local-government education (+42k), both seasonal-calendar artifacts with a late-Labor-Day reversal landing in September; ex-those August was ~58k, and ADP private was +38k. Upward: claims 196k in the Sept 6-12 survey week with continuing claims at a two-year low, Challenger Jan-Aug cuts the lowest since 2022 with government cuts -92% y/y, postings at a 15-month high, and a Street that has been badly biased low in 2026. The exactly-matching Kalshi/Robinhood contract prices ~0.38/0.44 mid ~0.41 (last 0.45, ~16.7k volume, thin non-monotone ladder); it corroborates rather than drives. Annulment risk negligible — the Sept 2 CR funds government through Dec 11.",
+   "sources": [],
+   "reconciliation": "Three factual disputes were settled from the dossiers. (1) Count of 2026 first prints above +100k: Runs 1 and 3 independently retrieved Jan-26 = +130k from the investing.com release history, giving 5 of 8; Run 2 said 'at least 4 of 8' and explicitly recorded Jan/Feb first prints as not found. Two independent retrievals over one non-retrieval: 5 of 8, so Run 2's base-rate anchor was slightly low. (2) The 'Capital Economics +50,000 September' forecast that Run 2 weighted as a live downward force: Runs 1 and 3 each independently traced the identical 'continued slimming of the federal workforce' wording to September 2025-vintage content. Not applicable to this question; no published Street median or whisper number for the September 2026 reference month exists yet on any run's search (consensus typically firms Sept 28-Oct 1). This removes one of Run 2's three stated downward forces. (3) Market: all three located the same Kalshi/Robinhood contract, and Run 2 verified its terms against the same series' settled August contract, which settled on the 162k print, so threshold, reference month, initial-print rule and close all match this question. Runs 1 and 2 agree the quote is ~0.38/0.44 on ~16.7k volume; Run 3 observed a non-monotone strike ladder, so I treat the mid (~0.41), not the 0.45 last trade, as the market read. No Polymarket or Manifold contract exists. I retrieved nothing myself on this run, hence empty sources. UNSETTLED: the magnitude of the August composition payback is pure judgment — every run sees the same +59k food services and +42k local-government-education concentration and the same late-Labor-Day calendar, and nothing in the dossiers fixes how much reverses in September; no run found the September 2026 seasonal-factor detail for local government education. I take the reading I would bet on: a real but partial reversal, leaving a central first print of ~80-85k. I carry forward Run 3's first-print reference class (which Runs 1 and 3 share) because the resolving instrument is explicitly the first print, and first prints in 2026 both averaged above the revised series (+87k vs +80k) and were more dispersed, which modestly raises P(>100k) for a center below the threshold. Net, the two settled factual points cut toward YES relative to the pool's lower members while the composition mechanism cuts toward NO, landing me at the top of the runs' range rather than beyond it.",
+   "disagreements": [
+    {
+     "claim": "How many 2026 first prints exceeded +100k — 5 of 8 or 4 of 8",
+     "kind": "factual",
+     "verdict": "5 of 8. Runs 1 and 3 independently retrieved Jan-26 = +130k first print; Run 2 recorded Jan/Feb as unverified. Run 2's anchor was undercounted."
+    },
+    {
+     "claim": "Capital Economics forecasts +50,000 for September 2026",
+     "kind": "factual",
+     "verdict": "Misdated. Runs 1 and 3 each traced the line to September 2025-vintage content. Discarded; no published September 2026 consensus exists as of Now."
+    },
+    {
+     "claim": "Magnitude of the August food-services / local-government-education seasonal payback in September",
+     "kind": "judgment",
+     "verdict": "Unsettled by evidence — no run found the September 2026 seasonal-factor detail. I take a real but partial reversal, giving a central estimate of ~80-85k rather than a reversion to the ~58k ex-distortion August figure."
+    },
+    {
+     "claim": "Whether ADP's +38k August private reading materially informs BLS September",
+     "kind": "judgment",
+     "verdict": "Weak evidence. The +38k vs +127k BLS private gap is factually agreed, but ADP's level tracking of BLS has been poor throughout 2026; it caps the upside case rather than moving the center."
+    },
+    {
+     "claim": "Whether the Kalshi contract matches this question's terms and what it prices",
+     "kind": "factual",
+     "verdict": "Terms match — Run 2 verified against the settled August contract in the same series. Quote ~0.38/0.44 mid ~0.41 (Runs 1, 2); Run 3's non-monotone ladder confirms thin per-strike quotes, so the mid governs over the 0.45 last trade."
+    },
+    {
+     "claim": "Annulment / release-delay risk from an October 1 funding lapse",
+     "kind": "factual",
+     "verdict": "Settled and unanimous: the CR signed 2026-09-02 funds government through Dec 11, 2026. Negligible."
+    }
+   ],
+   "reference_class": "Monthly first-print seasonally adjusted nonfarm payroll changes as stated in the initial BLS Employment Situation release, 2026 reference months Jan-Aug (n=8), cross-checked against the trailing 12 months Sep 2025-Aug 2026"
+  }
+ ]
+}
