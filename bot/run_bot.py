@@ -3204,8 +3204,9 @@ def main(argv: list[str] | None = None) -> int:
             print(f"deadline reached after {args.deadline_minutes:.0f} min; "
                   f"{len(pending) - done - failed} question(s) left for the next run")
             break
-        if closes_within_hours(post, question, 0.0):
+        if not single and closes_within_hours(post, question, 0.0):
             # The queue was built at tick start; an 85-minute tick outlives short windows.
+            # (--post backtests target closed questions on purpose, so they are exempt.)
             # A closed question can only 405 at submit after a full forecast's spend.
             print(f"skip (closed since this run started): "
                   f"{question.get('title', post.get('title'))!r}")
