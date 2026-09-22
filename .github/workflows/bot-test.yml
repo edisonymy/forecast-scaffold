@@ -117,3 +117,17 @@ jobs:
 
       - name: Show journal
         run: cat bot/journal/forecasts.jsonl || true
+
+      - name: Show backtest rows and per-call usage
+        # --post backtests write to the gitignored backtests journal; print what they cost
+        # and why (traces carry per-call token usage).
+        run: |
+          tail -n 3 bot/journal/backtests.jsonl 2>/dev/null || true
+          python - <<'PY'
+          import glob, json, os
+          for path in sorted(glob.glob("bot/journal/traces/*.json"), key=os.path.getmtime)[-3:]:
+              t = json.load(open(path, encoding="utf-8"))
+              for c in t.get("calls", []):
+                  print(os.path.basename(path), c.get("stage"), c.get("model"),
+                        c.get("cost_usd"), c.get("seconds"), json.dumps(c.get("usage")))
+          PY
