@@ -89,6 +89,8 @@ class TestOpenrouterModelCmd:
         ("claude-haiku-4-5", "anthropic/claude-haiku-4.5"),
         ("claude-opus-5", "anthropic/claude-opus-5"),
         ("claude-sonnet-5", "anthropic/claude-sonnet-5"),
+        # a date suffix is not a minor version: never dot it
+        ("claude-haiku-4-5-20251001", "anthropic/claude-haiku-4-5-20251001"),
     ])
     def test_minor_version_uses_openrouters_dot(self, model: str, slug: str) -> None:
         assert run_bot.openrouter_model_slug(model) == slug

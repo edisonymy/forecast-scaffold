@@ -878,7 +878,7 @@ def openrouter_model_slug(model: str) -> str:
     """
     if "/" in model:
         return model  # already an explicit OpenRouter slug
-    return "anthropic/" + re.sub(r"-(\d+)-(\d+)$", lambda m: f"-{m[1]}.{m[2]}", model)
+    return "anthropic/" + re.sub(r"-(\d{1,2})-(\d{1,2})$", lambda m: f"-{m[1]}.{m[2]}", model)
 
 
 def openrouter_model_cmd(agent_cmd: str) -> str:
