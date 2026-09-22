@@ -942,13 +942,6 @@ def agent_environment(provider: str = "subscription") -> dict[str, str]:
         env["ANTHROPIC_AUTH_TOKEN"] = key
         env["ANTHROPIC_API_KEY"] = ""
         env.pop("CLAUDE_CODE_OAUTH_TOKEN", None)
-        # MEASURED 2026-09-22 (same prompt, calls 6.5 min apart): the subscription writes
-        # 1-HOUR cache entries by default (43,174 tokens, ephemeral_1h) while this path
-        # writes 5-MINUTE ones — and a research call takes ~6 min, so every OpenRouter call
-        # re-wrote the whole ~33k prefix (call 2: write 32,861 again) at 1.25x input price
-        # instead of reading it at 0.1x. That is the 1.8x cost gap. 1h writes cost 2x once
-        # and are then read cheaply by the other runs of the same question.
-        env.setdefault("ENABLE_PROMPT_CACHING_1H", "1")
         # A machine with a cached `claude` login ignores env auth entirely (the CLI
         # rightly refuses to send its OAuth bearer to a third-party host, so requests
         # arrive with NO auth header -> 401 "Missing Authentication header"). A fresh,
@@ -1604,7 +1597,7 @@ def forecast_question(
     # Per-THREAD cap of the call in flight: with --parallel-runs several research runs share
     # this closure, and a single shared value would let one run reserve another's cap.
     call_caps: dict[int, float] = {}
-    state_lock = threading.Lock()  # the --max-budget-usd handed to the most recent metered call
+    state_lock = threading.Lock()
     # One entry per forecasting agent call, in the order they ran — see write_trace.
     trace_calls: list[dict[str, Any]] = []
 
@@ -3332,9 +3325,13 @@ def main(argv: list[str] | None = None) -> int:
         # hard cap to hand the CLI; that allowance is always fresh, never exhausted.
         urgent = index < new_count and closes_within_hours(post, question, URGENT_CLOSE_HOURS)
         question_args = args
-        if urgent and args.budget > 0 and spent["usd"] >= args.budget - URGENT_HEADROOM_USD:
+        committed = spent["usd"] + spent.get("reserved_usd", 0.0)
+        if urgent and args.budget > 0 and committed >= args.budget - URGENT_HEADROOM_USD:
+            # Budget-only reservations count against the metered remainder, so the fresh
+            # allowance sits ABOVE them — otherwise a few failed calls earlier in the tick
+            # would leave an urgent question with nothing to spend.
             question_args = argparse.Namespace(
-                **{**vars(args), "budget": spent["usd"] + URGENT_HEADROOM_USD})
+                **{**vars(args), "budget": committed + URGENT_HEADROOM_USD})
             print(f"  closes within {URGENT_CLOSE_HOURS:g}h: budget ceiling waived "
                   f"(${spent['usd']:.2f} spent)")
             ops_alert(f"budget ceiling ${args.budget:.0f} waived for urgent question "

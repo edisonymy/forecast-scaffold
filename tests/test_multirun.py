@@ -1452,6 +1452,33 @@ class TestMainOpsExits:
         assert "waived" in alerts.read_text(encoding="utf-8")
 
 
+def test_urgent_waiver_is_not_starved_by_earlier_reservations(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # A failed call earlier in the tick reserved budget it may never have spent. The
+    # urgent allowance must sit ABOVE those reservations, or the metered remainder is <= 0.
+    from datetime import UTC, datetime, timedelta
+    soon = (datetime.now(UTC) + timedelta(minutes=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    seen: list[tuple[Any, float, float]] = []
+    monkeypatch.setattr(run_bot, "MetaculusClient",
+                        lambda: ListClient([_open_post(1, soon), _open_post(2, soon)]))
+
+    def reserving(client: Any, post: Any, question: Any, args: Any, config: Any,
+                  journal: Any, spent: Any = None, deadline: Any = None) -> bool:
+        seen.append((question["id"], args.budget, spent.get("reserved_usd", 0.0)))
+        spent["usd"] += 1.0
+        spent["reserved_usd"] = spent.get("reserved_usd", 0.0) + 6.0
+        return True
+
+    monkeypatch.setattr(run_bot, "forecast_question", reserving)
+    run_bot.main(["--tournament", "t", "--dry-run", "--budget", "4",
+                  "--journal", str(tmp_path / "j.jsonl")])
+    # second urgent question: 1.0 spent + 6.0 reserved already committed
+    _, budget, reserved = seen[1]
+    assert reserved == pytest.approx(6.0)
+    assert budget == pytest.approx(1.0 + 6.0 + run_bot.URGENT_HEADROOM_USD)
+
+
 def test_call_budget_stop_is_recognized() -> None:
     envelope = ('agent failed (1): {"type":"result","subtype":"error_max_budget_usd",'
                 '"is_error":true}')
