@@ -83,6 +83,18 @@ class TestOpenrouterModelCmd:
     def test_no_model_flag_is_a_noop(self) -> None:
         assert run_bot.openrouter_model_cmd("claude -p") == "claude -p"
 
+    @pytest.mark.parametrize(("model", "slug"), [
+        # Anthropic dashes a minor version; OpenRouter dots it. A wrong slug is silent.
+        ("claude-opus-5-5", "anthropic/claude-opus-5.5"),
+        ("claude-haiku-4-5", "anthropic/claude-haiku-4.5"),
+        ("claude-opus-5", "anthropic/claude-opus-5"),
+        ("claude-sonnet-5", "anthropic/claude-sonnet-5"),
+    ])
+    def test_minor_version_uses_openrouters_dot(self, model: str, slug: str) -> None:
+        assert run_bot.openrouter_model_slug(model) == slug
+        tokens = shlex.split(run_bot.openrouter_model_cmd(f"claude -p --model {model}"))
+        assert tokens[tokens.index("--model") + 1] == slug
+
 
 class TestOpenrouterCreditCap:
     def test_replaces_duplicate_flags_with_current_remainder(self) -> None:

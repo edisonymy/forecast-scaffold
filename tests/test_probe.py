@@ -172,7 +172,9 @@ class TestProviderRouting:
         row = probe.probe_one(SPEC, "claude-opus-4-6",
                               base_args(provider="openrouter"))
         assert row is not None
-        assert "--model anthropic/claude-opus-4-6" in agent.calls[0]["cmd"]
+        # OpenRouter dots the minor version (anthropic/claude-opus-4.6); the old dashed
+        # rewrite produced a slug OpenRouter does not list.
+        assert "--model anthropic/claude-opus-4.6" in agent.calls[0]["cmd"]
         assert agent.calls[0]["provider"] == "openrouter"
 
     def test_openrouter_slug_with_existing_author_passes_through(

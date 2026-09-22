@@ -82,7 +82,7 @@ jobs:
         # then watch one run.
         run: |
           pip install -e .
-          npm install -g @anthropic-ai/claude-code@2.1.236
+          npm install -g @anthropic-ai/claude-code@2.1.280
           echo "JOB_START=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: OpenRouter key credit
@@ -130,7 +130,7 @@ jobs:
           set +e -o pipefail
           python bot/run_bot.py --tournament "$TOURNAMENT_ID,$EXTRA_TOURNAMENTS" \
             --limit 50 --budget 150 --refresh-budget 24 --refresh-hours 48 --deadline-minutes 85 --provider subscription \
-            --agent-cmd "claude -p --model claude-opus-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch" --comment \
+            --agent-cmd "claude -p --model claude-opus-5-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch" --comment \
             | tee "$RUNNER_TEMP/bot-primary.log"
           status=$?
           echo "status=$status" >> "$GITHUB_OUTPUT"
@@ -167,7 +167,7 @@ jobs:
           deadline=$(( remaining - 10 )); [ "$deadline" -gt 85 ] && deadline=85
           python bot/run_bot.py --tournament "$TOURNAMENT_ID,$EXTRA_TOURNAMENTS" \
             --limit 50 --budget 150 --refresh-budget 24 --refresh-hours 48 --deadline-minutes "$deadline" --provider openrouter \
-            --agent-cmd "claude -p --model claude-opus-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch" --comment \
+            --agent-cmd "claude -p --model claude-opus-5-5 --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch" --comment \
             | tee "$RUNNER_TEMP/bot-fallback.log"
 
       - name: Bot run summary
