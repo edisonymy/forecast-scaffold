@@ -1408,6 +1408,14 @@ class TestMainOpsExits:
             _open_post(1, "2020-01-01T00:00:00Z"), _open_post(2)])
         assert forecasted == [20]
 
+    def test_post_backtest_still_forecasts_a_closed_question(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        code, forecasted = run_main(monkeypatch, tmp_path,
+                                    [_open_post(1, "2020-01-01T00:00:00Z")],
+                                    extra=["--post", "1"])
+        assert forecasted == [10]
+
     def test_urgent_question_ignores_the_ceiling(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
