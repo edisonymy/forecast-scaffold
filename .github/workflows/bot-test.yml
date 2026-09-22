@@ -31,7 +31,7 @@ on:
         default: false
       model:
         description: "Model for the agent (cheap models for diagnostics)"
-        default: "claude-opus-5"
+        default: "claude-opus-5-5"
       provider:
         description: "LLM billing path"
         type: choice
@@ -58,7 +58,7 @@ jobs:
       - name: Install
         run: |
           pip install -e .
-          npm install -g @anthropic-ai/claude-code@2.1.236
+          npm install -g @anthropic-ai/claude-code@2.1.280
 
       - name: AskNews smoke
         # Positive proof the CI secret works: bot/asknews.py fails CLOSED (returns [] on any
@@ -117,7 +117,7 @@ jobs:
             ${{ inputs.dry_run && '--dry-run' || '' }} \
             ${{ inputs.blind && '--blind' || '' }} \
             ${{ inputs.include_forecasted && '--include-forecasted' || '' }} \
-            --agent-cmd "claude -p --model ${INPUT_MODEL:-claude-opus-5} --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch"
+            --agent-cmd "claude -p --model ${INPUT_MODEL:-claude-opus-5-5} --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch"
 
       - name: Show journal
         run: cat bot/journal/forecasts.jsonl || true

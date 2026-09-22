@@ -868,6 +868,19 @@ def verify_dossier(
             "a bullet above, trust the verdict)\n" + "\n".join(lines)), cost
 
 
+def openrouter_model_slug(model: str) -> str:
+    """Anthropic's model id -> OpenRouter's slug for the same model.
+
+    Anthropic spells a minor version with a dash (claude-opus-5-5, claude-haiku-4-5);
+    OpenRouter spells it with a dot (anthropic/claude-opus-5.5, anthropic/claude-haiku-4.5).
+    Getting this wrong is silent: the CLI accepts any string and the request 404s (or, for
+    an unrecognized-but-routable slug, is priced from the CLI's fallback table).
+    """
+    if "/" in model:
+        return model  # already an explicit OpenRouter slug
+    return "anthropic/" + re.sub(r"-(\d{1,2})-(\d{1,2})$", lambda m: f"-{m[1]}.{m[2]}", model)
+
+
 def openrouter_model_cmd(agent_cmd: str) -> str:
     """Rewrite a bare Anthropic --model id to OpenRouter's slug form (anthropic/<id>).
 
@@ -876,8 +889,8 @@ def openrouter_model_cmd(agent_cmd: str) -> str:
     """
     tokens = shlex.split(agent_cmd)
     for i, tok in enumerate(tokens):
-        if tok == "--model" and i + 1 < len(tokens) and "/" not in tokens[i + 1]:
-            tokens[i + 1] = f"anthropic/{tokens[i + 1]}"
+        if tok == "--model" and i + 1 < len(tokens):
+            tokens[i + 1] = openrouter_model_slug(tokens[i + 1])
     return shlex.join(tokens)
 
 
@@ -2994,7 +3007,7 @@ def main(argv: list[str] | None = None) -> int:
         # means the agent researches with whatever the local CLI permits — one bare run did
         # ZERO searches where the hardened command did seven, and moved the answer from
         # 0.34 to 0.66. Local default now matches the workflows exactly.
-        default=("claude -p --model claude-opus-5 --output-format json "
+        default=("claude -p --model claude-opus-5-5 --output-format json "
                  "--allowed-tools Read,Glob,Grep,WebSearch,WebFetch"),
         help="headless agent command (default mirrors bot.yml's hardened production shape)",
     )
