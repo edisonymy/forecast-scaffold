@@ -133,7 +133,8 @@ def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
         with_verify: bool = False, blind: bool = False, dry_run: bool = True,
         client: Any = None, deadline: float | None = None,
         comment: bool = False, provider: str = "subscription",
-        spent_usd: float = 0.0) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
+        spent_usd: float = 0.0, parallel_runs: int = 1,
+        ) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
     agent = ScriptedAgent(outputs)
     monkeypatch.setattr(run_bot, "run_agent", agent)
     if not with_verify:  # most tests script only the forecast runs
@@ -143,6 +144,7 @@ def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
         dry_run=dry_run, comment=comment, budget=budget,
         agent_cmd=("claude -p --model claude-sonnet-5 --output-format json "
                    "--allowed-tools Read,Glob,Grep,WebSearch,WebFetch"),
+        parallel_runs=parallel_runs,
     )
     config = config or config_with_tiers(
         {"medium": {"draws": 5, "searches": 5, "runs": 3}}
@@ -156,6 +158,7 @@ def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
     )
     agent.final_spent = spent["usd"]
     agent.final_infra = spent.get("infra_failures", 0)
+    agent.final_reserved = spent.get("reserved_usd", 0.0)
     record = None
     if journal_path.exists() and journal_path.read_text(encoding="utf-8").strip():
         record = json.loads(journal_path.read_text(encoding="utf-8").splitlines()[-1])
@@ -530,7 +533,9 @@ class TestFailureRecovery:
         )
         assert not ok and record is None
         assert len(agent.calls) == 1
-        assert agent.final_spent == pytest.approx(1.0)
+        # the cap is RESERVED (blocks further paid calls) but is not booked as cost
+        assert agent.final_spent == pytest.approx(0.0)
+        assert agent.final_reserved == pytest.approx(1.0)
 
     def test_openrouter_failure_reserves_one_call_cap_not_the_tick(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
@@ -546,7 +551,8 @@ class TestFailureRecovery:
         assert ok and record is not None
         assert len(agent.calls) == 2
         cap = run_bot.OPENROUTER_PER_CALL_CAP_USD
-        assert agent.final_spent == pytest.approx(cap + 0.05)
+        assert agent.final_spent == pytest.approx(0.05)  # only the real, known cost
+        assert agent.final_reserved == pytest.approx(cap)
         for call in agent.calls:
             tokens = shlex.split(call["cmd"])
             assert float(tokens[tokens.index("--max-budget-usd") + 1]) <= cap
@@ -563,8 +569,10 @@ class TestFailureRecovery:
         )
         assert ok and record is not None
         assert len(agent.calls) == 1
-        assert agent.final_spent == pytest.approx(1.0)
-        assert record["cost_usd"] == pytest.approx(1.0)
+        # an unpriced (cost-unknown) success reserves its cap but journals no phantom cost
+        assert agent.final_spent == pytest.approx(0.0)
+        assert agent.final_reserved == pytest.approx(1.0)
+        assert record.get("cost_usd", 0.0) == pytest.approx(0.0)  # no phantom cost
 
     def test_missing_evidence_reaches_the_record(self, monkeypatch: pytest.MonkeyPatch,
                                                  tmp_path: Path) -> None:
@@ -1444,8 +1452,115 @@ class TestMainOpsExits:
         assert "waived" in alerts.read_text(encoding="utf-8")
 
 
+def test_urgent_waiver_is_not_starved_by_earlier_reservations(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # A failed call earlier in the tick reserved budget it may never have spent. The
+    # urgent allowance must sit ABOVE those reservations, or the metered remainder is <= 0.
+    from datetime import UTC, datetime, timedelta
+    soon = (datetime.now(UTC) + timedelta(minutes=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    seen: list[tuple[Any, float, float]] = []
+    monkeypatch.setattr(run_bot, "MetaculusClient",
+                        lambda: ListClient([_open_post(1, soon), _open_post(2, soon)]))
+
+    def reserving(client: Any, post: Any, question: Any, args: Any, config: Any,
+                  journal: Any, spent: Any = None, deadline: Any = None) -> bool:
+        seen.append((question["id"], args.budget, spent.get("reserved_usd", 0.0)))
+        spent["usd"] += 1.0
+        spent["reserved_usd"] = spent.get("reserved_usd", 0.0) + 6.0
+        return True
+
+    monkeypatch.setattr(run_bot, "forecast_question", reserving)
+    run_bot.main(["--tournament", "t", "--dry-run", "--budget", "4",
+                  "--journal", str(tmp_path / "j.jsonl")])
+    # second urgent question: 1.0 spent + 6.0 reserved already committed
+    _, budget, reserved = seen[1]
+    assert reserved == pytest.approx(6.0)
+    assert budget == pytest.approx(1.0 + 6.0 + run_bot.URGENT_HEADROOM_USD)
+
+
 def test_call_budget_stop_is_recognized() -> None:
     envelope = ('agent failed (1): {"type":"result","subtype":"error_max_budget_usd",'
                 '"is_error":true}')
     assert run_bot.is_call_budget_stop(RuntimeError(envelope))
     assert not run_bot.is_call_budget_stop(RuntimeError("agent failed (1): rate limited"))
+
+
+class TestParallelResearchRuns:
+    """--parallel-runs: the independent research runs share no state, so they may run
+    concurrently. Same pool, same trace order, same cost — only wall clock changes."""
+
+    ANGLES = config_with_tiers({"high": {"draws": 5, "searches": 5, "runs": 3,
+                                        "min_sources": 0, "run_angles": ["F", "D", "A"],
+                                        "supervisor": False}})
+
+    class ConcurrentAgent:
+        """Thread-safe scripted agent that records how many calls overlap."""
+
+        def __init__(self, per_angle: dict[str, float]) -> None:
+            self.per_angle = per_angle
+            self.lock = __import__("threading").Lock()
+            self.in_flight = 0
+            self.max_in_flight = 0
+            self.calls: list[dict[str, Any]] = []
+
+        def __call__(self, cmd: str, prompt: str, system: str | None, timeout: int,
+                     provider: str = "subscription",
+                     strict_metering: bool = False) -> tuple[str, float, str]:
+            with self.lock:
+                self.in_flight += 1
+                self.max_in_flight = max(self.max_in_flight, self.in_flight)
+                self.calls.append({"cmd": cmd, "prompt": prompt, "system": system})
+            try:
+                time.sleep(0.05)
+                letter = next((a for a in self.per_angle
+                               if f"Angle {a} " in (system or "")), None)
+                p = self.per_angle.get(letter, 0.5)
+                return fenced({**RESEARCH, "probability": p}), 0.05, "claude-sonnet-5"
+            finally:
+                with self.lock:
+                    self.in_flight -= 1
+
+    def _run(self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+             parallel_runs: int) -> tuple[Any, dict[str, Any] | None]:
+        agent = self.ConcurrentAgent({"F": 0.30, "D": 0.50, "A": 0.40})
+        monkeypatch.setattr(run_bot, "run_agent", agent)
+        monkeypatch.setattr(run_bot, "verify_dossier", lambda *a, **k: ("", 0.0))
+        args = argparse.Namespace(
+            blind=False, effort="high", provider="subscription", timeout=60,
+            dry_run=True, comment=False, budget=0.0, parallel_runs=parallel_runs,
+            agent_cmd="claude -p --model claude-sonnet-5 --output-format json",
+        )
+        journal = Journal(str(tmp_path / f"j{parallel_runs}.jsonl"))
+        spent = {"usd": 0.0}
+        ok = run_bot.forecast_question(StubClient(), POST, QUESTION, args, self.ANGLES,
+                                       journal, spent, None)
+        assert ok
+        rows = [json.loads(line) for line
+                in (tmp_path / f"j{parallel_runs}.jsonl").read_text(
+                    encoding="utf-8").splitlines()]
+        agent.final_spent = spent["usd"]
+        return agent, rows[-1]
+
+    def test_runs_overlap_and_match_the_sequential_result(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        seq_agent, seq = self._run(monkeypatch, tmp_path, parallel_runs=1)
+        par_agent, par = self._run(monkeypatch, tmp_path, parallel_runs=3)
+
+        assert seq_agent.max_in_flight == 1  # default stays sequential
+        assert par_agent.max_in_flight == 3  # the three research runs really overlap
+        # identical work, identical answer and cost accounting
+        assert len(par_agent.calls) == len(seq_agent.calls)
+        assert par["probability"] == pytest.approx(seq["probability"])
+        assert par["aggregation"] == seq["aggregation"]
+        assert par_agent.final_spent == pytest.approx(seq_agent.final_spent)
+
+    def test_trace_order_is_slot_order_not_finish_order(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent, record = self._run(monkeypatch, tmp_path, parallel_runs=3)
+        trace = json.loads((Path(tmp_path) / record["trace_path"]).read_text(
+            encoding="utf-8"))
+        angles = [c.get("angle") for c in trace["calls"] if c.get("phase") == 1]
+        assert angles == ["F", "D", "A"]
