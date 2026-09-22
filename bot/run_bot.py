@@ -3407,12 +3407,18 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  ERROR: {exc}")
     print(f"forecast {done} question(s), {failed} failed, ${spent['usd']:.2f} notional spend")
     if billed_before is not None and (done or failed):
-        # The counter lags the call by up to a minute or two; poll briefly, then record
-        # whatever it says (None/unchanged is journaled as-is, never guessed).
+        # The counter updates per request, each with its own lag, so the FIRST increase
+        # is a partial total (measured 2026-09-22: $0.3773 recorded vs $0.8418 real).
+        # Poll until two consecutive reads agree after an increase, up to ~4 minutes;
+        # record whatever it says then (None is journaled as-is, never guessed).
         billed_after = openrouter_spend_usd()
-        for _ in range(9):
-            if billed_after is not None and billed_after > billed_before:
+        previous = None
+        for _ in range(12):
+            settled = (billed_after is not None and billed_after > billed_before
+                       and previous is not None and abs(billed_after - previous) < 1e-6)
+            if settled:
                 break
+            previous = billed_after
             time.sleep(20)
             billed_after = openrouter_spend_usd()
         entry = {

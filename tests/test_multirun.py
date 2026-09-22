@@ -1564,3 +1564,22 @@ class TestParallelResearchRuns:
             encoding="utf-8"))
         angles = [c.get("angle") for c in trace["calls"] if c.get("phase") == 1]
         assert angles == ["F", "D", "A"]
+
+
+def test_billed_spend_waits_for_the_counter_to_settle(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # OpenRouter's counter rises per request with lag: the first increase is partial.
+    # 2026-09-22 the old poll recorded $0.3773 of a real $0.8418.
+    reads = iter([10.0, 10.0, 10.38, 10.84, 10.84, 10.84])
+    monkeypatch.setattr(run_bot, "openrouter_spend_usd", lambda timeout=20.0: next(reads))
+    monkeypatch.setattr(run_bot.time, "sleep", lambda s: None)
+    monkeypatch.setattr(run_bot, "MetaculusClient", lambda: ListClient([_open_post(1)]))
+    monkeypatch.setattr(run_bot, "forecast_question",
+                        lambda *a, **k: True)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-test")
+    run_bot.main(["--tournament", "t", "--dry-run", "--provider", "openrouter",
+                  "--budget", "5", "--journal", str(tmp_path / "j.jsonl")])
+    rows = [json.loads(line) for line in
+            (tmp_path / "provider_spend.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert rows[-1]["billed_usd"] == pytest.approx(0.84)
