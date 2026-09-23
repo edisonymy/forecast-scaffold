@@ -1,0 +1,188 @@
+{
+ "record_id": "2026-09-23-b525e7ea",
+ "question": "Will the 2026 Atlantic hurricane season reach at least 6 named storms by October 3, 2026?",
+ "question_id": 45980,
+ "url": "https://www.metaculus.com/questions/45795/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "binary",
+ "forecast_at": "2026-09-23T21:21:22+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 0.8802,
+ "pools": {
+  "pooled_runs": 0.99,
+  "phase1": 0.99,
+  "phase2": null,
+  "spread_phase1": 0.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probability": 0.99
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6708,
+   "seconds": 24.9,
+   "usage": {
+    "num_turns": 4,
+    "input": 6,
+    "cache_read": 66844,
+    "cache_write": 18102,
+    "cache_write_1h": 18102,
+    "output": 1825,
+    "thinking": 78,
+    "web_search": 1,
+    "cost_usd_envelope": 0.22420279999999998,
+    "web_fetch": 0,
+    "duration_api_ms": 27863
+   },
+   "estimate": 0.99,
+   "reasoning": "The resolution source (NHC TCR index 2026 season summary) already shows 'Named Storms: 6' as of Sep 23, 2026, with Fay (TS, Sep 19-23) listed. Multiple outlets (AccuWeather, Fox Weather, Click2Houston, Fox13) confirm Fay became the 6th named storm on Sep 20. NO needs the NHC to strike Fay from the count before Oct 3. Post-season reanalysis happens months later and only rarely removes a storm. The 1% residual covers a page error or a misread. No matching human market exists: the Polymarket and Manifold contracts price hurricane counts, not named storms.",
+   "sources": [
+    "https://www.nhc.noaa.gov/data/tcr/index.php",
+    "https://www.accuweather.com/en/hurricane/tropical-storm-fay-becomes-sixth-named-storm-of-atlantic-hurricane-season/1935940",
+    "https://www.click2houston.com/weather/2026/09/21/tropical-storm-fay-churning-in-the-open-atlantic-makes-the-6th-named-storm-of-the-2026-atlantic-hurricane-season/",
+    "https://www.foxweather.com/weather-news/tropical-depression-six-forms-atlantic-el-nino-september-2026",
+    "https://www.fox13news.com/news/florida-tampa-tropical-storm-fay-atlantic-hurricane"
+   ],
+   "dossier": "- NHC TCR index page (fetched 2026-09-23): the 2026 season summary table reads 'Named Storms: 6', 0 hurricanes, 0 major. Storms listed: Arthur (Jun 17-18), Bertha (Jul 19-23), Cristobal (Aug 12-13), Dolly (Aug 27-28), Edouard (Aug 31-Sep 2), Fay (TS, Sep 19-23, marked active at last update).\n- AccuWeather, Fox Weather, Click2Houston (Sep 21), Fox13 and Spectrum News 13 (Sep 20): Tropical Depression Six was upgraded to TS Fay early Sunday, Sep 20, 2026, near the Azores; it peaked around 70 mph and was forecast to dissipate Tuesday, Sep 22.\n- Breaking Belize News and Quadratin (Sep 22-23): six named storms, no hurricanes; the latest hurricane-free date since 1914; strong El Nino.\n- Status quo: the count on the resolution page is already at the threshold. A NO requires the NHC to remove Fay before Oct 3.\n- Base rate: NHC operational named storms are removed only in post-season Tropical Cyclone Reports or reanalysis, which normally come months after the season. I found no case of removal within two weeks.\n- Resolves off: the NHC TCR index 2026 summary 'Named Storms' count, not hurricane counts or media reports.\n- Event window: season start -> 2026-10-03 23:59 UTC; as of Sep 23, about 10 days remain. The threshold was already met on Sep 20.\n- Markets: Polymarket and Manifold contracts only cover hurricane counts; no market on the named-storm count was found.\n- Searched for any NHC statement downgrading or reclassifying Fay: none found.",
+   "reference_class": "Questions whose threshold has already been met on the named resolution source with ~10 days left; named storms removed from the NHC tally within weeks of naming"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2241,
+   "seconds": 24.0,
+   "usage": {
+    "num_turns": 4,
+    "input": 6,
+    "cache_read": 66850,
+    "cache_write": 17983,
+    "cache_write_1h": 17983,
+    "output": 1894,
+    "thinking": 87,
+    "web_search": 1,
+    "cost_usd_envelope": 0.22414800000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 26099
+   },
+   "estimate": 0.99,
+   "reasoning": "The question is effectively resolved already. Tropical Depression Six became Tropical Storm Fay on about September 19-20, 2026, south-southwest of the Azores, with peak winds near 70 mph. That makes Fay the 6th named storm. The NHC Tropical Weather Summary page (data/tcr/index.php), fetched 2026-09-23, lists 6 named storms: Arthur, Bertha, Cristobal, Dolly, Edouard and Fay. Several news outlets (AccuWeather, FOX Weather, Click2Houston, Spectrum News 13) confirm this. A NO would need the NHC to drop Fay from the table before October 3. Post-season reanalysis that removes a storm happens months later and almost never drops a storm that reached 70 mph. The only risks left are a page error or a misreading by the resolver, so 1% is held back for tail risk. Markets checked: the Polymarket candidates count hurricanes, not named storms, so none of them match this question. No market for named storms by October 3 was found.",
+   "sources": [
+    "https://www.nhc.noaa.gov/data/tcr/index.php",
+    "https://www.accuweather.com/en/hurricane/tropical-storm-fay-becomes-sixth-named-storm-of-atlantic-hurricane-season/1935940",
+    "https://www.click2houston.com/weather/2026/09/21/tropical-storm-fay-churning-in-the-open-atlantic-makes-the-6th-named-storm-of-the-2026-atlantic-hurricane-season/",
+    "https://www.foxweather.com/weather-news/tropical-depression-six-forms-atlantic-el-nino-september-2026",
+    "https://mynews13.com/fl/orlando/weather/2026/09/20/tropical-storm-fay-forms-in-north-eastern-atlantic"
+   ],
+   "dossier": "- NHC Tropical Weather Summary page (nhc.noaa.gov/data/tcr/index.php), fetched 2026-09-23: 2026 Atlantic named storms = 6. The list is Arthur (Jun 17-18), Bertha (Jul 19-23), Cristobal (Aug 12-13), Dolly (Aug 27-28), Edouard (Aug 31-Sep 2) and Fay (Sep 19-23, active). There are 0 hurricanes, and the page shows the season 4 storms behind the 1991-2020 normal.\n- AccuWeather, ~2026-09-20: 'Tropical Storm Fay becomes sixth named storm of Atlantic hurricane season.'\n- Spectrum News 13, 2026-09-20: Tropical Storm Fay forms in the northeastern Atlantic.\n- Click2Houston, 2026-09-21: Fay is the 6th named storm and topped out near 70 mph. Dry air and shear were expected to weaken it.\n- Breaking Belize News and Quadratín, 2026-09-22/23: six named storms and zero hurricanes, the latest date without a hurricane since 1914. A strong El Niño is the stated cause.\n- Status quo: the count already stands at 6, which meets the threshold of 6 or more.\n- Resolves off the Named Storms count in the NHC North Atlantic Tropical Weather Summary table as of 2026-10-03 23:59 UTC, not off media reports (unless the NHC page is unavailable).\n- Event window: storms formed any time in 2026 count, read at 2026-10-03 23:59 UTC. As of 2026-09-23 the window runs to Oct 3, and the threshold has already been met.\n- The only NO path is the NHC removing or reclassifying Fay before Oct 3. Post-season reanalysis (Tropical Cyclone Reports) usually comes months later. Searched for any reclassification talk and found none.\n- Markets: Polymarket's 2026 contracts are about hurricane counts, not named storms, so they are not a match. No matching market was found.",
+   "reference_class": "Named storms the NHC has already counted in its seasonal summary and that were later removed within 2 weeks (essentially never happens)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4466,
+   "seconds": 24.6,
+   "usage": {
+    "num_turns": 4,
+    "input": 6,
+    "cache_read": 66849,
+    "cache_write": 17864,
+    "cache_write_1h": 17864,
+    "output": 1873,
+    "thinking": 91,
+    "web_search": 1,
+    "cost_usd_envelope": 0.2224418,
+    "web_fetch": 0,
+    "duration_api_ms": 26167
+   },
+   "estimate": 0.99,
+   "reasoning": "Already resolved in substance: Tropical Storm Fay formed on Sep 20, 2026 as the 6th named storm (AccuWeather, Click2Houston, FOX Weather). The NHC resolution page (nhc.noaa.gov/data/tcr/index.php) now lists Arthur through Fay, a Named Storms count of 6. The count only changes if a storm is removed in post-season reanalysis, which normally happens months after the season, not within 10 days. The small residual covers a reporting or resolution error. No human market prices this exact contract; the Polymarket and Manifold markets are about hurricane counts, which is a different variable.",
+   "sources": [
+    "https://www.nhc.noaa.gov/data/tcr/index.php",
+    "https://www.accuweather.com/en/hurricane/tropical-storm-fay-becomes-sixth-named-storm-of-atlantic-hurricane-season/1935940",
+    "https://www.click2houston.com/weather/2026/09/21/tropical-storm-fay-churning-in-the-open-atlantic-makes-the-6th-named-storm-of-the-2026-atlantic-hurricane-season/",
+    "https://www.foxweather.com/weather-news/tropical-depression-six-forms-atlantic-el-nino-september-2026",
+    "https://www.breakingbelizenews.com/2026/09/22/2026-atlantic-hurricane-season-breaks-112-year-record/"
+   ],
+   "dossier": "- NHC Tropical Weather Summary page (nhc.noaa.gov/data/tcr/index.php), fetched 2026-09-23: 2026 Atlantic list shows Arthur, Bertha, Cristobal, Dolly, Edouard, Fay. Fay ran 19–23 Sep with max winds of 60 kt. Named Storms count is 6, which is 4 below the 1991-2020 normal. No hurricanes.\n- AccuWeather / Mynews13 / Click2Houston (Sep 20-21, 2026): Tropical Depression Six upgraded to Tropical Storm Fay on Sep 20 south-southwest of the Azores; sixth named storm of 2026.\n- FOX Weather (Sep 2026): TD Six formed and became Fay, then intensified, with a Super El Niño in the background.\n- Breaking Belize News (Sep 22, 2026): six named storms and zero hurricanes; Fay peaked near 70 mph before weakening. It is the latest date without an Atlantic hurricane since 1914.\n- Quadratín (Sep 22-23, 2026): NHC reports six named storms and 0 hurricanes in 2026.\n- Status quo: the count already stands at 6 and the threshold is met. Additional storms can only raise it.\n- Downward revision mechanism: NHC post-season Tropical Cyclone Reports and reanalysis normally come out months after the season; no in-season removal of a named storm was found.\n- Resolution instrument: resolves off the NHC seasonal summary 'Named Storms' count, not hurricane counts.\n- Event window: counts for all of 2026 through 23:59 UTC on 2026-10-03. As of 2026-09-23, about 97% of the calendar-year window has elapsed, with about 10 days left.\n- Markets: the Polymarket and Manifold markets found are about hurricane counts, not named storms.\n- Searched for but did not find: any report of Fay being declassified or the NHC count being revised.",
+   "reference_class": "Seasonal named-storm counts already at the threshold with less than two weeks to resolution; NHC operational counts are almost never revised downward in-season"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1561,
+   "seconds": 11.2,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11805,
+    "cache_write": 16889,
+    "cache_write_1h": 16889,
+    "output": 930,
+    "thinking": 57,
+    "web_search": 0,
+    "cost_usd_envelope": 0.15608100000000003,
+    "web_fetch": 0,
+    "duration_api_ms": 10407
+   },
+   "estimate": 0.99,
+   "reasoning": "Three independent runs each fetched the NHC Tropical Weather Summary on 2026-09-23 and found 6 named storms (Arthur through Fay). Several outlets (AccuWeather, Click2Houston, Spectrum News 13, FOX Weather) confirm TS Fay formed on Sep 20 and peaked near 70 mph. The count can only go down if the NHC removes Fay, and that happens in post-season Tropical Cyclone Reports, months from now. The remaining ~1% covers a page error or a resolver mistake. No human market prices the named-storm count; the Polymarket and Manifold contracts are about hurricane counts, which is a different variable.",
+   "sources": [],
+   "reconciliation": "The runs have no factual disagreement. All three independently report the same NHC page state (6 named storms, with Fay listed Sep 19-23) and the same media confirmations. They also agree the resolution instrument is the NHC TCR index's named-storm count, not hurricane counts, and that no matching market exists. I retrieved nothing new on this run. The only judgment call is how big the tail risk of removal or a resolution error is; ~1% is reasonable, and I see no evidence for going higher or lower.",
+   "disagreements": [
+    {
+     "claim": "Whether the NHC page already shows 6 named storms",
+     "kind": "factual",
+     "verdict": "All three runs agree it does (as fetched 2026-09-23); no dispute."
+    },
+    {
+     "claim": "Size of the residual risk (removal or resolver error)",
+     "kind": "judgment",
+     "verdict": "All runs put it at 1%; I agree."
+    }
+   ],
+   "reference_class": "Operationally named Atlantic storms removed from NHC's in-season seasonal tally within two weeks of forming"
+  }
+ ]
+}
