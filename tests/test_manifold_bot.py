@@ -296,6 +296,16 @@ def test_subscription_session_limit_detection_is_narrow() -> None:
     assert run_manifold.is_subscription_session_limit_error(
         RuntimeError("session limit text without a 429 envelope")
     ) is False
+    # The CLI's own quota line, seen with no API call made (2026-09-26).
+    cli = ("agent failed (1): You’ve hit your session limit · resets 12:50pm (UTC) | "
+           '{"duration_api_ms":0,"stop_reason":"stop_sequence","total_cost_usd":0}')
+    assert run_manifold.is_subscription_session_limit_error(RuntimeError(cli)) is True
+    assert run_manifold.is_subscription_session_limit_error(
+        RuntimeError(cli.replace("’", "'"))
+    ) is True
+    assert run_manifold.is_subscription_session_limit_error(
+        RuntimeError("You've hit your session limit")  # no reset clause: stays red
+    ) is False
 
 
 def test_claude_budget_cap_detection_is_narrow() -> None:

@@ -686,12 +686,13 @@ def is_subscription_session_limit_error(error: BaseException | str) -> bool:
     producing an operator alert every hour while Claude has stated that the session is
     exhausted.
     """
-    message = str(error).lower()
-    return (
-        "api_error_status" in message
-        and "429" in message
-        and "session limit" in message
-    )
+    message = str(error).lower().replace("’", "'")
+    if "api_error_status" in message and "429" in message and "session limit" in message:
+        return True
+    # The CLI can also refuse before any API call (duration_api_ms 0, no 429 envelope) with
+    # its own quota line, "You've hit your session limit · resets 12:50pm (UTC)". Match that
+    # exact phrasing and its reset clause, never a bare "session limit".
+    return "you've hit your session limit" in message and "resets" in message
 
 
 def is_claude_budget_cap_error(error: BaseException | str) -> bool:
