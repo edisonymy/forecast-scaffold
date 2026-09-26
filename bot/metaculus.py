@@ -10,6 +10,7 @@ everything here reads defensively and this file is the only place that knows the
 from __future__ import annotations
 
 import contextlib
+import http.client
 import json
 import os
 import time
@@ -85,6 +86,15 @@ class MetaculusClient:
                     time.sleep(2 * (attempt + 1))
                     continue
                 raise MetaculusError(f"{method} {path} -> {exc.reason}") from exc
+            except (TimeoutError, ConnectionError, http.client.HTTPException) as exc:
+                # [ADDED 2026-09-26] A timeout while READING the response is a bare
+                # TimeoutError, not a URLError, so it skipped the retry above: one slow
+                # Metaculus response on 2026-09-26 dropped the whole Fall tournament from a
+                # tick. Same for a reset connection or a truncated body.
+                if attempt + 1 < attempts:
+                    time.sleep(2 * (attempt + 1))
+                    continue
+                raise MetaculusError(f"{method} {path} -> {exc or type(exc).__name__}") from exc
         return json.loads(payload) if payload else None
 
     # -- reads -------------------------------------------------------------

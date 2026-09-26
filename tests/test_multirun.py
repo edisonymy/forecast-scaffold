@@ -133,7 +133,7 @@ def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
         with_verify: bool = False, blind: bool = False, dry_run: bool = True,
         client: Any = None, deadline: float | None = None,
         comment: bool = False, provider: str = "subscription",
-        spent_usd: float = 0.0, parallel_runs: int = 1,
+        spent_usd: float = 0.0, parallel_runs: int = 1, min_effort: str = "low",
         ) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
     agent = ScriptedAgent(outputs)
     monkeypatch.setattr(run_bot, "run_agent", agent)
@@ -144,7 +144,7 @@ def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
         dry_run=dry_run, comment=comment, budget=budget,
         agent_cmd=("claude -p --model claude-sonnet-5 --output-format json "
                    "--allowed-tools Read,Glob,Grep,WebSearch,WebFetch"),
-        parallel_runs=parallel_runs,
+        parallel_runs=parallel_runs, min_effort=min_effort,
     )
     config = config or config_with_tiers(
         {"medium": {"draws": 5, "searches": 5, "runs": 3}}
@@ -1583,3 +1583,68 @@ def test_billed_spend_waits_for_the_counter_to_settle(
     rows = [json.loads(line) for line in
             (tmp_path / "provider_spend.jsonl").read_text(encoding="utf-8").splitlines()]
     assert rows[-1]["billed_usd"] == pytest.approx(0.84)
+
+
+class TestMinEffortFloor:
+    """--min-effort (2026-09-26, Fall season): no question is forecast below the floor,
+    whether the tier came from triage or from --effort."""
+
+    TIERS = {"low": {"draws": 1, "searches": 1, "runs": 1},
+             "medium": {"draws": 5, "searches": 5, "runs": 3}}
+
+    def test_floor_tier_only_raises(self) -> None:
+        assert run_bot.floor_tier("low", "medium") == "medium"
+        assert run_bot.floor_tier("high", "medium") == "high"
+        assert run_bot.floor_tier("medium", "low") == "medium"
+
+    def test_triaged_low_runs_at_medium(self, monkeypatch: pytest.MonkeyPatch,
+                                        tmp_path: Path) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced({"tier": "low"}),
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ], config=config_with_tiers(self.TIERS), effort="auto", min_effort="medium")
+        assert ok and record is not None
+        assert len(agent.calls) == 4  # triage + the medium tier's three runs
+        assert record["effort"] == "medium (floor; triage low)"
+
+    def test_given_low_runs_at_medium(self, monkeypatch: pytest.MonkeyPatch,
+                                      tmp_path: Path) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [
+            fenced(RESEARCH),
+            fenced(reasoning_payload(0.20)),
+            fenced(reasoning_payload(0.40)),
+        ], config=config_with_tiers(self.TIERS), effort="low", min_effort="medium")
+        assert ok and record is not None
+        assert len(agent.calls) == 3
+        assert record["effort"] == "medium (floor; given low)"
+
+    def test_no_floor_keeps_low(self, monkeypatch: pytest.MonkeyPatch,
+                                tmp_path: Path) -> None:
+        agent, record, ok = run(monkeypatch, tmp_path, [fenced(RESEARCH)],
+                                config=config_with_tiers(self.TIERS), effort="low")
+        assert ok and record is not None
+        assert len(agent.calls) == 1
+        assert record["effort"] == "low"
+
+
+class TestMidTickArrivals:
+    def test_newcomer_that_outranks_the_queue_ends_the_tick(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        monkeypatch.setattr(run_bot, "MIDTICK_POLL_S", 0.0)
+        monkeypatch.setattr(run_bot, "newly_opened_close_keys",
+                            lambda *a, **k: ["0000-01-01"])
+        code, forecasted = run_main(monkeypatch, tmp_path,
+                                    [_open_post(i) for i in range(1, 4)])
+        assert code == 0 and len(forecasted) == 1
+
+    def test_no_newcomer_runs_the_whole_queue(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        monkeypatch.setattr(run_bot, "MIDTICK_POLL_S", 0.0)
+        monkeypatch.setattr(run_bot, "newly_opened_close_keys", lambda *a, **k: [])
+        code, forecasted = run_main(monkeypatch, tmp_path,
+                                    [_open_post(i) for i in range(1, 4)])
+        assert code == 0 and len(forecasted) == 3

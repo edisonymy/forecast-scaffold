@@ -25,6 +25,11 @@ on:
         type: choice
         options: [auto, low, medium, high]
         default: auto
+      min_effort:
+        description: "Effort floor (production runs with medium)"
+        type: choice
+        options: [low, medium, high]
+        default: medium
       include_forecasted:
         description: "Re-forecast questions this account already forecast (testing only)"
         type: boolean
@@ -98,6 +103,7 @@ jobs:
           INPUT_LIMIT: ${{ inputs.limit }}
           INPUT_PROVIDER: ${{ inputs.provider }}
           INPUT_EFFORT: ${{ inputs.effort }}
+          INPUT_MIN_EFFORT: ${{ inputs.min_effort }}
           INPUT_MODEL: ${{ inputs.model }}
           INPUT_PARALLEL_RUNS: ${{ inputs.parallel_runs }}
         run: |
@@ -117,6 +123,7 @@ jobs:
           python bot/run_bot.py "${target[@]}" \
             --provider "${INPUT_PROVIDER:-subscription}" \
             --effort "${INPUT_EFFORT:-auto}" \
+            --min-effort "${INPUT_MIN_EFFORT:-medium}" \
             --budget 8 \
             --parallel-runs "${INPUT_PARALLEL_RUNS:-1}" \
             ${{ inputs.dry_run && '--dry-run' || '' }} \

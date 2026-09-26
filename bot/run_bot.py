@@ -119,6 +119,8 @@ URGENT_HEADROOM_USD = 30.0
 PER_QUESTION_ALERT_USD = 15.0
 # Per-tournament ceiling on open posts fetched before the close-time sort and --limit cut.
 OPEN_POSTS_FETCH_CAP = 500
+OPEN_POSTS_RETRY_DELAY_S = 10.0  # pause before the one retry of a failed tournament fetch
+MIDTICK_POLL_S = 300.0  # how often a running tick re-reads the open set for new arrivals
 # Secrets withheld from the forecasting agent's subprocess env — it runs on untrusted
 # question text and needs none of these (submission + leak-guard are pure Python).
 # OPENROUTER_API_KEY is stripped too: when that provider is selected the key re-enters
@@ -1091,6 +1093,16 @@ def extract_json(text: str) -> dict[str, Any]:
     return parsed
 
 
+TIER_ORDER = ("low", "medium", "high")
+
+
+def floor_tier(tier: str, minimum: str) -> str:
+    """Raise ``tier`` to at least ``minimum`` (--min-effort); never lowers it."""
+    if minimum in TIER_ORDER and tier in TIER_ORDER:
+        return max(tier, minimum, key=TIER_ORDER.index)
+    return tier
+
+
 def triage(
     agent_cmd: str, brief: str, timeout: int, provider: str = "subscription",
     fail_closed: bool = False, strict_metering: bool = False,
@@ -1437,6 +1449,30 @@ def close_time_key(pair: tuple[dict[str, Any], dict[str, Any]]) -> str:
                or "9999-12-31")
 
 
+def newly_opened_close_keys(
+    client: MetaculusClient, tournament: str, limit: int, seen_qids: set[Any],
+    banned: set[str],
+) -> list[str]:
+    """Close-time keys of forecastable open questions absent from ``seen_qids`` (the
+    tick's starting snapshot). Best-effort: any failure reads as "nothing new"."""
+    try:
+        posts = collect_open_posts(client, tournament, limit)
+    except Exception as exc:  # noqa: BLE001 — a failed re-poll must never stop the tick
+        print(f"  mid-tick re-poll failed ({exc}); carrying on")
+        return []
+    keys = []
+    for post in posts:
+        if str(post.get("id")) in banned:
+            continue
+        for question in client.questions_of(post):
+            if (question.get("id") in seen_qids or str(question.get("id")) in banned
+                    or question.get("type", "binary") not in SUPPORTED_TYPES
+                    or str(question.get("status") or "open") != "open"):
+                continue
+            keys.append(close_time_key((post, question)))
+    return keys
+
+
 def collect_open_posts(
     client: MetaculusClient, tournament: str, limit: int,
     errors: list[str] | None = None,
@@ -1451,7 +1487,13 @@ def collect_open_posts(
     slugs = [s.strip() for s in str(tournament).split(",") if s.strip()]
     posts: list[dict[str, Any]] = []
     seen: set[Any] = set()
-    for slug in slugs:
+    # [ADDED 2026-09-26] A slug that fails for a non-benign reason gets ONE more try at
+    # the end of the pass: the client already retries each request, but a Metaculus slow
+    # patch can outlast that, and a skipped seasonal slug is a whole tick of the season
+    # unwatched (2026-09-26: one read timeout on fall-futureeval-2026).
+    queue = [(slug, True) for slug in slugs]
+    while queue:
+        slug, retry_left = queue.pop(0)
         # Per-slug fault isolation [ADDED 2026-08-19]: the roster can name a tournament
         # before Metaculus creates it (a pre-entered next-quarter round arms itself on the
         # first tick after the tournament appears). An unknown slug — or one tournament's
@@ -1464,11 +1506,19 @@ def collect_open_posts(
             # queue after both.
             fetched = client.open_posts(slug, limit=max(limit, OPEN_POSTS_FETCH_CAP))
         except Exception as exc:  # noqa: BLE001 — isolate the failure to this slug
-            print(f"tournament {slug!r} unavailable ({exc}) — skipping this slug")
             # Only "this tournament does not exist (yet)" is benign. A dead token (401/403)
             # or a Metaculus outage skipped silently here made a green tick with zero
             # forecasts (audit, 2026-09-22): report it so main() exits nonzero and alerts.
-            if errors is not None and not re.search(r"-> HTTP (400|404):", str(exc)):
+            benign = bool(re.search(r"-> HTTP (400|404):", str(exc)))
+            # A 4xx other than 429 (dead token, bad slug) will not heal in ten seconds.
+            permanent = bool(re.search(r"-> HTTP 4(?!29)\d\d:", str(exc)))
+            if not benign and not permanent and retry_left:
+                print(f"tournament {slug!r} unavailable ({exc}) — retrying once")
+                time.sleep(OPEN_POSTS_RETRY_DELAY_S)
+                queue.append((slug, False))
+                continue
+            print(f"tournament {slug!r} unavailable ({exc}) — skipping this slug")
+            if errors is not None and not benign:
                 errors.append(f"{slug}: {str(exc)[:200]}")
             continue
         new = [p for p in fetched if p.get("id") not in seen]
@@ -1758,6 +1808,11 @@ def forecast_question(
             triage_cost = 0.0
             print("  metered triage returned unknown usage; per-call cap reserved")
         run_cost += triage_cost
+    effort_label = f"{tier} (auto)" if args.effort == "auto" else tier
+    if (floored := floor_tier(tier, getattr(args, "min_effort", "low"))) != tier:
+        print(f"  effort {tier} raised to the --min-effort floor: {floored}")
+        effort_label = f"{floored} (floor; {'triage' if args.effort == 'auto' else 'given'} {tier})"
+        tier = floored
 
     # Tier shape must be known before the system prompt is built: in multi-run mode the
     # in-context-draw instruction is replaced (a reasoning-only run being told both
@@ -2972,7 +3027,7 @@ def forecast_question(
         cost_usd=round(run_cost, 4) if run_cost else None,
         raw_draws=[f for d in payload.get("raw_draws") or []
                    if (f := _as_float(d)) is not None] or None,
-        effort=f"{tier} (auto)" if args.effort == "auto" else tier,
+        effort=effort_label,
         aggregation=aggregation_note,
         model=model_used or _model_from_cmd(base_cmd) or base_cmd,
         provider=args.provider,
@@ -3124,6 +3179,10 @@ def main(argv: list[str] | None = None) -> int:
                              "(default: $SKIP_POSTS). For a question that is not worth its "
                              "cost — e.g. the Fall practice question, $13.55 on one tick.")
     parser.add_argument("--effort", default="auto", choices=["auto", "low", "medium", "high"])
+    parser.add_argument("--min-effort", default="low", choices=list(TIER_ORDER),
+                        help="floor for the effort tier, whether triaged or given by "
+                             "--effort (default: low = no floor). Triage still runs, so "
+                             "a question can go above the floor")
     parser.add_argument("--parallel-runs", type=int, default=1,
                         help="run this many of a question's independent research runs at "
                              "once (1 = sequential, the historical behaviour). They share "
@@ -3331,7 +3390,26 @@ def main(argv: list[str] | None = None) -> int:
     # Exact provider billing (OpenRouter only — a subscription bills nothing per call, so
     # its cost_usd is and stays a list-price ESTIMATE).
     billed_before = openrouter_spend_usd() if args.provider == "openrouter" else None
+    # Mid-tick arrivals [ADDED 2026-09-26, Fall readiness audit]: the queue above is built
+    # once, and a tick can run 85 minutes, so a question that opens meanwhile (Fall windows
+    # are 1.5-3h) sat unseen until the next tick. Every MIDTICK_POLL_S the open set is
+    # re-read; if a newcomer would have been queued ahead of the next item (or the tick is
+    # only refreshing), this tick ends and the already-queued next dispatch (the kicker
+    # fires every 10 min) starts with it at the head of its close-time order.
+    seen_qids = {q.get("id") for post in posts for q in client.questions_of(post)}
+    last_poll = time.monotonic()
     for index, (post, question) in enumerate(pending):
+        if (not single and index > 0
+                and time.monotonic() - last_poll >= MIDTICK_POLL_S):
+            last_poll = time.monotonic()
+            arrived = newly_opened_close_keys(client, args.tournament, args.limit,
+                                              seen_qids, banned)
+            if arrived and (index >= new_count
+                            or min(arrived) < close_time_key((post, question))):
+                print(f"{len(arrived)} question(s) opened mid-tick and outrank the queue — "
+                      f"ending this tick so the next one takes them first "
+                      f"({len(pending) - index} queued item(s) carried over)")
+                break
         # Operator policy (2026-09-22): a NEW question closing too soon to wait for a later
         # run ignores the budget entirely. It still gets a finite per-question allowance
         # (URGENT_HEADROOM_USD past what is spent), because the OpenRouter path needs a
