@@ -119,6 +119,23 @@ class TestKeyLookup:
 
 
 class TestSearchNews:
+    def test_rejected_key_raises_one_ops_alert(self, monkeypatch: pytest.MonkeyPatch,
+                                               tmp_path: Path) -> None:
+        # AskNews keys must be renewed every season; a lapsed key must not fail silently.
+        monkeypatch.setenv("ASKNEWS_API_KEY", "testkey")
+        alerts = tmp_path / "alerts.txt"
+        monkeypatch.setenv("OPS_ALERTS_FILE", str(alerts))
+        monkeypatch.setattr(asknews, "_KEY_ALERTED", False)
+
+        def forbidden(request: Any, timeout: Any = None) -> _Resp:
+            raise urllib.error.HTTPError(request.full_url, 403, "no", {}, None)  # type: ignore[arg-type]
+
+        monkeypatch.setattr(asknews.urllib.request, "urlopen", forbidden)
+        assert asknews.search_news("q") == []
+        assert asknews.search_news("q2") == []
+        lines = alerts.read_text(encoding="utf-8").splitlines()
+        assert len(lines) == 1 and "HTTP 403" in lines[0]
+
     def test_success_returns_as_dicts(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("ASKNEWS_API_KEY", "testkey")
         monkeypatch.setattr(asknews.urllib.request, "urlopen",

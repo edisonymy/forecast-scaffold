@@ -87,6 +87,8 @@ def newest_forecast_at(journal_path: str | Path) -> datetime | None:
 #: open_question_count's verdict when Metaculus rejects the token (401/403). The bot uses the
 #: same token, so it is blind too — a total outage that must alarm, not read as "unknown".
 AUTH_REJECTED = -2
+PAGE_SIZE = 100
+MAX_PAGES = 10  # 1000 open posts per slug: far past any season's open set
 
 
 def open_question_count(
@@ -95,6 +97,7 @@ def open_question_count(
     grace_minutes: float = 360.0,
     imminent_minutes: float = 90.0,
     now: datetime | None = None,
+    skip: set[str] | None = None,
 ) -> int:
     """Open questions this bot account has NOT forecast that look like a coverage failure:
     closing within ``imminent_minutes`` (about to be missed), or open for more than
@@ -109,36 +112,50 @@ def open_question_count(
     """
     now = now or datetime.now(UTC)
     token = os.environ.get("METACULUS_TOKEN", "")
+    if skip is None:
+        skip = {t.strip() for t in os.environ.get("SKIP_POSTS", "").split(",") if t.strip()}
     total = 0
     read_any = False
     for raw_slug in slugs:
         slug = raw_slug.strip()
         if not slug:
             continue
-        query = urllib.parse.urlencode(
-            {"tournaments": slug, "statuses": "open", "limit": 100, "with_cp": "true"}
-        )
-        request = urllib.request.Request(f"{BASE_URL}/posts/?{query}")
-        request.add_header("User-Agent", USER_AGENT)
-        if token:
-            request.add_header("Authorization", f"Token {token}")
         try:
-            with urllib.request.urlopen(request, timeout=30) as response:
-                payload = json.loads(response.read().decode("utf-8"))
             count = 0
-            for post in payload.get("results") or []:
-                if post.get("question"):
-                    questions = [post["question"]]
-                else:
-                    group = post.get("group_of_questions") or {}
-                    questions = group.get("questions") or []
-                count += sum(
-                    1 for q in questions
-                    if isinstance(q, dict) and q.get("status") == "open"
-                    and not (q.get("my_forecasts") or {}).get("latest")
-                    and (_opened_minutes_ago(q, now) > grace_minutes
-                         or _closes_in_minutes(q, post, now) < imminent_minutes)
+            # [ADDED 2026-09-26] Follow pagination (bounded): a season with more than 100
+            # open posts used to hide every question past the first page from the alarm.
+            for page in range(MAX_PAGES):
+                query = urllib.parse.urlencode(
+                    {"tournaments": slug, "statuses": "open", "limit": PAGE_SIZE,
+                     "offset": page * PAGE_SIZE, "with_cp": "true"}
                 )
+                request = urllib.request.Request(f"{BASE_URL}/posts/?{query}")
+                request.add_header("User-Agent", USER_AGENT)
+                if token:
+                    request.add_header("Authorization", f"Token {token}")
+                with urllib.request.urlopen(request, timeout=30) as response:
+                    payload = json.loads(response.read().decode("utf-8"))
+                results = payload.get("results") or []
+                for post in results:
+                    # The bot's --skip-posts ban list (bot.yml SKIP_POSTS): a banned post is
+                    # never forecast by design, so it must not read as a coverage failure.
+                    if str(post.get("id")) in skip:
+                        continue
+                    if post.get("question"):
+                        questions = [post["question"]]
+                    else:
+                        group = post.get("group_of_questions") or {}
+                        questions = group.get("questions") or []
+                    count += sum(
+                        1 for q in questions
+                        if isinstance(q, dict) and q.get("status") == "open"
+                        and str(q.get("id")) not in skip
+                        and not (q.get("my_forecasts") or {}).get("latest")
+                        and (_opened_minutes_ago(q, now) > grace_minutes
+                             or _closes_in_minutes(q, post, now) < imminent_minutes)
+                    )
+                if not results or not payload.get("next"):
+                    break
         except urllib.error.HTTPError as exc:
             if exc.code in (401, 403):
                 return AUTH_REJECTED  # a dead token blinds the bot too: alarm, never "unknown"
@@ -179,17 +196,20 @@ def last_successful_run_age_hours(workflow: str = "bot.yml") -> float | None:
     """Hours since the last successful run of ``workflow``, via ``gh run list``.
 
     None whenever this can't be answered confidently — ``gh`` missing/unauthenticated,
-    a nonzero exit, unparsable JSON, or zero successful runs on record — so callers fall
+    a nonzero exit, unparsable JSON, or no runs listed at all — so callers fall
     back to the journal-silence tripwire instead of alarming on a tooling hiccup.
     """
     try:
         result = subprocess.run(
+            # [CHANGED 2026-09-26] No server-side --status filter: on 2026-09-25 the
+            # filtered query answered "last success 20-36h ago" while every 10-minute
+            # tick was green (non-monotonic ages, so a lagging filtered index), and the
+            # alarm cried wolf for a day. The plain list is newest-first; filter here.
             [
                 "gh", "run", "list",
                 f"--workflow={workflow}",
-                "--status", "success",
-                "--limit", "1",
-                "--json", "updatedAt",
+                "--limit", "100",
+                "--json", "conclusion,updatedAt",
             ],
             capture_output=True,
             text=True,
@@ -204,10 +224,19 @@ def last_successful_run_age_hours(workflow: str = "bot.yml") -> float | None:
         rows = json.loads(result.stdout)
     except json.JSONDecodeError:
         return None
-    if not isinstance(rows, list) or not rows:
+    if not isinstance(rows, list):
         return None
+    successes = [r for r in rows if isinstance(r, dict) and r.get("conclusion") == "success"]
+    if not successes:
+        # 100 runs with no success is ~17h of failing 10-minute ticks: report the oldest
+        # listed run's age as a lower bound instead of going quiet.
+        return None if not rows else _age_hours(rows[-1])
     # updatedAt = completion time: a long (85-min) tick started 2h ago is not an outage.
-    stamp = rows[0].get("updatedAt") if isinstance(rows[0], dict) else None
+    return _age_hours(successes[0])
+
+
+def _age_hours(row: object) -> float | None:
+    stamp = row.get("updatedAt") if isinstance(row, dict) else None
     if not isinstance(stamp, str):
         return None
     try:

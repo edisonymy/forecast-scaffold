@@ -288,3 +288,74 @@ def test_rejected_token_is_an_alarm_not_unknown(monkeypatch: pytest.MonkeyPatch)
     assert count == alarm.AUTH_REJECTED
     alarmed, reason = alarm.evaluate(NOW, count, 0.5, NOW)
     assert alarmed and "401/403" in reason
+
+
+def test_open_question_count_follows_pagination(monkeypatch: pytest.MonkeyPatch) -> None:
+    # 2026-09-26: only the first 100 open posts were ever read.
+    offsets: list[str] = []
+
+    def fake_urlopen(request: object, timeout: float = 30) -> _FakeResponse:
+        url = request.full_url  # type: ignore[attr-defined]
+        offset = url.split("offset=")[1].split("&")[0]
+        offsets.append(offset)
+        page = {"results": [{"question": {"status": "open"}}]}
+        if offset == "0":
+            page["next"] = "page-2"
+        return _FakeResponse(page)
+
+    monkeypatch.setattr(alarm.urllib.request, "urlopen", fake_urlopen)
+    assert alarm.open_question_count(["season"], skip=set()) == 2
+    assert offsets == ["0", "100"]
+
+
+def test_open_question_count_ignores_banned_posts(monkeypatch: pytest.MonkeyPatch) -> None:
+    payload = {"results": [
+        {"id": 45516, "question": {"id": 1, "status": "open"}},  # banned post
+        {"id": 7, "question": {"id": 99, "status": "open"}},  # banned question id
+        {"id": 8, "question": {"id": 2, "status": "open"}},
+    ]}
+    monkeypatch.setattr(alarm.urllib.request, "urlopen",
+                        lambda request, timeout=30: _FakeResponse(payload))
+    monkeypatch.setenv("SKIP_POSTS", "45516, 99")
+    assert alarm.open_question_count(["season"]) == 1
+
+
+# -- last_successful_run_age_hours ---------------------------------------------
+
+
+class _Completed:
+    def __init__(self, stdout: str) -> None:
+        self.returncode = 0
+        self.stdout = stdout
+
+
+def test_run_age_filters_success_client_side(monkeypatch: pytest.MonkeyPatch) -> None:
+    # The server-side --status filter lagged by a day on 2026-09-25 (false alarms).
+    now = datetime.now(UTC)
+    rows = [
+        {"conclusion": "", "updatedAt": now.isoformat()},  # in progress
+        {"conclusion": "failure", "updatedAt": (now - timedelta(minutes=10)).isoformat()},
+        {"conclusion": "success", "updatedAt": (now - timedelta(minutes=30)).isoformat()},
+    ]
+    seen: list[list[str]] = []
+
+    def fake_run(cmd: list[str], **kwargs: object) -> _Completed:
+        seen.append(cmd)
+        return _Completed(json.dumps(rows))
+
+    monkeypatch.setattr(alarm.subprocess, "run", fake_run)
+    age = alarm.last_successful_run_age_hours()
+    assert age is not None and 0.45 < age < 0.55
+    assert "--status" not in seen[0]
+
+
+def test_run_age_with_no_success_listed_is_a_lower_bound(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    now = datetime.now(UTC)
+    rows = [{"conclusion": "failure", "updatedAt": (now - timedelta(hours=h)).isoformat()}
+            for h in (1, 5, 17)]
+    monkeypatch.setattr(alarm.subprocess, "run",
+                        lambda cmd, **kw: _Completed(json.dumps(rows)))
+    age = alarm.last_successful_run_age_hours()
+    assert age is not None and age > 16.9

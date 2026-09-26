@@ -115,6 +115,27 @@ def _search_once(
     return articles if isinstance(articles, list) else []
 
 
+_KEY_ALERTED = False
+
+
+def _alert_key_rejected(code: int) -> None:
+    """Once per process: the key was refused. AskNews accounts must be renewed every
+    season, and a lapsed key otherwise just drops the news section silently."""
+    global _KEY_ALERTED
+    if _KEY_ALERTED:
+        return
+    _KEY_ALERTED = True
+    message = (f"AskNews rejected the API key (HTTP {code}); research runs have no news "
+               "section until it is renewed")
+    print(f"::warning::ops alert: {message}")
+    if path := os.environ.get("OPS_ALERTS_FILE"):
+        try:
+            with open(path, "a", encoding="utf-8") as fh:
+                fh.write(message + "\n")
+        except OSError:
+            pass
+
+
 def search_news(
     query: str, n_articles: int = 6, strategy: str = "latest news", timeout: int = 20
 ) -> list[dict[str, Any]]:
@@ -135,6 +156,8 @@ def search_news(
             if attempt == 0 and exc.code in RETRY_STATUS:
                 time.sleep(RETRY_WAIT_S)
                 continue
+            if exc.code in (401, 403):
+                _alert_key_rejected(exc.code)
             return []
         except Exception:  # noqa: BLE001 — timeout/URLError/JSON/anything: no-op, never raise
             return []

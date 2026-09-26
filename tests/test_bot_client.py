@@ -97,9 +97,12 @@ class TestCollectOpenPosts:
         assert len(posts) == 5
         assert asked == [run_bot.OPEN_POSTS_FETCH_CAP]
 
-    def test_unknown_slug_is_isolated_not_fatal(self, capsys: Any) -> None:
+    def test_unknown_slug_is_isolated_not_fatal(
+        self, capsys: Any, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         # A pre-entered next-quarter round names its slug before Metaculus creates the
         # tournament; that slug erroring must cost only its own batch, never the run.
+        monkeypatch.setattr(run_bot, "OPEN_POSTS_RETRY_DELAY_S", 0.0)
         client = MetaculusClient(token="t")
 
         def open_posts(slug: str, *, limit: int = 100) -> list[dict[str, Any]]:
@@ -114,7 +117,80 @@ class TestCollectOpenPosts:
         assert "market-pulse-26q4" in out and "skipping this slug" in out
 
 
+    def test_transient_slug_failure_is_retried_once(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # 2026-09-26: one read timeout dropped fall-futureeval-2026 from a whole tick.
+        monkeypatch.setattr(run_bot, "OPEN_POSTS_RETRY_DELAY_S", 0.0)
+        client = MetaculusClient(token="t")
+        calls: list[str] = []
+
+        def open_posts(slug: str, *, limit: int = 100) -> list[dict[str, Any]]:
+            calls.append(slug)
+            if slug == "season" and calls.count("season") == 1:
+                raise metaculus.MetaculusError("GET /posts/ -> The read operation timed out")
+            return [{"id": 1 if slug == "season" else 2}]
+
+        client.open_posts = open_posts  # type: ignore[method-assign]
+        errors: list[str] = []
+        posts = run_bot.collect_open_posts(client, "season,minibench", 100, errors)
+        assert sorted(p["id"] for p in posts) == [1, 2]
+        assert errors == [] and calls.count("season") == 2
+
+    def test_persistent_slug_failure_is_reported_after_one_retry(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(run_bot, "OPEN_POSTS_RETRY_DELAY_S", 0.0)
+        client = MetaculusClient(token="t")
+        calls: list[str] = []
+
+        def open_posts(slug: str, *, limit: int = 100) -> list[dict[str, Any]]:
+            calls.append(slug)
+            raise metaculus.MetaculusError("GET /posts/ -> HTTP 503: down")
+
+        client.open_posts = open_posts  # type: ignore[method-assign]
+        errors: list[str] = []
+        assert run_bot.collect_open_posts(client, "season", 100, errors) == []
+        assert calls == ["season", "season"] and len(errors) == 1
+
+
 class TestTransientRetry:
+    def test_read_timeout_is_retried(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        # A timeout while reading the body is a bare TimeoutError, not a URLError.
+        monkeypatch.setattr(metaculus.time, "sleep", lambda s: None)
+        attempts = {"n": 0}
+
+        class FakeResponse:
+            def __enter__(self) -> FakeResponse:
+                return self
+
+            def __exit__(self, *args: Any) -> bool:
+                return False
+
+            def read(self) -> bytes:
+                attempts["n"] += 1
+                if attempts["n"] < 3:
+                    raise TimeoutError("The read operation timed out")
+                return b"{}"
+
+        monkeypatch.setattr(metaculus.urllib.request, "urlopen",
+                            lambda request, timeout=60: FakeResponse())
+        assert MetaculusClient(token="t")._request("GET", "/posts/") == {}
+        assert attempts["n"] == 3
+
+    def test_exhausted_read_timeout_is_a_transient_metaculus_error(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(metaculus.time, "sleep", lambda s: None)
+
+        def fake_urlopen(request: Any, timeout: int = 60) -> Any:
+            raise TimeoutError("The read operation timed out")
+
+        monkeypatch.setattr(metaculus.urllib.request, "urlopen", fake_urlopen)
+        with pytest.raises(metaculus.MetaculusError) as info:
+            MetaculusClient(token="t")._request("GET", "/posts/")
+        assert run_bot.is_transient_platform_error(info.value)
+
     def test_retry_after_header_is_honored_and_capped(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:

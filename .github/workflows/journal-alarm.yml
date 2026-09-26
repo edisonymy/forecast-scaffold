@@ -44,6 +44,8 @@ jobs:
           TOURNAMENT_ID: ${{ vars.TOURNAMENT_ID }}
           # Keep in sync with bot.yml's EXTRA_TOURNAMENTS.
           EXTRA_TOURNAMENTS: market-pulse-26q3,market-pulse-26q4
+          # Keep in sync with bot.yml's SKIP_POSTS: banned posts are never forecast by design.
+          SKIP_POSTS: "45516"
           # [ADDED 2026-09-21] Metaculus 403s unauthenticated /posts/ reads, so without the
           # token the open-question count was always "unknown" and the journal-silence
           # tripwire could never fire — exactly the green-but-empty shape of Sep 21.
