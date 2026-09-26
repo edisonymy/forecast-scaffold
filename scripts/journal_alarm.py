@@ -88,6 +88,7 @@ def newest_forecast_at(journal_path: str | Path) -> datetime | None:
 #: same token, so it is blind too — a total outage that must alarm, not read as "unknown".
 AUTH_REJECTED = -2
 PAGE_SIZE = 100
+MIN_AGE_MINUTES = 15.0  # an unforecast question younger than this is not yet a miss
 MAX_PAGES = 10  # 1000 open posts per slug: far past any season's open set
 
 
@@ -152,7 +153,11 @@ def open_question_count(
                         and str(q.get("id")) not in skip
                         and not (q.get("my_forecasts") or {}).get("latest")
                         and (_opened_minutes_ago(q, now) > grace_minutes
-                             or _closes_in_minutes(q, post, now) < imminent_minutes)
+                             # [2026-09-26] Fall windows are as short as 90 min, so "closes
+                             # within 90" alone fired the moment a question opened; give
+                             # the bot one tick's latency first.
+                             or (_closes_in_minutes(q, post, now) < imminent_minutes
+                                 and _opened_minutes_ago(q, now) > MIN_AGE_MINUTES))
                     )
                 if not results or not payload.get("next"):
                     break

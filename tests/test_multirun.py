@@ -1627,3 +1627,24 @@ class TestMinEffortFloor:
         assert ok and record is not None
         assert len(agent.calls) == 1
         assert record["effort"] == "low"
+
+
+class TestMidTickArrivals:
+    def test_newcomer_that_outranks_the_queue_ends_the_tick(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        monkeypatch.setattr(run_bot, "MIDTICK_POLL_S", 0.0)
+        monkeypatch.setattr(run_bot, "newly_opened_close_keys",
+                            lambda *a, **k: ["0000-01-01"])
+        code, forecasted = run_main(monkeypatch, tmp_path,
+                                    [_open_post(i) for i in range(1, 4)])
+        assert code == 0 and len(forecasted) == 1
+
+    def test_no_newcomer_runs_the_whole_queue(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        monkeypatch.setattr(run_bot, "MIDTICK_POLL_S", 0.0)
+        monkeypatch.setattr(run_bot, "newly_opened_close_keys", lambda *a, **k: [])
+        code, forecasted = run_main(monkeypatch, tmp_path,
+                                    [_open_post(i) for i in range(1, 4)])
+        assert code == 0 and len(forecasted) == 3

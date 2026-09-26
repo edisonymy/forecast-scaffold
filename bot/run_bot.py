@@ -120,6 +120,7 @@ PER_QUESTION_ALERT_USD = 15.0
 # Per-tournament ceiling on open posts fetched before the close-time sort and --limit cut.
 OPEN_POSTS_FETCH_CAP = 500
 OPEN_POSTS_RETRY_DELAY_S = 10.0  # pause before the one retry of a failed tournament fetch
+MIDTICK_POLL_S = 300.0  # how often a running tick re-reads the open set for new arrivals
 # Secrets withheld from the forecasting agent's subprocess env — it runs on untrusted
 # question text and needs none of these (submission + leak-guard are pure Python).
 # OPENROUTER_API_KEY is stripped too: when that provider is selected the key re-enters
@@ -1446,6 +1447,30 @@ def close_time_key(pair: tuple[dict[str, Any], dict[str, Any]]) -> str:
     post, question = pair
     return str(question.get("scheduled_close_time") or post.get("scheduled_close_time")
                or "9999-12-31")
+
+
+def newly_opened_close_keys(
+    client: MetaculusClient, tournament: str, limit: int, seen_qids: set[Any],
+    banned: set[str],
+) -> list[str]:
+    """Close-time keys of forecastable open questions absent from ``seen_qids`` (the
+    tick's starting snapshot). Best-effort: any failure reads as "nothing new"."""
+    try:
+        posts = collect_open_posts(client, tournament, limit)
+    except Exception as exc:  # noqa: BLE001 — a failed re-poll must never stop the tick
+        print(f"  mid-tick re-poll failed ({exc}); carrying on")
+        return []
+    keys = []
+    for post in posts:
+        if str(post.get("id")) in banned:
+            continue
+        for question in client.questions_of(post):
+            if (question.get("id") in seen_qids or str(question.get("id")) in banned
+                    or question.get("type", "binary") not in SUPPORTED_TYPES
+                    or str(question.get("status") or "open") != "open"):
+                continue
+            keys.append(close_time_key((post, question)))
+    return keys
 
 
 def collect_open_posts(
@@ -3365,7 +3390,26 @@ def main(argv: list[str] | None = None) -> int:
     # Exact provider billing (OpenRouter only — a subscription bills nothing per call, so
     # its cost_usd is and stays a list-price ESTIMATE).
     billed_before = openrouter_spend_usd() if args.provider == "openrouter" else None
+    # Mid-tick arrivals [ADDED 2026-09-26, Fall readiness audit]: the queue above is built
+    # once, and a tick can run 85 minutes, so a question that opens meanwhile (Fall windows
+    # are 1.5-3h) sat unseen until the next tick. Every MIDTICK_POLL_S the open set is
+    # re-read; if a newcomer would have been queued ahead of the next item (or the tick is
+    # only refreshing), this tick ends and the already-queued next dispatch (the kicker
+    # fires every 10 min) starts with it at the head of its close-time order.
+    seen_qids = {q.get("id") for post in posts for q in client.questions_of(post)}
+    last_poll = time.monotonic()
     for index, (post, question) in enumerate(pending):
+        if (not single and index > 0
+                and time.monotonic() - last_poll >= MIDTICK_POLL_S):
+            last_poll = time.monotonic()
+            arrived = newly_opened_close_keys(client, args.tournament, args.limit,
+                                              seen_qids, banned)
+            if arrived and (index >= new_count
+                            or min(arrived) < close_time_key((post, question))):
+                print(f"{len(arrived)} question(s) opened mid-tick and outrank the queue — "
+                      f"ending this tick so the next one takes them first "
+                      f"({len(pending) - index} queued item(s) carried over)")
+                break
         # Operator policy (2026-09-22): a NEW question closing too soon to wait for a later
         # run ignores the budget entirely. It still gets a finite per-question allowance
         # (URGENT_HEADROOM_USD past what is spent), because the OpenRouter path needs a
