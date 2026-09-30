@@ -1,0 +1,254 @@
+{
+ "record_id": "2026-09-30-8032d107",
+ "question": "What will be the highest intraday value of the VIX between October 1 and December 24, 2026?",
+ "question_id": 46043,
+ "url": "https://www.metaculus.com/questions/45868/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-09-30T14:03:03+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.4259,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 18.633333333333333,
+    "25": 20.53333333333333,
+    "50": 23.2,
+    "75": 27.03333333333333,
+    "90": 32.333333333333336
+   },
+   "p_above_upper": 0.05000000000000001
+  },
+  "phase1": {
+   "10": 18.633333333333333,
+   "25": 20.53333333333333,
+   "50": 23.2,
+   "75": 27.03333333333333,
+   "90": 32.333333333333336
+  },
+  "phase2": null,
+  "spread_phase1": 1.2,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 18.6,
+   "25": 20.7,
+   "50": 23.5,
+   "75": 27.3,
+   "90": 32.5
+  },
+  "p_above_upper": 0.05
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.1803,
+   "seconds": 92.1,
+   "usage": {
+    "num_turns": 12,
+    "input": 14,
+    "cache_read": 183846,
+    "cache_write": 22035,
+    "cache_write_1h": 22035,
+    "output": 5254,
+    "thinking": 1532,
+    "web_search": 3,
+    "cost_usd_envelope": 0.4601522,
+    "web_fetch": 0,
+    "duration_api_ms": 96175
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 18.4,
+     "25": 20.4,
+     "50": 23.2,
+     "75": 27.0,
+     "90": 32.5
+    },
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Status quo: VIX ~15-16 as of late Sep 2026, Aug intraday max 18.43, Sep max ~18.9. Reference class: max intraday VIX over the ~60-trading-day Oct1-Dec24 window in 2014-2025, ratio to starting level typically 1.3-1.9x (median ~1.6), giving a median in the low-to-mid 20s. Upside drivers: October seasonality, US midterms, Fed hiking cycle (Oct 28 meeting), Middle East/oil risk that produced a ~35 VIX peak in March 2026. Downside: calm current regime and fast mean reversion of 2026 spikes. No human market found (Polymarket/Manifold none per harness; the Kalshi search found only Fed contracts, no VIX market; bookmakers not checked). ~5% tail mass above 40 for a crash-type regime break.",
+   "sources": [
+    "https://www.macroradar.io/vix",
+    "https://247wallst.com/investing/2026/04/20/cboe-vix-index-spikes-9-7-as-oil-fueled-fears-grip-markets/",
+    "WebSearch results summary incl. CNBC 2026-09-10 'Fear gauge VIX attracts hedges in historically volatile season'",
+    "WebSearch Kalshi results (kalshi.com Fed Oct 2026 markets)"
+   ],
+   "dossier": "- VIX 16.07 on 2026-09-28 (macroradar.io); closed 14.87 on 2026-09-25 (search summary). Near 10-yr average; 12-month change about -10%.\n- Monthly intraday highs: Aug 2026 18.43 on Aug 5 (question text); Sep 2026 about 18.94 on Sep 16 (search summary). CNBC 2026-08-17 headline: VIX hit a 2026 low in mid-August.\n- 2026 spikes: March 2026 peak about 35 (Iran/Strait of Hormuz/oil); VIX went from above 30 to below 20 in 8 sessions; Apr 20 2026 about 19.5 (247wallst 2026-04-20). Apr 2025 tariff-shock intraday peak 60.13.\n- CNBC 2026-09-10: hedging demand rising into a seasonally volatile period; risks named were US midterms (Nov 3 2026), rate risk/hawkish central banks, Middle East escalation; VIX and MOVE were near 10-yr averages.\n- A news summary from search reports the Fed hiked in Sep 2026; Kalshi reportedly prices about 70% for a 25bp hike at the Oct 28 2026 FOMC (unverified).\n- Reference class, from memory and not verified, max intraday VIX over Oct1-Dec24: 2014 ~31, 2015 ~27, 2016 ~23, 2017 ~14.5, 2018 ~36 (Dec 24), 2019 ~21.5, 2020 ~41, 2021 ~31.4, 2022 ~35, 2023 ~23, 2024 ~28.3 (Dec 18), 2025 ~29 (Oct 17). Ratio to the Oct-1 level in low-start years (start 13-18): about 1.3-1.95x.\n- Resolves off the Yahoo Finance ^VIX daily 'High' column (Cboe as fallback), not closes. Event window: 2026-10-01 -> 2026-12-24 per the criteria; as of 2026-09-30 0% elapsed.\n- Searched and not found: the full Cboe daily history (the CSV fetch returned only 1990s rows), VIX futures term structure, any Kalshi/Polymarket VIX-max market.",
+   "reference_class": "Maximum intraday VIX during Oct 1 - Dec 24 windows, 2014-2025, conditioned on a starting VIX of ~13-23"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7201,
+   "seconds": 71.1,
+   "usage": {
+    "num_turns": 9,
+    "input": 12,
+    "cache_read": 152690,
+    "cache_write": 21201,
+    "cache_write_1h": 21201,
+    "output": 4607,
+    "thinking": 1368,
+    "web_search": 4,
+    "cost_usd_envelope": 0.38892400000000005,
+    "web_fetch": 0,
+    "duration_api_ms": 80906
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 18.3,
+     "25": 20.0,
+     "50": 22.6,
+     "75": 26.5,
+     "90": 31.5
+    },
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Reference class: highest intraday VIX over Oct 1-Dec 24 relative to the starting level, recalled from memory for 2015-2025 (not retrieved this run). The median ratio is about 1.4-1.5x, so a start of about 16 implies a peak of about 22-23. VIX futures (Oct ~18.4, Nov ~19.1) price a midterm-election hump and hedging demand is up, which argues for a slightly higher peak. Against that, the VIX hit a 2026 low in August, August's high was only 18.43, and volatility has historically fallen after midterms. The floor is roughly 16.4, since the VIX is already there. The right tail is fat (2018 went from about 12 to 36), so I put 5% above 40. No Polymarket, Kalshi, Manifold or bookmaker market was found.",
+   "sources": [
+    "https://www.macroradar.io/vix",
+    "https://finance.yahoo.com/quote/%5EVIX/history/ (via search snippet: Sep 29 2026 OHLC)",
+    "https://www.bloomberg.com/news/articles/2026-08-25/vix-curve-bump-shows-stock-market-anxiety-growing-by-midterms (search snippet)",
+    "https://traderc.com/midterm-election-options-volatility-2026/ (search snippet: futures term structure)",
+    "https://www.cnbc.com/2026/08/17/stock-market-volatility-vix-wall-street.html (search snippet: VIX hit 2026 low)"
+   ],
+   "dossier": "- Sep 29 2026 VIX: open 16.17, high 16.44, low 15.73, close 16.04 (Yahoo Finance snippet).\n- The 10-year context from macroradar.io (Sep 2026) was fetched: spot 16.07, 42nd percentile of the 10-year range, 10-year average 19.74, 3-month change +5.9%, 12-month change -9.9%.\n- August 2026 intraday max was 18.43 (Aug 5), per the question text. CNBC (Aug 17 2026) reported the VIX hit its 2026 low.\n- The March 2026 Iran war and oil shock (crude +35% in one week) caused a volatility episode earlier in the year. The exact VIX peak was not found.\n- VIX futures in late Sep 2026 (traderc and other snippets): front ~16.6, Oct ~18.4, Nov ~19.1, a hump around the Nov 3 2026 midterms. Bloomberg (Aug 25 2026) described the curve bump. CNBC (Sep 10 2026) reported hedging demand going into a historically volatile season.\n- Historical claims in those articles: realized volatility in midterm years exceeded the prior year 80% of the time. The VIX falls about 4% on average in November after midterms.\n- Historical Q4 (Oct-Dec) max intraday VIX, approximate and recalled from memory rather than retrieved this run: 2015 ~27 (Dec), 2016 ~23 (Nov 4), 2017 ~14.5, 2018 ~36 (Dec 24), 2019 ~21.5 (early Oct), 2020 ~41 (Oct 30), 2021 ~31.4 (Dec 1), 2022 ~34.9 (Oct 13), 2023 ~23 (Oct 20), 2024 ~28.3 (Dec 18), 2025 ~29 (Oct 16). The ratio to the early-Oct level ranged ~1.1x to ~3x, median ~1.4-1.5x.\n- Q4 windows with an intraday max above 40 in the longer history: 1987, 1997, 1998, 2008, 2011, 2020.\n- Resolves off the Yahoo Finance ^VIX 'High' column over Oct 1-Dec 24 2026 inclusive (CBOE as fallback). It does not resolve off the close or off futures.\n- Event window: Oct 1 2026 -> Dec 24 2026 per the criteria. As of Sep 30 2026, 0% has elapsed (about 60 trading days remain).\n- Searched but not found: a Kalshi, Polymarket or Manifold market on the VIX Q4 max; the exact 2026 YTD intraday VIX high; a direct Yahoo daily history pull (blocked).",
+   "reference_class": "Maximum intraday VIX over the Oct 1-Dec 24 window in 2015-2025, scaled by the ratio to the early-October VIX level"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3312,
+   "seconds": 64.9,
+   "usage": {
+    "num_turns": 9,
+    "input": 14,
+    "cache_read": 180778,
+    "cache_write": 19968,
+    "cache_write_1h": 19968,
+    "output": 3935,
+    "thinking": 693,
+    "web_search": 2,
+    "cost_usd_envelope": 0.3312236,
+    "web_fetch": 0,
+    "duration_api_ms": 63574
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 19.2,
+     "25": 21.2,
+     "50": 23.8,
+     "75": 27.6,
+     "90": 33.0
+    },
+    "p_above_upper": 0.05
+   },
+   "reasoning": "VIX ~16.0 at Sep 29 2026 (FRED); Sep close range 14.2-17.8. The max of intraday highs over ~60 trading days from a ~16 start is typically 1.15-2.1x the start, median ~1.4-1.5x, so ~22-24. In 2026, monthly closing highs were above 20 in 6 of 9 months (Mar 31.05), October is seasonally volatile, and the US midterms are Nov 3: these raise the upper tail. Aug-Sep were calm and December is usually quiet. No human market found (Polymarket, Manifold, Kalshi searched). ~5% mass above 40 for a crash or shock regime.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=VIXCLS",
+    "https://www.macroradar.io/vix",
+    "https://www.cnbc.com/2026/09/10/fear-gauge-vix-hedges-volatility-stocks.html (search snippet only; fetch 403)",
+    "Kalshi web search (no VIX max market found)"
+   ],
+   "dossier": "- VIX closes (FRED VIXCLS): 2026-09-29 16.04; 09-28 16.07; 09-22 14.21 (Sep low); 09-16 17.71; Sep close max 17.84.\n- 2026 monthly close max (FRED): Jan 20.09, Feb 21.77, Mar 31.05, Apr 25.78, May 18.43, Jun 22.22, Jul 20.66, Aug 16.50, Sep 17.84. 2025: Oct 25.31, Nov 26.42, Dec 17.62. Question text says the Aug 2026 intraday high was 18.43.\n- The April 2025 tariff episode reached 52.33 (macroradar), so a tail above 40 is plausible.\n- CNBC 2026-09-10: hedging demand for the VIX; Sep-Oct are historically months of VIX jumps.\n- Approximate Q4 (Oct-Dec) intraday maxima, from memory: 2016 ~23, 2017 ~14, 2018 ~36, 2019 ~21, 2020 ~41, 2021 ~31, 2022 ~34, 2023 ~23, 2024 ~28, 2025 ~28; starting levels were mostly higher than 16.\n- Reference class: over all ~60-trading-day windows, the max close/start ratio runs roughly 1.1x (p10) to 2x (p90) (estimated, not computed this run); intraday highs add ~5-8% over closes.\n- Scheduled catalysts: US midterm elections Nov 3 2026, FOMC meetings in Oct/Dec, Q3 earnings season.\n- Resolves off the Yahoo Finance ^VIX 'High' column (intraday), not closes; CBOE as fallback.\n- Event window: 2026-10-01 -> 2026-12-24 inclusive; as of 2026-09-30, 0% elapsed.\n- Markets: none found on Polymarket, Manifold or Kalshi.\n- Could not compute the exact historical ratio distribution this run (tool blocked); no VIX futures curve found.",
+   "reference_class": "Maximum intraday VIX over ~60-trading-day windows starting with VIX in the 14-18 range (1990-2026), cross-checked against Q4 intraday maxima of 2016-2025"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1846,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1932,
+   "seconds": 30.5,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11805,
+    "cache_write": 17110,
+    "cache_write_1h": 17110,
+    "output": 2698,
+    "thinking": 707,
+    "web_search": 0,
+    "cost_usd_envelope": 0.193209,
+    "web_fetch": 0,
+    "duration_api_ms": 29865
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 18.6,
+     "25": 20.7,
+     "50": 23.5,
+     "75": 27.3,
+     "90": 32.5
+    },
+    "p_above_upper": 0.05
+   },
+   "reasoning": "VIX ~16.0 at end-Sep 2026 (FRED/Yahoo), Aug/Sep intraday highs 18.4/18.9. Reference class: max intraday VIX over Oct1-Dec24 relative to starting level in years starting ~13-18, median ratio ~1.5x → ~23.5. Upside: futures hump (Oct ~18.4, Nov ~19.1) around Nov 3 midterms, Fed hiking, Middle East/oil risk (March 2026 peak ~35), October seasonality. Downside: calm Aug-Sep regime, fast mean reversion of 2026 spikes, quiet December. 5% mass above 40 for a crash regime. No human market found.",
+   "sources": [],
+   "reconciliation": "Runs agreed closely (medians 22.6-23.8, widths 13-14.5, 5% above 40). Factual points: Sep intraday high ~18.9 (Run 1) vs close max 17.84 (Run 3) are consistent given the intraday premium; the futures curve hump reported only by Run 2 is plausible and corroborated by the CNBC/Bloomberg hedging reports but unverifiable here, so it gets moderate weight; the historical Q4 maxima in all runs are from memory and my own recall of ratios (2014 1.9x, 2016 1.7x, 2019/2023 1.3x, 2024 1.7x, 2025 ~1.8x, 2018 3x) suggests a median ratio near 1.5x or slightly higher, so I land at the upper-middle of the runs. The reference class and 5% tail are carried forward from the runs, with which I agree. No web access this run; no market found by any run.",
+   "disagreements": [
+    {
+     "claim": "September 2026 max: ~18.94 intraday vs 17.84 close",
+     "kind": "factual",
+     "verdict": "Consistent: intraday highs exceed closes by ~5-8%"
+    },
+    {
+     "claim": "VIX futures show Oct ~18.4 / Nov ~19.1 midterm hump",
+     "kind": "factual",
+     "verdict": "Only Run 2 found it; plausible and corroborated qualitatively by the CNBC/Bloomberg reports; unverifiable here, moderate weight"
+    },
+    {
+     "claim": "Median Q4 max/start ratio ~1.4-1.5x (Run 2) vs ~1.6x (Run 1)",
+     "kind": "judgment",
+     "verdict": "All from memory; my recall supports ~1.5x → median ~23.5"
+    },
+    {
+     "claim": "Weight of midterm/Fed/geopolitical catalysts vs calm regime",
+     "kind": "judgment",
+     "verdict": "Roughly balanced; slight upside tilt given the futures curve and 2026 spike history"
+    }
+   ],
+   "reference_class": "Highest intraday VIX over the Oct 1-Dec 24 window, 2012-2025, scaled by ratio to the start-of-October level (starts ~13-18)"
+  }
+ ]
+}
