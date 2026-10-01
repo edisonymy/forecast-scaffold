@@ -1,0 +1,259 @@
+{
+ "record_id": "2026-10-01-6b398d28",
+ "question": "How many games will the 2026 World Chess Championship last?",
+ "question_id": 46024,
+ "url": "https://www.metaculus.com/questions/45849/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "multiple_choice",
+ "forecast_at": "2026-10-01T04:02:45+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.3896,
+ "pools": {
+  "pooled_runs": {
+   "8 or less": 0.014667514127666238,
+   "9": 0.02033977257422919,
+   "10": 0.045149413657981266,
+   "11": 0.08999682229316942,
+   "12": 0.1554314275098247,
+   "13": 0.21744780043859502,
+   "14": 0.27232227916733304,
+   "15 or more": 0.18464497023120116
+  },
+  "phase1": {
+   "8 or less": 0.014667514127666238,
+   "9": 0.02033977257422919,
+   "10": 0.045149413657981266,
+   "11": 0.08999682229316942,
+   "12": 0.1554314275098247,
+   "13": 0.21744780043859502,
+   "14": 0.27232227916733304,
+   "15 or more": 0.18464497023120116
+  },
+  "phase2": null,
+  "spread_phase1": 0.08,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probabilities": {
+   "8 or less": 0.01,
+   "9": 0.015,
+   "10": 0.035,
+   "11": 0.08,
+   "12": 0.16,
+   "13": 0.24,
+   "14": 0.29,
+   "15 or more": 0.17
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7018,
+   "seconds": 80.3,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 120398,
+    "cache_write": 19408,
+    "cache_write_1h": 19408,
+    "output": 6017,
+    "thinking": 2984,
+    "web_search": 2,
+    "cost_usd_envelope": 0.37947159999999996,
+    "web_fetch": 0,
+    "duration_api_ms": 88880
+   },
+   "estimate": {
+    "8 or less": 0.01,
+    "9": 0.01,
+    "10": 0.025,
+    "11": 0.07,
+    "12": 0.14,
+    "13": 0.25,
+    "14": 0.32,
+    "15 or more": 0.175
+   },
+   "reasoning": "Format: 14 classical games, first to 7.5 wins; 7-7 goes to rapid/blitz tiebreaks, which I count as games before a winner is decided (so 15 or more). The match ends at game n<14 only if the lead is at least 15-n, so the cumulative chance of finishing by game n equals P(|score diff| >= 15-n). A random-walk model with a 66-75% draw rate and an edge for Sindarov (bookmakers about 73%, Polymarket 72%; Gukesh down to 2703) gives about 10-13% finished by game 11, about 20-29% by 12, about 46-55% by 13, about 17-19% for 7-7 tiebreaks and the rest at game 14. History of 14-game matches: 11 (2021), tiebreak (2023), 14 (2024). No market on the number of games was found; Polymarket, Manifold, Kalshi and bookmakers only price the winner.",
+   "sources": [
+    "https://worldchess.com/news/gukesh-vs-sindarov-everything-you-need-to-know-about-the-2026-world-chess-championship",
+    "https://en.wikipedia.org/wiki/World_Chess_Championship_2026",
+    "https://www.chessdom.com/javokhir-sindarov-is-a-clear-favorite-ahead-of-historic-world-chess-championship-2026-clash-with-gukesh/",
+    "https://polymarket.com/market/will-javokhir-sindarov-win-the-2026-world-chess-championship"
+   ],
+   "dossier": "- Format (worldchess.com and Wikipedia, read 2026-10-01): up to 14 classical games (120 min + 30 min after move 40), first to 7.5 points wins immediately. At 7-7: 4 rapid (15+10), then 2 rapid (10+5), then 2 blitz (3+2), then sudden-death blitz. Rest day after every 3 games.\n- Schedule: Game 1 on 2026-11-24, Game 14 on 2026-12-11, tiebreaks on 12-12, at Fondation Martin Bodmer in Cologny, Geneva.\n- Players (Wikipedia, 2026): Gukesh is champion, age 20, rated about 2703 after losing 43 points in 2025. Sindarov, age 20, won the 2026 Candidates with 10/14, 1.5 points clear of Giri.\n- Bookmakers (chessdom/olbg, 2026): Sindarov at about 1.36 decimal. Carlsen called Sindarov 'a pretty significant favorite'. Sindarov said recent form tells little about the match.\n- Prize money: $200k per game win, which gives an incentive to play for wins.\n- History of 14-game matches: 2021 Carlsen-Nepomniachtchi ended after game 11 (7.5-3.5). 2023 Ding-Nepomniachtchi went 7-7 then to tiebreaks. 2024 Gukesh-Ding was decided in game 14 (7.5-6.5) with 5 decisive games.\n- History of 12-game matches: 2006, 2012, 2016 and 2018 went to tiebreaks. 2008 ended at game 11, 2013 at game 10, 2014 at game 11, 2010 at game 12.\n- Mechanics: the match ends at game n (n<14) once the lead is at least 15-n (lead 2 at game 13, 3 at game 12, 4 at game 11). At game 14 any lead ends it; 7-7 goes to tiebreaks.\n- Resolution: the count of games played before a winner is decided. This most plausibly includes tiebreak games, so 7-7 means 15 or more; the wording is ambiguous.\n- Event window: 2026-11-24 to about 2026-12-12; as of 2026-10-01, 0% has elapsed and no games have been played.\n- Searched but not found: any market or bookmaker line on match length or on a tiebreak happening; a head-to-head classical record.",
+   "reference_class": "World Chess Championship matches with fixed 12-14 classical games and a first-to-majority rule, 2006-2024"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3223,
+   "seconds": 65.9,
+   "usage": {
+    "num_turns": 6,
+    "input": 10,
+    "cache_read": 121079,
+    "cache_write": 18434,
+    "cache_write_1h": 18434,
+    "output": 4759,
+    "thinking": 1888,
+    "web_search": 2,
+    "cost_usd_envelope": 0.32230780000000003,
+    "web_fetch": 0,
+    "duration_api_ms": 68025
+   },
+   "estimate": {
+    "8 or less": 0.03,
+    "9": 0.04,
+    "10": 0.07,
+    "11": 0.11,
+    "12": 0.15,
+    "13": 0.17,
+    "14": 0.24,
+    "15 or more": 0.19
+   },
+   "reasoning": "Format: max 14 classical games, first to 7.5 wins, tiebreaks on Dec 12 if 7-7. Reference class: modern 12-14-game WC matches since 2006 — roughly 5/11 went to tiebreaks, ~5 ended early (game 10-11 or 12 of 12) in lopsided matchups, 2024 decided at game 14. This match looks lopsided (Sindarov 10/14 unbeaten Candidates, 2908 TPR; Gukesh dropped below 2700), raising early-finish odds at games 11-13, but WC match caution and markets' modest 72/28 winner split temper that. Ties after 14 split between '15 or more' (if tiebreak games count, likelier reading) and '14'. No market on match length found; Polymarket/Manifold only price the winner (Sindarov ~72%, Gukesh 28-32%).",
+   "sources": [
+    "https://worldchess.com/news/gukesh-vs-sindarov-everything-you-need-to-know-about-the-2026-world-chess-championship",
+    "https://www.fide.com/geneva-to-host-fide-world-championship-match-2026/",
+    "https://en.wikipedia.org/wiki/Candidates_Tournament_2026",
+    "https://www.chess.com/news/view/geneva-gukesh-sindarov-2026-fide-world-championship",
+    "https://polymarket.com/market/will-javokhir-sindarov-win-the-2026-world-chess-championship"
+   ],
+   "dossier": "- Format (worldchess.com / FIDE, 2026): 14 classical games max; first to 7.5 pts wins, no further games after; if 7-7 after 14, tiebreaks (rapid/blitz) on Dec 12. Game 1 Nov 24; rest days Nov 27, Dec 1, 5, 9; venue Cologny/Geneva.\n- Early-finish arithmetic: end at game 13 needs 7.5-5.5 (margin 2); game 12 margin 3; game 11 margin 4; game 10 margin 5; game 9 margin 6; game 8 or fewer margin 7+.\n- Resolution note: resolves on number of games 'before a winner is decided'; ambiguous whether tiebreak games count — options include '15 or more', which only occurs if tiebreak games count (classical max is 14). Tie after 14 resolves as 15+ (tiebreak counted) or 14 (classical only).\n- Event window: Nov 24 -> Dec 12/13 2026; as of Oct 1 2026, 0% elapsed (match not started).\n- Sindarov won Candidates 2026 with 10/14 undefeated, 1.5-pt margin, TPR 2908, gained ~30 rating pts to world #5 live (Wikipedia/ChessBase, Apr 2026).\n- Gukesh dropped below 2700 live rating during Samarkand Olympiad (Sep 2026); mixed results at Tata Steel 2026 and Prague 2026 (search summary).\n- Both players 20 — youngest WC match ever.\n- History (12-14 game WC matches): 2006 Kramnik-Topalov tiebreak; 2008 Anand-Kramnik ended game 11/12; 2010 Anand-Topalov decided game 12/12; 2012 Anand-Gelfand tiebreak; 2013 Carlsen-Anand ended game 10/12; 2014 Carlsen-Anand ended game 11/12; 2016 Carlsen-Karjakin tiebreak; 2018 Carlsen-Caruana 12 draws then tiebreak; 2021 Carlsen-Nepo ended game 11/14; 2023 Ding-Nepo tiebreak after 14; 2024 Gukesh-Ding decided game 14 (7.5-6.5). Early finishes cluster in matchups with a clear favourite.\n- Winner markets exist (Polymarket, Manifold) pricing Sindarov as favourite; no market on match length found.\n- Searched but not found: current official FIDE ratings for both as of Oct 2026; head-to-head classical record.",
+   "reference_class": "FIDE World Championship matches 2006-2024 with 12-14 classical games and first-to-majority stopping rule"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.1429,
+   "seconds": 94.3,
+   "usage": {
+    "num_turns": 9,
+    "input": 14,
+    "cache_read": 183964,
+    "cache_write": 20576,
+    "cache_write_1h": 20576,
+    "output": 6532,
+    "thinking": 3125,
+    "web_search": 3,
+    "cost_usd_envelope": 0.44110879999999997,
+    "web_fetch": 0,
+    "duration_api_ms": 98047
+   },
+   "estimate": {
+    "8 or less": 0.01,
+    "9": 0.02,
+    "10": 0.05,
+    "11": 0.09,
+    "12": 0.17,
+    "13": 0.23,
+    "14": 0.25,
+    "15 or more": 0.18
+   },
+   "reasoning": "14-game match, first to 7.5 wins; 7-7 goes to rapid/blitz tiebreaks (counted as 15+ games). Reference class: modern WCC matches 2006-2024 — evenly matched ones went to tiebreaks ~50% (12-game era), 14-game era: 11, TB, 14. This match is lopsided (Sindarov 2777 vs Gukesh 2703; bookmakers ~73% Sindarov, Polymarket 0.72), which raises odds of an early finish and lowers tiebreak odds. Random-walk approximation with ~38% decisive games and 63% Sindarov share of decisive games gives P(end by 11)~0.14, by 12 ~0.33, by 13 ~0.59, tiebreak ~0.15; nudged tiebreak/14 up for historical stickiness and resolution ambiguity (classical-only count would map 7-7 to 14). No market on match length found; only winner markets on Polymarket/Manifold/Kalshi.",
+   "sources": [
+    "https://worldchess.com/news/gukesh-vs-sindarov-everything-you-need-to-know-about-the-2026-world-chess-championship",
+    "https://en.wikipedia.org/wiki/World_Chess_Championship_2026",
+    "https://www.chessdom.com/javokhir-sindarov-is-a-clear-favorite-ahead-of-historic-world-chess-championship-2026-clash-with-gukesh/",
+    "https://polymarket.com/market/will-javokhir-sindarov-win-the-2026-world-chess-championship"
+   ],
+   "dossier": "- Format (worldchess.com, Wikipedia WCC 2026 page, accessed 2026-10-01): 14 classical games, Geneva; game 1 Nov 24, 2026; tiebreak day Dec 12. First to 7.5 points wins immediately. If 7-7: 4 rapid (15+10), then 2 rapid (10+5), then 2 blitz (3+2), then sudden-death blitz.\n- No draw offers before Black's move 40, except by repetition or stalemate.\n- Ratings (Chessdom, Sept 2026 list): Sindarov 2777 (world #4), Gukesh 2703 (#30). Wikipedia lists March 2026 ratings as Gukesh 2794 and Sindarov 2745, a reversal since spring.\n- Sindarov won Candidates 2026 with 10/14, the record for the double round-robin format; Giri was 2nd on 8.5.\n- Bookmakers (Bet365/OLBG via Chessdom) price Sindarov as clear title favourite; prediction markets (Kalshi, Polymarket) are slightly tighter.\n- History, 14-game matches: 2021 Carlsen-Nepomniachtchi decided at game 11 (7.5-3.5); 2023 Ding-Nepomniachtchi 7-7, decided in rapid tiebreak; 2024 Gukesh-Ding decided at game 14 (7.5-6.5).\n- History, 12-game matches: 2006 TB, 2008 game 11, 2010 game 12, 2012 TB, 2013 game 10, 2014 game 11, 2016 TB, 2018 TB.\n- Classical decisive-game rates: 2024 5/14; 2023 8/14; 2021 5/11.\n- Early-finish thresholds: a game-n finish needs a lead of about 15-n decisive games (game 13 needs +2, game 12 +3, game 11 +4, game 10 +5).\n- Resolution note: resolves on number of games played before a winner is decided. Tiebreak games plausibly count, so a 7-7 finish would map to '15 or more'. Ambiguity: a classical-only count would map 7-7 to 14.\n- Event window: Nov 24 -> ~Dec 12, 2026; as of 2026-10-01, 0% elapsed.\n- Searched for a human market on number of games/match length: none found on Polymarket, Kalshi or Manifold, only winner markets and novelty markets.\n- Not found: head-to-head classical record between the two players; any reported changes to the format.",
+   "reference_class": "FIDE World Championship matches 2006-2024 (12- and 14-game, first-to-majority format), game at which the match was decided"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.08,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1938,
+   "seconds": 35.4,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11805,
+    "cache_write": 17158,
+    "cache_write_1h": 17158,
+    "output": 2708,
+    "thinking": 989,
+    "web_search": 0,
+    "cost_usd_envelope": 0.193793,
+    "web_fetch": 0,
+    "duration_api_ms": 34785
+   },
+   "estimate": {
+    "8 or less": 0.01,
+    "9": 0.015,
+    "10": 0.035,
+    "11": 0.08,
+    "12": 0.16,
+    "13": 0.24,
+    "14": 0.29,
+    "15 or more": 0.17
+   },
+   "reasoning": "Format: 14 classical games, first to 7.5 wins; at 7-7 the match goes to tiebreaks, which I count as '15 or more' (the more natural reading of 'games before a winner is decided'). The match can end at game n<14 only if the lead is at least 15-n. A random walk with ~35% decisive games and Sindarov taking ~65% of them gives ~72-75% for Sindarov, consistent with Polymarket's 0.72. It puts cumulative finish probabilities at ~3% by game 10, ~13% by 11, ~31% by 12 and ~57% by 13, with ~14% for a tiebreak. I nudged tiebreak/14 up because past World Championship matches have been cautious and drawn-out (5 of 11 since 2006 went to tiebreaks) and because a classical-only count would map 7-7 to '14'. No market on match length was found; Polymarket and Manifold price only the winner.",
+   "sources": [],
+   "reconciliation": "No factual disputes: all three dossiers agree on the format, the schedule, the ratings shift (Sindarov ~2777 vs Gukesh ~2703) and the winner markets (Sindarov ~0.72). The disagreements were judgments: how fat the early-finish tail is, whether 13 or 14 is the mode, and how much weight tiebreaks get. I re-derived the random walk myself with an edge consistent with the market's ~0.72-0.75 for Sindarov. It supports Runs 1 and 3's thinner early tail (P(end by 11) ~13%) over Run 2's ~25%, and puts 13 and 14 close together with 14 slightly ahead. I set tiebreak at ~17%, above the model's 14%, for historical draw-stickiness. I kept a little mass on '14' to cover the classical-only reading of the resolution. The interpretation question itself cannot be settled from the dossiers.",
+   "disagreements": [
+    {
+     "claim": "Probability the match ends by game 11 (Run 2 ~25% vs Runs 1/3 ~11-17%)",
+     "kind": "judgment",
+     "verdict": "A market-consistent random walk gives ~13%; I sided with the thinner tail (~14%)."
+    },
+    {
+     "claim": "Mode at game 13 vs game 14",
+     "kind": "judgment",
+     "verdict": "The model gives 13 ~26% and 14 ~29%; I kept 14 slightly ahead."
+    },
+    {
+     "claim": "Whether tiebreak games count toward the game total (7-7 -> 15+ or 14)",
+     "kind": "factual",
+     "verdict": "Cannot be settled from the criteria text. The '15 or more' option suggests tiebreak games count; I left some residual mass on 14."
+    },
+    {
+     "claim": "Size of Sindarov's per-game edge",
+     "kind": "judgment",
+     "verdict": "Anchored to the winner markets (~0.72); about 65% of decisive games going to Sindarov is consistent with that."
+    }
+   ],
+   "reference_class": "Modern 12-14 game World Chess Championship matches 2006-2024, plus a random-walk model of game results calibrated to the winner markets"
+  }
+ ]
+}
