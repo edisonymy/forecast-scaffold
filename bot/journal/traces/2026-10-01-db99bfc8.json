@@ -1,0 +1,261 @@
+{
+ "record_id": "2026-10-01-db99bfc8",
+ "question": "What will be the total spending by all Senate candidates in the 2026 US election cycle?",
+ "question_id": 46021,
+ "url": "https://www.metaculus.com/questions/45846/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-10-01T14:03:37+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.8819,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 1393333333.3333333,
+    "25": 1550000000.0,
+    "50": 1695000000.0,
+    "75": 1841666666.6666667,
+    "90": 2000000000.0
+   },
+   "p_below_lower": 0.02
+  },
+  "phase1": {
+   "10": 1393333333.3333333,
+   "25": 1550000000.0,
+   "50": 1695000000.0,
+   "75": 1841666666.6666667,
+   "90": 2000000000.0
+  },
+  "phase2": null,
+  "spread_phase1": 40000000.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 1360000000.0,
+   "25": 1510000000.0,
+   "50": 1650000000.0,
+   "75": 1800000000.0,
+   "90": 1970000000.0
+  },
+  "p_below_lower": 0.02
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4631,
+   "seconds": 103.4,
+   "usage": {
+    "num_turns": 11,
+    "input": 14,
+    "cache_read": 188867,
+    "cache_write": 22357,
+    "cache_write_1h": 22357,
+    "output": 7250,
+    "thinking": 3399,
+    "web_search": 3,
+    "cost_usd_envelope": 0.4631374,
+    "web_fetch": 0,
+    "duration_api_ms": 114302
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1330000000.0,
+     "25": 1520000000.0,
+     "50": 1685000000.0,
+     "75": 1845000000.0,
+     "90": 2010000000.0
+    },
+    "p_below_lower": 0.02
+   },
+   "reasoning": "Reference class: FEC final Senate-candidate spending in recent cycles (2020 $2.01B, 2022 $1.71B, 2024 $1.69B on the bythenumbers page). The 2026 field had spent $666M by mid-Aug. At 15 months it held a record $383M in cash and had raised 16% more than 2024 at the same point. It had spent less than 2024 by summer (2024 18-month 2-yr disbursements $682M vs 2026 ~$622M through Aug per USAFacts), so 2026 spending is back-loaded. Competitive races (GA, TX, NC, ME, MI, OH, IA, AK; Polymarket 62% D control) point to an eventual total of ~$1.7-1.85B. The December figure will lack Nov 24-Dec 31 spending (year-end report due Jan 2027), and there is a small risk that post-general reports are unprocessed, which skews the low tail. No market prices this quantity directly; only the Polymarket Senate-control contracts (not matching, used as competitiveness context).",
+   "sources": [
+    "https://www.fec.gov/updates/statistical-summary-of-15-month-campaign-activity-of-the-2025-2026-election-cycle/",
+    "https://www.fec.gov/updates/statistical-summary-of-18-month-campaign-activity-of-the-2023-2024-election-cycle",
+    "https://www.fec.gov/updates/statistical-summary-of-24-month-campaign-activity-of-the-2023-2024-election-cycle",
+    "https://usafacts.org/answers/how-much-are-candidates-spending-for-the-midterm/country/united-states/",
+    "https://www.fec.gov/data/spending-bythenumbers/"
+   ],
+   "dossier": "- Resolves off FEC 'Spending: by the numbers' page (Senate, 2026), total spending by all Senate candidates; fine print allows waiting until Dec 31, 2026. Not off USAFacts/OpenSecrets or independent expenditures.\n- Event window: cycle spending Jan 2025 -> whatever the FEC page shows at resolution (Dec 2-31, 2026). As of Now (2026-10-01), the election is on Nov 3; the post-general report (covering through Nov 23) is due Dec 3; the year-end report (Nov 24-Dec 31) is due Jan 31, 2027, so it will NOT be included at resolution.\n- FEC page history (question background): 2020 $2,007.6M; 2022 $1,708.2M; 2024 $1,687.3M (final, includes year-end). As of mid-Aug 2026: $666.3M (D $393.9M, R $261.0M, other $11.4M).\n- FEC 12-month summary (through Dec 31, 2025): 230 Senate candidates, receipts $454.1M, disbursements $237.9M, cash on hand $345.8M.\n- FEC 15-month summary (through Mar 31, 2026): 291 candidates, receipts $654M, disbursements $400.8M, debts $44.6M, cash on hand $382.7M; receipts ~16% above the 2024 field at the same point (FEC page).\n- FEC 18-month 2024 cycle (through Jun 30, 2024): receipts $857.5M, disbursements $681.9M, cash on hand $305M. FEC 24-month 2024 (through Dec 31, 2024): disbursements $1.5B (2-yr count; the bythenumbers page shows $1.687B for 2024, so the page appears to count a broader period, possibly the 6-year cycle).\n- USAFacts (updated Sep 28, 2026): Senate candidates spent $622M Jan 2025-Aug 2026; Texas $90.2M (Cornyn-Paxton primary/runoff), Georgia $60.8M lead.\n- Big war chests as of Jun 30, 2026: Ossoff raised $98M (COH $42.6M); Talarico raised $68.6M (COH $21.5M); Hagerty $16M raised.\n- Competitive map: GA, TX, NC, ME, MI, OH special, FL special, IA, NH, AK, NE; Polymarket (Oct 2026) shows the Senate majority as contested.\n- Status quo: recent cycles landed at $1.7-2.0B on this page; 2026 spent less than 2024 by mid-cycle but holds more cash and is raising faster.\n- Searched but could not find: the FEC 18-month 2025-26 summary (URL 404); whether the bythenumbers page in Dec 2022/Dec 2024 already reflected post-general data; Q3 2026 totals (not filed until Oct 15).",
+   "reference_class": "FEC 'spending by the numbers' total for all Senate candidates in recent election cycles (2020, 2022, 2024), scaled from mid-cycle spending pace"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.6129,
+   "seconds": 134.1,
+   "usage": {
+    "num_turns": 16,
+    "input": 22,
+    "cache_read": 337261,
+    "cache_write": 28359,
+    "cache_write_1h": 28359,
+    "output": 8193,
+    "thinking": 3627,
+    "web_search": 4,
+    "cost_usd_envelope": 0.6013961999999998,
+    "web_fetch": 0,
+    "duration_api_ms": 147999
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1400000000.0,
+     "25": 1560000000.0,
+     "50": 1720000000.0,
+     "75": 1880000000.0,
+     "90": 2040000000.0
+    },
+    "p_below_lower": 0.02
+   },
+   "reasoning": "2022 midterm Senate candidates had $710.6M disbursed by June 30 and finished at $1.708B (~2.4x). 2026 shows $666M by mid-Aug and $654M receipts at 15 months (vs $707M in 2022, $611M in 2024), implying ~$1.6B on 2022's ratio. But the late environment is hotter: AdImpact Senate ad projection $3.4B (+48% vs 2022), record Talarico $30M Q2, huge TX/OH races, Dem cash surge, Polymarket D-control 62% signals many competitive seats. Resolution data likely through post-general reports (excludes December), trimming a few percent; small tail if resolved on pre-general data only. No market found pricing total candidate spending; Polymarket Senate-control markets are only indirect evidence.",
+   "sources": [
+    "https://www.fec.gov/updates/statistical-summary-of-15-month-campaign-activity-of-the-2025-2026-election-cycle/",
+    "https://www.fec.gov/updates/statistical-summary-of-18-month-campaign-activity-of-the-2021-2022-election-cycle/",
+    "https://www.fec.gov/updates/statistical-summary-of-15-month-campaign-activity-of-the-2021-2022-election-cycle/",
+    "https://www.fec.gov/updates/statistical-summary-of-15-month-campaign-activity-of-the-2023-2024-election-cycle/",
+    "https://www.fec.gov/updates/statistical-summary-of-24-month-campaign-activity-of-the-2023-2024-election-cycle/",
+    "https://www.fec.gov/updates/statistical-summary-of-18-month-campaign-activity-of-the-2023-2024-election-cycle",
+    "AdImpact/WaPo/Bloomberg search results Sept 2026 (Senate ad projection $3.4B)",
+    "Houston Public Media / The Hill search results July 2026 (Talarico $30M Q2)"
+   ],
+   "dossier": "- FEC by-the-numbers Senate candidate spending, full cycle: 2024 $1.687B; 2022 $1.708B; 2020 $2.008B (question background).\n- 2026 cycle per question background: $666.3M spent by Senate candidates as of mid-Aug 2026 (D $393.9M, R $261.0M, other $11.4M).\n- FEC 15-month summary (Jan 1 2025-Mar 31 2026): 291 Senate candidates, receipts $654M, disbursements $400.8M, cash on hand $382.7M, debts $44.6M.\n- FEC 12-month (through Dec 31 2025): receipts $454.1M, disbursements $237.9M, COH $345.8M.\n- Comparable 15-month Senate receipts: 2022 cycle $707M; 2024 cycle $611.2M (FEC press releases).\n- FEC 18-month 2022 cycle (through Jun 30 2022): Senate 331 candidates, receipts $943.1M, disbursements $710.6M; 2022 final by-the-numbers $1.708B (ratio final/18-mo ~2.4). Caveat: summary 'disbursements' may not be identical in definition to by-the-numbers 'spending'.\n- 2024 24-month FEC summary: Senate candidates raised ~$1.5B (released Apr 2025).\n- AdImpact (Sept 2026 reporting): Senate ad projection raised from $2.8B to $3.4B, +48% vs 2022, +27% vs 2024 (includes outside groups). WaPo Sep 29 2026: midterm ad spending crossed $1.5B. Bloomberg Sep 28 2026: 'most expensive US election ever'.\n- Texas (Talarico D vs Paxton R): Talarico raised record $30M in Q2 2026, Paxton $9M; TX ad spending >$153M and projected ~$440M by Nov 3; TX primary most expensive Senate primary on record ($122M+). Ohio Senate ads $240M by late Sept.\n- Polymarket: Senate control markets active (competitive environment); no market found on total candidate spending.\n- Timing: post-general reports due ~Dec 3 2026 (cover through ~Nov 23); year-end reports (December activity) due Jan 31 2027 — after the Dec 31 latest resolution wait. Scheduled resolution Dec 2 2026; fine print allows waiting until Dec 31 2026. Early-Dec data would include only pre-general reports (through ~Oct 14) plus monthly filers.\n- Resolution instrument: resolves off FEC 'Spending: by the numbers' page (Senate, 2026), not OpenSecrets or AdImpact; outside-group spending excluded.\n- Event window: cumulative cycle through data available at resolution (Dec 2-Dec 31 2026); as of Oct 1 2026, ~21 of 24 cycle months elapsed but the heaviest spending (Q3 + Oct-Nov) is largely unreported.\n- Searched but not found: 2026 FEC 18-month summary (404), the 2024 Senate-only 18-month disbursement figure, current live by-the-numbers value.",
+   "reference_class": "Total FEC-reported Senate candidate spending per cycle 2020-2024 ($1.69B-$2.01B), scaled from mid-cycle disbursements using 2022 midterm final/18-month ratio"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.0115,
+   "seconds": 107.5,
+   "usage": {
+    "num_turns": 12,
+    "input": 16,
+    "cache_read": 227869,
+    "cache_write": 26457,
+    "cache_write_1h": 26457,
+    "output": 6391,
+    "thinking": 2850,
+    "web_search": 6,
+    "cost_usd_envelope": 0.5483448000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 119549
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1450000000.0,
+     "25": 1570000000.0,
+     "50": 1680000000.0,
+     "75": 1800000000.0,
+     "90": 1950000000.0
+    },
+    "p_below_lower": 0.02
+   },
+   "reasoning": "Reference class: FEC Senate candidate disbursement ratios final/partial in 2022 and 2024 (15-mo x3.95 both cycles; 18-mo x2.40-2.47). 2026 15-mo disbursements $400.8M -> ~1.58B; mid-Aug ~$666M -> ~1.55-1.62B. Upward adjustment: 2026 receipts (+7%) and cash on hand (+22%) above 2024 at the same point, record Texas race, many competitive seats and a favorable Dem fundraising environment. Downward: resolution near Dec 31 likely excludes year-end reports (~2-4% of spending), and a small chance of an earlier snapshot. No human market prices this; Polymarket Senate-control markets are not matching contracts.",
+   "sources": [
+    "https://www.fec.gov/updates/statistical-summary-of-15-month-campaign-activity-of-the-2025-2026-election-cycle/",
+    "https://www.fec.gov/updates/statistical-summary-of-18-month-campaign-activity-of-the-2023-2024-election-cycle",
+    "https://www.fec.gov/updates/statistical-summary-of-15-month-campaign-activity-of-the-2023-2024-election-cycle/",
+    "https://www.fec.gov/updates/statistical-summary-of-24-month-campaign-activity-of-the-2021-2022-election-cycle/",
+    "https://usafacts.org/answers/how-much-are-candidates-spending-for-the-midterm/country/united-states/",
+    "https://www.houstonpublicmedia.org/articles/news/politics/election-2026/2026/09/28/562922/texas-senate-race-spending-talarico-paxton-super-pacs/",
+    "https://www.fec.gov/data/spending-bythenumbers/"
+   ],
+   "dossier": "- Resolves off FEC 'Spending: by the numbers' page (total disbursements of campaign committees of all Senate candidates for 2026 cycle), not outside/super PAC spending. Fine print: may wait until 2026-12-31 for data. Page notes newly filed summary data can take up to 48h to appear.\n- Event window: Senate candidate disbursements Jan 1 2025 -> resolution snapshot (Dec 2026); as of 2026-10-01 about 21 of 24 cycle months elapsed, but spending is heavily back-loaded.\n- Filing calendar: Q3 (thru Sep 30) due Oct 15; pre-general (thru Oct 14) due Oct 22-23; post-general (thru Nov 23) due ~Dec 3; year-end (Nov 24-Dec 31) due Jan 31 2027, so after the likely resolution date. Possible Georgia runoff in early Dec.\n- FEC 15-month 2025-26 summary (pub. June 2026): 291 Senate candidates, receipts $654M, disbursements $400.8M, debts $44.6M, COH $382.7M through 3/31/2026.\n- FEC 2023-24: 15-month Senate disbursements $426.4M (receipts $611.2M, COH $313.6M); 18-month $681.9M (receipts $857.5M); full-cycle per by-the-numbers $1,687.3M.\n- FEC 2021-22: Senate disbursements 15-mo $432.5M; 18-mo $710.6M; 21-mo ~$1.1B; full-cycle ~$1.7B ($1,708.2M on by-the-numbers).\n- Implied full/partial multipliers: 15-mo ~3.95 (2022 and 2024); 18-mo ~2.40 (2022), ~2.47 (2024); 21-mo ~1.55 (2022).\n- 2020 full cycle $2,008M (presidential year; GA double runoffs in Jan 2021).\n- Question background: $666.3M spent by mid-Aug 2026 (D $393.9M, R $261.0M, other $11.4M). USAFacts cites $622M 'as of August 2026' from FEC (definitions/dates may differ).\n- Top spenders by Aug 2026: Talarico (D-TX) $47.0M, Ossoff (D-GA) $39.7M, Sherrod Brown (D-OH) $22.3M, Graham (R-SC) $20.1M; TX races $90.2M total, GA $60.8M (USAFacts).\n- Houston Public Media 2026-09-28: Paxton-Talarico race projected ~$440M total spending incl. super PACs; Talarico spent ~$50M on general-election ads by Sept 17.\n- Polymarket (context only): Dem Senate control is priced competitive, which points to many contested seats.\n- Searched, absent: an FEC 18-month 2025-26 press release; any prediction market on total Senate candidate spending.",
+   "reference_class": "FEC Senate candidate full-cycle disbursements in 2022 and 2024 midterm/presidential cycles, scaled from same-point partial totals"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1371,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2176,
+   "seconds": 39.2,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11805,
+    "cache_write": 18263,
+    "cache_write_1h": 18263,
+    "output": 3454,
+    "thinking": 1314,
+    "web_search": 0,
+    "cost_usd_envelope": 0.217553,
+    "web_fetch": 0,
+    "duration_api_ms": 38537
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1360000000.0,
+     "25": 1510000000.0,
+     "50": 1650000000.0,
+     "75": 1800000000.0,
+     "90": 1970000000.0
+    },
+    "p_below_lower": 0.02
+   },
+   "reasoning": "Anchor: FEC Senate-candidate final/partial ratios from 2022 and 2024 applied to 2026's 15-month disbursements ($400.8M) and mid-August page total ($666M) give about $1.55-1.62B. Adjusted up for receipts and cash on hand above 2024 at the same point, a record Texas race, AdImpact's Senate ad projection of +27% versus 2024, and a competitive map. Adjusted down because the December snapshot excludes year-end reports (a few percent). Low tail allows for an early snapshot taken before post-general reports are processed. No market prices this quantity.",
+   "sources": [],
+   "reconciliation": "Disputes: (1) whether the bythenumbers page counts 2-year or multi-year activity. Page and summary figures disagree ($666M vs $622M mid-cycle; the 2024 final of $1.687B vs Run 1's ~$1.5B 24-month figure, which Run 2 describes as receipts), suggesting multi-year counting; so I preferred like-basis ratios, which land around $1.55-1.6B. (2) Resolution timing: post-general reports (due ~Dec 3) are likely included under the Dec 31 wait; year-end reports are not, a few percent below a true final. (3) How large a hot-cycle premium to apply is pure judgment; I took a modest one, putting the median at $1.65B, slightly below the runs' $1.68-1.72B because of the year-end exclusion and the lag in spending to date versus 2024. No web access on this run; all evidence came from the dossiers.",
+   "disagreements": [
+    {
+     "claim": "Whether the FEC bythenumbers page counts 6-year or 2-year activity per candidate",
+     "kind": "factual",
+     "verdict": "Page and summary figures disagree ($666M vs $622M; the 2024 final vs a ~$1.5B 24-month figure whose label is disputed), suggesting multi-year counting; not fully settled without web access, so I relied on like-basis ratios"
+    },
+    {
+     "claim": "Whether post-general reports are included at resolution",
+     "kind": "factual",
+     "verdict": "Likely yes, given the Dec 31 wait and filing due ~Dec 3; year-end reports are excluded. Small low-tail risk of an earlier snapshot"
+    },
+    {
+     "claim": "How large an upward adjustment the hot environment (ad projections, Texas, Democratic cash) warrants above the ratio baseline",
+     "kind": "judgment",
+     "verdict": "Modest, about +4-6%, roughly offset by the year-end exclusion; median $1.65B"
+    },
+    {
+     "claim": "Width of the distribution (Run 3 narrower at $450M vs about $620-650M for the others)",
+     "kind": "judgment",
+     "verdict": "Kept wider, about $610M, because of basis and timing uncertainty"
+    }
+   ],
+   "reference_class": "FEC by-the-numbers total Senate candidate spending, 2020-2024 cycles, scaled by mid-cycle disbursement ratios"
+  }
+ ]
+}
