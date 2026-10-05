@@ -1,0 +1,244 @@
+{
+ "record_id": "2026-10-05-f2c5712d",
+ "question": "What will be the closing price of the iShares China Large-Cap ETF (FXI) on October 15, 2026?",
+ "question_id": 46097,
+ "url": "https://www.metaculus.com/questions/45915/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-10-05T10:11:29+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.1803,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 31.150000000000002,
+    "25": 32.25,
+    "50": 33.266666666666666,
+    "75": 34.28333333333333,
+    "90": 35.35
+   }
+  },
+  "phase1": {
+   "10": 31.150000000000002,
+   "25": 32.25,
+   "50": 33.266666666666666,
+   "75": 34.28333333333333,
+   "90": 35.35
+  },
+  "phase2": null,
+  "spread_phase1": 0.05,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 31.05,
+   "25": 32.2,
+   "50": 33.25,
+   "75": 34.3,
+   "90": 35.4
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9716,
+   "seconds": 44.6,
+   "usage": {
+    "num_turns": 7,
+    "input": 8,
+    "cache_read": 93437,
+    "cache_write": 19489,
+    "cache_write_1h": 19489,
+    "output": 3089,
+    "thinking": 523,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3318994,
+    "web_fetch": 0,
+    "duration_api_ms": 56932
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 31.1,
+     "25": 32.2,
+     "50": 33.25,
+     "75": 34.3,
+     "90": 35.4
+    }
+   },
+   "reasoning": "Random-walk anchor: FXI closed 33.19 on Oct 2 after a 2.1% drop (HSI -2.6%, worst since March, on US-Iran tension/oil/yield spike); HSI +0.28% on Oct 5 implies ~33.3 start. 9 trading sessions to Oct 15. No meaningful drift assumed; recent month -5.9% offsets near-52wk-low mean-reversion. Width from ~29% annualized vol given elevated macro risk (Fed hiking, oil shock); China Sept trade/CPI data ~Oct 14 is a catalyst. Escapes below 28 or above 40 (~16-20% moves) judged <0.5% each, not declared. Market check: no Polymarket/Kalshi/Manifold/bookmaker contract found.",
+   "sources": [
+    "https://finance.yahoo.com/quote/FXI/history/",
+    "https://www.blackrock.com/us/individual/products/239536/ishares-china-largecap-etf",
+    "https://news.rthk.hk/rthk/en/component/k2/1872425-20261002.htm",
+    "https://news.futunn.com/en/post/1000570584/hong-kong-stock-market-close-hang-seng-index-rises-0"
+   ],
+   "dossier": "- Yahoo Finance FXI closes: Aug 28 35.51; Sep 4 35.88 (recent high); Sep 8 35.00; Sep 16 33.92; Sep 22 35.00; Sep 25 33.96; Sep 30 34.02; Oct 1 33.92; Oct 2 33.19.\n- iShares/BlackRock page (as of Oct 2, 2026): NAV 33.35, 1-day NAV -2.06%; YTD NAV total return -10.81%; past month -5.88%; 52-week range 31.50-41.84; net assets ~$3.85B.\n- RTHK Oct 2, 2026: HSI -2.6% (-640 pts) to 23,972, largest one-day drop since March 2026; China Enterprises -2.3%, HS Tech -2.3%. Drivers: US-Iran tensions, oil surge, global bond yield spike (markets pricing more hikes through June 2027), Bloomberg Commodity Index +37% y/y.\n- Futu news, Oct 5, 2026: HSI +0.28%, HSCEI +0.26%, HS Tech +0.62%; low turnover HK$98.1B. FXI's US session on Oct 5 had not yet happened as of Now.\n- Macro: the Fed hiked in September 2026 (per a prediction-news headline). China Sept trade/CPI data ~Oct 14; Q3 GDP Oct 19 (after resolution).\n- Status quo: FXI around 33.2-33.3 entering the week of Oct 5.\n- Base-rate construction: FXI's typical annualized vol is ~25-30%; over 9 sessions that is a 1-sigma of ~4.7-5.7% (~$1.6-1.9). Daily moves of 1-2% were common in Sep 2026.\n- Resolves off the Yahoo Finance FXI history 'Close' for Oct 15, 2026 (not adjusted close, not NAV).\n- Event window: single close on Oct 15, 2026. As of Now (Oct 5 10:10 UTC), 0 of the 9 US sessions after the Oct 2 close have traded (Oct 5-9, 12-15).\n- Searched for a Polymarket/Kalshi/Manifold contract on FXI/HSI: none found. Did not find options-implied vol for FXI.",
+   "reference_class": "FXI 9-trading-day price changes over the past 1-2 years (lognormal random walk at ~25-30% annualized vol)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6397,
+   "seconds": 43.9,
+   "usage": {
+    "num_turns": 6,
+    "input": 8,
+    "cache_read": 92703,
+    "cache_write": 19194,
+    "cache_write_1h": 19194,
+    "output": 2904,
+    "thinking": 473,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3202486,
+    "web_fetch": 0,
+    "duration_api_ms": 51433
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 31.35,
+     "25": 32.35,
+     "50": 33.25,
+     "75": 34.15,
+     "90": 35.15
+    }
+   },
+   "reasoning": "Random-walk anchor at last close $33.19 (Oct 2) after a -2.15% day tracking HSI's -2.6% post-holiday drop. HSI +0.3% on Oct 5 suggests a flat-to-slightly-up open, so median ~33.25. Horizon is 8-9 trading sessions; ~1.5% daily vol gives ~$1.5 SD. Catalysts: China Sept trade/CPI ~Oct 14, Stock Connect reopening Oct 8, global bond yields (US 10y at highs). No prediction market found on Polymarket/Kalshi/Manifold. Tails beyond 28/40 (−16%/+20%) are very unlikely; not priced separately.",
+   "sources": [
+    "https://finance.yahoo.com/quote/FXI/history/",
+    "https://www.bbntimes.com/global-economy/hong-kong-stock-exchange-hang-seng-index-plunges-to-23-972-29-its-steepest-drop-since-march-as-banks-and-tech-slide-after-the-holiday",
+    "https://www.thestandard.com.hk/finance/article/344617/Hang-Seng-Index-regains-the-24000-point-mark-on-Monday",
+    "https://news.rthk.hk/rthk/en/component/k2/1872425-20261002.htm",
+    "https://stockanalysis.com/etf/fxi/"
+   ],
+   "dossier": "- FXI Yahoo history: closes Sep 14 34.84, Sep 15 34.40, Sep 16 33.92, Sep 17 34.19, Sep 18 34.32, Sep 21 34.91, Sep 22 35.00, Sep 23 34.36, Sep 24 34.24, Sep 25 33.96, Sep 28 34.17, Sep 29 33.86, Sep 30 34.02, Oct 1 33.92, Oct 2 33.19 (-2.15%) (finance.yahoo.com, fetched 2026-10-05).\n- HSI fell 2.6% to 23,972.29 on Oct 2 when Hong Kong reopened after National Day, its steepest drop since March 23. Drivers: a global bond sell-off (US 10y yield highest since 2002), Stock Connect southbound suspended until Oct 8, weak Macau gaming data. AIA -5.98%, HSBC -5.38% (bbntimes/RTHK, 2026-10-02).\n- HSI on Mon Oct 5: +68 pts (+0.3%) to ~24,040, reversing early losses; HS Tech +0.6% (The Standard, 2026-10-05). FXI's US session on Oct 5 had not happened as of this research.\n- FXI 52-week range $31.19-$42.00; AUM $4.06B; P/E ~10.25 (stockanalysis.com, as of Oct 2).\n- Catalysts in window: China Sept trade and CPI data ~Oct 14; Stock Connect resumes Oct 8. Q3 GDP is Oct 19, after resolution.\n- Recent realized daily moves are mostly 0.3-1.9%, with one 2.15% day. Typical FXI daily vol is about 1.3-1.8%.\n- Status quo: the price stays near its last close; the remaining horizon is 8-9 US trading sessions (Oct 5 through Oct 15).\n- Resolves off Yahoo Finance FXI 'Close' for Oct 15, 2026, not intraday or adjusted close.\n- Event window: single close on 2026-10-15; as of Oct 5 there are about 8-9 sessions remaining.\n- Searched for Polymarket/Kalshi/Manifold markets on FXI or HSI and found none.",
+   "reference_class": "FXI 8-9 trading-day price changes over the past 1-2 years (random walk from the last close)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3195,
+   "seconds": 43.4,
+   "usage": {
+    "num_turns": 6,
+    "input": 8,
+    "cache_read": 93308,
+    "cache_write": 19325,
+    "cache_write_1h": 19325,
+    "output": 2743,
+    "thinking": 504,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3194656,
+    "web_fetch": 0,
+    "duration_api_ms": 51791
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 31.0,
+     "25": 32.2,
+     "50": 33.3,
+     "75": 34.4,
+     "90": 35.5
+    }
+   },
+   "reasoning": "Random-walk anchor on the last close, $33.19 on Oct 2, adjusted for HSI +0.28% on Oct 5, giving a median of about 33.3. The regime is volatile: on Oct 2 the HSI fell 2.6%, the biggest drop since March, with the US 10-year yield at 5.34%, Brent near $102.6 and thin Golden-Week liquidity. FXI drifted from about 35.9 to 33.2 over September, but I am not extrapolating that momentum. Sept China trade/CPI data comes around Oct 14 and is event risk. The harness Polymarket/Manifold search found no market; I did not search Kalshi or bookmakers. The 28/40 bounds need roughly a 16% move, so no escape mass is priced.",
+   "sources": [
+    "https://finance.yahoo.com/quote/FXI/history/",
+    "https://cbonds.com/etf/133/",
+    "https://news.futunn.com/en/post/1000570584/hong-kong-stock-market-close-hang-seng-index-rises-0",
+    "https://www.businesstoday.com.my/2026/10/03/hang-seng-sinks-nearly-641-points-as-banks-tech-stocks-slide/",
+    "https://www.kucoin.com/news/flash/hong-kong-stocks-plunge-2-6-as-hsbc-alibaba-tencent-tumble"
+   ],
+   "dossier": "- Yahoo Finance FXI closes: Sep 4 35.88; Sep 8 35.00; Sep 15 34.40; Sep 22 35.00; Sep 25 33.96; Sep 30 34.02; Oct 1 33.92; Oct 2 33.19 (read 2026-10-05).\n- cbonds: NAV on Oct 2 was $33.35; YTD -10.8%; 1-month -5.9%.\n- On Oct 2 the HSI fell 2.6% to 23,972, the largest one-day drop since March and the lowest level since July. Drivers: US 10-year yield at 5.34% (highest since 2002), Brent about $102.6, US AI-hardware restrictions, thin liquidity with Stock Connect shut for Golden Week (BusinessToday 2026-10-03; KuCoin).\n- On Oct 5 the HSI rose 0.28% back above 24,000, the HSCEI rose 0.26% and HS Tech rose 0.62% (Futu). The US session for Oct 5 had not happened as of Now.\n- Upcoming: China Sept trade/CPI around Oct 14; Q3 GDP on Oct 19, after resolution.\n- Status quo: the last observed close carried forward.\n- Base rate: realized FXI daily vol about 1.5-1.8% in the 2026 regime, implying about ±5% (1 SD) over 9 trading days. This is an approximate figure, not computed from a downloaded series.\n- Resolves off the Yahoo Finance 'Close' for Oct 15, 2026, not NAV.\n- Event window: single close on 2026-10-15. As of Now (Oct 5), 9 US trading sessions remain (Oct 5-9 and Oct 12-15).\n- Searched but not found: a Polymarket/Manifold contract on FXI's price (harness search, none found); Kalshi and bookmakers not checked; implied vol for FXI options not found.",
+   "reference_class": "FXI 9-trading-day log returns over 2025-2026 (roughly 1.5-1.8% daily vol)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0246,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1691,
+   "seconds": 19.0,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11805,
+    "cache_write": 16853,
+    "cache_write_1h": 16853,
+    "output": 1596,
+    "thinking": 241,
+    "web_search": 0,
+    "cost_usd_envelope": 0.169113,
+    "web_fetch": 0,
+    "duration_api_ms": 18369
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 31.05,
+     "25": 32.2,
+     "50": 33.25,
+     "75": 34.3,
+     "90": 35.4
+    }
+   },
+   "reasoning": "Random-walk anchor on Oct 2 close 33.19 (after -2.15% day tracking HSI -2.6% post-Golden Week), nudged up for HSI +0.28% on Oct 5 -> median ~33.25. Nine US sessions to Oct 15. Width set from ~1.7% daily vol, upper end of runs' estimates, given elevated macro risk (US 10y at 2002 highs, Brent ~$102, Fed hiking, China Sept trade/CPI ~Oct 14, Stock Connect reopening Oct 8). Slightly fatter left tail for risk-off regime. Escape beyond 28/40 requires ~16-20% move in 9 sessions; not priced. Market check (per runs; no web this run): no Polymarket/Kalshi/Manifold/bookmaker contract found.",
+   "sources": [],
+   "reconciliation": "All three runs use the same anchor (33.19 close, HSI +0.28% Oct 5) and medians 33.25-33.3; the only material dispute is daily vol (1.5% vs ~1.8%), a judgment. Given the stressed macro backdrop documented in all dossiers (yield spike, oil shock, Fed hike), I side with the higher-vol reading and carry Run 1/3's width forward. Factual discrepancy in 52-week range (31.50-41.84 vs 31.19-42.00) is irrelevant to the forecast and unresolvable without web access. No averaging; median from anchor, width from vol judgment.",
+   "disagreements": [
+    {
+     "claim": "Appropriate daily volatility: ~1.5% (Run 2) vs ~1.7-1.8% (Runs 1,3)",
+     "kind": "judgment",
+     "verdict": "Took ~1.7% given elevated macro stress; width ~4.35"
+    },
+    {
+     "claim": "52-week range 31.50-41.84 vs 31.19-42.00",
+     "kind": "factual",
+     "verdict": "Unsettled (different sources/NAV vs price); immaterial to the forecast"
+    },
+    {
+     "claim": "Remaining sessions 8 vs 9",
+     "kind": "factual",
+     "verdict": "9 (Oct 5-9, 12-15), none traded as of Now"
+    }
+   ],
+   "reference_class": "FXI 9-trading-day log returns in elevated-volatility regimes (annualized vol ~25-30%)"
+  }
+ ]
+}
