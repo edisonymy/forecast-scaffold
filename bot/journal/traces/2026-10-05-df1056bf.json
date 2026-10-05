@@ -1,0 +1,259 @@
+{
+ "record_id": "2026-10-05-df1056bf",
+ "question": "What will Zcash (ZEC) close at on October 15, 2026?",
+ "question_id": 46100,
+ "url": "https://www.metaculus.com/questions/45918/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-10-05T12:03:03+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 0.8953,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 1040.0,
+    "25": 1178.3333333333333,
+    "50": 1328.3333333333333,
+    "75": 1493.3333333333333,
+    "90": 1690.0
+   },
+   "p_below_lower": 0.0125,
+   "p_above_upper": 0.01
+  },
+  "phase1": {
+   "10": 1040.0,
+   "25": 1178.3333333333333,
+   "50": 1328.3333333333333,
+   "75": 1493.3333333333333,
+   "90": 1690.0
+  },
+  "phase2": null,
+  "spread_phase1": 5.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 1040.0,
+   "25": 1175.0,
+   "50": 1330.0,
+   "75": 1505.0,
+   "90": 1700.0
+  },
+  "p_below_lower": 0.01,
+  "p_above_upper": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7328,
+   "seconds": 117.3,
+   "usage": {
+    "num_turns": 6,
+    "input": 10,
+    "cache_read": 132696,
+    "cache_write": 10970,
+    "cache_write_1h": 10970,
+    "output": 3410,
+    "thinking": 624,
+    "web_search": 2,
+    "cost_usd_envelope": 0.24139619999999998,
+    "web_fetch": 0,
+    "duration_api_ms": 62712
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1030.0,
+     "25": 1180.0,
+     "50": 1330.0,
+     "75": 1490.0,
+     "90": 1690.0
+    },
+    "p_below_lower": 0.01
+   },
+   "reasoning": "Spot ~$1,335 on Oct 5 after a ~23% pullback from the Sept 27 peak ($1,697); the last 5 daily closes were $1,301-1,352. Random-walk prior with ~6% daily vol over 10 days gives roughly +/-19% sigma. Grayscale ETF outflows and falling open interest push down; ETF demand, strong momentum and a steadying price push up, so I keep the median near spot with fat tails. No human market prices the Oct 15 close; the Polymarket contracts run to Dec 31 and ask about touching a level, so they are evidence only (reach $2000 at 0.44, dip to $700 at 0.28). Falling below $700 needs about a 48% drop in 10 days, priced at ~1%.",
+   "sources": [
+    "https://api.coingecko.com/api/v3/coins/zcash/market_chart?vs_currency=usd&days=60&interval=daily",
+    "https://news.bitcoin.com/market-updates/zcash-price-slides-23-as-grayscale-etf-hits-reverse/",
+    "https://247wallst.com/investing/cryptocurrency/2026/10/02/zcash-is-up-1077-in-a-year-and-down-8-this-week-is-the-best-trade-of-2026-over/",
+    "https://www.fxstreet.com/cryptocurrencies/news/zcash-price-forecast-zec-stalls-around-1-400-as-easing-upside-momentum-risks-capitulation-202609300615",
+    "https://polymarket.com/market/will-zcash-reach-2000-by-december-31-2026"
+   ],
+   "dossier": "- CoinGecko daily series (fetched 2026-10-05; the API returned dates shifted about 16 months early, so the series was aligned using the known $1,335.01 close on Oct 1): ~1,555 (Sep 24), 1,653 (Sep 26), 1,587, 1,483, 1,417, 1,438, 1,335.01 (Oct 1), 1,301 (Oct 2), 1,304 (Oct 3), 1,352 (Oct 4), ~1,334 (Oct 5 spot).\n- Run-up: ~$500 in early Aug to ~$1,650 by late Sep; single-day moves of up to +29% in that period.\n- Peak: $1,697 intraday on Sep 27; about 23% drawdown to $1,304 by Oct 3 (news.bitcoin.com, Oct 2026).\n- Grayscale ZCSH ETF: ~$93M outflow in its first negative week; $28.26M redeemed on Oct 1 (news.bitcoin.com).\n- Open interest down 13.5% during the pullback (cryptoticker.io).\n- Stolen Bitget funds ($3.9M) moved into Zcash's shielded pool; commentators raise the risk of regulatory or delisting pressure.\n- Technical levels cited by commentators: support at $1,300, $1,246 and $1,349; FXStreet (Sep 30) wrote of easing momentum and capitulation risk.\n- 24/7 Wall St (Oct 2): ZEC up 1,077% year on year, down 8% on the week.\n- Realized daily vol over the last 2 weeks is about 4-7%; 10-day sigma is roughly 15-22%.\n- Status quo: the price stays near ~$1,335.\n- Resolves off CoinGecko historical_data 'Close' for Oct 15 (UTC), not intraday highs or lows.\n- Event window: a single daily close on Oct 15, 2026; as of Oct 5 12:00 UTC, about 10.5 days remain.\n- Markets: Polymarket only has Dec 31 contracts on touching a level (reach/dip), not this date's close; no Kalshi/Manifold contract on the Oct 15 close found.\n- Searched for but did not find: scheduled ZEC catalysts (network upgrade, ETF decision) dated Oct 5-15.",
+   "reference_class": "10-day log returns of ZEC during the 2026 parabolic regime (high-vol altcoin random walk from spot)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2451,
+   "seconds": 56.1,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 130445,
+    "cache_write": 11171,
+    "cache_write_1h": 11171,
+    "output": 3535,
+    "thinking": 509,
+    "web_search": 2,
+    "cost_usd_envelope": 0.24507299999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 63905
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1060.0,
+     "25": 1190.0,
+     "50": 1325.0,
+     "75": 1475.0,
+     "90": 1660.0
+    }
+   },
+   "reasoning": "Status quo/random-walk anchor: spot ~$1,333 on Oct 5 (CoinGecko), flat since the Oct 1 close of $1,335. Recent realized volatility is very high (daily moves of 5-20% during the Aug-Sep run), which gives a horizon SD of ~18% over 10.5 days. Drift is set slightly negative because Grayscale ETF outflows (~$93M in the first negative week) and falling open interest continue the pullback from the $1,697 peak. The upside case is a resumed rally or renewed ETF inflows. Polymarket only has year-end touch markets (dip to $700 at 28%, reach $2,000 at 44%); they are consistent with high volatility but do not match this contract, and I found no market on the Oct 15 close itself. Tails outside $700-$2,400 are each <2%, so no escape mass is declared.",
+   "sources": [
+    "https://api.coingecko.com/api/v3/coins/zcash/market_chart?vs_currency=usd&days=60&interval=daily",
+    "https://api.coingecko.com/api/v3/simple/price?ids=zcash&vs_currencies=usd",
+    "https://news.bitcoin.com/market-updates/zcash-price-slides-23-as-grayscale-etf-hits-reverse/",
+    "https://247wallst.com/investing/cryptocurrency/2026/10/02/zcash-is-up-1077-in-a-year-and-down-8-this-week-is-the-best-trade-of-2026-over/",
+    "https://cryptoticker.io/en/zcash-pullback-open-interest-leverage/"
+   ],
+   "dossier": "- CoinGecko simple price API, 2026-10-05 14:53 UTC: ZEC $1,332.77, 24h change -0.16%.\n- CoinGecko daily series (API timestamps were mislabeled as 2025; the values line up with 2026): mid-Aug ~$500 -> late Aug ~$800 -> ~$1,000-1,250 in early-mid Sept -> ~$1,470-1,650 in late Sept -> $1,335.01 on Oct 1 -> ~$1,300-1,350 on Oct 2-5.\n- Single-day moves in that series ran from about +29% (~$569->$733) to -13% (~$1,244->$1,080). Several days moved more than 10%; the last ~5 days moved under 3%.\n- Peak about $1,697 on Sept 27; spot is about 21-23% below it (bitcoin.com news, chaincatcher).\n- Grayscale Zcash ETF had its first negative week, about $93M out; $28.26M redeemed on Oct 1 (bitcoin.com news, ~Oct 3).\n- ZEC futures open interest fell 13.5% during the pullback (cryptoticker).\n- An analyst names $1,349 as support and about $1,246 as the next target if it breaks (search digest, Oct 3).\n- Hackers moved $3.9M of stolen Bitget funds into the Zcash shielded pool, raising regulatory scrutiny (search digest).\n- On the bullish side: up about 1,077% year-on-year; ETF demand narrative; Sept 30 FXStreet notes stalling momentum near $1,400.\n- Status quo: a random walk from about $1,333.\n- Dispersion: realized daily volatility about 5-6% in this regime, so roughly 18% SD over 10.5 days.\n- Resolves off the CoinGecko historical_data 'Close' for 2026-10-15 UTC, not intraday highs or lows.\n- Event window: a single daily close on 2026-10-15 UTC. As of 2026-10-05 12:00 UTC there are about 10.5 days left (the window opens later; it is a point outcome).\n- Polymarket has only year-end touch markets (dip to $700/$600/$400; reach $2,000 by Dec 31). Searched for a matching Oct 15 close market: none found. Kalshi and Manifold were not checked.",
+   "reference_class": "10-day log returns of ZEC in its 2026 high-volatility regime (random walk from spot)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4914,
+   "seconds": 59.7,
+   "usage": {
+    "num_turns": 6,
+    "input": 10,
+    "cache_read": 130402,
+    "cache_write": 11277,
+    "cache_write_1h": 11277,
+    "output": 3570,
+    "thinking": 814,
+    "web_search": 2,
+    "cost_usd_envelope": 0.24631240000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 64290
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1030.0,
+     "25": 1165.0,
+     "50": 1330.0,
+     "75": 1515.0,
+     "90": 1720.0
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Spot ~$1,335 on Oct 5 after a ~22% pullback from the Sep 27 peak (~$1,697), driven by Grayscale ZEC ETF outflows and long liquidations; support at $1,270-1,300. Random-walk median at spot with no drift (momentum down vs support/strong 30d trend). Realized daily vol ~5-7% gives ~19-20% log sigma over 10.5 days; tails widened for frequent 15-30% single-day jumps. No Polymarket/Kalshi contract on the Oct 15 close; Dec-31 touch markets (reach $2000 at 0.44, dip to $700 at 0.28) are only near-miss evidence of high implied vol.",
+   "sources": [
+    "https://api.coingecko.com/api/v3/coins/zcash/market_chart?vs_currency=usd&days=60&interval=daily",
+    "https://news.bitcoin.com/market-updates/zcash-price-slides-23-as-grayscale-etf-hits-reverse/",
+    "https://www.fxstreet.com/cryptocurrencies/news/zcash-price-forecast-zec-stalls-around-1-400-as-easing-upside-momentum-risks-capitulation-202609300615",
+    "https://247wallst.com/investing/cryptocurrency/2026/10/02/zcash-is-up-1077-in-a-year-and-down-8-this-week-is-the-best-trade-of-2026-over/",
+    "https://polymarket.com/market/will-zcash-reach-2000-by-december-31-2026"
+   ],
+   "dossier": "- Spot: ZEC ~$1,333-1,335 on 2026-10-05 (CoinGecko API, web price summaries). CoinGecko Oct 1 close $1,335.01.\n- CoinGecko 60-day daily series: ~$480-570 in early-mid Aug 2026, jumped ~$730-850 late Aug, ~$1,000-1,250 early Sep, ~$1,470-1,650 mid/late Sep, peak daily ~$1,653 (Sep 26); then $1,483, $1,417, $1,438, $1,335 (Oct 1), $1,301, $1,304, $1,352, $1,334 (Oct 5 intraday). Note: the API output came back with dates shifted ~91 days; aligned using the Oct 1 close.\n- Realized daily moves in the last 60 days: typically 3-8%, with several single days of +15-30% (late Aug, early Sep). Implied 10.5-day log sigma ~0.18-0.22.\n- news.bitcoin.com (~Oct 3): ZEC fell ~23% from the Sep 27 peak ($1,697) to $1,304 on Oct 3; Grayscale ZEC ETF had its first negative week (~$93M outflow), $28.26M redeemed Oct 1.\n- FXStreet (Sep 30): momentum easing; downside target near the Sep 9 high ~$1,296; buyers defending $1,270-1,300.\n- 24/7 Wall St (Oct 2): up ~1,077% YoY, down 8% on the week.\n- cryptoticker: open interest down 13.5% during the pullback (deleveraging).\n- Upside drivers cited: privacy-coin narrative, ETF speculation and flows, perpetuals listing, whale accumulation; ZEC still up ~69% over 30 days as of early Oct.\n- Market check: no Polymarket/Kalshi/Manifold contract on the Oct 15 close found; Polymarket Dec-31-2026 touch markets exist (reach $2000; dip to $700/$600/$400) and are near-miss contracts only.\n- Status quo: price roughly flat near $1,330. Escaping the range (<$700 or >$2,400) needs a ~-47% or ~+80% move in 10 days.\n- Resolves off the CoinGecko historical_data 'Close' for 2026-10-15 UTC, not exchange-specific closes.\n- Event window: single daily close on 2026-10-15 UTC; as of 2026-10-05T12:00Z, ~10.5 days remain.\n- Not found: scheduled ZEC-specific catalysts (network upgrade, ETF decision date) between Oct 5 and Oct 15.",
+   "reference_class": "ZEC 10-11 day log returns in the Aug-Oct 2026 high-vol regime (random walk from spot)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0159,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1227,
+   "seconds": 24.9,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20122,
+    "cache_write": 9260,
+    "cache_write_1h": 9260,
+    "output": 2229,
+    "thinking": 320,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1226924,
+    "web_fetch": 0,
+    "duration_api_ms": 24254
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1040.0,
+     "25": 1175.0,
+     "50": 1330.0,
+     "75": 1505.0,
+     "90": 1700.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Status quo is a random walk from spot ~$1,333 (Oct 1 CoinGecko close $1,335.01, flat over Oct 1-5 between $1,301 and $1,352). Realized vol gives ~19% sigma over the 10.5 days left. Bearish factors are Grayscale ETF outflows, falling open interest and the pullback from the $1,697 peak. Bullish factors are support holding at ~$1,300, the strong 30-day trend and the ETF/privacy narrative. They roughly cancel, so the median stays at spot. Escaping the range needs about -47% or +80% in 10 days, priced at ~1% each. No human market prices this close; the Polymarket Dec-31 touch contracts are near-miss evidence of high implied vol only.",
+   "sources": [],
+   "reconciliation": "All three runs agree on the facts: spot ~$1,333, Oct 1 close $1,335.01, Sep 27 peak $1,697, ETF outflows ~$93M, OI -13.5%, no catalyst dated Oct 5-15, and no matching market. The CoinGecko API date shifts were reported differently but each run aligned on the Oct 1 close, so the values agree. What remained was judgment: (1) drift — run 2 slightly negative, runs 1 and 3 zero; with no evidence breaking the tie between bearish momentum and support holding, I bet on zero drift; (2) volatility of 18-20% — I adopt ~19% with mildly fat tails, in line with runs 1 and 3; (3) escape mass — I price ~1% each side, with the mechanisms named. The percentiles follow from the stated dispersion rather than from averaging the runs.",
+   "disagreements": [
+    {
+     "claim": "Drift over the next 10 days: slightly negative (ETF outflows) vs zero",
+     "kind": "judgment",
+     "verdict": "No tie-breaking evidence; zero drift, with outflows and support at $1,300 treated as offsetting"
+    },
+    {
+     "claim": "Horizon sigma 18% vs 19-20%",
+     "kind": "judgment",
+     "verdict": "~19% from realized daily vol of 5-7%, tails slightly widened"
+    },
+    {
+     "claim": "Whether to declare escape mass below $700 / above $2,400",
+     "kind": "judgment",
+     "verdict": "~1% each; the required moves are extreme but possible in this regime"
+    },
+    {
+     "claim": "Alignment of mislabeled CoinGecko API dates",
+     "kind": "factual",
+     "verdict": "All runs anchored on the known Oct 1 close of $1,335.01 and their recent series agree; settled"
+    }
+   ],
+   "reference_class": "10-day log returns of ZEC (high-vol altcoin) in the Aug-Oct 2026 regime, random walk from spot"
+  }
+ ]
+}
