@@ -1,0 +1,260 @@
+{
+ "record_id": "2026-10-05-a7ee462d",
+ "question": "How many of Peru's 25 regions will show no gubernatorial ticket at 30%+ of valid votes in ONPE's official count as of October 15, 2026?",
+ "question_id": 46112,
+ "url": "https://www.metaculus.com/questions/45930/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-05T21:19:43+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.2529,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 13.366666666666667,
+    "25": 14.083333333333334,
+    "50": 14.666666666666666,
+    "75": 15.216666666666667,
+    "90": 15.883333333333335
+   }
+  },
+  "phase1": {
+   "10": 13.366666666666667,
+   "25": 14.083333333333334,
+   "50": 14.666666666666666,
+   "75": 15.216666666666667,
+   "90": 15.883333333333335
+  },
+  "phase2": null,
+  "spread_phase1": 0.8,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 14.1,
+   "25": 14.65,
+   "50": 15.0,
+   "75": 15.2,
+   "90": 15.5
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.1601,
+   "seconds": 106.7,
+   "usage": {
+    "num_turns": 14,
+    "input": 16,
+    "cache_read": 241506,
+    "cache_write": 30046,
+    "cache_write_1h": 30046,
+    "output": 6689,
+    "thinking": 2005,
+    "web_search": 4,
+    "cost_usd_envelope": 0.6202672,
+    "web_fetch": 0,
+    "duration_api_ms": 138988
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 13.1,
+     "25": 14.0,
+     "50": 14.8,
+     "75": 15.4,
+     "90": 16.1
+    }
+   },
+   "reasoning": "ONPE official count as of Oct 5 (actas 86-99% in most regions) shows 13 regions firmly below 30%: Amazonas, Ancash, Arequipa, La Libertad, Lambayeque, Lima Provincias, Moquegua, Piura, Puno, Tumbes, Tacna (29.3% @98.5%), Pasco (28.5% @98.5%), Junin (29.2% @97%). Borderline: Cajamarca 29.885% @94.6% trending down, Loreto 28.3% @62%. Slightly above: Cusco 31.1, Ica 31.0, Huanuco 31.8, San Martin 31.1. Base rate 9-15 regions historically (2022: 9); Datum quick count projected 14. No human market found on Polymarket/Manifold/Kalshi/bookmakers. Expected ~14.8, mode 15.",
+   "sources": [
+    "https://www.infobae.com/peru/2026/10/04/resultados-onpe-en-vivo-las-cifras-oficiales-de-las-regiones-de-las-elecciones-de-hoy-4-de-octubre-de-2026/",
+    "https://www.infobae.com/peru/2026/10/05/elecciones-regionales-2026-estas-regiones-tendran-segunda-vuelta-para-elegir-a-sus-gobernadores/",
+    "https://larepublica.pe/politica/2026/10/04/primeros-resultados-onpe-en-vivo-conoce-quienes-lideran-las-elecciones-regionales-y-municipales-2026-hnews-301384",
+    "https://diariocorreo.pe/politica/resultados-onpe-asi-va-en-tumbes-cajamarca-loreto-y-huancavelica-elecciones-erm-2026-noticia/",
+    "https://diariocorreo.pe/politica/elecciones-erm-2026-ayacucho-huancavelica-moquegua-y-apurimac-onpe-reporta-avance-de-resultados-noticia/",
+    "https://elcomercio.pe/elecciones/elecciones-regionales-y-municipales-2026-resultados-oficiales-de-onpe-en-la-region-de-junin-noticia/",
+    "https://diariocorreo.pe/politica/erm-2026-estos-son-los-resultados-onpe-en-ancash-cerro-de-pasco-y-huanuco-noticia/",
+    "https://rpp.pe/politica/elecciones/resultados-onpe-en-vivo-el-conteo-de-los-candidatos-a-los-gobiernos-regionales-y-alcaldias-distritales-noticia-1710857"
+   ],
+   "dossier": "- Resolves off ONPE official computation (resultados.onpe.gob.pe) leader share of valid votes <30.00% per region, snapshot 23:59 Peru time Oct 15 2026; not quick count. Event window: count frozen at Oct 15 snapshot; as of Oct 5 21:16 UTC the snapshot is ~10 days away; actas mostly 86-99% processed already.\n- Base rate: 2022 had 9 of 25 regions in runoff; JNE says historically 9-15 regions (over all regional elections 2010-2022).\n- Datum quick count (Infobae, Oct 5): 14 regions to runoff: Amazonas, Ancash, Arequipa, Huancavelica, Ica, La Libertad, Lambayeque, Lima Provincias, Loreto, Moquegua, Piura, Puno, Tumbes, Ucayali (note several of these are above 30% in official count: Huancavelica, Ica, Ucayali).\n- ONPE official, Oct 5 (various outlets): Arequipa leader 25.3% @98.9%; Ancash 21.3% @97%; Amazonas ~24.9% @89.6%; La Libertad 24.8% @97.7%; Lambayeque 28.7% @96.3%; Lima Provincias 16.3% @96.6%; Moquegua 26.0% @98.3%; Piura 22.3% @77.8%; Puno 22.5% @97.2%; Tumbes 28.9% @98%; Tacna 29.32% @98.5%; Pasco 28.5% @98.5% (Correo 12:26); Junin 29.24% @96.9% (El Comercio 13:16; was 30.32% @87%).\n- Borderline: Cajamarca 29.885% @94.6% (Correo, Oct 5; was 30.33% @86%, trending down); Loreto 28.3% @62% (Correo 11:12, Oct 5).\n- Above 30%: Cusco 31.1% @92.4% (RPP); Ica 31.0% @94.2%; Huanuco 31.8% @93.2%; San Martin 31.1% @88.2%; Huancavelica 33.7% @98% (Correo; another report said 31.14%); Apurimac ~37.8%; Ayacucho ~36%; Callao 51.7%; Madre de Dios ~37%; Ucayali ~35% @73%.\n- Data caveat: figures were gathered from news summaries; minor discrepancies between outlets exist.\n- Remaining actas are often observed actas going to JEE (ONPE deadline to send Oct 11), may partly remain uncounted at Oct 15.\n- Searched for Polymarket/Manifold/Kalshi markets: none found.",
+   "reference_class": "Peruvian regional elections 2010-2022 runoff counts (JNE: 9-15 regions), updated by the partial official count at ~90-98% of actas"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 2.0058,
+   "seconds": 153.6,
+   "usage": {
+    "num_turns": 19,
+    "input": 22,
+    "cache_read": 380243,
+    "cache_write": 36531,
+    "cache_write_1h": 36531,
+    "output": 8292,
+    "thinking": 2326,
+    "web_search": 8,
+    "cost_usd_envelope": 0.8456676000000002,
+    "web_fetch": 0,
+    "duration_api_ms": 198242
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 14.2,
+     "25": 14.75,
+     "50": 15.0,
+     "75": 15.25,
+     "90": 15.75
+    }
+   },
+   "reasoning": "Prior from the historical range of regions going to a runoff (9-15; 9 in 2022). The ONPE official count on Oct 5 at about 87-99% counted shows 15 regions with the leader below 30% of valid votes. Junín (30.3 to 29.2) and Cajamarca (30.3 to 29.9) slipped below as counting progressed. Ica, San Martín, Cusco, Huánuco and Huancavelica are above 30 with nearly all actas counted. Main risks: Loreto, only ~62% counted, rising above 30 (needs +1.7pp); Cajamarca recovering; Ica dropping below. Observed actas resolved by Oct 15 shift shares only marginally. No human market found (harness found none on Polymarket or Manifold; Kalshi and bookmakers not searched).",
+   "sources": [
+    "https://www.infobae.com/peru/2026/10/04/resultados-onpe-en-vivo-las-cifras-oficiales-de-las-regiones-de-las-elecciones-de-hoy-4-de-octubre-de-2026/",
+    "https://www.infobae.com/peru/2026/10/05/elecciones-regionales-2026-estas-regiones-tendran-segunda-vuelta-para-elegir-a-sus-gobernadores/",
+    "https://elcomercio.pe/elecciones/elecciones-regionales-y-municipales-2026-resultados-oficiales-de-onpe-en-la-region-de-junin-noticia/",
+    "https://elcomercio.pe/elecciones/elecciones-regionales-y-municipales-2026-resultados-oficiales-de-onpe-en-la-region-de-san-martin-noticia/",
+    "https://diariocorreo.pe/politica/erm-2026-estos-son-los-resultados-onpe-en-ancash-cerro-de-pasco-y-huanuco-noticia/",
+    "https://diariocorreo.pe/politica/resultados-onpe-asi-va-en-tumbes-cajamarca-loreto-y-huancavelica-elecciones-erm-2026-noticia/",
+    "https://rpp.pe/politica/elecciones/resultados-onpe-en-vivo-el-conteo-de-los-candidatos-a-los-gobiernos-regionales-y-alcaldias-distritales-noticia-1710857",
+    "https://lalupa.pe/elecciones/regionales-municipales/ica/2026/resultados/"
+   ],
+   "dossier": "- Resolves off the ONPE official count (cómputo oficial, % of valid votes), last figures at or before 23:59 Peru time on Oct 15, 2026. Not the Datum exit poll or quick count, whose regional figures differ a lot from ONPE (e.g. Puno: Datum 29.3 vs ONPE 22.5; Ica: Datum 24.9 vs ONPE 30.8).\n- Event window: the Oct 4 election, measured at the Oct 15 snapshot. As of Oct 5 21:16Z, about 1 of the 11 days to the snapshot has elapsed; most regions are at 93-99% of actas counted.\n- ONPE leader share (% valid) by region, from media reports of ONPE on Oct 5 (Infobae 08:22, El Comercio, Correo, RPP, LaLupa):\n  - Amazonas 24.93 (86%); Áncash 21.25 (97%); Apurímac 39.2 (89%); Arequipa 25.26 (98.9%); Ayacucho 37.5 (85%)\n  - Cajamarca 30.33 (86%) then 29.885 (94.6%); Callao 51.7 (97.7%); Cusco 30.32 (85%) then 31.13 (92.4%)\n  - Huancavelica 32.94 (99.5%; 2nd place 32.88); Huánuco 31.44 (88%) then 31.76 (93.2%)\n  - Ica 31.02 (94%) then 30.77 (97.9%); LaLupa says the remaining 46 actas cannot drop it below 30\n  - Junín 30.32 (87%) then 29.24 (96.9%, El Comercio 13:16); La Libertad 24.79 (97.7%); Lambayeque 28.68 (96.3%); Lima Provincias 16.27 (96.6%)\n  - Loreto 28.28 (56%) then 28.29 (62%); Madre de Dios 37.2 (72%); Moquegua 26.03 (98%); Pasco 28.95 (86%) then 28.51 (98.5%)\n  - Piura 22.29 (78%); Puno 22.46 (97%); San Martín 31.40 (83%) then 31.24 (97.3%, 16:06); Tacna 29.32 (98.6%); Tumbes 28.90 (98%); Ucayali 35.3 (73%)\n- Status-quo tally from these figures: 15 regions below 30 (Amazonas, Áncash, Arequipa, Cajamarca, Junín, La Libertad, Lambayeque, Lima Provincias, Loreto, Moquegua, Pasco, Piura, Puno, Tacna, Tumbes).\n- Closest to the line: Cajamarca (-0.1, falling as counting progresses), Loreto (-1.7 with about 38% of actas left), Tacna (-0.7), Junín (-0.8), Ica (+0.8), San Martín (+1.2), Cusco (+1.1, rising).\n- Base rates: JNE says 9-15 regions historically go to a runoff (over all regional elections); 2022: 9 of 25. ONPE's quick count on election night was reported as 11 regions without a winner; the Datum exit poll showed 14.\n- Observed actas go to the JEE by Oct 11, recount hearings run until Oct 28. Some resolutions may be counted before Oct 15, typically moving shares by tenths of a point.\n- Not found: a direct ONPE portal snapshot for every region at a single timestamp; latest figures for Loreto, Piura, Amazonas and Ucayali beyond 62-86% counted; any prediction market (none on Polymarket or Manifold).",
+   "reference_class": "Peruvian regional elections: number of the 25 regions where no gubernatorial formula reaches 30% (JNE: historically 9-15; 2022: 9), updated by ONPE official count at ~90-99% of actas"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5399,
+   "seconds": 104.4,
+   "usage": {
+    "num_turns": 10,
+    "input": 14,
+    "cache_read": 202394,
+    "cache_write": 27588,
+    "cache_write_1h": 27588,
+    "output": 5567,
+    "thinking": 1646,
+    "web_search": 4,
+    "cost_usd_envelope": 0.5398548,
+    "web_fetch": 0,
+    "duration_api_ms": 123828
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 12.8,
+     "25": 13.5,
+     "50": 14.2,
+     "75": 15.0,
+     "90": 15.8
+    }
+   },
+   "reasoning": "ONPE official count (Oct 5, 56-98% actas) shows 13 regions with leader <30%: Amazonas, Ancash, Arequipa, La Libertad, Lambayeque, Lima Provincias, Loreto, Moquegua, Pasco, Piura, Puno, Tacna, Tumbes. Most are far below or near-fully counted. Three leaders sit right on the line at ~30.32-30.33% with 13-15% actas left: Cajamarca, Cusco (Mendoza, rural remainder likely favorable), Junin — each roughly a coin flip to drop below. Loreto (28.28% at 56%) and Pasco (28.95% at 86%) could climb above. Net expectation ~14.3. Datum exit poll (11) and press lists (13 with different composition) are noisier than ONPE's count. No human market found (Polymarket/Manifold/Kalshi/bookmakers: none).",
+   "sources": [
+    "https://www.infobae.com/peru/2026/10/04/resultados-onpe-en-vivo-las-cifras-oficiales-de-las-regiones-de-las-elecciones-de-hoy-4-de-octubre-de-2026/",
+    "https://www.infobae.com/peru/2026/10/02/si-ningun-candidato-llega-al-30-de-los-votos-peru-tendra-una-segunda-vuelta-regional-el-29-de-noviembre/",
+    "https://elcomercio.pe/lima/sucesos/el-nuevo-mapa-del-peru-tras-las-elecciones-las-13-regiones-donde-habra-segunda-vuelta-y-los-candidatos-que-iran-al-balotaje-apuesplan-noticia/",
+    "https://elcomercio.pe/elecciones/resultados-onpe-elecciones-regionales-y-municipales-2026-en-vivo-conteo-oficial-para-saber-quien-gana-las-elecciones-de-alcaldes-y-gobernadores-en-el-peru-erm-2026-lbposting-noticia/"
+   ],
+   "dossier": "- ONPE official count via Infobae live table (Oct 5, 2026), leader % valid votes / actas counted: Amazonas 24.93/86.4; Ancash 21.23/95.5; Apurimac 39.21/89.2; Arequipa 25.87/90.6; Ayacucho 37.47/85.3; Cajamarca 30.33/86.1 (Somos Peru); Callao 51.73/97.7; Cusco 30.32/85.3 (Venceremos, Veronika Mendoza); Huancavelica 34.09/81.4; Huanuco 31.44/88.5; Ica 31.02/94.3; Junin 30.32/87.1 (Podemos); La Libertad 24.76/93.3; Lambayeque 28.68/96.3; Lima Provincias 16.27/96.6; Loreto 28.28/56.1; Madre de Dios 37.20/71.6; Moquegua 26.03/98.1; Pasco 28.95/86.4; Piura 22.29/77.8; Puno 22.46/97.2; San Martin 31.09/88.2; Tacna 29.32/98.6; Tumbes 28.90/97.9; Ucayali 35.29/72.9.\n- On that snapshot, 13 regions have leader <30%. Within 1.5pp of 30% on either side: Cajamarca, Cusco, Junin, Ica, San Martin, Huanuco (above); Pasco, Tacna, Tumbes, Lambayeque, Loreto (below).\n- Datum exit poll/flash (Infobae Oct 5): 11 runoff regions (Tumbes, Lima Prov, Piura, Lambayeque, Amazonas, Puno, La Libertad, Arequipa, Ancash, Moquegua, Loreto); another El Comercio Datum headline said 20 of 25.\n- El Comercio piece listed 13 runoff regions including Huancavelica and Ica (which were >30% in ONPE's count) and excluding Pasco/Tacna; it said Mendoza (Cusco) secured her seat — composition conflicts with ONPE's numbers.\n- History: 2022 had 9 runoff regions; JNE says historically 9-15.\n- Resolves off ONPE official computation (not the quick count) as displayed at 23:59 Peru time Oct 15, 2026, regardless of % actas processed; observed actas sent to the JEE (deadline Oct 11) may remain uncounted at the snapshot.\n- Event window: snapshot at Oct 15, 2026 23:59 UTC-5; as of Oct 5, the count has run ~1 of ~11 days. ONPE estimated about 2 weeks to reach 100%.\n- Remaining actas are mostly rural/remote; late shifts of about 1pp are plausible where 10-15% of actas remain.\n- Searched for but not found: ONPE data after Oct 5, and region-specific analysis of which parties the remaining rural actas favor.\n- Markets: none found.",
+   "reference_class": "Peruvian regional elections 2010-2022: 9-15 of 25 regions went to runoff (2022: 9); conditioned on the current ONPE partial count, the final count usually tracks the partial count +/- 1-2 regions"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.7059,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2067,
+   "seconds": 30.7,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11805,
+    "cache_write": 18397,
+    "cache_write_1h": 18397,
+    "output": 2856,
+    "thinking": 747,
+    "web_search": 0,
+    "cost_usd_envelope": 0.20666500000000002,
+    "web_fetch": 0,
+    "duration_api_ms": 29874
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 14.1,
+     "25": 14.65,
+     "50": 15.0,
+     "75": 15.2,
+     "90": 15.5
+    }
+   },
+   "reasoning": "Taking each region's latest ONPE official figure on Oct 5 (most regions 94-99% counted) gives 15 regions with the leader below 30%: Amazonas, Ancash, Arequipa, Cajamarca (29.885 trending down), Junin (29.24 at 97%), La Libertad, Lambayeque, Lima Provincias, Loreto (28.3 at 62%), Moquegua, Pasco (28.5 at 98.5%), Piura, Puno, Tacna, Tumbes. Regions above 30% (Ica 30.77, San Martin 31.24, Cusco rising, Huanuco 31.8) are nearly fully counted. Main downside risk: Loreto climbs 1.7pp with 38% of actas left, or Cajamarca recovers. Historical 9-15 range is superseded by near-complete count. No human market found.",
+   "sources": [],
+   "reconciliation": "Run 3's 13 rested on an earlier Oct 5 snapshot, where Junin (30.32 at 87%) and Cajamarca (30.33 at 86%) were above 30%. Runs 1 and 2 cite later ONPE figures from El Comercio and Correo showing both below 30% (29.24 at 96.9% and 29.885 at 94.6%), which supersede it. Pasco is below 30% in all figures (latest 28.51 at 98.5%). Run 1's 13 firm plus 2 borderline equals Run 2's 15. Status quo: 15. Residual risk is concentrated in Loreto (still 38% uncounted) and Cajamarca (0.1pp margin), both of which would lower the count, plus a small chance that Ica or San Martin falls below 30%. I could not verify anything independently (no web access), so the media-figure discrepancies remain a small source of uncertainty.",
+   "disagreements": [
+    {
+     "claim": "Junin leader above (30.32) or below (29.24) 30%",
+     "kind": "factual",
+     "verdict": "Below; the 29.24 figure at 96.9% counted is the later snapshot, and Run 3 used the stale one"
+    },
+    {
+     "claim": "Cajamarca leader above (30.33) or below (29.885) 30%",
+     "kind": "factual",
+     "verdict": "Below on the later snapshot (94.6%) with a falling trend; ~10% chance of recovering"
+    },
+    {
+     "claim": "Pasco leader share 28.95 vs 28.51",
+     "kind": "factual",
+     "verdict": "Below 30 either way; latest is 28.51 at 98.5%"
+    },
+    {
+     "claim": "Whether Loreto (28.3% at 62%) can rise above 30",
+     "kind": "judgment",
+     "verdict": "Unsettled; needs ~+1.7pp from the remaining 38%, ~15% chance"
+    },
+    {
+     "claim": "Huancavelica leader share 31-34%",
+     "kind": "factual",
+     "verdict": "Above 30 in all reports; immaterial"
+    }
+   ],
+   "reference_class": "ONPE regional counts at 90%+ actas processed versus final standing; historical runoff counts 9-15 regions (2022: 9)"
+  }
+ ]
+}
