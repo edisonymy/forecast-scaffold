@@ -1,0 +1,193 @@
+{
+ "record_id": "2026-10-05-9fa00d8b",
+ "question": "Will La Jolla's tide gauge record an observed water level above 6.0 ft MLLW on October 15 or 16, 2026?",
+ "question_id": 46091,
+ "url": "https://www.metaculus.com/questions/45909/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "binary",
+ "forecast_at": "2026-10-05T06:22:31+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.6828,
+ "pools": {
+  "pooled_runs": 0.7030161849356721,
+  "phase1": 0.7030161849356721,
+  "phase2": null,
+  "spread_phase1": 0.22,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probability": 0.72
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.938,
+   "seconds": 91.0,
+   "usage": {
+    "num_turns": 11,
+    "input": 14,
+    "cache_read": 189265,
+    "cache_write": 13097,
+    "cache_write_1h": 13097,
+    "output": 6208,
+    "thinking": 1669,
+    "web_search": 1,
+    "cost_usd_envelope": 0.4787849999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 99601
+   },
+   "estimate": 0.66,
+   "reasoning": "To hit 6.0 ft MLLW, the water must run about 0.89 ft above the 5.11 ft predicted high on Oct 15 (or about 1.27 ft on Oct 16). Observed highs on Oct 1-4, 2026 ran 1.02-1.06 ft above prediction, including the low-prediction days Oct 3-4, which have a similar predicted high (~5.17-5.19 ft). If that holds, Oct 15 lands around 6.1-6.2 ft. The risk is that the anomaly varies: it ranged 0.6-1.4 ft from Sep 10 to Oct 4, and was only 0.6-0.78 ft in the mid-September post-spring-tide phase, though the level has since risen about 0.3 ft. A 10-day drop of about 0.15 ft would mean NO. No matching human market found; the Polymarket peak-level contracts (7.7-8.3 ft, through Apr 2027) are near-misses with thin volume, so I did not use them.",
+   "sources": [
+    "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?station=9410230&product=predictions&interval=hilo&begin_date=20261001&end_date=20261017",
+    "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?station=9410230&product=water_level&begin_date=20261001&end_date=20261005",
+    "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?station=9410230&product=water_level&begin_date=20260910&end_date=20260930",
+    "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?station=9410230&product=predictions&interval=hilo&begin_date=20260910&end_date=20260930",
+    "https://www.calcoasttides.com/blog/kelvin-wave-california-2026 (search result only)"
+   ],
+   "dossier": "- Resolves off NOAA CO-OPS 9410230 observed 6-min water level (MLLW, ft, local time), strictly >6.0 ft on Oct 15 or Oct 16, 2026 — not off the predictions. Event window: Oct 15 00:00 -> Oct 16 23:54 local; as of Oct 5 06:20Z, 0% of the window has elapsed (it starts in ~10 days).\n- NOAA predicted highs (API, fetched Oct 5): Oct 15 11:29 = 5.108 ft (also a 01:21 high of 3.10); Oct 16 12:08 = 4.729 ft. Oct 14 10:59 = 5.447; spring peak Oct 10-12 at ~5.90-5.96 ft. Required anomaly: about +0.89 ft on Oct 15, about +1.27 ft on Oct 16.\n- Observed daily max minus predicted high (NOAA 6-min data): Oct 1 6.769 vs 5.746 (+1.02); Oct 2 6.47 vs 5.415 (+1.05); Oct 3 6.224 vs 5.168 (+1.06); Oct 4 6.215 vs 5.187 (+1.03).\n- Sep 22-30: Sep 22 6.001 vs 5.266 (+0.74); Sep 23 6.093 vs 5.443 (+0.65); Sep 24 6.116 vs 5.491 (+0.63); Sep 25 6.139 vs 5.395 (+0.74); Sep 27 7.202 vs 5.792 (+1.41); Sep 28 6.966 vs 5.997 (+0.97); Sep 29 7.202 vs 6.069 (+1.13); Sep 30 6.986 vs 5.985 (+1.00).\n- Sep 10-20: Sep 10 +0.84; Sep 11 +1.06; Sep 12 +0.88; Sep 13 +0.91; Sep 14 +1.01; Sep 15 +0.76; Sep 16 +0.71; Sep 17 +0.70; Sep 18 +0.72; Sep 19 +0.78; Sep 20 +0.61 (Sep 15-20 is the post-spring weakening phase, analogous to Oct 15).\n- Sep 10-Oct 4 anomaly range: about 0.6 to 1.4 ft. The level in the comparable phase rose from about 0.7 (Sep 16-20) to about 1.05 (Oct 3-4).\n- Background (question text): a coastal Kelvin wave linked to El Nino plus a marine heat wave has raised SoCal sea level 6-12 in; early-September highs ran 6-7 in above predicted.\n- Note: the daily observed max from 6-min data includes short-period noise/seiche of roughly 0.05-0.1 ft on top of the smooth residual.\n- Status quo: if the current anomaly (about +1.03) persists, Oct 15 max is about 6.14 ft (above threshold, margin about 0.15 ft). Oct 16 needs the anomaly to rise to about 1.27.\n- Searched but not found: an official forecast of the coastal sea-level anomaly for mid-October; NWS coastal flood advisories for Oct 15-16; a matching human prediction market (Polymarket only has season-long peak-level contracts at 7.7-8.3 ft).",
+   "reference_class": "Daily observed-minus-predicted high-tide anomaly at La Jolla 9410230 over Sep 10-Oct 4, 2026 (the El Nino/Kelvin-wave regime), with persistence over a 10-day horizon"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.4004,
+   "seconds": 94.0,
+   "usage": {
+    "num_turns": 15,
+    "input": 20,
+    "cache_read": 289576,
+    "cache_write": 15023,
+    "cache_write_1h": 15023,
+    "output": 6665,
+    "thinking": 1377,
+    "web_search": 1,
+    "cost_usd_envelope": 0.4623652,
+    "web_fetch": 0,
+    "duration_api_ms": 106450
+   },
+   "estimate": 0.6,
+   "reasoning": "Oct 15 predicted high is 5.108 ft at 11:29, so the question needs a non-tidal anomaly of about 0.85-0.9 ft. Oct 16 (4.73 ft predicted) needs about 1.27 ft. NOAA preliminary 6-min data for Oct 1-4 shows daily peaks about 1.0-1.06 ft above predicted highs, and lows offset by about 1.1 ft. That is up from about 0.6-0.75 ft around Sep 20-24. NWS SGX on Oct 4 forecasts peaks of 6.5-7.0 ft through Oct 9, so the anomaly persists near-term. Main risks: an extreme anomaly may mean-revert, part may be swell/wave setup, and 10-day changes in the anomaly are about 0.25 ft SD. No matching human market: the Polymarket La Jolla contracts cover season-peak thresholds of 7.7-8.3 ft through April 2027, a different contract.",
+   "sources": [
+    "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?station=9410230&product=water_level&begin_date=20261001&end_date=20261004 (NOAA CO-OPS observed 6-min)",
+    "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?station=9410230&product=predictions&interval=hilo&begin_date=20261013&end_date=20261017 (NOAA predictions)",
+    "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?station=9410230&product=water_level&begin_date=20260920&end_date=20260930",
+    "https://www.weather.gov/wwamap/wwatxtget.php?cwa=sgx&wwa=all (NWS SGX Beach Hazards Statement Oct 4 2026)"
+   ],
+   "dossier": "- NOAA CO-OPS 9410230 predictions (MLLW, LST/LDT): Oct 15 highs 3.101 ft at 01:21 and 5.108 ft at 11:29. Oct 16 highest 4.729 ft at 12:08. Oct 13 5.718 ft, Oct 14 5.447 ft, Oct 17 4.354 ft.\n- NOAA preliminary observed 6-min daily max vs predicted high: Oct 1 6.769 (pred 5.746, +1.02); Oct 2 6.470 (pred 5.415, +1.06); Oct 3 6.224 (pred 5.168, +1.06); Oct 4 6.215 (pred 5.187, +1.03).\n- Observed lows are also offset: Oct 1 min 1.424 vs pred 0.335 (+1.09); Oct 3 min 1.208 vs pred 0.107 (+1.10). This points to a broad mean-sea-level rise, not spikes.\n- Sep 20-24 observed maxima vs predicted highs (summarized fetch, some rows garbled): Sep 20 5.283 vs 4.674 (+0.61); Sep 21 5.549 vs 4.993 (+0.56); Sep 22 6.001 vs 5.266 (+0.74); Sep 23 6.093 vs 5.443 (+0.65). The anomaly rose about 0.4 ft over roughly 10 days.\n- Question background: early Sept 2026 La Jolla highs ran 6-7 in above predicted; a coastal-trapped Kelvin wave tied to El Nino plus a marine heat wave is raising SoCal sea levels 6-12 in.\n- NWS San Diego Beach Hazards Statement (issued Oct 4 2026, 9:48 PM): Tue-Fri (Oct 6-9) minor coastal flooding, high tides peaking 6.5-7.0 ft, surf 3-6 ft on S/SW-facing beaches; possible upgrade or extension into the weekend. Part of the current anomaly may be swell or wave setup.\n- Threshold arithmetic: YES on Oct 15 needs an anomaly of about 0.89 ft at the 11:29 high (6-min noise may add a few hundredths). Oct 16 needs about 1.27 ft.\n- Status quo: if the current ~1.0-1.06 ft anomaly persists, Oct 15 peaks near 6.1-6.2 ft. Anomaly decay of more than about 0.15-0.2 ft gives NO.\n- Resolves off NOAA observed 6-min water level (preliminary or verified), not predictions.\n- Event window: Oct 15 00:00 -> Oct 16 23:54 local time; as of Oct 5 06:20 UTC, 0% elapsed (window opens in about 10 days).\n- Searched for, not found: an Oct 15-16 storm-surge forecast, a quantitative sea-level anomaly outlook for mid-October, and matching prediction markets. Polymarket La Jolla contracts are season-peak thresholds of 7.7-8.3 ft through April 2027, not comparable.",
+   "reference_class": "Observed-minus-predicted anomaly persistence at La Jolla over a 10-day horizon, during the current Kelvin-wave regime"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4592,
+   "seconds": 77.8,
+   "usage": {
+    "num_turns": 13,
+    "input": 16,
+    "cache_read": 220982,
+    "cache_write": 14358,
+    "cache_write_1h": 14358,
+    "output": 5710,
+    "thinking": 1180,
+    "web_search": 1,
+    "cost_usd_envelope": 0.45924740000000003,
+    "web_fetch": 0,
+    "duration_api_ms": 93706
+   },
+   "estimate": 0.82,
+   "reasoning": "Predicted high on Oct 15 is 5.108 ft (11:29 LDT); Oct 16 is 4.729 ft. YES needs an observed-minus-predicted anomaly above ~0.89 ft on Oct 15 (or ~1.27 ft on Oct 16). Observed 6-min/hourly highs from Sep 28 to Oct 4 ran a steady +0.97 to +1.13 ft above predicted, including off-peak days (Oct 3-4: predicted ~5.17-5.19, observed 6.22). An Oct 3 article says another Kelvin-wave pulse reaches San Diego within ~1 week, and pulses are expected through Feb. The main risk is the anomaly decaying by >0.15 ft over 10 days through weather or wave fading; it was only ~0.5 ft in early September. No matching human market: the Polymarket La Jolla contracts are on season peaks of 7.7-8.3 ft through 2027 (a near-miss, not an anchor).",
+   "sources": [
+    "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?station=9410230&product=predictions&interval=hilo (Sep 28-Oct 16 2026)",
+    "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?station=9410230&product=water_level (Sep 1-Oct 5 2026 hourly and 6-min)",
+    "https://phys.org/news/2026-10-sea-california-coastal-surges-west.html",
+    "https://www.calcoasttides.com/blog/kelvin-wave-california-2026 (via search snippet)"
+   ],
+   "dossier": "- NOAA CO-OPS 9410230 hilo predictions (fetched 2026-10-05): Oct 15 highs 3.101 ft @01:21 and 5.108 ft @11:29 LDT; Oct 16 high 4.729 ft @12:08 (only one high listed that day). So YES needs observed minus predicted > ~0.89 ft on Oct 15 or > ~1.27 ft on Oct 16.\n- Observed daily max vs predicted high (NOAA API, 2026): Sep28 6.97 vs 6.00 (+0.97); Sep29 7.20 vs 6.07 (+1.13); Sep30 6.99 vs 5.99 (+1.00); Oct1 6.77 vs 5.75 (+1.02); Oct2 6.47 vs 5.42 (+1.05); Oct3 6.224 (6-min) vs 5.168 (+1.06); Oct4 6.215 (6-min) vs 5.187 (+1.03). Sep 28-Oct 4 hourly maxes; Oct 3-4 values are 6-minute maxes.\n- 6-minute series shows ~0.03-0.07 ft high-frequency wiggle near the peak (e.g., Oct 4 16:06 6.090, 16:12 6.080, 16:18 6.142).\n- Early Sep 2026 observed maxes: Sep1 6.10, Sep5 6.05, Sep8 7.10 (hourly). Question background says early-Sep highs ran 6-7 in (~0.5-0.6 ft) above predicted, so the anomaly grew roughly from 0.5 to 1.0 ft between early Sep and early Oct.\n- phys.org 2026-10-03: a coastal Kelvin wave north of Cabo moving ~6 mph is expected to reach San Diego 'within the next week'; ~1 ft rise expected along the CA coast; duration not specified.\n- Search snippets (calcoasttides blog, US News 2026-10-01, PBS): La Jolla anomaly about +8.4 in in late Sep/early Oct; pulses expected Oct-Feb; 6-12 in rise.\n- Status quo: the anomaly has been persistent at ~1.0 ft for 7+ days.\n- Threshold margin: the current anomaly exceeds the Oct 15 requirement by ~0.1-0.15 ft. Weather-driven anomaly variance (wind setup, pressure, swell) at SoCal gauges over ~10-day horizons is typically ~0.1-0.2 ft SD (general knowledge, not fetched).\n- Resolves off NOAA observed 6-min water level at 9410230 (MLLW, ft), strictly >6.0, not predictions.\n- Event window: Oct 15 00:00 -> Oct 16 23:59 LDT per the criteria; as of 2026-10-05 0% elapsed (window starts in ~10 days).\n- Markets: Polymarket La Jolla 'peak water level >= 7.70/7.90/8.10/8.30 ft' contracts close 2027-04-01 (season peak, different threshold and window); no contract matching this question found.\n- Searched, not found: an official NOAA anomaly forecast for mid-October; a Kalshi or Manifold market for this question.",
+   "reference_class": "Days in the current Kelvin-wave regime (late Sep-early Oct 2026) on which the La Jolla observed high exceeded predicted high by >=0.89 ft"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "research",
+   "run_index": 1,
+   "spread": 0.22,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2403,
+   "seconds": 31.6,
+   "usage": {
+    "num_turns": 4,
+    "input": 8,
+    "cache_read": 103674,
+    "cache_write": 19742,
+    "cache_write_1h": 19742,
+    "output": 2706,
+    "thinking": 398,
+    "web_search": 0,
+    "cost_usd_envelope": 0.24025279999999996,
+    "web_fetch": 0,
+    "duration_api_ms": 30765
+   },
+   "estimate": 0.72,
+   "reasoning": "Oct 15 predicted high 5.108 ft needs an observed-minus-predicted anomaly > ~0.89 ft (Oct 16 needs ~1.27). The anomaly has been a steady +0.97 to +1.13 ft from Sep 28 to Oct 4, including off-peak days with predictions similar to Oct 15 (Oct 4 max 6.215 ft, re-verified). A broad mean-level offset (lows +1.1), an NWS forecast of 6.5-7.0 ft highs through Oct 9, and a reported incoming Kelvin pulse support persistence. The ~0.14 ft margin over a 10-day horizon with ~0.2 ft anomaly-change SD, plus mid-Sep levels of only 0.6-0.78, leave a real chance of NO. No matching human market.",
+   "sources": [
+    "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=water_level&station=9410230&begin_date=20261004&end_date=20261005&datum=MLLW&units=english&time_zone=lst_ldt&format=csv"
+   ],
+   "reconciliation": "All three runs agree on the facts: predicted highs of 5.108 (Oct 15) and 4.729 (Oct 16), and an observed anomaly of ~+1.03 ft on Oct 1-4. I re-checked the NOAA observed data for Oct 4 and confirmed a max of 6.215 ft (latest data at Oct 4 23:12 LDT). The spread among runs (0.60-0.82) is pure judgment about whether the anomaly persists over 10 days. The facts favour persistence: a steady week-long offset, raised lows, the NWS forecast, and an incoming pulse. Mean reversion toward mid-Sep levels and swell decay are the risks. A ~0.14 ft margin plus 6-min noise, against a ~0.2 ft SD for 10-day anomaly changes, gives roughly 70-75%.",
+   "disagreements": [
+    {
+     "claim": "Current anomaly is ~+1.03 ft as of Oct 4",
+     "kind": "factual",
+     "verdict": "Confirmed: Oct 4 6-min max is 6.215 ft vs 5.187 predicted"
+    },
+    {
+     "claim": "How likely the anomaly is to stay above 0.89 ft for 10 days",
+     "kind": "judgment",
+     "verdict": "Persistence is likelier than not given a steady regime and an incoming pulse; ~72%"
+    },
+    {
+     "claim": "Size of 10-day anomaly variability (0.1-0.25 ft SD)",
+     "kind": "judgment",
+     "verdict": "Not settled by search; ~0.2 ft taken"
+    }
+   ],
+   "reference_class": "Daily observed-minus-predicted high-tide anomaly at La Jolla during the 2026 Kelvin-wave / marine heat wave regime, persistence over ~10 days"
+  }
+ ]
+}
