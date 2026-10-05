@@ -1,0 +1,256 @@
+{
+ "record_id": "2026-10-05-15c4118b",
+ "question": "What will the front-month Brent crude futures settlement price be on October 16, 2026 (USD/barrel)?",
+ "question_id": 46094,
+ "url": "https://www.metaculus.com/questions/45912/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-10-05T07:51:51+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.1364,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 89.33333333333333,
+    "25": 95.16666666666667,
+    "50": 100.93333333333334,
+    "75": 106.76666666666667,
+    "90": 113.16666666666667
+   },
+   "p_below_lower": 0.02,
+   "p_above_upper": 0.023333333333333334
+  },
+  "phase1": {
+   "10": 89.33333333333333,
+   "25": 95.16666666666667,
+   "50": 100.93333333333334,
+   "75": 106.76666666666667,
+   "90": 113.16666666666667
+  },
+  "phase2": null,
+  "spread_phase1": 0.8,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 89.5,
+   "25": 95.5,
+   "50": 101.0,
+   "75": 106.8,
+   "90": 113.5
+  },
+  "p_below_lower": 0.015,
+  "p_above_upper": 0.015
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6345,
+   "seconds": 58.4,
+   "usage": {
+    "num_turns": 10,
+    "input": 12,
+    "cache_read": 161640,
+    "cache_write": 12563,
+    "cache_write_1h": 12563,
+    "output": 3321,
+    "thinking": 526,
+    "web_search": 3,
+    "cost_usd_envelope": 0.31402599999999997,
+    "web_fetch": 0,
+    "duration_api_ms": 74525
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 89.5,
+     "25": 95.5,
+     "50": 101.3,
+     "75": 107.3,
+     "90": 113.5
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Status quo: the December Brent contract (CBZ26) is front month at about $101-103 on Oct 5 (TE 101.31; it was 98.03 on Sep 30). The reference class is 9-trading-day changes in front-month Brent during the 2026 US-Iran/Hormuz conflict regime. That regime saw swings like 104->74 (Jun) and 72->100+ (Jul), which implies about 45-50% annualized vol, or roughly a $9 SD over the horizon. I centre the median at the current price, close to a martingale. There are tail risks both ways: an escalation such as Houthi strikes on Aramco or a third US carrier group, and a de-escalation through a US-Iran deal plus the G7 release of 100M barrels from reserves. No human market matches the contract: Polymarket has Brent perpetuals but no Oct 16 settlement contract, Kalshi focuses on WTI, and nothing was found on Manifold.",
+   "sources": [
+    "https://tradingeconomics.com/commodity/brent-crude-oil",
+    "https://fortune.com/article/price-of-oil-10-01-2026/",
+    "https://www.riotimesonline.com/oil-markets-latam-thursday-october-1-2026/",
+    "https://en.wikipedia.org/wiki/2026%E2%80%932028_world_oil_market_chronology",
+    "https://defirate.com/prediction-markets/oil-spot-price/ (search listing only)"
+   ],
+   "dossier": "- TradingEconomics (Oct 5 2026): Brent 101.31, -0.92% d/d; +4.3% m/m; +55% y/y. Drivers: G7 agreed to release 100M bbl from emergency reserves; Persian Gulf exports near pre-war levels; OPEC+ held quotas; Saudi-backed operations against the Houthis; more US deployments; US-Iran talks uncertain.\n- Reuters-style snippet (Oct 4-5 Asia session): Brent futures +0.81 at 103.06 after the Houthis claimed missile/drone attacks on Aramco facilities in Riyadh and Khurais; WTI 91.57.\n- Fortune (Oct 1 2026): Brent 103.86 at 9:20am ET; 97.38 a month earlier; 65.96 a year earlier.\n- Rio Times (Sep 30 2026): Nov contract expired at 103.50; Dec (CBZ26) settled 98.03, +1.9%; ~5.5 backwardation Nov-Dec. Trump denied offering Iran sanctions relief; Saudi resumed Yanbu loadings via the East-West pipeline.\n- Background (question text): CBZ26 Barchart last ~102.25 on Oct 2; EIA spot >116 around Sep 23-28; Sept average ~114; EIA STEO sees ~$90 for 2H26.\n- Wikipedia 2026-2028 oil chronology: Jun 2026 fell from 87 to 73.74 on US-Iran deal and ceasefire hopes; early Jul 71.57, then jumped to 88 (Kuwait attacks) and >100 late Jul (Red Sea tanker attacks); Aug fell ~7% on Hormuz reopening hopes, around 88-89; Sep 95 -> 104.8 on US-Iran fighting; early Oct ~102 on a third carrier deployment.\n- Realized regime vol: multiple moves of 20-35% within weeks in Jun-Jul 2026; daily moves of 1-3% are common.\n- No roll issue: CBZ26 stays front month until Oct 30 expiry.\n- Resolves off the Barchart CBZ26 historical page 'Last' for 10/16/2026 (the ICE settlement), not the EIA spot (the spot sat well above futures in late Sep).\n- Event window: single settlement on Fri Oct 16 2026; as of Oct 5, ~9 trading sessions remain.\n- Markets: Polymarket has Brent perpetuals; Kalshi lists WTI-focused oil markets; no contract matching the Oct 16 Brent settlement was found.\n- Searched without finding: a Barchart daily table (page blank), option-implied vol for CBZ26, and a scheduled OPEC+ meeting date inside the window.",
+   "reference_class": "9-trading-day changes in front-month Brent during the 2026 US-Iran/Hormuz conflict regime"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9808,
+   "seconds": 68.9,
+   "usage": {
+    "num_turns": 10,
+    "input": 14,
+    "cache_read": 193329,
+    "cache_write": 12871,
+    "cache_write_1h": 12871,
+    "output": 3610,
+    "thinking": 565,
+    "web_search": 4,
+    "cost_usd_envelope": 0.34633079999999994,
+    "web_fetch": 0,
+    "duration_api_ms": 77952
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 89.5,
+     "25": 95.0,
+     "50": 100.5,
+     "75": 106.0,
+     "90": 112.0
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Anchor is the current CBZ26 level: TE shows ~$101.3 on Oct 5; other reports put Oct 2-4 at ~$102.25-102.7 (one outlier says $97.3 on Oct 1). Reference class: 9-trading-day changes in front-month Brent during a geopolitical crisis regime. Recent swings are large (Sep +14%, spot >$116 then back to ~$101), so vol is high. Median set slightly below spot because US-Iran talks have resumed, Gulf exports have recovered and the G7 is releasing 100M bbl of reserves. Hormuz/Yemen escalation is the upside tail. Small open-bound escape masses: deal collapse below $75, escalation above $130. Market check: Polymarket and Manifold have nothing (per the harness); my Kalshi search found no Oct 16 market; Robinhood lists only an Oct 2 Brent market, so no anchor.",
+   "sources": [
+    "https://tradingeconomics.com/commodity/brent-crude-oil",
+    "https://hdfcsky.com/news/brent-crude-oil-price-today-october-1-2026-brent-crude-falls-0-7percent-to-97-3-wti-down-0-9percent-as-us-iran-talks-gulf-supply-in-focus",
+    "https://fortune.com/article/price-of-oil-10-02-2026/",
+    "WebSearch results: Brent settle Oct 2 2026 (convextrade/investing summaries)",
+    "WebSearch: Kalshi Brent October 2026 (no matching market found)"
+   ],
+   "dossier": "- Resolves off the Barchart CBZ26 (ICE Brent Dec 2026) settlement for 10/16/2026, not spot or the EIA series. Barchart fetch failed this run.\n- Event window: a single settlement on Oct 16, 2026. As of Oct 5 07:50Z there are ~9 trading days left (~0% of the window has elapsed; it is a point date).\n- Trading Economics (Oct 5, 2026): Brent 101.31, -0.92% on the day, +4.3% over the month, +55% year on year. Drivers: G7 agreed a 100M bbl crude+diesel emergency release; OPEC+ kept quotas unchanged; Saudi-backed operations in Yemen against the Houthis; Persian Gulf exports near pre-war levels.\n- Search summary (convextrade/investing): Brent closed 102.72 on Oct 2 (prev 102.25; low 98.40, high 103.04). Convextrade: $102.25 on Oct 4.\n- Fortune (Oct 2, 9:15 ET): Brent 103.37; one month earlier 97.34.\n- HDFC Sky (Oct 1): Brent 97.3, WTI 89.6. This conflicts with other quotes, possibly a contract-roll artifact. Saudi Yanbu loadings resumed; Gulf exports ~23.3 mb/d; Trump denied offering sanctions relief; Qatar shuttle diplomacy.\n- Search snippets: Brent +14% in Sept; US-Iran direct talks in New York were the first since June, and prompted a selloff from ~$104; Hormuz reopening deal is a key swing factor.\n- Background: EIA spot >$116 around Sep 23-28; EIA STEO sees ~$90 in 2H26, declining into 2027.\n- Vol: daily moves of ~1-4% and monthly moves of ~14% imply 40-55% annualized; a 9-day SD of roughly $8-10.\n- Status quo: the price stays near the current ~$101.\n- Upside regime break: talks collapse or a Hormuz/Gulf escalation. Downside: a US-Iran deal reopening Hormuz, plus the reserve release.\n- Markets: none found on Polymarket, Manifold or Kalshi for this date; Robinhood had only an Oct 2 Brent market.\n- Not found: the Barchart page itself, and implied vol (OVX/Brent options).",
+   "reference_class": "9-trading-day changes in front-month Brent futures during high-volatility geopolitical crisis regimes (e.g., 2022, Sep 2026)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3205,
+   "seconds": 58.1,
+   "usage": {
+    "num_turns": 10,
+    "input": 12,
+    "cache_read": 161356,
+    "cache_write": 12437,
+    "cache_write_1h": 12437,
+    "output": 3535,
+    "thinking": 471,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3204772,
+    "web_fetch": 0,
+    "duration_api_ms": 73620
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 89.0,
+     "25": 95.0,
+     "50": 101.0,
+     "75": 107.0,
+     "90": 114.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "CBZ26 ~$101.4 on Oct 5 (oilprice.com); futures price is the martingale anchor, so median ~101. Regime is a US-Iran/Hormuz crisis with very high realized vol (Sep: >$116 peak, 17% drop, +4% day on Oct 1), giving ~$9-10 SD over 9 sessions. Downside: G7 100mb SPR release, Gulf exports recovering, possible deal; upside: carrier buildup, escalation. Tails beyond 130/75 priced small. No matching human prediction market found (Polymarket only has Brent perps; Kalshi/Manifold none).",
+   "sources": [
+    "https://oilprice.com/futures/brent/",
+    "https://tradingeconomics.com/commodity/brent-crude-oil",
+    "https://fortune.com/article/price-of-oil-10-01-2026/",
+    "https://en.wikipedia.org/wiki/2026%E2%80%932028_world_oil_market_chronology"
+   ],
+   "dossier": "- CBZ26 (Dec-26 ICE Brent) quoted $101.41 (-0.84) on oilprice.com futures page, ~Oct 5 2026; curve backwardated: Jan-27 $98.01, Feb-27 $95.33, Mar-27 $93.32, Jun-27 $88.61, Dec-27 $82.23.\n- Trading Economics: Brent $101.31 on Oct 5 2026, -0.92% d/d, +4.27% m/m; drivers: G7 agreed 100mb emergency reserve release; Persian Gulf exports exceeded pre-conflict levels on 4 of 7 days late Sept; OPEC+ quotas unchanged; US sending third carrier group + 2,000 Marines; Saudi-backed ops vs Houthis in Yemen; US-Iran talks uncertain.\n- Fortune: Brent $103.86 at 9:20 ET Oct 1 2026.\n- Wikipedia 2026-28 oil chronology: Aug 20 Brent $93.73; end-Aug $89.31; early Sept +6% to $95.29; Sept 9 >$100 amid US-Iran fighting; mid-Sept 17% decline then rebound to $103.08; Oct 1 +4% to $102.31 on carrier report.\n- Question background: EIA spot >$116 around Sep 23-28, Sept avg ~$114; Barchart CBZ26 last ~$102.25 on Oct 2; EIA STEO sees ~$90 avg 2H26.\n- Status quo: price stays near current futures level ~low $100s.\n- Realized vol regime: multiple 4%+ daily moves and a 17% multi-day drop in Sept 2026 -> daily vol ~3-3.5%; over 9 remaining sessions implies SD ~$9-10.\n- Regime-break candidates: up = escalation/Hormuz closure (Sept peak >$116); down = US-Iran deal/Hormuz normalization plus SPR release (Aug lows ~$89).\n- Resolves off Barchart CBZ26 settlement for 10/16/2026 session, not spot/EIA series. Dec contract is front month until Oct 30.\n- Event window: single settlement on Oct 16 2026; as of Oct 5 ~0% elapsed, 9 trading sessions remain.\n- Searched: Barchart history page (returned empty); Polymarket/Kalshi/Manifold markets for this date — none found (Polymarket has Brent perps only). No OPEC+ meeting date in window found.",
+   "reference_class": "9-trading-day changes of front-month Brent during the 2026 Middle East supply-crisis regime (Aug-Oct 2026)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.069,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1164,
+   "seconds": 20.9,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20122,
+    "cache_write": 9276,
+    "cache_write_1h": 9276,
+    "output": 1910,
+    "thinking": 322,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1164404,
+    "web_fetch": 0,
+    "duration_api_ms": 20267
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 89.5,
+     "25": 95.5,
+     "50": 101.0,
+     "75": 106.8,
+     "90": 113.5
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Martingale anchor: CBZ26 ~$101.3-101.4 on Oct 5 (TE, oilprice.com). Reference class: 9-trading-day changes in front-month Brent during the 2026 US-Iran/Hormuz conflict regime (~45-50% annualized vol, SD ~$9). Downside drivers (G7 100mb release, Gulf exports recovered, talks) and upside drivers (third carrier group, Houthi strikes on Saudi infrastructure) roughly balance, so median sits at the current price. Small symmetric escape masses beyond 75/130 for a deal collapse or a Hormuz escalation. No matching human market found (Polymarket perps only, Kalshi WTI-focused, Manifold none).",
+   "sources": [],
+   "reconciliation": "Runs agreed on the instrument (Barchart CBZ26 settlement, with no roll before Oct 30), the anchor (~$101-102) and the volatility (~$9 SD). The one factual conflict was the latest level: Oct 5 quotes of 101.31 and 101.41 against a 103.06 snippet whose timing is unclear and may be stale. I couldn't verify it without web access, so I anchored on the two agreeing Oct 5 quotes. Run 2's slight bearish tilt is a judgment call. Since the futures price already prices the known news, I centred at 101. I retrieved no new sources.",
+   "disagreements": [
+    {
+     "claim": "Current CBZ26 level: ~101.3 vs 103.06 (Houthi-attack snippet)",
+     "kind": "factual",
+     "verdict": "Not fully settled. Two Oct 5 sources agree at ~101.3-101.4, so I used them; the 103.06 timing is unclear."
+    },
+    {
+     "claim": "Median slightly below spot (Run 2) vs at spot (Runs 1, 3)",
+     "kind": "judgment",
+     "verdict": "At spot: the known supply and talks news is already in the futures price."
+    },
+    {
+     "claim": "Size of the escape masses (1-3% per side)",
+     "kind": "judgment",
+     "verdict": "1.5% each, since a ~26-28% move in 9 sessions is rare but within this year's range."
+    }
+   ],
+   "reference_class": "9-trading-day changes in front-month ICE Brent during the 2026 US-Iran/Hormuz crisis regime"
+  }
+ ]
+}
