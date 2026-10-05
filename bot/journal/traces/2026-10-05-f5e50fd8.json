@@ -1,0 +1,194 @@
+{
+ "record_id": "2026-10-05-f5e50fd8",
+ "question": "Will Zcash (ZEC) be ranked in the top 10 cryptocurrencies by market capitalization on CoinGecko on October 15, 2026?",
+ "question_id": 46104,
+ "url": "https://www.metaculus.com/questions/45922/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "binary",
+ "forecast_at": "2026-10-05T16:32:21+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.2051,
+ "pools": {
+  "pooled_runs": 0.5300268342342538,
+  "phase1": 0.5300268342342538,
+  "phase2": null,
+  "spread_phase1": 0.03,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probability": 0.53
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9779,
+   "seconds": 76.4,
+   "usage": {
+    "num_turns": 8,
+    "input": 14,
+    "cache_read": 176852,
+    "cache_write": 20455,
+    "cache_write_1h": 20455,
+    "output": 4186,
+    "thinking": 884,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3672543999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 81554
+   },
+   "estimate": 0.52,
+   "reasoning": "Resolution is effectively a two-coin race: on CoinGecko (2026-10-05 16:28 UTC) ZEC is #10 at $21.83B, HYPE #11 at $20.59B (~6% gap); #9 FIGR_HELOC $25.0B is stable-priced, #12 DOGE $14.7B is far below. Base rate from a random-walk model: ~6% log gap vs ~20% 10-day relative vol of the ZEC/HYPE ratio gives ~0.58-0.60 for keeping the spot. Adjusted down for HYPE's early-October unlocks (more circulating supply mechanically raises its market cap), ZEC's -15.6% 7d momentum vs HYPE +6% near its ATH, and HYPE revenue buybacks. Counterweight: ZEC's very high volatility cuts both ways, and it is still +28% over 30d. No human prediction market found on Polymarket, Kalshi, Manifold or bookmakers.",
+   "sources": [
+    "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=15&page=1",
+    "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=zcash,hyperliquid,figure-heloc,dogecoin&price_change_percentage=7d,30d",
+    "https://cryptoticker.io/en/hyperliquid-price-prediction-hype-otc-sale-375-million/",
+    "https://startupfortune.com/hyperliquids-hype-token-hits-a-new-high-and-this-time-revenue-is-driving-it",
+    "https://marketcapof.com/crypto/zcash/",
+    "https://www.coinbase.com/price-prediction/zcash"
+   ],
+   "dossier": "- CoinGecko markets API, 2026-10-05 16:28 UTC, top ranks: 7 SOL $70.1B; 8 TRX $31.9B; 9 FIGR_HELOC $24.98B (stable-priced ~$1.06, 7d +0.4%); 10 ZEC $21.83B ($1,286.58, 24h -3.1%, supply 16.97M); 11 HYPE $20.59B ($92.52, 24h +3.2%, supply 222.45M); 12 DOGE $14.68B; 13 XMR $10.4B.\n- ZEC/HYPE market-cap gap as of 2026-10-05: ~6.0% (ZEC ahead). ZEC must fall ~5.7% relative to HYPE to lose #10. Moving up to #9 would need ~+14.5% against FIGR_HELOC.\n- Momentum (CoinGecko, 2026-10-05): ZEC 7d -15.6%, 30d +27.8%; HYPE 7d +6.0%, 30d +8.9%, ATH $97.96 on 2026-09-23 (current price ~6% below it).\n- ZEC context (question background): rallied from ~$800 in Aug 2026 on the Grayscale ZEC ETF and a European ETP, reached ~$1,600-1,700 in late Sep, has been pulling back since.\n- HYPE (search summaries, early Oct 2026): token unlocks in early October (part of ~$1.11B across several projects), which could raise CoinGecko circulating supply and market cap at a constant price. Hyperliquid Labs unstaked 3.75M HYPE (~$329M) sold OTC to one institution. First AQAv2 payout (~$14.5M USDC, Oct 3) funds automatic HYPE buybacks; 2026 protocol revenue ~$429M.\n- A marketcapof.com snapshot (early Oct) showed ZEC at #9, $22.16B. Ranks have flipped between #9 and #10 recently depending on the source and day.\n- Volatility: ZEC daily vol roughly 6-8% in this regime, HYPE ~4-5%. Ratio vol over 10 days is roughly 15-25% (my estimate, not a measured series).\n- Status quo: ZEC holds #10.\n- Resolution: resolves off the CoinGecko ZEC page '#' rank at 23:59 UTC Oct 15, 2026 (falls back to CoinMarketCap only if CoinGecko shows no rank); the rank includes stablecoins and RWA tokens such as FIGR_HELOC.\n- Event window: a single snapshot at 2026-10-15 23:59 UTC; as of 2026-10-05 16:30 UTC, ~10.3 days remain.\n- Searched without finding: any Polymarket, Kalshi or Manifold market on ZEC's top-10 rank (none found); exact HYPE unlock date and size, and whether CoinGecko already reflects it; ZEC ETF flow data for October.",
+   "reference_class": "Incumbent rank holder leading the next coin by ~6% market cap, with ~10 days left and a high-volatility relative ratio (random-walk first-order model)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6106,
+   "seconds": 57.7,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 118390,
+    "cache_write": 20354,
+    "cache_write_1h": 20354,
+    "output": 4055,
+    "thinking": 818,
+    "web_search": 3,
+    "cost_usd_envelope": 0.35278,
+    "web_fetch": 0,
+    "duration_api_ms": 73094
+   },
+   "estimate": 0.52,
+   "reasoning": "As of 2026-10-05 16:28 UTC the CoinGecko API shows ZEC #10 ($21.83B), HYPE #11 ($20.59B, about 6% behind), FIGR_HELOC #9 ($24.98B, stable RWA token), DOGE #12 ($14.7B, far behind). The question is mainly whether ZEC keeps its lead over HYPE for about 10.3 days. Treating the ZEC/HYPE market-cap ratio as a random walk, a 6% lead (ln about 0.058) against about 20-25% relative 10-day volatility gives roughly a 60% chance the lead survives. I shade that down because ZEC is falling (-15.6% over 7d) while HYPE is near its ATH with buybacks running (+6% over 7d), and HYPE's monthly unlocks may raise its counted circulating supply. Markets: none found on Polymarket, Kalshi or Manifold.",
+   "sources": [
+    "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=15&page=1",
+    "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=zcash,hyperliquid,figure-heloc,dogecoin&price_change_percentage=7d,30d",
+    "https://cryptoticker.io/en/hyperliquid-price-prediction-hype-otc-sale-375-million/",
+    "https://startupfortune.com/hyperliquids-hype-token-hits-a-new-high-and-this-time-revenue-is-driving-it",
+    "https://coinmarketcap.com/currencies/zcash/"
+   ],
+   "dossier": "- CoinGecko API snapshot 2026-10-05 16:28 UTC, top ranks: 1 BTC, 2 ETH $328B, 3 USDT $184B, 4 BNB $104.6B, 5 XRP $94.0B, 6 USDC $74.0B, 7 SOL $70.1B, 8 TRX $31.95B, 9 FIGR_HELOC (Figure Heloc, RWA token near $1.06) $24.98B, 10 ZEC $1,286.58 / $21.83B (24h -3.1%), 11 HYPE $92.52 / $20.59B (24h +3.2%), 12 DOGE $14.68B, 13 XMR $10.36B.\n- ZEC (CoinGecko, same time): circulating 16.97M; 7d -15.6%, 30d +27.8%; 24h range $1,294-$1,366; ATH $3,191.93. Late-Sep highs about $1,600-1,700 (question background). Other aggregators on Oct 5 quoted $1,305-$1,435 and gave its rank as #9 or #10.\n- HYPE (CoinGecko): circulating 222.4M; 7d +6.0%, 30d +8.9%; ATH $97.96; 24h range $89.8-$93.7.\n- ZEC/HYPE market-cap ratio = 1.06 (ZEC about 6% ahead). ZEC would drop to #11 if ZEC falls about 6% relative to HYPE. To fall to #12, DOGE would need to gain about 40% relative to ZEC (remote). Moving from #10 to #9 needs ZEC to gain about 14% vs FIGR_HELOC (not needed for YES).\n- HYPE news: AQAv2 sent $14.5M USDC into HYPE buybacks Oct 3; new ATH (startupfortune). Hyperliquid Labs is unstaking 3.75M HYPE (about $329M), OTC sale to one institutional buyer, not on the open market, unstaking completes about Oct 7 (cryptoticker). Early-Oct token unlocks include HYPE; CoinGecko's circulating figure could rise after an unlock (unverified).\n- ZEC drivers: Grayscale ZEC ETF and European ETP launched Aug 2026; very high realized volatility (a 15% weekly move is typical lately).\n- Rough relative volatility: ZEC daily vol about 6-7%, HYPE about 5%, moderate correlation, so ZEC/HYPE ratio daily vol about 6% and 10-day about 19-25% (own estimate, not a published figure).\n- Status quo: ZEC at #10.\n- Resolution instrument: the rank shown on the CoinGecko ZEC page at 23:59 UTC Oct 15 (falls back to CoinMarketCap only if CoinGecko shows no rank). Not a daily close or an average; it is a single snapshot.\n- Event window: a single point, 2026-10-15 23:59 UTC; as of 2026-10-05 16:30 UTC about 10.3 days remain.\n- Searched but not found: any Polymarket, Kalshi or Manifold market on ZEC's rank; confirmed HYPE unlock size and how CoinGecko counts it.",
+   "reference_class": "Two crypto assets about 6% apart in market cap; how often the leader is still ahead 10 days later, given relative volatility"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2578,
+   "seconds": 50.4,
+   "usage": {
+    "num_turns": 5,
+    "input": 10,
+    "cache_read": 118227,
+    "cache_write": 17573,
+    "cache_write_1h": 17573,
+    "output": 2883,
+    "thinking": 509,
+    "web_search": 1,
+    "cost_usd_envelope": 0.2578314,
+    "web_fetch": 0,
+    "duration_api_ms": 48966
+   },
+   "estimate": 0.55,
+   "reasoning": "Live CoinGecko API (2026-10-05 16:28 UTC): ZEC #10 at $21.83B, HYPE #11 at $20.59B (gap about 6%, log-ratio 0.058). #9 Figure Heloc ($24.98B) is a slow-moving RWA token; DOGE (#12, $14.7B) is far behind. So resolution is essentially whether ZEC's market cap is above HYPE's in 10.3 days. ZEC's daily volatility is about 6-8% and HYPE's about 5%, so the ratio's 10-day volatility is roughly 20-25%. A random walk gives about Phi(0.26), roughly 60% that ZEC stays ahead. Momentum is against ZEC (7d -15.6% vs HYPE +6%, HYPE near its all-time high), but short-horizon momentum carries little predictive weight, so I shaded only a little to 0.55. I found no Polymarket, Kalshi or Manifold market on ZEC's rank; Polymarket only has price-level markets for each coin, which are not comparable contracts.",
+   "sources": [
+    "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=15&page=1",
+    "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=zcash,hyperliquid,figure-heloc,tron&price_change_percentage=24h,7d,30d",
+    "https://coinmarketcap.com/currencies/zcash/",
+    "https://u.today/zcash-zec-poised-to-break-top-10-barrier-overtaking-hyperliquid-hype",
+    "https://polymarket.com/predictions/zcash"
+   ],
+   "dossier": "- CoinGecko API, 2026-10-05 16:28 UTC, top ranks: 1 BTC $1.71T; 2 ETH $328B; 3 USDT $184B; 4 BNB $104.6B; 5 XRP $94.0B; 6 USDC $74.0B; 7 SOL $70.1B; 8 TRX $31.95B; 9 Figure Heloc (FIGR_HELOC, RWA token at about $1.06) $24.98B; 10 ZEC $21.83B ($1,286.58); 11 HYPE $20.59B ($92.52); 12 DOGE $14.68B; 13 XMR $10.4B.\n- Price changes from the same API: ZEC 24h -3.1%, 7d -15.6%, 30d +27.8%. HYPE 24h +3.2%, 7d +6.0%, 30d +8.9%; HYPE all-time high $97.96 on 2026-09-23. Figure Heloc 7d +0.4%, almost no volatility. TRX 7d +0.7%.\n- Circulating supply: ZEC 16.97M; HYPE 222.45M (changes when tokens unlock); Figure Heloc 23.49B units.\n- Flip arithmetic: with HYPE at $92.52, ZEC drops to #11 below about $1,213 (about -5.7%). Equivalently, HYPE needs about +6% relative to ZEC. For ZEC to reach #9 it needs about +14% relative to Figure Heloc.\n- CoinMarketCap page (fetched via search, about 2026-10-05): ZEC #10 at about $22.56B, HYPE about $20.09B.\n- Earlier history: ZEC first flipped HYPE for the #9/#10 slot in a previous episode (U.Today/Yahoo coverage, ZEC about $19.8B vs HYPE about $19.4B), so the two have been trading places.\n- Status quo: ZEC is #10 now.\n- Volatility: ZEC moved about -15% in 7 days, and per the question background rose from about $800 to about $1,650 between August and September 2026; daily volatility roughly 6-8%. HYPE is roughly 4-5% daily.\n- Resolves off the '#' rank on CoinGecko's Zcash page at 23:59 UTC Oct 15, 2026; falls back to CoinMarketCap only if CoinGecko shows no rank. Stablecoins and RWA tokens count in the ranking.\n- Event window: one snapshot at 2026-10-15 23:59 UTC; as of now (2026-10-05 16:30 UTC) about 10.3 days remain.\n- Markets: Polymarket has ZEC and HYPE price-level markets only. Searched for, but did not find, any rank or top-10 market on Polymarket, Manifold or Kalshi.\n- Searched for but not found: HYPE unlock schedule within the window; any new token listings expected in the $20-25B band.",
+   "reference_class": "Two crypto assets about 6% apart in market cap: probability the leader is still ahead after about 10 days, modelled as a random walk of the relative cap with 20-25% horizon volatility"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.03,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1857,
+   "seconds": 23.2,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11805,
+    "cache_write": 17703,
+    "cache_write_1h": 17703,
+    "output": 2084,
+    "thinking": 333,
+    "web_search": 0,
+    "cost_usd_envelope": 0.185673,
+    "web_fetch": 0,
+    "duration_api_ms": 22502
+   },
+   "estimate": 0.53,
+   "reasoning": "Resolution is effectively ZEC vs HYPE market cap at a single snapshot 2026-10-15 23:59 UTC. ZEC leads by ~6% (ln 0.058); with ~20% 10-day relative vol of the ZEC/HYPE ratio a random walk gives ~0.61. Shaded down mainly for HYPE's early-October unlock possibly lifting CoinGecko's counted circulating supply by a few percent (a large share of the gap), plus a small allowance for new RWA/large listings entering above ZEC and slight adverse momentum. #9 Figure Heloc is out of reach and DOGE is far below.",
+   "sources": [],
+   "reconciliation": "All three runs agree on the facts (CoinGecko snapshot 2026-10-05: ZEC #10 $21.83B, HYPE #11 $20.59B, FIGR_HELOC #9 $24.98B stable, DOGE #12 $14.68B; ~10.3 days to a single snapshot). They differ only in judgment: how much to shade the ~0.60 random-walk baseline for HYPE unlock-driven supply increases, momentum, and buybacks. Unlock size and CoinGecko treatment could not be verified without web access, so it is weighted as a partial risk. Momentum is given little weight. Small extra risk from new top-10 listings (as FIGR_HELOC demonstrates). Net 0.53.",
+   "disagreements": [
+    {
+     "claim": "Size of downward shading for HYPE unlocks raising counted circulating supply",
+     "kind": "factual",
+     "verdict": "Unsettled; unlock size and CoinGecko supply treatment unverified in any dossier; carried as partial risk"
+    },
+    {
+     "claim": "Weight of short-term momentum (ZEC -15.6% 7d vs HYPE +6%)",
+     "kind": "judgment",
+     "verdict": "Little predictive weight at a 10-day horizon; small shade only"
+    },
+    {
+     "claim": "Baseline random-walk probability ~0.58-0.61",
+     "kind": "judgment",
+     "verdict": "Agreed; recomputed ~0.61 with ~20% ratio vol"
+    }
+   ],
+   "reference_class": "Random-walk survival of a ~6% market-cap lead between two high-volatility crypto assets over ~10 days"
+  }
+ ]
+}
