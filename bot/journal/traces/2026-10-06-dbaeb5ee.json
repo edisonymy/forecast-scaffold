@@ -1,0 +1,254 @@
+{
+ "record_id": "2026-10-06-dbaeb5ee",
+ "question": "On how many of the two trading days October 15–16, 2026 will US spot Bitcoin ETFs record a net daily inflow?",
+ "question_id": 46125,
+ "url": "https://www.metaculus.com/questions/45943/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-06T16:32:22+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.3667,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -0.09666666666666668,
+    "25": 0.49666666666666665,
+    "50": 1.1933333333333334,
+    "75": 1.8533333333333335,
+    "90": 2.2433333333333336
+   }
+  },
+  "phase1": {
+   "10": -0.09666666666666668,
+   "25": 0.49666666666666665,
+   "50": 1.1933333333333334,
+   "75": 1.8533333333333335,
+   "90": 2.2433333333333336
+  },
+  "phase2": null,
+  "spread_phase1": 0.03,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -0.1,
+   "25": 0.5,
+   "50": 1.19,
+   "75": 1.86,
+   "90": 2.24
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.364,
+   "seconds": 59.1,
+   "usage": {
+    "num_turns": 9,
+    "input": 12,
+    "cache_read": 154036,
+    "cache_write": 21128,
+    "cache_write_1h": 21128,
+    "output": 3120,
+    "thinking": 536,
+    "web_search": 3,
+    "cost_usd_envelope": 0.36401819999999996,
+    "web_fetch": 0,
+    "duration_api_ms": 64793
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -0.1,
+     "25": 0.48,
+     "50": 1.18,
+     "75": 1.84,
+     "90": 2.24
+    }
+   },
+   "reasoning": "Reference class: daily sign of the aggregate US spot BTC ETF flow. Over the 21 trading days from Sep 4 to Oct 5, 2026, 13 were positive (about 62%). Since launch the share has been roughly 55-60%, and H1 2026 had net outflows, so I use a marginal p(positive) of about 0.58. Signs cluster: there was a 9-day inflow streak followed by mixed days, so after a positive day the chance of another positive day is about 0.68. That gives P(both positive) ≈ 0.39, P(neither) ≈ 0.24 and P(exactly one) ≈ 0.37. Q3 inflows were strong ($6.3B) but have cooled: Sep 30 was -148.7, Oct 1 +102.7, Oct 2 +189.8 and Oct 5 -89.9. No human market was found: the harness search found nothing on Polymarket or Manifold, and my web search found no ETF-flow contract on Kalshi or with bookmakers.",
+   "sources": [
+    "https://www.tftc.io/bitcoin-etf-flows",
+    "https://cointelegraph.com/markets/bitcoin-etf-third-inflow-week-ether-funds-red",
+    "https://finance.yahoo.com/markets/crypto/articles/bitcoin-etfs-took-6-3-161157834.html",
+    "https://www.kucoin.com/news/insight/BTC/6abff19938a2640007924400"
+   ],
+   "dossier": "- Resolves off the Farside https://farside.co.uk/btc/ 'Total' row, not other aggregators. Count the days with Total > 0 among Oct 15 and Oct 16, 2026; 0.0 does not count. Farside returned HTTP 403 to automated fetch.\n- Event window: Oct 15 -> Oct 16, 2026 (two trading days, Thursday and Friday). As of Oct 6, 0% has elapsed.\n- Daily totals from the tftc.io tracker (mirrors the Farside series), checked Oct 6, 2026: Oct5 -89.9, Oct2 +189.8, Oct1 +102.7, Sep30 -148.7, Sep29 +66.2, Sep28 +31.1, Sep25 +134.5, Sep24 +190.6, Sep23 +347.0, Sep22 +714.7, Sep21 +999.0, Sep18 +433.0, Sep17 +159.5, Sep16 -296.0, Sep15 -450.3, Sep14 +160.0, Sep11 -13.3, Sep10 -282.6, Sep9 -120.2, Sep8 -46.6, Sep4 +174.6. That is 13 positive out of 21.\n- Signs cluster: a 9-day positive streak (Sep 17-29) and a 4-day negative run (Sep 8-11).\n- Yahoo Finance (around Oct 3, 2026): Q3 inflows $6.3B (Jul ~$0.17B, Aug $3.5B, Sep $2.7B). H1 2026 net outflows were about $5.4B, and YTD net is about +$985M. Best single day of 2026 was $999M (late Sep); worst was -$818M (late Jan).\n- Cointelegraph (Oct 5, 2026): week ending Oct 2 had +$241.1M, the third straight weekly inflow. Cumulative net inflows are $57.8B.\n- Over the whole 2024-2026 history, roughly 55-60% of days were positive (from memory, not verified this run). In H1 2026, with net outflows, the share was lower.\n- Two-day joint probability depends on day-to-day sign persistence, which looks positive in the recent data.\n- Searched for but not found: a Polymarket, Kalshi or Manifold contract on ETF daily flows; scheduled macro catalysts for Oct 15-16 (the CPI date was not checked).",
+   "reference_class": "Daily sign of aggregate US spot Bitcoin ETF net flow (Farside Total), Jan 2024 to Oct 2026, weighted toward the last ~21 trading days"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.1355,
+   "seconds": 66.2,
+   "usage": {
+    "num_turns": 9,
+    "input": 14,
+    "cache_read": 186250,
+    "cache_write": 21176,
+    "cache_write_1h": 21176,
+    "output": 3386,
+    "thinking": 621,
+    "web_search": 3,
+    "cost_usd_envelope": 0.37638800000000006,
+    "web_fetch": 0,
+    "duration_api_ms": 66943
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -0.12,
+     "25": 0.46,
+     "50": 1.21,
+     "75": 1.88,
+     "90": 2.25
+    }
+   },
+   "reasoning": "Reference class: daily sign of the Farside aggregate total. Recent sample Sep 4-Oct 5 2026: 13/21 positive (62%), inflated by a 9-day September streak; 2026 overall is weaker (H1 ~-$5.4B, Q3 +$6.3B), so single-day p~0.57. Flow signs cluster in streaks, so 0 and 2 are fatter than binomial: P0~0.26, P1~0.34, P2~0.40. Latest days are mixed (Oct 1 +102.7, Oct 2 +189.9, Oct 5 -89.8). No prediction market found on Polymarket, Kalshi, Manifold or bookmakers. Farside returned 403, so secondary sources citing Farside were used.",
+   "sources": [
+    "https://www.tftc.io/bitcoin-etf-flows",
+    "https://finance.yahoo.com/markets/crypto/articles/bitcoin-etfs-took-6-3-161157834.html",
+    "https://www.kucoin.com/news/flash/us-bitcoin-spot-etfs-see-89-8m-net-outflow-ethereum-etfs-see-18-9m-net-outflow-on-october-5",
+    "https://bitbo.io/treasuries/etf-flows/"
+   ],
+   "dossier": "- Resolves off the Farside https://farside.co.uk/btc/ 'Total' row for Thu Oct 15 and Fri Oct 16 2026. A total >0 counts; 0.0 or negative does not. Not off other trackers unless Farside is gone.\n- Event window: Oct 15 -> Oct 16 2026 (two trading days). As of Oct 6 16:30Z, 0% elapsed, with about 7 trading days to go.\n- Daily totals (tftc.io, citing Farside): Sep 4 +174.6; Sep 8 -46.6; Sep 9 -120.2; Sep 10 -282.6; Sep 11 -13.3; Sep 14 +160.0; Sep 15 -450.3; Sep 16 -296.0; Sep 17 +159.5; Sep 18 +433.0; Sep 21 +999.0; Sep 22 +714.7; Sep 23 +347.0; Sep 24 +190.6; Sep 25 +134.5; Sep 28 +31.1; Sep 29 +66.2; Sep 30 -148.7; Oct 1 +102.7; Oct 2 +189.8; Oct 5 -89.9.\n- Count over these 21 sessions: 13 positive, 8 negative. Signs cluster: a run of 4 negative days on Sep 8-11, then a run of 9 positive days on Sep 17-29.\n- Oct 5 breakdown (KuCoin flash, Oct 6): IBIT +69.9, FBTC -74.5, ARKB -85.2, all others 0.\n- Yahoo Finance, Oct 3 2026: Q3 net inflows +$6.3B (Aug +3.5B, Sep +2.7B); 2026 YTD only about +$985M, so H1 was about -$5.4B. Worst day of 2026 was about -$818M in January.\n- Earlier 2026 included a 10-day outflow streak that ended Jul 3 (Yahoo) and a -$635M day on May 13 (bitcoinfoundation.org).\n- Searched but not found: a full-year count of positive vs negative days for 2026; any prediction market on daily ETF flow sign; Farside directly (returned HTTP 403).",
+   "reference_class": "Daily sign of the aggregate US spot BTC ETF net flow (Farside Total), recent ~1-2 months and 2024-2026 history"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7591,
+   "seconds": 64.1,
+   "usage": {
+    "num_turns": 9,
+    "input": 12,
+    "cache_read": 155460,
+    "cache_write": 21586,
+    "cache_write_1h": 21586,
+    "output": 3689,
+    "thinking": 605,
+    "web_search": 4,
+    "cost_usd_envelope": 0.39505700000000005,
+    "web_fetch": 0,
+    "duration_api_ms": 70811
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -0.07,
+     "25": 0.55,
+     "50": 1.19,
+     "75": 1.84,
+     "90": 2.24
+    }
+   },
+   "reasoning": "Base rate: US spot BTC ETF aggregate totals have been positive on roughly 55-60% of trading days since 2024 (zeros count as not positive). The Q3 2026 regime leaned toward inflows ($3.5B in Aug, $2.7B in Sep; 8 of the last 10 days positive per Bitbo through Oct 2). Early October is mixed: +102.7M (Oct 1), +189.9M (Oct 2), -89.9M (Oct 5), 0 (Oct 6), with BTC stalling near $86k. Per-day positive probability is about 0.58, and positive correlation between consecutive days fattens the 0 and 2 outcomes: P(0)≈0.23, P(1)≈0.39, P(2)≈0.38. Market check: no Polymarket, Kalshi, Manifold or bookmaker market found; Kalshi lists only BTC price contracts.",
+   "sources": [
+    "https://bitbo.io/treasuries/etf-flows/",
+    "https://finance.yahoo.com/markets/crypto/articles/bitcoin-etfs-took-6-3-161157834.html",
+    "https://tokenpost.com/news/investing/26759",
+    "https://www.chaincatcher.com/en/article/2294340",
+    "https://www.kucoin.com/news/insight/BTC/6abff19938a2640007924400",
+    "https://cryptotimes.io/2026/10/05/bitcoins-hold-near-86000-builds-tension-as-it-fails-to-clear-resistance"
+   ],
+   "dossier": "- Resolves off the Farside https://farside.co.uk/btc/ 'Total' row for Oct 15 and Oct 16, 2026 (Thu/Fri, both trading days). Totals of 0.0 or below do not count. Other aggregators (SoSoValue, Bitbo) report different numbers on some days; e.g. Bitbo shows Oct 1 at -8.2 while Farside shows +102.7. Only Farside counts.\n- Event window: Oct 15 -> Oct 16, 2026 per the criteria. As of Oct 6, 2026 the window has not started (0% elapsed).\n- Oct 1, 2026: +102.7M (Farside; IBIT +195.6, FBTC -60.7, GBTC -31.4) [KuCoin/Farside X].\n- Oct 2, 2026: +189.9M, no fund posted an outflow (IBIT +158.2, FBTC +29.3) [TokenPost, Oct 2026].\n- Oct 5, 2026: about -89.9M (IBIT +69.9, ARKB -85.2) [ChainCatcher, likely SoSoValue data]. Oct 6 was reported as 0 flow (possibly incomplete at the time of reporting).\n- Sep 30, 2026: about -148.7M, ending a 9-session inflow streak of about $3.08B. The Sep 21 peak was about +$999M (Farside) / $1.28B (Bitbo).\n- Bitbo's last 10 days through Oct 2: 8 positive, 2 negative.\n- Monthly flows (Yahoo/CoinDesk-style piece, Oct 2026): Jul about +$170M, Aug +$3.5B, Sep +$2.7B. H1 2026 had about -$5.4B. YTD about +$985M. Cumulative since launch about $57.6B. AUM $109B, down from the Jan peak of $128B.\n- BTC price was around $86k on Oct 5, 2026, failing to clear resistance [CryptoTimes].\n- Base rate: since Jan 2024, roughly 55-60% of trading days have a positive Farside total (recollection over all days, not recounted this run). It is higher (about 65-75%) in inflow months like Aug-Sep 2026 and lower (about 30-40%) in outflow regimes like parts of H1 2026.\n- Consecutive daily signs are positively autocorrelated (streaks are common, e.g. the 9-day inflow streak and a 10-day outflow streak earlier in 2026).\n- Status quo: a mixed regime that leaned toward inflows in Q3 and has been cooling in early October.\n- Searched for but not found: the full Farside table (403 error), any Kalshi or Polymarket market on ETF flow sign, and the macro calendar for Oct 15-16 (a CPI release date is possible but not verified).",
+   "reference_class": "Daily sign of aggregate US spot Bitcoin ETF net flow (Farside Total row), Jan 2024 - Oct 2026, with weight on inflow-leaning regimes"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0221,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1792,
+   "seconds": 20.5,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11805,
+    "cache_write": 17451,
+    "cache_write_1h": 17451,
+    "output": 1859,
+    "thinking": 381,
+    "web_search": 0,
+    "cost_usd_envelope": 0.179157,
+    "web_fetch": 0,
+    "duration_api_ms": 19846
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -0.1,
+     "25": 0.5,
+     "50": 1.19,
+     "75": 1.86,
+     "90": 2.24
+    }
+   },
+   "reasoning": "Per-day P(Farside Total>0) ~0.58: 13/21 sessions positive Sep 4-Oct 5 2026 (62%, inflated by a 9-day streak), long-run ~55-60%, H1 2026 net outflows, early Oct mixed (+102.7, +189.8, -89.9). Signs cluster, so the 0 and 2 outcomes get more weight than independent days would give: P0~0.25, P1~0.36, P2~0.39. Market check: none found on Polymarket, Manifold, Kalshi or bookmakers.",
+   "sources": [],
+   "reconciliation": "The runs agree on the data (21-session sign count, monthly flows, early-Oct prints) and on a per-day p of about 0.57-0.58 with positive autocorrelation. The only disputes were small factual ones (Oct 2 +189.8 vs +189.9; Oct 6 reported as 0, probably an incomplete report; Bitbo vs Farside discrepancies). None of them change the estimate. I kept p=0.58 and P(+|+)~0.68, giving a P0/P1/P2 split close to Run 1's; that is where the evidence sits, not a split-the-difference. The CPI date for Oct 15-16 was not verified by any run and could not be settled without web access; it adds variance but no direction.",
+   "disagreements": [
+    {
+     "claim": "Oct 2 total +189.8 vs +189.9",
+     "kind": "factual",
+     "verdict": "Rounding only; immaterial"
+    },
+    {
+     "claim": "Oct 6 flow reported as 0",
+     "kind": "factual",
+     "verdict": "Unsettled without web access; probably an incomplete early report; immaterial to the Oct 15-16 outcome"
+    },
+    {
+     "claim": "Per-day p(positive) of 0.57 vs 0.58",
+     "kind": "judgment",
+     "verdict": "Took 0.58: the Q3 inflow regime is cooling but still net positive"
+    },
+    {
+     "claim": "Strength of sign autocorrelation (P0 0.23-0.26)",
+     "kind": "judgment",
+     "verdict": "Moderate persistence, P0~0.25"
+    },
+    {
+     "claim": "Whether a CPI release falls on Oct 15-16",
+     "kind": "factual",
+     "verdict": "Could not be settled; treated as added variance only"
+    }
+   ],
+   "reference_class": "Daily sign of the Farside aggregate US spot BTC ETF net flow, recent 21 sessions plus 2024-2026 history"
+  }
+ ]
+}
