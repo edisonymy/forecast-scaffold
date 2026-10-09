@@ -1,0 +1,257 @@
+{
+ "record_id": "2026-10-09-ddc0aa02",
+ "question": "What will be NVIDIA's forward guidance in its Q3 FY2027 earnings release? (Gross margin (GAAP))",
+ "question_id": 46249,
+ "url": "https://www.metaculus.com/questions/46016/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-09T20:56:12+00:00",
+ "effort": "medium (auto)",
+ "model": "anthropic/claude-opus-5.5",
+ "provider": "openrouter",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.9873,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 70.76666666666667,
+    "25": 71.16666666666667,
+    "50": 71.5,
+    "75": 71.86666666666667,
+    "90": 72.26666666666667
+   },
+   "p_below_lower": 0.015,
+   "p_above_upper": 0.016666666666666666
+  },
+  "phase1": {
+   "10": 70.76666666666667,
+   "25": 71.16666666666667,
+   "50": 71.5,
+   "75": 71.86666666666667,
+   "90": 72.26666666666667
+  },
+  "phase2": null,
+  "spread_phase1": 0.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 70.7,
+   "25": 71.1,
+   "50": 71.5,
+   "75": 71.9,
+   "90": 72.4
+  },
+  "p_below_lower": 0.015,
+  "p_above_upper": 0.025
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.8194,
+   "seconds": 74.8,
+   "usage": {
+    "num_turns": 22,
+    "input": 40,
+    "cache_read": 815808,
+    "cache_write": 18815,
+    "cache_write_1h": 0,
+    "output": 7867,
+    "thinking": 1679,
+    "web_search": 0,
+    "cost_usd_envelope": 0.72237275,
+    "web_fetch": 0,
+    "duration_api_ms": 72864
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 70.7,
+     "25": 71.1,
+     "50": 71.5,
+     "75": 71.8,
+     "90": 72.2
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "On the Aug 26 2026 Q2 FY27 call, CFO Kress pre-signaled that Q4 FY27 gross margin would trough at 71-72% because of memory price spikes, after 75.0% in Q2 and a 74.0% ±50bp Q3 guide. The Q3 release will give a formal Q4 GAAP guide in 'X% ±50bp' form, and NVIDIA usually guides close to what it pre-signals, so the mode is about 71.5. Downside tilt: memory prices are 'headed even higher', Rubin ramp costs, and GAAP has sat up to 0.2pt below non-GAAP. Upside: earlier price increases or memory relief. Live web tools failed this run (API errors, curl blocked), so all evidence comes from the repo's Oct 7-8 2026 research traces, and the market check could not be re-run live. Those traces found no human market (Polymarket, Kalshi, Manifold, bookmakers) on this guide.",
+   "sources": [
+    "bot/journal/traces/2026-10-07-bef5c3e9.json (prior research trace citing NVIDIA Q2 FY27 PR, SEC q2fy27 CFO commentary, Fool Aug 28 2026, BetaFinch)",
+    "bot/journal/traces/2026-10-07-585a3e28.json (prior trace: Q2 FY27 PR figures, Q3 GM guide, Q4 margin trough)",
+    "bot/journal/traces/2026-10-07-af66b6df.json (prior trace: Q3 FY27 outlook incl. GAAP/non-GAAP GM 74.0% ±50bp, report date Nov 17 2026)",
+    "bot/journal/traces/2026-10-08-ad76009d.json (prior trace: Q3 guide, memory-cost margin pressure, supply bottleneck through FY28)"
+   ],
+   "dossier": "- Q2 FY27 (qtr ended Jul 26 2026; NVIDIA PR Aug 26 2026, via repo trace): GAAP GM 75.0%, non-GAAP 75.0%; revenue $96.2B.\n- Q3 FY27 outlook (same PR): GAAP and non-GAAP GM 74.0% ±50bp; revenue $108.0B ±2%; no China DC compute assumed.\n- Q1 FY27 PR (May 20 2026): Q1 GAAP GM 74.9%; Q2 guide GAAP 74.9% / non-GAAP 75.0%; Q2 actual 75.0% (formal guides land within ~0.1pt).\n- Q2 FY27 call (Aug 26 2026, per Motley Fool Aug 28 2026 and BetaFinch, via trace): CFO Kress said Q4 FY27 gross margin would be 'a trough of 71% to 72%' because of memory price spikes; expects 72-73% in FY2028 once price increases take effect in Q1 FY28. Secondary sources don't say whether this was GAAP or non-GAAP.\n- Kress: memory pricing 'exceeded prior expectations and are headed even higher into next year'; supply commitments rose $119B -> $279B, mostly memory (SEC 8-K CFO commentary, via trace).\n- Vera Rubin production ramp began Aug 2026, ~20% of Q3 DC revenue; ramp costs are a margin swing factor. CFO: supply (memory, power) stays a bottleneck through FY28.\n- FY26 precedent: management signaled 'mid-70s by year end'; formal GAAP guides went ~71.8 -> 73.3 -> 74.8 and were met; GAAP ran 0.2pt below non-GAAP in FY26 guides, 0-0.1pt in FY27.\n- Status quo: the Q3 FY27 release gives a Q4 FY27 GAAP GM guide in 'X% ±50bp' format.\n- Resolves off the GAAP gross-margin figure in the Outlook section of the Q3 FY27 earnings release (not non-GAAP, not the Q3 actual). Resolution criteria text in the prompt was blank.\n- Event window: release expected ~Nov 17-19 2026 (NVIDIA IR date Nov 17 per trace); as of Oct 9 2026 not yet published; the Q3 fiscal quarter ends ~Oct 25 2026.\n- Searched but not found: live web access failed this run (API errors); no fresh news after early Oct 2026 on memory prices or NVIDIA margin commentary; no analyst consensus for the Q4 GM guide; no Polymarket/Kalshi/Manifold/bookmaker market on GM guidance (per the Oct 7 trace).",
+   "reference_class": "NVIDIA formal next-quarter GAAP gross-margin guides compared with the margin band management pre-signaled on the prior earnings call (e.g., the FY26 'mid-70s by year end' signal, then met via guides of 71.8 -> 73.3 -> 74.8)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.4967,
+   "seconds": 53.8,
+   "usage": {
+    "num_turns": 15,
+    "input": 28,
+    "cache_read": 539084,
+    "cache_write": 15265,
+    "cache_write_1h": 0,
+    "output": 5265,
+    "thinking": 1084,
+    "web_search": 0,
+    "cost_usd_envelope": 0.49671325000000005,
+    "web_fetch": 0,
+    "duration_api_ms": 51653
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 70.8,
+     "25": 71.2,
+     "50": 71.5,
+     "75": 71.9,
+     "90": 72.3
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "The resolving figure is the Q4 FY27 GAAP gross-margin guide in the Q3 FY27 release (~Nov 18 2026). On the Aug 26 2026 Q2 call, CFO Kress said Q4 FY27 gross margin would trough at 71-72% because memory prices spiked. That follows a 75.0% Q2 actual and a 74.0% ±50bp Q3 guide. NVIDIA usually formally guides inside a band it signaled a quarter earlier, so the anchor is ~71.5. GAAP has run 0-0.2pt below non-GAAP, which tilts slightly lower if the signal was non-GAAP. Downside: memory costs 'headed even higher' could push the guide to ~70.5-71. Upside: price increases or mix could lift it to ~72-72.5. Escapes outside 68.95-73.05 need a new shock, such as a sharp memory-cost blowout or a reversal. Market check: none found. The harness title search of Polymarket and Manifold found no candidate. An earlier trace found no Kalshi, Polymarket, Manifold or bookmaker contract on the GM guide. Live web tools failed this run; evidence comes from earlier research records in this repo that cited primary NVIDIA filings and press coverage.",
+   "sources": [
+    "local dataset: bot/journal/traces/2026-10-07-bef5c3e9.json (prior research on this question citing NVIDIA Q2 FY27 PR, SEC q2fy27 CFO commentary, Motley Fool Aug 28 2026, BetaFinch)",
+    "local dataset: bot/journal/traces/2026-10-08-ad76009d.json (NVIDIA Q3 FY27 revenue research incl. Q3 guide 74% ±50bp)",
+    "local dataset: bot/journal/traces/2026-10-07-585a3e28.json (NVIDIA Q4 revenue-guide research noting the 71-72% Q4 margin trough)"
+   ],
+   "dossier": "- Q2 FY27 press release (NVIDIA, Aug 26 2026): Q2 GAAP GM 75.0%, non-GAAP 75.0%; Q3 FY27 outlook GAAP and non-GAAP GM 74.0% +/-50bp; revenue guide $108.0B +/-2%; China DC compute excluded.\n- Q1 FY27 release (May 20 2026): Q1 GAAP GM 74.9%; Q2 outlook GAAP 74.9% / non-GAAP 75.0%. Q2 actual 75.0% vs 74.9% guide.\n- Earlier guides from memory: GAAP has typically been 0.1-0.2pt below non-GAAP (e.g., 71.8 vs 72.0, 73.3 vs 73.5, 74.8 vs 75.0); Q3 FY27 had both at 74.0.\n- Q2 FY27 call (Aug 26 2026, per Motley Fool Aug 28 2026 and BetaFinch): CFO Kress said Q4 FY27 gross margin is 'a trough of 71% to 72%' because of memory price spikes; she expects 72-73% in FY2028 once price increases take effect in Q1 FY28. Secondary sources don't say whether the band is GAAP or non-GAAP.\n- Kress (call): memory pricing 'exceeded prior expectations and are headed even higher into next year.' Supply commitments rose from $119B to $279B, mostly memory (Q2 CFO commentary, SEC 8-K).\n- Vera Rubin production ramp began Aug 2026 (~20% of Q3 DC revenue); new-product ramp costs are a further source of margin uncertainty in both directions (yields and mix).\n- Historical pattern: NVIDIA's FY26 'mid-70s by year-end' margin signal was met by its formal guides; the guide format is 'X.X% +/- 50 basis points' on both GAAP and non-GAAP.\n- Status quo: the Q3 FY27 release gives a single-point Q4 FY27 GAAP GM guide.\n- Resolution instrument: resolves off the GAAP gross-margin figure in the Outlook section of NVIDIA's Q3 FY27 earnings release, not the non-GAAP figure, not the actual Q3 margin, and not call commentary.\n- Event window: guide is published in the Q3 FY27 release, expected ~Nov 17-19 2026 (scheduled resolution Nov 17 2026); as of Oct 9 2026 not yet published, and the fiscal quarter (ends ~Oct 25) is ~85% elapsed.\n- Searched but not found: live web access failed this run (API errors), so no news after ~Oct 8 2026; no analyst consensus for the Q4 GM guide; no human prediction market (Polymarket/Kalshi/Manifold/bookmakers) on the GM guide; no full call transcript confirming GAAP vs non-GAAP basis of the 71-72% band.",
+   "reference_class": "NVIDIA formal next-quarter GAAP gross-margin guides issued one quarter after management pre-signals a specific margin band (e.g., FY26 'mid-70s by year end' signal, later met)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.097,
+   "seconds": 64.0,
+   "usage": {
+    "num_turns": 19,
+    "input": 32,
+    "cache_read": 634234,
+    "cache_write": 19081,
+    "cache_write_1h": 0,
+    "output": 6552,
+    "thinking": 1115,
+    "web_search": 0,
+    "cost_usd_envelope": 0.6003332499999999,
+    "web_fetch": 0,
+    "duration_api_ms": 61539
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 70.8,
+     "25": 71.2,
+     "50": 71.5,
+     "75": 71.9,
+     "90": 72.3
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Web tools failed this run, so this rests on evidence saved by earlier runs. On the Aug 26 2026 Q2 FY27 call, CFO Kress said gross margin would bottom at 71-72% in Q4 FY27 (the quarter this release guides) because of extreme memory pricing, after 75.0% in Q2 and a 74.0% Q3 guide. GAAP and non-GAAP guides are now within about 0.1pt. NVIDIA guides one figure ±50bp and usually lands inside a range it pre-signalled, so the mode is about 71.5. Memory costs 'headed even higher' tilt the low tail; pricing actions and mix are the upside. Market check: I could not search this run; earlier runs found no Polymarket, Kalshi or Manifold contract on this guide, and the harness also found none.",
+   "sources": [
+    "local journal trace bot/journal/traces/2026-10-07-bef5c3e9.json (earlier research on this same question; cites NVIDIA Q2 FY27 press release, SEC Q2 FY27 CFO commentary, Yahoo Finance call highlights, TrendForce Aug 27 2026)",
+    "local journal trace bot/journal/traces/2026-10-07-585a3e28.json (NVIDIA Q3 FY27 revenue-guidance research)",
+    "local journal trace bot/journal/traces/2026-10-08-ad76009d.json (NVIDIA Q3 FY27 revenue research, Oct 8 2026)"
+   ],
+   "dossier": "- Q2 FY27 (quarter ended Jul 26 2026, reported Aug 26 2026; NVIDIA press release / SEC 8-K): revenue $96.2B; GAAP and non-GAAP GM both 75.0%.\n- Q3 FY27 outlook (same release / CFO commentary): revenue $108.0B ±2%; GAAP and non-GAAP GM 74.0% ±50bp. The written commentary gave no Q4 GM figure.\n- Q2 call (Aug 26 2026; Yahoo Finance call highlights, TheElec, Motley Fool Aug 28-29 2026): CFO Kress said GM is expected to bottom at 71%-72% in Q4 FY27 because of extreme memory pricing, then settle at 72%-73% in FY28 once price increases take effect in Q1 FY28. Secondary sources did not say whether the band is GAAP or non-GAAP.\n- Memory: prices 'exceeded prior expectations and are headed even higher into next year' (call). Supply commitments rose from $119B to $279B, mostly memory (TrendForce Aug 27 2026).\n- The Vera Rubin ramp began Aug 2026, about 20% of Q3 data-center revenue; management calls it the fastest ramp in NVIDIA history and compares it to the Hopper-to-Blackwell transition, when GM dipped (to low 70s) and then recovered.\n- Guide format: one figure ±50bp at one decimal place. Recent GAAP guides: Q2 FY27 74.9 (actual 75.0); Q3 FY27 74.0. During FY26: 70.6, 71.8, 73.3, 74.8 GAAP. GAAP and non-GAAP now differ by 0-0.1pt because non-GAAP includes SBC from FY27.\n- Prior pre-signals: FY26 'mid-70s by year end' was met (Q4 FY26 GAAP 75.0%). A 'mid-70s through FY27' aim was later dropped because of memory costs.\n- Resolves off the GAAP gross-margin figure in the Outlook section of NVIDIA's Q3 FY2027 earnings release (the Q4 FY27 guide), not non-GAAP and not the actual Q3 margin.\n- Event window: the Q3 FY27 earnings release, expected about Nov 18-19 2026 (question scheduled to resolve 2026-11-17; criteria text blank). As of Oct 9 2026 the release has not happened.\n- Upside paths: price increases pulled forward, mix, memory contracts locked early. Downside paths: memory costs rising beyond the August assumption, low early Rubin yields, inventory or ramp charges (which hit GAAP and non-GAAP alike).\n- Searched but not found (this run's web tools failed; earlier runs): any NVIDIA comment on Q4 margins after Aug 26; any human prediction market on this guide; the verbatim call transcript; analyst consensus for the Q4 GM guide.",
+   "reference_class": "NVIDIA formal next-quarter GAAP gross-margin guides compared with the margin range management previewed on the prior earnings call (e.g., the FY25-26 Blackwell ramp: 'low 70s' then 'mid-70s by year end', both met)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.1266,
+   "seconds": 22.4,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 30844,
+    "cache_write": 8484,
+    "cache_write_1h": 0,
+    "output": 2326,
+    "thinking": 499,
+    "web_search": 0,
+    "cost_usd_envelope": 0.12660700000000003,
+    "web_fetch": 0,
+    "duration_api_ms": 21817
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 70.7,
+     "25": 71.1,
+     "50": 71.5,
+     "75": 71.9,
+     "90": 72.4
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.025
+   },
+   "reasoning": "This resolves off the GAAP gross-margin guide for Q4 FY27 in the Outlook section of the Q3 FY27 release. On Aug 26 2026 CFO Kress pre-signalled a Q4 trough of 71-72% from memory costs. That follows a 75.0% Q2 actual and a 74.0% Q3 guide. NVIDIA's formal guides have historically landed inside the bands it pre-signalled, so the mode is ~71.5. GAAP and non-GAAP are now within 0-0.1pt. Memory prices 'headed even higher' and Rubin ramp costs tilt the low side; pricing actions and mix are the upside. Market check: no Polymarket, Kalshi, Manifold or bookmaker market found, and no web access this run.",
+   "sources": [],
+   "reconciliation": "All three runs agree on the facts: Q2 GM 75.0%, Q3 guide 74.0% ±50bp, and the CFO's Q4 'trough 71-72%' remark on the Aug 26 call. The one open factual question, whether that band is GAAP or non-GAAP, can't be settled from the dossiers. It matters little because the FY27 GAAP/non-GAAP gap is 0-0.1pt. The judgment calls are where in 71-72 the guide lands and how much downside memory costs add. With no evidence to break the tie, I keep the 71.5 midpoint with a mild low tilt. I also note that all three runs drew on the same earlier saved research and shared secondary sources for the 71-72 quote, so they are not independent confirmations. For that I add a slightly wider upper tail (p90 72.4) and a little more above-range mass. I agree with the runs' reference class and carry it forward.",
+   "disagreements": [
+    {
+     "claim": "Whether the CFO's 71-72% Q4 band is GAAP or non-GAAP",
+     "kind": "factual",
+     "verdict": "Unsettled; immaterial because GAAP and non-GAAP have differed by 0-0.1pt in FY27"
+    },
+    {
+     "claim": "Whether the 71-72% quote is accurately reported (all runs relied on the same earlier saved research and secondary sources)",
+     "kind": "factual",
+     "verdict": "Cannot verify without web access; carried as a modestly fatter upper tail"
+    },
+    {
+     "claim": "Where within 71-72 the formal guide lands and the size of the memory-cost downside",
+     "kind": "judgment",
+     "verdict": "No tie-breaking evidence; midpoint 71.5 with slight downside skew, consistent with all runs"
+    },
+    {
+     "claim": "Upper-tail width (p90 72.2 vs 72.3)",
+     "kind": "judgment",
+     "verdict": "Set to 72.4 to account for the shared-source risk"
+    }
+   ],
+   "reference_class": "NVIDIA formal next-quarter GAAP gross-margin guides issued one quarter after management verbally pre-signalled a margin range (e.g., FY26 'mid-70s by year-end' -> guides 73.3, 74.8, met)"
+  }
+ ]
+}

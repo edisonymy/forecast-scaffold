@@ -1,0 +1,263 @@
+{
+ "record_id": "2026-10-09-e8062648",
+ "question": "What will be NVIDIA's forward guidance in its Q3 FY2027 earnings release? (Revenue)",
+ "question_id": 46248,
+ "url": "https://www.metaculus.com/questions/46016/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-09T21:00:46+00:00",
+ "effort": "medium (auto)",
+ "model": "anthropic/claude-opus-5.5",
+ "provider": "openrouter",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.322,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 121.89999999999999,
+    "25": 124.96666666666665,
+    "50": 127.8,
+    "75": 130.56666666666666,
+    "90": 133.13333333333333
+   },
+   "p_below_lower": 0.03333333333333333,
+   "p_above_upper": 0.06333333333333334
+  },
+  "phase1": {
+   "10": 121.89999999999999,
+   "25": 124.96666666666665,
+   "50": 127.8,
+   "75": 130.56666666666666,
+   "90": 133.13333333333333
+  },
+  "phase2": null,
+  "spread_phase1": 0.4,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 122.0,
+   "25": 125.0,
+   "50": 127.8,
+   "75": 130.6,
+   "90": 133.2
+  },
+  "p_below_lower": 0.03,
+  "p_above_upper": 0.06
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.5536,
+   "seconds": 71.0,
+   "usage": {
+    "num_turns": 19,
+    "input": 28,
+    "cache_read": 563889,
+    "cache_write": 18258,
+    "cache_write_1h": 0,
+    "output": 6295,
+    "thinking": 882,
+    "web_search": 0,
+    "cost_usd_envelope": 0.553572,
+    "web_fetch": 0,
+    "duration_api_ms": 67884
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 121.7,
+     "25": 124.8,
+     "50": 127.6,
+     "75": 130.5,
+     "90": 133.2
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.07
+   },
+   "reasoning": "Q3 FY27 guide is $108B±2%. NVIDIA has beaten the top of its range 12 straight quarters (Q1 +4.6%, Q2 +5.7% over the midpoint), so Q3 actual is likely ~$113-114B. The last three next-quarter guides were 11.5-14.5% above the prior quarter's actual (68.1->78, 81.6->91, 96.2->108), and guide-over-guide growth was +17-19%; both methods give ~$126-129B. FY27 consensus (~$411B) implies a street Q4 of ~$124.5B, and NVIDIA has recently guided above the street. Management said hyperscale growth 'reaccelerates in Q4' on Vera Rubin supply, which tilts up; memory, power and Rubin supply limits and the Q4 gross-margin trough of 71-72% cap the step. Escape tails: an export or capex shock (below), China inclusion or a faster supply release (above). Live web tools failed this run (API errors), so evidence comes from the repo's Oct 7-9 2026 research traces; those traces found no Polymarket, Kalshi, Manifold or bookmaker market on the revenue guide, and the harness search found none either.",
+   "sources": [
+    "bot/journal/traces/2026-10-07-585a3e28.json (prior research trace on this question: Q2 FY27 PR, Q2 call transcript (Fool), Webull, Yahoo consensus, Fool Sep 15 2026)",
+    "bot/journal/traces/2026-10-07-12ffe531.json (prior trace: SEC 8-K q2fy27pr figures, Q3 outlook $108B, investing.com earnings date)",
+    "bot/journal/traces/2026-10-09-ddc0aa02.json (prior trace: Q4 FY27 gross-margin trough signal, supply bottleneck through FY28, report-date notes)"
+   ],
+   "dossier": "- Resolves off the Q4 FY2027 revenue outlook figure (central point of the ±2% band) in NVIDIA's Q3 FY2027 earnings release, not off Q3 actual revenue or consensus. The resolution criteria text in the prompt is blank.\n- Event window: the Q3 FY27 earnings release; dates cited are Nov 17, 2026 (NVIDIA IR, via repo trace) and Nov 25, 2026 (investing.com, via repo trace). As of 2026-10-09 the guide has not been issued; the Q3 fiscal quarter ends ~Oct 25, 2026.\n- Q4 FY26 actual ~$68.1B; Q1 FY27 guide ~$78B, actual $81.6B (NVIDIA PR May 20, 2026).\n- Q2 FY27 guide $91B ±2%, actual $96.2B (+18% q/q, +106% y/y); Data Center $89.0B, Edge Computing $7.2B (SEC 8-K q2fy27pr, Aug 26, 2026).\n- Q3 FY27 outlook: revenue $108.0B ±2% ($105.8-110.2B), gross margin 74.0% ±50bp, no China data-center compute assumed. LSEG consensus before the guide: ~$104.2B (Webull, Aug 2026).\n- Guide / prior-quarter actual ratios: 78/68.1=1.145; 91/81.6=1.115; 108/96.2=1.123. Guide-over-guide: +16.7%, +18.7%.\n- NVIDIA has beaten the top of its guidance range 12 straight quarters (last four averaged ~3.1% above the high end). Motley Fool (Sep 15, 2026) projects Q3 actual ~$113-114B.\n- Q2 call (Aug 26, 2026): 'growth in hyperscale is expected to reaccelerate in Q4 and into fiscal year 28, as supply of Vera Rubin grows'; Rubin ~20% of Q3 Data Center revenue; preliminary FY28 revenue growth ~70%, described as supply-constrained.\n- CFO: Q4 FY27 gross margin trough of 71-72% from memory prices; supply commitments $119B -> $279B; supply (memory, power, DC space) a bottleneck through FY28.\n- Consensus: FY27 ~$411B (range ~$403-427B); Yahoo Jan-quarter (Q4 FY27) average ~$124.5B, low ~$117.3B, high ~$138.5B (~Sep 2026).\n- Downside candidates: export-control or China shocks, a hyperscaler capex pause, memory or Rubin supply bottlenecks, a conservative guide during the product transition. Upside candidates: China compute licenses included in the guide, a faster Rubin supply ramp.\n- Status quo: NVIDIA has issued a single-point revenue guide ±2% every quarter; no sign found that it will drop the quarterly guide after giving the FY28 annual outlook.\n- Searched but not found: live web access failed this run, so there is no news after ~Oct 8, 2026; no mid-quarter guidance update; no Polymarket, Kalshi, Manifold or bookmaker market on the Q4 revenue guide (per prior traces and the harness search).",
+   "reference_class": "NVIDIA next-quarter revenue guide midpoints vs prior-quarter actual revenue, Q4 FY26 through Q3 FY27 (ratios 1.115-1.145), applied to an expected Q3 FY27 actual of guide plus the typical 4-6% beat"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.2775,
+   "seconds": 75.1,
+   "usage": {
+    "num_turns": 22,
+    "input": 34,
+    "cache_read": 731698,
+    "cache_write": 25385,
+    "cache_write_1h": 0,
+    "output": 7972,
+    "thinking": 1507,
+    "web_search": 0,
+    "cost_usd_envelope": 0.7239752500000001,
+    "web_fetch": 0,
+    "duration_api_ms": 74047
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 122.0,
+     "25": 125.0,
+     "50": 127.8,
+     "75": 130.5,
+     "90": 133.0
+    },
+    "p_below_lower": 0.04,
+    "p_above_upper": 0.06
+   },
+   "reasoning": "Q3 FY27 guide is $108B ±2%. NVIDIA has beaten the top of its range for 12 straight quarters (last four +4.6% to +5.7% over the midpoint), so Q3 actual should be about $113-114B. The last four next-quarter guides were 11.5-14.5% above the prior quarter's actual (65/57.0, 78/68.1, 91/81.6, 108/96.2), giving about $126.5-130B; raising the previous guide by 17-19% gives $126-128.5B. Street Q4 is about $124.5B and NVIDIA has recently guided about 4% above consensus. Upside: bigger Rubin ramp in Q4, hyperscale growth speeding up again. Downside: supply limits (memory, power) through FY28, China excluded, export risk. Live web tools failed this run (API errors), so evidence comes from repo journal traces dated Oct 7, 2026. Market check: those traces found no Polymarket, Kalshi, Manifold or bookmaker market on the revenue guide, only EPS-beat and mention contracts; not re-checked live.",
+   "sources": [
+    "bot/journal/traces/2026-10-07-585a3e28.json (prior research trace on this question, citing NVIDIA Q1/Q2 FY27 press releases, Fool Q2 FY27 call transcript, Webull, TIKR, Yahoo analysis)",
+    "bot/journal/traces/2026-10-08-ad76009d.json (Nvidia Q3 FY27 actual-revenue research dossier: beat history, Q3 consensus)",
+    "bot/journal/traces/2026-10-09-c99583be.json (Nvidia Q3 FY27 opex-guide research: Aug 26 2026 PR outlook figures, report date ~Nov 17)",
+    "bot/journal/resolutions.jsonl (Nvidia question entries)"
+   ],
+   "dossier": "- Resolves off the Q4 FY27 revenue outlook midpoint ('approximately $X billion, plus or minus 2%') in NVIDIA's Q3 FY27 earnings press release, not off Q3 actual revenue or consensus. Resolution criteria text was blank in the prompt.\n- Event window: the Q3 FY27 earnings release (expected ~Nov 17-19, 2026; scheduled resolution 2026-11-17). As of 2026-10-09 not issued: 0% of the event has occurred. Fiscal Q3 ends ~Oct 25, 2026.\n- Guide history (NVIDIA PRs): Q4 FY26 guide ~$65B vs Q3 FY26 actual $57.0B; Q1 FY27 guide $78B vs Q4 FY26 actual $68.1B; Q2 FY27 guide $91B vs Q1 FY27 actual $81.6B; Q3 FY27 guide $108B ±2% vs Q2 FY27 actual $96.2B. Guide/prior-actual ratios: ~1.14, 1.145, 1.115, 1.123. Each guide over the previous guide: +20%, +16.7%, +18.7%.\n- Beat history: actual/guide midpoint over the last 4 quarters: 1.056 (Q3 FY26), 1.048, 1.046, 1.057; over the last 6 quarters 1.026-1.057 (Q1 FY26 lowest, H20 export hit). Top of the guide range beaten 12 straight quarters (Fool, Sep 15 2026).\n- Q3 FY27 actual consensus: mean ~$109B across 45 analysts, range $104.9-116.3B (Yahoo/TIKR, ~Oct 2026); a Fool writer projects $113-114B.\n- Q4 FY27 (Jan-2027 quarter) consensus: avg ~$124.5B, low ~$117.3B, high ~$138.5B (Yahoo, ~Sep 2026). FY27 consensus ~$411B. The Q3 guide was ~4% above LSEG consensus ($104.2B) at the time.\n- Q2 FY27 call (Aug 26, 2026): hyperscale growth 'expected to reaccelerate in Q4 and into FY28 as supply of Vera Rubin grows'; Rubin ~20% of Q3 data-center revenue; preliminary FY28 revenue growth ~70%; supply-constrained through FY28 (power, memory, DC space); supply commitments $119B->$279B; inventory $21.4B->$31.6B.\n- Gross margin expected to bottom in Q4 at 71-72% (memory costs); affects margin, not the revenue line directly.\n- Guidance excludes China data-center compute revenue; China licences being restored would be upside; new export restrictions or hyperscaler capex pauses would be downside.\n- Status quo: a single-point revenue guide ±2% every quarter; no sign of a change in format found.\n- Searched but not found: live news after ~Oct 7, 2026 (web tools failed this run); any mid-quarter guidance update; a prediction-market or bookmaker contract on the revenue guide (prior traces found only EPS-beat and word-mention contracts).",
+   "reference_class": "NVIDIA next-quarter revenue guide midpoint vs prior-quarter actual revenue, Q4 FY26 through Q3 FY27 (ratios 1.115-1.145), applied to an expected Q3 FY27 actual of guide x 1.046-1.057 (recent beat range)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 2.1409,
+   "seconds": 82.4,
+   "usage": {
+    "num_turns": 23,
+    "input": 42,
+    "cache_read": 919395,
+    "cache_write": 31224,
+    "cache_write_1h": 0,
+    "output": 8330,
+    "thinking": 1440,
+    "web_search": 0,
+    "cost_usd_envelope": 0.8633074999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 79726
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 122.0,
+     "25": 125.1,
+     "50": 128.0,
+     "75": 130.7,
+     "90": 133.2
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.06
+   },
+   "reasoning": "Q3 FY27 guide is $108B ±2%. With 12 straight beats above the high end (+4.6%/+5.7% the last two quarters), the Q3 actual should be ~$112.5-114.5B. NVIDIA's last four next-quarter guides ran 11.5-14.5% above the prior actual (~$126.6-130B). Guide-over-guide steps of 17-19% give ~$126-128.5B. The Street's Q4 FY27 is ~$124.5B and NVDA has recently guided ~4% above consensus. Management flagged hyperscale reacceleration in Q4 as Rubin ramps; supply/memory constraints and the 71-72% GM trough cap it. Tails: export/capex shock below, Rubin supply release or China inclusion above. Market check: web tools failed this run; prior runs (2026-10-07) found no Polymarket/Kalshi/Manifold contract on the guide (only EPS-beat/mention markets); the harness title search found none either. Evidence is from local research traces only, nothing after ~Oct 7, 2026.",
+   "sources": [
+    "local dataset: bot/journal/traces/2026-10-07-585a3e28.json (three prior research dossiers on this exact question citing NVIDIA Q1/Q2 FY27 press releases, Fool Q2 FY27 call transcript, MarketBeat, Yahoo/tikr consensus, Webull)",
+    "local dataset: bot/journal/forecasts.jsonl record 2026-10-07-585a3e28 (prior revenue-guide record and supervisor reconciliation)",
+    "local dataset: bot/journal/traces/2026-10-09-c99583be.json (NVIDIA Q4 opex guide research trace: Q3 outlook, report date ~Nov 17 2026)",
+    "local dataset: bot/journal/forecasts.jsonl records 730/731 (Q3 FY27 GM/opex guide research: Kress Q4 GM trough 71-72%, Q3 outlook figures)"
+   ],
+   "dossier": "- NOTE: web search/fetch unavailable this run; facts below come from repo research traces dated 2026-10-07 to 2026-10-09 citing NVIDIA press releases, the Fool Q2 FY27 call transcript, Webull, MarketBeat and Yahoo/tikr.\n- Resolution instrument: resolves off the Q4 FY2027 revenue outlook midpoint (point ±2%) in NVIDIA's Q3 FY2027 earnings release, not off Q3 actual revenue or analyst consensus.\n- Event window: the Q3 FY27 earnings release, expected ~Nov 17-19, 2026 (scheduled resolution 2026-11-17). As of 2026-10-09 the guide has not been issued; Q3 (ends ~late Oct) is mostly elapsed.\n- Actuals and guides (NVIDIA PRs): Q3 FY26 actual ~$57.0B -> Q4 FY26 guide ~$65B; Q4 FY26 actual $68.1B -> Q1 FY27 guide $78B; Q1 FY27 actual $81.6B (May 20, 2026) -> Q2 guide $91B; Q2 FY27 actual $96.2B, Data Center $89.0B (Aug 26, 2026) -> Q3 guide $108.0B ±2%. The Q3 guide excludes China data-center compute.\n- Guide / prior-quarter-actual ratios (class over the last 4 guides): ~1.14, 1.145, 1.115, 1.123. Guide-over-prior-guide: ~1.20, 1.167, 1.187.\n- Beat history: 12 straight quarters above the top of the guide range; the last two beats on the midpoint were +4.6% (Q1) and +5.7% (Q2); over the last six quarters, +2.6% to +5.7%. A Fool writer (Sep 15, 2026) projected Q3 actual at ~$113-114B.\n- Consensus: Q3 FY27 avg ~$109B (45 analysts, range $104.9-116.3B); Yahoo Q4 FY27 (Jan-2027 quarter) avg ~$124.5B, low ~$117.3B, high ~$138.5B (~Sep 2026); FY27 avg ~$411B. Before the Q2 release, the Q3 consensus was ~$104B and NVDA guided $108B.\n- Q2 call: Vera Rubin ~20% of Q3 Data Center revenue; 'growth in hyperscale is expected to reaccelerate in Q4 and into FY28 as supply of Vera Rubin grows'; preliminary FY28 revenue growth ~70%, described as supply-constrained.\n- Constraints: supply is a bottleneck through FY28 (power, memory, DC space); supply commitments rose from $119B to $279B and inventory from $21.4B to $31.6B in one quarter; CFO flagged a Q4 GM trough of 71-72% from memory costs.\n- Status quo: NVIDIA issues a single-point quarterly revenue guide ±2% every quarter; no sign of a change found.\n- Downside candidates: new export controls, a hyperscaler capex pause, Rubin/HBM4 supply slippage, a conservative guide at the transition. Upside candidates: China licenses restored and included, faster Rubin supply release.\n- Searched for but not found (earlier runs): a named-provider Q4 FY27 consensus history, any mid-quarter guidance update, a prediction-market or bookmaker contract on the Q4 guide; this run could not check news after ~Oct 7, 2026.",
+   "reference_class": "NVIDIA next-quarter revenue guide midpoints relative to the just-reported quarter's actual, Q4 FY26 through Q3 FY27 guides (ratios 1.14, 1.145, 1.115, 1.123), applied to an expected Q3 FY27 actual of guide plus typical 4-6% beat"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0714,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.1407,
+   "seconds": 27.5,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 30844,
+    "cache_write": 9086,
+    "cache_write_1h": 0,
+    "output": 2738,
+    "thinking": 445,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1406695,
+    "web_fetch": 0,
+    "duration_api_ms": 26917
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 122.0,
+     "25": 125.0,
+     "50": 127.8,
+     "75": 130.6,
+     "90": 133.2
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.06
+   },
+   "reasoning": "Q3 FY27 guide is $108B ±2%. With 12 straight beats above the top of the range (+4.6%/+5.7% over the midpoint the last two quarters), Q3 actual is likely ~$112.5-114.5B. The last four next-quarter guides ran 11.5-14.5% above the prior actual (~$125-130.5B); 17-19% guide-over-guide steps give ~$126-128.5B. Street Q4 is ~$124.5B and NVDA has recently guided ~4% above consensus (implies ~$129B). Management's Q4 hyperscale reacceleration on Vera Rubin tilts up; memory/power/Rubin supply limits cap the step. Escape tails: export/capex shock or conservative transition guide (below 117.5); China inclusion or faster Rubin supply (above 135.5). Market check: no Polymarket/Kalshi/Manifold/bookmaker contract on the revenue guide found (harness search + prior traces); not re-checked live this run.",
+   "sources": [],
+   "reconciliation": "All three runs agree that the question resolves off the Q4 FY27 revenue outlook midpoint in the Q3 FY27 release. They share the same core figures from NVIDIA press releases: Q2 actual $96.2B, Q3 guide $108B, 12-quarter beat streak, Street Q4 ~$124.5B. Medians (127.6-128.0) and widths (9.5-11) differ only by judgment. Factual items that could not be settled: the exact release date (Nov 17 vs Nov 25; it does not affect the value), and whether any news after ~Oct 7, 2026 (export controls, China licences) moved the picture. All runs' web tools failed and this run has no web access, so that gap carries uncertainty and I keep both escape tails priced. Judgment: the Q4 reacceleration language against supply constraints. I read the two as roughly offsetting around the historical ratio midpoint applied to a ~$113.5B Q3 actual (~1.127 x 113.5 ≈ 127.9). I agree with the runs' reference class and their ~10B dispersion and carry both forward.",
+   "disagreements": [
+    {
+     "claim": "Q3 FY27 release date is Nov 17 vs Nov 25, 2026",
+     "kind": "factual",
+     "verdict": "Unsettled from dossiers; immaterial to the guided value."
+    },
+    {
+     "claim": "Whether news after Oct 7, 2026 (export controls, China licences, mid-quarter update) changes the outlook",
+     "kind": "factual",
+     "verdict": "Cannot be checked: no run had live web, and neither does this one. Handled by keeping 3% below and 6% above the range."
+    },
+    {
+     "claim": "How much the 'Q4 hyperscale reacceleration' comment lifts the guide above the historical ~12-13% step",
+     "kind": "judgment",
+     "verdict": "Modest upward tilt, offset by memory/power/Rubin supply constraints; median ~127.8."
+    },
+    {
+     "claim": "Width of the distribution (90-10 of 9.5 vs 10.5 vs 11)",
+     "kind": "judgment",
+     "verdict": "~10-11B, consistent with Q3-beat uncertainty plus guide-ratio spread."
+    },
+    {
+     "claim": "Size of upper vs lower escape tails",
+     "kind": "judgment",
+     "verdict": "Upper tail (China inclusion, faster Rubin supply) somewhat likelier than a collapse below 117.5; 6% vs 3%."
+    }
+   ],
+   "reference_class": "NVIDIA next-quarter revenue guide midpoints relative to the prior quarter's actual over the last 4 guides (Q4 FY26-Q3 FY27), ratios 1.115-1.145"
+  }
+ ]
+}
