@@ -1,0 +1,237 @@
+{
+ "record_id": "2026-10-09-a8d9dcd2",
+ "question": "How many clinicaltrials.gov studies with an LLM-based Chatbot as the intervention/treatment will be recruiting on November 1, 2026?",
+ "question_id": 46136,
+ "url": "https://www.metaculus.com/questions/45954/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "multiple_choice",
+ "forecast_at": "2026-10-09T12:04:18+00:00",
+ "effort": "medium (auto)",
+ "model": "anthropic/claude-opus-5.5",
+ "provider": "openrouter",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.5434,
+ "pools": {
+  "pooled_runs": {
+   "0 or 1": 0.09779950749163281,
+   "2": 0.29238888433760285,
+   "3": 0.3002406497184165,
+   "4": 0.17973092455474396,
+   ">4": 0.12984003389760382
+  },
+  "phase1": {
+   "0 or 1": 0.09779950749163281,
+   "2": 0.29238888433760285,
+   "3": 0.3002406497184165,
+   "4": 0.17973092455474396,
+   ">4": 0.12984003389760382
+  },
+  "phase2": null,
+  "spread_phase1": 0.03,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probabilities": {
+   "0 or 1": 0.09,
+   "2": 0.29,
+   "3": 0.33,
+   "4": 0.18,
+   ">4": 0.11
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.4084,
+   "seconds": 98.2,
+   "usage": {
+    "num_turns": 14,
+    "input": 24,
+    "cache_read": 436597,
+    "cache_write": 46602,
+    "cache_write_1h": 0,
+    "output": 6963,
+    "thinking": 2120,
+    "web_search": 0,
+    "cost_usd_envelope": 0.683756,
+    "web_fetch": 0,
+    "duration_api_ms": 96247
+   },
+   "estimate": {
+    "0 or 1": 0.09,
+    "2": 0.26,
+    "3": 0.31,
+    "4": 0.21,
+    ">4": 0.13
+   },
+   "reasoning": "Live web/API access failed this run (WebFetch/WebSearch API errors; network Bash not approved), so I could not read the current registry count; forecast built from the repo's prior research record on the Sept-1 twin question. Aug 6 snapshot: exact query = 16 studies, 2 Recruiting, 11 Not-yet-recruiting (7 past listed start; HKU holds 4). Sept 1 resolved '2 or 3'. 2026 26-day deltas were 0/0/-1/+1, flip hazard per NYR record looks ~5%/month, and NCT07223736's primary completion (2026-10-01) adds some downside risk if the sponsor updates status. Unknown Oct-9 state (centred 2-3, tail to 4+) convolved with ~3 weeks of change gives a mode at 3 with substantial mass on 2 and 4. No human market found: harness found none on Polymarket/Manifold, I could not search Kalshi/bookmakers this run, and the prior record notes Kalshi clinical contracts settle on trial endpoints, not registry counts. Evidence is stale (Aug/Sept), so the distribution is kept wide.",
+   "sources": [
+    "bot/journal/forecasts.jsonl record 2026-08-06-d760a76c (prior research on Sept-1 twin question: ClinicalTrials.gov API v2/int snapshot of 2026-08-06)",
+    "bot/journal/resolutions.jsonl (question 45092 resolved '2 or 3' for 2026-09-01)",
+    "bench/analysis/summer-2026-my-scores-2026-09-03.json (prior forecast/score metadata for question 45092)"
+   ],
+   "dossier": "NOTE: this run had no live web access; all evidence is from a prior research record in the local journal, dated Aug-Sept 2026.\n- Resolves off the ClinicalTrials.gov search page https://clinicaltrials.gov/search?viewType=Card&intr=LLM-based%20Chatbot&aggFilters=status:rec as viewed Nov 1 2026, counting studies with status Recruiting, not other statuses or other queries.\n- Event window: single snapshot on 2026-11-01. As of 2026-10-09 the forecast window began after the last known data point (Sept 1). About 23 days remain.\n- 2026-08-06 (API v2 and api/int, prior record): the exact query returned 16 studies total, 2 Recruiting, 11 Not yet recruiting, rest other statuses.\n- NCT07223736 sat Not yet recruiting for ~7 months past its listed start, then switched to Recruiting on 2026-08-04. Its listed primary completion date is 2026-10-01, so a move to Active, not recruiting or Completed is possible. Sponsors often lag on status updates.\n- At 2026-08-06, 7 of the 11 NYR records were already past their listed start date with no update. Three NYR records had been updated within the prior two weeks. Sponsor clusters: University of Hong Kong x4, Utah x2 (incl. NCT07620301 LIFT-UP), Fudan x2 (incl. NCT07200570 HPV). Another HKU NYR record: NCT07732621.\n- The three newest registrations as of Aug entered as Not yet recruiting, not Recruiting.\n- Reconstructed 26-day changes in the Recruiting count across 2026 were 0, 0, -1, +1. The count had not exceeded 2 in 2026 up to Aug 6.\n- Resolution of Sept-1 twin question (Metaculus q45092): '2 or 3' (resolved 2026-09-10). Exact 2 vs 3 is not recorded.\n- Option bucket layout for this Nov-1 question ('0 or 1','2','3','4','>4') was set by the question author, presumably near the count at question creation.\n- Status quo: the count at Nov 1 equals the (unknown) early-October count. Upside comes from NYR->Recruiting switches and new registrations filed as Recruiting. Downside comes from recruiters closing enrollment.\n- Rough hazard estimate from prior research: ~5-8%/month per overdue NYR record. Prior research modeled additions as Poisson with lambda ~0.8 per 26 days and ~0.06 expected losses. Realized Aug-Sept movement was at most +1.\n- Searched for but could not obtain this run: the current Oct 2026 count, any status changes since Sept 1, new registrations since Aug.\n- Markets: harness title search found none on Polymarket/Manifold. Kalshi clinical-trial contracts (per a July 2026 blog the prior record cites) settle on trial endpoints/FDA actions, not registry counts.",
+   "reference_class": "Snapshot counts of the Recruiting-status result set for this exact ClinicalTrials.gov 'LLM-based Chatbot' intervention query across 2026 (prior monthly snapshots and 26-day deltas), plus observed NYR->Recruiting flip latency in that result set"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 2.2017,
+   "seconds": 136.5,
+   "usage": {
+    "num_turns": 19,
+    "input": 34,
+    "cache_read": 638340,
+    "cache_write": 45265,
+    "cache_write_1h": 0,
+    "output": 7641,
+    "thinking": 2358,
+    "web_search": 0,
+    "cost_usd_envelope": 0.7932712499999998,
+    "web_fetch": 0,
+    "duration_api_ms": 133413
+   },
+   "estimate": {
+    "0 or 1": 0.1,
+    "2": 0.37,
+    "3": 0.3,
+    "4": 0.14,
+    ">4": 0.09
+   },
+   "reasoning": "All web tools failed this run (WebFetch/WebSearch returned API errors; curl and python network calls were blocked), so the registry could not be re-queried. Prior record (2026-08-06) queried the exact search directly: 16 studies total, 2 Recruiting, 11 Not-yet-recruiting, and the count had never been above 2 during 2026. The Sep 1 sibling question resolved '2 or 3', so the state on Sep 1 was 2 or 3, leaning 2. Projected 2 months ahead: additions from 11 not-yet-recruiting records plus new registrations at roughly Poisson(0.6-0.8); losses mainly NCT07223736, whose primary completion date is 2026-10-01 (~20% chance it leaves Recruiting by Nov 1; sponsors often update late). The mixture centers on 2-3 with a modest right tail, since LLM-chatbot trial registrations are growing. No human market found: Polymarket and Manifold had nothing in the harness search, and Kalshi's clinical-trial contracts settle on trial endpoints/FDA actions, not registry counts. The evidence is old (2+ months) and I could not verify it this run, so the distribution is kept wide.",
+   "sources": [
+    "bot/journal/forecasts.jsonl (record 2026-08-06-d760a76c: direct ClinicalTrials.gov API snapshot of this exact query, Aug 6 2026)",
+    "bot/journal/resolutions.jsonl (Metaculus Q45092 Sep 1 2026 sibling question resolved '2 or 3')",
+    "bot/journal/manifold.jsonl (searched for a matching human market: none)"
+   ],
+   "dossier": "- WEB ACCESS FAILED THIS RUN: no live registry query was possible; all evidence below comes from a prior direct registry pull on 2026-08-06 and a resolved sibling question.\n- 2026-08-06 (prior direct API v2 and api/int query of intr='LLM-based Chatbot'): 16 studies total; 2 Recruiting; 11 Not yet recruiting; rest other statuses.\n- NCT07223736 sat Not-yet-recruiting ~7 months past its listed start, flipped to Recruiting on 2026-08-04; primary completion listed 2026-10-01, so it could move to Active-not-recruiting/Completed in the window (sponsors often update late).\n- As of Aug 6, 7 of the 11 not-yet-recruiting records were already past their listed start date with no status update; 3 had been updated in the prior two weeks.\n- Sponsor clusters among not-yet-recruiting records: Univ. of Hong Kong x4, Univ. of Utah x2 (incl. NCT07620301 LIFT-UP), Fudan x2 (incl. NCT07200570 HPV); NCT07732621 (HKU). Batch flips are possible.\n- The three newest registrations before Aug 6 all entered as Not-yet-recruiting, not Recruiting.\n- Reconstructed 26-day changes in the Recruiting count across 2026 up to Aug: 0, 0, -1, +1; the count never exceeded 2 during Jan-Aug 2026.\n- Metaculus sibling question (count on 2026-09-01, same link): resolved '2 or 3' (resolved 2026-09-10). Exact value within that bucket unknown.\n- Status quo: the count stays at its Sep 1 value (2 or 3).\n- Resolves off the ClinicalTrials.gov search page count with the Recruiting filter for intr=LLM-based Chatbot on Nov 1, 2026; the page uses the api/int endpoint, which matched API v2 on Aug 6.\n- Event window: a single snapshot on 2026-11-01. As of 2026-10-09, ~61% of the period from the last known resolution point (Sep 1) to the snapshot has elapsed.\n- Searched for but could not get: the live Oct 2026 count, new registrations since Aug, and the current status of NCT07223736. No human market: Polymarket/Manifold none; Kalshi clinical-trial contracts settle on trial endpoints, not registry counts.",
+   "reference_class": "Snapshot counts of the Recruiting-filtered result set for this exact ClinicalTrials.gov intervention query during 2026 (Jan-Aug at most 2; Sep 1 resolved in the '2 or 3' bucket), projected forward with not-yet-recruiting to Recruiting flip hazards and completion-driven exits"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 2.8846,
+   "seconds": 163.7,
+   "usage": {
+    "num_turns": 23,
+    "input": 38,
+    "cache_read": 788991,
+    "cache_write": 17498,
+    "cache_write_1h": 0,
+    "output": 7154,
+    "thinking": 1716,
+    "web_search": 0,
+    "cost_usd_envelope": 0.682898,
+    "web_fetch": 0,
+    "duration_api_ms": 70833
+   },
+   "validation_errors_first_attempt": [
+    "research run listed 2 distinct source(s); this tier requires at least 3 — run real searches and list in \"sources\" only what you actually consulted"
+   ],
+   "estimate": {
+    "0 or 1": 0.1,
+    "2": 0.25,
+    "3": 0.28,
+    "4": 0.19,
+    ">4": 0.18
+   },
+   "reasoning": "Live web and ClinicalTrials.gov access failed this run (all fetch/search calls errored), so this rests on the repo's own records. A 2026-08-06 research record found the exact query returned 16 studies: 2 Recruiting, 11 Not-yet-recruiting (NYR), with reconstructed 26-day changes across 2026 of 0/0/-1/+1. The sister question for 2026-09-01 resolved '2 or 3', so the count stayed at 2-3 in August. Looking from Aug 6 to Nov 1 (~2.8 months), more NYR records may flip and new trials may be registered (NCT07223736 flipped after 7 months NYR). Against that, the known recruiter NCT07223736 listed primary completion 2026-10-01 and could leave Recruiting before Nov 1. Net drift is modestly upward from 2-3, with fat tails both ways because I could not see the current count. No human market found: the harness found no Polymarket/Manifold candidate, my local Manifold log has none, and Kalshi/bookmakers could not be searched (web tools down). The prior run noted that Kalshi's clinical-trial contracts settle on trial outcomes, not registry counts.",
+   "sources": [
+    "bot/journal/forecasts.jsonl record 2026-08-06-d760a76c (prior ClinicalTrials.gov API research snapshot for this exact query)",
+    "bot/journal/resolutions.jsonl (Metaculus Q45092 resolution: '2 or 3' recruiting on 2026-09-01)",
+    "bot/journal/manifold.jsonl (local Manifold market log: no market on this question)"
+   ],
+   "dossier": "- Resolves off the ClinicalTrials.gov search page count (intr=LLM-based Chatbot, aggFilters=status:rec) on 2026-11-01. It does not resolve off the API, total study counts, or NYR counts.\n- Event window: one snapshot on 2026-11-01 per the criteria. As of 2026-10-09 the count is unobserved this run (live access failed).\n- 2026-08-06 (repo research record, ClinicalTrials.gov API v2 + api/int): the query returned 16 studies, 2 Recruiting and 11 Not-yet-recruiting.\n- 2026-09-01 resolution of the sister Metaculus question (Q45092): '2 or 3' Recruiting (repo resolutions.jsonl). The bucket did not separate 2 from 3.\n- Reconstructed 26-day deltas across 2026 (Aug record): 0, 0, -1, +1. The count had not exceeded 2 in 2026 through Aug 6.\n- NCT07223736 sat NYR for ~7 months past its listed start, then flipped to Recruiting on 2026-08-04. Its listed primary completion is 2026-10-01, so it could move to Active-not-recruiting/Completed before Nov 1, but registry updates often lag.\n- As of Aug 6, 7 of 11 NYR records were past their listed start dates with no update. Sponsors with multiple NYR records: Univ. of Hong Kong x4, Univ. of Utah x2, Fudan x2, so batch flips are possible.\n- The three newest records as of Aug all entered as NYR, not as Recruiting.\n- Status quo: the count stays near its Aug-Sep level (2-3).\n- Upside drivers: NYR flips, new registrations filed directly as Recruiting, and LLM-trial registrations growing generally. Downside drivers: the recruiter's Oct 1 primary completion, and sponsors marking trials closed or withdrawn.\n- Searched but could not obtain this run: the live current count, the post-Aug status of the NYR records, any Oct 2026 snapshot, and Kalshi/bookmaker listings. No Polymarket/Manifold market was found (harness and local Manifold log).",
+   "reference_class": "Snapshot counts of the Recruiting-status result set for this exact ClinicalTrials.gov intervention query across 2026 (2 on 2026-08-06; '2 or 3' on 2026-09-01), with NYR->Recruiting flip hazard ~5-8%/month per record over ~11 NYR records"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.03,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.4778,
+   "seconds": 53.1,
+   "usage": {
+    "num_turns": 7,
+    "input": 12,
+    "cache_read": 199266,
+    "cache_write": 42006,
+    "cache_write_1h": 0,
+    "output": 4624,
+    "thinking": 1470,
+    "web_search": 0,
+    "cost_usd_envelope": 0.47783049999999994,
+    "web_fetch": 0,
+    "duration_api_ms": 52607
+   },
+   "estimate": {
+    "0 or 1": 0.09,
+    "2": 0.29,
+    "3": 0.33,
+    "4": 0.18,
+    ">4": 0.11
+   },
+   "reasoning": "No live access; the registry count is 2 Recruiting as of 2026-08-06 (16 total, 11 NYR) and the Sep-1 twin resolved '2 or 3' (confirmed in local resolutions.jsonl, line 641). Start state Sep 1 ~65% 2 / 35% 3 (count never exceeded 2 Jan-Aug). Two-month change: additions ~Poisson(0.8) from 11 NYR records (7 overdue, sponsor clusters HKU/Utah/Fudan) and new registrations; losses ~0.3 expected, mainly NCT07223736 (primary completion 2026-10-01, sponsors lag). Convolution gives mode at 3 with close 2; modest extra right tail for unobserved Oct state and bucket layout hint. No human market found (Polymarket/Manifold none per harness; Kalshi clinical contracts settle on trial outcomes, not registry counts).",
+   "sources": [],
+   "reconciliation": "All three runs rest on the same Aug-6 registry pull and the Sep-1 '2 or 3' resolution; I verified locally that Q45092 resolved '2 or 3' on 2026-09-10 and found no newer (October) data in the repo. Factual disputes: exact Sep-1 value (2 vs 3) is unresolvable—weighted 65/35 toward 2 given the count never exceeded 2 through Aug; NCT07223736's post-Oct-1 status is unverifiable—assigned ~20% exit by Nov 1. The remaining disagreement (pace of NYR flips/new registrations) is judgment: realized 2026 deltas were small, but the NYR pool is large and growing, so I used Poisson(0.8) additions over two months. A convolution put mode at 3 (~0.34) with 2 close (~0.32); I shifted a little mass to '>4' for the unobserved October state and the author's 2/3/4 bucket layout, which suggests a count near 3 at question creation. Not averaged from the runs; it happens to sit between Run 2 and Runs 1/3.",
+   "disagreements": [
+    {
+     "claim": "Sep-1 Recruiting count was 2 vs 3",
+     "kind": "factual",
+     "verdict": "Unresolvable offline; resolution bucket '2 or 3' confirmed; weighted ~65/35 toward 2 based on 2026 history never exceeding 2."
+    },
+    {
+     "claim": "NCT07223736 leaves Recruiting after its 2026-10-01 primary completion",
+     "kind": "factual",
+     "verdict": "Unverifiable without registry access; ~20% chance of exit by Nov 1 given typical sponsor update lag."
+    },
+    {
+     "claim": "Size of upward drift from NYR flips and new registrations (Run 2 slow vs Runs 1/3 faster)",
+     "kind": "judgment",
+     "verdict": "Realized 2026 deltas small but NYR pool of 11 (7 overdue) and growing registrations; took middle-pace Poisson(0.8)/2 months, mode at 3."
+    },
+    {
+     "claim": "Width of right tail ('>4' 0.09 vs 0.18)",
+     "kind": "judgment",
+     "verdict": "Took ~0.11: a jump of 2+ needs batch flips or multiple new Recruiting registrations, which history hasn't shown, but the October state is unobserved."
+    }
+   ],
+   "reference_class": "Month-to-month changes in ClinicalTrials.gov Recruiting count for this exact intr='LLM-based Chatbot' query during 2026 (26-day deltas 0,0,-1,+1), plus NYR->Recruiting flip hazard for small pools of overdue NYR registrations"
+  }
+ ]
+}
