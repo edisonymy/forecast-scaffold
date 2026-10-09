@@ -1,0 +1,259 @@
+{
+ "record_id": "2026-10-09-b18df0ae",
+ "question": "What will the first reported revenues after September 2026 be for the following companies? (Tesla)",
+ "question_id": 46197,
+ "url": "https://www.metaculus.com/questions/46006/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-10-09T20:13:38+00:00",
+ "effort": "medium (auto)",
+ "model": "anthropic/claude-opus-5.5",
+ "provider": "openrouter",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 3.1239,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 27483333333.333332,
+    "25": 27966666666.666668,
+    "50": 28406666666.666668,
+    "75": 28843333333.333332,
+    "90": 29333333333.333332
+   },
+   "p_below_lower": 0.01,
+   "p_above_upper": 0.01
+  },
+  "phase1": {
+   "10": 27483333333.333332,
+   "25": 27966666666.666668,
+   "50": 28406666666.666668,
+   "75": 28843333333.333332,
+   "90": 29333333333.333332
+  },
+  "phase2": null,
+  "spread_phase1": 100000000.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 27400000000.0,
+   "25": 27820000000.0,
+   "50": 28250000000.0,
+   "75": 28680000000.0,
+   "90": 29100000000.0
+  },
+  "p_below_lower": 0.01,
+  "p_above_upper": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 2.6014,
+   "seconds": 123.8,
+   "usage": {
+    "num_turns": 24,
+    "input": 30,
+    "cache_read": 604867,
+    "cache_write": 30666,
+    "cache_write_1h": 0,
+    "output": 7321,
+    "thinking": 1164,
+    "web_search": 0,
+    "cost_usd_envelope": 0.6772710000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 67799
+   },
+   "validation_errors_first_attempt": [
+    "research run listed 0 distinct source(s); this tier requires at least 3 — run real searches and list in \"sources\" only what you actually consulted"
+   ],
+   "estimate": {
+    "percentiles": {
+     "10": 27500000000.0,
+     "25": 27950000000.0,
+     "50": 28350000000.0,
+     "75": 28750000000.0,
+     "90": 29250000000.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Anchor: Q2 2026 revenue $28.24B on 480,126 deliveries; Q3 2025 $28.1B on 497k. Q3 2026 deliveries were 486,532 (+1.3% QoQ), but the higher-priced other-models line fell to 8.3k from 12.4k, and a ~22k inventory drawdown suggests discounting. Storage was 13.7 vs 13.5 GWh, so energy is ~flat at ~$3.1-3.3B. Services & other at $4.58B in Q2 is the main swing factor. Net: car volume adds ~+$0.27B, mix ~-$0.2B, credits slightly down, so median ~$28.35B. Consensus is cited at $27.1-28.3B and probably predates the delivery beat. Web tools failed this run (API errors), so the evidence comes from this repo's 2026-10-07 research traces. I could not check markets live; those traces record no Polymarket/Kalshi/Manifold revenue market (only Kalshi deliveries). Escapes past $26B/$31B need an accounting one-off or restatement: ~1% each.",
+   "sources": [
+    "local repo dataset: bot/journal/traces/2026-10-07-6622a891.json (prior research dossiers on Tesla Q3 2026 revenue)",
+    "local repo dataset: bot/journal/traces/2026-10-07-a8b14bc4.json (prior research dossiers on Tesla Q3 2026 EPS incl. revenue consensus and earnings date)",
+    "local repo dataset: bot/journal/forecasts.jsonl (prior Tesla Q3 2026 revenue record 2026-10-07-6622a891 with supervisor reconciliation)"
+   ],
+   "dossier": "- Note: in this run the web tools were down. These facts come from 2026-10-07 research traces in the repo that cite Electrek, SEC 8-K exhibit 99.1, Tesla Oracle, Tradingpedia and Visible Alpha/Yahoo snippets.\n- Q2 2026 8-K (Jul 22 2026): total revenue $28,236M. Auto sales $20,006M, regulatory credits $146M, leasing $364M, so total auto $20,516M. Energy $3,139M; services & other $4,581M (+50% YoY).\n- Prior quarters' total revenue: Q3'25 $28,095M, Q4'25 $24,901M, Q1'26 $22,387M, Q2'26 $28,236M. Services: $3,475M / $3,371M / $3,745M / $4,581M. Energy: $3,415M / $3,837M / $2,408M / $3,139M. Credits: $417M / $542M / $380M / $146M.\n- Q2 2026 deliveries 480,126 (Model 3/Y 467,762; other 12,364); storage 13.5 GWh.\n- Q3 2026 P&D (Electrek, 2026-10-02): deliveries 486,532 (+1.3% QoQ, -2.1% YoY vs 497,099); Model 3/Y 478,237; other 8,295 (-48% YoY); production 464,391, so inventory fell by ~22k. Delivery consensus was ~461,974.\n- Q3 2026 storage deployed 13.7 GWh vs 15.9 GWh expected; Q3'25 was 12.5 GWh.\n- Implied auto sales per delivered vehicle: Q2'26 ~$41.7k, Q3'25 ~$41.0k.\n- Q2 2026: operating margin 1.4%, gross margin 16.8%. Federal EV credit expired 2025-09-30 and CAFE penalties were zeroed, so credits are shrinking. Model S/X Fremont lines were decommissioned.\n- Revenue consensus snippets (Oct 2026): Visible Alpha $27.73B, Yahoo avg $27.91B (27 analysts), ChartMill/Tradingpedia ~$28.27B, another ~$27.1B. Some may predate the delivery release.\n- Earnings release: Wed 2026-10-21 after close (Tesla Oracle, 2026-10-04). One preview said Oct 20 and another Oct 28.\n- Status-quo outcome: revenue near the Q2 level, adjusted for the delivery count and mix change and flat energy.\n- Both directions: upside from higher delivery volume, continued services growth and energy; downside from fewer high-priced S/X/Cybertruck units, inventory-clearing discounts, lower credits and the storage miss.\n- Resolves off Tesla's reported Q3 2026 total revenues (8-K / shareholder deck), not deliveries or automotive segment revenue.\n- Event window: quarter Jul 1 -> Sep 30 2026, already closed. Resolution is the first revenue report after September 2026, expected 2026-10-21; as of 2026-10-09 100% of the quarter has elapsed and only the report is pending.\n- Searched but not found (earlier runs plus this one): Q3 ASP/pricing data, a post-delivery-beat revised revenue consensus, an explanation of the Q2 services jump, and any Polymarket/Kalshi/Manifold revenue market (Kalshi lists only deliveries).",
+   "reference_class": "Tesla quarterly total revenue modeled from same-quarter P&D deliveries/storage deployments scaled off prior-quarter per-unit revenue (2023-2026)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.619,
+   "seconds": 45.2,
+   "usage": {
+    "num_turns": 12,
+    "input": 22,
+    "cache_read": 387704,
+    "cache_write": 49243,
+    "cache_write_1h": 0,
+    "output": 4690,
+    "thinking": 872,
+    "web_search": 0,
+    "cost_usd_envelope": 0.61898075,
+    "web_fetch": 0,
+    "duration_api_ms": 43963
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 27500000000.0,
+     "25": 28000000000.0,
+     "50": 28450000000.0,
+     "75": 28900000000.0,
+     "90": 29400000000.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Q3 2026 closed with 486,532 deliveries (+1.3% QoQ, beating the delivery consensus by about 25k) and 13.7 GWh of storage. Q2 2026 revenue was $28.24B (cars $20.0B, credits and leasing $0.5B, energy $3.14B, services $4.58B). Scaling Q2 per-unit revenue to Q3 volumes and mix gives about $28.3-28.7B; I shade the median to $28.45B for the falling S/X/Cybertruck mix, discounting to clear about 22k units of inventory, and possible partial reversal of Q2's services jump. Published revenue consensus of $27.7-28.3B probably predates the delivery beat. Web tools failed this run, so I relied on research from earlier runs logged in the local journal on 2026-10-07. Those runs found no Polymarket, Kalshi or Manifold revenue market (Kalshi lists delivery contracts only), and I could not re-verify that.",
+   "sources": [
+    "local journal trace bot/journal/traces/2026-10-07-6622a891.json (prior research runs on this question: Electrek Q3 deliveries 2026-10-02, Tesla Q2 2026 8-K)",
+    "local journal trace bot/journal/traces/2026-10-07-a8b14bc4.json (Tesla Q3 2026 EPS question research: earnings date, consensus)",
+    "local journal bot/journal/forecasts.jsonl (Tesla Q3 2026 records)"
+   ],
+   "dossier": "- NOTE: web tools failed this run; every item below comes from research logged by earlier runs in the local journal (2026-10-07), with the original sources named.\n- Tesla Q2 2026 8-K (2026-07-22): total revenue $28,236M; car sales $20,006M, regulatory credits $146M, leasing $364M, total automotive $20,516M; energy $3,139M; services & other $4,581M. Q2 revenue consensus had been about $26.4B (Electrek/EVWire).\n- Prior quarters' total revenue: Q3'25 $28,095M, Q4'25 $24,901M, Q1'26 $22,387M. Services: Q3'25 $3,475M, Q4'25 $3,371M, Q1'26 $3,745M, Q2'26 $4,581M (cause of the Q2 jump not found). Energy: Q3'25 $3,415M, Q4'25 $3,837M, Q1'26 $2,408M. Credits: Q3'25 $417M, Q4'25 $542M, Q1'26 $380M.\n- Q2 2026 deliveries 480,126 (Model 3/Y 467,762; other models 12,364); storage 13.5 GWh.\n- Q3 2026 deliveries/production report (Electrek/Tesla IR, 2026-10-02): deliveries 486,532 (Model 3/Y 478,237; other models 8,295, -48% YoY); production 464,391, so about 22k units came out of inventory. Company-compiled delivery consensus was 461,974.\n- Q3 2026 storage deployed 13.7 GWh vs analyst expectation of 15.9 GWh; Q3'25 was 12.5 GWh.\n- Regulatory credits are collapsing (US federal EV credit expired 2025-09-30; CAFE penalties zeroed). Model S/X Fremont lines are being decommissioned for Optimus.\n- Q2 2026 gross margin 16.8%, operating margin 1.4%; Q2 non-GAAP EPS $0.33 vs about $0.54 consensus.\n- Revenue consensus snippets (Oct 2026, timing vs the delivery release unclear): Visible Alpha $27.73B; Yahoo average $27.91B; ChartMill/Tradingpedia $28.27B; one source $27.1B.\n- Implied car sales per delivered vehicle: Q2'26 about $41.7k; Q3'25 about $41.0k.\n- Earnings release: Wed 2026-10-21 after market close per Tesla IR (some aggregators list Oct 20 or Oct 28).\n- Resolves off Tesla's reported total revenues for Q3 2026 (8-K/shareholder deck), not automotive segment revenue or delivery figures.\n- Event window: the first revenue report after Sept 2026, i.e. Q3 2026 (Jul 1 -> Sep 30, 2026); the quarter is 100% elapsed as of 2026-10-09 and only the report is pending.\n- Pointing lower: weaker mix, discounting to clear inventory, low credits, storage miss, possible reversal of the Q2 services jump. Pointing higher: the delivery beat, services growth (+50% YoY in Q2), lumpy energy revenue recognition.\n- Searched but not found: Q3 ASP data, a revenue consensus updated after the delivery beat, any revenue market on Polymarket/Kalshi/Manifold.",
+   "reference_class": "Tesla quarterly total revenue modeled from known same-quarter deliveries and storage deployments scaled off prior-quarter per-unit segment revenue (2023-2026)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.9241,
+   "seconds": 67.7,
+   "usage": {
+    "num_turns": 18,
+    "input": 28,
+    "cache_read": 534686,
+    "cache_write": 51683,
+    "cache_write_1h": 0,
+    "output": 6917,
+    "thinking": 1877,
+    "web_search": 0,
+    "cost_usd_envelope": 0.76342675,
+    "web_fetch": 0,
+    "duration_api_ms": 66314
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 27450000000.0,
+     "25": 27950000000.0,
+     "50": 28420000000.0,
+     "75": 28880000000.0,
+     "90": 29350000000.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Live web tools failed this run (API error on every WebSearch/WebFetch), so evidence comes from the repo's Oct 7 2026 research traces. Q2 2026 revenue was $28.24B on 480k deliveries. Q3 deliveries were 486.5k (more Model 3/Y, -4.1k higher-priced other models) and storage 13.7 GWh vs 13.5. A segment build gives auto ~$20.6B, energy ~$3.2B and services ~$4.6B, about $28.4B total. Inventory-clearing discounts and possible reversion of the Q2 services jump are the downside; services growth is the upside. Published consensus of $27.7-28.3B is likely pre-delivery-beat. The Oct 7 traces report no human market on revenue (Kalshi lists only a deliveries contract; none on Polymarket or Manifold), and the harness search also found none on Polymarket/Manifold; I could not re-check this run.",
+   "sources": [
+    "bot/journal/traces/2026-10-07-6622a891.json (prior Oct 7 2026 research runs on this question: Q2 2026 8-K segment data, Q3 2026 P&D release figures, consensus snippets)",
+    "bot/journal/traces/2026-10-07-a8b14bc4.json (Oct 7 2026 Tesla Q3 EPS research: Q2 2026 margins, credits, revenue consensus range)",
+    "bot/journal/forecasts.jsonl (Metaculus question metadata for Tesla Q3 revenue/EPS)"
+   ],
+   "dossier": "- NOTE: live web retrieval failed this run; the facts below are relayed from this repo's own research traces dated 2026-10-07 (the underlying sources they cite are named but were not re-opened).\n- Tesla Q2 2026 8-K (2026-07-22, per trace): total revenue $28,236M; auto sales $20,006M, regulatory credits $146M, leasing $364M (total auto $20,516M); energy $3,139M; services & other $4,581M.\n- Prior quarters' total revenue (per trace): Q3'25 $28,095M (497,099 deliveries), Q4'25 $24,901M, Q1'26 $22,387M. Services: Q3'25 $3,475M, Q4'25 $3,371M, Q1'26 $3,745M, Q2'26 $4,581M (the jump is unexplained). Energy: Q3'25 $3,415M, Q4'25 $3,837M, Q1'26 $2,408M.\n- Q2 2026 deliveries 480,126 (Model 3/Y 467,762; other 12,364); storage 13.5 GWh.\n- Q3 2026 P&D (Electrek/Tesla IR, 2026-10-02, per trace): deliveries 486,532 (Model 3/Y 478,237; other 8,295, -48% YoY); production 464,391 (inventory drawdown ~22k); storage 13.7 GWh vs 15.9 GWh expected.\n- Delivery consensus was ~461,974; the actual beat it by ~24.6k.\n- Q2 2026: gross margin 16.8%, operating margin 1.4%; credits collapsing after the federal EV credit expired 2025-09-30 and CAFE penalties were zeroed.\n- Revenue consensus snippets (Oct 2026): Visible Alpha $27.73B, Yahoo $27.91B (27 analysts), ChartMill/Tradingpedia $28.27B, others ~$27.1B; it is unclear whether these predate the delivery release.\n- Implied Q2 auto sales per delivery: ~$41.7k; Q3'25 ~$41.0k.\n- Downside drivers: mix away from S/X/Cybertruck, inventory-clearing incentives, energy lumpiness, reversion of the Q2 services jump. Upside drivers: higher volume, services growth trend, energy price/mix.\n- Status quo: revenue near the Q2 level, scaled by volume and mix.\n- Resolves off Tesla's reported Q3 2026 total revenues (8-K/shareholder deck), not automotive or segment revenue and not deliveries.\n- Event window: the quarter Jul 1 -> Sep 30 2026 is complete; the figure is published at Q3 earnings (expected ~2026-10-21 after close; one preview said Oct 28). As of 2026-10-09 the quarter is 100% elapsed and only the report is pending.\n- Searched, absent: a post-delivery revenue consensus revision, Q3 ASP/pricing data, segment consensus, and any Polymarket/Kalshi/Manifold revenue market (Kalshi has only a deliveries contract).",
+   "reference_class": "Tesla quarterly total revenue modeled from known same-quarter P&D deliveries/storage deployments scaled off prior-quarter per-unit segment revenue (2023-2026)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1141,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.3395,
+   "seconds": 36.5,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 0,
+    "cache_write": 39715,
+    "cache_write_1h": 0,
+    "output": 3649,
+    "thinking": 1558,
+    "web_search": 0,
+    "cost_usd_envelope": 0.33945375,
+    "web_fetch": 0,
+    "duration_api_ms": 36048
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 27400000000.0,
+     "25": 27820000000.0,
+     "50": 28250000000.0,
+     "75": 28680000000.0,
+     "90": 29100000000.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Deliveries for the closed quarter are known: 486,532 (Model 3/Y 478k, other models 8.3k), with production 22k below deliveries. Splitting Q2 car sales into Model 3/Y (about $40.6k each) and the higher-priced other models (about $80k each) and carrying that to Q3 volumes gives about $20.1B, less about $0.25B of inventory-clearing incentives, so about $19.85B. A year-over-year check at Q3'25's ~$41.0k per delivery gives about $19.95B. Adding credits (~$0.15B), leasing (~$0.35B), energy (~$3.2B at flat storage of 13.7 GWh) and services (~$4.5B, allowing partial reversion of the Q2 jump) gives about $28.1-28.2B. Median $28.25B, slightly below the runs, which added little for discounting or services reversion. Published consensus of $27.7-28.3B may predate the delivery beat. No human market on revenue: the harness found none on Polymarket or Manifold, and earlier traces show Kalshi lists only deliveries. I could not re-check this run.",
+   "sources": [],
+   "reconciliation": "All three runs share identical facts: Q2'26 segment revenue, Q3'26 deliveries and mix, storage, and the consensus snippets. The only factual spread is the earnings date (Oct 20, 21 or 28). It does not affect the value, since the question resolves on the reported figure whenever it is published. The remaining disputes are judgment: how much the inventory drawdown implies discounting, whether the Q2 services jump persists, and energy recognition. My segment and year-over-year builds both land near $28.1-28.2B, so the median is $28.25B, slightly below the runs' $28.35-28.45B. I accept the runs' dispersion of about $1.7-1.85B and the ~1% escape tails on each side (an accounting one-off or restatement would be needed). I had no web access, so nothing was independently verified.",
+   "disagreements": [
+    {
+     "claim": "Earnings release date: Oct 20, Oct 21 or Oct 28, 2026",
+     "kind": "factual",
+     "verdict": "Unsettled without web access; it does not affect the resolved value, which is the Q3 total revenue reported whenever it is published"
+    },
+    {
+     "claim": "Size of inventory-clearing discounts on car revenue per vehicle",
+     "kind": "judgment",
+     "verdict": "I assume about a 1-1.5% haircut (about $0.25B), slightly more than the runs implied"
+    },
+    {
+     "claim": "Whether Q2's $4.58B services & other level persists",
+     "kind": "judgment",
+     "verdict": "I take ~$4.5B, allowing partial reversion; the cause of the jump could not be established"
+    },
+    {
+     "claim": "Whether published revenue consensus ($27.7-28.3B) predates the delivery beat",
+     "kind": "factual",
+     "verdict": "Could not be settled; my median is set by the bottom-up build rather than leaning on consensus"
+    }
+   ],
+   "reference_class": "Bottom-up revenue build for a Tesla quarter with deliveries already reported, anchored on recent quarters' revenue per delivery (Q2'26, Q3'25) plus segment run-rates"
+  }
+ ]
+}

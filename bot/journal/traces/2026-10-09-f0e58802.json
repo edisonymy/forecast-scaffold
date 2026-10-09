@@ -1,0 +1,246 @@
+{
+ "record_id": "2026-10-09-f0e58802",
+ "question": "What will the first reported earnings per share after September 2026 be for the following companies? (Meta)",
+ "question_id": 46181,
+ "url": "https://www.metaculus.com/questions/45995/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-09T20:26:35+00:00",
+ "effort": "medium (auto)",
+ "model": "anthropic/claude-opus-5.5",
+ "provider": "openrouter",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P)",
+ "cost_usd": 4.0108,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 5.9,
+    "25": 6.325,
+    "50": 6.800000000000001,
+    "75": 7.075,
+    "90": 7.255
+   },
+   "p_below_lower": 0.5,
+   "p_above_upper": 0.09
+  },
+  "phase1": {
+   "10": 5.9,
+   "25": 6.325,
+   "50": 6.800000000000001,
+   "75": 7.075,
+   "90": 7.255
+  },
+  "phase2": null,
+  "spread_phase1": 0.3,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 6.55,
+   "25": 6.82,
+   "50": 7.0,
+   "75": 7.15,
+   "90": 7.27
+  },
+  "p_below_lower": 0.5,
+  "p_above_upper": 0.1
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": false,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 3.6317,
+   "seconds": 328.4,
+   "usage": {
+    "num_turns": 11,
+    "input": 14,
+    "cache_read": 258742,
+    "cache_write": 2458,
+    "cache_write_1h": 0,
+    "output": 4339,
+    "thinking": 1337,
+    "web_search": 0,
+    "cost_usd_envelope": 0.25327849999999996,
+    "web_fetch": 0,
+    "duration_api_ms": 42513
+   },
+   "validation_errors_first_attempt": [
+    "p_below_lower + p_above_upper = 0.620 exceeds 0.6 — that much escape mass means the range is wrong, not the tails"
+   ],
+   "errors": [
+    "research run listed 0 distinct source(s); this tier requires at least 3 — run real searches and list in \"sources\" only what you actually consulted"
+   ]
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.8333,
+   "seconds": 100.5,
+   "usage": {
+    "num_turns": 23,
+    "input": 42,
+    "cache_read": 905965,
+    "cache_write": 25581,
+    "cache_write_1h": 0,
+    "output": 8811,
+    "thinking": 2974,
+    "web_search": 0,
+    "cost_usd_envelope": 0.83334875,
+    "web_fetch": 0,
+    "duration_api_ms": 98225
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 5.5,
+     "25": 5.95,
+     "50": 6.65,
+     "75": 7.0,
+     "90": 7.22
+    },
+    "p_below_lower": 0.5,
+    "p_above_upper": 0.1
+   },
+   "reasoning": "This run's web tools failed (API errors), so the evidence comes from earlier bot research in the local journal, which I could not re-verify. Meta reportedly guided a ~$10B Q3 2026 legal accrual for the youth-harm settlement (~$3.3-3.9/sh). Ex-charge consensus is ~$6.75, so GAAP diluted EPS should be ~$3-4, below the 5.345 floor. The criteria are blank, but the same Metaculus series resolved Nvidia's June-2026 question at GAAP 2.46 (non-GAAP 2.22), so I weight GAAP resolution ~85-90%. The true below-range probability is ~0.8+, but the format caps it at 0.5. The interior mass is a mixture: a smaller-accrual GAAP outcome near the floor, and an ex-charge outcome (~6.9-7.4) with some mass above 7.345. Market check: no Polymarket/Manifold market (harness search); a Kalshi page showing a '$6.39 consensus' is unverified and not used as an anchor. I could not run a fresh market search this run.",
+   "sources": [
+    "local journal bot/journal/forecasts.jsonl record 2026-10-07-dc832fe1 (prior research on this question, q46181)",
+    "local journal bot/journal/traces/2026-10-07-dc832fe1.json (prior run dossier: Meta Q2'26 release, CNBC Aug 26 2026 settlement, Yahoo consensus)",
+    "local journal bot/journal/resolutions.jsonl (q45366 Nvidia June-2026 EPS resolved 2.46)",
+    "local journal bot/journal/forecasts.jsonl (later Nvidia record: Q2 FY27 GAAP 2.46 vs non-GAAP 2.22)"
+   ],
+   "dossier": "- NOTE: this run's live web tools failed; these items are relayed from an earlier bot research run (Oct 7 2026) in the local journal and were not re-verified.\n- Meta Q3 2026 earnings date: Oct 28 2026 after US close (admiralmarkets, Oct 2026; relayed).\n- Q2 2026 (reported Jul 2026): GAAP diluted EPS $6.18 vs consensus ~$7.17; it included a $2.4B legal-contingency charge and $1.18B severance; diluted shares ~2,566M (Meta IR Q2 release; relayed).\n- Q3 2026 guidance: revenue $61-64B; FY26 total expenses $165-169B; tax rate 15-17% (Meta IR Q2 release; relayed).\n- Aug 26 2026: Meta settled the multistate youth/social-media case for up to ~$18B over 10 years and said it expects to accrue ~$10B of legal expense in Q3 2026 (CNBC Aug 26 2026; relayed). Per-share impact: ~$3.90 if non-deductible ($10B/2.566B sh), ~$3.3 at a 16% tax rate.\n- Q3 consensus EPS: ex-charge ~$6.74-6.77 (TipRanks/admiralmarkets); Yahoo average $6.25 from 44 analysts (low $2.88, high $7.64), mixing charge-inclusive and ex-charge estimates (relayed, ~Oct 7 2026).\n- Meta GAAP EPS history: Q3'25 1.05 (tax charge; Meta stated ex-charge 7.25), Q4'25 8.88, Q1'26 10.44 (tax benefit; adjusted ~7.31), Q2'26 6.18. Ex-item beats vs consensus were ~8-9% in Q3'25-Q1'26 and ~2.5% in Q2'26.\n- Series precedent: this Metaculus series ('first reported EPS after June 2026') resolved Nvidia at 2.46, which was GAAP diluted (non-GAAP was 2.22) (local resolutions.jsonl, resolved Aug 27 2026).\n- Resolution instrument: criteria text is blank. If it resolves off GAAP diluted EPS (press-release headline / Yahoo actual), the charge is included; if off Meta's 'excluding the charge' figure, it is not. Question bounds 5.345-7.345 (open both sides).\n- Event window: first EPS reported after Sep 2026 -> Meta's Q3 2026 report (scheduled Oct 28 2026). As of Oct 9 2026 it has not been released; scheduled resolution is Oct 28.\n- Status quo: Meta reports GAAP-only EPS in its headline and sometimes adds an ex-one-off sentence.\n- Searched, not found: verbatim resolution criteria; whether the $10B is tax-deductible; any traded Kalshi/Polymarket/Manifold EPS contract price.",
+   "reference_class": "Resolved questions in this Metaculus 'first reported EPS' series (resolved on GAAP diluted EPS: Nvidia June-2026 = 2.46 GAAP vs 2.22 non-GAAP), combined with Meta's quarterly GAAP EPS in quarters with large one-off charges (Q3'25 GAAP 1.05 vs ex-charge 7.25; Q2'26 GAAP 6.18 with $2.4B legal charge)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 3.3784,
+   "seconds": 178.1,
+   "usage": {
+    "num_turns": 21,
+    "input": 36,
+    "cache_read": 766090,
+    "cache_write": 24084,
+    "cache_write_1h": 0,
+    "output": 7503,
+    "thinking": 1377,
+    "web_search": 0,
+    "cost_usd_envelope": 0.721325,
+    "web_fetch": 0,
+    "duration_api_ms": 68794
+   },
+   "validation_errors_first_attempt": [
+    "p_below_lower + p_above_upper = 0.620 exceeds 0.6 — that much escape mass means the range is wrong, not the tails"
+   ],
+   "estimate": {
+    "percentiles": {
+     "10": 6.3,
+     "25": 6.7,
+     "50": 6.95,
+     "75": 7.15,
+     "90": 7.29
+    },
+    "p_below_lower": 0.5,
+    "p_above_upper": 0.08
+   },
+   "reasoning": "Meta said in Aug 2026 it would accrue about a $10B legal expense in Q3 2026 (29-state youth settlement). Meta reports only GAAP diluted EPS, and Q2'26 GAAP was $6.18 after $3.6B of charges. With about 2.57B shares and a 15-17% tax rate, GAAP Q3 EPS is about $3-4.5, below the 5.345 floor. I believe GAAP resolution is about 65% likely; 0.50 is the most one field allows, and total escape mass must stay at or below 0.6. If the resolution source uses an ex-charge figure (as some vendors did for Q3'25: $7.25 vs GAAP $1.05), consensus is about $6.74-6.77 and Meta usually beats by 3-9%, so the result is about $6.9-7.4. That gives an interior median near 6.95 and an 8% upper escape. Market check: the harness found no Polymarket or Manifold market. A prior run saw a Kalshi Meta page showing '$6.39 consensus EPS', not a confirmed traded price, so I did not anchor on it. I could not check bookmakers. Caveat: live web tools failed this run, so the evidence comes from local traces dated Oct 7-9, 2026.",
+   "sources": [
+    "local dataset: bot/journal/traces/2026-10-07-dc832fe1.json (prior Meta Q3 2026 EPS research dossiers citing the Meta IR Q2 2026 release, CNBC Aug 26 2026 settlement report, Admiral Markets Oct 2026, Yahoo Finance analysis, Kalshi Meta page)",
+    "local dataset: bot/journal/traces/2026-10-09-a6d824cb.json (Meta Q3 2026 revenue research trace: guidance $61-64B, consensus ~$63.2B, earnings date Oct 28)",
+    "local dataset: bot/journal/resolutions.jsonl (Metaculus 'first reported EPS' series: Nvidia q45366 resolved 2.46; Meta q46181 open, closing Oct 28)"
+   ],
+   "dossier": "- NOTE: live web tools failed this run; the bullets come from saved research dossiers dated 2026-10-07 to 2026-10-09.\n- Meta Q2 2026 (reported 2026-07-29, Meta IR / prnewswire): revenue $60.8B (+28%), GAAP diluted EPS $6.18 incl. $2.4B legal-contingency charge and $1.18B severance; diluted shares ~2,566M; tax rate 16%. Consensus was ~$7.17; ex-items about $7.35.\n- Q3 2026 guidance (July 2026): revenue $61-64B; FY26 expenses $165-169B; tax rate 15-17%.\n- Aug 26 2026 (CNBC/Variety): Meta settled the 29-state AG youth-harm case for up to ~$16.7-18B over ~10 years and said it expects to accrue ~$10B legal expense in Q3 2026; other guidance unchanged. Tax deductibility not stated. Per-share impact ~$3.3 (16% tax) to ~$3.9 (non-deductible).\n- Consensus (Oct 2026): ex-charge EPS ~$6.74-6.77 (TipRanks, Admiral Markets); Yahoo average ~$6.25-6.34 across 44 analysts, range ~$2.88-3.13 to $7.64, mixing GAAP-with-charge and ex-charge estimates. A Kalshi company page shows a 'consensus EPS' of $6.39 (not a traded price).\n- Beat history: Meta beat ex-item consensus by ~8-9% in Q3'25, Q4'25 and Q1'26, and by ~2-3% ex-items in Q2'26.\n- Yahoo 'actual EPS' history is GAAP: Q3'25 1.05 (tax charge; ~7.25 ex-charge), Q4'25 8.88, Q1'26 10.44 (tax benefit; Zacks adjusted 7.31), Q2'26 6.18.\n- New Mexico privacy-penalty ruling expected in Oct 2026 (state seeks $35-40B; Meta proposes a $3.45B cap); could add accruals if booked in Q3.\n- Resolution instrument: criteria text blank. Resolves off company-reported diluted EPS (GAAP, ~$3-4.5 incl. charge) or a vendor's adjusted/ex-charge EPS (~$6.7-7.5); this difference dominates. Question range 5.345-7.345 is centred near the blended Yahoo average.\n- Status quo: Meta reports GAAP only; the headline press-release EPS will include the accrued charge.\n- Event window: first EPS reported after Sept 2026 -> Meta Q3 2026 report expected Oct 28, 2026 after close; as of 2026-10-09 the quarter is complete and the report is pending (0% of the report event elapsed).\n- Searched, not found: verbatim resolution criteria; tax treatment of the $10B charge; any traded Polymarket/Kalshi/Manifold EPS contract price; bookmaker lines.",
+   "reference_class": "Meta quarterly GAAP diluted EPS vs consensus in quarters with large announced one-time items, 2025-2026 (Q3'25 tax charge: GAAP $1.05 vs ~$7.25 ex-charge; Q2'26 legal and severance charges: GAAP $6.18 vs ~$7.17 consensus)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.4,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.3386,
+   "seconds": 38.9,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 0,
+    "cache_write": 38091,
+    "cache_write_1h": 0,
+    "output": 4021,
+    "thinking": 1565,
+    "web_search": 0,
+    "cost_usd_envelope": 0.33860375,
+    "web_fetch": 0,
+    "duration_api_ms": 38437
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 6.55,
+     "25": 6.82,
+     "50": 7.0,
+     "75": 7.15,
+     "90": 7.27
+    },
+    "p_below_lower": 0.5,
+    "p_above_upper": 0.1
+   },
+   "reasoning": "Meta guided a ~$10B Q3 2026 accrual for the youth-harm settlement (~$3.3-3.9/sh). Ex-charge consensus is ~$6.75, so GAAP diluted EPS should be ~$3-4, far below the 5.345 floor. The criteria are blank, but the series resolved Nvidia's June-2026 question on GAAP 2.46 (not non-GAAP 2.22), and Meta reports only GAAP. I put P(GAAP resolution) at ~0.8 and declare the capped 0.5 below-range mass. In-range outcomes mostly come from the ex-charge reading: consensus 6.75 plus a 3-9% beat gives ~6.95-7.35, median ~7.0, with real mass above 7.345 (10% declared, the maximum allowed). Market check: no Polymarket or Manifold market (harness); an unverified Kalshi 'consensus $6.39' page is not a traded price and is not used.",
+   "sources": [],
+   "reconciliation": "Factual: the runs agree that Meta guided ~$10B Q3 legal accrual and that GAAP EPS then lands ~$3-4, below range; not in dispute. Judgment: P(GAAP resolution), 85-90% (Run 1) vs 65% (Run 2). The series precedent (Nvidia resolved on GAAP 2.46, per the local resolutions log relayed in Run 1) and Meta's GAAP-only reporting favour GAAP; I take ~80%, so the capped 0.5 below mass is correct either way. Interior shape: Run 1's mass near the floor assumes a smaller accrual, which has no mechanism given the explicit $10B Q3 guidance, so I follow Run 2's ex-charge-centred interior (consensus 6.75 + historical beat) and carry Run 2's reference class. Upper escape set to the 0.1 maximum because a Q3'25-Q1'26-sized beat (~9%) reaches ~7.35. Unsettled: verbatim criteria and tax deductibility (neither changes the below-range conclusion). No web access this run.",
+   "disagreements": [
+    {
+     "claim": "Probability the question resolves off GAAP diluted EPS (charge included)",
+     "kind": "judgment",
+     "verdict": "Leaned toward Run 1 (~80%) on the Nvidia GAAP precedent and Meta's GAAP-only headline; criteria text is blank, so this is not fully settled"
+    },
+    {
+     "claim": "GAAP Q3 EPS including the ~$10B accrual falls below 5.345",
+     "kind": "factual",
+     "verdict": "Agreed by both dossiers: ~$3-4 either way on tax deductibility"
+    },
+    {
+     "claim": "Whether meaningful in-range mass sits near the floor (smaller-accrual GAAP path)",
+     "kind": "judgment",
+     "verdict": "Rejected as minor: Meta explicitly guided ~$10B in Q3; interior centred on the ex-charge outcome"
+    },
+    {
+     "claim": "Size of the beat over the ex-charge consensus, i.e. upper-escape probability",
+     "kind": "judgment",
+     "verdict": "A 3-9% historical beat gives 6.95-7.35; upper escape declared at the 0.1 cap"
+    }
+   ],
+   "reference_class": "Meta quarterly GAAP diluted EPS vs ex-one-off consensus in quarters with large announced one-off charges (Q3'25 tax charge: GAAP 1.05 vs 7.25 ex-charge; Q2'26 legal + severance: GAAP 6.18 vs ~7.35 ex-items)"
+  }
+ ]
+}
