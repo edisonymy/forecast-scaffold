@@ -1,0 +1,263 @@
+{
+ "record_id": "2026-10-09-cc16cfbe",
+ "question": "What will the first reported revenues after September 2026 be for the following companies? (Microsoft)",
+ "question_id": 46195,
+ "url": "https://www.metaculus.com/questions/46006/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-10-09T20:33:33+00:00",
+ "effort": "medium (auto)",
+ "model": "anthropic/claude-opus-5.5",
+ "provider": "openrouter",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.6537,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 91150000000.0,
+    "25": 91650000000.0,
+    "50": 92150000000.0,
+    "75": 92666666666.66667,
+    "90": 93166666666.66667
+   },
+   "p_below_lower": 0.02,
+   "p_above_upper": 0.015
+  },
+  "phase1": {
+   "10": 91150000000.0,
+   "25": 91650000000.0,
+   "50": 92150000000.0,
+   "75": 92666666666.66667,
+   "90": 93166666666.66667
+  },
+  "phase2": null,
+  "spread_phase1": 100000000.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 90900000000.0,
+   "25": 91550000000.0,
+   "50": 92100000000.0,
+   "75": 92650000000.0,
+   "90": 93300000000.0
+  },
+  "p_below_lower": 0.03,
+  "p_above_upper": 0.015
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.9512,
+   "seconds": 93.4,
+   "usage": {
+    "num_turns": 15,
+    "input": 24,
+    "cache_read": 464737,
+    "cache_write": 17654,
+    "cache_write_1h": 0,
+    "output": 5980,
+    "thinking": 1050,
+    "web_search": 0,
+    "cost_usd_envelope": 0.492326,
+    "web_fetch": 0,
+    "duration_api_ms": 55430
+   },
+   "validation_errors_first_attempt": [
+    "research run listed 0 distinct source(s); this tier requires at least 3 — run real searches and list in \"sources\" only what you actually consulted"
+   ],
+   "estimate": {
+    "percentiles": {
+     "10": 91050000000.0,
+     "25": 91600000000.0,
+     "50": 92100000000.0,
+     "75": 92650000000.0,
+     "90": 93150000000.0
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Q1 FY27 revenue guidance is $89.85-90.95B (midpoint $90.4B). In FY26 Q1-Q4 Microsoft beat the guidance midpoint by 2.2%, 1.6%, 2.1% and 3.2% (mean ~2.3%), which implies ~$92.4B. I shade to ~$92.1B for late-September dollar strength (DXY ~98.6 to ~101) against guidance set at July rates, and because the Q4 beat was unusually large. Below $90.2B would mean landing under the guidance midpoint, which has not happened in the last four quarters. Above $94.5B would need a >4.5% beat. Market check: no Polymarket, Manifold, Kalshi or bookmaker revenue market found (Kalshi lists only earnings-call mention markets). This run's live web tools failed (WebSearch/WebFetch API errors, curl not approved), so the evidence comes from the repo's Oct 7, 2026 research traces. Evidence is thin on FX, so I stay close to the historical beat pattern.",
+   "sources": [
+    "bot/journal/traces/2026-10-07-aa549cb5.json (prior research trace for this question: Microsoft guidance, FY26 actuals, consensus, FX, segment change)",
+    "bot/journal/traces/2026-10-07-00052d59.json (MSFT EPS trace: report date Oct 28, 2026 and consensus context)",
+    "bot/journal/forecasts.jsonl (journal record of the prior Microsoft revenue forecast)",
+    "bot/journal/resolutions.jsonl (resolved Microsoft stock-price questions, Q3 2026)"
+   ],
+   "dossier": "- Quantity: Microsoft total revenue for fiscal Q1 FY27 (quarter ended Sep 30, 2026), as reported in the earnings release; calendars expect it after the close on Oct 27-28, 2026 (prior year: Oct 29) (repo trace of Oct 7, 2026 research: MarketBeat/TIKR).\n- Company guidance (CFO Amy Hood, Jul 29, 2026): total revenue $89.85-90.95B (+16-17% YoY). New two-segment structure: Agents & Infra $75.15-75.75B and Devices & Consumer $14.7-15.2B; the segment guides add up to the total. Azure guide +44-45% cc (bitget/Investing.com/Yahoo, Jul 2026).\n- Actual vs guidance midpoint, FY26: Q1 $77.7B vs ~$76.0B (+2.2%); Q2 $81.3B vs $80.05B (+1.6%); Q3 $82.9B vs ~$81.2B (+2.1%); Q4 $90.0B vs $87.25B (+3.2%; guide was $86.7-87.8B, consensus $87.61B) (Microsoft press releases, CNBC, investing.com).\n- FY26 Q3 grew +18% reported vs +15% cc, so FX added ~3 points then; FY26 Q4 grew +18% reported vs +17% cc (Microsoft/CNBC).\n- Consensus for FQ1 FY27: Visible Alpha ~$90.7B; another source $90.59-90.66B; one outlier aggregator $94.33B (TIKR Oct 5, 2026; search snippets).\n- FX: dollar index rose from 98.61 (Sep 9) to 100.98 (Sep 25, 2026) after a Fed hike; EUR ~2.7% weaker vs USD YTD by Sep 25 (capital.com). Guidance assumed late-July rates.\n- Stock up ~39% since Jun 30, 2026 (TIKR).\n- Status quo: Microsoft has reported above its revenue guidance midpoint in each of the last four quarters (beats of 1.6-3.2%).\n- Base rates: the mean beat over FY26 Q1-Q4 applied to the $90.4B midpoint gives ~$92.4B; the range of beats (1.6-3.2%) gives ~$91.85-93.3B; beats vs consensus have run ~1.8-2.7%.\n- Downside risks: first quarter under the new segment structure; Azure/AI capacity constraints; September dollar strength. Upside: AI demand and Azure growth above the guide (Q4 Azure +43%).\n- Resolves off total revenue in Microsoft's FQ1 FY27 earnings release, not analyst estimates or segment figures.\n- Event window: the first revenue report after September 2026, expected Oct 27-28, through question resolution Oct 29, 2026. As of Oct 9 the fiscal quarter has closed and results are unreported (0% of the reporting event has occurred).\n- Searched but not found: Microsoft's explicit FX assumption for the quarter; any Polymarket/Manifold/Kalshi/bookmaker market on MSFT revenue (Kalshi lists only earnings-call word markets). This run's live web access failed, so nothing newer than Oct 7, 2026 was checked.",
+   "reference_class": "Microsoft quarterly total revenue vs the guidance midpoint given the prior quarter, FY26 Q1-Q4"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 2.4654,
+   "seconds": 125.4,
+   "usage": {
+    "num_turns": 16,
+    "input": 28,
+    "cache_read": 548669,
+    "cache_write": 15745,
+    "cache_write_1h": 0,
+    "output": 5650,
+    "thinking": 834,
+    "web_search": 0,
+    "cost_usd_envelope": 0.51413075,
+    "web_fetch": 0,
+    "duration_api_ms": 53251
+   },
+   "validation_errors_first_attempt": [
+    "research run listed 2 distinct source(s); this tier requires at least 3 — run real searches and list in \"sources\" only what you actually consulted"
+   ],
+   "estimate": {
+    "percentiles": {
+     "10": 91250000000.0,
+     "25": 91700000000.0,
+     "50": 92200000000.0,
+     "75": 92700000000.0,
+     "90": 93200000000.0
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "FQ1 FY27 (Sep-2026 quarter) guidance $89.85-90.95B, midpoint $90.4B; consensus ~$90.7B near top of guide. FY26 beats vs guidance midpoint were +2.2%, +1.6%, +2.1%, +3.2% (Q4 $90.0B vs $87.25B mid), implying ~$92.45B on continuation; a September dollar rally (DXY ~98.6->101) is a mild FX translation headwind, so median ~$92.2B. Tails: first quarter under new two-segment reporting (segment guides sum to total, so redefinition risk low), AI capacity constraints. Live web tools failed this run (API errors); evidence drawn from prior research runs stored in the local journal. Market check: no Polymarket/Manifold/Kalshi revenue contract found (prior runs; only earnings-call word markets exist); not independently re-verified this run.",
+   "sources": [
+    "local dataset: bot/journal/forecasts.jsonl (record 2026-10-07-aa549cb5, Microsoft FQ1 FY27 revenue)",
+    "local dataset: bot/journal/traces/2026-10-07-aa549cb5.json (prior research-run dossiers citing Microsoft Jul 29 2026 press release, CNBC, TIKR, capital.com)",
+    "local dataset: bot/journal/traces/2026-10-07-00052d59.json (Microsoft EPS research dossiers citing revenue guidance/consensus, TIKR/BigGo Oct 5 2026)"
+   ],
+   "dossier": "- Quantity: MSFT total revenue for fiscal Q1 FY27 (quarter ended Sep 30, 2026); report expected after close ~Oct 27-28, 2026 (earnings calendars per prior research; prior-year report Oct 29).\n- Guidance (CFO, Jul 29 2026): total $89.85-90.95B (+16-17% YoY); new segments Agents & Infra $75.15-75.75B, Devices & Consumer $14.7-15.2B (bitget/investing.com, Jul 2026).\n- Consensus: Visible Alpha ~$90.7B; another tracker $90.66B; one outlier aggregator listed $94.33B (TIKR/BigGo, Oct 5 2026).\n- History actual vs guidance midpoint: FY26 Q1 $77.7B vs ~$76.0B mid (+2.2%); Q2 $81.3B vs $80.05B (+1.6%); Q3 $82.9B vs ~$81.2B (+2.1%; FX added ~3pts that quarter, +18% reported vs +15% cc); Q4 $90.0B vs $87.25B (+3.2%; Azure +43%) (Microsoft press releases, CNBC Jul 29 2026).\n- Prior-year comp: FQ1 FY26 revenue $77.7B.\n- FX: DXY rose from ~98.6 (Sep 9) to ~101.0 (Sep 25, 2026) after a Fed move; EUR ~2.7% weaker vs USD YTD by late Sep; guidance set at late-July rates (capital.com, Sep 2026). July-August FX path not found.\n- Structure: first quarter under the new two-segment reporting; segment guides sum to the total guide.\n- Upside drivers cited: Azure demand, faster capacity delivery, fleet efficiency. Downside: capacity constraints, stronger dollar.\n- Stock up ~39% since Jun 30 (TIKR, Oct 5 2026).\n- Status quo: Microsoft has not reported total revenue below its guidance range in recent years; beats 1.6-3.2% over midpoint across FY26.\n- Resolution instrument: resolves off total revenue in Microsoft's FQ1 FY27 earnings release, not analyst estimates or segment figures.\n- Event window: first revenue report after Sep 2026 -> expected ~Oct 28, 2026, resolution Oct 29, 2026; as of Oct 9, 2026 the quarter has closed and the report is pending.\n- Searched but not found: Microsoft's explicit FX assumption for the quarter; any Polymarket/Manifold/Kalshi market on MSFT revenue (only earnings-call word markets). Live web unavailable this run; facts carried from Oct 7 research runs.",
+   "reference_class": "Microsoft quarterly total revenue actual vs CFO guidance midpoint given the prior quarter, FY26 Q1-Q4"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.7776,
+   "seconds": 68.2,
+   "usage": {
+    "num_turns": 17,
+    "input": 30,
+    "cache_read": 592823,
+    "cache_write": 14975,
+    "cache_write_1h": 0,
+    "output": 6285,
+    "thinking": 1280,
+    "web_search": 0,
+    "cost_usd_envelope": 0.54728025,
+    "web_fetch": 0,
+    "duration_api_ms": 66934
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 91150000000.0,
+     "25": 91650000000.0,
+     "50": 92150000000.0,
+     "75": 92650000000.0,
+     "90": 93150000000.0
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Anchor: Jul 29 2026 CFO guide for FQ1 FY27 total revenue $89.85-90.95B (mid $90.4B); consensus ~$90.6-90.7B. Reference class: the last 4 quarters beat the guide midpoint by +1.5% to +3.2% (mean ~+2.2%), giving ~$92.4B. Adjusted down ~0.3% for the Sept 2026 dollar strengthening (DXY ~98.6 -> ~101) after guidance was set, giving a median ~$92.15B. Counterarguments: Azure capacity limits, first quarter under the new segment structure, and a possibly smaller beat than FQ4's +3.2%. Market check: I could not search this run (web tools errored); prior runs and the harness found no Polymarket/Manifold/Kalshi revenue market, only earnings-call word markets. Caveat: no fresh web research this run; evidence comes from a prior run's dossier in the local journal.",
+   "sources": [
+    "local journal bot/journal/forecasts.jsonl record 2026-10-07-aa549cb5 (prior-run reconciler summary)",
+    "local trace bot/journal/traces/2026-10-07-aa549cb5.json run-1 dossier (guidance, beat history, consensus)",
+    "local trace bot/journal/traces/2026-10-07-aa549cb5.json run-2 dossier (FX/DXY Sept 2026, consensus range, report date)"
+   ],
+   "dossier": "- NOTE: this run's live web tools failed; the bullets below come from 2026-10-07 prior-run research dossiers (citing bitget/investing.com, CNBC, Microsoft IR, TIKR, capital.com, marketbeat).\n- Quantity: MSFT total revenue for fiscal Q1 FY27 (quarter ended Sep 30, 2026). Report expected ~Oct 27-28, 2026 after the close (marketbeat/earnings calendars; prior-year report was Oct 29).\n- Guidance (CFO Amy Hood, Jul 29, 2026): total revenue $89.85-90.95B (+16-17% YoY). New segments: Agents & Infra $75.15-75.75B and Devices & Consumer $14.7-15.2B (investing.com/yahoo, Jul 2026).\n- Consensus: Visible Alpha ~$90.7B (TIKR, Oct 5 2026); others $90.59B and $90.66B; one outlier aggregator lists $94.33B (likely erroneous).\n- Actual vs guidance midpoint, FY26: Q1 $77.7B (mid ~$75.25-76.0B, +2.2% to +3.2%); Q2 $81.3B vs guide $79.5-80.6B (+1.6%); Q3 $82.9B vs mid ~$81.2B (+2.1%; consensus $81.39B; FX added ~3 pts that quarter); Q4 $90.01B vs guide $86.7-87.8B (+3.2%; consensus $87.61B; Azure +43%).\n- Range of beats over the last 4 quarters: +1.5% to +3.2% over the guide midpoint. No miss below the midpoint in recent years.\n- FX: DXY rose from 98.61 (Sep 9) to 100.98 (Sep 25, 2026) after a Fed hike; EUR was ~2.7% weaker vs USD YTD by Sep 25 (capital.com). Guidance was set at late-July rates. Microsoft's explicit FX assumption for FQ1 was not found.\n- Stock up ~39% since Jun 30, 2026 (TIKR) — context on demand sentiment.\n- Upside drivers: Azure growth momentum (guided 44-45% cc per one run), faster capacity delivery cited by the CFO in July.\n- Downside drivers: September dollar strength, Azure capacity constraints, first quarter under the new two-segment structure (total unaffected).\n- Status quo: Microsoft reports above the guidance midpoint.\n- Resolves off total revenue in Microsoft's FQ1 FY27 earnings press release, not segment figures or estimates.\n- Event window: next revenue report after Sep 2026 -> expected ~Oct 28, 2026; as of Oct 9, 2026 the quarter has closed, the report is pending, and the window to the report is ~0% elapsed in terms of information release.\n- Searched but not found (prior runs): any Polymarket/Manifold/Kalshi market on MSFT revenue (only earnings-call word markets); Microsoft's explicit FX assumption.",
+   "reference_class": "Microsoft quarterly total revenue vs CFO guidance midpoint, FY26 Q1-Q4"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0984,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.1481,
+   "seconds": 30.2,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 30844,
+    "cache_write": 8640,
+    "cache_write_1h": 0,
+    "output": 3145,
+    "thinking": 1065,
+    "web_search": 0,
+    "cost_usd_envelope": 0.148057,
+    "web_fetch": 0,
+    "duration_api_ms": 29756
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 90900000000.0,
+     "25": 91550000000.0,
+     "50": 92100000000.0,
+     "75": 92650000000.0,
+     "90": 93300000000.0
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "FQ1 FY27 guide $89.85-90.95B (mid $90.4B); consensus ~$90.6-90.7B. Reference class: Microsoft's beats vs guidance midpoint in FY26 Q1-Q4 (~+3.4%, +0.6%, +2.1%, +3.2%; mean ~2.3%) imply ~$92.4B. Shade down ~0.3% for the Sept 2026 dollar rally (DXY ~98.6 -> ~101) after the July guide, giving a median ~$92.1B. Below $90.2B would require a sub-midpoint print (no recent precedent but possible with capacity limits or FX); above $94.5B requires a >4.5% beat. No web access this run; market check per prior runs/harness: no Polymarket/Manifold/Kalshi/bookmaker revenue market (Kalshi only lists earnings-call mention markets).",
+   "sources": [],
+   "reconciliation": "Runs agree closely (medians $92.10-92.20B). Disputes: (1) FY26 Q1 beat size (+2.2% vs +3.2%): from my recollection the Q1 FY26 segment guides summed to ~$74.6-75.7B, so the beat was ~+3.4%, which supports Run 3's upper reading. (2) FY26 Q2 guide: the runs list $79.5-80.6B; my recollection of the segment guides (P&BP $34.05-34.35B, IC $32.25-32.55B, MPC $13.95-14.45B) sums to ~$80.25-81.35B, a beat of only ~+0.6%. This can't be verified without web access, but if right it widens the beat spread without moving the mean (~2.3%). (3) FX shade size: judgment; I adopt ~0.3%. Net: same center (~$92.1B), modestly wider band than the runs, slightly more lower-tail mass reflecting the low-beat quarter.",
+   "disagreements": [
+    {
+     "claim": "FY26 Q1 beat over guide midpoint was +2.2% vs +3.2%",
+     "kind": "factual",
+     "verdict": "Recollection of segment guides (~$74.6-75.7B total) implies ~+3.4%; not web-verified this run"
+    },
+    {
+     "claim": "FY26 Q2 guide was $79.5-80.6B (beat +1.6%)",
+     "kind": "factual",
+     "verdict": "My recollection of the segment guides sums to ~$80.25-81.35B (beat ~+0.6%); unverified, so I widened dispersion rather than shift the center"
+    },
+    {
+     "claim": "Size of the downward FX adjustment for the Sept dollar rally",
+     "kind": "judgment",
+     "verdict": "Adopt ~0.3% shade; FX assumption in the guide unknown"
+    },
+    {
+     "claim": "Tail mass outside [90.2B, 94.5B]",
+     "kind": "judgment",
+     "verdict": "3% below (a sub-midpoint print is plausible given one quarter at only +0.6%), 1.5% above"
+    }
+   ],
+   "reference_class": "Microsoft quarterly total revenue vs CFO guidance midpoint, FY26 Q1-Q4"
+  }
+ ]
+}

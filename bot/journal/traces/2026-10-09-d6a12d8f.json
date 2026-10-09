@@ -1,0 +1,255 @@
+{
+ "record_id": "2026-10-09-d6a12d8f",
+ "question": "What will the first reported earnings per share after September 2026 be for the following companies? (Apple)",
+ "question_id": 46176,
+ "url": "https://www.metaculus.com/questions/45995/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-09T20:37:58+00:00",
+ "effort": "medium (auto)",
+ "model": "anthropic/claude-opus-5.5",
+ "provider": "openrouter",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.5894,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 1.92,
+    "25": 1.9933333333333334,
+    "50": 2.0433333333333334,
+    "75": 2.0883333333333334,
+    "90": 2.1366666666666667
+   },
+   "p_below_lower": 0.01
+  },
+  "phase1": {
+   "10": 1.92,
+   "25": 1.9933333333333334,
+   "50": 2.0433333333333334,
+   "75": 2.0883333333333334,
+   "90": 2.1366666666666667
+  },
+  "phase2": null,
+  "spread_phase1": 0.01,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 1.92,
+   "25": 1.99,
+   "50": 2.05,
+   "75": 2.09,
+   "90": 2.14
+  },
+  "p_below_lower": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.8011,
+   "seconds": 108.9,
+   "usage": {
+    "num_turns": 19,
+    "input": 30,
+    "cache_read": 642714,
+    "cache_write": 23370,
+    "cache_write_1h": 0,
+    "output": 7527,
+    "thinking": 1523,
+    "web_search": 0,
+    "cost_usd_envelope": 0.6557445000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 68304
+   },
+   "validation_errors_first_attempt": [
+    "research run listed 0 distinct source(s); this tier requires at least 3 — run real searches and list in \"sources\" only what you actually consulted"
+   ],
+   "estimate": {
+    "percentiles": {
+     "10": 1.93,
+     "25": 2.0,
+     "50": 2.05,
+     "75": 2.09,
+     "90": 2.13
+    },
+    "p_below_lower": 0.01
+   },
+   "reasoning": "First EPS after Sep 2026 = Apple fiscal Q4 2026 (Sept quarter), GAAP diluted EPS from the press release/8-K. Guidance (rev +9-11% on $102.5B, GM 47-48%, opex $19.1-19.4B, ~16.5% tax, ~14.65B shares) implies ~$1.97 at midpoint and ~$2.04 at the top of the ranges. Consensus is ~$1.98-2.02. Apple beat in ~14 of the last 15 quarters, median ~+4.5% (FQ3'26 $2.02 vs $1.89; FQ4'25 $1.85 vs ~$1.77), so the median is ~$2.05, tempered by worse SoC supply constraints, FX and memory costs. Left skew: a GAAP one-off charge (FQ4'24 precedent $0.97) or a Taction $5.7B verdict accrual (~-$0.30, unlikely while under appeal). Market check: no Polymarket/Kalshi/Manifold/bookmaker market found (harness and earlier runs); I could not search this run. Caveat: WebSearch/WebFetch returned API errors and network shell access was blocked, so evidence is from the Oct 7-9 local research traces and was not refreshed.",
+   "sources": [
+    "bot/journal/traces/2026-10-07-9fd416bc.json (prior Apple FQ4 2026 EPS research runs citing SEC 8-K ex99.1 Q3 FY26, MarketBeat earnings page, MacRumors 2026-07-30 and 2026-10-06, Tradingpedia 2026-10-06, CNBC 2026-09-26 Taction verdict, Yahoo Finance)",
+    "bot/journal/traces/2026-10-09-d07a774a.json (Apple FQ4 2026 revenue research dossiers: guidance track record, report-date conflict Oct 29 vs Nov 2, consensus ~$113.6B)",
+    "bot/journal/forecasts.jsonl records 699 and 721 (prior Apple FQ4 2026 EPS and revenue records)"
+   ],
+   "dossier": "- Resolves off Apple's first reported diluted EPS (GAAP) for fiscal Q4 2026 (quarter Jun 28-Sep 26, 2026) in the earnings press release/8-K, not adjusted figures or consensus.\n- Event window: quarter ended ~Sep 26, 2026 -> first EPS print at the earnings release. MarketBeat lists Oct 29, 2026 (one Tradingpedia piece says Oct 28); MacRumors/AppleInsider (2026-10-06) say Mon Nov 2, 2026, 1:30pm PT. As of 2026-10-09 the quarter is 100% elapsed and the number is fixed but unpublished.\n- FQ3 2026 (June qtr, reported Jul 30, 2026): revenue $109.4B (+16% y/y); diluted EPS $2.02 (+29%) vs ~$1.89 consensus, including ~+$0.11 from tariff refunds; GM 50.1% (~2pt from tariff refunds); NI ~$29.8B, implying ~14.75B diluted shares (Apple 8-K, MacRumors, digitalapplied).\n- FQ4 guidance (Jul 30 call): revenue +9-11% y/y (~$111.7-113.7B) including ~2.5pt FX headwind; GM 47-48% including ~1pt tariff-refund benefit; opex $19.1-19.4B; OI&E ~$0.35B ex mark-to-market; tax ~16.5%; supply constraints at the advanced SoC node 'significantly' worse across iPhone/Mac/iPad. The guide was below consensus at the time and the stock fell ~6% after hours.\n- Guidance arithmetic: midpoint ~$1.97, top of all ranges ~$2.04, bottom ~$1.90 (computed from the figures above; ~14.55-14.65B shares, ~1c sensitivity).\n- Consensus EPS (Oct 2026 aggregators): ~$1.98 (44 analysts), $1.99, $2.02 (Tradingpedia); individual estimates span ~$1.76-2.12. Revenue consensus ~$113.6B (Yahoo, 27 analysts) to $115.06B (Tradingpedia, provenance unclear).\n- Year-ago FQ4 FY25: revenue ~$102.5B, diluted EPS $1.85 vs ~$1.77 consensus. FQ4 FY24 GAAP EPS was $0.97 because of a one-time EU State Aid tax charge (precedent for GAAP one-offs in this quarter).\n- Surprise base rates: over the last ~15 quarters Apple beat EPS consensus ~14 times, median surprise ~+4.5%, typical range +2% to +10% (search summaries in prior traces). Revenue vs own guide midpoint over FQ4'25-FQ3'26: -1, +5, +2.5, +0.8 pts; in supply-constrained quarters (2 cases): -1 and +0.8 pts.\n- Quarter content: iPhone 18 Pro/Pro Max on sale Sep 18 (~1-2 weeks in the quarter); iPhone Duo/foldable launched Oct 23 (outside the quarter); base iPhone 18 reportedly moved to 1H 2027. Demand above internal forecasts per management; memory cost inflation. John Ternus became CEO Sep 1, 2026.\n- Litigation: $5.7B Taction Technology jury verdict (S.D. Cal., Sep 25, 2026, inside the quarter; not willful); Apple is appealing (CNBC 2026-09-26). Apple has historically not accrued appealed verdicts; if accrued, ~-$0.30/share after tax.\n- Upside mechanisms: conservative guiding habit, strong Pro launch sell-in, a weaker USD than assumed, a lower share count. Downside: worse supply shortfall, GM at the low end, FX, a GAAP one-off charge or investment mark-to-market losses.\n- Searched, absent: Polymarket/Kalshi/Manifold/bookmaker market on Apple FQ4 EPS (none found); Apple's accounting stance on Taction; any preannouncement. Live web tools failed on 2026-10-09, so items are carried from 2026-10-07 research and were not refreshed.",
+   "reference_class": "Apple quarterly GAAP diluted EPS vs pre-report consensus and guidance-implied EPS, FY2023-FY2026 (beats ~14/15, median surprise ~+4.5%)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.1454,
+   "seconds": 104.8,
+   "usage": {
+    "num_turns": 20,
+    "input": 32,
+    "cache_read": 655517,
+    "cache_write": 26711,
+    "cache_write_1h": 0,
+    "output": 7266,
+    "thinking": 1668,
+    "web_search": 0,
+    "cost_usd_envelope": 0.6765122499999999,
+    "web_fetch": 0,
+    "duration_api_ms": 67716
+   },
+   "validation_errors_first_attempt": [
+    "research run listed 0 distinct source(s); this tier requires at least 3 — run real searches and list in \"sources\" only what you actually consulted"
+   ],
+   "estimate": {
+    "percentiles": {
+     "10": 1.92,
+     "25": 1.99,
+     "50": 2.04,
+     "75": 2.09,
+     "90": 2.14
+    },
+    "p_below_lower": 0.01
+   },
+   "reasoning": "Resolves on Apple's FQ4 2026 (Sept-quarter) diluted EPS, report Oct 29 or Nov 2, 2026. Guidance (rev +9-11% on $102.5B, GM 47-48% incl ~1pt tariff-refund benefit, opex $19.1-19.4B, OI&E ~$0.35B, tax ~16.5%, ~14.6B shares) implies ~$1.97 at midpoint, ~$2.05 at top; consensus ~$1.98-2.02. Apple beat EPS consensus in 14 of the last 15 quarters (median surprise ~+4.5%), but supply constraints, FX and memory costs temper the beat; revenue runs cluster near ~$113.8B, implying ~$2.02 before any margin beat. Median $2.04. Left tail: GAAP one-offs (Taction $5.7B verdict accrual ~-$0.30 if booked, unlikely while appealed; an EU-tax-style charge needed to fall below $0.995, ~1%). Market check: no Polymarket/Kalshi/Manifold/bookmaker market found in prior runs or by the harness; live web tools failed this run (API errors), so evidence is from Oct 7-9 local research dossiers, not refreshed.",
+   "sources": [
+    "bot/journal/traces/2026-10-07-9fd416bc.json (Oct 7 2026 Apple FQ4 EPS research runs citing Apple Jul 30 2026 8-K, MarketBeat, tradingpedia, vectorshift, MacRumors, CNBC Taction verdict)",
+    "bot/journal/traces/2026-10-09-d07a774a.json (Oct 9 2026 Apple FQ4 revenue research dossiers: guidance history, consensus ~$113.6B, report date)",
+    "bot/journal/forecasts.jsonl (prior Apple FQ4 2026 EPS/revenue records and source notes)"
+   ],
+   "dossier": "- Target: Apple fiscal Q4 2026 (quarter Jun 28-Sep 26, 2026) diluted EPS. It is the first EPS reported after Sep 2026. Report date: Oct 29, 2026 per MarketBeat; Mon Nov 2, 2026, 1:30pm PT per MacRumors/AppleInsider (Oct 6, 2026). Not reconciled.\n- Resolution instrument: diluted EPS in Apple's earnings press release/8-K. Assumed GAAP, since the criteria text is blank. It does not resolve off adjusted figures or consensus.\n- Event window: quarter ended ~Sep 26, 2026 -> one print at the earnings release. As of 2026-10-09 the quarter is 100% elapsed; the number is fixed but unpublished.\n- FQ3 2026 (June quarter, Jul 30 2026 8-K): revenue $109.4B (+16% y/y), diluted EPS $2.02 (+29%) vs ~$1.89 consensus. Includes ~+$0.11 from tariff refunds; GM 50.1% (~2pts from refunds).\n- FQ4 guidance (Jul 30 call): revenue +9-11% y/y (~$111.7-113.7B) incl ~2.5pt FX headwind. GM 47-48% incl ~1pt tariff-refund benefit. Opex $19.1-19.4B. OI&E ~$0.35B ex minority-investment marks. Tax ~16.5%. Supply constraints on advanced-node chips 'significantly' worse across iPhone/Mac/iPad. Memory-cost inflation.\n- Guidance arithmetic (~14.55-14.65B diluted shares): midpoint ~$1.97, top of all ranges ~$2.04-2.05, bottom ~$1.90.\n- Year-ago: FQ4 2025 diluted EPS $1.85 (vs ~$1.77 consensus) on revenue $102.47B. FQ4 2024 GAAP EPS $0.97 due to a one-time EU State Aid tax charge.\n- EPS consensus quotes (Oct 2026): $1.98 (44 analysts), $1.99, $2.02 (tradingpedia). Estimate range cited as $1.76-2.12 or $1.93-2.07, depending on source.\n- Revenue consensus ~$113.6B (Yahoo, 27 analysts, low $112.25B, high $117.2B); one preview says $115.06B (unclear provenance).\n- Beat history: positive EPS surprise in 14 of the last 15 quarters, median ~+4.5%. Examples: FQ3'25 $1.57 vs ~1.43; FQ4'25 $1.85 vs ~1.77; FQ1'26 ~$2.84 vs ~2.67; FQ3'26 $2.02 vs 1.89.\n- Revenue vs guide (FQ4'25-FQ3'26): -1, +5, +2.5, +0.8 pp vs midpoint. In the supply-constrained Sept 2025 quarter, revenue landed at the bottom of its guide.\n- Quarter mix: iPhone 18 Pro/Pro Max on sale Sep 18 (~1-2 weeks inside the quarter). iPhone Duo launches Oct 23 (outside). New CEO John Ternus since Sep 1, 2026.\n- Litigation: $5.7B jury verdict for Taction Technology (Sep 25, 2026, S.D. Cal., not willful); Apple will appeal (CNBC Sep 26). Apple has historically not accrued appealed verdicts. If accrued, about -$0.30/share after tax.\n- Downside mechanisms: GM at the low end, supply shortfall, FX, one-off tax/legal charges, investment mark-to-market. Upside: conservative guide habit, strong Pro launch-week sell-in, weaker USD.\n- Searched, not found: Polymarket/Kalshi/Manifold/bookmaker contract on this EPS (none); whisper numbers; Apple statement on Taction accounting; exact FQ3 diluted share count. Live web tools failed this run, so the evidence is carried from Oct 7-9 research and not refreshed.",
+   "reference_class": "Apple quarterly diluted EPS vs pre-report consensus and guidance-implied EPS, FY2023-FY2026 (beats in 14 of 15 quarters, median surprise ~+4.5%)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 2.4001,
+   "seconds": 124.4,
+   "usage": {
+    "num_turns": 19,
+    "input": 32,
+    "cache_read": 631038,
+    "cache_write": 19145,
+    "cache_write_1h": 0,
+    "output": 6545,
+    "thinking": 1233,
+    "web_search": 0,
+    "cost_usd_envelope": 0.59896025,
+    "web_fetch": 0,
+    "duration_api_ms": 62618
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1.91,
+     "25": 1.99,
+     "50": 2.04,
+     "75": 2.085,
+     "90": 2.14
+    }
+   },
+   "reasoning": "First EPS reported after Sep 2026 is Apple's fiscal Q4 2026 (Sept quarter, ended ~Sep 26), due Oct 29 or Nov 2, 2026. Guidance midpoint arithmetic (rev ~$112.7B, GM 47.5%, opex $19.25B, ~16.5% tax, ~14.65B shares) gives ~$1.97; consensus ~$1.98-2.02. Apple beat EPS in 14 of the last 15 quarters, median +4.5% (Q3 FY26 $2.02 vs $1.89), pointing to ~$2.03-2.07. Left tail: possible accrual of the $5.7B Taction verdict (~-$0.33/share, unlikely since Apple usually doesn't accrue appealed verdicts), a one-off tax charge, or a supply-constrained margin miss. Market check: live web tools failed this run, so I could not search Polymarket/Kalshi/Manifold/bookmakers myself; Oct 7 research runs found no EPS market on any of them, and the harness found none on Polymarket/Manifold. Evidence is carried from Oct 7-9 dossiers and was not refreshed.",
+   "sources": [
+    "local journal dataset: bot/journal/traces/2026-10-07-9fd416bc.json (prior Apple FQ4 EPS research dossiers citing MacRumors 2026-07-30 & 2026-10-06, MarketBeat, Tradingpedia 2026-10-06, CNBC 2026-09-26, Apple 8-K)",
+    "local journal dataset: bot/journal/traces/2026-10-09-d07a774a.json (Apple FQ4 revenue research dossiers: guidance history, report date, segment data)",
+    "local journal dataset: bot/journal/forecasts.jsonl (prior Apple EPS forecast record, Metaculus q46176)"
+   ],
+   "dossier": "- Target: Apple's first reported EPS after Sep 2026 = fiscal Q4 2026 (quarter Jun 28-Sep 26, 2026). The release date is reported as Nov 2, 2026 (MacRumors/AppleInsider, Oct 6 2026), but some aggregators list Oct 29 (MarketBeat). Assumed to resolve off GAAP diluted EPS in Apple's press release/8-K (the criteria text is blank).\n- Event window: the quarter ended ~Sep 26, 2026, so the number is fixed but unpublished. As of 2026-10-09, 0% of the reporting event has occurred.\n- Year-ago: FQ4 FY25 diluted EPS $1.85 (beat ~$1.77 consensus) on revenue $102.47B. FQ4 FY24 GAAP EPS was $0.97 because of a one-time EU State Aid tax charge.\n- FQ3 FY26 (reported Jul 30, 2026): revenue $109.4B (+16%), diluted EPS $2.02 (+29%) vs $1.89 consensus. That figure includes ~+$0.11 from tariff refunds, and GM was 50.1% (~2pt from refunds) (MacRumors/Apple 8-K).\n- FQ4 guidance (Jul 30 call): revenue +9-11% YoY (~$111.7-113.7B) incl. ~2.5pt FX headwind; GM 47-48% incl. ~1pt tariff-refund benefit; opex $19.1-19.4B; OI&E ~$350M; tax ~16.5%. Advanced-node supply constraints are worsening across iPhone/Mac/iPad, and memory costs are rising.\n- Guidance arithmetic: midpoint ~$1.97, top of all ranges ~$2.04, bottom ~$1.90. A cruder model with ~$17.5B opex gives ~$2.05-2.10. Each $1B of revenue above guide is worth ~+$0.027/share; each 0.5pt of GM ~+$0.03.\n- Consensus EPS (Oct 2026 aggregators): ~$1.96-2.02 mean, ~44 analysts, range ~$1.76-2.12.\n- Beat history: positive EPS surprise in 14 of the last 15 quarters, median ~+4.5% (FQ3 FY25 $1.57 vs ~1.43; FQ4 FY25 $1.85 vs ~1.77; FQ1 FY26 ~$2.84 vs ~2.67; FQ3 FY26 $2.02 vs 1.89).\n- Revenue guide-vs-actual over the last 4 quarters: -1, +5, +2.5, +0.8 pts vs midpoint. The supply-constrained quarters came in at -1 and +0.8.\n- Quarter mix: iPhone 18 Pro/Pro Max on sale Sep 18 (~1-2 weeks inside the quarter). iPhone Duo launches Oct 23 (outside it). New CEO John Ternus since Sep 1, 2026.\n- Litigation: $5.7B Taction jury verdict (Sep 25, 2026, inside the quarter, not willful); Apple is appealing (CNBC Sep 26). Apple historically has not accrued appealed jury verdicts. If accrued, the impact is ~-$0.33/share after tax.\n- Searched, absent: Apple's accounting treatment for the Taction verdict; any preannouncement; whisper numbers; Polymarket/Kalshi/Manifold/bookmaker markets on Apple EPS (none found). Live web tools failed on Oct 9, so everything is carried from Oct 7 research.",
+   "reference_class": "Apple quarterly diluted EPS vs pre-report consensus and guidance-implied EPS, FY2023-FY2026 (beats 14/15, median surprise ~+4.5%)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1053,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.1481,
+   "seconds": 31.1,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 30844,
+    "cache_write": 9892,
+    "cache_write_1h": 0,
+    "output": 2833,
+    "thinking": 452,
+    "web_search": 0,
+    "cost_usd_envelope": 0.148082,
+    "web_fetch": 0,
+    "duration_api_ms": 30678
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1.92,
+     "25": 1.99,
+     "50": 2.05,
+     "75": 2.09,
+     "90": 2.14
+    },
+    "p_below_lower": 0.01
+   },
+   "reasoning": "Resolves on Apple's fiscal Q4 2026 (September-quarter) GAAP diluted EPS. Guidance (revenue +9-11% on $102.5B, gross margin 47-48% including ~1pt of tariff refunds, opex $19.1-19.4B, ~16.5% tax, ~14.6B shares) implies ~$1.97 at the midpoint and ~$2.04-2.05 at the top of the ranges; consensus is ~$1.98-2.02. Apple beat EPS consensus in 14 of the last 15 quarters (median ~+4.5%) and its gross margin usually lands at or above the top of the guide, but worsening chip supply constraints, FX and memory costs dampen the beat, so the median is ~$2.05. Left skew comes from GAAP one-offs: accrual of the $5.7B Taction verdict (~-$0.33, unlikely while under appeal) or a tax charge like the 2024 EU State Aid charge (needed to fall below 0.995, ~1%). Market check: none found on Polymarket, Kalshi, Manifold or bookmakers (per the runs and the harness; no web access on this run).",
+   "sources": [],
+   "reconciliation": "The three runs share the same evidence (Jul 30 guidance, FQ3 $2.02 print, consensus ~$1.98-2.02, beat history, Taction verdict) and differ only at the margins: medians 2.04-2.05 and nearly identical tails. Factual disputes: (1) report date, Oct 29 (MarketBeat) vs Nov 2 (MacRumors/AppleInsider). I could not settle it without web access; it changes the timing, not the value. (2) After-tax hit if the Taction verdict were accrued: -$0.30 vs -$0.33. A rough check ($5.7B x (1-0.165) / ~14.6B shares ≈ $0.33) favors -$0.33. Immaterial, because Apple historically does not accrue verdicts it is appealing (≤3% likelihood), so it only fattens the region below p10. Judgment dispute: how big a beat to expect. Apple usually hits or exceeds the top of its gross-margin guide, which supports at least top-of-range (~$2.04-2.05); worsening supply constraints argue against a full median-sized +4.5% beat on consensus (~$2.08). I take $2.05 as the median. I kept the runs' ~0.2 dispersion and their 1% probability below the 0.995 bound. No web access this run; nothing retrieved.",
+   "disagreements": [
+    {
+     "claim": "Earnings release date is Oct 29 vs Nov 2, 2026",
+     "kind": "factual",
+     "verdict": "Unresolved without web access; affects only resolution timing, not the EPS value"
+    },
+    {
+     "claim": "After-tax EPS impact if the Taction verdict were accrued: -$0.30 vs -$0.33",
+     "kind": "factual",
+     "verdict": "A rough check ($5.7B x 0.835 / 14.6B) gives ~-$0.33; immaterial because accrual is unlikely while under appeal"
+    },
+    {
+     "claim": "Size of the expected beat vs guidance/consensus (median $2.04 vs $2.05)",
+     "kind": "judgment",
+     "verdict": "Took $2.05: the gross-margin habit of landing at or above the top of the guide supports top-of-range; supply constraints cap the upside below a full +4.5% beat"
+    },
+    {
+     "claim": "Probability of a GAAP one-off pushing EPS below 0.995",
+     "kind": "judgment",
+     "verdict": "Kept 1%; would need a charge on the scale of the 2024 EU State Aid charge, with no known pending item of that size"
+    }
+   ],
+   "reference_class": "Apple quarterly diluted EPS relative to its own guidance-implied EPS and analyst consensus, FY2022-FY2026 (beat in 14 of the last 15 quarters, median surprise ~+4.5%)"
+  }
+ ]
+}

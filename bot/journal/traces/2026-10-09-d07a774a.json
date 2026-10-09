@@ -1,0 +1,256 @@
+{
+ "record_id": "2026-10-09-d07a774a",
+ "question": "What will the first reported revenues after September 2026 be for the following companies? (Apple)",
+ "question_id": 46191,
+ "url": "https://www.metaculus.com/questions/46006/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-10-09T20:30:53+00:00",
+ "effort": "medium (auto)",
+ "model": "anthropic/claude-opus-5.5",
+ "provider": "openrouter",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.5631,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 112400000000.0,
+    "25": 113050000000.0,
+    "50": 113783333333.33333,
+    "75": 114633333333.33333,
+    "90": 115833333333.33333
+   },
+   "p_below_lower": 0.07333333333333335,
+   "p_above_upper": 0.023333333333333334
+  },
+  "phase1": {
+   "10": 112400000000.0,
+   "25": 113050000000.0,
+   "50": 113783333333.33333,
+   "75": 114633333333.33333,
+   "90": 115833333333.33333
+  },
+  "phase2": null,
+  "spread_phase1": 150000000.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 112200000000.0,
+   "25": 112800000000.0,
+   "50": 113500000000.0,
+   "75": 114400000000.0,
+   "90": 115800000000.0
+  },
+  "p_below_lower": 0.08,
+  "p_above_upper": 0.02
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.8949,
+   "seconds": 52.7,
+   "usage": {
+    "num_turns": 13,
+    "input": 24,
+    "cache_read": 457328,
+    "cache_write": 13929,
+    "cache_write_1h": 0,
+    "output": 5154,
+    "thinking": 1588,
+    "web_search": 0,
+    "cost_usd_envelope": 0.44469025,
+    "web_fetch": 0,
+    "duration_api_ms": 50958
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 112500000000.0,
+     "25": 113150000000.0,
+     "50": 113850000000.0,
+     "75": 114650000000.0,
+     "90": 115900000000.0
+    },
+    "p_below_lower": 0.08,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Resolves on Apple's total net sales for fiscal Q4 2026 (quarter ended about Sep 26, 2026). Prior research says the report is due Nov 2, 2026 (MacRumors, Oct 6); some aggregators list Oct 29. Guidance from the Jul 30 call is +9% to +11% on $102.47B, or $111.7-113.7B, including a 2.5pt FX headwind and heavier supply constraints. The last four quarters landed at or above the guide midpoint, except FQ4'25, which came in at the bottom. Consensus is about $113.6B (27 analysts, range $112.25-117.2B). I set the median at about $113.85B (+11.1%). Risk of landing below $112B is about 8%; above $118B is about 3%, which needs a big beat despite the supply limits. No Polymarket, Kalshi, Manifold or bookmaker market was found, either by the harness or in earlier runs; I couldn't search this time because my web tools failed. Thin, unverified evidence keeps me close to the guide and consensus.",
+   "sources": [
+    "bot/journal/traces/2026-10-07-187aa82d.json (prior research run on this question: MacRumors 2026-10-06, 9to5Mac 2026-07-30, TechTimes 2026-07-31, Yahoo consensus)",
+    "bot/journal/traces/2026-10-07-9fd416bc.json (prior Apple FQ4 EPS research: guidance details, report date)",
+    "bot/journal/traces/2026-09-14-8329468b.json (Apple FQ3 revenue +16%, CEO change context)"
+   ],
+   "dossier": "- Resolution: Apple's reported total net sales for fiscal Q4 2026 (quarter Jun 28-Sep 26, 2026). It resolves off the earnings press release/8-K total, not segment figures or consensus.\n- Event window: quarter ended about Sep 26, 2026 -> the number is first published at the earnings release. MacRumors (2026-10-06) says Nov 2, 2026; some aggregators list Oct 29. As of 2026-10-09 the quarter is 100% elapsed and the number is unreported.\n- Year-ago base: FQ4'25 revenue $102.47B (Apple 8-K).\n- Guidance (Jul 30, 2026 call, CFO Parekh): total revenue +9% to +11% YoY, or $111.7-113.7B. Includes about a 2.5pt FX headwind and 'significantly greater' supply constraints on iPhone, Mac and iPad. iPhone guided to mid-teens growth. Gross margin 47-48% (MacRumors/TechTimes, Jul 30-31, 2026).\n- Consensus when guidance was given was about +12% (about $114.3B, LSEG/FactSet), so the guide came in below it; the stock fell about 6% after hours (TechTimes, 2026-07-31).\n- Later consensus: about $113.6B from 27 analysts, low $112.25B, high $117.2B (Yahoo, Oct 2026, per prior trace). One preview cites $115.06B (tradingpedia, 2026-10-06; provenance unclear).\n- Track record vs guidance: FQ4'25 guided +8-10%, actual about +8%. FQ1'26 guided +10-12%, actual about +16% ($143.8B). FQ2'26 guided +13-16%, actual +17% ($111.2B). FQ3'26 guided +14-17%, actual +16% ($109.4B) (Apple 8-Ks / 9to5Mac).\n- Upside factors: iPhone 18 Pro/Pro Max launch-week sales fall inside the quarter, and strong demand has been reported. Downside factors: supply constraints, FX headwind, and the iPhone Duo/foldable launching Oct 23, outside this quarter.\n- John Ternus became CEO on Sep 1, 2026 (prior trace).\n- Base rate: over the last 4 quarters, actual growth minus the guide midpoint ranged from -1pp to +5pp. Two quarters were above the top of the range, one at the bottom, one mid-range. A miss below the bottom of the guide is rare in that sample (0 of 4).\n- Searched and not found: Polymarket, Kalshi, Manifold or bookmaker markets on Apple's FQ4 revenue. This run's web tools failed, so no fresh verification after Oct 7, 2026.",
+   "reference_class": "Apple quarterly revenue actuals vs its own next-quarter YoY growth guidance (FQ4'25 through FQ3'26)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.3878,
+   "seconds": 58.6,
+   "usage": {
+    "num_turns": 14,
+    "input": 26,
+    "cache_read": 506482,
+    "cache_write": 14979,
+    "cache_write_1h": 0,
+    "output": 5837,
+    "thinking": 1311,
+    "web_search": 0,
+    "cost_usd_envelope": 0.49291474999999996,
+    "web_fetch": 0,
+    "duration_api_ms": 56520
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 112300000000.0,
+     "25": 112950000000.0,
+     "50": 113700000000.0,
+     "75": 114600000000.0,
+     "90": 115700000000.0
+    },
+    "p_below_lower": 0.07,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Anchor: Apple's own Jul-30 guide of +9-11% YoY on $102.47B = $111.7-113.7B, midpoint $112.7B, already including a 2.5pt FX headwind and sharply worse chip supply constraints. Apple beat or hit the top of its range in the last three quarters (+16%, +17%, +16.3%). In the last supply-constrained September quarter it landed at the bottom (+8% vs +8-10%). Median set modestly above the guide top (~+11%), near the October consensus quoted at ~$113.6B. Supply limits cap the upside, so >$118B (+15%) is a ~2% tail; <$112B needs a miss at or below the guide floor, ~7%. Web tools failed this run (API errors), so evidence comes from the local journal dossiers dated 2026-10-07 and is not re-verified. Market check: earlier runs and the harness found no Polymarket/Kalshi/Manifold market; I could not check Kalshi or bookmakers myself this run.",
+   "sources": [
+    "bot/journal/traces/2026-10-07-187aa82d.json (dossiers citing Apple 8-K, Apple newsroom Jul 30 2026, MacRumors/AppleInsider/9to5Mac Oct 6 2026, tradingpedia Oct 6 2026)",
+    "bot/journal/traces/2026-10-07-9fd416bc.json (EPS-question dossiers citing Apple Jul 30 2026 8-K, MarketBeat, Yahoo consensus)",
+    "bot/journal/forecasts.jsonl record 2026-10-07-187aa82d (supervisor reconciliation noting Yahoo Oct consensus ~$113.6B, 27 analysts)"
+   ],
+   "dossier": "- Resolves off Apple's reported total net sales for fiscal Q4 2026 (quarter ending ~Sep 26 2026) in its earnings press release/8-K. It does not resolve off segment figures or consensus.\n- Event window: the first revenue report after September 2026, i.e. this quarter's release. Release reported as scheduled Mon Nov 2 2026 (MacRumors/AppleInsider/9to5Mac, Oct 6 2026); some aggregators list Oct 29. As of 2026-10-09 the quarter is 100% elapsed and the number is fixed but unpublished.\n- Year-ago base: fiscal Q4 2025 revenue $102.47B (Apple 8-K).\n- Guidance (Jul 30 2026 call, CFO Parekh): revenue +9% to +11% YoY (~$111.7-113.7B). Includes ~2.5pt FX headwind. Supply constraints (advanced-node chips) 'significantly' greater than the June quarter across iPhone/Mac/iPad. iPhone guided to mid-teens growth; Services similar to June-quarter growth ex-FX; GM 47-48%. The guide was below the ~12% LSEG consensus at the time, and the stock fell ~6% after hours.\n- Guide-vs-actual history: Sep-25 qtr guided +8-10%, actual ~+8% (bottom; supply-constrained). Dec-25 qtr guided +10-12%, actual ~+16% ($143.8B). Mar-26 qtr guided +13-16%, actual +17% ($111.2B). Jun-26 qtr guided +14-17%, actual +16.3% ($109.4B). Jun-26 segments: iPhone $54.3B +22%, Mac $10.4B +29%, Services $30.7B +12% (services below expectations).\n- Consensus figures quoted in sources disagree: ~$113.6B (Yahoo, 27 analysts, Oct), ~$114.3B (at guidance time), $115.06B (tradingpedia Oct 6, unclear provenance, possibly stale).\n- iPhone 18 Pro/Pro Max on sale Sep 18 2026, so only ~1-2 weeks of sales fall in the quarter. Base iPhone 18 reportedly moved to 1H 2027; iPhone Duo launches Oct 23 (outside the quarter). Lead times reported ~15% longer YoY; demand above internal forecasts per Cook. Memory costs are rising.\n- Base rate: over the 4 quarters FY25Q4-FY26Q3, actual growth minus guide midpoint = roughly -1, +5, +2.5, +0.8 pts. Conditional on a supply-constrained guide quarter (2 cases): -1 and +0.8 pts.\n- Upside mechanisms: Apple's habitual conservative guides; strong Pro launch-week sell-in; a weaker USD than assumed. Downside mechanisms: worse-than-guided chip supply; FX; Services softness.\n- Searched, absent: an updated post-September revenue consensus that could be verified; any preannouncement; USD moves Aug-Sep 2026; any Polymarket/Kalshi/Manifold market. Live web search failed this run, so all items come from 2026-10-07 dossiers.",
+   "reference_class": "Apple quarterly revenue outcomes vs its own percent-growth guidance range, FY2025-FY2026 (4 quarters)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.4502,
+   "seconds": 50.6,
+   "usage": {
+    "num_turns": 12,
+    "input": 22,
+    "cache_read": 414038,
+    "cache_write": 18295,
+    "cache_write_1h": 0,
+    "output": 5150,
+    "thinking": 1080,
+    "web_search": 0,
+    "cost_usd_envelope": 0.45022274999999995,
+    "web_fetch": 0,
+    "duration_api_ms": 49417
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 112400000000.0,
+     "25": 113050000000.0,
+     "50": 113800000000.0,
+     "75": 114650000000.0,
+     "90": 115900000000.0
+    },
+    "p_below_lower": 0.07,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Apple guided fiscal Q4 2026 (Sep quarter) revenue to +9-11% YoY on $102.47B ($111.7-113.7B), including a 2.5pt FX headwind and significantly worse supply constraints. The December and March quarters beat the top of their guides, June landed mid-range, and the supply-constrained Sep 2025 quarter landed at the bottom of its range. Analyst estimates are ~$113.6B (Oct, Yahoo) to ~$114.3B. Median ~$113.8B, ~7% below $112B, ~2% above $118B. Market check: none of the runs found a Polymarket, Kalshi, Manifold or bookmaker market. Caveat: web tools failed on this run, so the evidence is the Oct 7 research dossiers in the local journal and was not refreshed.",
+   "sources": [
+    "local journal trace bot/journal/traces/2026-10-07-187aa82d.json (Oct 7 2026 research dossiers citing MacRumors, 9to5Mac, TechTimes, Yahoo Finance, SEC 8-K)",
+    "local journal trace bot/journal/traces/2026-10-07-9fd416bc.json (Apple FQ4 2026 EPS dossier: FQ3 results, guidance, report date)",
+    "local journal bot/journal/forecasts.jsonl (prior Apple FQ4 2026 revenue record and guidance summary)"
+   ],
+   "dossier": "- Target: Apple fiscal Q4 2026 total net sales (quarter Jun 28 - Sep 26, 2026). Release scheduled Mon Nov 2, 2026, 1:30pm PT (MacRumors/AppleInsider, Oct 6 2026). Some aggregators listed Oct 29 (MarketBeat). New CEO John Ternus (since Sep 1 2026), CFO Kevan Parekh.\n- Resolves off Apple's reported total revenue for the September quarter, not segment figures or consensus.\n- Event window: the quarter ended Sep 26 2026 -> first report ~Nov 2 2026. As of Oct 9 the quarter is 100% elapsed and the number is fixed but unpublished.\n- Year-ago base: FQ4 2025 revenue $102.47B (Apple 8-K).\n- Guidance (Jul 30 2026 call): revenue +9% to +11% YoY (~$111.7-113.7B). FX headwind ~2.5pt. Supply constraints 'significantly' greater than in the June quarter across iPhone, Mac and iPad. iPhone growth mid-teens. Services growth similar to June ex-FX. GM 47-48%. Guide came in below LSEG/FactSet consensus of ~12% and the stock fell ~6% after hours (TechTimes Jul 31 2026; Seeking Alpha).\n- FQ3 2026 (June quarter): $109.4B, +16% vs a +14-17% guide. iPhone $54.3B +22%, Mac $10.4B +29%, Services $30.7B +12% (Services missed estimates) (9to5Mac Jul 30 2026).\n- FQ2 2026 (March quarter): $111.2B, +17% vs a +13-16% guide (Apple 8-K). FQ1 2026 (December quarter): ~$143.8B, ~+16% vs a +10-12% guide.\n- FQ4 2025 (supply-constrained September quarter): ~+8% vs a +8-10% guide, i.e. the bottom of the range.\n- Analyst estimates: Yahoo Finance (Oct 2026) ~$113.6B average, 27 analysts, low ~$112.25B, high ~$117.2B. One preview (tradingpedia, Oct 6) cites $115.06B, provenance unclear.\n- Quarter mix: iPhone 18 Pro/Pro Max on sale Sep 18 (~1-2 weeks in quarter). iPhone Duo/foldable launched Oct 23 (next quarter). Base iPhone 18 reportedly pushed to spring 2027. A memory/advanced-node supply crunch is limiting units, while demand exceeded internal forecasts per Cook.\n- Historical surprise vs guidance midpoint over FY25-26: about -1pp to +5pp of YoY growth (~-$1B to +$5B on this base).\n- Searched, absent: preannouncement or intra-quarter update; USD moves Jul-Sep 2026; Polymarket/Kalshi/Manifold/bookmaker market on this number (none found). Note: this run's web tools failed, so the evidence is carried from Oct 7 research and was not refreshed.",
+   "reference_class": "Apple quarterly revenue outcomes vs its own YoY growth guidance range, FY2025-FY2026, weighted toward supply-constrained quarters"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0947,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.1348,
+   "seconds": 25.5,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 30844,
+    "cache_write": 8602,
+    "cache_write_1h": 0,
+    "output": 2624,
+    "thinking": 771,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1347945,
+    "web_fetch": 0,
+    "duration_api_ms": 25056
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 112200000000.0,
+     "25": 112800000000.0,
+     "50": 113500000000.0,
+     "75": 114400000000.0,
+     "90": 115800000000.0
+    },
+    "p_below_lower": 0.08,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "This resolves on Apple's reported fiscal Q4 2026 total net sales. The quarter ended Sep 26, so the number is fixed but not yet published; the release is expected about Nov 2. On Jul 30 Apple guided +9-11% on $102.47B, or $111.7-113.7B (midpoint $112.7B). That guide already includes a ~2.5pt FX headwind and significantly worse supply constraints. In the unconstrained Dec and Mar quarters Apple beat its guide midpoint by +5 and +2.5pp. In the constrained Sep-25 and Jun-26 quarters it landed near the midpoint (-1 and +0.8pp). Since this quarter is explicitly more constrained, I put the median near the top of the guide rather than above it: $113.5B (+10.8%), close to the ~$113.6B consensus. Below $112B means landing at or under the guide floor, ~8%. Above $118B means a ~+15% print despite the supply caps, ~2%. Market check: none of the runs or the harness found a Polymarket, Kalshi, Manifold or bookmaker market, and I could not search on this run.",
+   "sources": [],
+   "reconciliation": "Factual items: all three dossiers agree on the guide (+9-11% on $102.47B), the guide-vs-actual history, the ~$113.6B Yahoo consensus (27 analysts, $112.25-117.2B), and that the release is due ~Nov 2. The unclear $115.06B tradingpedia figure cannot be checked without web access; it is uncorroborated, so I gave it little weight. The release date vs the Oct 29 scheduled resolution cannot be settled here, but it affects only timing, not the value. Judgment item: whether the median should sit above the guide top. All runs put it at ~$113.7-113.85B. Weighting the two constrained-regime quarters, where outcomes landed near the guide midpoint, and given Apple's statement that constraints are worse this quarter, I put the median slightly lower at $113.5B, essentially at consensus. I kept tail escape masses similar to the runs (8%/2%) and set the width from constrained-regime surprise dispersion.",
+   "disagreements": [
+    {
+     "claim": "Median should sit ~$113.7-113.85B (above the guide top)",
+     "kind": "judgment",
+     "verdict": "Trimmed to $113.5B: in the constrained-regime quarters Apple landed near its guide midpoint, and this quarter's constraints are stated to be worse."
+    },
+    {
+     "claim": "Analyst consensus is ~$113.6B vs $114.3B vs $115.06B",
+     "kind": "factual",
+     "verdict": "Not verifiable without web access. The $113.6B figure from 27 analysts is the most recent and best-sourced; $114.3B was the consensus at guidance time, and $115.06B is of unclear provenance and given little weight."
+    },
+    {
+     "claim": "Release date Nov 2 vs Oct 29",
+     "kind": "factual",
+     "verdict": "Three dossiers cite MacRumors/AppleInsider for Nov 2; not re-verifiable. It does not affect the value."
+    },
+    {
+     "claim": "Below-$112B mass 7% vs 8%",
+     "kind": "judgment",
+     "verdict": "Took 8% because supply constraints are explicitly worse and the last constrained September quarter landed at the guide floor."
+    }
+   ],
+   "reference_class": "Apple quarterly total revenue vs. its own guided YoY range, FY25Q4-FY26Q3, weighted toward supply-constrained quarters"
+  }
+ ]
+}

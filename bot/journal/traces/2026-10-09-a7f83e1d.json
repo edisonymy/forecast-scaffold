@@ -1,0 +1,251 @@
+{
+ "record_id": "2026-10-09-a7f83e1d",
+ "question": "What will the first reported earnings per share after September 2026 be for the following companies? (Microsoft)",
+ "question_id": 46182,
+ "url": "https://www.metaculus.com/questions/45995/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-09T20:40:37+00:00",
+ "effort": "medium (auto)",
+ "model": "anthropic/claude-opus-5.5",
+ "provider": "openrouter",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.053,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 4.706666666666667,
+    "25": 4.836666666666667,
+    "50": 4.95,
+    "75": 5.066666666666666,
+    "90": 5.256666666666667
+   },
+   "p_below_lower": 0.01,
+   "p_above_upper": 0.023333333333333334
+  },
+  "phase1": {
+   "10": 4.706666666666667,
+   "25": 4.836666666666667,
+   "50": 4.95,
+   "75": 5.066666666666666,
+   "90": 5.256666666666667
+  },
+  "phase2": null,
+  "spread_phase1": 0.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 4.68,
+   "25": 4.83,
+   "50": 4.94,
+   "75": 5.05,
+   "90": 5.24
+  },
+  "p_below_lower": 0.01,
+  "p_above_upper": 0.02
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.8792,
+   "seconds": 130.3,
+   "usage": {
+    "num_turns": 19,
+    "input": 34,
+    "cache_read": 667618,
+    "cache_write": 17313,
+    "cache_write_1h": 0,
+    "output": 7163,
+    "thinking": 1668,
+    "web_search": 0,
+    "cost_usd_envelope": 0.62126025,
+    "web_fetch": 0,
+    "duration_api_ms": 68091
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.7,
+     "25": 4.83,
+     "50": 4.95,
+     "75": 5.07,
+     "90": 5.26
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Consensus for MSFT FQ1 FY27 (Sep-2026 quarter, report ~Oct 28 2026) is ~$4.72 (range $4.67-4.82); guidance math (rev $89.85-90.95B, COGS $29.6-29.8B, opex $16.8-16.9B, OI&E ex-OpenAI ~-$0.1B, ~19% tax, ~7.45B shares) gives ~$4.76. MSFT beat EPS consensus every FY26 quarter by ~5-12% (~4-7% ex discrete gains), so median ~$4.95. Tails: resolution criteria blank, so GAAP vs non-GAAP ambiguity (OpenAI equity-method items, recently $0-0.07 but +$1.0/-$0.41 in early FY26) plus possible Anthropic/OpenAI valuation marks fatten the upper tail. Live web tools failed this run (API 400 errors), so evidence comes from the 2026-10-07 research dossiers in the local journal; no human market (Polymarket/Manifold/Kalshi) found in that research, and the harness found none on Polymarket/Manifold.",
+   "sources": [
+    "local dataset: bot/journal/traces/2026-10-07-00052d59.json (MSFT EPS research dossiers citing SEC 8-K ex99.1 Jul 29 2026, TIKR Oct 5 2026, theta.md, Yahoo/Zacks consensus)",
+    "local dataset: bot/journal/traces/2026-10-07-aa549cb5.json (MSFT FQ1 FY27 revenue dossier: guidance, Visible Alpha consensus, beat history)",
+    "local dataset: bot/journal/traces/2026-10-09-cc16cfbe.json (MSFT related research summary and source index)"
+   ],
+   "dossier": "- NOTE: live web tools failed this run; facts below are drawn from 2026-10-07 research-run dossiers in the local journal.\n- Report: MSFT FQ1 FY27 (quarter ended Sep 30 2026) expected Oct 28 2026 after close (theta.md/MarketBeat; per TIKR as of Oct 5 2026 not officially confirmed). Prior-year report was Oct 29.\n- Consensus EPS (Oct 2026): Yahoo $4.72 (26 analysts), theta.md $4.71, Zacks $4.67, ChartMill $4.82. Consensus revenue ~$90.7B (Visible Alpha via TIKR Oct 5 2026).\n- Guidance (Jul 29 2026 call): revenue $89.85-90.95B; COGS $29.6-29.8B; opex $16.8-16.9B; OI&E ex-OpenAI ~-$100M; capex >$50B; FY27 op margin down <1pt. Midpoint math (~19% tax, ~7.45B diluted shares) ≈ $4.76.\n- Q4 FY26 (Jun 2026, SEC 8-K ex99.1): revenue $90.0B; GAAP EPS $4.81, non-GAAP $4.74 vs consensus ~$4.21-4.24. Discrete items +$0.27 incl. $3.2B Anthropic gain (~$0.33), which non-GAAP did NOT exclude; OpenAI net gain $480M (+$0.07) excluded from non-GAAP.\n- Q3 FY26 (Mar 2026): EPS $4.27 vs Zacks $4.07; OpenAI impact ~$14M (negligible).\n- Q2 FY26 (Dec 2025): GAAP ~$5.16 incl. ~$7.6B OpenAI gain; non-GAAP ~$4.14 vs ~$3.88.\n- Q1 FY26 (Sep 2025, YoY base): GAAP $3.72 (OpenAI loss ~$3.1B), non-GAAP $4.13 vs ~$3.67.\n- FY26 non-GAAP EPS surprise sizes: ~+12.5%, ~+6.7%, ~+4.9%, ~+11.8% (~+4-5% ex discrete gain).\n- Revenue actual vs guidance midpoint last 4 quarters: +1.5% to +3.2%, never below midpoint.\n- Investment marks: Anthropic rounds Feb 2026 and May 2026; no Anthropic/OpenAI valuation event found within Jul-Sep 2026 (searches were limited).\n- Downside candidates: capex/depreciation pressure, retirement-program/severance charges, OpenAI equity losses (GAAP basis), FX (not checked). Upside: Azure acceleration, investment mark-ups.\n- Resolution instrument: criteria text blank; unclear whether GAAP diluted or adjusted (non-GAAP) EPS; aggregators usually log non-GAAP; question range centred at 4.745 (≈ Q4 FY26 non-GAAP).\n- Event window: first EPS reported after Sep 2026 -> FQ1 FY27 release ~Oct 28 2026; as of 2026-10-09 the quarter is closed, report not yet released.\n- Searched, absent: company EPS guidance; pre-announcement; Polymarket/Manifold/Kalshi EPS-level market.",
+   "reference_class": "Microsoft quarterly non-GAAP EPS outcomes vs pre-report consensus, FY25-FY26 (all beats, ~3-12%)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.6397,
+   "seconds": 64.3,
+   "usage": {
+    "num_turns": 20,
+    "input": 36,
+    "cache_read": 727294,
+    "cache_write": 17361,
+    "cache_write_1h": 0,
+    "output": 6696,
+    "thinking": 1304,
+    "web_search": 0,
+    "cost_usd_envelope": 0.6397332500000001,
+    "web_fetch": 0,
+    "duration_api_ms": 62686
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.7,
+     "25": 4.83,
+     "50": 4.95,
+     "75": 5.07,
+     "90": 5.27
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Q1 FY27 (Sep-2026 quarter) reports ~Oct 28, 2026. Consensus non-GAAP EPS ~$4.72 (range $4.67-4.82). Guidance midpoint math gives ~$4.76. In FY26 MSFT beat every quarter; headline beats were +5% to +12%, or ~4-6% excluding one-offs (Q4's $4.74 included a ~$0.33 Anthropic gain). That puts the median near $4.95. Right tail: investment mark-ups (e.g. Anthropic), or OpenAI dilution gains if GAAP EPS is used (Q2 FY26 GAAP ran ~$1 above non-GAAP). Left tail: capex/depreciation pressure, a stronger dollar in September, OpenAI equity losses on a GAAP basis. Market check: live web access failed this run. Earlier research (Oct 7) and the harness found no Polymarket, Manifold or Kalshi EPS-level market and no bookmaker line, so there is no crowd anchor.",
+   "sources": [
+    "bot/journal/forecasts.jsonl (record 2026-10-07-00052d59, Microsoft EPS prior research summary)",
+    "bot/journal/traces/2026-10-07-00052d59.json (three research dossiers citing MSFT 8-K ex99.1, TIKR, tradingeconomics, TipRanks)",
+    "bot/journal/traces/2026-10-09-cc16cfbe.json (Microsoft Q1 FY27 revenue dossier: guidance, FX, beat history)"
+   ],
+   "dossier": "- NOTE: live web access failed this run; facts below come from repo research traces dated Oct 7 and Oct 9, 2026 (citing SEC 8-K ex99.1, TIKR, tradingeconomics, Zacks, TipRanks, CNBC).\n- Q4 FY26 (Jun 2026 qtr, reported Jul 29, 2026): GAAP diluted EPS $4.81, non-GAAP $4.74 vs consensus ~$4.21-4.24. Non-GAAP excludes OpenAI impact (+$480M, +$0.07). A $3.2B Anthropic investment gain (~$0.33) was NOT excluded from non-GAAP. Diluted shares ~7,443M (8-K).\n- Q3 FY26 (Mar 2026): EPS $4.27 vs Zacks $4.07; OpenAI impact negligible. Q2 FY26 (Dec 2025): GAAP ~$5.16 (incl. ~$7.6B OpenAI gain) vs non-GAAP ~$4.14 (consensus ~$3.88). Q1 FY26 (Sep 2025, year-ago comp): GAAP $3.72 vs non-GAAP $4.13 (~$3.1B OpenAI loss).\n- FY26 GAAP EPS $17.95; non-GAAP $17.28; OpenAI net gains added $0.67 (8-K).\n- Q1 FY27 consensus EPS (Oct 2026): Yahoo/tradingeconomics $4.72, another aggregator $4.71, Zacks $4.67, ChartMill $4.82.\n- Q1 FY27 guidance (Jul 29, 2026 call): revenue $89.85-90.95B (+16-17%); COGS $29.6-29.8B; opex $16.8-16.9B; OI&E ex-OpenAI ~-$100M; capex >$50B. Midpoint math (~19% tax, ~7.45B shares) gives ~$4.76.\n- Beat history vs consensus FY26: ~+12.5%, ~+6%, ~+4.9%, +11.8% headline (~+4% ex-Anthropic gain in Q4). Revenue beat the guidance midpoint in all four FY26 quarters (by 1.6-3.2%).\n- FX: dollar index rose from ~98.6 (Sep 9) to ~101 (Sep 25, 2026) after a Fed hike (capital.com via revenue trace); guidance assumed late-July rates.\n- New FY27 segment structure (Agents & Infra; Devices & Consumer); stock up ~39% since Jun 30, 2026 (TIKR).\n- Resolution instrument: criteria text blank. 'Reported EPS' could mean GAAP diluted or non-GAAP; aggregators usually log non-GAAP. The gap between them is the OpenAI equity-method impact, which ranged from -$0.41 to about +$1.0 per quarter in FY26. The question range is centred at 4.745 (≈ Q4 FY26 non-GAAP).\n- Event window: the first EPS report after Sep 2026 = Q1 FY27 release, expected Oct 27-28, 2026; as of Oct 9, 2026, 0% elapsed (not yet reported).\n- Upside mechanisms: Azure acceleration (Q4 Azure +43%, guide +44-45% cc); investment mark-ups; OpenAI dilution gains on a GAAP basis. Downside: depreciation from capex, dollar strength, OpenAI equity losses (GAAP), restructuring charges.\n- Searched, not found (Oct 7 research): any Anthropic/OpenAI valuation event inside Jul-Sep 2026; explicit EPS guidance; pre-announcement; Polymarket/Manifold/Kalshi/bookmaker EPS markets.",
+   "reference_class": "Microsoft quarterly EPS outcomes vs pre-report consensus, FY25-FY26 (ex-discrete beats ~4-6%, headline beats 5-12%)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.258,
+   "seconds": 70.4,
+   "usage": {
+    "num_turns": 19,
+    "input": 32,
+    "cache_read": 642233,
+    "cache_write": 18008,
+    "cache_write_1h": 0,
+    "output": 7376,
+    "thinking": 1849,
+    "web_search": 0,
+    "cost_usd_envelope": 0.6182265,
+    "web_fetch": 0,
+    "duration_api_ms": 69033
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.72,
+     "25": 4.85,
+     "50": 4.95,
+     "75": 5.06,
+     "90": 5.24
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Q1 FY27 (Sep-2026 qtr) reports ~Oct 27-28. Consensus EPS ~$4.72 (aggregators $4.67-4.82); guidance-midpoint math ~$4.76. MSFT beat every FY26 quarter: headline +5% to +12.5%, ex-discrete ~4-6%, implying ~$4.90-5.00. Right tail: Anthropic/OpenAI mark-ups (non-GAAP keeps Anthropic gains; GAAP would add OpenAI effects); left tail: capex depreciation, September USD strength, first quarter under new segments. Question range centered at 4.745 (= Q4 non-GAAP 4.74), suggesting adjusted EPS is the instrument. Market check: live web tools failed this run; prior repo research found no Polymarket/Manifold/Kalshi EPS-level market, and the harness found none on Polymarket/Manifold — no market anchor.",
+   "sources": [
+    "bot/journal/forecasts.jsonl record 2026-10-07-00052d59 (prior research on this question: SEC 8-K ex99.1, tradingeconomics, TipRanks, TIKR)",
+    "bot/journal/traces/2026-10-07-00052d59.json (three independent research dossiers, Oct 7 2026)",
+    "bot/journal/traces/2026-10-09-cc16cfbe.json (MSFT Q1 FY27 revenue dossier: guidance, beat history, FX, Oct 9 2026)"
+   ],
+   "dossier": "- NOTE: live web access failed this run; all evidence is from repo research dated Oct 7-9, 2026.\n- Report: MSFT Q1 FY27 (qtr ended Sep 30 2026), expected after close Oct 27-28 2026 (MarketBeat/theta.md/TIKR via Oct 7 research).\n- Consensus EPS (non-GAAP basis, Oct 2026): Yahoo/tradingeconomics $4.72 (26 analysts), theta.md $4.71, Zacks $4.67, ChartMill $4.82.\n- Guidance (Jul 29 2026 call): revenue $89.85-90.95B (+16-17%); COGS $29.6-29.8B; opex $16.8-16.9B; other income ex-OpenAI ~-$100M; op margin roughly flat YoY; capex >$50B. Midpoint math at ~19% tax and ~7.45B diluted shares gives ~$4.76.\n- Q4 FY26 (reported Jul 29 2026, SEC 8-K ex99.1): revenue $90.0B; GAAP EPS $4.81; non-GAAP $4.74 vs consensus ~$4.21-4.24. Non-GAAP excludes OpenAI impact (+$0.07) but included a $3.2B Anthropic gain (~$0.33).\n- Q3 FY26 (Apr 29 2026): EPS $4.27 vs Zacks $4.07; OpenAI impact negligible.\n- Q2 FY26: GAAP ~$5.16 (incl. ~$7.6B OpenAI gain) vs non-GAAP ~$4.14 (consensus ~$3.88).\n- Q1 FY26 (Sep 2025, YoY base): GAAP $3.72; non-GAAP $4.13 (consensus ~$3.67).\n- FY26 EPS surprises: headline +12.5%, ~+6%, +4.9%, +11.8% (Q4 ~+4% ex-Anthropic gain). Revenue beats vs guide midpoint: +1.6% to +3.2% each quarter.\n- FX: dollar index rose from ~98.6 (Sep 9) to ~101 (Sep 25 2026) after a Fed hike; guidance used late-July rates.\n- Stock up ~39% since Jun 30 2026 (TIKR, Oct 5).\n- Sep 2026 8-K: segments reorganized to Agents & Infra and Devices & Consumer.\n- Resolution instrument: criteria blank; 'first reported EPS' could be GAAP diluted or adjusted. Range center 4.745 matches Q4 non-GAAP 4.74. GAAP minus non-GAAP has been driven by OpenAI equity-method effects: -$0.41 (Q1 FY26), +~$1.0 (Q2), ~0 (Q3), +$0.07 (Q4).\n- Event window: the single Q1 FY27 release (~Oct 27-28 2026) through resolution Oct 29 2026; as of Oct 9 the quarter has closed and the report is unpublished.\n- Searched, absent: Anthropic/OpenAI valuation events in Jul-Sep 2026 (not found in limited searches); explicit EPS guidance; Polymarket/Manifold/Kalshi/bookmaker EPS-level markets (none found).",
+   "reference_class": "Microsoft quarterly non-GAAP EPS actual vs pre-report consensus, FY25-FY26 (beats ~4-6% ex-discrete, 5-12.5% headline)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.1328,
+   "seconds": 23.7,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 30844,
+    "cache_write": 9223,
+    "cache_write_1h": 0,
+    "output": 2387,
+    "thinking": 563,
+    "web_search": 0,
+    "cost_usd_envelope": 0.13275075,
+    "web_fetch": 0,
+    "duration_api_ms": 23309
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.68,
+     "25": 4.83,
+     "50": 4.94,
+     "75": 5.05,
+     "90": 5.24
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "First EPS after Sep 2026 = MSFT FQ1 FY27 (Sep-2026 qtr), reporting ~Oct 27-28. Consensus ~$4.72 ($4.67-4.82); guidance-midpoint math ~$4.76. MSFT beat every FY26 quarter, ex-discrete ~4-7% and shrinking, implying ~$4.92-4.98; trimmed slightly for September USD strength and the first quarter under new segments. Right tail: Anthropic/OpenAI mark-ups. Left tail: GAAP basis with OpenAI equity losses (-$0.41 in Q1 FY26) if the instrument is GAAP; range centred on Q4 non-GAAP 4.74 suggests adjusted EPS. Market check: no Polymarket/Manifold/Kalshi/bookmaker EPS market found (per runs' prior research and harness); no live web this run.",
+   "sources": [],
+   "reconciliation": "All three runs share identical evidence (consensus $4.67-4.82, guidance math ~$4.76, FY26 beat history, blank criteria -> GAAP/non-GAAP ambiguity, no market found) and near-identical distributions (median 4.95, p10 4.70-4.72, p90 5.24-5.27). No factual disputes remain open; the report date (Oct 27 vs 28) does not matter since both fall before resolution. The only judgment calls are beat size and tail weight. I take the shrinking ex-discrete beat trend (~4-5%) plus the slight FX headwind as putting the median at ~4.94. I keep the left tail a little fatter (p10 4.68) because a GAAP reading with OpenAI equity losses is a real if unlikely path. I agree with the runs' reference class and their roughly 0.52-0.56 dispersion. No web retrieval on this run.",
+   "disagreements": [
+    {
+     "claim": "Report date Oct 27 vs Oct 28, 2026",
+     "kind": "factual",
+     "verdict": "Unresolved but immaterial: both precede the Oct 29 resolution."
+    },
+    {
+     "claim": "Size of expected beat over consensus (~4-6% vs higher)",
+     "kind": "judgment",
+     "verdict": "Shrinking ex-discrete beat trend supports ~4.5%; median ~4.94."
+    },
+    {
+     "claim": "Weight on GAAP-instrument left tail / mark-up right tail",
+     "kind": "judgment",
+     "verdict": "Range centred on non-GAAP 4.74 favors adjusted EPS; kept a modest fat left tail (p10 4.68) and a 2% upper escape."
+    }
+   ],
+   "reference_class": "MSFT quarterly non-GAAP EPS actual vs pre-report consensus, FY26 quarters (beats of ~+4% to +12.5%)"
+  }
+ ]
+}
