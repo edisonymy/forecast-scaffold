@@ -1,0 +1,258 @@
+{
+ "record_id": "2026-10-10-7fc6ce70",
+ "question": "What will be the total OpenRouter token usage December 21-27, 2026?",
+ "question_id": 46187,
+ "url": "https://www.metaculus.com/questions/46003/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-10-10T14:05:34+00:00",
+ "effort": "medium (auto)",
+ "model": "anthropic/claude-opus-5.5",
+ "provider": "openrouter",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.0437,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 154666666666666.66,
+    "25": 188333333333333.34,
+    "50": 228000000000000.0,
+    "75": 276666666666666.66,
+    "90": 345666666666666.7
+   },
+   "p_below_lower": 0.023333333333333334,
+   "p_above_upper": 0.02
+  },
+  "phase1": {
+   "10": 154666666666666.66,
+   "25": 188333333333333.34,
+   "50": 228000000000000.0,
+   "75": 276666666666666.66,
+   "90": 345666666666666.7
+  },
+  "phase2": null,
+  "spread_phase1": 4000000000000.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 155000000000000.0,
+   "25": 192000000000000.0,
+   "50": 235000000000000.0,
+   "75": 285000000000000.0,
+   "90": 355000000000000.0
+  },
+  "p_below_lower": 0.02,
+  "p_above_upper": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.6681,
+   "seconds": 128.7,
+   "usage": {
+    "num_turns": 10,
+    "input": 18,
+    "cache_read": 342924,
+    "cache_write": 10705,
+    "cache_write_1h": 0,
+    "output": 4663,
+    "thinking": 1482,
+    "web_search": 0,
+    "cost_usd_envelope": 0.35503324999999997,
+    "web_fetch": 0,
+    "duration_api_ms": 54572
+   },
+   "validation_errors_first_attempt": [
+    "research run listed 2 distinct source(s); this tier requires at least 3 — run real searches and list in \"sources\" only what you actually consulted"
+   ],
+   "estimate": {
+    "percentiles": {
+     "10": 158000000000000.0,
+     "25": 190000000000000.0,
+     "50": 230000000000000.0,
+     "75": 280000000000000.0,
+     "90": 352000000000000.0
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Web tools failed this run (search/fetch API errors), so this forecast uses only the question text and the Polymarket prices supplied by the harness. Level: the chart showed 127T for Sep 7-13. Polymarket's 4-week Sep28-Oct25 book is centred on 675-725T (~170T/wk; 675-725T at 0.36, >=725T at 0.15, <575T at 0.02), and its week-of-Oct-5 market prices <155T at only 5%, so the early-October run rate is ~165-175T/wk. Trend: ~25T/wk in May -> 127T mid-Sep -> ~170T early Oct, i.e. 30-50%/month compounding. Projecting ~10.5 weeks with growth decaying to 10-30%/month, less a Christmas-week dip of ~10-20%, gives a median near 230T. Downside: plateau, free-model removals, holiday slump. Upside: compounding continues or a large new agentic/free model launches. Market check: no human market prices the Dec 21-27 bar. The Polymarket books are near-miss contracts (different windows) and are used only to fix the current level.",
+   "sources": [
+    "https://www.metaculus.com/questions/45689",
+    "https://polymarket.com/market/will-openrouter-process-less-than-155t-tokens-the-week-of-october-5",
+    "https://polymarket.com/market/will-openrouter-process-between-675t-and-725t-tokens-sep-28-to-oct-25-2026",
+    "https://polymarket.com/market/will-openrouter-process-at-least-725t-tokens-sep-28-to-oct-25-2026"
+   ],
+   "dossier": "- Resolves off the OpenRouter rankings 'Top Models: Weekly usage' chart, using the bar labelled Dec 21 (Mon-Sun bins) as displayed and rounded. It does not resolve off third-party tallies. If the bins change, it uses the last full week of 2026.\n- Event window: Dec 21 -> Dec 27, 2026 per the criteria. As of 2026-10-10, 0% of the window has elapsed; about 10.5 weeks remain before it starts.\n- Sep 7-13, 2026 bar = 127T tokens (Metaculus question fine print). Background calls this the top-ten total; the chart bar is the resolution value.\n- May 2026 Series B ($113M, CapitalG, ~$1.3B valuation): OpenRouter reported ~25T tokens/week, up 5x from ~5T/week six months earlier (question background).\n- Polymarket (harness data, Oct 2026): 4-week Sep28-Oct25 total buckets <575T, 575-625T, 625-675T, 675-725T, >=725T. Mass centred around 650-725T, which implies roughly 160-180T/week in early-to-mid October. A week-of-Oct-5 market puts a low price on <155T.\n- Implied growth: ~25T/wk (May) -> 127T/wk (mid-Sep) -> ~170T/wk (early Oct), about 30-50%/month in 2026.\n- Drivers cited: agentic/coding workloads, cheap open-weight models, free model variants. Free-variant volume can switch on or off abruptly.\n- Seasonality: the Christmas week usually sees lower human developer activity. Automated agent traffic may dampen the dip. No OpenRouter-specific holiday-week data was found.\n- Status quo: continued growth from ~170T/wk, at a pace that is uncertain.\n- Regime-break candidates: down = free-model removals, a provider outage or pricing change, or holiday slump; up = a major new model launch or enterprise/agent adoption surge.\n- Searched but could not retrieve (web tools failed this run): live rankings JSON, Dec 2025 holiday-week bars, Oct 2026 weekly bars.",
+   "reference_class": "OpenRouter weekly token totals and their month-over-month growth in 2026 (May ~25T/wk -> Sep ~127T/wk -> early Oct ~170T/wk), extrapolated ~2.5 months with decaying growth"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.3131,
+   "seconds": 80.0,
+   "usage": {
+    "num_turns": 14,
+    "input": 24,
+    "cache_read": 459608,
+    "cache_write": 21771,
+    "cache_write_1h": 0,
+    "output": 6459,
+    "thinking": 2064,
+    "web_search": 0,
+    "cost_usd_envelope": 0.52746775,
+    "web_fetch": 0,
+    "duration_api_ms": 77866
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 158000000000000.0,
+     "25": 190000000000000.0,
+     "50": 226000000000000.0,
+     "75": 268000000000000.0,
+     "90": 330000000000000.0
+    },
+    "p_below_lower": 0.02
+   },
+   "reasoning": "Tools for web retrieval failed this run (WebSearch/WebFetch API errors, curl blocked), so evidence is limited to the question text and harness-supplied Polymarket data. Trajectory: ~5T/wk (Nov 2025) -> ~25T/wk (May 2026) -> 127T (Sep 7-13 week), i.e. ~6-10%/wk compounding. Polymarket 4-week Sep 28-Oct 25 buckets (modal 675-725T at 36%, >=725T 15%, 625-675T 26%) and the Oct 5 week '<155T' at 5% imply ~170-180T/wk in October; these are near-miss contracts (different windows), used as level evidence, not anchors. Projecting ~9 weeks from ~180T at decelerating 3-4%/wk gives ~235-255T, less ~10% Christmas-week dip -> median ~225T. Right skew from continued compounding; left tail from deceleration, holiday dip and free-model withdrawals; small 2% mass below 100T for a methodology change or collapse.",
+   "sources": [
+    "Metaculus question 45689 text/background (OpenRouter Series B ~25T/wk May 2026; 127T Sep 7-13 2026), as provided in prompt",
+    "Polymarket market data supplied by harness: Will OpenRouter process between 675T and 725T tokens Sep 28-Oct 25 (polymarket.com/market/will-openrouter-process-between-675t-and-725t-tokens-sep-28-to-oct-25-2026)",
+    "Polymarket market data supplied by harness: Will OpenRouter process less than 155T tokens the week of October 5 (polymarket.com/market/will-openrouter-process-less-than-155t-tokens-the-week-of-october-5)"
+   ],
+   "dossier": "RESEARCH LIMITATION: live web retrieval failed this run (search/fetch tools errored); evidence below is from question text and harness-supplied market data only.\n- OpenRouter reported ~5T tokens/week around Nov 2025 and ~25T/week at its May 2026 Series B ($113M, CapitalG, ~$1.3B valuation) (Metaculus Q45689 background, 2026-10-06). Implied growth ~6%/week over that period.\n- Week Sep 7-13 2026: 127T tokens per the rankings chart (Metaculus example resolution). Implied May->Sep growth ~10%/week compounding.\n- Polymarket (harness data, ~2026-10-10): 4-week Sep 28-Oct 25 total bucket markets exist, low volume ($1-3k each); bucket structure centered 575T-725T+, implying a weekly run-rate in the ~145-180T zone. Separate Polymarket market on the week of Oct 5 has a '<155T' contract. These are different windows than this question.\n- Drivers cited: agentic/coding workloads, cheap open-weight models, free model variants (Metaculus background). Free variants and stealth models can be withdrawn, creating step-downs.\n- Holiday effect: Dec 21-27 includes Christmas; developer-driven (human-initiated coding) traffic typically dips in that week; automated agent traffic less affected. Magnitude for OpenRouter not verified this run (searched, absent).\n- Status quo: continued compounding growth at a decelerating rate, with a Christmas-week dip.\n- Regime-break candidates: DOWN - removal of large free models, pricing changes, a major customer migrating off, methodology/privacy-exclusion changes; UP - a viral free/stealth model launch or a big agentic product routing through OpenRouter.\n- Compounding arithmetic from ~175T (early Oct) over 11 weeks: 1%/wk -> ~195T; 3%/wk -> ~242T; 5%/wk -> ~299T; 8%/wk -> ~408T (before holiday adjustment).\n- Resolution instrument: resolves off the value displayed for the Dec 21 bar on openrouter.ai/rankings 'Top Models' weekly chart (with its displayed rounding), not off press releases or Polymarket. If bins change, uses the last full week within 2026.\n- Event window: Dec 21 -> Dec 27, 2026 per the criteria; as of 2026-10-10 0% elapsed (window starts ~10 weeks out).\n- Searched for but could not obtain: the actual recent weekly chart values (late Sep/early Oct 2026), prior Christmas-week dips in OpenRouter data (Dec 2024, Dec 2025), any Kalshi/Manifold market on December volume.",
+   "reference_class": "OpenRouter weekly total-token series 2025-2026, extrapolated by compounding weekly growth with a holiday-week adjustment"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.3721,
+   "seconds": 66.2,
+   "usage": {
+    "num_turns": 9,
+    "input": 14,
+    "cache_read": 253288,
+    "cache_write": 18356,
+    "cache_write_1h": 0,
+    "output": 5225,
+    "thinking": 1915,
+    "web_search": 0,
+    "cost_usd_envelope": 0.37206399999999995,
+    "web_fetch": 0,
+    "duration_api_ms": 59436
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 148000000000000.0,
+     "25": 185000000000000.0,
+     "50": 228000000000000.0,
+     "75": 282000000000000.0,
+     "90": 355000000000000.0
+    },
+    "p_below_lower": 0.03
+   },
+   "reasoning": "Live web tools failed this run (API errors), so this works only from the question text and the harness-supplied Polymarket listings. Anchors: Sep 7-13 bar = 127T; Polymarket implies the week of Oct 5 above 155T (~95%) and Sep 28-Oct 25 at roughly 170T/week. That market evidence is not an anchor because the windows differ. Growth has run ~6-10%/week since late 2025, but sustained compounding usually decays. 11 more weeks at 0-7%/week, less a 5-15% Christmas-week dip, gives a median of ~225-230T. 3% is put below 100T for a collapse such as free/stealth model traffic being withdrawn; no upper escape is priced because 700T would need >9%/week sustained.",
+   "sources": [
+    "Metaculus question 45689 text and fine print (as provided in the prompt)",
+    "Polymarket: Will OpenRouter process less than 155T tokens the week of October 5 (harness listing)",
+    "Polymarket: OpenRouter Sep 28-Oct 25 token bracket markets 575T/625T/675T/725T (harness listing)"
+   ],
+   "dossier": "- Resolves off the OpenRouter rankings 'Top Models: Weekly usage' chart, value displayed on the Dec 21 bar (Mon-Sun bins), including its rounding. It does not resolve off press releases or Series B figures. If the bins change, it uses the last full week within 2026.\n- Event window: Dec 21 -> Dec 27, 2026 per the criteria; as of 2026-10-10 0% elapsed (window starts in ~10 weeks).\n- Data point (question fine print, Sep 2026): the Sep 7-13 2026 bar = 127T tokens (background describes this as the top ten models' total).\n- Data point (question background): at the May 2026 Series B OpenRouter reported ~25T tokens/week, up ~5x from ~5T/week six months earlier (~late 2025). This implies ~6-7%/week compounding from late 2025 to May 2026 and ~10%/week May to Sep (the metrics may not be identical).\n- Polymarket (harness listing, Oct 2026) has markets on the week of Oct 5 (<155T threshold) and on the 4-week Sep 28-Oct 25 total (brackets 575/625/675/725T). The bracket structure places recent weekly volume around the 150-180T range.\n- Remaining horizon from the latest observed weeks (early Oct) to Dec 21 is ~11 weeks. Continuation arithmetic: 0%/wk -> flat ~170T; 3.5%/wk -> ~1.46x; 7%/wk -> ~2.1x.\n- Holiday effect: Christmas week typically depresses human developer API activity; automated/agentic workloads soften this. Magnitude for OpenRouter not found (searched, absent - tools failed).\n- Regime-break candidates: up - new free/stealth model launches or major agentic coding tools routing via OpenRouter (these previously caused jumps); down - free-variant withdrawal, a big customer moving to direct provider APIs, rate limits, or private-request exclusion changes.\n- Volatility note: the series is driven partly by free-model promotions, so week-to-week swings of +/-10-20% are plausible.\n- Searched for but could not retrieve (web tools errored this run): current rankings JSON, Oct 2026 weekly values, Dec 2025 holiday-week bars, any Manifold/Kalshi markets for December 2026.\n- No market prices this exact Dec 21-27 window, as far as could be checked.",
+   "reference_class": "OpenRouter weekly-token series 2025-2026 extrapolated with decaying compound growth; holiday-week dips in developer API usage"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0453,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.3362,
+   "seconds": 35.8,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 0,
+    "cache_write": 40377,
+    "cache_write_1h": 0,
+    "output": 3354,
+    "thinking": 1348,
+    "web_search": 0,
+    "cost_usd_envelope": 0.33621625,
+    "web_fetch": 0,
+    "duration_api_ms": 35209
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 155000000000000.0,
+     "25": 192000000000000.0,
+     "50": 235000000000000.0,
+     "75": 285000000000000.0,
+     "90": 355000000000000.0
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Level: the Sep 7-13 bar was 127T. Polymarket's 4-week Sep28-Oct25 brackets and the 'under 155T' price for the week of Oct 5 put early October at about 165-175T per week. These are near-miss contracts used only to set the level. No human market prices the Dec 21-27 bar. Trend: about 10% per week from May to September, slowing to about 7% per week from mid-September to early October. Assuming 3-4% per week on average over the 11 weeks to Dec 21 gives about 240-265T. Less a 5-15% Christmas-week dip (agent traffic softens it), the median is about 235T. The distribution is skewed right because compounding could continue or a big free model or agent product could launch. The left tail covers a plateau, withdrawal of free or stealth models, and a holiday slump.",
+   "sources": [],
+   "reconciliation": "All three runs had no web access and used the same evidence: 127T for Sep 7-13, 25T per week at the May Series B, and Polymarket brackets implying about 170T per week in early October. I re-checked the bracket prices and agree with the ~165-175T early-October level. Whether the May 25T figure is measured the same way as the chart cannot be settled here, so it widens the distribution rather than steepening the trend. The remaining disagreements are judgment calls about how fast growth slows and how deep the holiday dip is. I put the median slightly above the runs (235T against 226-230T) because the latest observed month still grew about 7% per week, so an average of 3-4% per week is reasonable. I agree with and keep the runs' ~2.2x dispersion and the small lower-escape probability. I added a 1% upper escape for a growth regime break.",
+   "disagreements": [
+    {
+     "claim": "Early-October weekly run rate is about 165-180T",
+     "kind": "factual",
+     "verdict": "Consistent across runs and with the bracket prices; accepted at about 170T, with low-liquidity, near-miss caveats."
+    },
+    {
+     "claim": "Whether the May 25T/week figure is comparable to the chart's 127T",
+     "kind": "factual",
+     "verdict": "Cannot be settled without web access; treated as uncertainty in the width."
+    },
+    {
+     "claim": "Average weekly growth from October to December (1-7% per week)",
+     "kind": "judgment",
+     "verdict": "Took about 3-4% per week, given the most recent ~7% per week and the observed slowdown."
+    },
+    {
+     "claim": "Size of the Christmas-week dip (5-20%)",
+     "kind": "judgment",
+     "verdict": "Took about 10%, since agent traffic dampens the holiday drop."
+    }
+   ],
+   "reference_class": "Fast-compounding API platform usage series (OpenRouter weekly tokens, late 2025-2026), with growth slowing over a ~11-week horizon"
+  }
+ ]
+}
