@@ -1,0 +1,258 @@
+{
+ "record_id": "2026-10-11-0587acc4",
+ "question": "How many mass shootings will the U.S. experience in October 2026?",
+ "question_id": 46140,
+ "url": "https://www.metaculus.com/questions/45958/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-11T21:02:49+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.778,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 32.333333333333336,
+    "25": 35.666666666666664,
+    "50": 39.5,
+    "75": 43.333333333333336,
+    "90": 48.666666666666664
+   },
+   "p_below_lower": 0.04666666666666667
+  },
+  "phase1": {
+   "10": 32.333333333333336,
+   "25": 35.666666666666664,
+   "50": 39.5,
+   "75": 43.333333333333336,
+   "90": 48.666666666666664
+  },
+  "phase2": null,
+  "spread_phase1": 3.5,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 31.0,
+   "25": 35.0,
+   "50": 38.5,
+   "75": 42.0,
+   "90": 47.0
+  },
+  "p_below_lower": 0.05
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9838,
+   "seconds": 101.4,
+   "usage": {
+    "num_turns": 14,
+    "input": 26,
+    "cache_read": 363882,
+    "cache_write": 14670,
+    "cache_write_1h": 14670,
+    "output": 5444,
+    "thinking": 1484,
+    "web_search": 3,
+    "cost_usd_envelope": 0.4856264,
+    "web_fetch": 0,
+    "duration_api_ms": 103496
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 33.0,
+     "25": 37.0,
+     "50": 41.0,
+     "75": 45.0,
+     "90": 50.0
+    },
+    "p_below_lower": 0.03
+   },
+   "reasoning": "MST's 2026 JSON lists 13 October incidents through Oct 10 (~32% of month elapsed), consistent with ~1.3/day (GVA, stricter definition, logged ~11 Oct incidents by Oct 10 and 33 in Sep; MST typically runs ~1.2x GVA). Projecting ~1.25/day for the remaining 21 days plus a Halloween-weekend bump (Oct 31 is a Saturday) gives ~40-42 total. Upside: late reporting backfill, fall weekends, 2026 running above 2025 YTD (GVA 358 vs 328 on Oct 5). Downside: seasonal decline into late fall, MST volunteer update lag before resolution. Escape below 29.5 requires <=16 more incidents in 21 days or a stalled database update (~3%). Market check: no Polymarket/Manifold (harness) or Kalshi market found.",
+   "sources": [
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2026-data.json",
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2025-data.json",
+    "https://x.com/GunDeaths/status/2107196001312469168",
+    "https://www.gunviolencearchive.org/reports/mass-shooting",
+    "https://www.massshootingtracker.site/data/?year=2026"
+   ],
+   "dossier": "- Resolves off the Mass Shooting Tracker (massshootingtracker.site) 2026 data for October 2026 (raw JSON at mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2026-data.json), NOT off Gun Violence Archive (GVA). MST counts 4+ shot, including the shooter, so it is broader than GVA (which excludes the shooter); MST historically runs about 1.1-1.3x GVA.\n- Event window: Oct 1 -> Oct 31, 2026 per the criteria; as of 2026-10-11 21:00 UTC about 35% has elapsed (MST data seen only through Oct 10, about 32%).\n- MST JSON fetched 2026-10-11 lists 13 October incidents: Oct 3 (Baltimore MD, Commerce TX, Trenton NJ), Oct 4 (Sacramento CA, Albany NY, Dallas TX, Vienna GA homecoming party with 2 killed and 35 injured), Oct 5 (Portsmouth VA), Oct 7 (Meridianville AL), Oct 9 (Douglas GA, Baltimore MD, Erie PA with 8-9 dead), Oct 10 (Detroit MI). None on Oct 1-2. Oct 10-11 weekend entries may not all be added yet.\n- MST's monthly 2026 counts could not be read cleanly because the fetch was truncated: August was about 46-48; September came out as 27 on one read and 40 on another (unreliable).\n- GVA 2026 monthly counts (X @GunDeaths, about Oct 5-6, 2026): Jan 25, Feb 29, Mar 40, Apr 34, May 36, Jun 42, Jul 68, Aug 47, Sep 33, Oct 4 through Oct 5. YTD 358 vs 328 at the same date in 2025. GVA YTD was reportedly 365 by about Oct 10 (about 11 October incidents).\n- MST 2025 (truncated read): about 18 incidents Oct 1-12, 2025, which means October 2025 MST was likely in the 35-45 range (not directly verified).\n- Seasonality: summer peak (July); September through November usually lower. Halloween (Oct 31, 2026, a Saturday) has historically produced party shootings.\n- Downside mechanism: MST is volunteer-maintained and may lag in adding late-October incidents before the resolution check (Nov 2).\n- Markets: none found on Polymarket, Manifold or Kalshi.\n- Could not find: a clean MST monthly breakdown for October in 2023-2025, or reliable full-month MST counts for 2026.",
+   "reference_class": "Monthly mass-shooting counts (4+ shot) in the US in recent years (2024-2026), MST definition (~1.2x GVA); October month-to-date pace extrapolation"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.6257,
+   "seconds": 122.1,
+   "usage": {
+    "num_turns": 18,
+    "input": 32,
+    "cache_read": 459344,
+    "cache_write": 16588,
+    "cache_write_1h": 16588,
+    "output": 6762,
+    "thinking": 2197,
+    "web_search": 2,
+    "cost_usd_envelope": 0.6419638,
+    "web_fetch": 0,
+    "duration_api_ms": 123002
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 31.0,
+     "25": 34.0,
+     "50": 37.5,
+     "75": 41.0,
+     "90": 47.0
+    },
+    "p_below_lower": 0.07
+   },
+   "reasoning": "MST 2026 JSON shows 13 October incidents logged through Oct 10 (Oct 3-10; none Oct 1-2). Recent rate ~1.25/day (Sept 2026 ~37-39; GVA 271 on Jul 27 -> 365 on Oct 10). Oct 2025 MST had ~38 total, with 21 over Oct 11-31. Expect ~21-27 more over 21 remaining days incl. Halloween Saturday -> median ~37-38. Downside: slow late-month rate or lag in MST entry before resolution; upside: WebFetch-based counts may undercount existing entries. No Kalshi/Polymarket/Manifold/bookmaker market found.",
+   "sources": [
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2026-data.json",
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2025-data.json",
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2024-data.json",
+    "https://www.massshootingtracker.site/data/",
+    "https://www.gunviolencearchive.org/reports/mass-shooting",
+    "https://x.com/GunDeaths/status/2081800165510262856",
+    "https://www.thetrace.org/2026/07/shooting-gun-violence-data-america-q2-2026/"
+   ],
+   "dossier": "- Resolves off the Mass Shooting Tracker (massshootingtracker.site) 2026 database, which includes the shooter in the 4+ shot count. It does not resolve off GVA, which excludes the shooter. The data is a JSON file at mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2026-data.json.\n- Event window: Oct 1 -> Oct 31, 2026 per the criteria. As of Oct 11 21:00 UTC, about 35% of the window has elapsed. Question resolves Nov 2, about 1 day after the window closes, so late-entry lag is possible.\n- MST 2026 file, fetched Oct 11 by listing entries: October entries are Oct 3 (Commerce TX, Trenton NJ, Baltimore MD), Oct 4 (Sacramento, Albany NY, Dallas, Vienna GA), Oct 5 (Portsmouth VA), Oct 7 (Meridianville AL), Oct 9 (Douglas GA, Baltimore, Erie PA — 9 dead), Oct 10 (Detroit). Total 13. No Oct 1-2 or Oct 11 entries yet.\n- The same file's September 2026 listing has 37 lines; the tool's own total said 39. There are no entries Sep 28-30.\n- MST October 2025: about 38 entries, 17 dated Oct 1-10 and 21 dated Oct 11-31. Oct 31, 2025 had 2.\n- MST October 2024: 31-32 entries listed, of which about 26 were dated Oct 11-31. The fetch may have been partial (lower than GVA's typical October figure).\n- GVA (excludes shooter): 206 mass shootings through Q2 2026 vs 193 in H1 2025 (The Trace, Jul 2026). 271 as of Jul 27 (GVA on X). Reported 365 as of about Oct 10, which implies about 1.25/day in Aug-early Oct.\n- Overall gun deaths and injuries in 2026 are at their lowest since 2015 (The Trace), while mass-shooting counts are up slightly year over year.\n- Calendar: Oct 31, 2026 is a Saturday (Halloween weekend). There are three more full weekends before it (Oct 16-18, 23-25, 30-Nov 1).\n- Counts came from LLM-assisted listing of large JSON files and may undercount by a few entries; direct parsing was unavailable.\n- Searched and found no Kalshi, Polymarket or Manifold market on monthly mass-shooting counts.",
+   "reference_class": "MST monthly October counts (2024-2025) and recent 2026 monthly MST counts; rest-of-month additions over Oct 11-31 in prior years"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4981,
+   "seconds": 92.6,
+   "usage": {
+    "num_turns": 14,
+    "input": 24,
+    "cache_read": 335483,
+    "cache_write": 14471,
+    "cache_write_1h": 14471,
+    "output": 5523,
+    "thinking": 1401,
+    "web_search": 2,
+    "cost_usd_envelope": 0.4981316,
+    "web_fetch": 0,
+    "duration_api_ms": 98006
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 33.0,
+     "25": 36.0,
+     "50": 40.0,
+     "75": 44.0,
+     "90": 49.0
+    },
+    "p_below_lower": 0.04
+   },
+   "reasoning": "MST raw S3 JSON for 2026 shows 13 October entries dated Oct 3-10 (~32% of month elapsed at Oct 11), pacing ~40. Reference class: MST fall monthly counts — Oct 2025 = 39, Sep 2025 = 48, Nov 2025 = 40, Sep 2026 >= 38 (list ends Sep 27, possible lag). GVA shows 2026 running ~9% above 2025 YTD. Halloween falls on a Saturday (Oct 31), a mild upside; possible entry lag at the Nov 2 resolution date is a mild downside and the main below-range mechanism. Counts came from an LLM summarizer on the JSON, not direct parsing. No human market found (Polymarket/Manifold per harness; Kalshi search found nothing).",
+   "sources": [
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2026-data.json",
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2025-data.json",
+    "https://www.massshootingtracker.site/data/?year=2026",
+    "https://x.com/GunDeaths/status/2107196001312469168",
+    "https://en.wikipedia.org/wiki/2026_Vienna,_Georgia,_shooting"
+   ],
+   "dossier": "- Resolves off the Mass Shooting Tracker (massshootingtracker.site) 2026 data, October 2026 entries; NOT the Gun Violence Archive (GVA). MST definition: 4+ people shot, shooter included, so its counts usually exceed GVA's. Raw data: mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2026-data.json (fetched 2026-10-11).\n- Event window: Oct 1 -> Oct 31 2026 per criteria; as of 2026-10-11T21:00Z about 35% elapsed (10.9 of 31 days). Scheduled resolution is Nov 2, so late-October entries may not yet be entered (entry-lag risk).\n- MST 2026 October entries as of fetch (13): Oct 3 Commerce TX, Trenton NJ, Baltimore MD; Oct 4 Vienna GA (2 killed, 35 injured, homecoming party), Dallas TX, Albany NY, Sacramento CA; Oct 5 Portsmouth VA; Oct 7 Meridianville AL; Oct 9 Erie PA (8 killed), Baltimore MD, Douglas GA; Oct 10 Detroit MI. None listed for Oct 1-2.\n- MST Sep 2026: 38 entries listed, the last dated Sep 27 (Sep 28-30 either had none or are missing/lagged).\n- MST 2025 (S3 JSON): Oct 2025 = 39, Sep 2025 = 48, Nov 2025 = 40. An earlier summarizer pass gave different 2025 numbers (Jul 31, Aug 27, Sep 30, Oct 26), so the summarizer counts are noisy; the explicit Oct 2025 list had 39 lines.\n- GVA (@GunDeaths on X, ~Oct 5 2026): 2026 monthly counts Jan 25, Feb 29, Mar 40, Apr 34, May 36, Jun 42, Jul 68, Aug 47, Sep 33, Oct 4 (first 5 days). YTD 358 vs 328 by the same date in 2025.\n- Calendar: Oct 31 2026 is a Saturday (Halloween party weekend); the month has 5 Saturdays (3, 10, 17, 24, 31). Weekend nights drive most incidents.\n- Status quo: continuing the fall run rate of about 1.2-1.4 per day.\n- Searched for but not found: any prediction market (Polymarket, Manifold, Kalshi), whether MST data has been entered for Oct 11, and an official MST monthly summary for 2026.",
+   "reference_class": "Mass Shooting Tracker monthly counts for fall months (Sep-Nov) 2025-2026"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.4565,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1126,
+   "seconds": 23.7,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20126,
+    "cache_write": 8469,
+    "cache_write_1h": 8469,
+    "output": 2040,
+    "thinking": 462,
+    "web_search": 0,
+    "cost_usd_envelope": 0.11258520000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 23062
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 31.0,
+     "25": 35.0,
+     "50": 38.5,
+     "75": 42.0,
+     "90": 47.0
+    },
+    "p_below_lower": 0.05
+   },
+   "reasoning": "MST lists 13 October 2026 incidents through Oct 10. Saturday Oct 10 has only 1 entry, so a likely weekend lag adds about 2. The recent MST rate is about 1.25/day (Sep 2026 about 38-39). October usually runs a bit below September, but Halloween falls on a Saturday. Projecting about 24 over the remaining 21 days gives about 38-39, consistent with MST Oct 2025 of about 38-39. The main downside risk is MST not yet entering late-October incidents before the Nov 2 resolution check. No human market was found (all three runs checked Polymarket, Manifold and Kalshi).",
+   "sources": [],
+   "reconciliation": "All runs agree on 13 entries through Oct 10 and that no market exists. The disputes were the Sep 2026 MST count (37-39 vs a noisy 27/40) and the Oct 2025 MST count (38 vs 39). Neither could be re-checked without web access, but the readings converge on about 38-39 for both. Run 2's lower median relied on a slower late-month pace. Runs 1 and 3 extrapolated about 1.3/day. I took a middle pace of about 1.15/day because of the autumn decline, plus a lag catch-up for the Oct 10-11 weekend, which is underrepresented at only 1 entry. I carry forward a p_below_lower of about 5% for MST update lag. I agree with the runs' reference class.",
+   "disagreements": [
+    {
+     "claim": "Sep 2026 MST total",
+     "kind": "factual",
+     "verdict": "Unsettled (37-39 vs a noisy 27/40). The consistent listings say about 38, which I accept, with possible missing entries for Sep 28-30."
+    },
+    {
+     "claim": "Oct 2025 MST total",
+     "kind": "factual",
+     "verdict": "38 vs 39; immaterial, anchor about 38-39."
+    },
+    {
+     "claim": "Pace for the rest of October",
+     "kind": "judgment",
+     "verdict": "About 1.15/day, between Run 2's slower pace and the about 1.3/day of Runs 1 and 3."
+    },
+    {
+     "claim": "Size of the entry-lag risk at resolution",
+     "kind": "judgment",
+     "verdict": "Small. Set p_below_lower at 0.05."
+    }
+   ],
+   "reference_class": "MST monthly counts for fall months (Oct 2025 about 38-39, Nov 2025 about 40, Sep 2026 about 38-39)"
+  }
+ ]
+}
