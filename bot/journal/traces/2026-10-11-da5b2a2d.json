@@ -1,0 +1,259 @@
+{
+ "record_id": "2026-10-11-da5b2a2d",
+ "question": "What will the first reported earnings per share after September 2026 be for the following companies? (Nvidia)",
+ "question_id": 46199,
+ "url": "https://www.metaculus.com/questions/45995/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-11T21:16:26+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.0799,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 2.4600000000000004,
+    "25": 2.5399999999999996,
+    "50": 2.6266666666666665,
+    "75": 2.7466666666666666,
+    "90": 2.97
+   },
+   "p_below_lower": 0.01,
+   "p_above_upper": 0.015
+  },
+  "phase1": {
+   "10": 2.4600000000000004,
+   "25": 2.5399999999999996,
+   "50": 2.6266666666666665,
+   "75": 2.7466666666666666,
+   "90": 2.97
+  },
+  "phase2": null,
+  "spread_phase1": 0.05,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 2.45,
+   "25": 2.53,
+   "50": 2.61,
+   "75": 2.72,
+   "90": 2.92
+  },
+  "p_above_upper": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9259,
+   "seconds": 81.0,
+   "usage": {
+    "num_turns": 8,
+    "input": 12,
+    "cache_read": 160181,
+    "cache_write": 13546,
+    "cache_write_1h": 13546,
+    "output": 5299,
+    "thinking": 1917,
+    "web_search": 4,
+    "cost_usd_envelope": 0.35765919999999995,
+    "web_fetch": 0,
+    "duration_api_ms": 89089
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 2.47,
+     "25": 2.56,
+     "50": 2.65,
+     "75": 2.79,
+     "90": 2.99
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Q3 FY27 guide ($108B ±2%, 74% GM, $9.0B non-GAAP opex, 16-18% tax, ~24.25B shares) implies ~$2.46 non-GAAP EPS; consensus is ~$2.47. NVIDIA typically beats by 3-6% (Q1: 1.87 vs 1.77), so non-GAAP is near ~$2.60. The question doesn't say GAAP or non-GAAP, and GAAP adds volatile mark-to-market equity gains (Intel, OpenAI, others; $7.8B pre-tax in Q2), which put GAAP centrally ~$2.70 but with a wide spread. AI stocks sold off Oct 8, so there is downside risk to the gains. Market check: no Polymarket/Kalshi/Manifold EPS market for this quarter found (only past-quarter beat markets and a Manifold Q3 revenue market).",
+   "sources": [
+    "https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000073/q2fy27pr.htm",
+    "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027",
+    "https://trendandticker.com/markets/semiconductors/nvidia-earnings-date-q3-fiscal-2027-2026",
+    "https://www.wallstreethorizon.com/nvidia-earnings-calendar",
+    "https://www.cnbc.com/2026/10/08/open-ai-revenue-nvidia-oracle-coreweave.html",
+    "https://polymarket.com/event/nvda-quarterly-earnings-nongaap-eps-05-20-2026-1pt77"
+   ],
+   "dossier": "- Q2 FY27 (qtr ended Jul 26 2026; SEC 8-K q2fy27pr): revenue $96.2B; GAAP diluted EPS $2.46, non-GAAP $2.22; GAAP net $59.7B vs non-GAAP $54.0B; gains from equity securities $7.77B; diluted shares 24,285M; effective tax ~16.5%.\n- Q1 FY27 (SEC 8-K): GAAP EPS $2.39, non-GAAP $1.87 (gap mostly equity gains).\n- Q3 FY27 outlook (Aug 26 2026 release): revenue $108.0B ±2%; GAAP and non-GAAP GM 74.0% ±50bp; opex GAAP ~$9.2B / non-GAAP ~$9.0B; FY tax 16-18%; no other-income guidance (equity gains/losses unguided).\n- Guide math: 108*0.74 - 9.0 + ~0.5 interest = ~71.4B pretax, *0.835 = ~59.6B, /24.25B shares = ~$2.46 non-GAAP. A cited consensus is $2.47 (investing.com via search).\n- Beat history: Q1 FY27 non-GAAP 1.87 vs ~1.77 consensus; NVIDIA has typically beaten revenue guidance by $1-4B; Polymarket priced past-quarter beats at ~90-95%.\n- Report date: Nov 17 per Wall Street Horizon, some sources say Nov 25; either way first EPS reported after Sep 2026 = Q3 FY27 (quarter ending ~Oct 25 2026).\n- GAAP-specific: NVIDIA holds large equity stakes (Intel stake ~5x up; $30B OpenAI; Anthropic, xAI, CoreWeave, Corning, IREN) per CNBC May 2026; marks swing GAAP EPS by roughly ±$0.2-0.5. AI stocks incl. CoreWeave/Oracle/NVIDIA fell Oct 8 2026 on an OpenAI revenue report (CNBC), a downside risk for Q3 marks.\n- Resolution instrument: the question does not say GAAP vs non-GAAP diluted EPS; GAAP has run above non-GAAP the last two quarters because of investment gains.\n- Status quo: sequential revenue growth ~12% guided; margins stable ~74-75%.\n- Searched but not found: current updated consensus after Q2 print, Intel/OpenAI mark changes for Aug-Oct 2026, any Kalshi/Polymarket/Manifold EPS market for this quarter (none found).\n- Event window: Q3 FY27 earnings release, expected mid/late Nov 2026; as of Oct 11 the quarter is ~80% elapsed, nothing reported yet.",
+   "reference_class": "NVIDIA quarterly diluted EPS vs prior-quarter guidance-implied EPS, FY26-FY27 (consistent beats; GAAP above non-GAAP due to equity gains)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2782,
+   "seconds": 66.8,
+   "usage": {
+    "num_turns": 6,
+    "input": 10,
+    "cache_read": 129210,
+    "cache_write": 10823,
+    "cache_write_1h": 10823,
+    "output": 4189,
+    "thinking": 1281,
+    "web_search": 3,
+    "cost_usd_envelope": 0.278246,
+    "web_fetch": 0,
+    "duration_api_ms": 69072
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 2.47,
+     "25": 2.53,
+     "50": 2.6,
+     "75": 2.69,
+     "90": 2.92
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Q3 FY27 report scheduled Nov 17 2026. Guide: revenue $108B ±2%, GM 74%, non-GAAP opex $9.0B, tax 16-18%, ~24.3B diluted shares -> ~$2.47 non-GAAP at guide; consensus $2.47; recent beats ~5-6% -> ~$2.58-2.60. Resolution criteria blank, so GAAP vs non-GAAP is ambiguous; GAAP has exceeded non-GAAP by $0.24-0.52 in the last two quarters on equity-investment gains, which fattens the right tail. Weighted ~70% non-GAAP. No live market found for this quarter (the Polymarket contracts found were past beat/miss markets on non-GAAP EPS vs consensus).",
+   "sources": [
+    "https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000073/q2fy27pr.htm",
+    "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027",
+    "https://www.webull.com/blog/304-Nvidia-Q2-FY2027-Earnings-Beats-Revenue-EPS-Estimates-Guides-Q3-to-108B",
+    "https://www.investing.com/equities/nvidia-corp-earnings",
+    "https://polymarket.com/event/nvda-quarterly-earnings-nongaap-eps-05-20-2026-1pt77"
+   ],
+   "dossier": "- Q2 FY27 (qtr ended Jul 26 2026, SEC 8-K q2fy27pr): revenue $96.2B (+18% q/q, +106% y/y); GAAP diluted EPS $2.46, non-GAAP $2.22; GAAP net income $59.7B vs non-GAAP $54.0B; equity securities gains net $7.8B; ~24.3B diluted shares.\n- Q1 FY27 (same 8-K): GAAP EPS $2.39, non-GAAP $1.87 (GAAP-nonGAAP gap $0.52). Q2 FY26: GAAP $1.08, non-GAAP $1.01.\n- Q2 FY27 non-GAAP beat LSEG consensus $2.10 by $0.12 (+5.7%) (Webull blog, Aug 2026).\n- Q3 FY27 outlook (8-K): revenue $108.0B ±2%, GAAP/non-GAAP GM 74.0% ±50bp, opex $9.2B GAAP / $9.0B non-GAAP, FY27 tax rate 16-18%; excludes China data-center compute revenue.\n- Guide-implied non-GAAP EPS at $108B: ~(79.9-9.0+~1 other income)*0.835/24.3 ≈ $2.47; each +$1B revenue ≈ +$0.025.\n- Consensus Q3 FY27 (Oct 2026 quarter) EPS ~$2.47 (Investing.com / Yahoo, Oct 2026).\n- Report date: Tue Nov 17 2026 after close (Investing.com/TipRanks).\n- GAAP EPS includes mark-to-market gains/losses on equity investments; sign and size unpredictable (gap +$0.07 to +$0.52 over the last 3 reported quarters).\n- Resolution criteria text is blank: resolution instrument ambiguous between GAAP and non-GAAP diluted EPS; the question range (1.495-3.495) is centered near ~2.5.\n- Status quo: Nvidia has beaten non-GAAP consensus every recent quarter by low-to-mid single-digit %.\n- Downside risks: export-control or China shock, supply constraints, a gross-margin miss; GAAP could also include investment losses.\n- Event window: the first EPS report after Sep 2026 = Q3 FY27 release Nov 17 2026; as of Oct 11 2026, the quarter (ends ~Oct 25) is ~85% elapsed.\n- Searched for but not found: a live Kalshi/Polymarket contract for this quarter's EPS (only past beat/miss markets on non-GAAP EPS); explicit resolution source.",
+   "reference_class": "Nvidia quarterly non-GAAP EPS vs. guide-implied/consensus EPS over the last ~8 quarters (consistent ~3-7% beats)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5682,
+   "seconds": 70.7,
+   "usage": {
+    "num_turns": 6,
+    "input": 10,
+    "cache_read": 128450,
+    "cache_write": 10720,
+    "cache_write_1h": 10720,
+    "output": 4596,
+    "thinking": 1449,
+    "web_search": 3,
+    "cost_usd_envelope": 0.28995499999999996,
+    "web_fetch": 0,
+    "duration_api_ms": 73484
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 2.44,
+     "25": 2.53,
+     "50": 2.63,
+     "75": 2.76,
+     "90": 3.0
+    }
+   },
+   "reasoning": "Q3 FY27 (report ~Nov 17-19, 2026). Guidance $108B rev, 74% GM, non-GAAP opex $9.0B, 16-18% tax -> ~2.44 at guide; consensus 2.47-2.53; last two quarters beat consensus ~6% -> non-GAAP median ~2.60. Resolution basis (GAAP vs non-GAAP) is unspecified; GAAP has been above non-GAAP because of mark-to-market equity gains (Q1 2.39 vs 1.87, Q2 2.46 vs 2.22), so a GAAP basis adds right-skew and wide variance. Weighted ~70% non-GAAP. No human market found for this quarter (Polymarket ran non-GAAP 'beat' markets for earlier quarters).",
+   "sources": [
+    "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027",
+    "https://www.webull.com/blog/304-Nvidia-Q2-FY2027-Earnings-Beats-Revenue-EPS-Estimates-Guides-Q3-to-108B",
+    "https://www.tipranks.com/stocks/nvda/earnings",
+    "https://www.chartmill.com/stock/quote/NVDA/estimates",
+    "https://x.com/PolymarketMoney/status/2057196277654270099",
+    "https://polymarket.com/event/nvda-quarterly-earnings-nongaap-eps-05-20-2026-1pt77"
+   ],
+   "dossier": "- Next report: Q3 FY2027 (quarter ending late Oct 2026), scheduled about Nov 17, 2026 per TipRanks/aggregators (searched Oct 2026).\n- Q2 FY27 (ended Jul 26, 2026; Nvidia press release Aug 2026): revenue $96.2B, GAAP diluted EPS $2.46, non-GAAP $2.22 (LSEG consensus was $2.10), gross margin 75.0%.\n- Q1 FY27 (May 2026): revenue $81.6B, GAAP EPS $2.39, non-GAAP $1.87 vs $1.76 consensus (Polymarket Money/X).\n- GAAP-to-non-GAAP gap comes from gains on equity securities: $15.9B (Q1) and $7.8B (Q2) pretax; these are mark-to-market and can reverse. Stock-based comp takes about $0.06-0.08/share off GAAP.\n- Q3 FY27 guidance (Nvidia, Aug 2026): revenue $108.0B ±2%, gross margin 74.0% ±50bp (GAAP and non-GAAP), opex about $9.2B GAAP / $9.0B non-GAAP, tax 16-18% excluding discrete items. Diluted shares about 24.3B.\n- Arithmetic at the guided midpoint: non-GAAP EPS about $2.44; each extra $3B of revenue adds about $0.08.\n- Consensus Q3 FY27 EPS: TipRanks $2.47, ChartMill $2.53 (Oct 2026); some sources quote $2.35-2.47.\n- Beat history: non-GAAP came in about 5-7% above consensus in each of the last two quarters.\n- Status quo: a report in mid/late November, inside the window.\n- Resolution instrument: criteria text is blank, so GAAP vs non-GAAP is not specified; press coverage and consensus use non-GAAP, while some data feeds report GAAP diluted EPS.\n- Event window: the first EPS reported after Sept 2026 (the Q3 FY27 report, about Nov 17-19, 2026); scheduled resolution Nov 25, 2026. As of Oct 11 the fiscal quarter is about 75% elapsed.\n- Markets: no Polymarket/Kalshi/Manifold market found for the Nov 2026 EPS print; Polymarket listed non-GAAP 'beat' markets for earlier quarters.\n- Searched but not found: size of Q3 equity-portfolio marks; an explicit resolution-source definition.",
+   "reference_class": "Nvidia quarterly EPS vs pre-report consensus over the last several quarters (consistent ~5-7% non-GAAP beats); GAAP-minus-non-GAAP gap in FY27 driven by equity-security gains"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.2419,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1127,
+   "seconds": 22.9,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20126,
+    "cache_write": 8444,
+    "cache_write_1h": 8444,
+    "output": 2058,
+    "thinking": 361,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1127452,
+    "web_fetch": 0,
+    "duration_api_ms": 22161
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 2.45,
+     "25": 2.53,
+     "50": 2.61,
+     "75": 2.72,
+     "90": 2.92
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Q3 FY27 guide ($108B, 74% GM, $9.0B opex, 16-18% tax, ~24.3B shares) implies ~$2.45 non-GAAP; consensus ~$2.47; consistent 5-7% beats -> non-GAAP ~$2.60. Resolution basis (GAAP vs non-GAAP) unspecified; GAAP has exceeded non-GAAP by $0.24-0.52 on equity marks, but marks can reverse (AI selloff Oct 8) and SBC subtracts ~$0.07. Weighted ~65-70% non-GAAP, giving median ~2.61 with right skew. No human market found for this quarter's EPS.",
+   "sources": [],
+   "reconciliation": "All runs agree on facts: Q3 FY27 is the resolving report (~Nov 17), guide-implied non-GAAP ~2.44-2.47, consensus ~2.47, beats ~5-7%, GAAP gap driven by volatile equity gains. The one unresolvable factual point is whether resolution uses GAAP or non-GAAP — criteria blank; no web access here to check, so it is carried as a ~65-70/30-35 mixture. Remaining differences (median 2.60-2.65, tail width) are judgment over GAAP-mark size; I take non-GAAP beat ~2.60 as center with modest GAAP right skew, tempered by possible negative marks after the Oct AI selloff. Carried forward the runs' reference class.",
+   "disagreements": [
+    {
+     "claim": "Whether resolution uses GAAP or non-GAAP diluted EPS",
+     "kind": "factual",
+     "verdict": "Unsettleable without access; carried as mixture weighted toward non-GAAP"
+    },
+    {
+     "claim": "Size/sign of Q3 equity mark-to-market gains in GAAP EPS",
+     "kind": "judgment",
+     "verdict": "Likely positive but smaller than Q1/Q2 given Oct AI selloff; widens right tail"
+    },
+    {
+     "claim": "Guide-implied non-GAAP EPS 2.44 vs 2.47",
+     "kind": "factual",
+     "verdict": "Difference is other-income assumption; immaterial relative to beat spread"
+    },
+    {
+     "claim": "Probability of escaping above 3.495",
+     "kind": "judgment",
+     "verdict": "~1%, requires huge GAAP investment gain"
+    }
+   ],
+   "reference_class": "Nvidia recent quarterly EPS outcomes vs guidance-implied/consensus EPS (FY26-FY27), with GAAP-nonGAAP gap from equity marks"
+  }
+ ]
+}
