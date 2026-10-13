@@ -1,0 +1,268 @@
+{
+ "record_id": "2026-10-13-1e355a6a",
+ "question": "What will the first reported earnings per share after September 2026 be for the following companies? (Amazon)",
+ "question_id": 46180,
+ "url": "https://www.metaculus.com/questions/45995/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-13T21:06:47+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.9354,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 1.82,
+    "25": 1.96,
+    "50": 2.0866666666666664,
+    "75": 2.24,
+    "90": 2.513333333333333
+   },
+   "p_below_lower": 0.02,
+   "p_above_upper": 0.08666666666666667
+  },
+  "phase1": {
+   "10": 1.82,
+   "25": 1.96,
+   "50": 2.0866666666666664,
+   "75": 2.24,
+   "90": 2.513333333333333
+  },
+  "phase2": null,
+  "spread_phase1": 0.02,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 1.8,
+   "25": 1.94,
+   "50": 2.06,
+   "75": 2.2,
+   "90": 2.45
+  },
+  "p_below_lower": 0.02,
+  "p_above_upper": 0.07
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5251,
+   "seconds": 102.5,
+   "usage": {
+    "num_turns": 12,
+    "input": 14,
+    "cache_read": 201643,
+    "cache_write": 18433,
+    "cache_write_1h": 18433,
+    "output": 5878,
+    "thinking": 2228,
+    "web_search": 8,
+    "cost_usd_envelope": 0.5250566000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 133855
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1.86,
+     "25": 1.98,
+     "50": 2.1,
+     "75": 2.24,
+     "90": 2.47
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.08
+   },
+   "reasoning": "Consensus Q3 2026 EPS is about $1.96-2.03 (Q3 2025: $1.95). Q3 operating income guide is $22.5-26.5B against Q2's realized $27.5B; at a 17% tax rate and 10.9B diluted shares, $25-28B operating income implies $1.90-2.15 core EPS, and Amazon usually lands near or above the top of its guide. Q1 ($2.78) and Q2 ($5.75) were inflated by Anthropic revaluation gains tied to priced funding rounds (Series G in Feb, Series H in May). I found no Anthropic priced transaction in Jul-Sep 2026, and the IPO is reportedly after the November midterms, so I expect no large Anthropic gain in Q3. An unseen observable-price event is priced as an ~8% tail above 2.995. Market check: harness found nothing on Polymarket/Manifold, and my search found no Kalshi or bookmaker market.",
+   "sources": [
+    "https://www.sec.gov/Archives/edgar/data/0001018724/000101872426000024/amzn-20260630xex991.htm",
+    "https://drillr.ai/article/amzn-amazon-q3-2026-earnings-preview-aws-growth-ai-capex",
+    "https://www.marketbeat.com/earnings/reports/2026-10-29-amazoncom-inc-stock/",
+    "https://www.inkl.com/news/what-to-expect-from-amazon-coms-q3-2026-earnings-report",
+    "https://futuresearch.ai/anthropic-openai-ipo-dates-valuations/",
+    "https://tech-insider.org/anthropic-350-billion-tender-offer-share-sale-ipo-2026/"
+   ],
+   "dossier": "- Amazon reports Q3 2026 (quarter ending Sep 30) on Oct 29, 2026 (MarketBeat, financecalendar).\n- Consensus Q3 2026 diluted EPS: ~$1.96 (range $1.82-2.17, drillr); other sources $2.00-2.03 (Nasdaq/Barchart via inkl). Q3 2025 actual: $1.95, which included a ~$9.5B pre-tax Anthropic gain from the Sep 2025 Series F.\n- Q2 2026 (SEC 8-K Ex 99.1, Jul 2026): operating income $27.5B (+43% YoY); net income $62.6B; diluted EPS $5.75; 10,903M diluted shares; $53.4B pre-tax non-operating income, mostly Anthropic. A further $42.0B unrealized AFS gain went to OCI, not net income.\n- Q1 2026 diluted EPS: $2.78, inflated by an Anthropic revaluation after the Feb 2026 Series G at a $380B post-money valuation.\n- Q3 2026 guide: net sales $197-202B; operating income $22.5-26.5B.\n- Mechanics: Anthropic preferred-stock gains hit net income only on an observable price event (priced round or similar transaction). Series H ($65B at $965B post-money) closed May 2026, i.e. Q2. The employee tender at $350B ran Feb-Apr 2026.\n- Searched and found no Anthropic priced round, tender or secondary dated Jul-Sep 2026. Draft S-1 was filed confidentially Jun 1, 2026. IPO reportedly targeted after the Nov 2026 midterms (Reuters via useluminix), at ~$2T. One source mentions a late-September prospectus; unconfirmed.\n- Other non-operating items: Rivian mark-to-market and other equity revaluations each quarter; FX.\n- Core EPS arithmetic: (operating income + roughly $0-1B net other) x ~0.83 / 10.9B shares. Operating income of $24B gives ~$1.83, $26B ~$1.98, $28B ~$2.13. Amazon has historically landed at or above the top of its operating-income guide.\n- Resolves off the first reported EPS after Sep 2026, i.e. reported diluted GAAP EPS for Q3 2026, not consensus or adjusted figures.\n- Event window: Q3 2026 report expected Oct 29, 2026; as of Oct 13 the quarter has closed and the report is pending.\n- Markets: harness found none on Polymarket or Manifold; my search found no Kalshi or bookmaker market.\n- Upside tail: an undiscovered Anthropic observable-price event in Q3 could add $1+ to EPS. Downside tail: an impairment or large equity markdown.",
+   "reference_class": "Amazon quarterly diluted EPS versus sell-side consensus, 2024-2026 quarters without a new Anthropic priced round"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.0611,
+   "seconds": 109.8,
+   "usage": {
+    "num_turns": 12,
+    "input": 16,
+    "cache_read": 239024,
+    "cache_write": 19898,
+    "cache_write_1h": 19898,
+    "output": 6739,
+    "thinking": 2758,
+    "web_search": 8,
+    "cost_usd_envelope": 0.5360507999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 126784
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1.8,
+     "25": 1.95,
+     "50": 2.08,
+     "75": 2.24,
+     "90": 2.55
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.1
+   },
+   "reasoning": "Consensus Q3 2026 EPS ~$1.96-2.03 (Nasdaq/ChartMill/TipRanks). Core: op income guide $22.5-26.5B; Amazon typically beats the top of its range, so ~$27B op income, ~19% tax and ~10.95B shares gives ~$2.0-2.1. Q1 ($2.78) and Q2 ($5.75) were inflated by Anthropic mark-ups after the Series G and Series H rounds. No Q3 Anthropic priced round or tender found; IPO expected mid/late Oct (Q4), so a large Q3 gain is less likely but not ruled out. That gives ~10% above-range mass. Below-range needs a big charge or loss (~2%). Market check: no Kalshi or Polymarket Q3 EPS contract found (Polymarket ran beat-GAAP-EPS contracts for Q4 2025 and Q1 2026).",
+   "sources": [
+    "https://www.tradingview.com/news/tradingview:15b8f73c13724:0-amazon-com-inc-q2-2026-revenue-200-6b-net-income-62-65b-eps-5-75-10-q-summary/",
+    "https://www.digitalapplied.com/blog/amazon-q2-2026-earnings-ads-aws-anthropic-gain",
+    "https://www.inkl.com/news/what-to-expect-from-amazon-coms-q3-2026-earnings-report",
+    "https://www.cnbc.com/2026/09/05/anthropic-ipo-launch-shifts-toward-mid-october-reuters.html",
+    "https://techcrunch.com/2026/05/28/anthropic-raises-65-billion-nears-1t-valuation-ahead-of-ipo/",
+    "https://tech-insider.org/anthropic-350-billion-tender-offer-share-sale-ipo-2026/",
+    "https://www.investing.com/news/transcripts/earnings-call-transcript-amazons-q1-2026-results-exceed-expectations-93CH-4647388",
+    "https://www.chartmill.com/stock/quote/AMZN/analyst-ratings"
+   ],
+   "dossier": "- Amazon Q3 2026 earnings scheduled Oct 29, 2026 (inkl/Barchart, Nasdaq). Consensus GAAP EPS cited at $1.96 (TipRanks / one preview), $2.00 (ChartMill), $2.02-2.03 (Barchart/Nasdaq); Q3 2025 EPS was $1.95, which included ~$9.5B pre-tax Anthropic gain plus FTC ($2.5B) and severance charges.\n- Q3 2026 guidance (Jul 30, 2026 release): net sales $197-202B, operating income $22.5-26.5B; guidance excludes energy derivative remeasurements (~$0.6B gain in Q2).\n- Q2 2026 actual: sales $200.6B, op income $27.46B, other income $53.4B pre-tax primarily from Anthropic (after the Series H at $965B post, May 2026), NI $62.6B, EPS $5.75, effective tax 22.5% (digitalapplied, TradingView 10-Q summary). Estimated ex-gain NI ~$20.8B (~$1.9 EPS).\n- Q1 2026 actual: op income $23.9B, EPS $2.78 vs ~$1.63 consensus; included $16.8B pre-tax Anthropic gain (after the Series G at $380B, Feb 2026) (Amazon IR, Investing.com).\n- Pattern: Anthropic gains were booked in quarters with a priced Anthropic financing (Q3 2025 Series F, Q1 2026 Series G, Q2 2026 Series H). Anthropic employee tender closed early Apr 2026 at $350B (Q2).\n- Searched for an Anthropic priced round or tender during Jul-Sep 2026: none found. Anthropic IPO: confidential S-1 Jun 1, 2026; Reuters/CNBC (Sep 5) say marketing begins mid-Oct and listing before the early-Nov midterms, so IPO pricing falls in Q4, not Q3. One source mentions a public prospectus Sep 29 (unconfirmed).\n- Other non-operating swing items: Rivian stake marks, energy derivative remeasurements, interest income/expense (heavy capex and debt).\n- Diluted shares ~10.9-11.0B; each $1B of after-tax other income is worth ~$0.09 EPS. A $10B pre-tax gain is worth ~+$0.73.\n- Status quo: GAAP EPS near core run-rate unless a non-operating mark occurs; Amazon has beaten EPS consensus in recent quarters.\n- Resolves off Amazon's reported Q3 2026 diluted EPS (first report after Sep 2026), not adjusted/core EPS.\n- Event window: Q3 2026 earnings release expected Oct 29, 2026; as of Oct 13, 2026 not yet reported.\n- Market check: no Kalshi or Polymarket Q3 EPS contract found; Polymarket listed beat-GAAP-EPS contracts for prior quarters.\n- Not found: any Q3 Anthropic transaction, additional Amazon investment closing in Q3, or the Q3 Rivian price move's effect.",
+   "reference_class": "Amazon quarterly GAAP diluted EPS vs consensus, 2023-2026 (consistent beats; frequent non-operating investment marks)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.7668,
+   "seconds": 125.1,
+   "usage": {
+    "num_turns": 16,
+    "input": 18,
+    "cache_read": 280761,
+    "cache_write": 24055,
+    "cache_write_1h": 24055,
+    "output": 7319,
+    "thinking": 3237,
+    "web_search": 11,
+    "cost_usd_envelope": 0.7056722,
+    "web_fetch": 0,
+    "duration_api_ms": 161597
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1.8,
+     "25": 1.95,
+     "50": 2.08,
+     "75": 2.24,
+     "90": 2.52
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.08
+   },
+   "reasoning": "Amazon reports only GAAP diluted EPS. Q3 guidance is $22.5-26.5B operating income; Amazon usually beats, so ~27.5B OI, ~20% tax and ~10.95B shares gives ~$2.05. Consensus is $1.96-2.03. Q1 and Q2 2026 EPS ($2.78, $5.75) were inflated by Anthropic preferred mark-ups tied to the Series G and H rounds; I found no new priced Anthropic round in Q3 (IPO expected in November, $15B debt facility only), and OpenAI's August secondary was at the unchanged $852B, so the base case has no large gain. Upper tail is priced for a possible Q3 observable transaction or note conversion. No human prediction market found (Polymarket, Manifold, Kalshi searched).",
+   "sources": [
+    "https://www.sec.gov/Archives/edgar/data/0001018724/000101872426000024/amzn-20260630xex991.htm",
+    "https://www.sec.gov/Archives/edgar/data/0001018724/000101872426000026/amzn-20260630.htm",
+    "https://seekingalpha.com/article/4952263-amazon-q3-profit-could-explode",
+    "https://us.plus500.com/en/forecasts/amazon-earnings-amzn-expectations",
+    "https://www.tipranks.com/stocks/amzn/earnings",
+    "https://www.cnbc.com/2026/08/10/openai-wraps-7-billion-share-sale-ahead-of-potential-ipo-.html",
+    "https://www.cnbc.com/2026/05/28/anthropic-open-ai-startup-value.html"
+   ],
+   "dossier": "- Resolves off Amazon's Q3 2026 (quarter ending Sep 30) reported diluted GAAP EPS; report scheduled Oct 29 2026 (TipRanks/Plus500). Amazon does not publish a non-GAAP EPS.\n- Q2 2026 (8-K, Jul 29 2026): EPS $5.75; net income $62.6B; operating income $27.5B; diluted shares 10,903M; other income $53.4B, mostly from Anthropic (a $50.5B upward revaluation of preferred stock plus $1.3B equity securities and $1.4B warrant gains); effective tax ~22.5%.\n- Q1 2026: EPS $2.78 including a $16.8B pre-tax Anthropic gain; consensus was $1.64 (Yahoo/CNBC).\n- Q3 2025: EPS $1.95, including ~$9.5B pre-tax Anthropic gain, a $2.5B FTC charge and severance; operating income was $17.4B as reported (~$21.7B adjusted, per Seeking Alpha Oct 6 2026).\n- Q3 2026 guidance: sales $197-202B; operating income $22.5-26.5B, assuming no energy-derivative remeasurement. StreetAccount consensus for operating income is ~$24.9B.\n- EPS consensus for Q3 2026 ranges $1.955-2.03 (TipRanks 1.96, ChartMill 2.00, Barchart 2.02, Plus500 2.03).\n- Accounting (10-Q Q2 2026): Anthropic preferred stock and OpenAI Series C preferred are revalued in Other income only on observable price changes or impairments. Anthropic convertible notes (~$97.9B fair value) are available-for-sale, with gains held in AOCI until conversion; past conversions came in Q1 2025 and Q1 2026. Equity warrants carried at $4.3B.\n- Anthropic: Series H at $965B closed in May 2026. In Sep 2026 there was a $15B revolving credit facility (debt, not equity); IPO targeted mid-November at ~$2T. No Q3 priced equity round found.\n- OpenAI: Amazon paid the final $21.3B after Jun 30. OpenAI's ~$7B secondary closed in Aug 2026 at the unchanged $852B. Talks to raise at a ~$1.4T pre-money valuation were reported in late September, not confirmed as closed in Q3.\n- Event window: Q3 2026 results (Jul 1 -> Sep 30 2026) reported on Oct 29 2026; as of Oct 13 the quarter is complete and the report is pending.\n- Status quo: EPS from operations at roughly guidance level, with no large investment revaluation.\n- Searched but not found: any Q3 Anthropic tender or round above $965B; any Q3 note conversion; a prediction market for this EPS (none on Polymarket, Manifold or Kalshi).",
+   "reference_class": "Amazon quarterly GAAP diluted EPS vs consensus and guidance, 2024-2026, excluding Anthropic revaluation quarters"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0714,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.128,
+   "seconds": 28.8,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20126,
+    "cache_write": 8858,
+    "cache_write_1h": 8858,
+    "output": 2656,
+    "thinking": 500,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1280172,
+    "web_fetch": 0,
+    "duration_api_ms": 28115
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1.8,
+     "25": 1.94,
+     "50": 2.06,
+     "75": 2.2,
+     "90": 2.45
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.07
+   },
+   "reasoning": "Resolves on Q3 2026 diluted GAAP EPS (report Oct 29). Core: op income guide $22.5-26.5B, Amazon usually beats the top of its range (Q2 was $27.5B); ~$27B pre-tax, ~20% tax, ~10.95B shares gives ~$2.0-2.1, consistent with $1.96-2.03 consensus. Q1/Q2 were inflated by Anthropic mark-ups tied to priced rounds (Series G/H); no Q3 Anthropic priced event found (IPO in Q4, Sep facility is debt), and OpenAI's Aug secondary was flat, so the base case has no big gain. A 7% upper escape covers an unseen observable-price event or note conversion. A 2% lower escape covers a large impairment or markdown. No prediction market found on Polymarket, Manifold or Kalshi.",
+   "sources": [],
+   "reconciliation": "Runs agreed on all core facts: Q2/Q1 EPS, Q3 guide, consensus, ~10.9B shares, and no Q3 Anthropic priced event. Factual dispute over Anthropic IPO timing (mid-Oct marketing vs post-midterms): unsettled without web access, but both readings put pricing in Q4, so it does not affect Q3. OpenAI $1.4T talks were reported late Sep with no Q3 close; treated as tail risk. Judgment disputes: tax rate (17-22.5%) and beat size. I took ~20% tax and a moderate beat, giving a median slightly below the runs. Upper escape is 7%, a bit below the runs' 8-10%, because none found evidence of a Q3 event. Carried forward the runs' reference class and a similar dispersion.",
+   "disagreements": [
+    {
+     "claim": "Anthropic IPO marketing/pricing timing (mid-Oct vs post-midterms)",
+     "kind": "factual",
+     "verdict": "Unsettled, but all versions put it in Q4, so it doesn't matter for Q3 EPS"
+    },
+    {
+     "claim": "Whether an OpenAI priced round at a higher valuation closed in Q3",
+     "kind": "factual",
+     "verdict": "Run 3 reports only late-Sep talks and a flat Aug secondary; treated as an upside tail"
+    },
+    {
+     "claim": "Effective tax rate 17% vs ~20-22.5%",
+     "kind": "judgment",
+     "verdict": "Took ~20% (Q2 was 22.5%), median ~2.06"
+    },
+    {
+     "claim": "Size of the upper escape mass (8-10%)",
+     "kind": "judgment",
+     "verdict": "7%, since three independent searches found no Q3 observable-price event"
+    }
+   ],
+   "reference_class": "Amazon quarterly diluted GAAP EPS relative to operating-income guidance and consensus, 2023-2026, excluding quarters with an Anthropic priced-round revaluation"
+  }
+ ]
+}
