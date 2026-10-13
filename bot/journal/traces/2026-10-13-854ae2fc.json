@@ -1,0 +1,231 @@
+{
+ "record_id": "2026-10-13-854ae2fc",
+ "question": "How many systems on the November 2026 TOP500 list will be exascale?",
+ "question_id": 46145,
+ "url": "https://www.metaculus.com/questions/45963/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "multiple_choice",
+ "forecast_at": "2026-10-13T15:02:40+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.027,
+ "pools": {
+  "pooled_runs": {
+   "4 or less": 0.026276850316673737,
+   "5": 0.6846462236208103,
+   "6": 0.2396220003155082,
+   "7 or more": 0.04945492574700768
+  },
+  "phase1": {
+   "4 or less": 0.026276850316673737,
+   "5": 0.6846462236208103,
+   "6": 0.2396220003155082,
+   "7 or more": 0.04945492574700768
+  },
+  "phase2": null,
+  "spread_phase1": 0.06,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probabilities": {
+   "4 or less": 0.03,
+   "5": 0.67,
+   "6": 0.24,
+   "7 or more": 0.06
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6108,
+   "seconds": 96.6,
+   "usage": {
+    "num_turns": 13,
+    "input": 14,
+    "cache_read": 203934,
+    "cache_write": 29835,
+    "cache_write_1h": 29835,
+    "output": 5057,
+    "thinking": 1580,
+    "web_search": 9,
+    "cost_usd_envelope": 0.6107937999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 131739
+   },
+   "estimate": {
+    "4 or less": 0.02,
+    "5": 0.66,
+    "6": 0.26,
+    "7 or more": 0.06
+   },
+   "reasoning": "June 2026 TOP500 has exactly 5 systems with Rmax >= 1,000 PF (LineShine 2198.4, El Capitan 1809, Frontier 1353, Aurora 1012, JUPITER Booster 1000.00); next is HPC7 at 571.5. Systems stay on the list with their last submitted score, so the count is very unlikely to drop. Since Frontier (Jun 2022), 4 of 8 lists added one new exascale system, 3 of the last 4, so the rate is rising. But no named candidate looks ready for SC26: Alice Recoque's delivery only starts Q4 2026, Doudna is late 2026 delivery, Horizon is ~300 PF and Equinox is far below an exaflop on HPL. A sixth would most likely be a surprise (Chinese, hyperscaler GB200/GB300 run, Solstice). No human prediction market found on Polymarket, Kalshi, Manifold or bookmakers.",
+   "sources": [
+    "https://www.top500.org/lists/top500/2026/06/",
+    "https://www.top500.org/news/lineshine-debuts-no-1-top500-enters-new-global-exascale-era/",
+    "https://chipsandcheese.com/p/top500-at-isc26-we-have-a-new-number",
+    "https://www.eurohpc-ju.europa.eu/contract-signed-alice-recoque-europes-new-exascale-supercomputer-2025-11-18_en",
+    "https://www.nersc.gov/what-we-do/computing-for-science/doudna-system",
+    "https://tacc.utexas.edu/news/user-updates/107622/",
+    "https://www.anl.gov/article/argonne-expands-nations-ai-infrastructure-with-powerful-new-supercomputers"
+   ],
+   "dossier": "- June 2026 TOP500 (67th list, ISC Jun 23 2026, top500.org): systems with Rmax>=1000 PF: LineShine 2198.40 (China, NSC Shenzhen), El Capitan 1809.00, Frontier 1353.00, Aurora 1012.00, JUPITER Booster 1000.00 (exactly on threshold; criterion is >=). #6 HPC7 571.50, #7 Eagle 561.20, #8 HPC6 477.90, Fugaku 442, Alps 434.9.\n- History of exascale count per list: Jun22 1 (Frontier), Nov22-Nov23 1, Jun24 2 (Aurora), Nov24 3 (El Capitan), Jun25 3, Nov25 4 (JUPITER), Jun26 5 (LineShine). 4 of 8 transitions added exactly 1; none added 2; none decreased.\n- Systems keep their prior Rmax unless resubmitted; a decrease would need a delisting or a lower resubmission.\n- Alice Recoque (France, EuroHPC/Eviden, AMD MI430X, >1 EF HPL target): system delivery starts Q4 2026, user access ~end 2027 (EuroHPC Nov 2025; Numpex slides).\n- NERSC Doudna (Dell, NVIDIA Vera Rubin): full system delivery late 2026; early access system Cech delivered Mar 2026; ~10x Perlmutter app performance (FP64 HPL not stated).\n- TACC Horizon: early operation Apr 2026; ~300 PF simulation; 4,000 Blackwell GPUs.\n- Argonne Equinox: 10,000 Blackwell GPUs, expected H1 2026; Solstice: 100,000 Blackwell GPUs, no date; AI-focused (HPL submission uncertain).\n- Chips and Cheese (Jun 2026): the author expected the next new #1 to be Discovery (ORNL, ~2028) or FugakuNEXT (~2030).\n- Oct 8-11 2026 drone strikes on Yandex data centers in Russia (systems of ~12-22 PF): irrelevant to the exascale count.\n- Searched without finding: any announced SC26 exascale debut, Chinese follow-on systems, or hyperscaler HPL submission plans.\n- Resolves off the November 2026 TOP500 list (SC26, ~Nov 16-17 2026), counting Rmax >= 1,000 PFlop/s.\n- Event window: the Nov 2026 list publication; as of 2026-10-13 the list is not yet published.",
+   "reference_class": "Change in exascale count between consecutive TOP500 lists, Jun 2022 - Jun 2026 (8 transitions)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.1969,
+   "seconds": 97.9,
+   "usage": {
+    "num_turns": 10,
+    "input": 14,
+    "cache_read": 192591,
+    "cache_write": 26583,
+    "cache_write_1h": 26583,
+    "output": 4645,
+    "thinking": 1541,
+    "web_search": 8,
+    "cost_usd_envelope": 0.5860632,
+    "web_fetch": 0,
+    "duration_api_ms": 109714
+   },
+   "estimate": {
+    "4 or less": 0.03,
+    "5": 0.67,
+    "6": 0.25,
+    "7 or more": 0.05
+   },
+   "reasoning": "June 2026 TOP500 has exactly 5 systems >=1000 PF (LineShine 2198.4, El Capitan 1809, Frontier 1353, Aurora 1012, JUPITER 1000.00 — counts under >=). A new exascale entrant appeared in 4 of the last 5 lists, but no named candidate is ready for Nov 2026: Alice Recoque only begins installation in 2026 (users end-2027), Horizon is ~300 PF, Doudna is delivered late 2026, Discovery/FugakuNEXT come later. Upside: a surprise entry (AI/hyperscaler cluster, another Chinese system, as LineShine was in June) or Eni combining HPC6+HPC7. Downside of <=4 needs JUPITER re-measured below 1000.00 or a withdrawal, both unlikely. No prediction market found on Polymarket/Manifold/Kalshi.",
+   "sources": [
+    "https://www.top500.org/news/lineshine-debuts-no-1-top500-enters-new-global-exascale-era/",
+    "https://www.top500.org/lists/top500/2026/06/",
+    "https://chipsandcheese.com/p/top500-at-isc26-we-have-a-new-number",
+    "https://www.eurohpc-ju.europa.eu/contract-signed-alice-recoque-europes-new-exascale-supercomputer-2025-11-18_en",
+    "https://www.nersc.gov/what-we-do/computing-for-science/doudna-system",
+    "https://tacc.utexas.edu/news/latest-news/2025/11/17/nsf-lccf-horizon-supercomputer-to-power-breakthroughs-for-the-nations-leading-scientists/"
+   ],
+   "dossier": "- June 2026 TOP500 (top500.org, 2026-06): systems >=1000 PF: LineShine 2198.40, El Capitan 1809.00, Frontier 1353.00, Aurora 1012.00, JUPITER Booster 1000.00 (exactly the threshold; counts under >=). Next: HPC7 571.5, Eagle 561.2, HPC6 477.9, Fugaku 442.0, Alps 434.9.\n- History of the exascale count: Jun22-Nov23 = 1 (Frontier); Jun24 = 2 (Aurora); Nov24 = 3 (El Capitan); Jun25 = 3; Nov25 = 4 (JUPITER); Jun26 = 5 (LineShine, a surprise unannounced Chinese entry). The count rose in 4 of 9 transitions, and in 4 of the last 5.\n- Alice Recoque (France, EuroHPC/Eviden, AMD MI430X, >1 EF HPL target): contract signed Nov 2025; installation starts 2026; users expected end-2027 (EuroHPC, GENCI).\n- Doudna (NERSC, Dell/NVIDIA Vera Rubin): delivery late 2026 (nersc.gov).\n- Horizon (TACC): about 300 PF, operational 2026, not exascale.\n- Discovery (ORNL) and FugakuNEXT are later (chipsandcheese, Jun 2026).\n- Eni HPC6 and HPC7 combined exceed 1 EF but are listed separately (HPCwire).\n- Russian Yandex systems hit by drones Oct 2026 are at 12-22 PF: irrelevant to the count.\n- Status quo: 5. Resolves off the Nov 2026 TOP500 list published at SC26 (Nov 15-20, 2026, Chicago), counting entries with Rmax >= 1000 PF.\n- Event window: list publication at SC26 around Nov 16, 2026; as of Oct 13, 2026 about 0% of the window has elapsed (single-event list).\n- Searched but not found: any announced HPL >=1 EF submission for SC26; any JUPITER re-run; any hyperscaler exascale HPL plans; any prediction market.",
+   "reference_class": "List-to-list change in count of TOP500 systems with Rmax>=1 EF, June 2022 - June 2026 (9 transitions)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.7973,
+   "seconds": 99.2,
+   "usage": {
+    "num_turns": 13,
+    "input": 16,
+    "cache_read": 230438,
+    "cache_write": 29202,
+    "cache_write_1h": 29202,
+    "output": 5165,
+    "thinking": 1919,
+    "web_search": 8,
+    "cost_usd_envelope": 0.6004196,
+    "web_fetch": 0,
+    "duration_api_ms": 121392
+   },
+   "estimate": {
+    "4 or less": 0.03,
+    "5": 0.72,
+    "6": 0.21,
+    "7 or more": 0.04
+   },
+   "reasoning": "June 2026 TOP500 lists exactly 5 systems with Rmax>=1000 PF (LineShine 2198, El Capitan 1809, Frontier 1353, Aurora 1012, JUPITER Booster 1000.00). Entries persist list-to-list, so a drop below 5 requires withdrawal/re-benchmark below threshold (rare). Increment requires a new >=1 EF HPL submission at SC26: historically a new exascale entry appeared in ~5 of the last 8 lists, but the visible 2026 pipeline is thin — Alice Recoque (MI430X) is installing with user access by end-2027, Doudna (Vera Rubin) delivered late 2026 and likely sub-EF FP64; residual paths are surprise hyperscaler/AI-cluster or Chinese submissions. No human prediction market found on Polymarket/Kalshi/Manifold.",
+   "sources": [
+    "https://www.top500.org/news/lineshine-debuts-no-1-top500-enters-new-global-exascale-era/",
+    "https://www.top500.org/lists/top500/list/2026/06/",
+    "https://www-hpc.cea.fr/en/AliceRecoque.html",
+    "https://newscenter.lbl.gov/2026/03/17/berkeley-lab-takes-major-step-toward-doudna-with-delivery-of-early-access-system-cech/",
+    "https://www.fontanka.ru/2026/10/12/76696055/"
+   ],
+   "dossier": "- June 2026 TOP500 (67th list, 2026-06-23, top500.org): exascale (Rmax>=1000 PF) systems = 5: LineShine 2198.4 PF (China, CPU-only, debut), El Capitan 1809, Frontier 1353, Aurora 1012, JUPITER Booster 1000.00 (exactly at threshold; criterion is >=). No. 6 is HPC7 at 571.5 PF, far below.\n- Count history (top500.org news): 1 (Jun22 Frontier) -> ... Aurora crossed 1 EF Jun 2024; El Capitan Nov 2024; JUPITER Nov 2025 (4); LineShine Jun 2026 (5). The count has never fallen; listed entries persist unless withdrawn.\n- Alice Recoque (France/EuroHPC, Eviden, AMD MI430X + Venice, >1 EF FP64 target): contract signed Nov 2025; installation at TGCC in 2026; main partition targeted operational Q4 2026; user availability 2027 (CEA HPC page, EuroHPC, Wikipedia summary). No found report of an HPL run or SC26 submission.\n- Doudna (NERSC-10, Dell/Nvidia Vera Rubin): early-access system Cech delivered Mar 2026 (LBNL); full system delivery 'late 2026'; Vera Rubin rack ~5 PF native FP64; target ~10x Perlmutter on apps (Perlmutter HPL ~80 PF).\n- Yandex systems hit by drones Oct 2026 (Fontanka 2026-10-12) are ~13-22 PF; irrelevant to the threshold.\n- Resolves off the November 2026 TOP500 list (SC26, published ~mid-Nov 2026), counting Rmax>=1000 PF, not Rpeak.\n- Event window: single snapshot = Nov 2026 list release; as of 2026-10-13 the list is ~5 weeks out.\n- Searched, absent: any announced new >=1 EF HPL result for SC26; any Chinese second exascale submission news; Argonne Solstice/Equinox TOP500 plans; prediction markets on this (none found on Polymarket/Kalshi/Manifold).\n- Upside paths: partial Alice Recoque run, cloud/AI GB200-class cluster HPL submission, another Chinese system. Downside path: withdrawal or lower re-benchmark of a listed system (JUPITER sits exactly at 1000.00).",
+   "reference_class": "Consecutive TOP500 lists 2022-2026: list-to-list change in count of Rmax>=1 EF systems (changes of +1 in ~5 of 8 transitions, never negative)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.06,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1777,
+   "seconds": 23.7,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 16417,
+    "cache_write_1h": 16417,
+    "output": 2200,
+    "thinking": 380,
+    "web_search": 0,
+    "cost_usd_envelope": 0.17770580000000002,
+    "web_fetch": 0,
+    "duration_api_ms": 22711
+   },
+   "estimate": {
+    "4 or less": 0.03,
+    "5": 0.67,
+    "6": 0.24,
+    "7 or more": 0.06
+   },
+   "reasoning": "June 2026 TOP500 has exactly 5 systems >=1000 PF (LineShine, El Capitan, Frontier, Aurora, JUPITER at exactly 1000.00, which counts under >=); next is 571.5 PF. Entries persist, so <=4 needs a withdrawal or a lower JUPITER re-run, which is rare. A new exascale system appeared on 4 of the last 5 lists, but those were pre-announced apart from LineShine. No named candidate is ready for SC26 (Alice Recoque installing with users ~end-2027, Doudna delivered late 2026, Horizon ~300 PF). A 6th needs a surprise: an AI/hyperscaler cluster, a Chinese system, or a partial Alice Recoque run. No human prediction market found (none per the runs or the harness's Polymarket/Manifold search).",
+   "sources": [],
+   "reconciliation": "All three runs agree on the facts: June 2026 count = 5, JUPITER at exactly 1000.00 counts under >=, the count has never fallen, no SC26 exascale debut is announced, Alice Recoque/Doudna are not ready, and no prediction market exists. The only factual discrepancy is how many past transitions added a system (4/8, 4/9, 5/8); I could not settle it without web access, and it is immaterial because all agree recent increments were mostly pre-announced. The remaining dispute is judgment: how much weight to give an unannounced entry. LineShine shows surprises happen, and large AI clusters could plausibly run HPL above 1 EF, so I put ~30% on 6 or more, at the upper end of the runs.",
+   "disagreements": [
+    {
+     "claim": "Number of past list transitions that added an exascale system (4/8 vs 4/9 vs 5/8)",
+     "kind": "factual",
+     "verdict": "Unsettled without web access; immaterial, since all runs agree the recent rate is high and mostly driven by pre-announced systems"
+    },
+    {
+     "claim": "Probability of a surprise unannounced >=1 EF submission at SC26 (21-26% for exactly 6)",
+     "kind": "judgment",
+     "verdict": "Took ~24% for 6 and 6% for 7+, given the LineShine precedent and AI-cluster scale"
+    },
+    {
+     "claim": "Risk of falling to <=4 via JUPITER re-run or withdrawal",
+     "kind": "judgment",
+     "verdict": "Rare; ~3%"
+    }
+   ],
+   "reference_class": "TOP500 list-to-list changes in exascale count since Jun 2022, conditioned on the visible pipeline of announced >=1 EF systems"
+  }
+ ]
+}
