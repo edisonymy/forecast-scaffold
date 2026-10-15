@@ -1,0 +1,249 @@
+{
+ "record_id": "2026-10-15-92aaea2a",
+ "question": "What will the first reported earnings per share after September 2026 be for the following companies? (AMD)",
+ "question_id": 46179,
+ "url": "https://www.metaculus.com/questions/45995/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-15T21:33:58+00:00",
+ "effort": "medium (auto)",
+ "model": "anthropic/claude-opus-5.5",
+ "provider": "openrouter",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.9618,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 1.7766666666666666,
+    "25": 1.9333333333333333,
+    "50": 1.985,
+    "75": 2.03,
+    "90": 2.09
+   }
+  },
+  "phase1": {
+   "10": 1.7766666666666666,
+   "25": 1.9333333333333333,
+   "50": 1.985,
+   "75": 2.03,
+   "90": 2.09
+  },
+  "phase2": null,
+  "spread_phase1": 0.01,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 1.72,
+   "25": 1.92,
+   "50": 1.975,
+   "75": 2.02,
+   "90": 2.085
+  },
+  "p_below_lower": 0.02
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.6428,
+   "seconds": 66.6,
+   "usage": {
+    "num_turns": 19,
+    "input": 30,
+    "cache_read": 608142,
+    "cache_write": 18898,
+    "cache_write_1h": 0,
+    "output": 6661,
+    "thinking": 1162,
+    "web_search": 0,
+    "cost_usd_envelope": 0.5888585000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 63681
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1.85,
+     "25": 1.95,
+     "50": 1.99,
+     "75": 2.04,
+     "90": 2.1
+    }
+   },
+   "reasoning": "AMD reports fiscal Q3 2026 on Nov 3, 2026 after close. Guidance (rev $13.0B±0.3B, ~56% non-GAAP GM, ~$3.65B opex, 13% tax, 1.66B shares) implies ~$1.93 non-GAAP EPS; consensus $1.93-1.96. AMD has met or beaten EPS consensus each of the last 5 quarters (Q2'26 1.66 vs ~1.61; Q1'26 1.37 vs 1.29; Q4'25 1.53 vs 1.32; Q3'25 1.20 vs 1.17), and typically beats the revenue midpoint by ~3-7%, so median ~1.99. Resolution criteria are blank; the 0.995-2.995 range centred near 2 implies adjusted EPS, but ~10% weight on GAAP (Q2 GAAP 1.38 incl. a $483M investment gain) widens the left tail. Live web tools failed this run (API error), so evidence comes from prior research traces in this repo plus provided AskNews items; the semis selloff in mid-Oct affects price, not the already-closed quarter. Market check: no Polymarket/Manifold candidate per harness; prior traces found no Kalshi/bookmaker market; I could not re-check this run.",
+   "sources": [
+    "bot/journal/traces/2026-10-11-18b7acf3.json (prior research dossiers on this AMD EPS question)",
+    "bot/journal/traces/2026-10-07-f4ab2cb5.json (prior research run on this AMD EPS question)",
+    "bot/journal/traces/2026-10-07-02047ff4.json (prior research dossier on AMD Q3 2026 revenue)",
+    "https://invezz.com/news/2026/10/14/nasdaq-drops-as-hotter-cpi-bank-earnings-and-chip-losses-weigh-on-markets/",
+    "https://www.hindustantimes.com/world-news/us-news/stock-market-today-s-p-500-dow-jones-nasdaq-futures-fall-as-us-inflation-hits-3-7-in-september-101791986200035.html"
+   ],
+   "dossier": "- Report date: AMD reports fiscal Q3 2026 on Tue Nov 3, 2026 after market close (AMD IR announcement, per prior research traces, Oct 2026); one site said Nov 2.\n- Q3 2026 guidance (Q2 PR, Aug 4 2026): revenue ~$13.0B ±$0.3B; non-GAAP GM ~56%; non-GAAP opex ~$3.65B; non-GAAP OI&E ~$55M (Q2 implied ~$0.1B); non-GAAP tax 13%; ~1.66B diluted shares. Arithmetic: (13.0*0.56-3.65+0.055)*0.87/1.66 ≈ $1.93; with $0.1B OI&E ≈ $1.95-1.96; ±$0.3B revenue ≈ ±$0.09 EPS.\n- Q3 2026 non-GAAP EPS consensus (Sep-Oct 2026): TipRanks 1.93, tradingpedia 1.94, another 1.95, ChartMill 1.96.\n- Actual vs consensus non-GAAP EPS (TipRanks/alphastreet): Q2'26 1.66 vs ~1.60-1.62; Q1'26 1.37 vs 1.29; Q4'25 1.53 vs 1.32; Q3'25 1.20 vs 1.17; Q2'25 0.48 vs 0.48 (0 to ~16% above).\n- Revenue vs guide midpoint: Q2'26 $11.536B vs $11.2B guide (+3%); late-2025 beats ~6-7% (recalled in prior traces, not re-verified).\n- GAAP history: Q2'26 GAAP diluted EPS $1.38 (incl. ~$483M investment gain) vs non-GAAP $1.66; Q1'26 GAAP $0.84 vs non-GAAP $1.37. GAAP-non-GAAP gap is large and volatile (amortization, stock comp).\n- Q2 2026 call: Q3 guide disappointed some aggressive expectations; data-center revenue +107% YoY; gaming -31% YoY.\n- Mid-Oct 2026 macro (Invezz, Hindustan Times, Oct 14 2026): September CPI 3.7% YoY, 10-yr yield 5.28%; AMD shares fell >2.4% on Oct 14 amid chip valuation concerns; FactSet sees ~130% Q3 earnings growth for semis. The quarter ended in late Sept, so these affect price, not reported Q3 EPS.\n- Status quo: AMD reports non-GAAP EPS at or above consensus/guide-implied level; no below-low-end-of-guide quarters found for 2025-2026.\n- Resolution instrument: criteria text is blank; unclear whether it resolves on GAAP diluted or adjusted (non-GAAP) EPS; range 0.995-2.995 is centred near non-GAAP consensus.\n- Event window: first EPS report after Sep 2026 -> the Q3 FY2026 release on ~Nov 3, 2026; as of Oct 15, 2026 the quarter has closed and the report is pending.\n- Searched but not found: Polymarket/Manifold/Kalshi/bookmaker contracts on AMD Q3 EPS; any intra-quarter pre-announcement or guidance update. Live web access failed this run, so no newer data was checked after Oct 11.",
+   "reference_class": "AMD quarterly non-GAAP diluted EPS vs guidance-implied EPS and sell-side consensus, Q2 2025-Q2 2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.4301,
+   "seconds": 51.6,
+   "usage": {
+    "num_turns": 12,
+    "input": 20,
+    "cache_read": 384942,
+    "cache_write": 17525,
+    "cache_write_1h": 0,
+    "output": 5118,
+    "thinking": 817,
+    "web_search": 0,
+    "cost_usd_envelope": 0.43005225,
+    "web_fetch": 0,
+    "duration_api_ms": 49361
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1.78,
+     "25": 1.93,
+     "50": 1.985,
+     "75": 2.03,
+     "90": 2.1
+    }
+   },
+   "reasoning": "Q3 2026 (reported Nov 3, 2026 after close) is the first EPS after September. The guide (rev $13.0B +/-0.3B, 56% non-GAAP GM, $3.65B opex, $55M OI&E, 13% tax, 1.66B shares) implies about $1.93 non-GAAP EPS; consensus $1.93-1.96 as of Oct 11. AMD has met or beaten EPS consensus 5 straight quarters ($0.00-0.21), usually with revenue above the midpoint, so the median is about $1.98-1.99. The criteria are blank, so I put about 12% on GAAP EPS (around $1.55-1.75; the Q2 GAAP/non-GAAP gap was $0.28), which widens the low tail. The Oct 14 chip selloff on hot CPI does not affect earnings for a quarter that already closed. Market check: the harness found no Polymarket/Manifold market; my own web tools failed this run, so Kalshi and bookmakers were not checked. No escape mechanism outside the 1-3 range.",
+   "sources": [
+    "bot/journal/traces/2026-10-11-18b7acf3.json (prior research runs on this question: AMD IR Q2 2026 release, Q3 guidance, TipRanks/ChartMill consensus)",
+    "https://invezz.com/news/2026/10/14/nasdaq-drops-as-hotter-cpi-bank-earnings-and-chip-losses-weigh-on-markets/",
+    "https://www.hindustantimes.com/world-news/us-news/stock-market-today-s-p-500-dow-jones-nasdaq-futures-fall-as-us-inflation-hits-3-7-in-september-101791986200035.html"
+   ],
+   "dossier": "- Report date: AMD reports fiscal Q3 2026 on Tue Nov 3, 2026 after market close, per AMD IR as cited in the Oct 11 research trace. Event window: the first EPS reported after Sep 2026 is Q3 FY2026, released Nov 3. As of Oct 15 it has not been reported.\n- Q2 2026 (reported Aug 2026, AMD IR/SEC 8-K via the prior trace): revenue $11.536B (+50% YoY); GAAP diluted EPS $1.38; non-GAAP $1.66; non-GAAP GM 56%; data center $6.7B (+107%).\n- Q1 2026: non-GAAP EPS $1.37, GAAP $0.84. Q4 2025 non-GAAP $1.53. Q3 2025 non-GAAP $1.20 on $9.25B revenue.\n- Q3 2026 guidance (Q2 release/call, Aug 2026): revenue about $13.0B +/- $0.3B; non-GAAP GM about 56%; non-GAAP opex about $3.65B; non-GAAP OI&E about $55M; tax 13%; about 1.66B diluted shares. Arithmetic: about $1.93 non-GAAP EPS at the midpoint; +/-$0.3B revenue is about +/-$0.09.\n- Consensus Q3 2026 non-GAAP EPS (Sep-Oct 2026): TipRanks 1.93, ChartMill 1.95-1.96, tradingpedia 1.94. MarketBeat showed 1.41 and another page 1.66, both likely GAAP-basis or stale.\n- Reported vs consensus history: Q2'26 1.66 vs about 1.61; Q1'26 1.37 vs 1.29; Q4'25 1.53 vs 1.32; Q3'25 1.20 vs 1.17; Q2'25 0.48 vs 0.48.\n- Downside items: gaming down significantly in the Q3 outlook; the Taalas acquisition's effect on opex/EPS was not quantified; the Q3 guide disappointed some bulls in Aug.\n- Upside items: data center/MI-series ramp; FactSet expects semis/equipment Q3 earnings growth of about 130% (Invezz, Oct 14 2026).\n- Macro (Oct 14 2026, Invezz/Hindustan Times): Sept CPI 3.7% YoY, 10-yr yield 5.28%; AMD shares fell more than 2.4% that day on valuation and AI-financing worries. This affects price, not the already-closed quarter's earnings.\n- GAAP/non-GAAP gap: $0.28 (Q2'26), $0.53 (Q1'26). A GAAP Q3 would be roughly $1.5-1.75.\n- Resolution instrument: the criteria text is blank, so GAAP vs adjusted is ambiguous. The question range 0.995-2.995 is centered near adjusted consensus.\n- Status quo: AMD reports at or a few cents above guide-implied and consensus non-GAAP EPS.\n- Searched but not found: any prediction market on AMD Q3 EPS (Polymarket/Manifold none per harness; Kalshi/bookmakers unchecked this run because web tools failed); any intra-quarter pre-announcement.",
+   "reference_class": "AMD quarterly non-GAAP diluted EPS vs guidance-implied midpoint and sell-side consensus, Q2 2025-Q2 2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.0539,
+   "seconds": 64.2,
+   "usage": {
+    "num_turns": 17,
+    "input": 32,
+    "cache_read": 661233,
+    "cache_write": 20944,
+    "cache_write_1h": 0,
+    "output": 6487,
+    "thinking": 926,
+    "web_search": 0,
+    "cost_usd_envelope": 0.6238515,
+    "web_fetch": 0,
+    "duration_api_ms": 62308
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1.7,
+     "25": 1.92,
+     "50": 1.98,
+     "75": 2.02,
+     "90": 2.07
+    }
+   },
+   "reasoning": "AMD reports Q3 2026 on Nov 3 after close. Guidance (rev $13.0B±0.3B, ~56% non-GAAP GM, ~$3.65B opex, ~13% tax, ~1.66B shares) implies ~$1.91-1.95 non-GAAP EPS; consensus $1.93-1.96; AMD beat/met in 17 of 18 quarters by ~$0.02-0.08, so non-GAAP centre ~$1.98. Blank criteria leave GAAP vs adjusted ambiguous (Q2: GAAP 1.38 vs non-GAAP 1.66); range centred ~2 favours adjusted, ~15% weight on GAAP fattens lower tail. Oct 14 chip selloff is post-quarter and doesn't change Q3 results. My own web tools errored this run; facts come from the 2026-10-13 research-run dossiers in the local journal plus the provided news; market check could not be redone — prior runs found no Polymarket/Kalshi/Manifold market for Q3 2026 AMD EPS.",
+   "sources": [
+    "bot/journal/forecasts.jsonl (prior AMD Q3 2026 EPS record 2026-10-13-3a92a59a)",
+    "bot/journal/traces/2026-10-13-3a92a59a.json (three research-run dossiers citing AMD IR, StockTitan, TipRanks, ChartMill, MarketBeat)",
+    "https://invezz.com/news/2026/10/14/nasdaq-drops-as-hotter-cpi-bank-earnings-and-chip-losses-weigh-on-markets/",
+    "https://www.hindustantimes.com/world-news/us-news/stock-market-today-s-p-500-dow-jones-nasdaq-futures-fall-as-us-inflation-hits-3-7-in-september-101791986200035.html"
+   ],
+   "dossier": "- Report date: AMD Q3 FY2026 results Tue Nov 3, 2026 after market close (AMD newsroom; MarketBeat; TipRanks; per 2026-10-13 research runs).\n- Q2 2026 (reported Aug 4, 2026, AMD IR/StockTitan): revenue $11.5B (+50% y/y); non-GAAP diluted EPS $1.66 vs consensus ~$1.60-1.62; GAAP diluted EPS $1.38; diluted shares ~1,659M. Q1 2026: non-GAAP $1.37, GAAP $0.84.\n- Q3 2026 guidance (AMD Q2 release, Aug 2026): revenue ~$13.0B ±$0.3B; non-GAAP GM ~56%; non-GAAP opex ~$3.65B; non-GAAP tax ~13%. Bottom-up at midpoint ≈ $1.91-1.95 non-GAAP EPS.\n- Q3 2026 consensus adjusted EPS (Sep-Oct 2026, TipRanks/ChartMill/dividendcalculator): $1.93-1.96 on ~$13.06-13.19B revenue. MarketBeat showed $1.41 (range 1.14-1.64), likely different basis/stale; Earnings Whispers listed $1.66 labelled GAAP/possibly stale.\n- Beat history (TipRanks/MarketBeat): met/beat 17 of last 18 quarters; Q4'25 1.53 vs 1.32; Q3'25 1.20 vs 1.17; Q2'25 0.48 vs 0.54 (export-charge miss); Q1'25 0.96 vs 0.93; Q4'24 1.07 vs 1.07.\n- Upside drivers cited (Benzinga Oct 2026 preview): EPYC server CPU strength; MI450 revenue starting Q3. Downside: one-off charges (export controls precedent Q2'25), margin pressure.\n- Macro Oct 13-14, 2026 (Orange/AFP; Invezz; Hindustan Times): chip selloff (CXMT memory competition; AMD -0.75% Oct 13, >-2.4% Oct 14), hot Sept CPI 3.7%, 10y UST ~5.28%; FactSet projects ~130% Q3 y/y earnings growth for semis. These occur after Q3 close (late Sep) and do not alter reported Q3 figures.\n- Resolution instrument: criteria text is blank; question range 0.995-2.995 centred near 2. Aggregators (Yahoo/Zacks/Polymarket) generally use non-GAAP/adjusted EPS; GAAP diluted runs ~$0.25-0.50 below non-GAAP recently (Q2: 1.38 vs 1.66; Q1: 0.84 vs 1.37). Which basis counts is the main ambiguity.\n- Status quo: AMD reports adjusted EPS near guidance-implied consensus with its typical small beat.\n- Event window: first EPS reported after Sep 2026 -> the Nov 3, 2026 Q3 release; as of 2026-10-15 not yet reported (~19 days out).\n- Markets: no Polymarket/Kalshi/Manifold market found for AMD Q3 2026 EPS (Polymarket ran non-GAAP beat markets for prior quarters).\n- Searched but not found: any Q3 preannouncement or mid-quarter guidance change; a current GAAP-basis consensus; a whisper number for Q3. Web search tools failed on this run, so no new post-Oct-13 company-specific evidence was retrieved.",
+   "reference_class": "AMD quarterly non-GAAP EPS vs pre-report consensus, last ~18 quarters (met/beat 17 of 18, typical beat $0.02-0.08)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1034,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.1364,
+   "seconds": 27.3,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 30844,
+    "cache_write": 9033,
+    "cache_write_1h": 0,
+    "output": 2582,
+    "thinking": 793,
+    "web_search": 0,
+    "cost_usd_envelope": 0.13643824999999998,
+    "web_fetch": 0,
+    "duration_api_ms": 26763
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1.72,
+     "25": 1.92,
+     "50": 1.975,
+     "75": 2.02,
+     "90": 2.085
+    },
+    "p_below_lower": 0.02
+   },
+   "reasoning": "AMD reports Q3 FY2026 on Nov 3, 2026. Guidance (rev $13.0B±0.3B, 56% non-GAAP GM, $3.65B opex, 13% tax, 1.66B shares) implies ~$1.93 non-GAAP; consensus $1.93-1.96; AMD met or beat consensus in each of the last 5 quarters by $0.00-0.21 (median ~+0.05), so non-GAAP centre ~$1.99. Blank criteria leave GAAP vs adjusted ambiguous; range centred ~2 favours adjusted, but ~15% weight on GAAP (~$1.55-1.75) fattens the low tail, plus ~2% escape below $1 for a GAAP-basis large charge. Market check: no Polymarket/Manifold market per harness; Kalshi/bookmakers could not be checked (no web access this run); none found by prior runs.",
+   "sources": [],
+   "reconciliation": "All three runs agree on the factual core: Nov 3 report date, Q3 guidance, consensus $1.93-1.96, and the beat history. The MarketBeat $1.41 consensus is an unexplained outlier, likely GAAP-basis or stale; it cannot be settled without web access and is absorbed into the GAAP tail. The real disputes are judgment: GAAP weight (10-15%) and beat size. I take ~15% GAAP because the criteria are genuinely blank, and a ~+$0.05 beat consistent with the median of recent quarters. I carried Run 3's dispersion forward because the reconciled mixture implies about the same width. Nothing was retrieved this run.",
+   "disagreements": [
+    {
+     "claim": "Probability the question resolves on GAAP rather than non-GAAP EPS (10% vs 12% vs 15%)",
+     "kind": "judgment",
+     "verdict": "Blank criteria; range centre favours adjusted. Took ~15% because nothing rules GAAP out."
+    },
+    {
+     "claim": "MarketBeat consensus $1.41 vs others $1.93-1.96",
+     "kind": "factual",
+     "verdict": "Unsettleable offline; most likely GAAP/stale basis; treated as part of GAAP-tail uncertainty."
+    },
+    {
+     "claim": "Expected beat magnitude over $1.93-1.96 consensus (median 1.98-1.99)",
+     "kind": "judgment",
+     "verdict": "Recent median beat ~+$0.05 gives a non-GAAP centre of ~1.99; runs effectively agree."
+    },
+    {
+     "claim": "Whether escape below the 0.995 bound is possible",
+     "kind": "judgment",
+     "verdict": "Small (~2%) via GAAP basis plus large one-off charge (impairment/acquisition/export-control precedent)."
+    }
+   ],
+   "reference_class": "AMD quarterly non-GAAP EPS vs guidance-implied consensus, Q2 2025-Q2 2026 (5 quarters), with GAAP-basis mixture for resolution ambiguity"
+  }
+ ]
+}
