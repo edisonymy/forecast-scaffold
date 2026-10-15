@@ -1,0 +1,263 @@
+{
+ "record_id": "2026-10-15-7210031a",
+ "question": "What will the first reported earnings per share after September 2026 be for the following companies? (SpaceX)",
+ "question_id": 46183,
+ "url": "https://www.metaculus.com/questions/45995/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-15T21:31:04+00:00",
+ "effort": "medium (auto)",
+ "model": "anthropic/claude-opus-5.5",
+ "provider": "openrouter",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.626,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -0.09666666666666668,
+    "25": 0.043333333333333335,
+    "50": 0.16333333333333333,
+    "75": 0.27666666666666667,
+    "90": 0.41333333333333333
+   },
+   "p_below_lower": 0.011666666666666667,
+   "p_above_upper": 0.013333333333333334
+  },
+  "phase1": {
+   "10": -0.09666666666666668,
+   "25": 0.043333333333333335,
+   "50": 0.16333333333333333,
+   "75": 0.27666666666666667,
+   "90": 0.41333333333333333
+  },
+  "phase2": null,
+  "spread_phase1": 0.08,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -0.07,
+   "25": 0.05,
+   "50": 0.16,
+   "75": 0.27,
+   "90": 0.4
+  },
+  "p_below_lower": 0.01,
+  "p_above_upper": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.8668,
+   "seconds": 78.9,
+   "usage": {
+    "num_turns": 16,
+    "input": 28,
+    "cache_read": 577424,
+    "cache_write": 23333,
+    "cache_write_1h": 0,
+    "output": 6647,
+    "thinking": 1388,
+    "web_search": 0,
+    "cost_usd_envelope": 0.6008582499999999,
+    "web_fetch": 0,
+    "duration_api_ms": 76621
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -0.07,
+     "25": 0.07,
+     "50": 0.19,
+     "75": 0.31,
+     "90": 0.45
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Resolves on Q3 2026 GAAP diluted EPS, the first EPS reported after Sept 2026; calendars show Nov 3, 5 or 17. Q2 was -0.09 vs -0.26 consensus (net loss $541M on adj EBITDA $3.54B). Q3 consensus EPS ~0.13-0.16 on ~$12.9B revenue and ~$6.9B adj EBITDA (UBS $13.8B/$7.5B), boosted by a full quarter of Anthropic compute. Carrying the Q2 EBITDA-to-net bridge forward, with D&A ~3.6B, SBC ~1.0B and net interest ~0, gives ~0.30; I shade toward consensus for faster depreciation, stock comp and one-offs (Cursor consolidation, marks), so median 0.19. Live web tools failed this run, so the evidence comes from prior journal dossiers. Market check: no Polymarket/Manifold/Kalshi EPS market found (harness search plus prior runs); none re-verified live.",
+   "sources": [
+    "bot/journal/traces/2026-10-13-fd967176.json (prior research dossiers citing SEC 8-K Q2 2026 release, TipRanks, MarketBeat, GNG Research, UBS/Yahoo, Motley Fool)",
+    "bot/journal/traces/2026-10-15-5e979746.json (SpaceX Q3 revenue dossiers: segment data, Cursor consolidation, report-date calendars)",
+    "bot/journal/forecasts.jsonl (related SpaceX/Tesla records)",
+    "AskNews: FinanzNachrichten.de 2026-10-14 and Stockhouse 2026-10-13 SpaceX articles"
+   ],
+   "dossier": "- Quantity: SpaceX (NASDAQ: SPCX) first EPS reported after Sept 2026 = Q3 2026 (quarter ended Sept 30) EPS. Criteria text is blank; the Q2 release reported only GAAP basic/diluted EPS, so assume GAAP diluted.\n- Report date unconfirmed: Stocktwits/Wall Street Horizon Nov 3 AMC, Investing.com Nov 5, StockAnalysis Nov 17 (prior dossiers, Oct 13-15 2026). Searched, absent: company confirmation.\n- IPO June 12 2026 at $135; ~$85.7B net proceeds plus a $25B bond in June; cash ~$100B at end of Q2 (SEC 8-K Q2 release, Aug 4 2026).\n- Q2 2026 (8-K, Aug 4 2026): revenue $7.81B (+92% y/y; Space $962M, Connectivity $4,291M, AI $2,561M); GAAP net loss $541M; EPS -0.09 basic/diluted on 5,864M weighted shares; adj EBITDA $3,538M; D&A $2,848M; SBC $831M; interest expense $629M; interest income $340M; tax $23M; other $86M. Q2 consensus EPS was -0.26 (MarketBeat) / -0.16 (Investing.com). Q1 2026 EPS -1.27 on pre-IPO share basis.\n- Q3 EPS consensus (Oct 2026): GNG Research $0.16 from 14 analysts (range -0.11 to +0.43; was 0.08 90 days earlier); ChartMill $0.13 from 30 analysts; TipRanks $0.14; MarketBeat one estimate at $0.00. FY2026 consensus ~$0.09; Erste FY2026 -0.04, FY2027 +1.72 (MarketBeat Oct 13).\n- Q3 revenue consensus ~$12.9B (range $11.1-16.0B); adj EBITDA ~$6.9B. UBS: revenue $13.8B, EBITDA $7.5B, AI $7.6B, Connectivity $4.9B, Space $1.3B, capex $19.3B (Yahoo/UBS, Oct 2026).\n- Revenue drivers: Anthropic compute $1.25B/month (~$3.75B for a full quarter; lower fees during the May-Jun ramp); ~6 weeks of Cursor consolidation in Q3; Starlink price increases; Google's ~$920M/month deal starts in October (reduced fees before that) (Fool Oct 2 2026; prior dossiers).\n- Factors pushing EPS lower: D&A ramp from ~$18-19B/quarter capex (H1 AI capex $23.6B); post-IPO SBC; possible acquisition/integration costs (Cursor) and investment marks; Starship spending (Starship reached orbit Sept 28 2026 with one engine failure; AskNews Oct 14).\n- Factors pushing EPS higher: a full quarter of interest income on ~$100B cash; high-margin Anthropic revenue; Q2 beat consensus by 0.17.\n- Arithmetic: ~6.0-6.3B diluted shares, so each $0.10 EPS is ~$0.6B net income. A loss above ~$6B or profit above ~$6B would leave the question range; that would take a major impairment or one-off gain.\n- Oct 8 2026: agreement to buy Grain Management's 800 MHz spectrum, pending FCC approval (little Q3 P&L effect).\n- Event window: the quarter ended Sept 30 2026 and is 100% elapsed as of Oct 15; the report is pending (expected Nov 3-17).\n- Searched, absent: company EPS guidance or pre-announcement; any Polymarket/Kalshi/Manifold market on SpaceX Q3 EPS; live verification this run (web tools failed).",
+   "reference_class": "Recently IPO'd hyper-growth, capex-heavy companies' quarterly GAAP EPS vs sell-side consensus in their first post-IPO quarters, anchored on SpaceX's own Q2 2026 EBITDA-to-net-income bridge"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.4451,
+   "seconds": 79.9,
+   "usage": {
+    "num_turns": 16,
+    "input": 28,
+    "cache_read": 557802,
+    "cache_write": 20467,
+    "cache_write_1h": 0,
+    "output": 6854,
+    "thinking": 1484,
+    "web_search": 0,
+    "cost_usd_envelope": 0.57830975,
+    "web_fetch": 0,
+    "duration_api_ms": 78586
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -0.1,
+     "25": 0.05,
+     "50": 0.19,
+     "75": 0.31,
+     "90": 0.48
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "First EPS after Sept 2026 is Q3 2026 GAAP diluted EPS (report expected Nov 3-17). Q2 was -0.09 (net loss $541M; EBITDA 3.54B - D&A 2.85B - SBC 0.83B - net interest 0.29B), beating -0.26 consensus. Q3 consensus EPS ~+0.13-0.16 (range -0.12 to 0.43) on ~$12.9-13.1B revenue and ~$6.9B adj EBITDA (UBS 13.8B/7.5B), driven by the first full quarter of Anthropic's ~$1.25B/month compute deal. Bottom-up bridge (D&A ~3.6-3.8B on ~$19B/qtr capex, SBC ~1.0B, net interest turning slightly positive on ~$100B cash, Cursor intangibles amortization) gives ~0.30-0.40, but analysts embed more cost and one-off risk; median set modestly above consensus. Live web tools failed this run; evidence carried from journal research dated Oct 7-13. Market check: no human market found (Polymarket/Manifold/Kalshi per prior runs; not re-checkable this run).",
+   "sources": [
+    "local forecast journal trace bot/journal/traces/2026-10-13-fd967176.json (dossiers citing SEC 8-K Q2 2026, TipRanks, MarketBeat, UBS/Yahoo note)",
+    "local forecast journal trace bot/journal/traces/2026-10-15-5e979746.json (SpaceX Q3 revenue dossiers citing Motley Fool Oct 2 2026, Fortune Aug 4 2026, TheNextWeb)",
+    "https://stockhouse.com/opinion/contributors/2026/10/13/spacex-first-hydrogen-siemens-space-drones-and-robotics-are-key-themes-for",
+    "https://www.finanznachrichten.de/nachrichten-2026-10/69830175-spacex-first-hydrogen-siemens-weltraum-drohnen-und-robotik-sind-die-zukunftsthemen-fuer-anleger-673.htm"
+   ],
+   "dossier": "- NOTE: live web tools failed this run; bullets carried from journal research dated Oct 7-13, 2026 plus AskNews items of Oct 14; not re-verified live.\n- Quantity: SpaceX (Nasdaq: SPCX) first reported EPS after Sept 2026 = Q3 2026 (Jul 1-Sep 30) EPS. IPO June 12, 2026 at $135/share; ~$85.7B net IPO proceeds plus $25B bond issue in June; cash and securities ~$100B end-Q2 (SEC 8-K, Aug 2026).\n- Q2 2026 (8-K, Aug 4 2026): GAAP EPS -0.09 basic/diluted; net loss $541M; weighted shares 5,864M; revenue $7.81B (+92% y/y); adj EBITDA $3,538M; operating loss $143M; D&A $2,848M; SBC $831M; interest expense $629M; interest income $340M (partial quarter of IPO cash); tax $23M; other $86M. Pre-report EPS consensus -0.26 (MarketBeat/LSEG) or -0.16 (Investing.com).\n- Q1 2026: net loss ~$1.0B, adj EBITDA $1,127M; pre-IPO per-share figures on an inconsistent share basis (MarketBeat shows -1.27).\n- Q3 EPS consensus (as of ~Oct 13): TipRanks $0.14, range -$0.12 to $0.43; other aggregators $0.10-0.16; MarketBeat page showed a single $0.00 estimate. Goldman FY2026 EPS $1.30 (TheStreet snippet, paywalled); Investing.com FY2026 EPS $0.29 (share-basis mixing).\n- Q3 revenue consensus ~$12.9B (another aggregator $13.1B; 12-analyst range $11.1B-$16.0B); adj EBITDA consensus ~$6.9B. UBS: revenue $13.8B, EBITDA $7.5B, AI $7.6B, Connectivity $4.9B, Space $1.3B, Q3 capex $19.3B (Q2 capex $18.4B) (Yahoo/UBS, Oct 2026).\n- Drivers: first full quarter of Anthropic compute deal ~$1.25B/month; Google deal at reduced fee in Q3, full $920M/month from October (Motley Fool, Oct 2 2026). Cursor acquired all-stock ~$60B, closed Aug 14 2026 (adds shares and acquired-intangible amortization from mid-Aug). Starlink ~12M subs end-Q2, ARPU ~$66, May price increases.\n- Cost side: D&A rising with ~$19B/qtr capex (much of it AI hardware); post-IPO SBC; interest expense higher with $25B bonds, but full quarter of interest income on ~$100B cash; possible GAAP one-offs (impairments, investment marks, xAI-related charges).\n- Q3 weighted diluted shares will exceed Q2's 5,864M (full post-IPO quarter plus Cursor shares from mid-Aug); prior research estimated ~6.3-6.5B.\n- Other news: Sep 28 2026 Starship reached orbit, deployed 26 Starlink V3 sats; Oct 8 plan to buy Grain Management 800 MHz spectrum, pending FCC (Stockhouse/FinanzNachrichten, Oct 13-14 2026). Little Q3 P&L effect.\n- Base rates: SpaceX public-company EPS surprise history n=1 (+0.17 vs consensus in Q2 2026). Large-cap growth EPS surprises at this scale typically within about +/-0.15 of consensus.\n- Status quo: Q3 2026 EPS is published in the next earnings release / 8-K.\n- Resolution instrument: resolves off SpaceX's reported Q3 2026 EPS (assumed GAAP diluted, as reported), not adjusted/non-GAAP EPS or analyst figures. Criteria text blank; bounds -1.005 to 0.995, open both ends.\n- Event window: quarter Jul 1 -> Sep 30 2026, 100% elapsed as of 2026-10-15; report expected Nov 3 (Stocktwits/Wall Street Horizon), Nov 5 (Investing.com) or Nov 17 (StockAnalysis), unconfirmed.\n- Searched, absent: company Q3 guidance or pre-announcement; confirmed report date; any Polymarket/Kalshi/Manifold market on SpaceX Q3 EPS (only IPO/valuation/Musk net-worth contracts found in prior runs).",
+   "reference_class": "Recently-IPO'd hypergrowth megacap quarterly GAAP EPS vs pre-report consensus (surprises typically within about +/-0.15 of consensus at this EPS scale); SpaceX n=1 public print beat by +0.17"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 2.3575,
+   "seconds": 205.5,
+   "usage": {
+    "num_turns": 29,
+    "input": 40,
+    "cache_read": 959837,
+    "cache_write": 33623,
+    "cache_write_1h": 0,
+    "output": 8885,
+    "thinking": 1637,
+    "web_search": 0,
+    "cost_usd_envelope": 0.91238725,
+    "web_fetch": 0,
+    "duration_api_ms": 87160
+   },
+   "validation_errors_first_attempt": [
+    "research run listed 2 distinct source(s); this tier requires at least 3 — run real searches and list in \"sources\" only what you actually consulted"
+   ],
+   "estimate": {
+    "percentiles": {
+     "10": -0.12,
+     "25": 0.01,
+     "50": 0.11,
+     "75": 0.21,
+     "90": 0.31
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Resolves on Q3 2026 (quarter ended Sep 30) GAAP diluted EPS, report expected Nov 3-17. Anchor: sell-side Q3 consensus ~0.10-0.14 (TipRanks 0.14, MarketBeat ~0.10, per Oct 13 journal dossier). Bottom-up: revenue ~$13B (vs $7.81B Q2) with high-margin Anthropic compute revenue, adj EBITDA ~$7B, minus D&A ~$3.5B+, SBC, Cursor intangibles amortization, net interest ~flat, on ~13B+ diluted shares -> roughly $1-2B net income, EPS ~0.08-0.15. Main counterarguments: Q2 beat consensus by 0.17 (upside), while GAAP one-offs/impairments and AI depreciation could swing to a loss (downside). Market check: live web tools failed this run (all WebSearch/WebFetch calls errored); harness found no Polymarket/Manifold market and prior journal research found none on Kalshi either -> no market anchor. Evidence is carried from Oct 7-13 journal research, not re-verified live, so tails kept wide.",
+   "sources": [
+    "AskNews: FinanzNachrichten.de 2026-10-14 'SpaceX, First Hydrogen, Siemens - Weltraum, Drohnen und Robotik'",
+    "AskNews: Stockhouse.com 2026-10-13 'SpaceX, First Hydrogen, Siemens: Space, Drones and Robotics Are Key Themes'",
+    "local dataset: bot/journal/traces/2026-10-13-fd967176.json (prior SpaceX EPS research dossiers, Oct 13 2026)",
+    "local dataset: bot/journal/traces/2026-10-15-5e979746.json (SpaceX Q3 revenue research dossiers, Oct 15 2026)",
+    "local dataset: bot/journal/forecasts.jsonl (SpaceX EPS records 2026-10-07, 10-09, 10-11)"
+   ],
+   "dossier": "NOTE: live web tools failed this run; bullets carried from journal research dated Oct 7-15, 2026, not re-checked live.\n- Quantity: SpaceX (Nasdaq: SPCX) Q3 2026 (Jul 1-Sep 30) GAAP diluted EPS; SpaceX reports no adjusted EPS (journal dossiers Oct 7-13).\n- IPO Jun 12, 2026 at $135/share, ~$1.75T valuation, implying ~13B shares outstanding; ~$85.7B net IPO proceeds + $25B bonds; cash ~$100B (Q2 8-K, Aug 2026).\n- Q1 2026 EPS -1.27 (pre-IPO share base). Q2 2026 EPS -0.09 basic & diluted, net loss $541M, weighted shares 5,864M (partial post-IPO quarter); Q2 consensus was -0.26 -> beat by +0.17 (8-K; LSEG/Zacks via dossier).\n- Q2 detail: revenue $7.81B (+92% y/y); adj EBITDA $3.54B; operating loss $143M; D&A $2,848M; interest expense $629M, interest income $340M; capex ~$18.4B.\n- Q3 share count: full quarter at ~13B+ plus ~391M shares issued for Cursor (all-stock, closed Aug 14). Each ~$130M of net income ~= $0.01 EPS. A run once argued ~6.5B weighted instead; reconciliations favored ~13B (consistent with market cap/price).\n- Q3 EPS consensus by source: TipRanks $0.14 (range -$0.12 to $0.43, as of Oct 13); MarketBeat ~$0.10 (another page $0.00 on 1 estimate); one aggregator $0.13. FY2026 consensus ~$0.09; Erste FY2026 -0.04, FY2027 +1.72 (MarketBeat 2026-10-13); Goldman FY2026 $1.30 (snippet).\n- Q3 revenue consensus ~$12.9B; UBS $13.8B with adj EBITDA $7.5B (9% above consensus), AI $7.6B, Connectivity $4.9B, Space $1.3B; UBS Q3 capex $19.3B (Yahoo/UBS, Oct 2026).\n- Upward drivers: Anthropic compute contract $1.25B/month (~$3.75B/quarter at full rate); Starlink price increases (ARPU ~$66); interest income on ~$100B cash; Q2 beat history.\n- Downward drivers: depreciation on ~$18-19B/quarter capex; post-IPO stock-based compensation; Cursor intangibles amortization and deal costs; Starship R&D; possible GAAP one-offs/impairments; Google contract reduced fee in Q3 (full rate only from Q4).\n- Other news: Starship reached orbit Sep 28, 2026 deploying 26 Starlink V3 sats; Oct 8 agreement to buy Grain 800 MHz spectrum (pending FCC) - negligible Q3 P&L effect (Stockhouse/FinanzNachrichten, Oct 13-14).\n- Base rates: newly listed megacaps' quarterly GAAP EPS typically lands within ~+/-0.15 of consensus at this scale; SpaceX public-company surprise history n=1 (+0.17).\n- Status quo: the first EPS reported after Sept 2026 is the Q3 2026 earnings release figure.\n- Resolution instrument: resolves off reported GAAP diluted EPS in the Q3 2026 release/8-K, not adjusted figures or analyst estimates. Criteria text blank; bounds -1.005 to 0.995, both open.\n- Event window: quarter Jul 1 -> Sep 30, 2026, 100% elapsed as of 2026-10-15; report expected Nov 3 (Stocktwits/WSH), Nov 5 (Investing.com) or Nov 17 (StockAnalysis), unconfirmed.\n- Searched for but not found: company Q3 guidance or pre-announcement; confirmed report date; any Polymarket/Kalshi/Manifold market on Q3 EPS; explicit sell-side Q3 GAAP net income figure.",
+   "reference_class": "First full post-IPO quarter GAAP diluted EPS of newly listed high-growth megacaps vs thin sell-side consensus (actuals typically within ~+/-0.15 of consensus at this EPS scale)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.3429,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.2248,
+   "seconds": 36.6,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 21211,
+    "cache_write": 19698,
+    "cache_write_1h": 0,
+    "output": 3641,
+    "thinking": 1484,
+    "web_search": 0,
+    "cost_usd_envelope": 0.224753,
+    "web_fetch": 0,
+    "duration_api_ms": 36114
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -0.07,
+     "25": 0.05,
+     "50": 0.16,
+     "75": 0.27,
+     "90": 0.4
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Resolves on Q3 2026 GAAP diluted EPS (quarter fully elapsed, report expected Nov 3-17). Anchor is sell-side consensus ~0.13-0.16 (range -0.12 to 0.43) on ~$12.9B revenue / ~$6.9B adj EBITDA, driven by a full quarter of Anthropic compute revenue. Bottom-up bridge gives ~$1.8-2.2B net income, which is ~0.15 EPS on ~13B shares or ~0.30 on ~6.3B. The share count is unresolved, so I lean on consensus, which already embeds analysts' share count. Q2's +0.17 beat tilts slightly upward; depreciation ramp, stock comp, Cursor amortization and possible GAAP one-offs keep a real loss tail. No human market found.",
+   "sources": [],
+   "reconciliation": "Main factual dispute: Q3 weighted diluted share count, ~6.3B (Runs 1-2) vs ~13B (Run 3, from $1.75T/$135). The dossiers don't settle it: Q2's 5,864M weighted count with only 18 post-IPO days, and Q1's implied ~0.8B pre-IPO base, fit neither reading cleanly. Since bridge EPS roughly halves under the 13B reading (0.30 -> 0.15), I let the ambiguity widen the distribution and anchored on consensus (0.13-0.16), which carries analysts' own share-count models and fits 13B, or 6B with heavier costs. Report-date dispute (Nov 3/5/17) is immaterial. Judgment: Q2's +0.17 beat suggests modest upside vs consensus, offset by depreciation/one-off risk; median 0.16. No web retrieval this run; no market found per the runs and the harness.",
+   "disagreements": [
+    {
+     "claim": "Q3 weighted diluted shares ~6.3B vs ~13B",
+     "kind": "factual",
+     "verdict": "Unresolved from dossiers (Q2/Q1 reported figures inconsistent with both); handled by anchoring on consensus and widening the spread"
+    },
+    {
+     "claim": "Report date Nov 3 vs Nov 5 vs Nov 17",
+     "kind": "factual",
+     "verdict": "Unresolved but immaterial; all inside window"
+    },
+    {
+     "claim": "Median should sit above consensus (~0.19) per bridge vs at consensus (~0.11)",
+     "kind": "judgment",
+     "verdict": "Bridge depends on the unresolved share count; took slightly above consensus (0.16) given Q2 beat history"
+    },
+    {
+     "claim": "Tail width/loss risk from one-offs and depreciation ramp",
+     "kind": "judgment",
+     "verdict": "Kept ~0.47 10-90 width with ~1% escape mass each side"
+    }
+   ],
+   "reference_class": "Quarterly GAAP EPS surprises vs consensus for newly listed mega-cap growth companies (typically within ~±0.15 at this EPS scale; SpaceX history n=1, +0.17)"
+  }
+ ]
+}
