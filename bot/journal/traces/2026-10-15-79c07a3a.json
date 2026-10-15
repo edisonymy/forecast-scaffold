@@ -1,0 +1,254 @@
+{
+ "record_id": "2026-10-15-79c07a3a",
+ "question": "What will the first reported earnings per share after September 2026 be for the following companies? (Tesla)",
+ "question_id": 46190,
+ "url": "https://www.metaculus.com/questions/45995/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-15T20:47:15+00:00",
+ "effort": "medium (auto)",
+ "model": "anthropic/claude-opus-5.5",
+ "provider": "openrouter",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.4882,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 0.155,
+    "25": 0.23500000000000001,
+    "50": 0.3056666666666667,
+    "75": 0.37833333333333335,
+    "90": 0.455
+   },
+   "p_below_lower": 0.005
+  },
+  "phase1": {
+   "10": 0.155,
+   "25": 0.23500000000000001,
+   "50": 0.3056666666666667,
+   "75": 0.37833333333333335,
+   "90": 0.455
+  },
+  "phase2": null,
+  "spread_phase1": 0.263,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 0.015,
+   "25": 0.08,
+   "50": 0.155,
+   "75": 0.262,
+   "90": 0.39
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.1451,
+   "seconds": 115.5,
+   "usage": {
+    "num_turns": 14,
+    "input": 20,
+    "cache_read": 401808,
+    "cache_write": 9046,
+    "cache_write_1h": 0,
+    "output": 6110,
+    "thinking": 1609,
+    "web_search": 0,
+    "cost_usd_envelope": 0.41029150000000003,
+    "web_fetch": 0,
+    "duration_api_ms": 65503
+   },
+   "validation_errors_first_attempt": [
+    "research run listed 2 distinct source(s); this tier requires at least 3 — run real searches and list in \"sources\" only what you actually consulted"
+   ],
+   "estimate": {
+    "percentiles": {
+     "10": 0.24,
+     "25": 0.32,
+     "50": 0.38,
+     "75": 0.435,
+     "90": 0.49
+    }
+   },
+   "reasoning": "Live web search, page fetches and curl all failed this run. Evidence comes from the two AskNews/Zacks previews (2026-10-14) and this bot's 2026-10-13 record for the same question; that record's GAAP-gap breakdown (stock pay, bitcoin, SpaceX mark) was reused without checking. Adjusted consensus is $0.43, cut 11.9% in 30 days, and Zacks' 'most accurate estimate' is about 11% lower (~$0.38). Q3 deliveries (486.5k) were close to Q2's (480k), and Q2 printed $0.33 against $0.50 expected, so adjusted EPS is centred near $0.39-0.40. The criteria are blank, so GAAP gets about 20% weight; GAAP is expected lower (stock pay offset partly by investment marks) and fattens the lower tail. No escape mechanism is plausible for a range of -0.505 to 1.495. Market check: the harness found no Polymarket or Manifold market, the local Manifold dump has no Tesla EPS market, and Kalshi and bookmakers could not be checked because web tools failed.",
+   "sources": [
+    "https://www.zacks.com/stock/news/3007028/earnings-preview-tesla-tsla-q3-earnings-expected-to-decline",
+    "https://www.zacks.com/stock/news/3006672/tesla-to-post-q3-earnings-will-automotive-margins-play-a-spoilsport",
+    "bot/journal/forecasts.jsonl (prior Tesla EPS record 2026-10-13-c979d98a, incl. Q2 2026 8-K-derived EPS history)",
+    "bot/journal/manifold.jsonl (market scan: no Tesla EPS market)"
+   ],
+   "dossier": "- Tesla reports Q3 2026 (quarter ended Sep 30, 2026) on Oct 21, 2026 after the close (Zacks, 2026-10-14).\n- Zacks consensus adjusted EPS is $0.43 vs $0.50 a year ago (-14%); consensus revised 11.91% lower over the last 30 days; Zacks Earnings ESP is -11.35% (most-accurate estimate below consensus, ~$0.38); Zacks Rank #4 (Zacks, 2026-10-14).\n- Revenue consensus is $27.79-27.8B (-1.1% YoY) (Zacks, 2026-10-14).\n- Q3 2026 deliveries were 486,532 (-2.1% YoY), vs 480,126 in Q2 2026 (Zacks, 2026-10-14).\n- Q2 2026: adjusted EPS $0.33 vs $0.50 expected (-34% surprise); automotive revenue $20.5B; auto gross margin ex-credits 16.3% (vs 19.2% in Q1 2026, 15% in Q2 2025) (Zacks, 2026-10-14).\n- Tesla missed in 2 of the last 4 quarters; average surprise -3.7% (Zacks, 2026-10-14).\n- Adjusted EPS history Q3'25-Q2'26: 0.50, 0.50, 0.41, 0.33. GAAP: 0.39, 0.24, 0.13, 0.32. Q2'26 GAAP included a ~$1.0B SpaceX gain (prior bot record, citing Tesla 8-K and eletric-vehicles.com).\n- GAAP vs adjusted gap: stock-based compensation about -$0.28/share. Digital-asset (bitcoin) and investment mark-to-market gains/losses are reconciling items, so they hit GAAP only (prior bot record, citing Q2 8-K exhibit 99.1).\n- Zacks models Q3 automotive gross profit at $3.39B (-0.6% YoY).\n- Status quo: adjusted EPS lands near consensus with Tesla's typical surprise SD of ~15-20% of consensus.\n- Base rates: Q2'26 adjusted miss was -0.17 absolute. Over the last 4 quarters adjusted actual minus consensus ranged from about -0.17 to about +0.05.\n- Resolution instrument: the criteria are blank; 'first reported EPS' could mean adjusted (aggregator convention, e.g. Zacks/Yahoo) or GAAP diluted. The range of -0.505 to 1.495 is centred near 0.5, close to the consensus level when the question was written.\n- Event window: the first EPS report after Sept 2026 is the Oct 21, 2026 release; as of 2026-10-15 it has not happened (resolution scheduled 2026-10-21).\n- Searched for but could not get (web tools failed this run): live consensus updates, Kalshi/bookmaker EPS markets, SpaceX share-price move in Q3 (drives the GAAP mark), Tesla bitcoin price effect in Q3.",
+   "reference_class": "Tesla quarterly adjusted (non-GAAP) diluted EPS vs pre-report consensus, Q3 2025-Q2 2026 (actuals 0.50, 0.50, 0.41, 0.33; GAAP 0.39, 0.24, 0.13, 0.32)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.7348,
+   "seconds": 51.6,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 184324,
+    "cache_write": 7310,
+    "cache_write_1h": 0,
+    "output": 4524,
+    "thinking": 1342,
+    "web_search": 0,
+    "cost_usd_envelope": 0.2509995,
+    "web_fetch": 0,
+    "duration_api_ms": 50469
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 0.26,
+     "25": 0.34,
+     "50": 0.4,
+     "75": 0.45,
+     "90": 0.51
+    }
+   },
+   "reasoning": "Anchor: consensus non-GAAP EPS $0.43 (Zacks, Oct 14 2026), revised ~12% lower in 30 days; Zacks Most Accurate Estimate ~11% below consensus (~$0.38). Tesla has missed more often than beaten since 2024 (Q2'26: $0.33 vs $0.50). Q3 deliveries 486.5k vs 480.1k in Q2 -> modest sequential improvement from $0.33 plausible. Median ~$0.40, spread set by historical surprise SD (~$0.09). Left tail slightly fattened for possible GAAP-basis resolution (criteria text empty). Market check could not be performed (search tools errored); no market price used. Live web research failed this run (search/fetch errored; network blocked) - evidence limited to the provided Zacks articles plus background knowledge.",
+   "sources": [
+    "https://www.zacks.com/stock/news/3007028/earnings-preview-tesla-tsla-q3-earnings-expected-to-decline",
+    "https://www.zacks.com/stock/news/3006672/tesla-to-post-q3-earnings-will-automotive-margins-play-a-spoilsport",
+    "AskNews recent-news feed supplied with question (2026-10-14)"
+   ],
+   "dossier": "- Tesla reports Q3 2026 (quarter ended Sep 30 2026) on Oct 21 2026 after close (Zacks, 2026-10-14).\n- Consensus EPS $0.43 (adjusted basis), vs $0.50 in Q3 2025, i.e. -14% YoY; consensus revenue $27.79B (-1.1% YoY) (Zacks, 2026-10-14).\n- Consensus EPS revised 11.91% lower over the last 30 days; Zacks Earnings ESP -11.35% (Most Accurate Estimate below consensus, ~ $0.38); Zacks Rank #4 (Zacks, 2026-10-14).\n- Q2 2026: EPS $0.33 vs $0.50 expected (-34% surprise). Tesla missed in 2 of last 4 quarters, average surprise -3.7% (Zacks, 2026-10-14).\n- Q3 2026 deliveries 486,532 (-2.1% YoY), up from 480,126 in Q2 2026; Q2 production 451,758 (below deliveries) (Zacks, 2026-10-14).\n- Q2 2026 automotive revenue $20.5B; auto GM ex-credits 16.3% in Q2 vs 19.2% in Q1 2026 and 15% a year earlier; Zacks models Q3 auto gross profit $3.39B (-0.6% YoY) (Zacks, 2026-10-14).\n- Background (from memory, not re-verified this run): Tesla non-GAAP EPS vs consensus: Q1'24 0.45 v 0.51; Q2'24 0.52 v 0.62; Q3'24 0.72 v 0.58; Q4'24 0.73 v 0.77; Q1'25 0.27 v 0.41; Q2'25 0.40 v 0.40; Q3'25 0.50 v ~0.55; Q4'25 ~0.50 v ~0.45. Surprise SD ~ $0.09; GAAP EPS typically well below non-GAAP (SBC excluded from non-GAAP; e.g., Q3'25 GAAP $0.26 vs non-GAAP $0.50).\n- Base rate over Tesla quarters 2024-2026: actual minus consensus median slightly negative, range about -$0.17 to +$0.14.\n- Resolution instrument: criteria text not provided; likely the headline (non-GAAP diluted) EPS as reported/consensus-compared — GAAP basis would be materially lower. Treat basis as an open ambiguity.\n- Event window: the single Q3 2026 report on Oct 21 2026; as of 2026-10-15 the report has not been released.\n- Searched for: human markets (Polymarket/Kalshi/Manifold) on Tesla EPS, Q3 production figure, energy storage deployments, regulatory credit revenue — could not retrieve (search tools failed this run); harness found no Polymarket/Manifold market.\n- Upside factors: sequential delivery growth, energy storage growth, cost reductions. Downside factors: falling regulatory credits, rising AI/R&D opex, price cuts/incentives, negative revisions trend.",
+   "reference_class": "Tesla quarterly non-GAAP EPS actual vs final consensus, 2024-2026 (surprises roughly -$0.17 to +$0.14, median slightly negative)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.6886,
+   "seconds": 118.5,
+   "usage": {
+    "num_turns": 14,
+    "input": 22,
+    "cache_read": 462150,
+    "cache_write": 24302,
+    "cache_write_1h": 0,
+    "output": 6417,
+    "thinking": 1652,
+    "web_search": 0,
+    "cost_usd_envelope": 0.5434975,
+    "web_fetch": 0,
+    "duration_api_ms": 72285
+   },
+   "validation_errors_first_attempt": [
+    "research run listed 2 distinct source(s); this tier requires at least 3 — run real searches and list in \"sources\" only what you actually consulted"
+   ],
+   "estimate": {
+    "percentiles": {
+     "10": -0.035,
+     "25": 0.045,
+     "50": 0.137,
+     "75": 0.25,
+     "90": 0.365
+    },
+    "p_below_lower": 0.005
+   },
+   "reasoning": "The criteria are blank, but this series resolved Nvidia's June-2026 question at 2.46, which an earlier journal record says was GAAP diluted (non-GAAP 2.22), so I weight GAAP diluted ~85%. Non-GAAP centre ~0.38: Zacks consensus 0.43, cut 11.9% in 30 days, Most Accurate Estimate ~0.38 (ESP -11.35%), Q2 printed 0.33 vs 0.50, deliveries only +1.3% QoQ, credits shrinking, opex rising, storage missed. GAAP ~0.11 = non-GAAP - after-tax SBC (~0.30, rising) + BTC mark (~+0.06) - SpaceX mark (~-0.03). Market check: live web search and fetch failed this run (API errors). The harness found no Polymarket/Manifold market and prior runs found no Kalshi/Polymarket/Manifold Q3 EPS contract, so there is no market anchor. Evidence is the AskNews/Zacks items plus local journal dossiers that were not re-verified live, so the bands stay wide.",
+   "sources": [
+    "https://www.zacks.com/stock/news/3007028/earnings-preview-tesla-tsla-q3-earnings-expected-to-decline (via AskNews digest, 2026-10-14)",
+    "https://www.zacks.com/stock/news/3006672/tesla-to-post-q3-earnings-will-automotive-margins-play-a-spoilsport (via AskNews digest, 2026-10-14)",
+    "local dataset: bot/journal/traces/2026-10-09-76e96db9.json (prior Tesla Q3 2026 EPS dossiers: Q2 2026 8-K EPS reconciliation, deliveries, BTC/SpaceX marks)",
+    "local dataset: bot/journal/resolutions.jsonl (q45366 Nvidia 'first reported EPS after June 2026' resolved 2.46; q46190 Tesla open, close 2026-10-21)"
+   ],
+   "dossier": "- NOTE: live web tools failed this run. Items come from the AskNews digest (Zacks, 2026-10-14) and from local journal research logged 2026-10-07/09.\n- Report timing: Tesla Q3 2026 results Oct 21, 2026 after the close (Zacks 2026-10-14). This is the first EPS release after Sept 2026.\n- Resolution-instrument note: criteria and fine print are blank, so it could resolve off GAAP diluted or non-GAAP diluted EPS. Same Metaculus series precedent: the June-2026 Nvidia question resolved 2.46 (resolutions.jsonl). A prior journal record citing the SEC 8-K puts Nvidia GAAP diluted at 2.46 and non-GAAP at 2.22. That is a single data point.\n- Zacks (2026-10-14): Q3 consensus EPS 0.43 (-14% YoY vs 0.50 non-GAAP Q3'25). Consensus revised 11.91% lower over 30 days. Most Accurate Estimate below consensus (Earnings ESP -11.35%, implies ~0.38). Revenue consensus $27.79B. Zacks Rank #4. Q2'26 actual 0.33 vs 0.50 expected (-34%). Missed in 2 of the last 4 quarters.\n- Earlier consensus snapshots (journal, ~Oct 7): Yahoo 0.45 (range 0.30-0.70), MarketBeat 0.37 (0.22-0.61). FY26 estimate cut from 2.12 to 1.74 over 90 days.\n- Q3'26 deliveries 486,532 (+1.3% QoQ, -2.1% YoY; ~5% above the pre-release consensus). Storage 13.7 GWh vs ~15.9 GWh expected (UBS: ~-$0.03 EPS). Zacks models Q3 auto gross profit $3.39B.\n- Q2'26: auto GM ex-credits 16.3% (19.2% in Q1). Revenue $28.24B, operating margin 1.4%, regulatory credits $146M (vs $439M a year earlier), opex +47% YoY.\n- Diluted EPS history (Q2'26 8-K via journal): non-GAAP Q2'25-Q2'26 0.40/0.50/0.50/0.41/0.33. GAAP 0.33/0.39/0.24/0.13/0.32. ~3,540M diluted shares.\n- After-tax reconciling items, $M, same quarters: SBC 443/459/682/803/989, rising each quarter (~0.28/share in Q2). Digital assets -222/-62/+239/+173/+87 (negative = gain). Q2'26 also excluded a SpaceX gain of -763 and tax items of -274.\n- Q3 marks (journal, unverified live): BTC ~$58k implied at Jun 30 vs ~$80k in Sept on ~11.5k BTC (~+$250-290M pretax). SpaceX ~19M shares, ~$158 implied Jun 30 vs ~$151 Sep 30 (~-$135M).\n- Status quo: non-GAAP sat in a 0.33-0.50 band over the last 4 quarters. GAAP sat in 0.13-0.39 over 5 quarters. The GAAP-minus-non-GAAP gap ranged -0.28 to -0.01.\n- Event window: first EPS report after Sept 30 2026 -> Oct 21 2026 release. As of 2026-10-15 the quarter is closed (100% elapsed) and only the report is pending.\n- Searched but not found (web failed): a post-delivery consensus update beyond Zacks, the exact Sep 30 BTC price, Q3 SBC, Q3 tax items, and any Polymarket/Kalshi/Manifold Q3 EPS market (the harness and prior runs found none).",
+   "reference_class": "Tesla quarterly GAAP diluted EPS Q2'25-Q2'26 (0.33, 0.39, 0.24, 0.13, 0.32), built as non-GAAP EPS (0.40, 0.50, 0.50, 0.41, 0.33) minus after-tax SBC plus mark-to-market items, with metric weight from this series' Nvidia resolution"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "research",
+   "run_index": 1,
+   "spread": 1.8349,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.7586,
+   "seconds": 94.7,
+   "usage": {
+    "num_turns": 18,
+    "input": 30,
+    "cache_read": 678109,
+    "cache_write": 33696,
+    "cache_write_1h": 0,
+    "output": 8351,
+    "thinking": 2863,
+    "web_search": 0,
+    "cost_usd_envelope": 0.7585794999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 93321
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 0.015,
+     "25": 0.08,
+     "50": 0.155,
+     "75": 0.262,
+     "90": 0.39
+    }
+   },
+   "reasoning": "The criteria are blank, but the only resolved question in this Metaculus series (Nvidia, June 2026) resolved at 2.46, Nvidia's GAAP diluted EPS (adjusted was 2.22), so I weight GAAP ~80%. Adjusted EPS centre ~0.39: consensus 0.43 after a 12% cut, Zacks' most accurate estimate ~0.38, Q2 printed 0.33 vs 0.50 expected, deliveries only +1.3% QoQ, regulatory credits shrinking, opex rising. GAAP ~0.125 = adjusted minus after-tax stock pay (~0.30, rising each quarter), plus the BTC mark (~+0.065), minus the SpaceX mark (~-0.03). The mixture gives a median ~0.155 with an upper tail from the adjusted reading. No human market found (Polymarket/Manifold none per harness; Kalshi and bookmakers not checkable because web tools failed). No escape mechanism outside -0.505 to 1.495 is plausible.",
+   "sources": [
+    "bot/journal/resolutions.jsonl (qid 45366 Nvidia June-2026 resolved 2.46; Tesla qid 46190 open)",
+    "bot/journal/forecasts.jsonl record 2026-08-25-3bc2f8e3 (Nvidia EPS record)",
+    "bot/journal/traces/2026-10-07-af66b6df.json (Nvidia Q2 GAAP 2.46 vs adjusted 2.22)",
+    "bot/journal/traces/2026-10-07-a8b14bc4.json (Tesla Q3 BTC/SpaceX mark estimates)"
+   ],
+   "reconciliation": "Disputes: (1) FACTUAL — which EPS basis the series resolves on. I checked the local resolutions.jsonl: the only resolved question in the series (Nvidia, June 2026, qid 45366) resolved at 2.46. Journal traces put Nvidia's Q2 FY27 at GAAP 2.46 and adjusted 2.22 (consensus ~2.08), so the precedent is GAAP. That favours Run 3's reading over Runs 1-2 (~20% GAAP). It is one data point, so I set GAAP at ~80%. (2) FACTUAL — the Q3 reconciling items. A journal trace dated 2026-10-07 has BTC ~$58.5k (Jun 30) -> ~$83.6k (Sep 30) on ~11.5k BTC, and a SpaceX mark of ~-$135M. Live verification failed: WebSearch returned an API error and the Metaculus page returned 403. Stock pay is rising every quarter (443 -> 989 $M), so I extrapolate ~0.30/share. (3) JUDGMENT — the adjusted centre ~0.38-0.40, which all runs share; I agree with it. Result: a GAAP-heavy mixture with median ~0.155. It is near Run 3 but with a fatter upper tail for the 20% adjusted reading. I did not average the runs.",
+   "disagreements": [
+    {
+     "claim": "The series resolves on GAAP diluted EPS rather than adjusted",
+     "kind": "factual",
+     "verdict": "Supported by the local resolutions log: Nvidia June-2026 resolved at 2.46 = GAAP (adjusted 2.22). One precedent, so P(GAAP) ~0.8."
+    },
+    {
+     "claim": "The Q3 GAAP-minus-adjusted gap is about -0.25 to -0.28",
+     "kind": "factual",
+     "verdict": "Journal trace: BTC mark ~+0.065, SpaceX ~-0.03, stock pay ~-0.30 => ~-0.265. Could not verify live (web tools failed)."
+    },
+    {
+     "claim": "Adjusted EPS centre ~0.38-0.40",
+     "kind": "judgment",
+     "verdict": "Not in dispute between runs; adopted ~0.39."
+    }
+   ],
+   "reference_class": "Tesla quarterly diluted EPS, Q2 2025-Q2 2026 (GAAP 0.13-0.39, adjusted 0.33-0.50), with this series' Nvidia precedent for which basis it resolves on"
+  }
+ ]
+}
