@@ -1,0 +1,249 @@
+{
+ "record_id": "2026-10-15-8ac3ba9b",
+ "question": "What will the first reported revenues after September 2026 be for the following companies? (Meta)",
+ "question_id": 46194,
+ "url": "https://www.metaculus.com/questions/46006/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-10-15T20:53:26+00:00",
+ "effort": "medium (auto)",
+ "model": "anthropic/claude-opus-5.5",
+ "provider": "openrouter",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.2387,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 62750000000.0,
+    "25": 63283333333.333336,
+    "50": 63816666666.666664,
+    "75": 64350000000.0,
+    "90": 64966666666.666664
+   }
+  },
+  "phase1": {
+   "10": 62750000000.0,
+   "25": 63283333333.333336,
+   "50": 63816666666.666664,
+   "75": 64350000000.0,
+   "90": 64966666666.666664
+  },
+  "phase2": null,
+  "spread_phase1": 50000000.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 62800000000.0,
+   "25": 63350000000.0,
+   "50": 63900000000.0,
+   "75": 64450000000.0,
+   "90": 65150000000.0
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.8176,
+   "seconds": 63.5,
+   "usage": {
+    "num_turns": 13,
+    "input": 20,
+    "cache_read": 406198,
+    "cache_write": 32042,
+    "cache_write_1h": 0,
+    "output": 5260,
+    "thinking": 880,
+    "web_search": 0,
+    "cost_usd_envelope": 0.5349615,
+    "web_fetch": 0,
+    "duration_api_ms": 62400
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 62700000000.0,
+     "25": 63250000000.0,
+     "50": 63800000000.0,
+     "75": 64300000000.0,
+     "90": 64900000000.0
+    }
+   },
+   "reasoning": "Web tools failed this run (API errors), so evidence comes from prior journal research records (Oct 7 and Oct 11 runs) citing the SEC 8-K, Admiral Markets, MarketBeat, Yahoo. Meta guided Q3 2026 revenue to $61-64B with a ~1% FX headwind; consensus is ~$63.2B. In 2026 both quarters landed ~$0.2B under the top of guidance (Q1 56.31 vs 56.5; Q2 60.80 vs 61), while 2025 beat the top by $0.5-2.0B. Anchor ~$63.8B, with mild upside skew from 2025-style beats or FX tailwind and downside from an ad slowdown. The ~$10B legal accrual hits expenses, not revenue. Market check: no Polymarket/Manifold market; a Kalshi Meta page exists but no price was retrievable in prior runs, and none this run. No escape mass: the quarter has ended and no mechanism takes revenue outside $61-67B.",
+   "sources": [
+    "bot/journal/forecasts.jsonl record 2026-10-07-250627f7 (prior Meta Q3 2026 revenue research: Meta IR Q1 2026 release, Variety, Admiral Markets, MarketBeat)",
+    "bot/journal/forecasts.jsonl record 2026-10-11-27c72fa3 (prior research: SEC 8-K exhibit 99.1 Q2 2026, Seeking Alpha guidance report, Yahoo Finance)",
+    "bot/journal/traces/2026-10-11-27c72fa3.json (dossier: Q2 2026 actuals, Q3 guide $61-64B, consensus ~$63.25B, Oct 28 date)",
+    "bot/journal/traces/2026-10-07-250627f7.json (guide-vs-actual history Q4'24-Q2'26)"
+   ],
+   "dossier": "- NOTE: web tools failed this run; all items come from earlier journal research (Oct 7 and Oct 11, 2026), not re-verified.\n- Meta Q2 2026 (8-K exhibit 99.1, Jul 29 2026): revenue $60.801B, +28% YoY vs Q2'25 $47.516B; ad impressions +14%, price per ad +12%. The Q2 guide was $58-61B.\n- Q1 2026 (Meta IR, Apr 29 2026): revenue $56.31B, +33% YoY; the guide was $53.5-56.5B.\n- Q3 2026 guidance (Jul 29 2026 release): total revenue $61-64B, assuming ~1% FX headwind to YoY growth. FY26 expenses $165-169B; capex $130-145B.\n- Analyst consensus for Q3 2026 revenue ~$63.2-63.25B (Admiral Markets Oct 2026; MarketBeat). At the time of guidance, the $62.5B guide midpoint was ~0.9% below the street (Yahoo/StockStory Jul 29).\n- Actual minus top of guidance (prior-run compilation, partly from memory): Q4'24 +0.39B, Q1'25 +0.51B, Q2'25 +2.02B, Q3'25 +0.74B, Q4'25 ~+0.9B, Q1'26 -0.19B, Q2'26 -0.20B.\n- Prior-year base: Q3'25 revenue $51.24B. The $61-64B guide implies ~19-25% YoY.\n- Aug 26 2026: $16.7-18B multistate youth-harm settlement; Meta said it will accrue ~$10B legal expense in Q3 (expense line, not revenue).\n- Sept 2026 (Admiral Markets): Muse AI agent launched Sep 8, ~5M downloads by late Sept; stock rose ~27% in Sept. No revenue-specific datapoint.\n- Earnings date: Oct 28 2026 after close per most sources; one snippet said Nov 4 (Kalshi). Either way it is the first report after September.\n- Status quo: the reported figure lands within or near the guided range.\n- Resolves off Meta's reported Q3 2026 total revenue in its earnings release, not analyst estimates or ad revenue alone.\n- Event window: quarter Jul 1 -> Sep 30 2026 (100% elapsed); report expected ~Oct 28 2026; as of Oct 15 the report is pending.\n- Searched but not found: Kalshi revenue strike prices; Q3 2026 FX moves vs guidance assumption; any mid-quarter Meta update.\n- No Polymarket/Manifold market found.",
+   "reference_class": "Meta quarterly total revenue actual vs its own prior-quarter guidance range, Q4 2024 - Q2 2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.7612,
+   "seconds": 125.7,
+   "usage": {
+    "num_turns": 17,
+    "input": 26,
+    "cache_read": 502144,
+    "cache_write": 27709,
+    "cache_write_1h": 0,
+    "output": 5597,
+    "thinking": 1064,
+    "web_search": 0,
+    "cost_usd_envelope": 0.5643082500000001,
+    "web_fetch": 0,
+    "duration_api_ms": 63546
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 62600000000.0,
+     "25": 63200000000.0,
+     "50": 63800000000.0,
+     "75": 64400000000.0,
+     "90": 65000000000.0
+    }
+   },
+   "reasoning": "Guidance for Q3 2026 is $61-64B (about a 1% FX headwind). Meta has landed at or above the top of guidance for about 7 straight quarters; the last two came in about $0.2B under the top (Q1 $56.31B vs $56.5B; Q2 $60.8B vs $61B), and 2024-25 quarters beat the top by $0.4-2.0B. Consensus is about $63.2B. Past Q2-to-Q3 growth (3.9%-7.8%) applied to $60.8B points to $63.2-65.5B. Median about $63.8B, close to the top of guidance. No credible way to escape the 61-67B range. Market check: none on Polymarket or Manifold; Kalshi Meta KPI markets were reported by a prior run but the revenue page was not reachable, and I could not check Kalshi myself. Caveat: live web tools failed this run, so the evidence is relayed from prior research dossiers in this repo.",
+   "sources": [
+    "bot/journal/traces/2026-10-07-250627f7.json (prior research dossier: Meta IR Q1/Q2 2026 releases, Variety, Admiral Markets, MarketBeat)",
+    "bot/journal/traces/2026-10-13-be23de81.json (prior research dossier: Q2 2026 actuals, Q3 guidance, consensus, report date)",
+    "bot/journal/traces/2026-10-11-cbbbddd6.json (prior research dossier: Meta Q2 press release, guidance)",
+    "bot/journal/traces/2026-10-09-f0e58802.json (prior research dossier: Meta IR Q2 release, consensus ~$63.2B)"
+   ],
+   "dossier": "- NOTE: live web tools failed this run; all items below are relayed from prior research dossiers in the repo journal (Oct 7-13, 2026), not re-verified.\n- Q3 2026 revenue guidance (Q2 release, Jul 29 2026): $61-64B, assumes ~1% FX headwind to YoY growth (Meta IR / Seeking Alpha, Jul 2026).\n- Q2 2026 actual: $60.8B, +28% YoY, vs guidance $58-61B (Meta IR, Jul 29 2026).\n- Q1 2026 actual: $56.31B, +33% YoY, vs guidance $53.5-56.5B (Meta IR, Apr 29 2026).\n- Q3 2025 actual (prior-year base): ~$51.24B; guidance range implies ~19-25% YoY growth.\n- Actual minus top of guidance history: Q4'24 +0.39B, Q1'25 +0.51B, Q2'25 +2.02B, Q3'25 +0.74B, Q4'25 ~+0.9B, Q1'26 -0.19B, Q2'26 -0.20B (prior dossier, partly from memory).\n- Q2->Q3 sequential growth: 2024 ~3.9% (39.07->40.59), 2025 ~7.8% (47.52->51.24).\n- Street consensus Q3 2026 revenue ~$63.15-63.3B, analyst range ~61.7-65.3B (MarketBeat/Admiral Markets/Yahoo, Oct 2026).\n- Stock fell ~11% after hours on the Q2 report because of the soft Q3 outlook and AI costs (Stocktwits, Jul 2026).\n- Aug 26 2026: ~$18B multistate youth settlement, ~$10B legal accrual in Q3 — affects expenses/EPS, not revenue.\n- Report date: sources conflict (Oct 21, Oct 28, or Nov 4 2026); the quarter has already ended.\n- Status quo: revenue lands within the guidance range near its upper half, per the recent pattern.\n- Resolves off Meta's reported Q3 2026 total revenue (first quarterly revenue reported after Sep 2026), not ad revenue or segment revenue.\n- Event window: Q3 2026 quarter (Jul 1 -> Sep 30 2026), already 100% elapsed; only the report remains.\n- Searched but could not find: Kalshi strike prices for revenue; actual USD/FX movement over Q3 2026; any Meta pre-announcement or guidance update.",
+   "reference_class": "Meta quarterly revenue actual vs management guidance range, Q4 2024 - Q2 2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.1969,
+   "seconds": 94.1,
+   "usage": {
+    "num_turns": 11,
+    "input": 18,
+    "cache_read": 346895,
+    "cache_write": 13787,
+    "cache_write_1h": 0,
+    "output": 4784,
+    "thinking": 943,
+    "web_search": 0,
+    "cost_usd_envelope": 0.37930625000000007,
+    "web_fetch": 0,
+    "duration_api_ms": 48709
+   },
+   "validation_errors_first_attempt": [
+    "research run listed 2 distinct source(s); this tier requires at least 3 — run real searches and list in \"sources\" only what you actually consulted"
+   ],
+   "estimate": {
+    "percentiles": {
+     "10": 62950000000.0,
+     "25": 63400000000.0,
+     "50": 63850000000.0,
+     "75": 64350000000.0,
+     "90": 65000000000.0
+    }
+   },
+   "reasoning": "Web tools failed this run (API errors); evidence comes from prior-run dossiers in the local journal (Oct 9-13, 2026), not re-verified. Meta guided Q3'26 total revenue $61-64B (Q2 release, Jul 29); consensus ~$63.25B. Over the last 6 quarters actuals beat guide midpoint by $1.3-3.5B; 2026 quarters landed ~$0.2B below the top of guide, 2025 quarters beat the top. Applying the 2026 pattern gives ~$63.8B; the 2025 pattern gives $64.5-66B; Q2->Q3 seasonal growth on $60.8B of 4-8% gives $63.2-65.7B. Median ~$63.85B. The ~$10B legal charge affects expenses only. Market check: harness found no Polymarket/Manifold market; Kalshi/bookmakers not reachable this run (prior dossier: Kalshi lists Meta KPI markets, no revenue contract found) — no market anchor used.",
+   "sources": [
+    "bot/journal/traces/2026-10-11-27c72fa3.json (prior-run dossier citing Meta Q2 2026 8-K ex.99.1, Yahoo/StockStory, Admiral Markets)",
+    "bot/journal/traces/2026-10-13-be23de81.json (prior-run dossier citing Meta Q2 release, TechCrunch settlement report, TipRanks/Nasdaq consensus)",
+    "bot/journal/traces/2026-10-09-a6d824cb.json (prior-run dossier citing Meta Q2 2026 8-K, MarketBeat/Admiral consensus, guidance-vs-actual history)"
+   ],
+   "dossier": "- NOTE: this run's web tools failed; bullets come from prior-run dossiers in local journal (Oct 9-13, 2026), not re-verified.\n- Meta Q2 2026 (8-K, Jul 29 2026): revenue $60.801B, +28% YoY vs $47.516B; ad impressions +14%, price per ad +12%.\n- Q3 2026 outlook (same release): total revenue $61-64B; FX ~1% headwind to YoY growth assumed.\n- Q1 2026: revenue $56.31B vs guide $53.5-56.5B; Q2 2026 $60.80B vs guide $58-61B.\n- 2025 history: Q1 42.31 vs 39.5-41.8; Q2 47.52 vs 42.5-45.5; Q3 ~51.24 vs 47.5-50.5; Q4 ~59.9 vs 56-59. Actual minus guide top: +0.5,+2.0,+0.7,+0.9 (2025); -0.19,-0.20 (2026).\n- Q2->Q3 sequential growth history: 2023 ~+6.7%, 2024 ~+3.9%, 2025 ~+7.8%.\n- Q3'25 base ~$51.24B: 20% YoY = 61.5B, 25% = 64.0B, 28% = 65.6B.\n- Analyst consensus Q3'26 revenue ~$63.2-63.3B, range ~$61.7-65.3B (MarketBeat/Admiral/Yahoo, Oct 2026); guide midpoint was below Street at issue.\n- Aug 26 2026: ~$18B multistate settlement, ~$10B legal expense in Q3 — expense, not revenue. Muse AI agent launched Sep 8.\n- Earnings date: Oct 28 2026 after close (MarketBeat/Admiral); one snippet cites Nov 4.\n- Resolves off Meta's reported Q3 2026 total revenue (first report after Sept 2026), not ad revenue/segment or consensus.\n- Event window: Q3 2026 (Jul 1 -> Sep 30) fully elapsed as of 2026-10-15; report pending (~Oct 28).\n- Searched but not found: Kalshi revenue contract, intra-quarter FX change vs July assumption, mid-quarter guidance updates.",
+   "reference_class": "Meta quarterly total revenue actuals relative to its own prior-quarter guidance range (Q1 2025 - Q2 2026)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0469,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.2969,
+   "seconds": 23.6,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 0,
+    "cache_write": 38814,
+    "cache_write_1h": 0,
+    "output": 2171,
+    "thinking": 475,
+    "web_search": 0,
+    "cost_usd_envelope": 0.29687250000000004,
+    "web_fetch": 0,
+    "duration_api_ms": 23119
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 62800000000.0,
+     "25": 63350000000.0,
+     "50": 63900000000.0,
+     "75": 64450000000.0,
+     "90": 65150000000.0
+    }
+   },
+   "reasoning": "The quarter has ended and the result is reported around Oct 28. Meta guided $61-64B (about 1% FX headwind); consensus is about $63.2B. Over 7 quarters, actuals ran from $0.2B under the top of guidance to $2.0B over it; both 2026 quarters came in about $0.2B under the top, which suggests ~$63.8B. Seasonal Q2->Q3 growth of 4-8% on $60.8B gives $63.2-65.7B. The September stock strength (+27%) and Meta's history of conservative guides tilt slightly upward. Median $63.9B with mild right skew. The ~$10B legal accrual is an expense and does not touch revenue. No human market found (Polymarket/Manifold none; Kalshi revenue strikes not retrievable).",
+   "sources": [],
+   "reconciliation": "All three runs relayed the same journal evidence (guide $61-64B, consensus ~$63.2B, 2026 quarters ~0.2B under the top of guidance, 2025 quarters beating it by 0.5-2.0B, seasonal growth 3.9-7.8%), and their medians were nearly identical at $63.80-63.85B. Factual disputes: (1) earnings date (Oct 21, Oct 28 or Nov 4) — immaterial, since any of them is the first report after September; (2) the Q3 FX move vs the July assumption — no run found data and I have no web access, so it stays as added width rather than a directional call. Judgment dispute: whether the 2026 pattern (just under the top) or the 2025 pattern (beats of the top) applies. I weight 2026 most because it is most recent, and allow some 2025-style upside, partly because the September stock rally hints at strong ad checks. That puts the median a touch above the runs at $63.9B and gives a slightly wider right tail. I agree with the runs that there is no concrete escape mechanism outside 61-67B, so no escape mass.",
+   "disagreements": [
+    {
+     "claim": "Earnings date is Oct 28 vs Oct 21 vs Nov 4 2026",
+     "kind": "factual",
+     "verdict": "Unsettled without web access but immaterial: any date is the first report after Sept 2026 and the quarter's revenue is already fixed"
+    },
+    {
+     "claim": "Q3 FX movement relative to the ~1% headwind assumed in guidance",
+     "kind": "factual",
+     "verdict": "Could not be settled; no run found data; treated as extra symmetric width"
+    },
+    {
+     "claim": "Whether the 2026 under-top pattern or the 2025 beat-top pattern governs Q3",
+     "kind": "judgment",
+     "verdict": "Weighted toward 2026 (median near the top of guidance, $63.9B) with right skew for a 2025-style beat"
+    },
+    {
+     "claim": "Width of the 10-90 interval (2.0-2.3B across runs)",
+     "kind": "judgment",
+     "verdict": "Set at ~2.35B to cover FX uncertainty and regime ambiguity"
+    }
+   ],
+   "reference_class": "Meta quarterly total revenue vs. the top of the prior-quarter guidance range, Q4 2024-Q2 2026"
+  }
+ ]
+}
