@@ -1,0 +1,252 @@
+{
+ "record_id": "2026-10-15-c2c88397",
+ "question": "What will the first reported revenues after September 2026 be for the following companies? (AMD)",
+ "question_id": 46192,
+ "url": "https://www.metaculus.com/questions/46006/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-10-15T21:09:33+00:00",
+ "effort": "medium (auto)",
+ "model": "anthropic/claude-opus-5.5",
+ "provider": "openrouter",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.9788,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 13070000000.0,
+    "25": 13250000000.0,
+    "50": 13416666666.666666,
+    "75": 13590000000.0,
+    "90": 13796666666.666666
+   },
+   "p_above_upper": 0.02
+  },
+  "phase1": {
+   "10": 13070000000.0,
+   "25": 13250000000.0,
+   "50": 13416666666.666666,
+   "75": 13590000000.0,
+   "90": 13796666666.666666
+  },
+  "phase2": null,
+  "spread_phase1": 70000000.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 13040000000.0,
+   "25": 13230000000.0,
+   "50": 13420000000.0,
+   "75": 13610000000.0,
+   "90": 13820000000.0
+  },
+  "p_above_upper": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.2214,
+   "seconds": 94.6,
+   "usage": {
+    "num_turns": 11,
+    "input": 18,
+    "cache_read": 343300,
+    "cache_write": 15045,
+    "cache_write_1h": 0,
+    "output": 4421,
+    "thinking": 785,
+    "web_search": 0,
+    "cost_usd_envelope": 0.37629625,
+    "web_fetch": 0,
+    "duration_api_ms": 47772
+   },
+   "validation_errors_first_attempt": [
+    "research run listed 1 distinct source(s); this tier requires at least 3 — run real searches and list in \"sources\" only what you actually consulted"
+   ],
+   "estimate": {
+    "percentiles": {
+     "10": 13050000000.0,
+     "25": 13220000000.0,
+     "50": 13380000000.0,
+     "75": 13550000000.0,
+     "90": 13740000000.0
+    }
+   },
+   "reasoning": "AMD guided Q3 2026 revenue to ~$13.0B +/- $0.3B on Aug 4, 2026; consensus is ~$12.97-13.19B. The reference class is AMD's reported revenue vs its guidance midpoint: in each of the last 8 quarters it beat the midpoint, by $0.12B-$0.67B (mean ~$0.36B; Q1'26 +$0.45B, Q2'26 +$0.34B). That puts the median near $13.38B. Data Center is accelerating (Q2 +107% YoY) and Lisa Su is talking up AI-inference CPU demand (Oct 14). Downside comes from client/gaming softness, export controls and rack shipment slips. Market check: no Polymarket, Kalshi, Manifold or bookmaker contract on AMD revenue found, by earlier runs or the harness. Web search failed this run, so the evidence is carried over from earlier journal research, not newly verified. No concrete mechanism for leaving the $12.0-14.2B range, so no escape mass is declared.",
+   "sources": [
+    "bot/journal/traces/2026-10-07-02047ff4.json (prior-run research digest: AMD Q2 2026 8-K, Q3 guidance, beat history)",
+    "bot/journal/traces/2026-10-11-2bd9d76a.json (prior-run digest: consensus ~$13.19B, Nov 3 report date)",
+    "bot/journal/traces/2026-10-13-3a92a59a.json (prior-run digest: Q3 guidance details, no guidance revision found)",
+    "http://hkstock.cnfol.com/shichangfenxi/20261014/32397232.shtml (AskNews, Oct 14 2026)"
+   ],
+   "dossier": "- AMD Q3 2026 guidance (Q2 press release, Aug 4 2026): revenue ~$13.0B +/- $0.3B (range $12.7-13.3B), ~+41% YoY, ~+13% QoQ; non-GAAP GM ~56%; Data Center strong double-digit YoY, Embedded up, Client+Gaming down overall with gaming down significantly (per prior-run digests of AMD IR).\n- Q2 2026 actual (Aug 4 2026): $11.536B vs guide $11.2B +/- 0.3B (+$0.34B over midpoint); Data Center $6.718B (+107% YoY), Client $3.062B, Gaming $0.779B (-31% YoY), Embedded $0.977B.\n- Q1 2026: about $10.25-10.3B vs guide midpoint ~$9.8B (+~$0.45B).\n- Beat history over all quarters Q3 2024-Q2 2026 (8 quarters): actual above the guidance midpoint every time, by $0.12B to $0.67B (mean ~$0.36B, about +2% to +7%); e.g. Q3'25 guide 8.7 vs actual 9.25; Q4'25 guide 9.6 vs ~10.3.\n- Street consensus for Q3 2026 revenue: ~$13.19B (Tradingpedia, Oct 5 2026); Investing.com ~$12.97B.\n- Report date: Tue Nov 3, 2026 after close (AMD IR/StockTitan, MarketBeat). This is after the question's scheduled resolution of Oct 29.\n- Oct 14 2026 (China Finance Online/AskNews): Lisa Su calls 2026 the 'year of AI inference' with explosive CPU demand growth; ASML Q3 revenue +55% YoY and raised FY guide (semis demand backdrop).\n- Downside candidates: Helios/MI450 rack shipment slips, steeper gaming decline, PC demand softness from memory prices, export-control changes. Upside candidates: Instinct GPU pull-ins, server CPU strength.\n- Status quo: AMD reports inside or above the top of its guide range.\n- Resolves off AMD's reported total Q3 FY2026 revenue (quarter ended ~late Sep 2026), the first report after Sept 2026; not segment, consensus or non-GAAP figures.\n- Event window: Q3 FY2026 (Jul-Sep 2026) -> first report after Sept 2026 (Nov 3 2026); as of Oct 15 2026 the quarter has closed (100% elapsed) and the report is pending.\n- Searched, absent: any Q3 pre-announcement or guidance revision; Polymarket/Kalshi/Manifold contracts on AMD revenue. Live web search failed this run; the evidence comes from prior-run research digests dated Oct 7-13 2026.",
+   "reference_class": "AMD quarterly reported revenue vs prior-quarter guidance midpoint, Q3 2024-Q2 2026 (8 quarters, all beats of +$0.12B to +$0.67B)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.8451,
+   "seconds": 78.8,
+   "usage": {
+    "num_turns": 19,
+    "input": 34,
+    "cache_read": 679475,
+    "cache_write": 16002,
+    "cache_write_1h": 0,
+    "output": 6319,
+    "thinking": 1035,
+    "web_search": 0,
+    "cost_usd_envelope": 0.5978950000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 77306
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 13060000000.0,
+     "25": 13250000000.0,
+     "50": 13420000000.0,
+     "75": 13600000000.0,
+     "90": 13800000000.0
+    }
+   },
+   "reasoning": "AMD guided Q3 FY2026 revenue to $13.0B +/- $0.3B (Aug 4, 2026); it reports Nov 3, 2026, after the close. Reference class: the last 8 quarters, each beating the guidance midpoint by 1.8-7%: Q3'24 +1.8%, Q4'24 +2.1%, Q1'25 +4.7%, Q2'25 +3.9%, Q3'25 +6.3%, Q4'25 +7%, Q1'26 +4.6%, Q2'26 +3.0%. The 2024-2025 figures are from memory. The two most recent beats were the smallest of the last four, so I apply about +3.3%, for a median near $13.42B. Consensus is about $13.06-13.2B. Upside: EPYC strength and an early MI450 ramp. Downside: rumors of MI450 delays and a weak gaming segment. Market check: the harness found no Polymarket or Manifold market; my own web tools failed this run, so I could not check Kalshi or bookmakers. Escaping the $12B-$14.2B range would take a 7.7% miss or a 9.2% beat against the midpoint, so I declared no escape mass. Caveat: my web tools failed this run, so this rests on dossiers from earlier runs in the local journal.",
+   "sources": [
+    "local journal trace bot/journal/traces/2026-10-13-2d5605ce.json (prior research dossier on this question: AMD IR Q2 2026 release, MarketBeat, TIKR/Stifel, CNBC)",
+    "local journal trace bot/journal/traces/2026-10-11-18b7acf3.json (AMD EPS dossier: Q3 guide details, Nov 3 report date, TipRanks history)",
+    "local journal bot/journal/forecasts.jsonl (prior AMD Q3 2026 revenue records: guidance, beat history, consensus range)"
+   ],
+   "dossier": "- NOTE: web tools failed this run; these facts come from earlier runs' dossiers in the local journal (Oct 7-13, 2026), which cite AMD IR, MarketBeat, TIKR, CNBC and TipRanks.\n- AMD Q3 2026 outlook (Q2 press release, Aug 4 2026, AMD IR): revenue about $13.0B +/- $0.3B (range $12.7-13.3B), about +41% YoY and +13% QoQ; non-GAAP GM about 56%; non-GAAP opex about $3.65B.\n- Q2 2026 actual: $11.536B vs a $11.2B guide midpoint (+3.0%). Data Center $6.72B (+107% YoY), Client $3.06B, Gaming $0.78B (-31% YoY), Embedded $0.98B.\n- Q1 2026 actual: $10.253B vs about a $9.8B guide midpoint (+4.6%); vs consensus $9.91B (CNBC, May 5 2026).\n- Q4 2025: about $10.27B vs a $9.6B guide (+7%). Q3 2025: $9.25B vs an $8.7B guide (+6.3%). From memory/prior dossiers, not re-verified.\n- 2024-2025 (from memory, not verified): Q3'24 +1.8%, Q4'24 +2.1%, Q1'25 +4.7%, Q2'25 +3.9% vs guide midpoint.\n- Base rate: over the last 8 quarters, AMD actual revenue beat its guidance midpoint 8 of 8 times, by +1.8% to +7% (mean about 4.2%). Over the last 2 quarters the beats were +4.6% and +3.0%. No result below the low end of guidance found in that window.\n- Consensus for Q3 2026 varies by provider: about $13.06B (TIKR/MarketBeat, 38 analysts), about $13.19B elsewhere, about $12.97B (Investing.com).\n- Stifel (Oct 5 2026) raised its target to $700 and expects a Q3 beat driven by EPYC. It puts meaningful MI450 revenue in Q4, with an initial ramp in Q3.\n- Downside items: MI450 schedule-delay rumors (Yahoo, per prior dossier); gaming segment shrinking YoY.\n- Oct 14 2026 news: CEO Lisa Su called 2026 the 'year of AI inference' with explosive CPU demand growth (China Finance Online). ASML Q3 revenue was +55% YoY and it raised its full-year outlook for the third consecutive quarter.\n- Report date: Tue Nov 3, 2026, after market close (AMD IR announcement). That is after the question's scheduled resolution of Oct 29.\n- Resolves off total net revenue in AMD's Q3 FY2026 earnings release (the first revenue reported after Sep 2026); the criteria text is blank.\n- Event window: AMD's Q3 FY2026 report (Nov 3, 2026); as of Oct 15, 2026 not yet released, 0% resolved.\n- Markets: Polymarket and Manifold, none found (harness); prior runs found nothing on Kalshi either.\n- Searched for but not found this run: any live web confirmation (tools failed), a mid-quarter pre-announcement, or a guidance update.",
+   "reference_class": "AMD quarterly revenue actual vs company guidance midpoint, Q3 2024-Q2 2026 (8 of 8 beats, +1.8% to +7%)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.8026,
+   "seconds": 139.6,
+   "usage": {
+    "num_turns": 20,
+    "input": 34,
+    "cache_read": 670163,
+    "cache_write": 15388,
+    "cache_write_1h": 0,
+    "output": 5991,
+    "thinking": 1033,
+    "web_search": 0,
+    "cost_usd_envelope": 0.5812014999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 77577
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 13100000000.0,
+     "25": 13280000000.0,
+     "50": 13450000000.0,
+     "75": 13620000000.0,
+     "90": 13850000000.0
+    },
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Anchor: AMD Q3 2026 guidance of $13.0B ±$0.3B (Aug 4, 2026). Reference class: AMD's actual revenue vs its guidance midpoint, recently +3% to +7% (Q3'25 ~+6%, Q4'25 ~+7%, Q2'26 +3%), no misses below the low end found. Applying a ~3.5% median beat gives ~$13.45B. Upside from strong AI/CPU demand (Lisa Su Oct 2026 comments, ASML raising guidance); downside from gaming decline, export controls, MI shipment timing. Web tools failed this run, so evidence comes from earlier research dossiers in the repo's journal plus the AskNews item. Market check: harness found no Polymarket/Manifold market and an earlier run found no Polymarket/Kalshi/Manifold market; I could not re-check Kalshi or bookmakers this run.",
+   "sources": [
+    "bot/journal/traces/2026-10-07-02047ff4.json (prior AMD Q3 2026 revenue research dossier citing ir.amd.com Q2 2026 PR and sec.gov 8-K)",
+    "bot/journal/forecasts.jsonl (prior AMD Q3 2026 records: guidance and beat history)",
+    "http://hkstock.cnfol.com/shichangfenxi/20261014/32397232.shtml (China Finance Online, Oct 14 2026)"
+   ],
+   "dossier": "- AMD Q3 2026 guidance (Q2 2026 earnings PR, Aug 4 2026, per earlier-run dossier citing ir.amd.com): revenue ~$13.0B ±$0.3B (range $12.7-13.3B), ~41% YoY, ~13% QoQ; non-GAAP GM ~56%.\n- Q2 2026 actual (same PR): $11.536B (+50% YoY, +13% QoQ); Data Center $6.718B, Client $3.062B, Gaming $0.779B (-31% YoY), Embedded $0.977B.\n- Q2 2026 guidance (May 2026): $11.2B ±$0.3B -> actual +3.0% vs midpoint.\n- Q3 2025: guide $8.7B vs actual ~$9.25B (+6%); Q4 2025: guide $9.6B vs actual ~$10.27B (+7%) (recalled; earlier run did not re-verify).\n- Base rate: over 2025-2026 quarters, AMD revenue landed between +3% and +7% above the guidance midpoint; no quarter found below the low end of guidance.\n- Consensus (Oct 2026 per earlier run, varies by provider): ~$12.97B (Investing.com) to ~$13.19B; one stale figure ~$12.4B. A Benzinga preview expected a 'beat-and-raise'.\n- Oct 14 2026 (China Finance Online): Lisa Su called 2026 the 'year of AI inference' with explosive CPU demand growth; ASML Q3 revenue +55% YoY and raised its FY guide; Microsoft signed >$130B in data center leases.\n- Downside factors: gaming decline, China export controls on GPUs, MI-series shipment timing. Upside factors: data-center GPU/EPYC demand, client share gains.\n- Status quo: the company reports within or above its guided range.\n- Resolves off AMD's reported Q3 FY2026 total revenue (first report after Sept 2026), not the consensus figures. Report expected Nov 3, 2026 after market close (one site says Nov 2).\n- Event window: Q3 FY2026 (Jul-late Sep 2026) is closed; as of 2026-10-15 the quarter has fully elapsed and the report is pending.\n- Not found: no human prediction market on AMD Q3 revenue (Polymarket/Manifold per harness; Kalshi not re-checked this run). Web search failed this run, so there was no fresh confirmation of the earnings date or the latest consensus.",
+   "reference_class": "AMD quarterly reported revenue vs prior-quarter guidance midpoint, 2025-2026"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.2059,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 0.1361,
+   "seconds": 26.4,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 30844,
+    "cache_write": 8528,
+    "cache_write_1h": 0,
+    "output": 2694,
+    "thinking": 746,
+    "web_search": 0,
+    "cost_usd_envelope": 0.136082,
+    "web_fetch": 0,
+    "duration_api_ms": 26069
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 13040000000.0,
+     "25": 13230000000.0,
+     "50": 13420000000.0,
+     "75": 13610000000.0,
+     "90": 13820000000.0
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "AMD guided Q3 FY2026 revenue to $13.0B ± $0.3B on Aug 4, 2026. In each of the last 8 quarters AMD beat its guidance midpoint, by +1.8% to +7%; the two latest beats were +4.6% and +3.0%. Applying about +3.2% gives a median near $13.42B, a little above the $13.06-13.19B consensus. Upside: EPYC and AI-inference demand (Lisa Su, Oct 14) and an early MI450 ramp. Downside: gaming decline, MI450 timing, export controls. Market check: no Polymarket, Kalshi, Manifold or bookmaker contract found by the runs or the harness; I had no web access this run. Leaving the range above would take a beat of more than 9%, never seen in the record (priced at 1%); below would take a miss of more than 7.7% (not priced).",
+   "sources": [],
+   "reconciliation": "All three runs used the same facts: guidance of $13.0B ± $0.3B, the Q2'26 actual of $11.536B, and an 8-for-8 history of beating the guidance midpoint. Their medians were $13.38-13.45B, so the only real dispute was how big a beat to expect, which is a judgment call. I recognise the Q3'24 through Q4'25 beat figures from my own background knowledge. Q1'26 and Q2'26 come only from the dossiers. Report date (Nov 3 vs Nov 2): this cannot be settled without web access, and it does not change the reported figure. The Oct 29 scheduled resolution falls before the report, which affects timing only. I used about a +3.2% beat, weighting the smaller recent beats, which gives a $13.42B median. I widened the spread past the beat-history SD because no run could verify the data live. I declared 1% upper escape for a large MI450 pull-in and no lower escape. I retrieved nothing myself.",
+   "disagreements": [
+    {
+     "claim": "Size of the expected beat vs the $13.0B midpoint (+2.9% vs +3.3% vs +3.5%)",
+     "kind": "judgment",
+     "verdict": "No evidence breaks the tie. I took about +3.2%, weighting the smaller recent beats (+4.6%, +3.0%) over the larger late-2025 ones."
+    },
+    {
+     "claim": "Report date Nov 3 vs Nov 2, 2026",
+     "kind": "factual",
+     "verdict": "Cannot settle without web access; most sources say Nov 3. The resolving figure is the same either way."
+    },
+    {
+     "claim": "Whether to declare upper escape mass (0 vs 0.02)",
+     "kind": "judgment",
+     "verdict": "A beat of more than 9.2% has no precedent in 8 quarters, but a large MI450 pull-in could cause one. Priced at 1%."
+    },
+    {
+     "claim": "Width of the 10-90 interval ($0.60B-$0.74B)",
+     "kind": "judgment",
+     "verdict": "Took about $0.78B: beat-history SD x 2.56, widened because no run could verify the data live."
+    }
+   ],
+   "reference_class": "AMD quarterly reported revenue vs its own guidance midpoint, Q3 2024-Q2 2026 (8 quarters, all beats, +1.8% to +7%, mean ~4.2%)"
+  }
+ ]
+}
