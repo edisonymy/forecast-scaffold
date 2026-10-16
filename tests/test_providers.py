@@ -58,8 +58,8 @@ class TestAgentEnvironment:
         env = run_bot.agent_environment("openrouter")
         # via the loopback shim (bot/or_proxy.py), never straight to OpenRouter
         assert env["ANTHROPIC_BASE_URL"].startswith("http://127.0.0.1:")
-        assert env["ANTHROPIC_DEFAULT_HAIKU_MODEL"] == run_bot.OPENROUTER_HELPER_MODEL
-        assert env["ANTHROPIC_SMALL_FAST_MODEL"] == run_bot.OPENROUTER_HELPER_MODEL
+        # helper model left at the CLI default (the shim maps its name), as on subscription
+        assert "ANTHROPIC_DEFAULT_HAIKU_MODEL" not in env
         assert env["ANTHROPIC_AUTH_TOKEN"] == "sk-or-test"
         # an inherited real key would out-rank the auth token and bill the API account
         assert env["ANTHROPIC_API_KEY"] == ""

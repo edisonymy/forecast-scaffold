@@ -23,6 +23,7 @@ import contextlib
 import copy
 import http.client
 import json
+import re
 import select
 import socket
 import threading
@@ -46,7 +47,20 @@ SEARCH_NUDGE = "Call the web_search tool for this query. Do not answer from memo
 _TOOL_USE_MARK = b"server_tool_use"
 
 _STATS_LOCK = threading.Lock()
-_STATS = {"search_requests": 0, "search_without_tool_use": 0}
+_STATS = {"search_requests": 0, "search_without_tool_use": 0, "upstream_errors": 0}
+
+
+def openrouter_slug(model: str) -> str:
+    """Anthropic's model id -> OpenRouter's slug (claude-haiku-5-5 -> anthropic/claude-haiku-5.5).
+
+    The CLI names models in Anthropic's spelling — including its own helper model for
+    WebFetch page summaries, which no flag sets — and OpenRouter rejects that spelling.
+    Mapping here lets the OpenRouter path run the CLI's exact subscription defaults.
+    Date-pinned ids lose the date: OpenRouter lists only undated slugs."""
+    if not model or "/" in model:
+        return model
+    base = re.sub(r"-\d{8}$", "", model)
+    return "anthropic/" + re.sub(r"-(\d{1,2})-(\d{1,2})$", r"-.", base)
 
 
 def stats() -> dict[str, int]:
@@ -79,6 +93,7 @@ def _nudge(body: dict[str, Any]) -> None:
 def rewrite_messages_body(body: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
     """The body OpenRouter accepts, plus a list of what changed (for tests and logs).
 
+    * an Anthropic model id becomes OpenRouter's slug (see openrouter_slug).
     * ``thinking: {"type": "disabled"}`` is removed — the model then thinks as it would by
       default, which is what OpenRouter requires for Opus 5.5 anyway.
     * a forced ``tool_choice`` (``tool`` / ``any``) becomes ``auto``, and the last user turn
@@ -88,6 +103,10 @@ def rewrite_messages_body(body: dict[str, Any]) -> tuple[dict[str, Any], list[st
     """
     changed: list[str] = []
     out = dict(body)
+    model = out.get("model")
+    if isinstance(model, str) and (slug := openrouter_slug(model)) != model:
+        out["model"] = slug
+        changed.append("model")
     thinking = out.get("thinking")
     if isinstance(thinking, dict) and thinking.get("type") == "disabled":
         del out["thinking"]
@@ -152,6 +171,8 @@ class _Handler(BaseHTTPRequestHandler):
             conn.request(self.command, self.upstream.path + self.path, body=data or None,
                          headers=headers)
             resp = conn.getresponse()
+            if resp.status >= 400:
+                _count("upstream_errors")  # e.g. an unknown model slug: alerted per run
             # send_response_only: no second Server/Date beside the upstream's own
             self.send_response_only(resp.status, resp.reason)
             started = True

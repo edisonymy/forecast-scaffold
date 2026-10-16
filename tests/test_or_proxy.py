@@ -16,6 +16,17 @@ import or_proxy  # noqa: E402
 
 
 class TestRewrite:
+    @pytest.mark.parametrize(("model", "slug"), [
+        ("claude-haiku-5-5", "anthropic/claude-haiku-5.5"),
+        ("claude-haiku-4-5-20251001", "anthropic/claude-haiku-4.5"),
+        ("claude-sonnet-5", "anthropic/claude-sonnet-5"),
+        ("anthropic/claude-opus-5.5", "anthropic/claude-opus-5.5"),
+    ])
+    def test_model_ids_mapped_to_openrouter_slugs(self, model: str, slug: str) -> None:
+        out, changed = or_proxy.rewrite_messages_body({"model": model})
+        assert out["model"] == slug
+        assert ("model" in changed) == (model != slug)
+
     def test_websearch_side_request_is_made_acceptable(self) -> None:
         body = {"model": "anthropic/claude-opus-5.5", "thinking": {"type": "disabled"},
                 "tool_choice": {"type": "tool", "name": "web_search"},

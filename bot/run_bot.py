@@ -138,8 +138,6 @@ _SECRETS_TO_HIDE = frozenset(
 # OpenRouter's Anthropic-compatible endpoint ("Anthropic skin"): Claude Code speaks its
 # native protocol to it directly, billed to OpenRouter credits instead of the subscription.
 OPENROUTER_BASE_URL = "https://openrouter.ai/api"
-# The CLI's small helper model (WebFetch page summaries), in OpenRouter's slug spelling.
-OPENROUTER_HELPER_MODEL = "anthropic/claude-haiku-5.5"
 PROVIDERS = ("subscription", "openrouter")
 # ``claude --output-format json`` does not always price gateway model slugs. A negative
 # sentinel keeps a successful answer usable while forcing the caller to reserve the entire
@@ -970,11 +968,11 @@ def agent_environment(provider: str = "subscription") -> dict[str, str]:
         # every fallback research run without search (bot/or_proxy.py has the details).
         env["ANTHROPIC_BASE_URL"] = or_proxy.base_url()
         env["ANTHROPIC_AUTH_TOKEN"] = key
-        # WebFetch summarises pages with the CLI's "haiku" helper model, whose default
-        # Anthropic id OpenRouter does not know -> every WebFetch errored. Name the same
-        # model in OpenRouter's spelling (the deprecated alias too, for older CLIs).
-        env["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = OPENROUTER_HELPER_MODEL
-        env["ANTHROPIC_SMALL_FAST_MODEL"] = OPENROUTER_HELPER_MODEL
+        # WebFetch summarises pages with the CLI's own helper model, named in Anthropic's
+        # spelling; the shim maps it to OpenRouter's, so this path runs exactly the
+        # subscription's defaults. Drop inherited overrides that would break that parity.
+        env.pop("ANTHROPIC_DEFAULT_HAIKU_MODEL", None)
+        env.pop("ANTHROPIC_SMALL_FAST_MODEL", None)
         # An inherited HTTP(S)_PROXY would otherwise route the loopback shim URL through it.
         no_proxy = env.get("NO_PROXY") or env.get("no_proxy") or ""
         env["NO_PROXY"] = env["no_proxy"] = ",".join(p for p in (no_proxy, "127.0.0.1") if p)
@@ -1651,6 +1649,9 @@ SEARCH_MISS_ALERT_SHARE = 0.25
 def report_search_shim(counts: dict[str, int]) -> None:
     """Print the OpenRouter shim's WebSearch counts; alert when the model often skipped
     the search (it answers from memory and the CLI passes that off as results)."""
+    if errors := counts.get("upstream_errors", 0):
+        ops_alert(f"openrouter: {errors} request(s) refused by OpenRouter this run (an "
+                  "unknown model slug or a rejected field) — tool parity may be degraded")
     total = counts.get("search_requests", 0)
     missed = counts.get("search_without_tool_use", 0)
     if not total:
