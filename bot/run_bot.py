@@ -25,6 +25,7 @@ import math
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -43,6 +44,7 @@ sys.path.insert(0, str(ROOT / "bot"))  # so sibling bot modules (asknews) import
 # ruff: noqa: E402  (imports follow the sys.path bootstrap above)
 import asknews  # optional AskNews research source (dark by default; no key -> no-op)
 import markets  # harness-side Polymarket/Manifold candidate lookup (record-only, sighted only)
+import or_proxy  # loopback shim restoring WebSearch on the OpenRouter path
 import priors  # same-template prior outcomes from the resolutions overlay (record-only)
 from metaculus import MetaculusClient, MetaculusError
 
@@ -155,8 +157,16 @@ BLIND_DISALLOWED = (
 # must keep (its own OAuth) would be readable. A rule that matches nothing is inert, so
 # this is safe on platforms without /proc.
 # .git/**: actions/checkout stores the job's push token in .git/config (audit, 2026-09-22).
+# The whole repo checkout: it holds the bot's own past forecasts, traces, dossiers, the
+# Manifold journal and bench sets with outcomes. With web search broken on the OpenRouter
+# path (Oct 2026), 41 of 51 runs grepped them and cited our earlier research as their
+# "sources" — anchoring on ourselves instead of researching. The agent instead runs in a
+# scratch dir holding only a copy of the skill (agent_workdir); whatever prior context a
+# run should see, the harness puts in its brief. Read rules cover Grep/Glob too.
+_REPO_DENY = "Read(//" + ROOT.as_posix().lstrip("/") + "/**)"
 ALWAYS_DISALLOWED = ("Read(//proc/**),Read(~/.claude/**),Read(~/.claude.json),"
-                     "Read(**/.git/**),Grep(**/.git/**),Glob(**/.git/**)")
+                     "Read(**/.git/**),Grep(**/.git/**),Glob(**/.git/**),"
+                     "Read(**/bot/journal/**)," + _REPO_DENY)
 # A runaway research dossier is re-embedded into EVERY reasoning run's prompt; cap it.
 MAX_DOSSIER_CHARS = 8000
 
@@ -720,6 +730,23 @@ def angle_brief_section(letter: str, body: str) -> str:
     )
 
 
+def question_text(post: dict[str, Any], question: dict[str, Any], field: str) -> str:
+    """A question's ``resolution_criteria`` / ``fine_print`` / ``description``, with its
+    GROUP's text when it is a group subquestion.
+
+    Metaculus keeps the contract of a question group (every Market Pulse question, many
+    MiniBench ones) on ``post.group_of_questions``; the subquestions' own fields are
+    usually empty. Reading only the subquestion sent 202 of 819 live forecasts (Jul-Oct
+    2026) out with "(no criteria published)" — e.g. adjusted EPS forecast for questions
+    that resolve on GAAP diluted EPS. Group text first, then any subquestion-specific text.
+    """
+    own = str(question.get(field) or "").strip()
+    group = str((post.get("group_of_questions") or {}).get(field) or "").strip()
+    if own and group and own != group:
+        return f"{group}\n\n{own}"
+    return own or group
+
+
 def build_brief(post: dict[str, Any], question: dict[str, Any], crowd: float | None) -> str:
     # The 2026-07-06 Lovable miss (q44378, 8% vs crowd 31%): the brief's only timestamp
     # was "Closes: <ts>" — the forecast-lock time — and the agent read it as the event
@@ -739,11 +766,11 @@ def build_brief(post: dict[str, Any], question: dict[str, Any], crowd: float | N
         f"Scheduled resolution: {resolve_time} — the event window itself comes from the "
         "resolution criteria text below, verbatim; no other timestamp defines it.",
         "\n## Resolution criteria (verbatim — the contract)",
-        str(question.get("resolution_criteria", "")),
+        question_text(post, question, "resolution_criteria"),
         "\n## Fine print",
-        str(question.get("fine_print", "")),
+        question_text(post, question, "fine_print"),
         "\n## Background",
-        str(question.get("description", ""))[:4000],
+        question_text(post, question, "description")[:4000],
     ]
     if question.get("type") == "multiple_choice":
         parts.append(f"\n## Options\n{json.dumps(question.get('options') or [])}")
@@ -953,8 +980,19 @@ def agent_environment(provider: str = "subscription") -> dict[str, str]:
         key = os.environ.get("OPENROUTER_API_KEY", "")
         if not key:
             raise RuntimeError("provider 'openrouter' requires OPENROUTER_API_KEY")
-        env["ANTHROPIC_BASE_URL"] = OPENROUTER_BASE_URL
+        # Through the loopback shim, not straight to OpenRouter: the CLI's WebSearch side
+        # request carries two fields OpenRouter rejects for Opus 5.5, which silently left
+        # every fallback research run without search (bot/or_proxy.py has the details).
+        env["ANTHROPIC_BASE_URL"] = or_proxy.base_url()
         env["ANTHROPIC_AUTH_TOKEN"] = key
+        # WebFetch summarises pages with the CLI's own helper model, named in Anthropic's
+        # spelling; the shim maps it to OpenRouter's, so this path runs exactly the
+        # subscription's defaults. Drop inherited overrides that would break that parity.
+        env.pop("ANTHROPIC_DEFAULT_HAIKU_MODEL", None)
+        env.pop("ANTHROPIC_SMALL_FAST_MODEL", None)
+        # An inherited HTTP(S)_PROXY would otherwise route the loopback shim URL through it.
+        no_proxy = env.get("NO_PROXY") or env.get("no_proxy") or ""
+        env["NO_PROXY"] = env["no_proxy"] = ",".join(p for p in (no_proxy, "127.0.0.1") if p)
         env["ANTHROPIC_API_KEY"] = ""
         env.pop("CLAUDE_CODE_OAUTH_TOKEN", None)
         # A machine with a cached `claude` login ignores env auth entirely (the CLI
@@ -1020,6 +1058,28 @@ def _usage_summary(envelope: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+_WORKDIR_LOCK = threading.Lock()
+_WORKDIR: Path | None = None
+
+
+def agent_workdir() -> Path:
+    """The agent's working directory: a scratch dir OUTSIDE the repo holding only a copy
+    of the forecast skill (SKILL.md, references, scripts) — nothing it could anchor on.
+    Built once per process; parallel runs share it read-only."""
+    global _WORKDIR
+    with _WORKDIR_LOCK:
+        if _WORKDIR is None:
+            workdir = Path(tempfile.mkdtemp(prefix="forecast-agent-"))
+            shutil.copytree(SKILL, workdir / "skills" / "forecast")
+            _WORKDIR = workdir
+        return _WORKDIR
+
+
+def agent_skill_dir() -> Path:
+    """Where the agent finds the skill: the copy inside agent_workdir()."""
+    return agent_workdir() / "skills" / "forecast"
+
+
 def run_agent(
     agent_cmd: str, prompt: str, system: str | None, timeout: int,
     provider: str = "subscription", strict_metering: bool = False,
@@ -1043,7 +1103,7 @@ def run_agent(
     agent_env = agent_environment(provider)
     result = subprocess.run(
         cmd, input=prompt, capture_output=True, text=True, encoding="utf-8",
-        errors="replace", timeout=timeout, cwd=ROOT, env=agent_env,
+        errors="replace", timeout=timeout, cwd=agent_workdir(), env=agent_env,
     )
     if result.returncode != 0:
         # `--output-format json` reports errors (e.g. auth 401s) in the stdout envelope
@@ -1352,8 +1412,8 @@ def build_system(
             f"of them in raw_draws."
         )
     system = (
-        f"You have this skill (references in {SKILL / 'references'}, scripts in "
-        f"{SKILL / 'scripts'}):\n\n{skill_text}\n\n{tier_line}\n{CONTRACT}"
+        f"You have this skill (references in {agent_skill_dir() / 'references'}, scripts in "
+        f"{agent_skill_dir() / 'scripts'}):\n\n{skill_text}\n\n{tier_line}\n{CONTRACT}"
         + SECURITY_SECTION
     )
     if blind:
@@ -1556,6 +1616,67 @@ def ops_alert(message: str) -> None:
     if path := os.environ.get("OPS_ALERTS_FILE"):
         with contextlib.suppress(OSError), open(path, "a", encoding="utf-8") as fh:
             fh.write(f"{_utc_now()} {message}\n")
+
+
+# A credential the provider REFUSED, as opposed to a quota or an outage. These never heal
+# on their own: from 2026-10-15 a revoked subscription token silently sent every forecast
+# to the fallback for 40h, because a fallback that works hides the primary's death.
+_AUTH_REJECTION_MARKERS = ("Failed to authenticate", "OAuth access token has been revoked",
+                           "API Error: 401", "invalid x-api-key", "OAuth token has expired")
+_AUTH_ALERTED: set[str] = set()
+
+
+def is_auth_rejection(text: str) -> bool:
+    """True when an agent error says the provider rejected the credential itself."""
+    return any(marker in text for marker in _AUTH_REJECTION_MARKERS)
+
+
+def alert_auth_rejected(provider: str) -> None:
+    """Once per process and provider: say exactly which credential to renew, and how."""
+    if provider in _AUTH_ALERTED:
+        return
+    _AUTH_ALERTED.add(provider)
+    if provider == "openrouter":
+        fix = "renew the OPENROUTER_API_KEY repo secret"
+    else:
+        fix = ("run `claude setup-token` and store the result as the "
+               "CLAUDE_CODE_OAUTH_TOKEN repo secret")
+    ops_alert(f"{provider} credential REJECTED (401) — forecasts are running on the "
+              f"fallback until it is fixed: {fix}")
+
+
+def check_search_parity(provider: str, usage: dict[str, Any]) -> None:
+    """Alert (once per process) when a research run finished without a single web search.
+
+    Subscription research has never done that (0 of 143 runs, Oct 2026), while OpenRouter
+    did it 156 times in 157 before the loopback shim: a broken tool degrades forecasts
+    silently, because the run still lists enough sources (local journal files) to pass."""
+    if usage.get("web_search") or provider in _SEARCH_ALERTED:
+        return
+    _SEARCH_ALERTED.add(provider)
+    ops_alert(f"{provider} research run made 0 web searches — WebSearch may be broken on "
+              "this provider (compare usage.web_search in bot/journal/traces)")
+
+
+_SEARCH_ALERTED: set[str] = set()
+# Share of WebSearch calls that may come back without searching before we alert.
+SEARCH_MISS_ALERT_SHARE = 0.25
+
+
+def report_search_shim(counts: dict[str, int]) -> None:
+    """Print the OpenRouter shim's WebSearch counts; alert when the model often skipped
+    the search (it answers from memory and the CLI passes that off as results)."""
+    if errors := counts.get("upstream_errors", 0):
+        ops_alert(f"openrouter: {errors} request(s) refused by OpenRouter this run (an "
+                  "unknown model slug or a rejected field) — tool parity may be degraded")
+    total = counts.get("search_requests", 0)
+    missed = counts.get("search_without_tool_use", 0)
+    if not total:
+        return
+    print(f"OpenRouter WebSearch calls: {total}, answered without searching: {missed}")
+    if missed / total > SEARCH_MISS_ALERT_SHARE:
+        ops_alert(f"openrouter: {missed} of {total} WebSearch calls answered without "
+                  "searching (model skipped the tool) — search parity degraded")
 
 
 def closes_within_hours(post: dict[str, Any], question: dict[str, Any], hours: float,
@@ -1851,7 +1972,7 @@ def forecast_question(
     # One --disallowed-tools flag only: repeated flags are last-wins in the CLI, so the
     # always-on deny list and the blind-mode domains must travel together.
     disallowed = ALWAYS_DISALLOWED + ("," + BLIND_DISALLOWED if args.blind else "")
-    agent_cmd = f"{base_cmd} --disallowed-tools {disallowed}"
+    agent_cmd = f"{base_cmd} --disallowed-tools {shlex.quote(disallowed)}"
 
     def one_run(
         cmd: str, run_prompt: str, run_system: str, need_dossier: bool, timeout: int,
@@ -1892,6 +2013,8 @@ def forecast_question(
             }
             if usage_now := last_call_usage():
                 entry["usage"] = usage_now
+                if ok and "research" in str(trace_meta.get("stage", "")):
+                    check_search_parity(args.provider, usage_now)
             if attempt0_errors:
                 entry["validation_errors_first_attempt"] = [
                     str(e)[:300] for e in attempt0_errors
@@ -2203,7 +2326,7 @@ def forecast_question(
             # Every other angle follows the ambient (--blind) mode.
             run_blind = args.blind or letter == "F"
             run_disallowed = ALWAYS_DISALLOWED + ("," + BLIND_DISALLOWED if run_blind else "")
-            run_cmd = f"{base_cmd} --disallowed-tools {run_disallowed}"
+            run_cmd = f"{base_cmd} --disallowed-tools {shlex.quote(run_disallowed)}"
             # The same sighted brief the dossier path builds: the market-scan mandate AND
             # the harness's own market candidates. Angle F is market-blind, so it gets
             # neither; in --blind mode market_facts is "" for every angle.
@@ -2363,7 +2486,7 @@ def forecast_question(
                         f"Scheduled resolution: "
                         f"{question.get('scheduled_resolve_time', 'unknown')}\n"
                         f"Resolution criteria (verbatim): "
-                        f"{str(question.get('resolution_criteria', ''))[:2000]}"
+                        f"{question_text(post, question, 'resolution_criteria')[:2000]}"
                     )
                     verify_cmd = metered_cmd(agent_cmd)
                     if verify_cmd is not None:
@@ -2632,7 +2755,8 @@ def forecast_question(
                         sup_cmd, sup_timeout = agent_cmd, args.timeout
                     else:
                         # Denied at the tool level, not just asked for in the prompt.
-                        sup_cmd = f"{base_cmd} --disallowed-tools {disallowed},{NO_WEB_DISALLOWED}"
+                        sup_cmd = (f"{base_cmd} --disallowed-tools "
+                                   f"{shlex.quote(disallowed + ',' + NO_WEB_DISALLOWED)}")
                         sup_timeout = reasoning_timeout
                     cost_before = run_cost
                     candidate, _, errors = one_run(
@@ -2701,6 +2825,8 @@ def forecast_question(
             # earlier one answered: not the question's fault. main() exits
             # EXIT_PROVIDER_FAILURE so bot.yml reruns the remainder on OpenRouter.
             spent["infra_failures"] = spent.get("infra_failures", 0) + 1
+            if is_auth_rejection("; ".join(errors)):
+                alert_auth_rejected(args.provider)
         elif agent_responded:
             # The model answered and still couldn't produce a valid payload — that's a
             # question-content failure the backoff ledger should count. Pure infra
@@ -2913,7 +3039,7 @@ def forecast_question(
              for o in question.get("options") or []}
         )
     title = question.get("title", post.get("title", "untitled"))
-    criterion = str(question.get("resolution_criteria", "")).strip()[:2000]
+    criterion = question_text(post, question, "resolution_criteria")[:2000]
     if not criterion:
         # Metaculus sometimes returns empty criteria; the title is the resolvable contract.
         criterion = f"(no criteria published) Resolves per the question as stated: {title}"
@@ -3511,6 +3637,8 @@ def main(argv: list[str] | None = None) -> int:
         if entry["billed_usd"] is not None:
             print(f"OpenRouter billed ${entry['billed_usd']:.4f} this run "
                   f"(CLI estimate ${entry['estimate_usd']:.2f})")
+    if args.provider == "openrouter":
+        report_search_shim(or_proxy.stats())
     if infra := spent.get("infra_failures", 0):
         print(f"provider failure: every agent call errored on {infra} question(s) — "
               f"exit {EXIT_PROVIDER_FAILURE} so the workflow reruns on its fallback provider")

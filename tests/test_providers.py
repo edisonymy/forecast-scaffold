@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import math
 import shlex
+import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -55,7 +56,10 @@ class TestAgentEnvironment:
         monkeypatch.setenv("CLAUDE_CODE_OAUTH_TOKEN", "oauth-tok")
         monkeypatch.setenv("ANTHROPIC_API_KEY", "real-api-key")
         env = run_bot.agent_environment("openrouter")
-        assert env["ANTHROPIC_BASE_URL"] == run_bot.OPENROUTER_BASE_URL
+        # via the loopback shim (bot/or_proxy.py), never straight to OpenRouter
+        assert env["ANTHROPIC_BASE_URL"].startswith("http://127.0.0.1:")
+        # helper model left at the CLI default (the shim maps its name), as on subscription
+        assert "ANTHROPIC_DEFAULT_HAIKU_MODEL" not in env
         assert env["ANTHROPIC_AUTH_TOKEN"] == "sk-or-test"
         # an inherited real key would out-rank the auth token and bill the API account
         assert env["ANTHROPIC_API_KEY"] == ""
@@ -338,3 +342,100 @@ class TestReportAutoImputation:
         # auto row appears in the crowd table with medium's p (gap 0.2) and summed cost
         auto_line = next(line for line in text.splitlines() if line.startswith("| auto"))
         assert "0.200" in auto_line and "$0.45" in auto_line
+
+
+class TestAuthRejectionAlert:
+    def test_revoked_token_detected_quota_not(self) -> None:
+        assert run_bot.is_auth_rejection(
+            "agent failed (1): Failed to authenticate. API Error: 401 OAuth access token "
+            "has been revoked.")
+        assert not run_bot.is_auth_rejection("agent failed (1): You've hit your weekly limit")
+        assert not run_bot.is_auth_rejection("API Error: 529 Overloaded")
+
+    def test_alert_once_per_provider_names_the_fix(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path
+    ) -> None:
+        alerts = tmp_path / "alerts.txt"
+        monkeypatch.setenv("OPS_ALERTS_FILE", str(alerts))
+        monkeypatch.setattr(run_bot, "_AUTH_ALERTED", set())
+        run_bot.alert_auth_rejected("subscription")
+        run_bot.alert_auth_rejected("subscription")
+        lines = alerts.read_text(encoding="utf-8").splitlines()
+        assert len(lines) == 1
+        assert "credential REJECTED" in lines[0] and "claude setup-token" in lines[0]
+        assert "CLAUDE_CODE_OAUTH_TOKEN" in lines[0]
+
+
+def test_zero_search_research_alerts_once(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
+    alerts = tmp_path / "alerts.txt"
+    monkeypatch.setenv("OPS_ALERTS_FILE", str(alerts))
+    monkeypatch.setattr(run_bot, "_SEARCH_ALERTED", set())
+    run_bot.check_search_parity("openrouter", {"web_search": 7})
+    assert not alerts.exists()
+    run_bot.check_search_parity("openrouter", {"web_search": 0})
+    run_bot.check_search_parity("openrouter", {"web_search": None})
+    assert len(alerts.read_text(encoding="utf-8").splitlines()) == 1
+
+
+def test_search_shim_report_alerts_on_many_skips(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
+    alerts = tmp_path / "alerts.txt"
+    monkeypatch.setenv("OPS_ALERTS_FILE", str(alerts))
+    run_bot.report_search_shim({"search_requests": 0, "search_without_tool_use": 0})
+    run_bot.report_search_shim({"search_requests": 20, "search_without_tool_use": 2})
+    assert not alerts.exists()
+    run_bot.report_search_shim({"search_requests": 20, "search_without_tool_use": 9})
+    assert "answered without searching" in alerts.read_text(encoding="utf-8")
+
+
+def test_openrouter_env_bypasses_http_proxy(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-test")
+    monkeypatch.setenv("NO_PROXY", "internal.example")
+    env = run_bot.agent_environment("openrouter")
+    assert env["NO_PROXY"] == env["no_proxy"] == "internal.example,127.0.0.1"
+
+
+class TestAgentSandbox:
+    def test_agent_runs_outside_repo_with_only_the_skill(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        seen: dict = {}
+
+        def fake_run(cmd, **kwargs):
+            seen.update(kwargs, cmd=cmd)
+            return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
+
+        monkeypatch.setattr(run_bot.subprocess, "run", fake_run)
+        run_bot.run_agent("claude -p", "prompt", None, 10)
+        cwd = Path(seen["cwd"]).resolve()
+        assert run_bot.ROOT.resolve() not in (cwd, *cwd.parents)
+        assert (cwd / "skills" / "forecast" / "SKILL.md").is_file()
+        assert not (cwd / "bot").exists()
+        system = run_bot.build_system("medium", False, {})
+        assert str(run_bot.agent_skill_dir() / "references") in system
+
+    def test_repo_deny_survives_the_command_line(self) -> None:
+        cmd = (f"claude -p --disallowed-tools {shlex.quote(run_bot.ALWAYS_DISALLOWED)}")
+        args = shlex.split(cmd)
+        assert args[args.index("--disallowed-tools") + 1] == run_bot.ALWAYS_DISALLOWED
+        assert run_bot._REPO_DENY in run_bot.ALWAYS_DISALLOWED
+        assert run_bot._REPO_DENY.startswith("Read(//")
+
+
+class TestGroupQuestionText:
+    POST = {"group_of_questions": {
+        "resolution_criteria": "Resolves to GAAP diluted EPS as reported.",
+        "fine_print": "Non-GAAP figures are ignored.", "description": "Earnings season.",
+        "questions": [{"id": 1, "title": "EPS (Tesla)", "type": "numeric",
+                       "resolution_criteria": "", "fine_print": "", "description": ""}]}}
+
+    def test_group_subquestion_brief_carries_the_group_contract(self) -> None:
+        question = self.POST["group_of_questions"]["questions"][0]
+        brief = run_bot.build_brief(self.POST, question, None)
+        assert "GAAP diluted EPS" in brief and "Non-GAAP figures are ignored" in brief
+        assert "Earnings season." in brief
+
+    def test_own_text_kept_after_group_text(self) -> None:
+        question = {"resolution_criteria": "Tesla only."}
+        text = run_bot.question_text(self.POST, question, "resolution_criteria")
+        assert text == "Resolves to GAAP diluted EPS as reported.\n\nTesla only."
+        assert run_bot.question_text({}, question, "resolution_criteria") == "Tesla only."
