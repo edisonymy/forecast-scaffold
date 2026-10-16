@@ -136,6 +136,22 @@ class TestSearchNews:
         lines = alerts.read_text(encoding="utf-8").splitlines()
         assert len(lines) == 1 and "HTTP 403" in lines[0]
 
+    def test_exhausted_credits_raise_an_ops_alert(self, monkeypatch: pytest.MonkeyPatch,
+                                                  tmp_path: Path) -> None:
+        # The plan blocks usage past its monthly credits (2026-09-07, 09-29): not silent.
+        monkeypatch.setenv("ASKNEWS_API_KEY", "testkey")
+        alerts = tmp_path / "alerts.txt"
+        monkeypatch.setenv("OPS_ALERTS_FILE", str(alerts))
+        monkeypatch.setattr(asknews, "_KEY_ALERTED", False)
+
+        def payment_required(request: Any, timeout: Any = None) -> _Resp:
+            raise urllib.error.HTTPError(request.full_url, 402, "pay", {}, None)  # type: ignore[arg-type]
+
+        monkeypatch.setattr(asknews.urllib.request, "urlopen", payment_required)
+        assert asknews.search_news("q") == []
+        text = alerts.read_text(encoding="utf-8")
+        assert "HTTP 402" in text and "credits exhausted" in text
+
     def test_success_returns_as_dicts(self, monkeypatch: pytest.MonkeyPatch) -> None:
         monkeypatch.setenv("ASKNEWS_API_KEY", "testkey")
         monkeypatch.setattr(asknews.urllib.request, "urlopen",

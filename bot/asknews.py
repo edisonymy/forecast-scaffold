@@ -119,14 +119,18 @@ _KEY_ALERTED = False
 
 
 def _alert_key_rejected(code: int) -> None:
-    """Once per process: the key was refused. AskNews accounts must be renewed every
-    season, and a lapsed key otherwise just drops the news section silently."""
+    """Once per process: AskNews refused the call. A lapsed key (401/403) or a used-up
+    monthly credit allowance (the plan blocks usage past 500 credits until the billing
+    period resets — it did on 2026-09-07 and 09-29) otherwise just drops the news section
+    silently."""
     global _KEY_ALERTED
     if _KEY_ALERTED:
         return
     _KEY_ALERTED = True
-    message = (f"AskNews rejected the API key (HTTP {code}); research runs have no news "
-               "section until it is renewed")
+    cause = ("key rejected — renew it" if code in (401, 403)
+             else "credits exhausted or rate-limited — top up the wallet or wait for the reset")
+    message = (f"AskNews refused the call (HTTP {code}: {cause}); research runs have no news "
+               "section until it is fixed")
     print(f"::warning::ops alert: {message}")
     if path := os.environ.get("OPS_ALERTS_FILE"):
         try:
@@ -156,7 +160,7 @@ def search_news(
             if attempt == 0 and exc.code in RETRY_STATUS:
                 time.sleep(RETRY_WAIT_S)
                 continue
-            if exc.code in (401, 403):
+            if exc.code in (401, 402, 403, 429):
                 _alert_key_rejected(exc.code)
             return []
         except Exception:  # noqa: BLE001 — timeout/URLError/JSON/anything: no-op, never raise
