@@ -971,6 +971,9 @@ def agent_environment(provider: str = "subscription") -> dict[str, str]:
         # model in OpenRouter's spelling (the deprecated alias too, for older CLIs).
         env["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = OPENROUTER_HELPER_MODEL
         env["ANTHROPIC_SMALL_FAST_MODEL"] = OPENROUTER_HELPER_MODEL
+        # An inherited HTTP(S)_PROXY would otherwise route the loopback shim URL through it.
+        no_proxy = env.get("NO_PROXY") or env.get("no_proxy") or ""
+        env["NO_PROXY"] = env["no_proxy"] = ",".join(p for p in (no_proxy, "127.0.0.1") if p)
         env["ANTHROPIC_API_KEY"] = ""
         env.pop("CLAUDE_CODE_OAUTH_TOKEN", None)
         # A machine with a cached `claude` login ignores env auth entirely (the CLI
@@ -1615,6 +1618,21 @@ def check_search_parity(provider: str, usage: dict[str, Any]) -> None:
 
 
 _SEARCH_ALERTED: set[str] = set()
+# Share of WebSearch calls that may come back without searching before we alert.
+SEARCH_MISS_ALERT_SHARE = 0.25
+
+
+def report_search_shim(counts: dict[str, int]) -> None:
+    """Print the OpenRouter shim's WebSearch counts; alert when the model often skipped
+    the search (it answers from memory and the CLI passes that off as results)."""
+    total = counts.get("search_requests", 0)
+    missed = counts.get("search_without_tool_use", 0)
+    if not total:
+        return
+    print(f"OpenRouter WebSearch calls: {total}, answered without searching: {missed}")
+    if missed / total > SEARCH_MISS_ALERT_SHARE:
+        ops_alert(f"openrouter: {missed} of {total} WebSearch calls answered without "
+                  "searching (model skipped the tool) — search parity degraded")
 
 
 def closes_within_hours(post: dict[str, Any], question: dict[str, Any], hours: float,
@@ -3574,6 +3592,8 @@ def main(argv: list[str] | None = None) -> int:
         if entry["billed_usd"] is not None:
             print(f"OpenRouter billed ${entry['billed_usd']:.4f} this run "
                   f"(CLI estimate ${entry['estimate_usd']:.2f})")
+    if args.provider == "openrouter":
+        report_search_shim(or_proxy.stats())
     if infra := spent.get("infra_failures", 0):
         print(f"provider failure: every agent call errored on {infra} question(s) — "
               f"exit {EXIT_PROVIDER_FAILURE} so the workflow reruns on its fallback provider")

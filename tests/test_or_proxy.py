@@ -27,6 +27,16 @@ class TestRewrite:
         assert out["tools"] == body["tools"]
         assert body["thinking"] == {"type": "disabled"}  # input not mutated
 
+    def test_search_request_gets_nudge_without_mutating_input(self) -> None:
+        body = {"tool_choice": {"type": "tool", "name": "web_search"},
+                "messages": [{"role": "user", "content": [{"type": "text", "text": "q"}]}]}
+        out, _ = or_proxy.rewrite_messages_body(body)
+        assert out["messages"][-1]["content"][-1]["text"] == or_proxy.SEARCH_NUDGE
+        assert len(body["messages"][0]["content"]) == 1
+        out, _ = or_proxy.rewrite_messages_body(
+            {"tool_choice": {"type": "any"}, "messages": [{"role": "user", "content": "q"}]})
+        assert out["messages"][0]["content"].endswith(or_proxy.SEARCH_NUDGE)
+
     def test_any_choice_relaxed(self) -> None:
         out, changed = or_proxy.rewrite_messages_body({"tool_choice": {"type": "any"}})
         assert out["tool_choice"] == {"type": "auto"} and changed == ["tool_choice"]
@@ -82,3 +92,26 @@ def test_shim_forwards_rewritten_body_and_streams_back(monkeypatch: pytest.Monke
         assert auth == "Bearer sk-test"  # the CLI's own credential, passed through
     finally:
         upstream.shutdown()
+
+
+def test_search_without_tool_use_is_counted(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A WebSearch side request answered from memory (no server_tool_use) is counted."""
+    upstream = ThreadingHTTPServer(("127.0.0.1", 0), _Upstream)
+    threading.Thread(target=upstream.serve_forever, daemon=True).start()
+    try:
+        http_client = or_proxy.http.client
+        monkeypatch.setattr(http_client, "HTTPSConnection", http_client.HTTPConnection)
+        monkeypatch.setattr(or_proxy._Handler, "upstream", or_proxy.urllib.parse.urlsplit(
+            f"http://127.0.0.1:{upstream.server_address[1]}/api"))
+        before = or_proxy.stats()
+        body = json.dumps({"tool_choice": {"type": "tool", "name": "web_search"},
+                           "messages": [{"role": "user", "content": "q"}]}).encode()
+        req = urllib.request.Request(or_proxy.base_url() + "/v1/messages", data=body)
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            resp.read()
+        after = or_proxy.stats()
+        assert after["search_requests"] == before["search_requests"] + 1
+        assert after["search_without_tool_use"] == before["search_without_tool_use"] + 1
+    finally:
+        upstream.shutdown()
+        upstream.server_close()

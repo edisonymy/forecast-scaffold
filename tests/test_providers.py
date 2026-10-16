@@ -374,3 +374,20 @@ def test_zero_search_research_alerts_once(monkeypatch: pytest.MonkeyPatch, tmp_p
     run_bot.check_search_parity("openrouter", {"web_search": 0})
     run_bot.check_search_parity("openrouter", {"web_search": None})
     assert len(alerts.read_text(encoding="utf-8").splitlines()) == 1
+
+
+def test_search_shim_report_alerts_on_many_skips(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
+    alerts = tmp_path / "alerts.txt"
+    monkeypatch.setenv("OPS_ALERTS_FILE", str(alerts))
+    run_bot.report_search_shim({"search_requests": 0, "search_without_tool_use": 0})
+    run_bot.report_search_shim({"search_requests": 20, "search_without_tool_use": 2})
+    assert not alerts.exists()
+    run_bot.report_search_shim({"search_requests": 20, "search_without_tool_use": 9})
+    assert "answered without searching" in alerts.read_text(encoding="utf-8")
+
+
+def test_openrouter_env_bypasses_http_proxy(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-test")
+    monkeypatch.setenv("NO_PROXY", "internal.example")
+    env = run_bot.agent_environment("openrouter")
+    assert env["NO_PROXY"] == env["no_proxy"] == "internal.example,127.0.0.1"
