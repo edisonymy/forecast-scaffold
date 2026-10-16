@@ -634,7 +634,7 @@ def agent_cmd_for(base_cmd: str, blind: bool) -> str:
     disallowed = run_bot.ALWAYS_DISALLOWED + (
         "," + run_bot.BLIND_DISALLOWED if blind else ""
     )
-    return f"{base_cmd} --disallowed-tools {disallowed}"
+    return f"{base_cmd} --disallowed-tools {shlex.quote(disallowed)}"
 
 
 def with_credit_cap(agent_cmd: str, remaining_usd: float) -> str:

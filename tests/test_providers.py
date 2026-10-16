@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import math
 import shlex
+import subprocess
 import sys
 from pathlib import Path
 from types import SimpleNamespace
@@ -391,3 +392,30 @@ def test_openrouter_env_bypasses_http_proxy(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.setenv("NO_PROXY", "internal.example")
     env = run_bot.agent_environment("openrouter")
     assert env["NO_PROXY"] == env["no_proxy"] == "internal.example,127.0.0.1"
+
+
+class TestAgentSandbox:
+    def test_agent_runs_outside_repo_with_only_the_skill(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        seen: dict = {}
+
+        def fake_run(cmd, **kwargs):
+            seen.update(kwargs, cmd=cmd)
+            return subprocess.CompletedProcess(cmd, 0, stdout="ok", stderr="")
+
+        monkeypatch.setattr(run_bot.subprocess, "run", fake_run)
+        run_bot.run_agent("claude -p", "prompt", None, 10)
+        cwd = Path(seen["cwd"]).resolve()
+        assert run_bot.ROOT.resolve() not in (cwd, *cwd.parents)
+        assert (cwd / "skills" / "forecast" / "SKILL.md").is_file()
+        assert not (cwd / "bot").exists()
+        system = run_bot.build_system("medium", False, {})
+        assert str(run_bot.agent_skill_dir() / "references") in system
+
+    def test_repo_deny_survives_the_command_line(self) -> None:
+        cmd = (f"claude -p --disallowed-tools {shlex.quote(run_bot.ALWAYS_DISALLOWED)}")
+        args = shlex.split(cmd)
+        assert args[args.index("--disallowed-tools") + 1] == run_bot.ALWAYS_DISALLOWED
+        assert run_bot._REPO_DENY in run_bot.ALWAYS_DISALLOWED
+        assert run_bot._REPO_DENY.startswith("Read(//")

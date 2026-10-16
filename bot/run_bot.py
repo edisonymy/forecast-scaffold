@@ -25,6 +25,7 @@ import math
 import os
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -158,13 +159,16 @@ BLIND_DISALLOWED = (
 # must keep (its own OAuth) would be readable. A rule that matches nothing is inert, so
 # this is safe on platforms without /proc.
 # .git/**: actions/checkout stores the job's push token in .git/config (audit, 2026-09-22).
-# bot/journal/**: the bot's own past forecasts, traces and dossiers. With web search broken
-# on the OpenRouter path (Oct 2026), 41 of 51 runs grepped them and cited our earlier
-# research as their "sources" — anchoring on ourselves instead of researching. Whatever
-# prior context a run should see, the harness puts in its brief.
+# The whole repo checkout: it holds the bot's own past forecasts, traces, dossiers, the
+# Manifold journal and bench sets with outcomes. With web search broken on the OpenRouter
+# path (Oct 2026), 41 of 51 runs grepped them and cited our earlier research as their
+# "sources" — anchoring on ourselves instead of researching. The agent instead runs in a
+# scratch dir holding only a copy of the skill (agent_workdir); whatever prior context a
+# run should see, the harness puts in its brief. Read rules cover Grep/Glob too.
+_REPO_DENY = "Read(//" + ROOT.as_posix().lstrip("/") + "/**)"
 ALWAYS_DISALLOWED = ("Read(//proc/**),Read(~/.claude/**),Read(~/.claude.json),"
                      "Read(**/.git/**),Grep(**/.git/**),Glob(**/.git/**),"
-                     "Read(**/bot/journal/**)")  # Read rules cover Grep/Glob too
+                     "Read(**/bot/journal/**)," + _REPO_DENY)
 # A runaway research dossier is re-embedded into EVERY reasoning run's prompt; cap it.
 MAX_DOSSIER_CHARS = 8000
 
@@ -1039,6 +1043,28 @@ def _usage_summary(envelope: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+_WORKDIR_LOCK = threading.Lock()
+_WORKDIR: Path | None = None
+
+
+def agent_workdir() -> Path:
+    """The agent's working directory: a scratch dir OUTSIDE the repo holding only a copy
+    of the forecast skill (SKILL.md, references, scripts) — nothing it could anchor on.
+    Built once per process; parallel runs share it read-only."""
+    global _WORKDIR
+    with _WORKDIR_LOCK:
+        if _WORKDIR is None:
+            workdir = Path(tempfile.mkdtemp(prefix="forecast-agent-"))
+            shutil.copytree(SKILL, workdir / "skills" / "forecast")
+            _WORKDIR = workdir
+        return _WORKDIR
+
+
+def agent_skill_dir() -> Path:
+    """Where the agent finds the skill: the copy inside agent_workdir()."""
+    return agent_workdir() / "skills" / "forecast"
+
+
 def run_agent(
     agent_cmd: str, prompt: str, system: str | None, timeout: int,
     provider: str = "subscription", strict_metering: bool = False,
@@ -1062,7 +1088,7 @@ def run_agent(
     agent_env = agent_environment(provider)
     result = subprocess.run(
         cmd, input=prompt, capture_output=True, text=True, encoding="utf-8",
-        errors="replace", timeout=timeout, cwd=ROOT, env=agent_env,
+        errors="replace", timeout=timeout, cwd=agent_workdir(), env=agent_env,
     )
     if result.returncode != 0:
         # `--output-format json` reports errors (e.g. auth 401s) in the stdout envelope
@@ -1371,8 +1397,8 @@ def build_system(
             f"of them in raw_draws."
         )
     system = (
-        f"You have this skill (references in {SKILL / 'references'}, scripts in "
-        f"{SKILL / 'scripts'}):\n\n{skill_text}\n\n{tier_line}\n{CONTRACT}"
+        f"You have this skill (references in {agent_skill_dir() / 'references'}, scripts in "
+        f"{agent_skill_dir() / 'scripts'}):\n\n{skill_text}\n\n{tier_line}\n{CONTRACT}"
         + SECURITY_SECTION
     )
     if blind:
@@ -1928,7 +1954,7 @@ def forecast_question(
     # One --disallowed-tools flag only: repeated flags are last-wins in the CLI, so the
     # always-on deny list and the blind-mode domains must travel together.
     disallowed = ALWAYS_DISALLOWED + ("," + BLIND_DISALLOWED if args.blind else "")
-    agent_cmd = f"{base_cmd} --disallowed-tools {disallowed}"
+    agent_cmd = f"{base_cmd} --disallowed-tools {shlex.quote(disallowed)}"
 
     def one_run(
         cmd: str, run_prompt: str, run_system: str, need_dossier: bool, timeout: int,
@@ -2282,7 +2308,7 @@ def forecast_question(
             # Every other angle follows the ambient (--blind) mode.
             run_blind = args.blind or letter == "F"
             run_disallowed = ALWAYS_DISALLOWED + ("," + BLIND_DISALLOWED if run_blind else "")
-            run_cmd = f"{base_cmd} --disallowed-tools {run_disallowed}"
+            run_cmd = f"{base_cmd} --disallowed-tools {shlex.quote(run_disallowed)}"
             # The same sighted brief the dossier path builds: the market-scan mandate AND
             # the harness's own market candidates. Angle F is market-blind, so it gets
             # neither; in --blind mode market_facts is "" for every angle.
@@ -2711,7 +2737,8 @@ def forecast_question(
                         sup_cmd, sup_timeout = agent_cmd, args.timeout
                     else:
                         # Denied at the tool level, not just asked for in the prompt.
-                        sup_cmd = f"{base_cmd} --disallowed-tools {disallowed},{NO_WEB_DISALLOWED}"
+                        sup_cmd = (f"{base_cmd} --disallowed-tools "
+                                   f"{shlex.quote(disallowed + ',' + NO_WEB_DISALLOWED)}")
                         sup_timeout = reasoning_timeout
                     cost_before = run_cost
                     candidate, _, errors = one_run(
