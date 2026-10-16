@@ -43,6 +43,7 @@ sys.path.insert(0, str(ROOT / "bot"))  # so sibling bot modules (asknews) import
 # ruff: noqa: E402  (imports follow the sys.path bootstrap above)
 import asknews  # optional AskNews research source (dark by default; no key -> no-op)
 import markets  # harness-side Polymarket/Manifold candidate lookup (record-only, sighted only)
+import or_proxy  # loopback shim restoring WebSearch on the OpenRouter path
 import priors  # same-template prior outcomes from the resolutions overlay (record-only)
 from metaculus import MetaculusClient, MetaculusError
 
@@ -136,6 +137,8 @@ _SECRETS_TO_HIDE = frozenset(
 # OpenRouter's Anthropic-compatible endpoint ("Anthropic skin"): Claude Code speaks its
 # native protocol to it directly, billed to OpenRouter credits instead of the subscription.
 OPENROUTER_BASE_URL = "https://openrouter.ai/api"
+# The CLI's small helper model (WebFetch page summaries), in OpenRouter's slug spelling.
+OPENROUTER_HELPER_MODEL = "anthropic/claude-haiku-5.5"
 PROVIDERS = ("subscription", "openrouter")
 # ``claude --output-format json`` does not always price gateway model slugs. A negative
 # sentinel keeps a successful answer usable while forcing the caller to reserve the entire
@@ -953,8 +956,16 @@ def agent_environment(provider: str = "subscription") -> dict[str, str]:
         key = os.environ.get("OPENROUTER_API_KEY", "")
         if not key:
             raise RuntimeError("provider 'openrouter' requires OPENROUTER_API_KEY")
-        env["ANTHROPIC_BASE_URL"] = OPENROUTER_BASE_URL
+        # Through the loopback shim, not straight to OpenRouter: the CLI's WebSearch side
+        # request carries two fields OpenRouter rejects for Opus 5.5, which silently left
+        # every fallback research run without search (bot/or_proxy.py has the details).
+        env["ANTHROPIC_BASE_URL"] = or_proxy.base_url()
         env["ANTHROPIC_AUTH_TOKEN"] = key
+        # WebFetch summarises pages with the CLI's "haiku" helper model, whose default
+        # Anthropic id OpenRouter does not know -> every WebFetch errored. Name the same
+        # model in OpenRouter's spelling (the deprecated alias too, for older CLIs).
+        env["ANTHROPIC_DEFAULT_HAIKU_MODEL"] = OPENROUTER_HELPER_MODEL
+        env["ANTHROPIC_SMALL_FAST_MODEL"] = OPENROUTER_HELPER_MODEL
         env["ANTHROPIC_API_KEY"] = ""
         env.pop("CLAUDE_CODE_OAUTH_TOKEN", None)
         # A machine with a cached `claude` login ignores env auth entirely (the CLI
@@ -1558,6 +1569,49 @@ def ops_alert(message: str) -> None:
             fh.write(f"{_utc_now()} {message}\n")
 
 
+# A credential the provider REFUSED, as opposed to a quota or an outage. These never heal
+# on their own: from 2026-10-15 a revoked subscription token silently sent every forecast
+# to the fallback for 40h, because a fallback that works hides the primary's death.
+_AUTH_REJECTION_MARKERS = ("Failed to authenticate", "OAuth access token has been revoked",
+                           "API Error: 401", "invalid x-api-key", "OAuth token has expired")
+_AUTH_ALERTED: set[str] = set()
+
+
+def is_auth_rejection(text: str) -> bool:
+    """True when an agent error says the provider rejected the credential itself."""
+    return any(marker in text for marker in _AUTH_REJECTION_MARKERS)
+
+
+def alert_auth_rejected(provider: str) -> None:
+    """Once per process and provider: say exactly which credential to renew, and how."""
+    if provider in _AUTH_ALERTED:
+        return
+    _AUTH_ALERTED.add(provider)
+    if provider == "openrouter":
+        fix = "renew the OPENROUTER_API_KEY repo secret"
+    else:
+        fix = ("run `claude setup-token` and store the result as the "
+               "CLAUDE_CODE_OAUTH_TOKEN repo secret")
+    ops_alert(f"{provider} credential REJECTED (401) — forecasts are running on the "
+              f"fallback until it is fixed: {fix}")
+
+
+def check_search_parity(provider: str, usage: dict[str, Any]) -> None:
+    """Alert (once per process) when a research run finished without a single web search.
+
+    Subscription research has never done that (0 of 143 runs, Oct 2026), while OpenRouter
+    did it 156 times in 157 before the loopback shim: a broken tool degrades forecasts
+    silently, because the run still lists enough sources (local journal files) to pass."""
+    if usage.get("web_search") or provider in _SEARCH_ALERTED:
+        return
+    _SEARCH_ALERTED.add(provider)
+    ops_alert(f"{provider} research run made 0 web searches — WebSearch may be broken on "
+              "this provider (compare usage.web_search in bot/journal/traces)")
+
+
+_SEARCH_ALERTED: set[str] = set()
+
+
 def closes_within_hours(post: dict[str, Any], question: dict[str, Any], hours: float,
                        now: datetime | None = None) -> bool:
     """True when the question's close time is known and less than ``hours`` away."""
@@ -1892,6 +1946,8 @@ def forecast_question(
             }
             if usage_now := last_call_usage():
                 entry["usage"] = usage_now
+                if ok and "research" in str(trace_meta.get("stage", "")):
+                    check_search_parity(args.provider, usage_now)
             if attempt0_errors:
                 entry["validation_errors_first_attempt"] = [
                     str(e)[:300] for e in attempt0_errors
@@ -2701,6 +2757,8 @@ def forecast_question(
             # earlier one answered: not the question's fault. main() exits
             # EXIT_PROVIDER_FAILURE so bot.yml reruns the remainder on OpenRouter.
             spent["infra_failures"] = spent.get("infra_failures", 0) + 1
+            if is_auth_rejection("; ".join(errors)):
+                alert_auth_rejected(args.provider)
         elif agent_responded:
             # The model answered and still couldn't produce a valid payload — that's a
             # question-content failure the backoff ledger should count. Pure infra

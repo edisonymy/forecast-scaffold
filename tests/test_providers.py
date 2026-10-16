@@ -55,7 +55,10 @@ class TestAgentEnvironment:
         monkeypatch.setenv("CLAUDE_CODE_OAUTH_TOKEN", "oauth-tok")
         monkeypatch.setenv("ANTHROPIC_API_KEY", "real-api-key")
         env = run_bot.agent_environment("openrouter")
-        assert env["ANTHROPIC_BASE_URL"] == run_bot.OPENROUTER_BASE_URL
+        # via the loopback shim (bot/or_proxy.py), never straight to OpenRouter
+        assert env["ANTHROPIC_BASE_URL"].startswith("http://127.0.0.1:")
+        assert env["ANTHROPIC_DEFAULT_HAIKU_MODEL"] == run_bot.OPENROUTER_HELPER_MODEL
+        assert env["ANTHROPIC_SMALL_FAST_MODEL"] == run_bot.OPENROUTER_HELPER_MODEL
         assert env["ANTHROPIC_AUTH_TOKEN"] == "sk-or-test"
         # an inherited real key would out-rank the auth token and bill the API account
         assert env["ANTHROPIC_API_KEY"] == ""
@@ -338,3 +341,36 @@ class TestReportAutoImputation:
         # auto row appears in the crowd table with medium's p (gap 0.2) and summed cost
         auto_line = next(line for line in text.splitlines() if line.startswith("| auto"))
         assert "0.200" in auto_line and "$0.45" in auto_line
+
+
+class TestAuthRejectionAlert:
+    def test_revoked_token_detected_quota_not(self) -> None:
+        assert run_bot.is_auth_rejection(
+            "agent failed (1): Failed to authenticate. API Error: 401 OAuth access token "
+            "has been revoked.")
+        assert not run_bot.is_auth_rejection("agent failed (1): You've hit your weekly limit")
+        assert not run_bot.is_auth_rejection("API Error: 529 Overloaded")
+
+    def test_alert_once_per_provider_names_the_fix(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path
+    ) -> None:
+        alerts = tmp_path / "alerts.txt"
+        monkeypatch.setenv("OPS_ALERTS_FILE", str(alerts))
+        monkeypatch.setattr(run_bot, "_AUTH_ALERTED", set())
+        run_bot.alert_auth_rejected("subscription")
+        run_bot.alert_auth_rejected("subscription")
+        lines = alerts.read_text(encoding="utf-8").splitlines()
+        assert len(lines) == 1
+        assert "credential REJECTED" in lines[0] and "claude setup-token" in lines[0]
+        assert "CLAUDE_CODE_OAUTH_TOKEN" in lines[0]
+
+
+def test_zero_search_research_alerts_once(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
+    alerts = tmp_path / "alerts.txt"
+    monkeypatch.setenv("OPS_ALERTS_FILE", str(alerts))
+    monkeypatch.setattr(run_bot, "_SEARCH_ALERTED", set())
+    run_bot.check_search_parity("openrouter", {"web_search": 7})
+    assert not alerts.exists()
+    run_bot.check_search_parity("openrouter", {"web_search": 0})
+    run_bot.check_search_parity("openrouter", {"web_search": None})
+    assert len(alerts.read_text(encoding="utf-8").splitlines()) == 1

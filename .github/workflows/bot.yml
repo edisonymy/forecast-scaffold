@@ -304,6 +304,9 @@ jobs:
         run: |
           [ -s "$OPS_ALERTS_FILE" ] || { echo "no ops alerts"; exit 0; }
           title="Tournament bot ops alert"
+          # A rejected credential gets its own issue: buried in a long-open thread, a revoked
+          # subscription token ran every forecast on the fallback for 40h (2026-10-15).
+          if grep -q "credential REJECTED" "$OPS_ALERTS_FILE"; then title="Tournament bot credential rejected"; fi
           body="$(cat "$OPS_ALERTS_FILE")
           Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')
