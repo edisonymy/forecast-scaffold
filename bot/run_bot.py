@@ -158,8 +158,13 @@ BLIND_DISALLOWED = (
 # must keep (its own OAuth) would be readable. A rule that matches nothing is inert, so
 # this is safe on platforms without /proc.
 # .git/**: actions/checkout stores the job's push token in .git/config (audit, 2026-09-22).
+# bot/journal/**: the bot's own past forecasts, traces and dossiers. With web search broken
+# on the OpenRouter path (Oct 2026), 41 of 51 runs grepped them and cited our earlier
+# research as their "sources" — anchoring on ourselves instead of researching. Whatever
+# prior context a run should see, the harness puts in its brief.
 ALWAYS_DISALLOWED = ("Read(//proc/**),Read(~/.claude/**),Read(~/.claude.json),"
-                     "Read(**/.git/**),Grep(**/.git/**),Glob(**/.git/**)")
+                     "Read(**/.git/**),Grep(**/.git/**),Glob(**/.git/**),"
+                     "Read(**/bot/journal/**)")  # Read rules cover Grep/Glob too
 # A runaway research dossier is re-embedded into EVERY reasoning run's prompt; cap it.
 MAX_DOSSIER_CHARS = 8000
 

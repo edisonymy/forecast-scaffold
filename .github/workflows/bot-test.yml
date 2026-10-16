@@ -132,9 +132,21 @@ jobs:
             --agent-cmd "claude -p --model ${INPUT_MODEL:-claude-opus-5-5} --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch"
 
       - name: Show journal
+        if: ${{ always() }}
         run: cat bot/journal/forecasts.jsonl || true
 
+      - name: Upload journal and traces
+        # A provider failure exits 75 and would otherwise hide the traces of the runs that
+        # did complete — which is exactly what a provider-parity test needs to see.
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: bot-test-journal
+          path: bot/journal/
+          retention-days: 14
+
       - name: Show backtest rows and per-call usage
+        if: ${{ always() }}
         # --post backtests write to the gitignored backtests journal; print what they cost
         # and why (traces carry per-call token usage).
         run: |
