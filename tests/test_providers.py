@@ -419,3 +419,23 @@ class TestAgentSandbox:
         assert args[args.index("--disallowed-tools") + 1] == run_bot.ALWAYS_DISALLOWED
         assert run_bot._REPO_DENY in run_bot.ALWAYS_DISALLOWED
         assert run_bot._REPO_DENY.startswith("Read(//")
+
+
+class TestGroupQuestionText:
+    POST = {"group_of_questions": {
+        "resolution_criteria": "Resolves to GAAP diluted EPS as reported.",
+        "fine_print": "Non-GAAP figures are ignored.", "description": "Earnings season.",
+        "questions": [{"id": 1, "title": "EPS (Tesla)", "type": "numeric",
+                       "resolution_criteria": "", "fine_print": "", "description": ""}]}}
+
+    def test_group_subquestion_brief_carries_the_group_contract(self) -> None:
+        question = self.POST["group_of_questions"]["questions"][0]
+        brief = run_bot.build_brief(self.POST, question, None)
+        assert "GAAP diluted EPS" in brief and "Non-GAAP figures are ignored" in brief
+        assert "Earnings season." in brief
+
+    def test_own_text_kept_after_group_text(self) -> None:
+        question = {"resolution_criteria": "Tesla only."}
+        text = run_bot.question_text(self.POST, question, "resolution_criteria")
+        assert text == "Resolves to GAAP diluted EPS as reported.\n\nTesla only."
+        assert run_bot.question_text({}, question, "resolution_criteria") == "Tesla only."

@@ -730,6 +730,23 @@ def angle_brief_section(letter: str, body: str) -> str:
     )
 
 
+def question_text(post: dict[str, Any], question: dict[str, Any], field: str) -> str:
+    """A question's ``resolution_criteria`` / ``fine_print`` / ``description``, with its
+    GROUP's text when it is a group subquestion.
+
+    Metaculus keeps the contract of a question group (every Market Pulse question, many
+    MiniBench ones) on ``post.group_of_questions``; the subquestions' own fields are
+    usually empty. Reading only the subquestion sent 202 of 819 live forecasts (Jul-Oct
+    2026) out with "(no criteria published)" — e.g. adjusted EPS forecast for questions
+    that resolve on GAAP diluted EPS. Group text first, then any subquestion-specific text.
+    """
+    own = str(question.get(field) or "").strip()
+    group = str((post.get("group_of_questions") or {}).get(field) or "").strip()
+    if own and group and own != group:
+        return f"{group}\n\n{own}"
+    return own or group
+
+
 def build_brief(post: dict[str, Any], question: dict[str, Any], crowd: float | None) -> str:
     # The 2026-07-06 Lovable miss (q44378, 8% vs crowd 31%): the brief's only timestamp
     # was "Closes: <ts>" — the forecast-lock time — and the agent read it as the event
@@ -749,11 +766,11 @@ def build_brief(post: dict[str, Any], question: dict[str, Any], crowd: float | N
         f"Scheduled resolution: {resolve_time} — the event window itself comes from the "
         "resolution criteria text below, verbatim; no other timestamp defines it.",
         "\n## Resolution criteria (verbatim — the contract)",
-        str(question.get("resolution_criteria", "")),
+        question_text(post, question, "resolution_criteria"),
         "\n## Fine print",
-        str(question.get("fine_print", "")),
+        question_text(post, question, "fine_print"),
         "\n## Background",
-        str(question.get("description", ""))[:4000],
+        question_text(post, question, "description")[:4000],
     ]
     if question.get("type") == "multiple_choice":
         parts.append(f"\n## Options\n{json.dumps(question.get('options') or [])}")
@@ -2469,7 +2486,7 @@ def forecast_question(
                         f"Scheduled resolution: "
                         f"{question.get('scheduled_resolve_time', 'unknown')}\n"
                         f"Resolution criteria (verbatim): "
-                        f"{str(question.get('resolution_criteria', ''))[:2000]}"
+                        f"{question_text(post, question, 'resolution_criteria')[:2000]}"
                     )
                     verify_cmd = metered_cmd(agent_cmd)
                     if verify_cmd is not None:
@@ -3022,7 +3039,7 @@ def forecast_question(
              for o in question.get("options") or []}
         )
     title = question.get("title", post.get("title", "untitled"))
-    criterion = str(question.get("resolution_criteria", "")).strip()[:2000]
+    criterion = question_text(post, question, "resolution_criteria")[:2000]
     if not criterion:
         # Metaculus sometimes returns empty criteria; the title is the resolvable contract.
         criterion = f"(no criteria published) Resolves per the question as stated: {title}"

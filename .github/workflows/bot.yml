@@ -35,8 +35,9 @@ env:
   # Oct). collect_open_posts tolerates a slug that does not exist yet — it logs
   # and skips — so the entry arms itself: the first hourly tick after the
   # tournament appears starts forecasting it. If Metaculus names the slug
-  # differently, update this line. Drop 26q3 here once its round ends.
-  EXTRA_TOURNAMENTS: market-pulse-26q3,market-pulse-26q4
+  # differently, update this line. 26q3 dropped (round over); market-pulse-27q1 is
+  # PRE-ENTERED the same way (26Q1 opened mid-December, before the prior round ended).
+  EXTRA_TOURNAMENTS: market-pulse-26q4,market-pulse-27q1
   # run_bot.ops_alert() appends here (budget ceiling waived/reached, one question over the
   # per-question cost threshold); the "Ops alerts" step turns it into an issue comment.
   OPS_ALERTS_FILE: ${{ github.workspace }}/../ops-alerts.txt
