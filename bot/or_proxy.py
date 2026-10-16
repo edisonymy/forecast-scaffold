@@ -60,7 +60,7 @@ def openrouter_slug(model: str) -> str:
     if not model or "/" in model:
         return model
     base = re.sub(r"-\d{8}$", "", model)
-    return "anthropic/" + re.sub(r"-(\d{1,2})-(\d{1,2})$", r"-.", base)
+    return "anthropic/" + re.sub(r"-(\d{1,2})-(\d{1,2})$", r"-\1.\2", base)
 
 
 def stats() -> dict[str, int]:
