@@ -1,0 +1,260 @@
+{
+ "record_id": "2026-10-17-18fe17ee",
+ "question": "What will the first reported earnings per share after September 2026 be for the following companies? (Tesla)",
+ "question_id": 46190,
+ "url": "https://www.metaculus.com/questions/45995/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-17T20:55:57+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.6419,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 0.10333333333333333,
+    "25": 0.17,
+    "50": 0.2333333333333333,
+    "75": 0.29666666666666663,
+    "90": 0.3633333333333333
+   }
+  },
+  "phase1": {
+   "10": 0.10333333333333333,
+   "25": 0.17,
+   "50": 0.2333333333333333,
+   "75": 0.29666666666666663,
+   "90": 0.3633333333333333
+  },
+  "phase2": null,
+  "spread_phase1": 0.03,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 0.08,
+   "25": 0.15,
+   "50": 0.22,
+   "75": 0.29,
+   "90": 0.36
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 2.4696,
+   "seconds": 175.8,
+   "usage": {
+    "num_turns": 25,
+    "input": 30,
+    "cache_read": 578559,
+    "cache_write": 32725,
+    "cache_write_1h": 32725,
+    "output": 9473,
+    "thinking": 3614,
+    "web_search": 15,
+    "cost_usd_envelope": 1.0902638,
+    "web_fetch": 0,
+    "duration_api_ms": 208953
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 0.13,
+     "25": 0.19,
+     "50": 0.25,
+     "75": 0.31,
+     "90": 0.37
+    }
+   },
+   "reasoning": "GAAP EPS = core non-GAAP (consensus $0.43-0.46) minus SBC (~$0.25/sh) plus fair-value items. Bitcoin rose ~43% in Q3 from Tesla's June 30 carrying price (~$58.6k) to ~$84k, a ~$290M pretax gain (~+$0.06). SpaceX stake ($3.007B at June 30, including a $238M discount for restrictions that expired in September) vs SPCX $150.86 at Sep 30; my implied ~20M shares put the stake near flat, but this is the main uncertainty. The build-up gives ~$0.25, consistent with Hudson Labs' GAAP consensus of $0.26. No Polymarket/Manifold/Kalshi market found.",
+   "sources": [
+    "https://www.hudson-labs.com/research/tesla-q3-2026-earnings-preview-tsla-revenue-margins-outlook",
+    "https://www.sec.gov/Archives/edgar/data/0001318605/000162828026049213/exhibit991.htm",
+    "https://www.sec.gov/Archives/edgar/data/0001318605/000162828026026551/exhibit991.htm",
+    "https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm",
+    "https://stockanalysis.com/stocks/spcx/history/",
+    "https://www.kucoin.com/blog/tesla-bitcoin-holdings-1-billion-unrealized-gain",
+    "https://en.wikipedia.org/wiki/Initial_public_offering_of_SpaceX",
+    "https://www.nbcnews.com/business/markets/spacex-stock-below-ipo-price-rcna587717",
+    "https://finance.yahoo.com/markets/stocks/articles/spacex-stock-closes-fresh-low-205521239.html"
+   ],
+   "dossier": "- Resolves off Tesla's Q3 2026 8-K/shareholder deck GAAP diluted EPS (release scheduled Oct 21, 2026 after close), NOT non-GAAP/adjusted EPS. Event window: first quarterly release after Sep 30, 2026 -> Q3 2026 (quarter ended Sep 30); as of Oct 17, 2026 the quarter is complete and the release is 4 days away.\n- Consensus (Zacks/mint, Oct 17 2026): adjusted EPS $0.43 (-14% YoY), revenue $27.79B; Bloomberg consensus EPS $0.458 (elEconomista, Oct 16) - both adjusted. Hudson Labs preview: GAAP EPS consensus $0.26, revenue $27.57B, GM 17.7%. Adjusted EPS consensus cut 9.4% over the past 30 days; operating income estimates down sharply (~$661M).\n- Q2 2026 (8-K): GAAP EPS $0.32, non-GAAP $0.33, net income $1.114B, SBC $1.151B pretax, operating income $0.398B, other income $0.590B, incl. a $1.005B unrealized SpaceX gain (~$763M after tax) and a California tax valuation allowance release.\n- Q1 2026 (8-K): GAAP EPS $0.13, non-GAAP $0.41, diluted shares 3,538M; reconciling items SBC net of tax $803M ($0.23/sh), digital asset loss net of tax $173M ($0.05/sh).\n- Bitcoin: 11,509 BTC, fair value $674M at June 30, 2026 (10-Q) ≈ $58.6k/BTC. BTC rose ~43% in Q3 2026 (financefeeds/coinpedia) and opened Oct 1 at ~$83.6k -> roughly $280-300M pretax fair-value gain in Q3.\n- SpaceX stake: bought for $2B in Q1 (xAI conversion); fair value $3.007B at June 30, Level 2, after a $238M marketability discount for restrictions expiring Sep 2026. Fair-value option, so changes go to other income. SPCX IPO June 12 at $135, first-day close ~$161, all-time high $225.64 on June 16, then fell ~50% by late July/August; closed $150.86 on Sep 30, 2026. June 30 close NOT found. Implied share count from merger-price math ~19-21M shares -> Q3 mark roughly flat, but uncertain by several hundred million dollars either way.\n- Q3 deliveries 486,532 (beat by 5.3%, -2.1% YoY). Q2 automotive margin fell to 16.3%; energy warranty charges; capex >$25B/yr; Q2 FCF -$1.1B.\n- Comparable GAAP history: Q3 2025 GAAP EPS reported $0.26 (non-GAAP $0.50); Hudson lists the Q3 2025 figure as $0.39.\n- Searched without finding: SPCX June 30 close, any analyst estimate of Tesla's Q3 SpaceX mark, any Polymarket/Manifold/Kalshi market on Tesla GAAP EPS (none found).",
+   "reference_class": "Tesla quarterly GAAP diluted EPS vs pre-release GAAP consensus, recent quarters (Q1 2026 0.13, Q2 2026 0.32, Q3 2025 ~0.26-0.39), where fair-value items (BTC, SpaceX) create large GAAP swings"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.646,
+   "seconds": 129.3,
+   "usage": {
+    "num_turns": 15,
+    "input": 18,
+    "cache_read": 288371,
+    "cache_write": 22722,
+    "cache_write_1h": 22722,
+    "output": 7771,
+    "thinking": 3304,
+    "web_search": 7,
+    "cost_usd_envelope": 0.6459912,
+    "web_fetch": 0,
+    "duration_api_ms": 146618
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 0.1,
+     "25": 0.17,
+     "50": 0.23,
+     "75": 0.29,
+     "90": 0.35
+    }
+   },
+   "reasoning": "Resolves on GAAP diluted EPS, not adjusted. Non-GAAP consensus ~$0.43-0.46 (Bloomberg 0.458, Zacks 0.47, Alphastreet 0.448), but GAAP has run $0.01-0.28 below non-GAAP over the last 5 quarters due to SBC (~$1.15B in Q2, rising) and mark-to-market items. Q3: bitcoin +42% (58.6k->83.6k), so ~+$290M pre-tax; SpaceX stake (18.99M sh) went from ~$158 to $150.86, ~-$140M. Netting SBC, marks and the empirically backed-out tax effect gives a gap of ~-$0.22, so GAAP ≈ 0.21-0.24; Hudson Labs lists a GAAP consensus of $0.26. Tesla's habit of missing (Q2 non-GAAP 0.33 vs 0.51+) skews the risk down slightly. No EPS market found on Polymarket, Manifold or Kalshi (Kalshi only lists delivery markets).",
+   "sources": [
+    "https://www.sec.gov/Archives/edgar/data/0001318605/000162828026049213/exhibit991.htm",
+    "https://electrek.co/2026/07/22/tesla-tsla-q2-2026-financial-results/",
+    "https://www.hudson-labs.com/research/tesla-q3-2026-earnings-preview-tsla-revenue-margins-outlook",
+    "https://www.investing.com/equities/spacex-historical-data",
+    "https://en.wikipedia.org/wiki/Initial_public_offering_of_SpaceX",
+    "https://financefeeds.com/bitcoin-price-q3-2026-quarterly-return/",
+    "https://fortune.com/article/price-of-bitcoin-06-30-2026/",
+    "https://www.livemint.com/market/stock-market-news/wall-street-week-ahead-earnings-expectations-all-eyes-on-meta-tesla-netflix-and-spacex-this-survey-also-in-focus-11792254700438.html"
+   ],
+   "dossier": "- Resolves off Tesla's GAAP diluted EPS in the Q3 2026 earnings release (8-K Exhibit 99.1, expected Oct 21, 2026 after close), NOT non-GAAP/adjusted EPS.\n- Event window: Q3 2026 release (first after Sep 30, 2026) -> expected Oct 21, 2026; as of Oct 17 the quarter is closed and the report is pending.\n- Tesla 8-K (SEC, Q2 2026 release): GAAP diluted EPS / non-GAAP EPS by quarter: Q2'25 0.33/0.40; Q3'25 0.39/0.50; Q4'25 0.24/0.50; Q1'26 0.13/0.41; Q2'26 0.32/0.33. Diluted shares ~3.54B.\n- Same source: SBC by quarter $635M, $663M, $954M, $1,030M, $1,151M (rising with 2025 CEO pay package). Digital asset gain/loss: +284, +80, -307, -222, -112 ($M). Q2'26 included a $1,005M unrealized gain on the SpaceX equity stake ($763M after tax per press). Q3'25 had $238M restructuring.\n- Tesla's SpaceX stake: 18,990,195 SPCX shares (from a $2B xAI investment in Jan 2026), marked to market through net income each quarter; implied ~$158/sh at Jun 30, 2026. SPCX closed $150.86 on Sep 30, 2026 (Investing.com), so ~-$140M pre-tax in Q3. SPCX was $146 on Oct 16.\n- Bitcoin: $58,559 on Jun 30, 2026 (Fortune/Statmuse) -> $83,554 on Sep 30, 2026 (+42% in Q3). Tesla held ~11,509 BTC (assumed unchanged; not verified), so ~+$290M pre-tax mark.\n- Non-GAAP consensus for Q3'26: Bloomberg $0.458 (elEconomista Oct 16), $0.43 (Mint Oct 17), Zacks $0.47, Alphastreet $0.448; estimates range 0.30-0.70. GAAP consensus listed at $0.26 (Hudson Labs); MarketBeat lists $0.37 (basis unclear).\n- Q3'26 deliveries 486,532 (+26% YoY), beat ~462k consensus (CNBC Oct 2). Revenue consensus ~$27.6-27.9B.\n- Q2'26 non-GAAP of $0.33 missed $0.51-0.55 consensus badly; operating income $398M (-57% YoY), operating margin 1.4%.\n- Empirical tax/other effect: back-solving past quarters, the GAAP minus non-GAAP gap is ~$0.25B smaller than raw (-SBC + marks); Q2'26 gap only -$0.01 because of the SpaceX gain.\n- Status quo: GAAP EPS sits well below the non-GAAP headline because of growing SBC; the marks this quarter roughly net to a small positive.\n- Searched for but not found: a Kalshi/Polymarket EPS market (only Kalshi delivery markets exist), Tesla's Q3 restructuring charges, confirmation of current BTC holdings.",
+   "reference_class": "Tesla quarterly GAAP diluted EPS, Q2 2025-Q2 2026 (0.33, 0.39, 0.24, 0.13, 0.32), and the GAAP minus non-GAAP gap in the same quarters"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.3793,
+   "seconds": 137.6,
+   "usage": {
+    "num_turns": 18,
+    "input": 20,
+    "cache_read": 334850,
+    "cache_write": 26129,
+    "cache_write_1h": 26129,
+    "output": 7963,
+    "thinking": 3235,
+    "web_search": 11,
+    "cost_usd_envelope": 0.73333,
+    "web_fetch": 0,
+    "duration_api_ms": 168050
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 0.08,
+     "25": 0.15,
+     "50": 0.22,
+     "75": 0.29,
+     "90": 0.37
+    }
+   },
+   "reasoning": "Non-GAAP consensus ~$0.43-0.46 (~$1.55B). GAAP bridge: subtract SBC (~$1.0-1.1B after tax, Q2 was $989M), add bitcoin MTM gain (BTC ~$58.5k on 6/30 to ~$83.5k on 9/30 on ~11.5k BTC => ~+$287M pre-tax), subtract SpaceX MTM loss (19.0M shares marked ~$158 at 6/30 vs $150.86 on 9/30 => ~-$135M pre-tax). Net ~$0.18-0.22/share before tax items. Hudson Labs cites a GAAP consensus of $0.26; Q2 GAAP was $0.32 and was flattered by a $763M SpaceX gain and a $274M tax benefit. No prediction market found on Polymarket, Kalshi, Manifold or bookmakers. Surprises have been large (Q1 beat by $0.14, Q2 missed by $0.20), so the distribution is wide.",
+   "sources": [
+    "https://www.hudson-labs.com/research/tesla-q3-2026-earnings-preview-tsla-revenue-margins-outlook",
+    "https://www.sec.gov/Archives/edgar/data/0001318605/000162828026049213/exhibit991.htm",
+    "https://electrek.co/2026/07/22/tesla-tsla-q2-2026-financial-results/",
+    "https://www.marketbeat.com/earnings/reports/2026-10-21-tesla-inc-stock/",
+    "https://fortune.com/article/price-of-bitcoin-09-30-2026/",
+    "https://fortune.com/article/price-of-bitcoin-06-30-2026/",
+    "https://www.marketbeat.com/instant-alerts/price-spacex-nasdaq-spcx-shares-up-11-still-a-buy-2026-09-30/",
+    "https://www.tikr.com/blog/tesla-nasdaq-tsla-stock-secures-spacex-stake-through-xai-investment-ahead-of-massive-june-initial-public-offering"
+   ],
+   "dossier": "- Resolves off Tesla's GAAP diluted EPS in its Q3 2026 earnings release (8-K, scheduled Oct 21, 2026 after close), not adjusted/non-GAAP EPS. Event window: first release after Sep 30, 2026 to that release; as of 2026-10-17 the quarter is closed and the release is 4 days away.\n- Q2 2026 (8-K exhibit 99.1, Jul 22 2026): GAAP diluted EPS $0.32; GAAP net income to common $1,114M; 3,540M diluted shares. Bridge to non-GAAP: +SBC $989M net of tax, +digital-asset loss add-back $87M, -SpaceX unrealized gain $763M net of tax, -certain tax items $274M => non-GAAP $1,153M ($0.33). Operating income $398M (1.4% margin); regulatory credits $146M.\n- Q1 2026: GAAP diluted EPS $0.13, non-GAAP $0.41 (consensus ~$0.27); bitcoin loss ~$222M (BTC -22% in the quarter).\n- Q2 2026 non-GAAP $0.33 against consensus ~$0.53 (Electrek). Recent surprises are about +/-0.15-0.20.\n- Q3 2026 consensus: adjusted EPS ~$0.43-0.46 (MarketBeat $0.448, Alphastreet $0.45, Bloomberg $0.458, Zacks/mint $0.43), revised down from $0.55 over 90 days. Hudson Labs (Oct 5) gives a GAAP EPS consensus of $0.26 and gross margin of 17.7%. Revenue consensus ~$27.6-28.1B.\n- Q3 deliveries 486,532, ahead of estimates (~-2% YoY).\n- Bitcoin (Tesla holds ~11.5k BTC, marked to fair value): close ~$58.5k on Jun 30 2026, ~$83.5k on Sep 30 2026 => ~+$287M pre-tax unrealized gain in Q3 (Fortune price pages).\n- SpaceX stake: ~19.0M SPCX shares from the $2B xAI investment, ~$1B gain booked in Q2 (implies ~$158/share at 6/30). SPCX closed $150.86 on Sep 30 2026 (MarketBeat) => ~-$135M pre-tax MTM. One outlet (TheStreet, Jul) said SpaceX had fallen ~30% after the Q2 mark; this conflicts with the 9/30 price. Worth checking.\n- SBC is large and rising (~$989M net of tax in Q2, about $0.28/share); it is excluded from non-GAAP, included in GAAP.\n- Tax items swing GAAP (Q2 had a $274M benefit). Possible impairments or restructuring are unknown.\n- Searched and not found: Kalshi, Polymarket, Manifold or bookmaker markets on Tesla's Q3 EPS; company-compiled Tesla IR consensus page for Q3 (403).",
+   "reference_class": "Tesla quarterly GAAP diluted EPS, 2025-2026 (Q1'26 $0.13, Q2'26 $0.32, Q3'25 ~$0.39), bridged from the current non-GAAP consensus"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.2368,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1336,
+   "seconds": 28.1,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20108,
+    "cache_write": 9847,
+    "cache_write_1h": 9847,
+    "output": 2541,
+    "thinking": 644,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1336256,
+    "web_fetch": 0,
+    "duration_api_ms": 27459
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 0.08,
+     "25": 0.15,
+     "50": 0.22,
+     "75": 0.29,
+     "90": 0.36
+    }
+   },
+   "reasoning": "GAAP EPS = adjusted EPS consensus (~$0.45, ~$1.59B) minus SBC after tax (~$1.0B), plus net fair-value marks (BTC +~$287M pretax, SpaceX -~$142M pretax => ~+$0.11B after tax), giving ~$0.19-0.20; Hudson Labs GAAP consensus $0.26, a delivery beat and possible tax benefits lift the median to ~$0.22. Tesla's recent ±$0.15-0.20 surprises keep the distribution wide. No Polymarket/Manifold/Kalshi/bookmaker EPS market found by any run.",
+   "sources": [],
+   "reconciliation": "Main factual dispute: the SpaceX Q3 mark. Run 1 called it ~flat; Runs 2/3 called it ~-$140M. Using the dossier share count (18,990,195) and the June 30 fair value of $3.007B (~$158.3/sh, net of the $238M marketability discount) against the $150.86 close on 9/30 (after the discount expired), the value is ~$2.865B, a loss of ~$142M; Runs 2/3 are right. Bitcoin gain of ~$287-290M is agreed by all three runs. SBC level is judgment; I assume a slight rise from Q2. The arithmetic gives ~$0.20 and Hudson Labs' GAAP consensus is $0.26; I take $0.22. Factual items were not independently re-verified (no web access).",
+   "disagreements": [
+    {
+     "claim": "SpaceX stake Q3 fair-value change is ~flat vs ~-$140M pretax",
+     "kind": "factual",
+     "verdict": "Resolved to ~-$142M using the dossiers' 18.99M share count, $3.007B June 30 value and $150.86 close on 9/30; the marketability discount had expired by 9/30"
+    },
+    {
+     "claim": "Bitcoin Q3 mark size",
+     "kind": "factual",
+     "verdict": "Agreed across runs ~+$287-290M pretax; holdings unchanged is assumed, not verified"
+    },
+    {
+     "claim": "Q3 SBC after tax level",
+     "kind": "judgment",
+     "verdict": "Took ~$1.0-1.05B, consistent with the rising trend"
+    },
+    {
+     "claim": "Weight on Hudson Labs GAAP consensus $0.26 vs bottom-up ~$0.20",
+     "kind": "judgment",
+     "verdict": "Median $0.22, leaning toward bottom-up but allowing for tax benefits and the delivery beat"
+    }
+   ],
+   "reference_class": "Tesla quarterly GAAP diluted EPS vs adjusted consensus, Q2 2025-Q2 2026 (GAAP ran $0.01-0.28 below adjusted EPS)"
+  }
+ ]
+}
