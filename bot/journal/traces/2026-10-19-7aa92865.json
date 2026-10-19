@@ -1,0 +1,247 @@
+{
+ "record_id": "2026-10-19-7aa92865",
+ "question": "What year-over-year revenue growth rate will Amazon report for its AWS segment in Q3 2026?",
+ "question_id": 46367,
+ "url": "https://www.metaculus.com/questions/46138/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-10-19T11:52:30+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.5848,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 35.46666666666666,
+    "25": 37.36666666666667,
+    "50": 39.199999999999996,
+    "75": 41.13333333333333,
+    "90": 43.26666666666667
+   }
+  },
+  "phase1": {
+   "10": 35.46666666666666,
+   "25": 37.36666666666667,
+   "50": 39.199999999999996,
+   "75": 41.13333333333333,
+   "90": 43.26666666666667
+  },
+  "phase2": null,
+  "spread_phase1": 0.3,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 35.0,
+   "25": 37.0,
+   "50": 39.0,
+   "75": 41.0,
+   "90": 43.3
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4286,
+   "seconds": 70.3,
+   "usage": {
+    "num_turns": 9,
+    "input": 12,
+    "cache_read": 166558,
+    "cache_write": 23608,
+    "cache_write_1h": 23608,
+    "output": 3856,
+    "thinking": 767,
+    "web_search": 4,
+    "cost_usd_envelope": 0.42855659999999995,
+    "web_fetch": 0,
+    "duration_api_ms": 82494
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 35.3,
+     "25": 37.2,
+     "50": 39.0,
+     "75": 40.9,
+     "90": 43.2
+    }
+   },
+   "reasoning": "Q3'25 base $33.0B; each $0.33B = 1pt. Q2'26 grew 36.7% to $42.2B after +$4.6B QoQ (record), accelerating from ~28% in Q1. Sell-side estimates: HSBC $45.1B/36.8%, cited consensus ~38%, TD Cowen 41%, buy-side hopes 43-45%, with some articles citing 30-35%. Capacity-constrained with $496B backlog and big capacity adds, so I lean slightly above consensus. Repeating Q2's +$4.6B add gives ~42%; a normal +$2.5-3B gives ~36-38%. No matching human market found (Polymarket only has an EPS-beat market).",
+   "sources": [
+    "https://www.investing.com/news/analyst-ratings/td-cowen-reiterates-amazon-stock-buy-rating-on-aws-growth-outlook-93CH-4932395",
+    "https://www.techflowpost.com/en-US/article/34564",
+    "https://drillr.ai/article/amzn-amazon-q3-2026-earnings-preview-aws-growth-ai-capex",
+    "https://www.fool.com/investing/2026/10/16/amazon-is-12-below-its-high-heading-into-earnings/",
+    "https://www.techtimes.com/articles/322572/20260731/aws-backlog-hits-496b-amazon-raises-ai-spend-220b-capacity-runs-short.htm",
+    "https://seekingalpha.com/news/4622393-amazon-outlines-q3-net-sales-of-197b-202b-while-lifting-2026-cash-capex-to-about-220b"
+   ],
+   "dossier": "- Q3 2025 AWS net sales $33.0B (base; each $0.33B of Q3'26 sales = 1pp growth). Q2 2025 $30.9B (+17.5%).\n- Q2 2026 AWS $42.2B, +36.7% YoY, fastest in 18 quarters; QoQ add ~$4.6B, ~80% larger than any prior quarterly add (Investing.com transcript / CNBC, Jul 30 2026). Q1 2026 growth ~28% (HSBC note via techflowpost, Oct 12 2026).\n- AWS backlog $496B at Q2, up from $364B one quarter earlier; much of it is OpenAI/Anthropic commitments (techtimes Jul 31 2026; drillr preview).\n- Jassy: not enough capacity to meet demand in 2026 or 2027; AI power capacity to double by end-2027 vs 2025; 7-8 GW net new capacity late 2025 to late 2027 (HSBC/drillr).\n- Amazon gives no AWS-specific guidance; total Q3 guidance $197-202B in sales, $22.5-26.5B operating income; capex ~$220B for 2026 (Seeking Alpha).\n- HSBC (Oct 12 2026): Q3 AWS $45.1B, +36.8% YoY.\n- TD Cowen: Q3 AWS growth 41% YoY (Investing.com).\n- Motley Fool (Oct 16 2026): analysts expect 30-35% YoY in Q3. Question background: consensus ~38%; BNP says investors look for 43-45%.\n- Drillr: about $44.56B needed to hold 35% growth; Q2 AWS margin included ~$600M energy-derivative gain (affects margin, not sales).\n- AI business and custom chips each above $25B run rate; chip run rate up from ~$5B at the start of the year.\n- Reference class: during the 2025-26 reacceleration, AWS growth changed +2.5pp (Q2->Q3 2025), +~4pp, +~4pp, then +9pp (Q1->Q2 2026) quarter to quarter.\n- Resolution instrument: resolves off the AWS segment net-sales figures in Amazon's Q3 2026 release (Oct 29 2026), computed exactly, not off the rounded headline percentage.\n- Event window: the quarter ended Sep 30 2026, already finished; the number is set and only the release (Oct 29) remains. As of Oct 19, 100% of the quarter has elapsed and the release is 10 days away.\n- Searched, absent: Kalshi/Polymarket/Manifold market on AWS growth (only a Polymarket AMZN EPS-beat market found); an exact FactSet/Visible Alpha AWS consensus figure.",
+   "reference_class": "AWS quarterly YoY growth prints vs prior quarter and sell-side consensus during the 2025-26 AI reacceleration (beats of ~1-3pp typical)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.3537,
+   "seconds": 99.1,
+   "usage": {
+    "num_turns": 10,
+    "input": 14,
+    "cache_read": 198162,
+    "cache_write": 24727,
+    "cache_write_1h": 24727,
+    "output": 4430,
+    "thinking": 1003,
+    "web_search": 4,
+    "cost_usd_envelope": 0.4946453999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 110139
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 35.3,
+     "25": 37.3,
+     "50": 39.3,
+     "75": 41.4,
+     "90": 43.6
+    }
+   },
+   "reasoning": "Q3 2025 AWS = $33.0B. Q2 2026 AWS $42.2B (+37%, 5th straight acceleration, +12.6% QoQ). Consensus ~38% (HSBC 36.8%, TD Cowen ~41%, Fool cites stale 30-35%); buy-side whisper 43-45% per BNP. QoQ growth of 7/10/12% implies 36.9/40.7/43.3%. Recent quarters beat consensus materially; $496B backlog and capacity ramps support continued acceleration, but Q2 QoQ jump may be lumpy and Q3 2025 comp is tougher. No prediction market found (Polymarket/Manifold/Kalshi none).",
+   "sources": [
+    "https://drillr.ai/article/amzn-amazon-q3-2026-earnings-preview-aws-growth-ai-capex",
+    "https://www.fool.com/investing/2026/10/16/amazon-is-12-below-its-high-heading-into-earnings/",
+    "https://stocktwits.com/news-articles/markets/equity/amazon-analysts-slash-price-targets-ahead-of-q3-wells-fargo-sees-aws-acceleration-to-continue-in-q4/cZxIXT6RB87",
+    "https://www.tradingkey.com/analysis/stocks/us-stocks/262205651-amazon-amzn-stock-forecast-october-8-2026-tradingkey",
+    "WebSearch results: HSBC note (techflowpost), TD Cowen ~41% (mlq.ai/nextplatform snippets), Q2 2026 results (CNBC/aboutamazon snippets)"
+   ],
+   "dossier": "- Q3 2025 AWS net sales $33.0B (+20% YoY); Q2 2025 $30.9B; Q4 2025 ~ $35.6B (+24%); Q1 2026 ~ +28%; Q2 2026 $42.2B (+37%), fastest in 18 quarters (Amazon Q2 release, 2026-07-30).\n- Q2 2026 sequential growth ~12.6% QoQ vs ~5.6-7.9% in prior quarters; Q2 2025->Q3 2025 QoQ was ~6.9%.\n- Arithmetic: Q3 2026 QoQ growth 7%/10%/12% -> YoY 36.9%/40.7%/43.3%. Threshold for >35% is ~$44.56B (drillr preview, Oct 2026).\n- Q2 2026 AWS beat Street model (~31%) by ~6 pts (CNBC/beancount, 2026-07-31).\n- Estimates: question background says consensus ~38%; HSBC $45.1B / +36.8%; TD Cowen ~41%; Motley Fool (2026-10-16) cites 30-35% range; BNP says investors look for 43-45%.\n- Backlog $496B growing triple-digit %, most 2027 capacity reserved; AI capacity to double by end-2027 vs 2025; capex ~$220B 2026.\n- Downside notes: backlog concentrated in OpenAI/Anthropic; Q2 may have been lumpy; ~$600M energy derivative benefit boosted Q2 AWS operating income (not revenue). Total Q3 company guide $197-202B (+9-12%).\n- Wells Fargo expects AWS acceleration to continue into Q4; Cantor expects healthy cloud acceleration (Oct 2026).\n- Status quo: growth around the Q2 level (~37%).\n- Resolves off Amazon Q3 2026 release segment net-sales table (computed precise %), release Oct 29 2026.\n- Event window: quarter Jul 1 -> Sep 30 2026 already complete; only the reporting remains (release Oct 29).\n- Searched, absent: any Polymarket/Kalshi/Manifold market; explicit FactSet/Visible Alpha AWS consensus figure; Amazon AWS-specific Q3 guidance (none given).",
+   "reference_class": "AWS reported YoY growth vs prior-quarter growth and consensus, 2024-2026 (reaccelerating regime; actuals typically at or above consensus)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.859,
+   "seconds": 78.8,
+   "usage": {
+    "num_turns": 10,
+    "input": 12,
+    "cache_read": 163500,
+    "cache_write": 23818,
+    "cache_write_1h": 23818,
+    "output": 4007,
+    "thinking": 866,
+    "web_search": 4,
+    "cost_usd_envelope": 0.430493,
+    "web_fetch": 0,
+    "duration_api_ms": 82175
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 35.8,
+     "25": 37.6,
+     "50": 39.3,
+     "75": 41.1,
+     "90": 43.0
+    }
+   },
+   "reasoning": "Reference: AWS YoY growth has accelerated 20%->24%->28%->36.7% (Q3'25-Q2'26), with a $496B backlog, capacity doubling, AI and chip run-rates >$25B each. Q3 comp base $33.0B. HSBC models $45.1B (36.8%), the background text puts consensus near 38%, and buy-side whispers run 43-45%. Q1->Q2 sequential add was ~$4.6B; a Q3 add of $3-5B implies 37-43%. Amazon has recently beaten AWS consensus. Downside: capacity constraints, a tougher comp, some previews still citing 30-35% (likely stale). No market on AWS growth itself: Polymarket only prices an EPS beat, and Kalshi's AWS page was rate-limited.",
+   "sources": [
+    "https://drillr.ai/article/amzn-amazon-q3-2026-earnings-preview-aws-growth-ai-capex",
+    "https://www.techflowpost.com/en-US/article/34564",
+    "https://www.fool.com/investing/2026/10/16/amazon-is-12-below-its-high-heading-into-earnings/",
+    "https://www.aboutamazon.com/news/company-news/amazon-earnings-q2-2026-report",
+    "https://www.webull.com/news/15272012743451648",
+    "https://polymarket.com/event/amzn-quarterly-earnings-gaap-eps-10-29-2026-2pt00"
+   ],
+   "dossier": "- AWS Q2 2026 (Amazon release, 2026-07-30): net sales $42.2B, +36.7% YoY (headline 37%), fastest in 18 quarters; operating margin ~39.4%, incl. ~$600M one-off energy-derivative gains (drillr preview, Oct 2026); backlog $496B.\n- Trajectory of AWS YoY growth: Q2'25 17.5% ($30.9B), Q3'25 ~20% ($33.0B), Q4'25 ~24%, Q1'26 ~28%, Q2'26 36.7% (Motley Fool 2026-10-16; drillr).\n- Sequential dollar adds: Q1->Q2 2026 ~ +$4.6B. Q3'25 base is $33.0B, so $44.6B = 35%, $45.1B = 36.7%, $46.2B = 40%, $47.5B = 44%.\n- HSBC (techflowpost, ~Oct 2026): AWS Q3 forecast $45.1B (+36.8%), op profit $27B; AI ARR >$20B (from $15B in Q1); custom-chip ARR >$25B; 7-8 GW net new capacity late 2025 to late 2027.\n- Question background: consensus AWS growth ~38%; BNP Paribas says investors are looking for 43-45%.\n- Motley Fool (2026-10-16) and webull: 'analysts expect 30-35%'; BofA raised to 33% from 31% (date unclear, possibly pre-Q2 print).\n- Amazon Q3 guidance (2026-07-30): total net sales $197-202B, op income $22.5-26.5B; capex ~$220B for 2026. Jassy: AWS AI power capacity to double by end-2027 vs 2025; most 2027 capacity already reserved.\n- Anthropic: nearly 1 GW of Trainium2/3 capacity online by end-2026; OpenAI also has a multi-year commitment.\n- Status quo: growth in the high 30s, similar to Q2's 36.7%.\n- Resolves off the AWS segment net sales in Amazon's Q3 release (Q3'26 vs Q3'25 $33.0B), not ex-FX growth or the rounded headline unless no figures are given.\n- Event window: quarter ended 2026-09-30, release 2026-10-29; as of 2026-10-19 the quarter is complete and the release is 10 days away.\n- Searched for but not found: a single authoritative FactSet/Visible Alpha AWS consensus dollar figure; any market on AWS growth (Polymarket has only an EPS-beat market; Kalshi's AWS page could not be loaded); Microsoft/Google Q3 cloud results (not yet reported).",
+   "reference_class": "Amazon AWS reported YoY growth vs. sell-side consensus in recent quarters of accelerating AI-driven cloud demand (Q3 2025 to Q2 2026)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0796,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1797,
+   "seconds": 23.5,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 17258,
+    "cache_write_1h": 17258,
+    "output": 1963,
+    "thinking": 266,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1796938,
+    "web_fetch": 0,
+    "duration_api_ms": 22874
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 35.0,
+     "25": 37.0,
+     "50": 39.0,
+     "75": 41.0,
+     "90": 43.3
+    }
+   },
+   "reasoning": "Q3'25 base $33.0B; each $0.33B equals 1pp. Q2'26 grew 36.7% after a record +$4.6B quarter-on-quarter gain. Seasonal ~7% sequential growth gives ~37%; repeating Q2's dollar gain gives ~42%. Consensus is ~38% (HSBC 36.8%, TD Cowen 41%), with buy-side whispers at 43-45%. Amazon has recently beaten AWS consensus, and with a $496B backlog plus new capacity coming online I lean slightly above consensus, median 39. No matching human market was found (Polymarket only has an EPS-beat market).",
+   "sources": [],
+   "reconciliation": "The runs agreed on all hard figures (Q3'25 $33.0B; Q2'26 $42.2B / 36.7%; backlog $496B; HSBC $45.1B). The only factual dispute was the consensus level: ~38% per the question background versus 30-35% per Motley Fool. Without web access I cannot date the Fool figure; it is likely stale, from before the Q2 beat, so I treated it as a small extra weight on the downside tail. The remaining question, whether Q3's sequential gain matches seasonal norms or Q2's record, is a judgment call. Capacity additions and the recent pattern of beats push me to a median slightly above consensus at 39.0. I adopted the runs' dispersion (~7-8). No escape mass is priced, because the quarter has ended and no mechanism takes the result outside 25-55.",
+   "disagreements": [
+    {
+     "claim": "Analyst consensus for Q3 AWS growth is ~38% vs 30-35%",
+     "kind": "factual",
+     "verdict": "Cannot verify without web access; 30-35% is likely stale, from before Q2. I weighted ~37-38% as the consensus and widened the lower tail slightly."
+    },
+    {
+     "claim": "Whether Q3's sequential dollar gain repeats Q2's record +$4.6B or reverts to ~7% QoQ",
+     "kind": "judgment",
+     "verdict": "Took the middle reading: capacity additions and the backlog support +$3.5-4B, about 39%."
+    },
+    {
+     "claim": "Whether Q2 was lumpy, implying deceleration",
+     "kind": "judgment",
+     "verdict": "Possible; covered by a lower tail down to ~35% at p10."
+    }
+   ],
+   "reference_class": "AWS YoY growth one quarter after the prior print, during the 2025-26 reacceleration, measured against sell-side consensus"
+  }
+ ]
+}
