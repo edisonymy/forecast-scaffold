@@ -1,0 +1,252 @@
+{
+ "record_id": "2026-10-19-f1a5a314",
+ "question": "How many of Japan's 47 prefectures will be at the influenza warning level (≥30 cases per sentinel institution) in the MHLW weekly report for the week ending October 25, 2026?",
+ "question_id": 46382,
+ "url": "https://www.metaculus.com/questions/46153/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-19T18:45:48+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.2774,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -0.13333333333333333,
+    "25": 0.19999999999999998,
+    "50": 0.8333333333333334,
+    "75": 1.8666666666666665,
+    "90": 3.5666666666666664
+   },
+   "p_above_upper": 0.0
+  },
+  "phase1": {
+   "10": -0.13333333333333333,
+   "25": 0.19999999999999998,
+   "50": 0.8333333333333334,
+   "75": 1.8666666666666665,
+   "90": 3.5666666666666664
+  },
+  "phase2": null,
+  "spread_phase1": 0.3,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -0.2,
+   "25": 0.1,
+   "50": 0.8,
+   "75": 1.8,
+   "90": 3.6
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.1096,
+   "seconds": 73.0,
+   "usage": {
+    "num_turns": 10,
+    "input": 14,
+    "cache_read": 204152,
+    "cache_write": 14520,
+    "cache_write_1h": 14520,
+    "output": 4488,
+    "thinking": 1367,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3728724,
+    "web_fetch": 0,
+    "duration_api_ms": 83626
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -0.2,
+     "25": 0.2,
+     "50": 0.8,
+     "75": 1.9,
+     "90": 3.9
+    },
+    "p_above_upper": 0.0
+   },
+   "reasoning": "Only Okinawa is at or above 30 now (31.34 in wk41) and it is falling (37.07 to 31.34), so it likely drops below 30 by wk43. The nearest challengers are Kanagawa 21.6 (+17%/wk), Saitama 21.0 (+7%) and Chiba 19.6 (+4%); Tokyo is flat. National growth is modest (11.35 to 12.81). Each needs about +40% in two weeks to reach 30. Upside risk: school closures rose 1.8x and the wk42 holiday dip may be followed by a wk43 rebound; past seasons show growth of 50%/wk in the acceleration phase. Most likely outcome is 0 or 1, with a tail to several if the season accelerates. No human market found (harness found none on Polymarket/Manifold; I checked no other venues).",
+   "sources": [
+    "https://resemom.jp/article/2026/10/16/87922.html",
+    "https://weathernews.jp/news/202610/160261/",
+    "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/kenkou/kekkaku-kansenshou01/houdou_00023.html",
+    "https://ml-flu.children.jp/"
+   ],
+   "dossier": "- MHLW wk41 (Oct 5-11, 2026; reported ~Oct 16 by Resemom/Weathernews): national 12.81 per sentinel (+1.46 vs wk40 11.35), 47,746 cases, about 5x the same period last year.\n- wk41 prefectures: Okinawa 31.34 (only one >=30), Kanagawa 21.60, Saitama 20.99, Chiba 19.55, Hokkaido 16.21, Tokyo 15.88, Iwate 13.34, Yamaguchi 12.36.\n- wk40 (Sep 28-Oct 4): national 11.35; Okinawa 37.07 (only one >=30), Saitama 19.66, Chiba 18.72, Kanagawa 18.51, Tokyo 15.87; 15-16 prefectures >=10.\n- Week-over-week wk40 to wk41: Kanagawa +17%, Saitama +7%, Chiba +4%, Tokyo flat, Okinawa -15%. Okinawa down 2 consecutive weeks; Aichi down 3 weeks; Shizuoka and Okayama slightly down (Resemom).\n- Weathernews: brief national dip in wk39, then rising again.\n- School/class closures wk41: 1,703 facilities vs 937 the previous week (1.82x).\n- wk42 (Oct 12-18) includes the Oct 12 Sports Day holiday, which may depress counts; MHLW wk42 release expected ~Oct 23; not found as of Oct 19.\n- Reference: in the 2025/26 season, national went roughly 3.3 to 6.3 to 14.9 to 21.8 across late Oct to early Nov 2025 (rapid acceleration phase) [recall, not re-verified].\n- To reach 30 by wk43, Kanagawa needs about +39% over 2 weeks, Saitama about +43%, Chiba about +53%.\n- Resolves off MHLW per-prefecture per-sentinel figures for wk43 (Oct 19-25), published ~Oct 30; not off national average or prefectural alerts.\n- Event window: single surveillance week Oct 19-25, 2026; as of Oct 19 it is just starting (0% elapsed).\n- Status quo: 1 prefecture (Okinawa) currently >=30.\n- Searched but not found: wk42 prefecture data, any prediction market (none found).",
+   "reference_class": "Japan early-season weeks where national per-sentinel is 10-15 with 0-1 prefectures over 30; number of warning-level prefectures 2 weeks later"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7367,
+   "seconds": 71.8,
+   "usage": {
+    "num_turns": 10,
+    "input": 12,
+    "cache_read": 171478,
+    "cache_write": 15581,
+    "cache_write_1h": 15581,
+    "output": 4561,
+    "thinking": 1567,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3703356,
+    "web_fetch": 0,
+    "duration_api_ms": 87624
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 0.0,
+     "25": 0.3,
+     "50": 1.0,
+     "75": 2.0,
+     "90": 3.6
+    }
+   },
+   "reasoning": "Two weeks remain from week 41 data (national 12.81, up from 11.35). Okinawa is declining 42.50->37.07->31.34 and should drop below 30 by week 43 if the trend holds. Hokkaido rose 9.2->16.2 (+76%) and is the most likely to cross 30. Iwate (13.3, +55%) is a long shot. Kanto (Kanagawa 21.6, Saitama 21.0, Chiba 19.6) has slowed to 0-17%/week and needs ~18%/week to reach 30. The week-42 Monday holiday (Oct 12) depresses counts. Searched Polymarket, Manifold, Kalshi and bookmakers: no market found. Median 1, meaningful mass at 0, tail to 4+ if growth reaccelerates as it did in Nov 2025.",
+   "sources": [
+    "https://weathernews.jp/news/202610/160261/",
+    "https://www.newscafe.ne.jp/article/2026/10/16/3034793.html",
+    "https://kurage.exbridge.jp/kkansen.php/d/influenza/",
+    "https://c7service.co.jp/virus/influenza-spread-october-2026",
+    "https://www.okinawatimes.co.jp/articles/-/1946071",
+    "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/kenkou/kekkaku-kansenshou01/houdou_00023.html"
+   ],
+   "dossier": "- National per-sentinel by week (MHLW via c7service, kurage, weathernews, Oct 2026): wk36 3.29, wk37 5.54, wk38 8.48, wk39 7.17 (holiday dip), wk40 11.35, wk41 (Oct 5-11) 12.81.\n- Okinawa (Okinawa Times, Oct 2026): wk38 26.27, wk39 42.50, wk40 37.07, wk41 31.34, falling 2 weeks running but still above 30. By health district in wk41: Yaeyama 45.33, Chubu 35.0, Nanbu 33.58, Kita 27.4, Naha 23.56.\n- Kanagawa: wk39 8.56, wk40 18.51, wk41 21.60. Saitama: 14.17, 19.66, 20.99. Chiba: 9.76, 18.72, 19.55. Tokyo: 9.51, 15.87, 15.88 (kurage; weathernews).\n- Hokkaido wk41 16.21 (+6.99 week on week). Muroran, Iwamizawa and Nakashibetsu districts each 33+ (Hokkaido IPH).\n- Iwate wk41 13.34 (+4.75). Yamaguchi 12.36 (+4.13). Aichi 11.47, down 3 weeks running (newscafe, Oct 16).\n- Wk40: Okinawa the only prefecture above 30; 15 prefectures at or above 10.\n- Calendar: wk42 (Oct 12-18) includes the Sports Day holiday on Mon Oct 12, which usually lowers reported counts. Wk43 (Oct 19-25) has no holiday.\n- Comparison: in 2025, national went from about 14.9 to 21.8 to 37.7 over three weeks in Nov, with growth near 1.5x per week once the surge started.\n- Status quo: currently 1 prefecture (Okinawa) at 30 or above, on a declining trend.\n- Resolves off MHLW per-prefecture per-sentinel figures for wk43 (Oct 19-25), published about Oct 30; counts values of 30.00 or higher.\n- Event window: single surveillance week Oct 19-25, 2026; as of Oct 19 that week has just begun (0% of reported data available). Wk42 data is not yet out (due about Oct 23).\n- Searched but not found: wk42 prefecture data, a full 47-prefecture wk41 table, prediction markets (none).",
+   "reference_class": "Japanese prefectures 2 weeks before the national surge phase: count crossing 30 per sentinel, given 1 prefecture at warning and ~4 at 16-22 two weeks earlier"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3664,
+   "seconds": 70.9,
+   "usage": {
+    "num_turns": 10,
+    "input": 12,
+    "cache_read": 173315,
+    "cache_write": 15036,
+    "cache_write_1h": 15036,
+    "output": 4335,
+    "thinking": 1381,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3663640000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 84782
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -0.2,
+     "25": 0.1,
+     "50": 0.7,
+     "75": 1.7,
+     "90": 3.2
+    }
+   },
+   "reasoning": "Week 41 (Oct 5-11): only Okinawa >=30 (31.34), and it has fallen for 2 weeks (42.50->37.07->31.34), so it likely drops below 30 by week 43. The next highest are Kanagawa 21.60, Saitama 20.99, Chiba 19.55 and Hokkaido 16.21, and Kanto growth slowed sharply in week 41 (+17%, +7%, +4%, Tokyo flat). Week 42 contains the Oct 12 Sports Day holiday, which dampens reports. Reaching 30 by week 43 needs about 20%/week for two weeks. A late-season acceleration like Nov 2025 (national ~22->38->51) gives the right tail. No market found on Polymarket, Manifold or Kalshi.",
+   "sources": [
+    "https://weathernews.jp/news/202610/160261/",
+    "https://kurage.exbridge.jp/kkansen.php/d/influenza/",
+    "https://resemom.jp/article/2026/10/16/87922.html",
+    "https://www.cbnews.jp/news/entry/20261002174728",
+    "https://www.nippon.com/en/news/yjj2026100900793/japan-flu-cases-exceed-alert-level.html"
+   ],
+   "dossier": "- Week 39 (Sep 21-27, 2026), CBnews Oct 2: national 7.17 per sentinel (down 15.1% from the prior week because of holidays). Okinawa 42.50 (only one >=30), Saitama 14.17, Ibaraki 12.50, Aichi 12.33, Gifu 10.18, Chiba 9.76.\n- Week 40 (Sep 28-Oct 4), MHLW via Jiji/Nippon.com Oct 9 and Kurage: national 11.35. Okinawa 37.07, Saitama 19.66, Chiba 18.72, Kanagawa 18.51, Tokyo 15.87. 1 prefecture >=30, 16 prefectures >10.\n- Week 41 (Oct 5-11), Resemom/Weathernews Oct 16: national 12.81 (+1.46). Okinawa 31.34 (second straight weekly decline), Kanagawa 21.60, Saitama 20.99, Chiba 19.55, Hokkaido 16.21, Tokyo 15.88 (Tokyo reported as a slight increase), Iwate 13.34, Yamaguchi 12.36, Aichi 11.47 (down three weeks running). 28 prefectures >10. Only Okinawa >=30.\n- Week 41 week-on-week changes: Kanagawa +17%, Saitama +7%, Chiba +4%, Tokyo ~0%, Okinawa -15%. Week 40 changes had been much larger (Kanagawa +116%, Chiba +92%).\n- Hokkaido sub-areas in week 41: Iwamizawa 33.33, Asahikawa 25.14, Ebetsu 22.71 (Hokkaido Institute of Public Health). The criterion is the prefecture average, not sub-areas.\n- Calendar: week 42 (Oct 12-18) contains the Sports Day holiday on Oct 12, which typically depresses reports. Week 43 (Oct 19-25) has no national holiday.\n- School closures: 937 facilities in week 40, 1,703 in week 41.\n- Season context: about one month earlier than 2025/26; week 39 was 6.6x the same period of the prior year. In the prior season, national averages went roughly 22 -> 38 -> 51 over weeks 45-47 of 2025 (the take-off phase).\n- Resolves off the MHLW per-prefecture per-sentinel figures for week 43 (published about Oct 30), not the national average or sub-area health-centre figures.\n- Event window: the single surveillance week Oct 19-25, 2026. As of Oct 19 that week has just started (~0% elapsed). The week 42 report is due about Oct 23.\n- Searched and could not find the week 42 figures (not yet published) or any prediction market (Polymarket, Manifold, Kalshi: none found).",
+   "reference_class": "Japanese prefectures at 16-31 per sentinel during early-season weeks, and their status two weekly reports later; plus the 2025/26 season's week-by-week count of prefectures >=30 during the build-up phase"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.18,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.127,
+   "seconds": 26.9,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20105,
+    "cache_write": 9389,
+    "cache_write_1h": 9389,
+    "output": 2391,
+    "thinking": 600,
+    "web_search": 0,
+    "cost_usd_envelope": 0.126961,
+    "web_fetch": 0,
+    "duration_api_ms": 26287
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -0.2,
+     "25": 0.1,
+     "50": 0.8,
+     "75": 1.8,
+     "90": 3.6
+    }
+   },
+   "reasoning": "In week 41 only Okinawa (31.34) is at or above 30, and it has fallen about 15% a week for two weeks, so it most likely drops below 30 by week 43. The challengers are Kanagawa 21.6 (+17%/wk), Saitama 21.0, Chiba 19.6 and Hokkaido 16.2 (+76%/wk). Each needs roughly 18-40% weekly growth over two weeks to reach 30. National growth slowed to +13%, and the week-42 holiday blurs the trend. Base case is 0-1 prefectures, with a right tail if the season reaccelerates like Nov 2025.",
+   "sources": [],
+   "reconciliation": "The runs agreed on all checkable facts: week 40-41 prefecture values, Okinawa's decline, the week-42 holiday, and that no market exists. The only factual discrepancy, the count of prefectures above 10 in week 41, does not affect the outcome and was not settled. The real disputes are judgment calls. Which challenger is most likely to cross (Hokkaido's surge vs slowing Kanto): I treat both as live paths, which slightly fattens the 1-2 range and the tail. Whether Okinawa stays at 30 or above: likely not, given a steady ~15%/wk decline, but it keeps some mass at 1+. I carry Run 2's dispersion and broadly agree with all three runs' shapes, because the evidence supports a mode at 0-1 with a take-off tail. No market found (harness found none; no independent check this run).",
+   "disagreements": [
+    {
+     "claim": "Number of prefectures above 10 in week 41 (28 per Run 3)",
+     "kind": "factual",
+     "verdict": "Unsettled without web access; irrelevant to the count at 30 or above"
+    },
+    {
+     "claim": "Most likely crosser: Hokkaido (rapid growth) vs Kanto (higher level, slowing)",
+     "kind": "judgment",
+     "verdict": "Both plausible; together they put meaningful mass on 1-2"
+    },
+    {
+     "claim": "Okinawa falls below 30 by week 43",
+     "kind": "judgment",
+     "verdict": "Likely, given a ~15%/wk decline, but a stall is possible given Yaeyama at 45"
+    },
+    {
+     "claim": "Size of the right tail from reacceleration",
+     "kind": "judgment",
+     "verdict": "About 12% on 4 or more, based on the Nov 2025 take-off analog"
+    }
+   ],
+   "reference_class": "Early-season Japanese influenza weeks with a national per-sentinel average of 10-15, and the count of prefectures at 30 or above two weeks later (2023/24 early plateau, 2025/26 take-off)"
+  }
+ ]
+}
