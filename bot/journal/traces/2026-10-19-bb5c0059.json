@@ -1,0 +1,196 @@
+{
+ "record_id": "2026-10-19-bb5c0059",
+ "question": "Will the openai/math repository's history log show more than three total withdrawn manuscripts as of October 29, 2026?",
+ "question_id": 46360,
+ "url": "https://www.metaculus.com/questions/46131/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "binary",
+ "forecast_at": "2026-10-19T03:22:21+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.3514,
+ "pools": {
+  "pooled_runs": 0.1866202015441808,
+  "phase1": 0.1866202015441808,
+  "phase2": null,
+  "spread_phase1": 0.01,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probability": 0.15
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.1243,
+   "seconds": 84.6,
+   "usage": {
+    "num_turns": 10,
+    "input": 14,
+    "cache_read": 188751,
+    "cache_write": 22456,
+    "cache_write_1h": 22456,
+    "output": 3341,
+    "thinking": 432,
+    "web_search": 4,
+    "cost_usd_envelope": 0.3848602,
+    "web_fetch": 0,
+    "duration_api_ms": 87220
+   },
+   "estimate": 0.19,
+   "reasoning": "history.md (fetched live) still lists exactly 3 withdrawals from Oct 7; last commit to history.md Oct 8. No new withdrawals in 11 days post-cluster; ~11 days remain. Large unformalized corpus (~58% non-Lean), ongoing expert scrutiny (Tao group, Connes rigidity dispute) and OpenAI's stated withdraw-if-unfixable policy keep risk material, but OpenAI has favored revisions (14) over withdrawals and human verification is slow. No human market found on Polymarket/Kalshi/Manifold.",
+   "sources": [
+    "https://github.com/openai/math/blob/main/history.md",
+    "https://github.com/openai/math/commits/main/history.md",
+    "https://retractionwatch.com/2026/10/08/openai-withdraws-preprints-722-manuscripts-unsolved-math-problems/",
+    "https://eu.36kr.com/en/p/3924860175333762"
+   ],
+   "dossier": "- history.md (fetched 2026-10-19): lists 3 withdrawn manuscripts, all dated Oct 7, 2026 (Weil classes on split abelian eightfolds; Kuga–Satake for K3; rational Hodge conjecture for products of K3). Reason: sign error in stabilization-trace cancellation argument; dependents withdrawn.\n- GitHub commit history for history.md (fetched 2026-10-19): latest visible commit Oct 8, 2026 'Update manuscripts and Lean formalizations' by dr-openai; no later commits visible.\n- Retraction Watch (2026-10-08): 722 preprints released Oct 6; 3 withdrawn Oct 7; 14 others revised (proof repairs, corrected statements, hypotheses, one citation fix). ~50% of results released without full formalization on advisory group recommendation.\n- Aggregated coverage: ~42% of results formalized in Lean (300 of 719) after 6 new formalizations.\n- 36kr (2026-08-04): earlier OpenAI claimed counterexample to Connes rigidity conjecture disputed by J. L. Nielsen (Kansas): constructed group not ICC/Property (T); statement-mismatch, not a Lean error. A later search snippet describes it as still an unresolved dispute after release; no OpenAI withdrawal of it found.\n- Tech-insider headline: 'Tao Group Scrutinizes OpenAI's 722 Math Claims' (content not accessible, 403).\n- News Oct 17-18 (Mint, NewsBytes): recap only; mention only the 3 Oct 7 withdrawals; OpenAI funding workshops/conferences for examination.\n- OpenAI policy: correct promptly, withdraw if no fix can be found; errata planned.\n- Status quo: count stays at 3.\n- Base-rate framing: day-1 cluster produced 3 withdrawals (from 1 root error) + 14 revisions; 0 withdrawals in the following 11 days (Oct 8-19). Revisions outnumbered withdrawals ~5:1 in the first cluster.\n- Resolution instrument: resolves off history.md in openai/math (or equivalent official repo record / credible sources), counting only items explicitly designated withdrawn; revisions don't count.\n- Event window: cumulative count as of 2026-10-29 23:59 UTC; window for new withdrawals effectively Oct 7 -> Oct 29; as of 2026-10-19 ~50% elapsed (11 of 22 days).\n- Markets: no Polymarket/Kalshi/Manifold contract found on this.\n- Searched but not found: any news of a 4th withdrawal; any history.md commits after Oct 8; specific named errors reported in other manuscripts since Oct 8.",
+   "reference_class": "Post-release withdrawal events in large AI-generated preprint dumps after the initial day-1 error cluster, per ~11-day window"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7394,
+   "seconds": 73.6,
+   "usage": {
+    "num_turns": 9,
+    "input": 12,
+    "cache_read": 156615,
+    "cache_write": 21863,
+    "cache_write_1h": 21863,
+    "output": 2943,
+    "thinking": 256,
+    "web_search": 4,
+    "cost_usd_envelope": 0.378151,
+    "web_fetch": 0,
+    "duration_api_ms": 83011
+   },
+   "estimate": 0.19,
+   "reasoning": "Status quo: history.md lists only the three Oct 7 withdrawals, and the only commits since then are Oct 8 (manuscript/Lean update) and Oct 12 (PR lock). That leaves about 10 days and requires a new, distinct withdrawal. Upward pressure: 719 manuscripts, about 58% of top-line results unformalized, intense scrutiny, and OpenAI's stated policy of withdrawing papers it cannot fix. Downward: no public report of a new fatal error found, the independent counterexample check found 0 failures, updates arrive slowly in batches, and PR conversations are locked. No human market found.",
+   "sources": [
+    "https://github.com/openai/math/blob/main/history.md",
+    "https://github.com/openai/math/commits/main",
+    "https://github.com/queelius/openai-math-counterexamples",
+    "https://retractionwatch.com/2026/10/08/openai-withdraws-preprints-722-manuscripts-unsolved-math-problems/",
+    "https://www.ilfoglio.it/en/science/2026/10/14/news/openai-withdraws-three-demonstrations-after-one-day-and-calls-the-mathematical-pact-into-question--410393"
+   ],
+   "dossier": "- history.md (fetched 2026-10-19): a single entry dated Oct 7 2026 withdrawing 3 manuscripts (Weil classes on split abelian eightfolds; Kuga-Satake for K3; rational Hodge conjecture for products of K3) over a sign error. It also records 14 revised manuscripts and formalization bringing coverage to about 42%.\n- openai/math commits (fetched 2026-10-19): Oct 8 'Update manuscripts and Lean formalizations' (PR #1, update-10-7); Oct 12 'Lock pull request conversations when opened' (PR #2). No later commits seen, and no commit touching withdrawals since Oct 8.\n- queelius/openai-math-counterexamples (independent, last synced to commit fd4aeeb): of 63 counterexample families, 8 hold, 0 fail, 9 not explicit, 46 not finitely checkable.\n- Retraction Watch Oct 8: 3 withdrawn, 14 revised; 719 manuscripts across 372 families remain.\n- Il Foglio Oct 14 and Nature (via reports): OpenAI research lead Dan Roberts said the repo would be updated 'with new formalizations and with any errata'; OpenAI 'welcomes scrutiny'; 13 further bibliography updates.\n- Reports say the withdrawn and substantively revised content came almost entirely from parts not formalized in Lean; about 58% of top-line results remain unformalized.\n- Mint/NewsBytes Oct 17-18: coverage still cites only the 3 Oct 7 withdrawals; no new withdrawal reported.\n- An arXiv 'Human Audit of OpenAI's AI-Generated Mathematical Proofs' (2608.14673) exists; contents not reviewed.\n- Status quo: the count stays at 3 unless OpenAI pushes a new history entry.\n- Resolves off openai/math history.md explicitly designating a 4th distinct manuscript as withdrawn/retracted, not off revisions or press reports.\n- Event window: repo launch (Oct 6 2026) -> Oct 29 2026 23:59 UTC, cumulative; as of Oct 19 03:20Z about 10.9 days remain (about 53% of the post-launch window elapsed).\n- Searched for but not found: any public report of a new fatal error after Oct 8; any Polymarket, Manifold or Kalshi market.",
+   "reference_class": "Large AI-generated research releases after the initial post-release error sweep: chance of a further formal withdrawal in a given ~10-day window about 2-3 weeks after release"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3613,
+   "seconds": 66.9,
+   "usage": {
+    "num_turns": 9,
+    "input": 10,
+    "cache_read": 126435,
+    "cache_write": 22120,
+    "cache_write_1h": 22120,
+    "output": 3014,
+    "thinking": 291,
+    "web_search": 4,
+    "cost_usd_envelope": 0.361292,
+    "web_fetch": 0,
+    "duration_api_ms": 80299
+   },
+   "estimate": 0.18,
+   "reasoning": "Status quo is NO: history.md fetched 2026-10-19 still shows only the Oct 7 entry, with 3 withdrawals and 14 revisions. The only content commit came Oct 8; the Oct 12 commit only locks PR conversations. About 11 days remain. Reference class: post-release withdrawals in large AI-math dumps. The initial burst was found internally on day 1, and the hazard since then has been 0 per 11 days. Upward pressure: 419 papers without Lean checks, heavy expert scrutiny, Townsend's prediction of more errors, and OpenAI's pledge to withdraw papers it can't fix. Any batched errata update could add a withdrawal. Downward pressure: OpenAI prefers revising to withdrawing, updates are slow, and confirming an error as unfixable takes time. No market found on Polymarket, Manifold or Kalshi.",
+   "sources": [
+    "https://github.com/openai/math/blob/main/history.md",
+    "https://github.com/openai/math/commits/main",
+    "https://retractionwatch.com/2026/10/08/openai-withdraws-preprints-722-manuscripts-unsolved-math-problems/",
+    "https://www.scientificamerican.com/article/did-openai-solve-the-wrong-navier-stokes-problem/"
+   ],
+   "dossier": "- history.md (fetched 2026-10-19): one dated entry only, Oct 7 2026. It lists 3 withdrawals (Weil classes on split abelian eightfolds, plus 2 dependent K3 papers), 14 revisions, 6 new formalizations, and ~42% formalized (300/719).\n- openai/math commits (fetched 2026-10-19): Oct 8 'Update manuscripts and Lean formalizations' (PR #1, update-10-7); Oct 12 'Lock pull request conversations when opened' (PR #2). Nothing since then mentions withdraw, errata or retract.\n- Retraction Watch (2026-10-08): the sign error (+1 vs -1) was found by OpenAI itself within 24 hours. OpenAI pledged to correct promptly and to withdraw if no fix can be found.\n- Search coverage (Oct 2026): Alex Townsend (Cornell) expects 'more errors will be found'; Andrew Sutherland (MIT) called the withdrawal responsible but says mathematicians are unhappy.\n- Scientific American / Startup Fortune: a dispute that OpenAI's Navier-Stokes proof doesn't match its Lean code. This appears separate from the openai/math repo, and OpenAI says the gap doesn't make either proof wrong.\n- News on Oct 17-18 (Mint, NewsBytes) reports no new withdrawals beyond the 3. OpenAI is funding workshops for review.\n- Status quo: 3 withdrawals. The repo has had no content update since Oct 8.\n- Pattern so far: revisions outnumber withdrawals 14:3.\n- Resolves off openai/math history.md (or equivalent official repo record) explicitly designating the paper withdrawn, not off news reports of errors.\n- Event window: Oct 6 launch -> Oct 29 23:59 UTC 2026. As of Oct 19 03:20 UTC, about 10.9 days remain (~53% of the window since launch has elapsed). Empirical record: 1 withdrawal batch (day 1, internal), then 0 in the next 11 days.\n- Searched without finding: any specific outside report of a fatal error in another repo manuscript; any announced errata schedule; any prediction market (Polymarket, Manifold, Kalshi): none found.",
+   "reference_class": "Further withdrawals in a ~10-day window from a large preprint dump after the initial correction burst (empirical hazard since Oct 8: 0 events in 11 days)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.01,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1771,
+   "seconds": 24.0,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 16725,
+    "cache_write_1h": 16725,
+    "output": 2046,
+    "thinking": 199,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1770898,
+    "web_fetch": 0,
+    "duration_api_ms": 23410
+   },
+   "estimate": 0.15,
+   "reasoning": "history.md still lists only the 3 Oct 7 withdrawals, all from one sign error OpenAI found itself on day 1. The only content commit came Oct 8 and the Oct 12 commit just locks PRs, so the withdrawal hazard has been 0 in 11 days, with ~10.9 days left. Upward pressure: 719 manuscripts, ~58% of top-line results without Lean proofs, heavy expert scrutiny (Tao group, Townsend expects more errors), and OpenAI's pledge to withdraw unfixable papers and publish errata. Downward pressure: OpenAI prefers revising (14 revisions vs 3 withdrawals), confirming a paper is unfixable takes time, updates come in batches, and no public report of a new fatal error was found. No human market exists.",
+   "sources": [],
+   "reconciliation": "All three runs agree on the facts: history.md (fetched Oct 19) has only the Oct 7 entry with 3 withdrawals; commits were Oct 8 (content) and Oct 12 (PR lock only); no market found; no reported new fatal error. The Connes rigidity and Navier-Stokes disputes appear to sit outside the repo's withdrawal record. The arXiv audit 2608.14673 was not read, and its ID suggests it predates the Oct 6 release, so it is weak evidence. No web access on this run, so nothing was re-verified. The only real dispute is a judgment about hazard rate. Given 11 quiet days, OpenAI's preference for revisions, and the slow path from outside error report to declared-unfixable withdrawal, I land slightly below the runs at 0.15.",
+   "disagreements": [
+    {
+     "claim": "Commits after Oct 8 (Run 1 saw none; Runs 2-3 saw an Oct 12 PR-lock commit)",
+     "kind": "factual",
+     "verdict": "Consistent: the Oct 12 commit is non-content, so no withdrawal activity either way"
+    },
+    {
+     "claim": "Whether the Connes rigidity / Navier-Stokes disputes bear on repo withdrawals",
+     "kind": "factual",
+     "verdict": "Both appear to sit outside the repo's withdrawal record; no withdrawal found; minor weight"
+    },
+    {
+     "claim": "Whether arXiv 2608.14673 human audit flags fatal errors",
+     "kind": "factual",
+     "verdict": "Unresolved; contents unread, its ID suggests it predates the release; carries small upward uncertainty"
+    },
+    {
+     "claim": "Hazard rate of a new withdrawal in remaining ~11 days",
+     "kind": "judgment",
+     "verdict": "Runs at 0.18-0.19; I take 0.15 given 0 events in 11 days and slow confirmation pipeline"
+    }
+   ],
+   "reference_class": "post-release withdrawals from large AI-generated math manuscript dumps, with observed hazard after the initial internal-review burst"
+  }
+ ]
+}
