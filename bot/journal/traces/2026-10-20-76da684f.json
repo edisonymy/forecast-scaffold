@@ -1,0 +1,257 @@
+{
+ "record_id": "2026-10-20-76da684f",
+ "question": "What will Japan's national average of influenza cases per sentinel medical institution be for the week ending October 25, 2026?",
+ "question_id": 46403,
+ "url": "https://www.metaculus.com/questions/46174/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-10-20T17:37:07+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.4881,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 11.5,
+    "25": 13.4,
+    "50": 15.333333333333334,
+    "75": 17.466666666666665,
+    "90": 20.099999999999998
+   },
+   "p_below_lower": 0.02,
+   "p_above_upper": 0.02
+  },
+  "phase1": {
+   "10": 11.5,
+   "25": 13.4,
+   "50": 15.333333333333334,
+   "75": 17.466666666666665,
+   "90": 20.099999999999998
+  },
+  "phase2": null,
+  "spread_phase1": 0.8,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 11.2,
+   "25": 13.2,
+   "50": 15.1,
+   "75": 17.3,
+   "90": 19.9
+  },
+  "p_below_lower": 0.02,
+  "p_above_upper": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4121,
+   "seconds": 75.3,
+   "usage": {
+    "num_turns": 10,
+    "input": 12,
+    "cache_read": 159563,
+    "cache_write": 22681,
+    "cache_write_1h": 22681,
+    "output": 4457,
+    "thinking": 1177,
+    "web_search": 3,
+    "cost_usd_envelope": 0.4120716,
+    "web_fetch": 0,
+    "duration_api_ms": 87897
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 11.3,
+     "25": 13.2,
+     "50": 15.0,
+     "75": 17.0,
+     "90": 19.5
+    }
+   },
+   "reasoning": "National per-sentinel series this season: wk36 3.29, wk37 5.54, wk38 8.48, wk39 7.17 (Silver Week holiday dip), wk40 11.35, wk41 12.81 (+13%, slowing). Target week ending Oct 25 is two weeks past the last print; Oct 12 Sports Day holiday may depress the intervening week, but the target week is holiday-free. Continued 5-15%/wk growth implies ~14-17; plateau/decline is the main downside, and renewed acceleration in populous Kanto/Hokkaido is the upside. School closures still rising in several prefectures as of Oct 19. Question labels the week as 'week 44', but per the JIHS calendar the week ending Oct 25 is week 43; I forecast the date-defined week and add some upper-tail mass for the mislabel. No human market found on Polymarket/Manifold/Kalshi.",
+   "sources": [
+    "https://id-info.jihs.go.jp/en/surveillance/idwr/rapid/2026/index.html",
+    "https://weathernews.jp/news/202610/160261/",
+    "https://resemom.jp/article/2026/10/16/87922.html",
+    "https://c7service.co.jp/virus/influenza-spread-october-2026",
+    "https://idsc.tmiph.metro.tokyo.lg.jp/diseases/flu/flu/",
+    "https://www.pref.okayama.jp/page/630182.html",
+    "https://news.ksb.co.jp/article/16976387"
+   ],
+   "dossier": "- JIHS IDWR index (checked 2026-10-20): latest published week is week 41 (Oct 5-11); week 42 (Oct 12-18) expected ~Oct 23; the week ending Oct 25 is JIHS week 43 (question text calls it week 44, but the date and the Oct 30 publication timing match week 43).\n- National per-sentinel series 2026-27 (c7service 2026-10-01; resemom/weathernews 2026-10-16): wk36 (Aug31-Sep6) 3.29; wk37 5.54; wk38 8.48; wk39 (Sep21-27, includes Silver Week holidays) 7.17; wk40 11.35; wk41 12.81 (47,746 cases). Week-on-week change: +68%, +53%, -15%, +58%, +13%.\n- Prior season comparison: 2025-26 wk38 was 0.80; about 14.9 reached only in the week ending Nov 2, 2025.\n- Week 41 prefectures (weathernews 2026-10-16): Okinawa 31.34 (warning), Kanagawa 21.60, Saitama 20.99, Chiba 19.55, Hokkaido 16.21 (+7.00 w/w); Okayama fell to 5.50 (KSB). Over 1,700 schools/childcare facilities had closures.\n- Calendar: Monday Oct 12, 2026 is Sports Day (a national holiday) inside week 42, which reduces clinic days; the wk39 holiday week showed a dip. The target week (Oct 19-25) has no holiday.\n- 2026-10-19 school closures: Okayama 7 schools newly closed; Toyama cumulative 37 schools; Iwate 15 new facilities in Oct 12-18 (49 for the season vs 6 at this point last year).\n- Tokyo IDSC page updated 2026-10-15 through wk41; no numeric week-42 values found.\n- Taiwan (UDN 2026-10-20): flu epidemic ongoing there; officials expect it may end by early November (a regional signal only).\n- Status quo: continued growth at a slowing rate from 12.81.\n- Resolves off the JIHS IDWR national per-sentinel influenza value, first published; not prefecture-level or hospital-based figures.\n- Event window: single reading for the week Oct 19-25, 2026; as of Oct 20, day 2 of 7 of that week has elapsed, and two weekly prints (wk42, wk43) are still unpublished.\n- Searched, not found: a national week-42 value; a subtype mix breakdown; any prediction market.",
+   "reference_class": "Two-week-ahead changes in Japan's national flu per-sentinel value during early-season growth phases (e.g., 2023-24 early season, current 2026-27 weeks 36-41)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.2471,
+   "seconds": 80.7,
+   "usage": {
+    "num_turns": 11,
+    "input": 14,
+    "cache_read": 192195,
+    "cache_write": 23074,
+    "cache_write_1h": 23074,
+    "output": 4931,
+    "thinking": 1436,
+    "web_search": 3,
+    "cost_usd_envelope": 0.42962100000000003,
+    "web_fetch": 0,
+    "duration_api_ms": 92851
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 11.0,
+     "25": 13.1,
+     "50": 15.2,
+     "75": 17.4,
+     "90": 19.8
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Trajectory wk38 8.48, wk39 7.17 (Silver Week holidays depressed), wk40 11.35, wk41 12.81; underlying growth ~15%/wk wk38->41 but decelerating. Target is week ending Oct 25 (= ISO/JIHS wk43 although question says 44; forecast uses the Oct 25 date/Oct 30 publication). Okinawa declining from peak while Kanto (Kanagawa 21.6, Saitama 21.0, Chiba 19.6, Tokyo 15.9) high; AH1pdm09 dominant. Continued ~7-10%/wk growth gives ~15; plateau ~13; decline ~11; acceleration ~19+. No market found on Polymarket/Manifold (harness) and none found in my own checks.",
+   "sources": [
+    "https://weathernews.jp/news/202610/160261/",
+    "https://nk.jiho.jp/article/305652",
+    "https://idsc.tmiph.metro.tokyo.lg.jp/diseases/flu/flu/",
+    "https://id-info.jihs.go.jp/en/surveillance/idwr/rapid/2026/index.html",
+    "https://www.okinawatimes.co.jp/articles/-/1946071",
+    "https://resemom.jp/article/2026/10/16/87922.html"
+   ],
+   "dossier": "- National per-sentinel flu (JIHS/MHLW via jiho.jp, weathernews, resemom): wk38 (Sep14-20) 8.48; wk39 (Sep21-27) 7.17 (week contained Sep 21-23 public holidays); wk40 (Sep28-Oct4) 11.35; wk41 (Oct5-11) 12.81 (+1.46), 47,746 cases, published Oct 16 2026.\n- Calendar: wk41 = Oct 5-11, so week ending Oct 25 is JIHS week 43 (question text says 'week 44'; the date Oct 25 and the Oct 30 publication match wk43). Wk42 (Oct 12-18) contains Sports Day holiday Mon Oct 12 (holiday weeks depress counts, as in wk39). Wk43 (Oct 19-25) has no holiday.\n- Wk42 national value due ~Oct 23 2026; not yet published as of Oct 20. No prefectural wk42 figures found.\n- Prefectures wk41 (weathernews Oct 16): Okinawa 31.34 (down from 37.07, past peak), Kanagawa 21.60, Saitama 20.99, Chiba 19.55, Hokkaido 16.21, Tokyo 15.88; 28 prefectures >=10.\n- Tokyo IDSC (updated Oct 15): AH1pdm09 52/53 detections; alert threshold exceeded Sep 17; many school/childcare clusters. >1,700 facilities nationwide with closures (weathernews).\n- Season started ~late Aug, ~1 month+ earlier than 2025-26; 2025-26 reached ~14.9 only on week ending Nov 2 2025.\n- Taiwan (UDN Oct 20): flu epidemic in neighboring Taiwan, expected to end early Nov — regional activity high.\n- Status quo: growth decelerating (wk40->41 +13%, wk38->41 ~+15%/wk avg); holiday effects make week-to-week noisy.\n- Resolves off JIHS IDWR national per-sentinel influenza value for week ending Oct 25 2026, first published value; not prefectural or hospital-based figures.\n- Event window: single weekly reading Oct 19 -> Oct 25 2026; as of Oct 20, ~15% of that week elapsed, value published ~Oct 30.\n- Searched but not found: wk42 national value, any JIHS short-term forecast numbers (ts-biosecurity dashboard didn't render), prediction markets (none found).",
+   "reference_class": "Japan national per-sentinel influenza, two-week-ahead change during early-season growth phase (e.g., 2023-24, 2025-26 autumn rises, 2009 pdm09)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.8175,
+   "seconds": 76.5,
+   "usage": {
+    "num_turns": 10,
+    "input": 12,
+    "cache_read": 159670,
+    "cache_write": 22641,
+    "cache_write_1h": 22641,
+    "output": 4342,
+    "thinking": 1031,
+    "web_search": 3,
+    "cost_usd_envelope": 0.40544399999999997,
+    "web_fetch": 0,
+    "duration_api_ms": 90724
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 12.2,
+     "25": 13.9,
+     "50": 15.8,
+     "75": 18.0,
+     "90": 21.0
+    }
+   },
+   "reasoning": "Series: 8.48 (wk38), 7.17 (wk39, Silver Week holiday dip), 11.35 (wk40), 12.81 (wk41). Past the holiday artifact, underlying growth is ~13-16%/wk and slowing. Okinawa is past its peak (42.5->31.3) and Tokyo has been above alert since mid-September, but Kanto and Hokkaido are still rising fast and school closures nearly doubled. The strain is H1pdm09-dominant, not last season's explosive H3 subclade K. Week 42 contains the Oct 12 Sports Day holiday (possible dip), while the target week has no holiday. Central projection ~10-11%/wk for 2 weeks -> ~15.8. No human market found (Polymarket/Manifold/Kalshi).",
+   "sources": [
+    "https://id-info.jihs.go.jp/en/surveillance/idwr/rapid/2026/index.html",
+    "https://resemom.jp/article/2026/10/16/87922.html",
+    "https://nk.jiho.jp/article/305652",
+    "https://weathernews.jp/news/202610/160261/",
+    "https://idsc.tmiph.metro.tokyo.lg.jp/diseases/flu/flu/",
+    "https://www.v-plat.jp/influenza/epidemics/"
+   ],
+   "dossier": "- National per-sentinel influenza (JIHS/MHLW via press): wk38 (Sep14-20) 8.48; wk39 (Sep21-27) 7.17, a drop coinciding with the Sep 21-23 holiday cluster (jiho.jp, Oct 2 2026); wk40 (Sep28-Oct4) 11.35; wk41 (Oct5-11) 12.81, +1.46, 47,746 cases (resemom.jp, Oct 16 2026).\n- wk41 prefectures: Okinawa 31.34 (down from 42.50 in wk39; past its peak), Kanagawa 21.60, Saitama 20.99, Chiba 19.55, Hokkaido 16.21 (+7.00 w/w), Tokyo 15.88, Iwate 13.34 (+4.75), Yamaguchi 12.36 (+4.13) (resemom/weathernews, Oct 16 2026).\n- School/class closures wk41: 1,703 facilities vs 937 the prior week (1.82x) (resemom).\n- Tokyo IDSC: epidemic onset Aug 27, alert threshold exceeded Sep 17; ~98% of detections are AH1pdm09 (52/53) (idsc.tmiph.metro.tokyo.lg.jp).\n- Same week in prior seasons: 0.89 (2024), 2.36 (2025) (v-plat.jp). The 2025-26 season reached ~14.9 only by the week ending Nov 2, 2025.\n- Calendar: wk42 (Oct 12-18) includes Sports Day (Mon Oct 12), a holiday that can depress consultations; the target week (Oct 19-25) has no national holiday.\n- Week numbering: JIHS lists wk41 = Oct 5-11, so the week ending Oct 25 is ISO week 43 even though the question says 'week 44'; the dates in the criterion govern.\n- Status quo: a growth phase that is decelerating (wk40->41 +13%; wk38->40 two-week +34% excluding the holiday dip).\n- Regime-break candidates: up = Kanto/Hokkaido acceleration plus school spread; down = early-onset regions (Okinawa, Tokyo) peaking, H1 susceptibility depletion.\n- Resolves off the JIHS IDWR national per-sentinel value (first published), expected ~Oct 30 2026.\n- Event window: single week Oct 19 -> Oct 25 2026; as of Oct 20, about 1/7 of it has elapsed; wk42 data due ~Oct 23.\n- Searched but not found: wk42 national/Tokyo data (not yet published); any prediction market (none on Polymarket/Manifold/Kalshi).",
+   "reference_class": "Japanese sentinel influenza national series, 2-week-ahead changes during the early growth phase of a season (H1pdm09-dominant seasons such as 2019-20 and 2023-24 early phase)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1967,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.191,
+   "seconds": 27.9,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 17475,
+    "cache_write_1h": 17475,
+    "output": 2442,
+    "thinking": 350,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1910098,
+    "web_fetch": 0,
+    "duration_api_ms": 27287
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 11.2,
+     "25": 13.2,
+     "50": 15.1,
+     "75": 17.3,
+     "90": 19.9
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Series 8.48 (wk38), 7.17 (wk39 holiday dip), 11.35 (wk40), 12.81 (wk41, +13%, decelerating). Target is the date-defined week Oct 19-25 (JIHS wk43; question mislabels as 44), holiday-free and two prints ahead. Okinawa past peak and Tokyo long above alert argue for slowing; Kanto/Hokkaido rising and school closures nearly doubling argue for continued growth. Central ~7-10%/wk for two weeks -> ~15. Downside plateau/early peak ~11-12; upside re-acceleration or week-44 interpretation ~20+. No human market found.",
+   "sources": [],
+   "reconciliation": "All three runs agree on the factual series (8.48, 7.17, 11.35, 12.81), that the week ending Oct 25 is JIHS wk43 despite the question's 'week 44' label, that wk42 holds the Sports Day holiday while the target week has none, and that no market exists. Remaining disagreement is a judgment about how fast growth slows (median 15.0-15.8). Run 3's higher centre rests on the school-closures surge and the holiday rebound, both already priced in; Okinawa's decline and the deceleration from +58% to +13% argue against a centre above ~15. I take a median of ~15.1 with a slightly fatter upper tail for the week-label ambiguity (actual wk44 would likely read higher). I keep the runs' ~8-wide dispersion. No web retrieval on this run.",
+   "disagreements": [
+    {
+     "claim": "Week ending Oct 25 is JIHS week 43, not 44",
+     "kind": "factual",
+     "verdict": "Settled from all dossiers (wk41 = Oct 5-11); the date governs, with small resolver-risk mass added to the upper tail"
+    },
+    {
+     "claim": "Pace of deceleration over the next two weeks (median 15.0 vs 15.8)",
+     "kind": "judgment",
+     "verdict": "Okinawa past peak plus the +13% slowing outweighs the closure surge at the margin; median ~15.1"
+    },
+    {
+     "claim": "Whether to declare escape mass beyond 8 / 35",
+     "kind": "judgment",
+     "verdict": "Small: 2% below (sharp early peak), 1% above (extreme acceleration)"
+    }
+   ],
+   "reference_class": "Two-week-ahead national per-sentinel influenza readings in Japanese growth phases that have begun to decelerate (early-season H1pdm09-dominant epidemics)"
+  }
+ ]
+}
