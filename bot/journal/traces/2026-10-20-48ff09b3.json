@@ -1,0 +1,258 @@
+{
+ "record_id": "2026-10-20-48ff09b3",
+ "question": "How many AIS-visible commercial ships will the hormuz.now tracker count crossing the Strait of Hormuz on October 29, 2026?",
+ "question_id": 46390,
+ "url": "https://www.metaculus.com/questions/46161/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-20T02:12:31+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.5272,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -0.09999999999999999,
+    "25": 0.5666666666666667,
+    "50": 2.1666666666666665,
+    "75": 5.2,
+    "90": 9.333333333333334
+   },
+   "p_above_upper": 0.03333333333333333
+  },
+  "phase1": {
+   "10": -0.09999999999999999,
+   "25": 0.5666666666666667,
+   "50": 2.1666666666666665,
+   "75": 5.2,
+   "90": 9.333333333333334
+  },
+  "phase2": null,
+  "spread_phase1": 1.5,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -0.2,
+   "25": 0.3,
+   "50": 2.0,
+   "75": 5.0,
+   "90": 9.0
+  },
+  "p_above_upper": 0.03
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.2867,
+   "seconds": 94.0,
+   "usage": {
+    "num_turns": 14,
+    "input": 22,
+    "cache_read": 318246,
+    "cache_write": 22828,
+    "cache_write_1h": 22828,
+    "output": 4846,
+    "thinking": 1010,
+    "web_search": 2,
+    "cost_usd_envelope": 0.4421102,
+    "web_fetch": 0,
+    "duration_api_ms": 99499
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 0.0,
+     "25": 1.0,
+     "50": 3.0,
+     "75": 6.0,
+     "90": 10.0
+    },
+    "p_above_upper": 0.04
+   },
+   "reasoning": "Anchor: hormuz.now daily counts in the restricted regime, median ~6/day (range 0-12) through mid-Oct. Update down: the trailing 7-day total is now 28 (~4/day), the 19 Oct archive page reads 0 even though the live ticker showed 3 in the last 24h (the archive may undercount, and it was reset to start 19 Oct), attacks hit a record in October, and GPS jamming suppresses AIS. Upside: the 7-day reopening plan is still being discussed, and occasional 10+ days occur. Median 3, heavy mass at 0-2, small open-upper tail for a reopening. No human market found (Polymarket/Manifold per harness; Kalshi/bookmakers not checked).",
+   "sources": [
+    "https://hormuz.now/",
+    "https://hormuz.now/data",
+    "https://hormuz.now/api/daily.csv",
+    "https://hormuz.now/traffic",
+    "https://hormuz.now/traffic/2026-10-19",
+    "https://straits.live/briefs/2026-10-20",
+    "WebSearch: Strait of Hormuz transits October 2026 (straits.live, globalmilitary.net snippets)"
+   ],
+   "dossier": "- hormuz.now /traffic/2026-10-19 (fetched 2026-10-20): 'no AIS-visible commercial ships crossed the Strait of Hormuz' on 19 Oct; 2 small craft excluded. The archive index says daily pages go back only to 19 Oct 2026 (reset/rebuild); /traffic/2026-10-14 and 2026-10-18 return 404.\n- hormuz.now /api/daily.csv (2026-10-20): rows only for 2026-10-19 (total 0) and 2026-10-20 (0, partial).\n- hormuz.now /data (2026-10-20 02:10 UTC): last 24h 3 crossings (2 in, 1 out); last 7 days 28 (18 in, 10 out); 7-day avg 4/day. This conflicts with the archive's 0 for 19 Oct, so the archive and live counters may differ.\n- hormuz.now homepage table (looks like PortWatch): Oct 2-11 daily values 2-8 (Oct 11=2, Oct 10=4, Oct 5=8); 7-day average shown as 0.0; 507 ships waiting outside, 164 stationary inside the Gulf.\n- Question background: hormuz.now counts Oct 9 ~12, 10=6, 11=8, 12=7, 13=10, 14=10; 1 Oct=1; trailing-week ~9-10/day around 15 Oct; pre-crisis 84.8/day.\n- Search snippet (around 15 Oct): hormuz.now 9.0/day over the past week; 11 crossings in a 24h window.\n- UKMTO via Al Jazeera/Mer et Marine (19 Oct): at least 27 ships attacked 1-18 Oct (record month); GFS Pride and Cape Dao sunk; jamming affected over 23k AIS signals in one week; ships increasingly go dark.\n- NCAGS (around 19 Oct): US-assisted traffic ~30 transits/day over 96h, mostly not AIS-visible. Windward 27 Sep: 24 transits, 14 dark.\n- Diplomacy: Araghchi (18 Oct) says a 7-day reopening plan is still being discussed with the US; Trump rejected an earlier version on 26 Sep. Brent ~$109.\n- Status quo: Restricted regime, low single-digit to ~10 AIS-visible crossings/day, with 0 days occurring.\n- Resolves off the archive page https://hormuz.now/traffic/2026-10-29, not the CSV or live ticker.\n- Event window: 2026-10-29 00:00 -> 24:00 UTC; as of 2026-10-20 the window has 0% elapsed (it starts in ~9 days).\n- Open upper bound (>24) requires a reopening deal or a big AIS-coverage change.\n- Searched but not found: the methodology for the archive reset; any prediction market on this question.",
+   "reference_class": "hormuz.now daily AIS-visible commercial crossings during the 2026 restricted phase (mid-Sep to mid-Oct 2026)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.8446,
+   "seconds": 81.8,
+   "usage": {
+    "num_turns": 14,
+    "input": 16,
+    "cache_read": 230289,
+    "cache_write": 24248,
+    "cache_write_1h": 24248,
+    "output": 5223,
+    "thinking": 1219,
+    "web_search": 2,
+    "cost_usd_envelope": 0.45591880000000007,
+    "web_fetch": 0,
+    "duration_api_ms": 96229
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -0.3,
+     "25": 0.1,
+     "50": 1.5,
+     "75": 4.6,
+     "90": 9.0
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "hormuz.now appears to have rebuilt its pipeline: its daily data starts 19 Oct, older archive pages return 404, and the first full day (19 Oct) reads 'no AIS-visible commercial ships crossed'; 20 Oct partial is also 0. PortWatch counted 2-8/day for 2-11 Oct, and the question background cites 6-12/day mid-Oct from an earlier site version. October is the worst attack wave of the crisis, with jamming and ships going dark, which pushes AIS-visible counts toward 0. Upside comes from escorted convoys arriving in batches; a US-Iran deal under the seven-day plan (rejected by Trump in Sept, but Iran said on 18 Oct it is still on the table) is a ~3% upper escape. No human market found (Polymarket/Manifold per harness; Kalshi and bookmakers not checked).",
+   "sources": [
+    "https://hormuz.now/",
+    "https://hormuz.now/traffic",
+    "https://hormuz.now/traffic/2026-10-19",
+    "https://hormuz.now/api/daily.json",
+    "https://hormuz.now/methodology",
+    "https://hormuz.now/data",
+    "https://straits.live/briefs/2026-10-19",
+    "WebSearch: Araghchi seven-day plan (aljazeera/iranintl/cnbc result snippets)"
+   ],
+   "dossier": "- hormuz.now/traffic/2026-10-19 (fetched 2026-10-20): 'On Monday 19 October 2026, no AIS-visible commercial ships crossed the Strait of Hormuz, on our count.' 20 Oct partial: 0.\n- hormuz.now/api/daily.json and the /data page: the site's own daily series starts 2026-10-19 (rows: 19 Oct=0, 20 Oct=0 partial). The archive pages /traffic/2026-10-14 and /2026-10-18 return 404, which suggests a pipeline rebuild around 19 Oct. The site's 7-day average shows 0.0.\n- Pre-19-Oct figures the site now shows are IMF PortWatch (lagged, latest 11 Oct): Oct 2=4, 3=2, 4=4, 5=8, 6=2, 7=6, 8=4, 9=3, 10=4, 11=2. The question background quotes different, higher hormuz.now figures (9 Oct ~12, 10 Oct 6, 11 Oct 8, 12 Oct 7, 13-14 Oct 10), apparently from an earlier site version.\n- Methodology (hormuz.now/methodology): live AIS, crossing the Musandam-Kuhestak line, needs 2 observations on the new side or 1 at least 15 km past it; positions >40 kn rejected as spoofed; AIS-dark ships excluded. Pre-crisis baseline 84.8/day.\n- UKMTO via Mer et Marine (2026-10-19): 12 attacks in the week to 14 Oct; GFS Pride and Cape Dao sunk; tug Jif Barracuda switched AIS off before crossing on 17 Oct; 27 attacks in October so far.\n- Al Jazeera (2026-10-19): GPS jamming affected >23,000 AIS signals in one week; traffic down 70-75% (all-source counts).\n- Windward (cited in background): 24 transits on 27 Sep, 14 of them dark, vs PortWatch 1.\n- Reopening: Iran's seven-day plan (Sept) was rejected by Trump on 26 Sep; Araghchi said on 18 Oct it remains on the table; no agreement as of 19 Oct (straits.live brief).\n- Status quo: severely restricted, near-zero AIS-visible crossings.\n- Resolves off the hormuz.now/traffic/2026-10-29 archive-page sentence, not the PortWatch figures or the CSV.\n- Event window: UTC day 29 Oct 2026 (00:00-24:00); as of now (20 Oct 02:10Z) 0% elapsed, ~9 days ahead.\n- Searched, not found: hormuz.now live counts for 12-18 Oct under the new pipeline; any human prediction market on this (none found on Polymarket/Manifold).",
+   "reference_class": "Daily AIS-visible Hormuz crossing counts in the restricted-crisis regime, Oct 2026 (PortWatch and hormuz.now daily figures)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3887,
+   "seconds": 68.6,
+   "usage": {
+    "num_turns": 12,
+    "input": 12,
+    "cache_read": 161012,
+    "cache_write": 22577,
+    "cache_write_1h": 22577,
+    "output": 4436,
+    "thinking": 915,
+    "web_search": 2,
+    "cost_usd_envelope": 0.3886644,
+    "web_fetch": 0,
+    "duration_api_ms": 79012
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 0.0,
+     "25": 0.6,
+     "50": 2.0,
+     "75": 5.0,
+     "90": 9.0
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Status quo: Strait effectively closed; hormuz.now switched to a new live collector on 19 Oct 2026 and recorded 0 crossings on 19 Oct and 0 so far on 20 Oct, with a trailing-week average shown as 0.0. Older legacy/background counts for early-to-mid October were 1-12/day (median ~4-6), and PortWatch showed 2 on 11 Oct. October attacks have escalated (27+ ships hit through 18 Oct, sinkings on 14-17 Oct), pushing more transits to go dark. Upside tail: Iran's 6-7 day reopening proposal; no deal yet and the US is pressing nuclear demands. Even with a deal, a jump past 24 by 29 Oct is unlikely. No human market found (the harness found none on Polymarket/Manifold; Kalshi and bookmakers not checked). Median about 2, with heavy mass at 0-1.",
+   "sources": [
+    "https://hormuz.now/",
+    "https://hormuz.now/api/daily.json",
+    "https://hormuz.now/methodology",
+    "https://hormuz.now/traffic/2026-10-19",
+    "https://hormuz.now/data",
+    "https://straits.live/briefs/2026-10-19",
+    "https://www.usnews.com/news/world/articles/2026-10-18/iran-urges-us-to-accept-proposal-to-reopen-strait-of-hormuz"
+   ],
+   "dossier": "- hormuz.now methodology: live crossing logging with the current method began 19 Oct 2026; earlier days were reconstructed with a smaller-box legacy method. It counts commercial ships (>=80m or >=5,000 dwt) crossing a line from Musandam to Kuhestak; ships with AIS off are excluded. (hormuz.now/methodology, fetched 20 Oct)\n- hormuz.now/api/daily.json has rows only for 19 Oct (total 0) and 20 Oct (0, in progress). The archive page for 19 Oct reads: 'no AIS-visible commercial ships crossed the Strait of Hormuz'. Pages for 14 and 18 Oct return 404. (fetched 20 Oct)\n- hormuz.now homepage on 20 Oct: status Restricted, '0.0 a day over the past week' vs 84.8 pre-crisis, no crossings in the last 24h, 507 ships waiting outside, 164 stationary inside the Gulf. Its chart lists Oct 2-11 as 4,2,4,8,2,6,4,3,4,2. The question background instead lists 9 Oct ~12, 10 Oct 6, 11 Oct 8, 12 Oct 7, 13-14 Oct 10 (conflicting series).\n- IMF PortWatch: 2 transits on 11 Oct (straits.live brief, 19 Oct). PortWatch also recorded 1 on 27 Sep, when Windward counted 24 (14 dark).\n- UKMTO/Windward: 254 transits in the week ending 14 Oct, all vessel types including dark ones, about 70-75% below normal. 27 ships attacked 1-18 Oct; GFS Pride and Cape Dao sunk; GPS/AIS jamming affected 23,000+ signals in one week (Mer et Marine and Al Jazeera, 19 Oct).\n- Diplomacy: Iran's FM said on 18 Oct that the proposal to reopen within about 6-7 days is still on the table (strait reopens on day 6, talks on day 7). The US has not accepted; disagreement is over the nuclear issue and seven conditions. GCC urged talks on 19 Oct; Lavrov visited Tehran. (US News 18 Oct, Gulf News)\n- Status-quo outcome: near-zero AIS-visible crossings per day under the new collector.\n- Resolves off the hormuz.now/traffic/2026-10-29 archive page figure, not PortWatch or Windward. A zero day is phrased as 'no AIS-visible commercial ships crossed'.\n- Event window: 29 Oct 2026 00:00 -> 24:00 UTC. As of 20 Oct 02:10Z, 0% elapsed (9 days ahead).\n- Searched but not found: a validated new-collector count for any day with known nonzero traffic, so there is no way to tell whether the 0s reflect real traffic or a collector undercount; also no prediction market on this.",
+   "reference_class": "hormuz.now / PortWatch daily AIS-visible crossing counts during the October 2026 crisis phase (1-19 Oct)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.3237,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1891,
+   "seconds": 25.3,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 17945,
+    "cache_write_1h": 17945,
+    "output": 2161,
+    "thinking": 305,
+    "web_search": 0,
+    "cost_usd_envelope": 0.18914979999999998,
+    "web_fetch": 0,
+    "duration_api_ms": 24581
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -0.2,
+     "25": 0.3,
+     "50": 2.0,
+     "75": 5.0,
+     "90": 9.0
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Status quo: hormuz.now's new collector (live from 19 Oct) recorded 0 on 19 Oct and 0 so far on 20 Oct. Legacy/PortWatch October counts were 2-12/day. The record October attack wave and AIS jamming push visible counts toward 0, while escorted convoy batches and a possible collector fix push them up. Median ~2 with heavy mass at 0-1. ~3% upper escape if the Iran 7-day reopening plan is accepted and takes effect quickly. No human market found (Polymarket/Manifold none per harness; Kalshi/bookmakers not checked).",
+   "sources": [],
+   "reconciliation": "All runs agree the archive was reset with a new collector on 19 Oct that read 0. Disputed fact: Run 1 says /data showed 3 in the last 24h and 28 over 7 days, while Runs 2-3 say the trailing average is 0.0. This could not be settled without web access; it may be a legacy counter or a sign of new-collector undercounting, so both 0 and ~3-4 keep weight. The judgment on whether the zeros persist over 9 days is settled at median ~2: the zeros are recent and backed by the attack and jamming evidence, but a one-day reading from a just-launched pipeline is weak, and PortWatch showed 2-8/day in early October. Upper escape set at 3%: no deal, and a deal would need to take effect within 9 days.",
+   "disagreements": [
+    {
+     "claim": "Live /data shows nonzero crossings (3 in 24h, 28 in 7 days) vs trailing-week 0.0",
+     "kind": "factual",
+     "verdict": "Unresolved without web access; carried as uncertainty with weight on both 0 and low single digits"
+    },
+    {
+     "claim": "New-collector zeros reflect real traffic vs a startup undercount",
+     "kind": "judgment",
+     "verdict": "Mixed; median ~2 with heavy mass at 0-1"
+    },
+    {
+     "claim": "Probability of a reopening pushing the count above 24 by 29 Oct",
+     "kind": "judgment",
+     "verdict": "~3%; no deal yet and implementation lag is likely"
+    }
+   ],
+   "reference_class": "Daily AIS-visible Hormuz crossings during the 2026 restricted regime (Oct 2026: legacy hormuz.now, PortWatch, new collector)"
+  }
+ ]
+}
