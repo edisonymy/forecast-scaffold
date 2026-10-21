@@ -1,0 +1,261 @@
+{
+ "record_id": "2026-10-21-280c9369",
+ "question": "What will the front-month Brent crude oil futures settlement price be on October 30, 2026?",
+ "question_id": 46407,
+ "url": "https://www.metaculus.com/questions/46178/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-10-21T01:22:25+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.4337,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 96.66666666666667,
+    "25": 102.83333333333333,
+    "50": 108.39999999999999,
+    "75": 113.73333333333333,
+    "90": 119.83333333333333
+   },
+   "p_below_lower": 0.0175,
+   "p_above_upper": 0.02
+  },
+  "phase1": {
+   "10": 96.66666666666667,
+   "25": 102.83333333333333,
+   "50": 108.39999999999999,
+   "75": 113.73333333333333,
+   "90": 119.83333333333333
+  },
+  "phase2": null,
+  "spread_phase1": 1.5,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 96.0,
+   "25": 102.5,
+   "50": 108.5,
+   "75": 114.0,
+   "90": 120.5
+  },
+  "p_below_lower": 0.01,
+  "p_above_upper": 0.015
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3558,
+   "seconds": 51.6,
+   "usage": {
+    "num_turns": 7,
+    "input": 8,
+    "cache_read": 98783,
+    "cache_write": 21648,
+    "cache_write_1h": 21648,
+    "output": 3445,
+    "thinking": 820,
+    "web_search": 4,
+    "cost_usd_envelope": 0.3558486,
+    "web_fetch": 0,
+    "duration_api_ms": 62151
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 95.0,
+     "25": 101.5,
+     "50": 107.5,
+     "75": 113.5,
+     "90": 120.0
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Front-month (Dec26) Brent settled $108.79 on Oct 20; Dec expires Oct 30, so that date is its final settlement. Futures price is the median anchor, nudged ~$1 down for the chance that Barchart's continuous series has already rolled to Jan (~$3 backwardation) and for mean reversion after the five-month high. Width comes from 2026's very high realized volatility (Middle East strikes and Hormuz mine risk vs Russia sanctions waivers). No matching human prediction market found (Polymarket/Kalshi/Manifold); a Robinhood daily Brent contract exists for Oct 21 only.",
+   "sources": [
+    "https://www.morningstar.com/news/dow-jones/202610207154/front-month-ice-brent-crude-fell-069-to-settle-at-10879-data-talk",
+    "https://tradingeconomics.com/commodity/brent-crude-oil",
+    "https://www.cnbc.com/2026/10/20/oil-eases-as-markets-assess-potential-waiver-on-russian-energy-middle-east-supply-risks.html",
+    "https://financefeeds.com/brent-crude-oil-price-110-houthi-saudi-attacks-hormuz-mine-bull-113-bear-104/",
+    "https://globaloilshock.com/en/glossary/contango-backwardation/"
+   ],
+   "dossier": "- Oct 20 2026: front-month ICE Brent (Dec26) settled $108.79 (-0.69%), intraday five-month high $111.99 (Morningstar/Dow Jones Data Talk; SPA). Other outlets cite $109.55 / $109.29 for nearby sessions; Oct 19 settle ~$107.57-109.55 depending on source.\n- MTD +5.08%, YTD +78.8%; 52-wk range $58.92 (Dec 16 2025) to $118.35 (Mar 31 2026) per Morningstar; question background says $59-$138.\n- Curve: Oct 19 Dec26 ~$109.23 vs Jan27 ~$105.93 (Dec-Jan backwardation ~$3.3); Oct 6 Dec $100.36 / Jan $97.51 (globaloilshock/commodity-board).\n- Bearish drivers: Trump executive order (~Oct 16-17) waiving key Russia sanctions/tariffs, shadow-fleet exemption under consideration; ceasefire/diplomacy hopes (CNBC Oct 20).\n- Bullish drivers: Houthi-claimed strikes on Saudi Yanbu/Shaybah, tanker hit by mine in Hormuz (financefeeds), Ukrainian strikes on Russian refineries, diesel tightness, IEA Oct report shows falling Russian and Middle East product exports.\n- Status quo: Dec26 contract trades roughly $105-112 through expiry.\n- Resolution instrument: resolves off Barchart CB*0 continuous front-month 'Last' for Oct 30 2026. The Dec26 Brent contract's last trading day is Oct 30 (last business day of the second month before delivery). Could not confirm whether Barchart's continuous series rolls to Jan27 before Dec expiry (page did not load); if it has rolled, the value is ~$3 lower given the backwardation.\n- Event window: single settlement on Oct 30 2026; as of Oct 21 there are ~8 trading days left.\n- Volatility: 2026 realized daily moves of 1-3% are common; ~50% annualized implies ~9% SD over 8 trading days.\n- Markets: no Polymarket/Kalshi/Manifold contract on this date was found; a Robinhood daily Brent contract exists for Oct 21 only.\n- Searched for but not found: Barchart's current CB*0 mapping, implied-volatility quotes.",
+   "reference_class": "8-trading-day changes in front-month Brent during high-volatility geopolitical regimes (2022, 2026)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.1937,
+   "seconds": 75.4,
+   "usage": {
+    "num_turns": 11,
+    "input": 14,
+    "cache_read": 193267,
+    "cache_write": 23787,
+    "cache_write_1h": 23787,
+    "output": 4339,
+    "thinking": 899,
+    "web_search": 4,
+    "cost_usd_envelope": 0.44844839999999997,
+    "web_fetch": 0,
+    "duration_api_ms": 89538
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 96.0,
+     "25": 103.0,
+     "50": 109.0,
+     "75": 114.5,
+     "90": 121.0
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Front-month Brent settled ~$108.7-109.6 on Oct 20, 2026; Dec contract ~$110 on Oct 21. Eight trading days to Oct 30 (likely Dec contract expiry day). Random-walk anchor at spot with OVX-implied ~9% 1-SD move. Slight downside skew: active US-Iran war-ending mediation (Qatar/Pakistan proposal) produced 3%+ intraday drops and a 17% 5-day drop in September; upside from Hormuz tanker attacks, Houthi-Saudi hostilities, Russian refinery strikes. Market check: no Brent Oct-30 settlement market found; Polymarket WTI 'hit in October' touch ladder (~38% for $105+) is a near-miss contract, used only as evidence.",
+   "sources": [
+    "https://tradingeconomics.com/commodity/brent-crude-oil",
+    "https://fortune.com/article/price-of-oil-10-20-2026/",
+    "https://en.wikipedia.org/wiki/2026%E2%80%932028_world_oil_market_chronology",
+    "https://defirate.com/prediction-markets/oil-spot-price/",
+    "https://www.morningstar.com/news/dow-jones/202610207154/front-month-ice-brent-crude-fell-069-to-settle-at-10879-data-talk",
+    "https://www.rigzone.com/news/oil_slips_as_iran_talks_fuel_volatility-20-oct-2026-184889-article"
+   ],
+   "dossier": "- Oct 20, 2026 front-month Brent settle reported as $108.79 (-0.69%) by Morningstar/Dow Jones Data Talk; other outlets report $108.72, $109.55, $110.40 (inconsistent sourcing). Intraday high $111.99 = five-month high. 52-wk high $118.35 (Mar 31, 2026), 52-wk low $58.92 (Dec 16, 2025). MTD +5.08%, YTD +78.8%.\n- Oct 21, 2026: TradingEconomics shows Brent ~$110.17 (+1.27%); Dec 2026 contract CBZ26 quoted ~109.9. Brent 'steadied near $109' amid mixed US-Iran diplomacy reports.\n- Context (Wikipedia 2026-28 oil chronology): US-Iran war; Strait of Hormuz blockade; Brent $89.31 end-Aug; >$100 Sep 9; Sept saw a 17% drop over five days then rebound; Oct opened $102.31 after carrier deployment; mid-Oct $109.86 (highest since May 19).\n- Oct 20 (Rigzone/Bloomberg): unconfirmed reports US and Iran close to deal sent Brent down up to 3.3% intraday; diplomat denied imminence. Qatar/Pakistan mediation proposal reportedly approved by US, consent of Iran.\n- Supply risks: at least 18 vessels attacked near Hormuz in two weeks; Saudi vs Houthi hostilities; Ukrainian strikes on Russian refineries; Middle East flows ~80% of pre-conflict (TradingEconomics).\n- Volatility: OVX 50.74 on Oct 16, 2026 (FRED OVXCLS via search). Implied 8-trading-day 1-SD ≈ 9% (~$10). Brent open interest at lowest since Mar 2025 earlier in October.\n- Status quo: price stays near ~$109-110 (spot as of Oct 20-21).\n- Resolution instrument: resolves off Barchart CB*0 continuous front-month settlement for Oct 30, 2026 (expected Dec 2026 contract, which under ICE rules expires on last business day of Oct = Oct 30 — expiry-day settle, possibly thin/volatile); not spot Dated Brent, not WTI.\n- Event window: single settlement on 2026-10-30; as of 2026-10-21 ~8 trading days remain.\n- Market check: no Polymarket/Kalshi/Manifold contract on Brent Oct-30 settlement found; Polymarket has a WTI 'hit in October 2026' touch ladder (different benchmark, touch-not-settle).\n- Searched but not found: Barchart page content (fetch failed), Brent options implied vol directly, Dec/Jan Brent spread.",
+   "reference_class": "8-trading-day changes in front-month Brent during high-volatility geopolitical regimes (2022, 2026), OVX ~50"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7453,
+   "seconds": 68.4,
+   "usage": {
+    "num_turns": 9,
+    "input": 12,
+    "cache_read": 161716,
+    "cache_write": 22493,
+    "cache_write_1h": 22493,
+    "output": 4509,
+    "thinking": 1300,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3894402,
+    "web_fetch": 0,
+    "duration_api_ms": 77546
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 99.0,
+     "25": 104.0,
+     "50": 108.7,
+     "75": 113.2,
+     "90": 118.5
+    }
+   },
+   "reasoning": "Status quo: Dec-26 Brent ~$110 on Oct 21 (settled $108.79 Oct 20, 5-month intraday high $111.99). Reference class: Brent 8-trading-day changes in high-volatility regimes (random walk with SD ≈ 7%). Key wrinkle: the Dec contract expires Oct 30, so Barchart's CB*0 may show the expiring Dec settlement or roll to Jan, which trades ~$3.3 lower in steep backwardation; weighted ~60/40, which pulls the center down ~$1.3. Robinhood/Kalshi's Brent Oct 30 5pm market (Pyth source, likely tracking the next contract) implies a median ~$105.5, which supports a slight downward lean. Two-sided risks: Hormuz/Houthi attacks and Ukrainian refinery strikes push up; US-Iran diplomacy, easing of shadow-fleet sanctions and profit-taking push down.",
+   "sources": [
+    "https://tradingeconomics.com/commodity/brent-crude-oil",
+    "https://robinhood.com/us/en/prediction-markets/commodities/events/brent-crude-oil-price-on-october-30-2026-at-5-00-pm-edt-oct-01-2026/",
+    "https://www.morningstar.com/news/dow-jones/202610207154/front-month-ice-brent-crude-fell-069-to-settle-at-10879-data-talk",
+    "https://globaloilshock.com/en/glossary/contango-backwardation/",
+    "https://commodity-board.com (Brent Dec/Jan settlement data via search snippet)"
+   ],
+   "dossier": "- Oct 20 2026 (Morningstar/Dow Jones Data Talk): front-month ICE Brent settled $108.79, -0.69%; 52-wk high $118.35 (Mar 31 2026), 52-wk low $58.92 (Dec 16 2025); MTD +5.08%, YTD +78.8%.\n- Oct 20 intraday the contract hit a 5-month high of $111.99 (SPA/Al-Riyadh). Oct 19 settle was $109.55.\n- Oct 21 morning (Trading Economics): Brent ~$110.17, +1.27% on the day; up ~11% over the month. Drivers: US-Iran diplomacy via Pakistan mediation, Houthi-Saudi hostilities, at least 18 vessels attacked near Hormuz, Russia-Ukraine refinery strikes. Middle East flows back to ~80% of pre-conflict levels.\n- Curve (commodity-board search snippet): Oct 19, Dec-26 Brent settled $109.23 and Jan-27 $105.93, a Dec/Jan backwardation of ~$3.3. Early October the spread was ~$2.85. The whole curve is in steep backwardation.\n- Contract-identity note: the ICE Brent Dec-26 contract expires on the last business day of October = Fri Oct 30 2026, the resolution date. Barchart CB*0 could show the expiring Dec settlement or roll to Jan; the difference is ~$3.\n- Resolves off Barchart CB*0 historical daily 'Last' for Oct 30 2026; not WTI, not intraday, not Pyth.\n- Event window: single settlement on Oct 30 2026; as of Oct 21 01:20Z there are 8 trading sessions left (Oct 21-30).\n- Realized vol: recent daily moves of 0.7-3%. The 0.69% drop on Oct 20 was the largest one-day % fall since Oct 13, so the latest days were relatively calm; the 2026 range of $59-$138 shows a high-vol regime.\n- Upside risks: Hormuz shipping attacks, Ukrainian strikes on Russian refining, diesel tightness. Downside risks: US-Iran deal progress, US easing of shadow-fleet sanctions, Russian-ceasefire headlines, profit-taking.\n- Market: Robinhood/Kalshi has a 'Brent price Oct 30 2026 5pm EDT' bracket market (Pyth-sourced, so the tracked contract month may differ). Its prices are not reproduced here to avoid anchoring.\n- Searched but not found: Polymarket/Manifold markets on this question; an explicit Barchart roll rule for CB*0 at expiry.",
+   "reference_class": "Brent front-month 8-trading-day price changes during high-volatility geopolitical regimes (2022, 2026)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1376,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.19,
+   "seconds": 28.6,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 17387,
+    "cache_write_1h": 17387,
+    "output": 2427,
+    "thinking": 471,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1900058,
+    "web_fetch": 0,
+    "duration_api_ms": 27940
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 96.0,
+     "25": 102.5,
+     "50": 108.5,
+     "75": 114.0,
+     "90": 120.5
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Front-month Dec26 Brent ~$110 on Oct 21 (settled $108.79 Oct 20); Dec expires Oct 30, the resolution date. Random-walk anchor at futures price, nudged down ~$1 for the ~35% chance Barchart CB*0 has already rolled to Jan27 (~$3.3 backwardation) and modest downside skew from US-Iran mediation headlines. Width from OVX ~50 (≈9% 8-day SD). Market check: Kalshi/Robinhood Brent Oct-30 bracket market (Pyth-sourced, possibly next-month contract) implies median ~$105.5 per Run 3 — near-miss contract, used as weak evidence only; no Polymarket/Manifold match.",
+   "sources": [],
+   "reconciliation": "Price level disputes were small (~$108.7-110 across sources) and settled as consistent with ~$109-110. The main factual dispute, whether Barchart CB*0 shows the expiring Dec26 or rolled Jan27 on Oct 30, could not be verified without web access; I weight Dec ~65% since it still trades on its expiry day, which shifts the median ~$1 down. Width was a judgment call: Run 3's 7% SD vs OVX-implied 9%. I side with OVX plus expiry-day thinness, which gives a ~$24.5 10-90 width. Kalshi bracket evidence (median ~105.5) supports a slight downward lean but may track Jan, so it was not used as an anchor.",
+   "disagreements": [
+    {
+     "claim": "Barchart CB*0 on Oct 30 shows Dec26 final settle vs rolled Jan27 (~$3.3 lower)",
+     "kind": "factual",
+     "verdict": "Unresolved without web access; weighted ~65/35 toward Dec"
+    },
+    {
+     "claim": "Current front-month level ($108.7 vs $109.55 vs $110.17)",
+     "kind": "factual",
+     "verdict": "Different timestamps/sessions; consistent with ~$109-110"
+    },
+    {
+     "claim": "8-day volatility ~7% (Run 3) vs ~9% (Runs 1-2)",
+     "kind": "judgment",
+     "verdict": "OVX 50.7 supports ~9%; adopted the wider range"
+    },
+    {
+     "claim": "Size of downside skew from US-Iran deal risk and the Kalshi market's ~105.5 median",
+     "kind": "judgment",
+     "verdict": "Modest downward lean; Kalshi contract may track a different month, so used as evidence only"
+    }
+   ],
+   "reference_class": "Brent 8-trading-day price changes in high-volatility regimes (OVX ~50), random walk from current front-month futures"
+  }
+ ]
+}
