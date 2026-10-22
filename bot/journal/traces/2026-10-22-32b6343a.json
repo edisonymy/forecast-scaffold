@@ -1,0 +1,267 @@
+{
+ "record_id": "2026-10-22-32b6343a",
+ "question": "How many Swiss regions will be classified as \"Extremely Dry\" according to the Swiss drought platform on November 8, 2026?",
+ "question_id": 46422,
+ "url": "https://www.metaculus.com/questions/46195/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-22T15:04:53+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.6608,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 6.333333333333333,
+    "25": 8.933333333333334,
+    "50": 11.333333333333334,
+    "75": 13.833333333333334,
+    "90": 16.5
+   },
+   "p_below_lower": 0.09000000000000001,
+   "p_above_upper": 0.02
+  },
+  "phase1": {
+   "10": 6.333333333333333,
+   "25": 8.933333333333334,
+   "50": 11.333333333333334,
+   "75": 13.833333333333334,
+   "90": 16.5
+  },
+  "phase2": null,
+  "spread_phase1": 12.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 8.0,
+   "25": 11.0,
+   "50": 14.0,
+   "75": 16.5,
+   "90": 18.5
+  },
+  "p_below_lower": 0.03
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 2.3675,
+   "seconds": 211.2,
+   "usage": {
+    "num_turns": 27,
+    "input": 50,
+    "cache_read": 841416,
+    "cache_write": 33212,
+    "cache_write_1h": 33212,
+    "output": 9796,
+    "thinking": 3571,
+    "web_search": 6,
+    "cost_usd_envelope": 0.8551621999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 214301
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 2.0,
+     "25": 2.8,
+     "50": 4.0,
+     "75": 6.0,
+     "90": 9.0
+    },
+    "p_below_lower": 0.22
+   },
+   "reasoning": "Reference class: week-to-week changes in the count of 'Extremely dry' regions on the Swiss drought map during a slowly easing, long-running autumn drought. Anchor: a search-engine snippet putting 5 regions at 'Extremely dry' on Oct 11, 2026. I could not verify it because the map is interactive. Oct 22 bulletin: 'slowly easing but locally tense', worst on the central/eastern Plateau. Rain through ~Oct 24 is followed by dry high pressure until about mid-November, so major improvement before Nov 8 is unlikely, but further slow easing is plausible. If the region warning 'level 4' corresponds to 'Very dry' rather than 'Extremely dry', the count could be 0-1; I price that below-range outcome at 22%. Market check: none found on Polymarket, Manifold, Kalshi or bookmakers.",
+   "sources": [
+    "https://www.trockenheit.admin.ch/en",
+    "https://www.trockenheit.admin.ch/de/trockenheit/trockenheitsbulletin",
+    "https://www.trockenheit.admin.ch/en/regions/42-eastern-swiss-plateau/time-series",
+    "https://www.trockenheit.admin.ch/en/factors/soil/modelled-soil-moisture",
+    "https://www.swissinfo.ch/eng/climate-adaptation/the-rain-brought-only-a-temporary-respite/92201760",
+    "https://www.wsl.ch/de/news/trockenheit-2026-haeufige-fragen-und-antworten/",
+    "https://www.iamexpat.ch/expat-info/swiss-news/drought-warning-switzerland",
+    "https://www.thelocal.ch/20260709/hig-danger-how-bad-is-the-drought-situation-in-switzerland-right-now"
+   ],
+   "dossier": "- trockenheit.admin.ch main map (fetched 2026-10-22): 'situation until 18.10.2026, updated 19.10.2026'. Map legend: Not dry / Slightly dry / Dry / Very dry / Extremely dry. Per-region classes are not readable via text fetch (interactive map with a 'show list' option).\n- Drought bulletin dated 2026-10-22 (next update 2026-10-29): 'Die Trockenheitssituation entspannt sich langsam, aber bleibt lokal weiterhin angespannt'. Tense especially on the central/eastern Plateau. 30-day precipitation deficits of 45-80% in Valais, central/eastern Plateau and central/eastern Alps. Record-low discharges at several High Rhine stations. Lakes Constance and Zurich exceptionally low. Soil moisture deficits 'considerable or even extreme'. Groundwater low.\n- Bulletin outlook: rain through ~Oct 24, then mostly dry high pressure in the last week of October and early November; precipitation possibly returning mid-November.\n- Region page 42 'Eastern Swiss Plateau' (fetched 2026-10-22): warning 'High risk, level 4' valid since 2026-06-25; 'It is becoming less dry'. It was not established whether warning level 4 corresponds to the map's 'Very dry' or 'Extremely dry' label. Region IDs go at least up to 42, so the total region count is likely ~40+ (unverified).\n- Search-engine snippet (unverified, attributed to the platform): 5 regions 'extrem trocken' as of 2026-10-11.\n- WSL FAQ 2026-08-21: the whole Plateau from Yverdon to the eastern St. Gallen Rhine valley under extreme drought; Jura and Basel strongly dry. Implies a higher count in late summer, now easing.\n- swissinfo 2026-10-12: rain brought only temporary relief; 30-day rainfall <50% of normal; Jura/Plateau flows at 10-30-year lows.\n- iamexpat 2026-07-10: level-4 drought warning across Switzerland except parts of Ticino/Graubünden.\n- Status quo: a weekly-updated classification that is easing slowly; the Nov 8 reading likely reflects data to ~Nov 1-8.\n- Resolution: resolves off the count of regions labelled 'Extremely dry' on trockenheit.admin.ch/en when Metaculus accesses it on/after 2026-11-08, not off warning levels or news reports. Range 1.5-25.5 with open bounds (0-1 falls below).\n- Event window: single snapshot on/after 2026-11-08; as of 2026-10-22, ~17 days remain.\n- Searched but could not find: the exact current count; a machine-readable data endpoint; the mapping between warning level and label; the total number of regions; any market (none on Polymarket/Manifold/Kalshi).",
+   "reference_class": "Week-to-week evolution of the count of 'Extremely dry' regions on trockenheit.admin.ch during a slowly easing, long-running autumn drought (2026 episode)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.675,
+   "seconds": 147.9,
+   "usage": {
+    "num_turns": 19,
+    "input": 30,
+    "cache_read": 464695,
+    "cache_write": 29455,
+    "cache_write_1h": 29455,
+    "output": 6834,
+    "thinking": 1957,
+    "web_search": 5,
+    "cost_usd_envelope": 0.6749779999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 163970
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 9.0,
+     "25": 13.0,
+     "50": 16.0,
+     "75": 18.5,
+     "90": 21.0
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Live geo.admin layer ch.bafu.trockenheitsindex (week 12-18 Oct 2026) shows 17 of 38 regions Extremely dry (13 very dry, 4 dry, 3 slightly, 1 not dry). Page updates Mondays with prior-week status, so the Nov 8 access likely shows week 26 Oct-1 Nov, ~2 updates away. Oct 22 bulletin: slow easing, recent rain helped only regionally, dry high-pressure end of Oct and first Nov week; deficits stay considerable to extreme on the northern Alps and the Plateau. Status quo persistence argues ~15-17; slow easing tilts slightly lower. No human market found on Polymarket/Manifold/Kalshi/bookmakers. No history of weekly counts found, so the spread is judgment-based.",
+   "sources": [
+    "https://api3.geo.admin.ch/rest/services/api/MapServer/identify?layers=all:ch.bafu.trockenheitsindex",
+    "https://www.trockenheit.admin.ch/de/trockenheit/trockenheitsbulletin",
+    "https://www.trockenheit.admin.ch/en",
+    "https://www.watson.ch/schweiz/wetter/927439341-wetter-schweiz-so-viel-hat-der-regen-gegen-die-trockenheit-genuetzt",
+    "https://de.wikipedia.org/wiki/D%C3%BCrre_und_Hitze_in_Europa_2026",
+    "https://swisstopo.github.io/topo-drought-briefing/"
+   ],
+   "dossier": "- Resolves off trockenheit.admin.ch map (geo.admin layer ch.bafu.trockenheitsindex, 38 regions, 5 classes: Not/Slightly/Dry/Very/Extremely dry), not cantonal warning levels (swisstopo briefing shows canton levels 1-5, a different product).\n- Layer updated weekly on Mondays showing previous week (page 'updated 10/19/2026, situation until 10/18/2026'). Access on/after Sun Nov 8 likely shows week 26 Oct-1 Nov (published ~Nov 2); possibly Nov 2-8 if updated Nov 9 before access.\n- geo.admin API, week 12-18 Oct 2026: Extremely dry = 17 (W & E Bernese Oberland, Oberaargau, Upper Emmental, Freiamt, W & E Central Switzerland, E Swiss Plateau, Lake Zurich region, Uri Alps, Surselva, Alpstein, Glarus Alps, N-Central & S-Central Grisons, Rhine Valley, Prättigau); Very dry 13 (E Jura, Balsthal, Lower Emmental, Bernese Plateau, Gruyère, Franches-Montagnes, W Plateau, Chablais, Valais S Alps, N Valais, Visp valleys, Goms, N Ticino); Dry 4; Slightly dry 3; Not dry 1 (Sottoceneri).\n- Drought bulletin 22 Oct 2026 (next 29 Oct): situation easing slowly, recent rain helped only regionally; stays tense in coming weeks esp. central/eastern Plateau; 30-day precip deficits 45-80% in Valais, Plateau, central/eastern Alps; W Switzerland and southern Alps less affected.\n- Same bulletin outlook: high-pressure dry weather end of Oct, first Nov week dry; from second Nov week westerly flow may bring seasonal precip (high uncertainty).\n- Rivers: exceptionally low discharge at several stations, High Rhine near-record lows; Lake Constance and Lake Zurich exceptionally low; soil moisture deficits considerable to extreme on northern Alps and Plateau; groundwater low, rising only slowly.\n- Watson 11 Oct 2026: past 30 days <50% of normal precip, some areas 15-35%; 90-day deficits expected to decrease slowly.\n- Wikipedia (Dürre und Hitze in Europa 2026): driest Apr-Sep half-year on record; Apr-Jul deficit 46%, highest since 1901.\n- Counter-evidence: rain helped regionally; the trend is described as slow easing, so counts may drift down; the index uses anomalies, so seasonally normal November rain could reclassify regions quickly.\n- Searched, absent: archived weekly counts for earlier weeks (no time series in API); any prediction market (none found).\n- Event window: single snapshot of the page on/after 2026-11-08; as of 2026-10-22 it is ~17 days away (~2 weekly updates).",
+   "reference_class": "Persistence of weekly Swiss drought-index regional classifications over a 2-week horizon during a prolonged multi-month drought"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.5123,
+   "seconds": 189.4,
+   "usage": {
+    "num_turns": 30,
+    "input": 42,
+    "cache_read": 705120,
+    "cache_write": 35768,
+    "cache_write_1h": 35768,
+    "output": 9252,
+    "thinking": 2416,
+    "web_search": 5,
+    "cost_usd_envelope": 0.8373659999999998,
+    "web_fetch": 0,
+    "duration_api_ms": 207869
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 8.0,
+     "25": 11.0,
+     "50": 14.0,
+     "75": 17.0,
+     "90": 19.5
+    },
+    "p_below_lower": 0.03
+   },
+   "reasoning": "Reference class: weekly persistence of the platform's combined drought index (37 days, slow-moving: rainfall, soil moisture, river/lake levels). Latest layer data (valid 12-18 Oct 2026) shows 17/38 regions Extremely dry, up from 13 in June. Bulletin 22 Oct: easing slowly, still tense in central/eastern Plateau. Rain and snow 21-24 Oct should pull a few Alpine regions down, then high pressure keeps late October dry, early November uncertain. The Metaculus snapshot is likely the week to 1 Nov or 8 Nov map. Median 14, modest decline. Left tail: heavy rain could take many regions down to Very dry. Right tail: dry spell holds or re-intensifies the count. Market check: none found on Polymarket, Manifold or Kalshi; bookmakers not checked.",
+   "sources": [
+    "https://api3.geo.admin.ch/rest/services/api/MapServer/identify?layers=all:ch.bafu.trockenheitsindex",
+    "https://www.trockenheit.admin.ch/de/trockenheit/trockenheitsbulletin",
+    "https://www.trockenheit.admin.ch/en",
+    "https://www.watson.ch/schweiz/klima/128161167-wetter-in-der-schweiz-die-hitzewelle-sorgt-fuer-massive-trockenheit",
+    "https://www.20min.ch/story/wetter-vorsicht-auf-den-paessen-kaltfront-bringt-schnee-bis-1000-meter-103651904",
+    "https://www.watson.ch/schweiz/wetter/927439341-wetter-schweiz-so-viel-hat-der-regen-gegen-die-trockenheit-genuetzt",
+    "https://www.geo.admin.ch/de/datensatz-09092026",
+    "https://www.trockenheit.admin.ch/en/drought/drought-warnings-and-recommendations-on-how-to-act"
+   ],
+   "dossier": "- Resolution instrument: the platform's regional drought-index map (categories: Not dry / Slightly dry / Dry / Very dry / Extremely dry over 38 regions). This is not the hazard WARNING map (levels 1-5). The index is also published as geo.admin layer ch.bafu.trockenheitsindex. Counts come from that index, not the warnings.\n- Layer data valid 12-18 Oct 2026 (map 'Situation bis 18.10.2026', page updated 19.10): Extremely dry = 17 regions (W & E Bernese Oberland, Oberaargau, Upper Emmental, Freiamt, W & E Central Switzerland, Eastern Swiss Plateau, Lake Zurich Region, Uri Alps, Surselva, Alpstein, Glarus Alps, N- and S-Central Grisons, Rhine Valley, Prättigau). Very dry = 13; Dry = 4; Slightly dry = 3; Not dry = 1 (Sottoceneri).\n- Map updates weekly; each map covers Mon-Sun. A snapshot taken 8 Nov likely shows the week to 1 Nov; if accessed 9 Nov or later, possibly the week to 8 Nov.\n- watson.ch, 23 Jun 2026: 13 of 38 regions were extreme; only Upper Engadine not dry.\n- Drought bulletin, 22 Oct 2026 (next issue 29 Oct): situation easing slowly, still locally tense, especially central/eastern Plateau. 30-day precipitation deficits 45-80% in Valais, Plateau and Alps; 90-day deficits 40-50% in eastern Plateau and NE Alpine slopes. River flows are 10-30-year lows, some record lows on the High Rhine. Soil-moisture deficits 'substantial or even extreme' on the northern Alpine slopes and Plateau. Groundwater low.\n- Bulletin outlook: precipitation at the end of this week, then a mostly high-pressure, dry last week of October. Early November uncertain; possibly somewhat more precipitation in mid-November.\n- 20min, 19 Oct 2026: cold fronts Wed 21 Oct and Fri-Sat 23-24 Oct; snow line falling toward 1000-1500 m, especially eastern Switzerland and Grisons.\n- watson, 11 Oct 2026: earlier rain of 20-40 mm on the northern Alps gave only temporary relief; much of it evaporated or ran off.\n- Summer 2026: driest April-September since 1864 per news reports. In July most of the country was under warning level 4.\n- Event window: single snapshot when Metaculus accesses the page on or after 8 Nov 2026. As of 22 Oct, about 2-3 weekly map updates remain.\n- Searched but not found: earlier weekly index counts for Sep-Oct (trajectory before 18 Oct); quantitative precipitation forecast for early November; any betting market.",
+   "reference_class": "Week-to-week persistence of the Swiss combined drought index category counts (38 regions) during a prolonged multi-month drought, 2-3 weekly updates ahead"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "research",
+   "run_index": 1,
+   "spread": 2.449,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.243,
+   "seconds": 38.7,
+   "usage": {
+    "num_turns": 4,
+    "input": 8,
+    "cache_read": 100098,
+    "cache_write": 19203,
+    "cache_write_1h": 19203,
+    "output": 2985,
+    "thinking": 465,
+    "web_search": 0,
+    "cost_usd_envelope": 0.2429756,
+    "web_fetch": 0,
+    "duration_api_ms": 37003
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 8.0,
+     "25": 11.0,
+     "50": 14.0,
+     "75": 16.5,
+     "90": 18.5
+    },
+    "p_below_lower": 0.03
+   },
+   "reasoning": "Verified directly: the geo.admin layer ch.bafu.trockenheitsindex for 12-18 Oct 2026 lists 17 of 38 regions as Extremely dry (the fetch summary said 16, but its own table lists 17). The 22 Oct bulletin says the drought is easing slowly and stays tense on the central/eastern Plateau. Rain and snow on 21-24 Oct should downgrade a few Alpine and eastern regions, then dry high pressure is expected through early November. The Metaculus snapshot likely shows the week to 1 Nov or 8 Nov, so I expect a modest decline from 17 with a median of 14. Left tail: rain resets the anomaly-based index faster than expected. Right tail: the count holds near 17-18. No human market found (Polymarket/Manifold/Kalshi).",
+   "sources": [
+    "https://api3.geo.admin.ch/rest/services/api/MapServer/identify?layers=all:ch.bafu.trockenheitsindex (valid 12-18.10.2026)"
+   ],
+   "reconciliation": "Main factual dispute: today's count, 5 (Run 1, from an unverified snippet) vs 17 (Runs 2 and 3). I queried the geo.admin identify API for ch.bafu.trockenheitsindex, valid 12-18.10.2026: 38 regions, and the listed classifications give 17 Extremely dry (the tool's summary miscounted 16). This rules out Run 1's anchor and its warning-level confusion, since the question resolves off the index map. Still unsettled: which weekly map the snapshot shows (week to 1 Nov vs 8 Nov) and the size of the rain effect on 21-24 Oct; these were weighed as judgment. I agree with Run 3's slow-decline framing, with a slightly tighter upper tail.",
+   "disagreements": [
+    {
+     "claim": "Current number of Extremely dry regions is 5 vs 17",
+     "kind": "factual",
+     "verdict": "17 per the geo.admin API for 12-18 Oct 2026; the 5 snippet is wrong or outdated"
+    },
+    {
+     "claim": "Warning level 4 may map to Very dry, implying 0-1 Extremely dry regions",
+     "kind": "factual",
+     "verdict": "Irrelevant: the index map labels 17 regions Extremely dry directly"
+    },
+    {
+     "claim": "How much the count eases by the Nov 8 snapshot (median 14 vs 16)",
+     "kind": "judgment",
+     "verdict": "Slow easing per the bulletin plus late-October rain and snow; took a median of 14"
+    },
+    {
+     "claim": "Which weekly map is shown on Nov 8",
+     "kind": "factual",
+     "verdict": "Unresolved; most likely week to 1 Nov, possibly week to 8 Nov"
+    }
+   ],
+   "reference_class": "Short-horizon (2-3 weekly updates) persistence of region counts in the Swiss drought index's top class during a slowly easing long drought"
+  }
+ ]
+}
