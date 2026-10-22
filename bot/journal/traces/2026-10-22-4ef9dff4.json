@@ -1,0 +1,267 @@
+{
+ "record_id": "2026-10-22-4ef9dff4",
+ "question": "What will the first reported revenues after September 2026 be for the following companies? (Nvidia)",
+ "question_id": 46279,
+ "url": "https://www.metaculus.com/questions/46006/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-10-22T22:42:11+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.2179,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 110566666666.66667,
+    "25": 111933333333.33333,
+    "50": 113133333333.33333,
+    "75": 114300000000.0,
+    "90": 115266666666.66667
+   },
+   "p_below_lower": 0.01,
+   "p_above_upper": 0.09000000000000001
+  },
+  "phase1": {
+   "10": 110566666666.66667,
+   "25": 111933333333.33333,
+   "50": 113133333333.33333,
+   "75": 114300000000.0,
+   "90": 115266666666.66667
+  },
+  "phase2": null,
+  "spread_phase1": 300000000.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 110600000000.0,
+   "25": 111900000000.0,
+   "50": 113000000000.0,
+   "75": 114100000000.0,
+   "90": 115100000000.0
+  },
+  "p_below_lower": 0.01,
+  "p_above_upper": 0.1
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3004,
+   "seconds": 55.9,
+   "usage": {
+    "num_turns": 6,
+    "input": 8,
+    "cache_read": 93727,
+    "cache_write": 18794,
+    "cache_write_1h": 18794,
+    "output": 3641,
+    "thinking": 990,
+    "web_search": 2,
+    "cost_usd_envelope": 0.3003804,
+    "web_fetch": 0,
+    "duration_api_ms": 63776
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 110900000000.0,
+     "25": 112200000000.0,
+     "50": 113300000000.0,
+     "75": 114400000000.0,
+     "90": 115300000000.0
+    },
+    "p_above_upper": 0.09
+   },
+   "reasoning": "Nvidia guided Q3 FY27 at $108.0B ±2% (Aug 2026, ex-China DC compute). Over the last 8 quarters actual revenue beat the guide midpoint by 2.5-7.9% (mean ~5%, SD ~1.5%); Q2 FY27 beat by ~5.7% ($96.2B vs ~$91B). Applying the beat distribution gives a median of ~$113.3B. Upside tail >$116B (beat >7.4%) via a faster Rubin ramp or China sales resuming, ~9%. Downside below the low end of guidance is historically absent. Manifold (thin: 18 trades, 4 holders, same contract) puts 8% on <110, 40% on 110-112, 26% on 112-114, 17% on 114-116 and 10% on >=116, slightly lower than my beat-based median; I give it small weight.",
+   "sources": [
+    "https://dataporium.tech/articles/nvidia-fiscal-q2-2027-earnings-revenue-doubles-to-96-2-billion-guides-108-billion-for-q3",
+    "https://manifold.markets/Terminator2/what-will-nvidias-q3-fiscal-2027-re",
+    "https://www.marketbeat.com/earnings/reports/2026-11-18-nvidia-co-stock/",
+    "https://www.fool.com/investing/2026/09/15/prediction-nvidias-108-billion-q3-guide-will-look/",
+    "https://www.chartmill.com/stock/quote/NVDA/estimates",
+    "https://www.rexshares.com/nvidia-earnings/"
+   ],
+   "dossier": "- Nvidia Q2 FY27 (reported late Aug 2026): revenue $96.2B, data center ~$89B (+117% y/y) (dataporium.tech; stocktitan).\n- Q3 FY27 guidance: $108.0B ±2% (range $105.8-110.2B), GAAP GM 74.0% ±50bp, no China DC compute revenue assumed; Vera Rubin in full production (dataporium.tech, Aug 2026).\n- Consensus at the time of guidance was ~$103.5-104.2B (techflowpost). Later consensus figures by source: MarketBeat $108.8B, ChartMill $111.3B, RexShares $103.8B (varying dates).\n- MarketBeat lists the report date as Nov 18, 2026 after close; the question text says no earlier than Nov 25. Either date is inside the window.\n- Beat history (actual vs guide midpoint): Q3FY25 32.5->35.1 (+7.9%); Q4FY25 37.5->39.3 (+4.9%); Q1FY26 43->44.06 (+2.5%, H20 export hit); Q2FY26 45->46.74 (+3.9%); Q3FY26 54->57.0 (+5.6%); Q4FY26 65->68.1 (+4.8%); Q1FY27 ~78->81.6 (+4.6%); Q2FY27 ~91->96.2 (+5.7%). Q1/Q2 FY27 guide midpoints are inferred, not confirmed. Fool cites 12 straight quarters above the high end of guidance, averaging 3.1% above the high end over the last 4.\n- Sequential growth guided at ~12% vs 18% actual in Q2.\n- Upside mechanisms: faster Rubin ramp, China H20/other sales resuming (not in guide). Downside: supply/CoWoS constraints, export rules, Rubin transition hiccups.\n- Human market: thin Manifold market exists (same contract).\n- Resolves off the initially reported Q3 FY27 total revenue in the 8-K/press release, not later revisions and not segment figures.\n- Event window: first quarterly release after Sep 30, 2026 -> before Jan 1, 2027. As of Oct 22, 2026 the release has not happened; it is expected mid/late November.\n- Not found: any mid-quarter guidance update or pre-announcement.",
+   "reference_class": "Nvidia quarterly revenue actual vs guidance midpoint, Q3 FY25-Q2 FY27"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9644,
+   "seconds": 66.9,
+   "usage": {
+    "num_turns": 7,
+    "input": 12,
+    "cache_read": 154389,
+    "cache_write": 20585,
+    "cache_write_1h": 20585,
+    "output": 3758,
+    "thinking": 936,
+    "web_search": 3,
+    "cost_usd_envelope": 0.35508480000000003,
+    "web_fetch": 0,
+    "duration_api_ms": 71311
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 110300000000.0,
+     "25": 111800000000.0,
+     "50": 113000000000.0,
+     "75": 114200000000.0,
+     "90": 115200000000.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.08
+   },
+   "reasoning": "Nvidia guided Q3 FY27 revenue to $108.0B +/-2%, assuming no China data-center compute revenue. Over the last six quarters, actual revenue beat the guidance midpoint by 2.5%-5.7% (median ~4.7%; most recent +5.7% on a $91B guide, and roughly +4.6% on Q1's $78B guide). Applying that pattern gives a center near $113B. Sell-side consensus (~$108.8B) hugs the guide, as usual. The Manifold market (unknown volume; contract matches GAAP 8-K revenue apart from its stated report date) has its mode at $110-112B with 10% at $116B+, consistent with this view. Upside tail: China shipments or a bigger supply-driven beat. Downside: supply/rack constraints. The midpoint hasn't been missed in at least 6 quarters.",
+   "sources": [
+    "https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000073/q2fy27cfocommentary.htm",
+    "https://manifold.markets/Terminator2/what-will-nvidias-q3-fiscal-2027-re",
+    "https://www.fool.com/investing/2026/09/15/prediction-nvidias-108-billion-q3-guide-will-look/",
+    "https://www.marketbeat.com/earnings/reports/2026-11-18-nvidia-co-stock/"
+   ],
+   "dossier": "- Q2 FY27 (reported Aug 2026, SEC 8-K CFO commentary): revenue $96.2B, +18% QoQ, +106% YoY; Data Center $89.0B (+18% QoQ); hyperscale $48.7B, AI clouds/industrial/enterprise $40.3B (+25% QoQ). China Hopper shipments <1% of DC revenue.\n- Q3 FY27 guidance (same source): $108.0B +/-2% (range $105.8B-$110.2B), GM 74.0% +/-50bp; assumes zero China DC compute revenue.\n- History of actual vs guidance midpoint: Q1 FY26 guide $43B -> $44.06B (+2.5%, China H20 hit); Q2 FY26 $45B -> $46.74B (+3.9%); Q3 FY26 $54B -> $57.0B (+5.6%); Q4 FY26 $65B -> $68.13B (+4.8%); Q1 FY27 ~$78B -> $81.6B (~+4.6%); Q2 FY27 $91B -> $96.2B (+5.7%). Per Motley Fool (Sep 15 2026), Nvidia has beat the high end of guidance in each of the past 12 quarters, averaging ~3.1% above the high end over the past four.\n- Sell-side consensus (MarketBeat, Oct 2026): revenue ~$108.82B, EPS $2.49; consensus typically sits near the guide.\n- Report date: sources variously say Nov 17, 18 or 25, 2026, after market close; all on or before the question's scheduled resolution.\n- Resolves off the total revenue in the Q3 FY27 earnings release/8-K, initial figure only.\n- Event window: the quarter ending ~late Oct 2026; the release is expected mid/late Nov 2026. As of Oct 22 the quarter is nearly complete and the release has not happened.\n- Upside mechanisms: China export approvals (excluded from the guide), supply easing. Downside: rack/supply constraints, customer timing. No below-guidance-low result in at least 12 quarters.\n- Searched for but did not find: an updated mid-quarter Nvidia revenue update, or Kalshi/bookmaker lines.",
+   "reference_class": "Nvidia quarterly revenue actual vs guidance midpoint, Q1 FY26-Q2 FY27 (beats +2.5% to +5.7%)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6093,
+   "seconds": 58.0,
+   "usage": {
+    "num_turns": 6,
+    "input": 8,
+    "cache_read": 93691,
+    "cache_write": 18949,
+    "cache_write_1h": 18949,
+    "output": 3988,
+    "thinking": 948,
+    "web_search": 2,
+    "cost_usd_envelope": 0.3089242,
+    "web_fetch": 0,
+    "duration_api_ms": 63705
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 110500000000.0,
+     "25": 111800000000.0,
+     "50": 113100000000.0,
+     "75": 114300000000.0,
+     "90": 115300000000.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.1
+   },
+   "reasoning": "Nvidia guided Q3 FY27 revenue to $108.0B +/-2%, excluding China data-center compute. Over the last 8 quarters actual revenue beat the guidance midpoint by about 2.5-8%, typically ~5% (Q2 FY27: $96.2B vs $91.0B guide, +5.7%). Applying that beat gives a median near $113.2-113.4B. About 10% sits above $116B (a beat over 7.4% happened once in 8 quarters; China resumption or a faster Rubin ramp could cause it), and about 1% below $105B (a miss of the guidance floor, unseen recently). The only market found is a thin Manifold one (4 holders) with most weight in $110-114B, roughly consistent with this. Sell-side consensus is about $108.8-111.3B.",
+   "sources": [
+    "https://dataporium.tech/articles/nvidia-fiscal-q2-2027-earnings-revenue-doubles-to-96-2-billion-guides-108-billion-for-q3",
+    "https://manifold.markets/Terminator2/what-will-nvidias-q3-fiscal-2027-re",
+    "https://www.marketbeat.com/earnings/reports/2026-11-18-nvidia-co-stock/",
+    "https://www.chartmill.com/stock/quote/NVDA/estimates",
+    "https://www.fool.com/investing/2026/09/15/prediction-nvidias-108-billion-q3-guide-will-look/",
+    "https://www.stocktitan.net/news/NVDA/nvidia-announces-financial-results-for-second-quarter-fiscal-98x41cxh35vk.html"
+   ],
+   "dossier": "- Guidance (Q2 FY27 release, late Aug 2026): Q3 FY27 revenue $108.0B +/-2% ($105.8B-$110.2B), gross margin 74.0% +/-50bp, assumes zero China data-center compute revenue (stocktitan/dataporium/techflowpost).\n- Q2 FY27 actual $96.2B vs $91.0B guide (+5.7%); Data Center $89.0B, +117% y/y (dataporium; Manifold market description).\n- Guide-vs-actual history (guide midpoint -> actual, $B): Q3FY25 32.5->35.1 (+8%); Q4FY25 37.5->39.3 (+4.9%); Q1FY26 43->44.1 (+2.5%, H20 China hit); Q2FY26 45->46.7 (+3.9%); Q3FY26 54->57.0 (+5.6%); Q4FY26 65->68.1 (+4.8%); Q1FY27 ~78->81.6 (~+4.6%); Q2FY27 91->96.2 (+5.7%). Older guides are from memory; Q2FY27 is confirmed.\n- Guided sequential growth ~12% vs 18% achieved in Q2 FY27.\n- Vera Rubin said to be in full production with Google Cloud, Azure, Oracle; ramp is behind the slightly lower margin guide.\n- China: any H20/China resumption would add to the guide; $180M of H20 charges released in Q2.\n- Consensus: MarketBeat ~$108.82B (Oct 2026); ChartMill ~$111.3B (early Oct); RexShares $103.8B (dated ~early Sep, likely stale).\n- Report date appears to be ~Nov 18, 2026 (MarketBeat, Manifold), inside the window.\n- Status quo: Nvidia reports above the top of its guidance range, as it has every quarter in this sample.\n- Resolves off total revenue in Nvidia's Q3 FY27 earnings release / 8-K, not data-center revenue or later restatements.\n- Event window: first earnings release after Sep 30 2026 through Jan 1 2027; as of Oct 22 2026, Q3 FY27 (ending ~late Oct) is nearly complete and the report is ~4 weeks away.\n- Searched for but not found: a Kalshi or Polymarket contract on NVDA revenue; Q3-specific supply-constraint commentary.",
+   "reference_class": "Nvidia quarterly reported revenue vs prior-quarter guidance midpoint, Q3 FY25-Q2 FY27 (8 quarters)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1268,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2025,
+   "seconds": 31.4,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 17344,
+    "cache_write_1h": 17344,
+    "output": 3071,
+    "thinking": 732,
+    "web_search": 0,
+    "cost_usd_envelope": 0.2025418,
+    "web_fetch": 0,
+    "duration_api_ms": 30889
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 110600000000.0,
+     "25": 111900000000.0,
+     "50": 113000000000.0,
+     "75": 114100000000.0,
+     "90": 115100000000.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.1
+   },
+   "reasoning": "Nvidia guided Q3 FY27 revenue to $108.0B +/-2%, excluding China data-center compute. Over the last 8 quarters it beat the guide midpoint by 2.5-7.9% (about 5% on average; the last 4 were 4.6-5.7%), which centres the outcome near $113.0-113.4B. Revenue above $116B needs a beat over 7.4%, seen once in 8 quarters; China sales resuming or a faster Rubin ramp could cause it, so I put ~10% there. Below $105B means missing the guidance floor, which hasn't happened in at least 12 quarters (~1%). The percentiles are conditional on landing inside $105-116B, which pulls the median slightly below the unconditional ~$113.3B. Market check: the runs found only a thin Manifold market with the same contract (4 holders) that clusters at $110-114B, slightly lower; no Polymarket, Kalshi or bookmaker market found.",
+   "sources": [],
+   "reconciliation": "All three runs agree on the guide ($108.0B +/-2%, ex-China), the beat history (2.5-7.9%, about 5% typical), and that the release falls inside the window. Remaining factual gaps: the report date (Nov 17/18/25, all inside the window, so it doesn't matter) and some older guide midpoints that are partly from memory, which only Q2 FY27 confirms; I couldn't verify either without web access. Neither changes the centre. The only real disagreement is judgment on tail mass (8-10% above $116B, 0-1% below $105B). I took 10%/1% because China upside is excluded from the guide and dollar beats are growing. Unlike the runs, I stated the percentiles explicitly conditional on landing in-range, so the median is $113.0B rather than ~$113.2B. I carried forward the runs' reference class and the ~$4.1B dispersion.",
+   "disagreements": [
+    {
+     "claim": "Report date is Nov 17/18 vs Nov 25, 2026",
+     "kind": "factual",
+     "verdict": "Unresolved without web access, but irrelevant: all dates fall inside the resolution window"
+    },
+    {
+     "claim": "Exact Q1 FY27 and earlier guidance midpoints (partly from memory)",
+     "kind": "factual",
+     "verdict": "Couldn't verify; Q2 FY27 ($91B -> $96.2B) is confirmed, and the beat pattern is consistent enough that the centre doesn't move"
+    },
+    {
+     "claim": "Probability above $116B (8% vs 9% vs 10%)",
+     "kind": "judgment",
+     "verdict": "Took 10%: China upside is excluded from the guide and dollar beats are growing; a >7.4% beat occurred 1 in 8 quarters"
+    },
+    {
+     "claim": "Probability below $105B (0 vs 1%)",
+     "kind": "judgment",
+     "verdict": "1%, for tail risk such as export shocks or supply disruption; no miss of the guidance floor in at least 12 quarters"
+    },
+    {
+     "claim": "Consensus level ($103.8B vs $108.8B vs $111.3B)",
+     "kind": "factual",
+     "verdict": "Different dates; the $103.8B figure is likely stale. Consensus hugs the guide and is a weak signal next to the beat history"
+    }
+   ],
+   "reference_class": "Nvidia quarterly revenue vs guidance midpoint, Q3 FY25-Q2 FY27 (8 quarters)"
+  }
+ ]
+}
