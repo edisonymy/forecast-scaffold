@@ -1,0 +1,250 @@
+{
+ "record_id": "2026-10-23-fc85bec6",
+ "question": "What will be the all-time highest close price of NVDA before January 1, 2027?",
+ "question_id": 46412,
+ "url": "https://www.metaculus.com/questions/46184/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-10-23T14:02:55+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.2569,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 239.20000000000002,
+    "25": 239.3066666666667,
+    "50": 239.6,
+    "75": 248.0,
+    "90": 260.6666666666667
+   },
+   "p_above_upper": 0.11333333333333334
+  },
+  "phase1": {
+   "10": 239.20000000000002,
+   "25": 239.3066666666667,
+   "50": 239.6,
+   "75": 248.0,
+   "90": 260.6666666666667
+  },
+  "phase2": null,
+  "spread_phase1": 0.7,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 239.25,
+   "25": 239.3,
+   "50": 239.5,
+   "75": 249.5,
+   "90": 262.0
+  },
+  "p_above_upper": 0.13
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3011,
+   "seconds": 71.1,
+   "usage": {
+    "num_turns": 5,
+    "input": 8,
+    "cache_read": 91824,
+    "cache_write": 18601,
+    "cache_write_1h": 18601,
+    "output": 4021,
+    "thinking": 1268,
+    "web_search": 2,
+    "cost_usd_envelope": 0.3010568,
+    "web_fetch": 0,
+    "duration_api_ms": 74708
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 239.25,
+     "25": 239.3,
+     "50": 239.5,
+     "75": 251.0,
+     "90": 263.0
+    },
+    "p_above_upper": 0.14
+   },
+   "reasoning": "Resolution equals max(239.24, highest close Oct 23–Dec 31). The floor is the existing ATH, so there's no lower escape. Spot is ~213 after a 4.4% drop on Oct 22 tied to AI-capex worries, so a new high needs about +12.4% in ~48 trading days, including Q3 earnings in late Nov. Reflection principle with 40-45% vol gives a 50-55% touch chance; daily-close monitoring trims that to ~47%, so ~53% mass sits at exactly 239.24. Given a breakout: P(>250)≈0.34, P(>260)≈0.25, P(>275)≈0.14 (priced as the upper escape). Percentiles are conditional on landing in range. Polymarket's ATH-by-Dec-31 contract already resolved YES on the October high and isn't informative for a further high; no live matching market was found.",
+   "sources": [
+    "https://stockanalysis.com/stocks/nvda/history/",
+    "https://www.heygotrade.com/en/news/nvidia-nvda-stock-news-october-23-2026/",
+    "https://www.globalbankingandfinance.com/nvidia-nvda-falls-2026-10-22/",
+    "https://polymarket.com/event/nvda-all-time-high-by",
+    "https://www.lines.com/prediction-markets/finance/nvda-all-time-high-by"
+   ],
+   "dossier": "- Stock Analysis daily history (fetched 2026-10-23): ATH close $239.24 on 2026-10-06; Oct 5 238.90, Oct 7 237.47, Oct 8 230.48, Oct 9 229.28, Oct 12 226.32, Oct 13 228.52, Oct 14 221.30, Oct 15 217.23, Oct 16 214.13, Oct 19 217.09, Oct 20 216.47, Oct 21 221.97, Oct 22 212.21, Oct 23 212.94 (possibly intraday). Sep 28 228.86.\n- heygotrade/globalbankingandfinance (2026-10-22): NVDA -4.4% to 212.21 on ~112M shares, chip selloff over AI-spending and cost-of-capital worries after Meta earnings.\n- Background (question text): $150B buyback announced 2026-09-28.\n- Status quo: if no new high, resolution = 239.24 exactly (the floor; can't resolve lower). Price needs ~+12.4% from ~213 to set a new high.\n- Catalysts in window: NVDA Q3 FY27 earnings expected ~late Nov 2026 (exact date searched, not confirmed); usual Dec seasonality.\n- Volatility: recent daily moves of 2-4.4% imply ~40-50% annualized realized vol; horizon ~48 trading days (~0.19y), 1-sigma ~17-20%.\n- Reference: reflection principle P(max>B)≈2(1-Φ(ln(B/S)/σ√T)), continuous; daily closes touch slightly less often.\n- Markets: Polymarket 'NVDA all-time high by Dec 31, 2026' already resolved YES on the October high, so it's uninformative for a further high; no live contract on the year-end max was found. The harness-suggested Manifold Nasdaq-drawdown market is a near-miss (different instrument).\n- Resolves off Yahoo Finance adjusted close (split-adjusted), not intraday highs (one source listed an intraday ATH of $243.16).\n- Event window: now (2026-10-23) -> 2026-12-31 close; the window is all-time to date, so the existing 239.24 counts; ~0% of the remaining forward window has elapsed.\n- Searched for but not found: confirmed earnings date, options-implied vol for Dec expiry.",
+   "reference_class": "Running-maximum (barrier-touch) distribution for a high-vol mega-cap stock ~11% below its ATH with ~10 weeks left, lognormal at ~40-45% annual vol"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.0107,
+   "seconds": 84.6,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 123326,
+    "cache_write": 20152,
+    "cache_write_1h": 20152,
+    "output": 4318,
+    "thinking": 1597,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3616372,
+    "web_fetch": 0,
+    "duration_api_ms": 93198
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 239.1,
+     "25": 239.22,
+     "50": 239.3,
+     "75": 246.5,
+     "90": 260.0
+    },
+    "p_above_upper": 0.1
+   },
+   "reasoning": "Current ATH close 239.24 (Oct 6, 2026); spot ~213 after a 4.4% drop on Oct 22 tied to Meta/AI-capex worries; needs +12.4% within ~47 trading days. Driftless barrier model at ~35-45% vol gives ~45-50% touch; closing-basis haircut -> ~42% new ATH, ~10% chance max >275. Catalyst: Q3 FY27 earnings ~Nov 17-18 (guide $108B), $150B buyback support. Polymarket year-end market-cap market (~$43k vol) is a near-miss (terminal value, not max) but roughly consistent: ~26% on >=6.0T (~+15%). Most mass sits at the 239.24 point mass.",
+   "sources": [
+    "https://stockanalysis.com/stocks/nvda/history/",
+    "https://www.heygotrade.com/en/news/nvidia-nvda-stock-news-october-23-2026/",
+    "https://polymarket.com/event/nvidias-market-cap-end-of-2026",
+    "https://www.marketbeat.com/earnings/reports/2026-11-18-nvidia-co-stock/"
+   ],
+   "dossier": "- Stock Analysis daily closes (fetched 2026-10-23): ATH close $239.24 on Oct 6, 2026; Oct 7 237.47; Oct 9 229.28; Oct 13 228.52; Oct 15 217.23; Oct 16 214.13; Oct 21 221.97; Oct 22 212.21; latest listed 212.94 (labelled Oct 23). Mid-Sep closes ~211-228.\n- Heygotrade 2026-10-23: NVDA fell 4.4% to $212.21 on Oct 22 on renewed AI-spending/cost-of-capital worries after Meta results. Oct 20 news on Chinese chip orders.\n- Background (question text): $150B buyback announced Sep 28, 2026.\n- Next catalyst: Q3 FY2027 earnings, expected ~Nov 17-18, 2026 after close (MarketBeat/TipRanks; not confirmed by company in sources found). Company guide: revenue ~$108B +/-2%. Q2 FY27 revenue $96.2B (+106% YoY).\n- Required move to new ATH from ~213: +12.4%. To exceed 275 (range top): +29%.\n- Polymarket 'Nvidia market cap end of 2026' (terminal value, NOT max; ~$43k volume): brackets <4T, 4-4.5, 4.5-5, 5-5.5, 5.5-6, 6-6.5, 6.5T+; current cap ~$5.1-5.35T; ATH price ~ $5.8T cap.\n- Base model: driftless GBM running max; NVDA annualized vol typically 35-50%; horizon ~47 trading days (~0.19y).\n- Resolves off Yahoo Finance adjusted close (max of closes through Dec 31, 2026), not intraday highs. Dividend adjustment negligible ($0.01/qtr). Split adjustment per fine print.\n- Status quo: no new high -> resolves at 239.24.\n- Event window: now (2026-10-23) -> 2026-12-31 close; window counts all history, ATH already set; remaining ~10 weeks.\n- Searched but not found: direct prediction market on NVDA max close by year-end; confirmed official earnings date.",
+   "reference_class": "Running maximum of a high-vol mega-cap stock over a ~2.3-month horizon starting ~11% below its prior ATH (reflection-principle barrier model)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6491,
+   "seconds": 82.3,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 123817,
+    "cache_write": 20152,
+    "cache_write_1h": 20152,
+    "output": 4011,
+    "thinking": 1098,
+    "web_search": 3,
+    "cost_usd_envelope": 0.34803340000000005,
+    "web_fetch": 0,
+    "duration_api_ms": 89609
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 239.25,
+     "25": 239.4,
+     "50": 240.0,
+     "75": 246.5,
+     "90": 259.0
+    },
+    "p_above_upper": 0.1
+   },
+   "reasoning": "Outcome floor is the existing ATH close of 239.24 (Oct 6, 2026). Last close 212.21 (Oct 22); a new high requires ~+12.3% within ~47 trading days, with Q3 FY27 earnings ~Nov 17-18. Reflection-principle estimate with 40-47% vol gives ~50-57% continuous, ~45-50% for daily closes; shaded down for recent negative momentum and the AI-capex worries, giving ~41% new-ATH probability. If a new high happens, the max is right-skewed. Breaking 275 needs a ~29% rally; I price it at ~10%. No matching human market: Polymarket's 'NVDA ATH by Dec 31' already resolved YES on an intraday threshold, and its year-end market-cap median of ~$5.43T is only weak evidence.",
+   "sources": [
+    "https://stockanalysis.com/stocks/nvda/history/",
+    "https://www.heygotrade.com/en/news/nvidia-nvda-stock-news-october-23-2026/",
+    "https://www.marketbeat.com/earnings/reports/2026-11-18-nvidia-co-stock/",
+    "https://polym.trade/event/nvda-all-time-high-by",
+    "https://polymarket.com/event/nvidias-market-cap-end-of-2026"
+   ],
+   "dossier": "- Prior ATH adjusted close: $239.24 on 2026-10-06 (stockanalysis.com history); $238.90 on Oct 5, $237.47 on Oct 7. The resolution value cannot be below this.\n- Recent closes (stockanalysis.com): Oct 13 $228.52, Oct 14 $221.30, Oct 15 $217.23, Oct 16 $214.13, Oct 19 $217.09, Oct 20 $216.47, Oct 21 $221.97, Oct 22 $212.21 (-4.4%, Meta results renewed AI-capex/cost-of-capital worries; heygotrade 2026-10-23), Oct 23 shows $213.05 (possibly intraday).\n- Mid-Sep closes ~$211-213 (Sep 14-16); the rally to the Oct 6 ATH followed the $150B buyback announcement on Sep 28 (NYT per question background).\n- Q3 FY27 earnings: ~Nov 17-18, 2026 after close (MarketBeat/TipRanks); revenue guidance $108B ±2%; consensus EPS ~$2.49.\n- Yahoo Finance headline: chip sell-off deepened on hot inflation data (October 2026).\n- Analyst year-end targets cited in Yahoo/Motley Fool pieces: ~$276 and ~$357.\n- Distance to new ATH from $212.21: +12.7%; to $275 (range top): +29.6%.\n- Event window: now (2026-10-23) -> last close before 2027-01-01 (Dec 31, 2026), ~47 trading days remaining; as of now, ~7% of the window from question open (Oct 19) has elapsed.\n- Resolves off Yahoo Finance adjusted close (fallback Stock Analysis), not intraday highs. The dividend ($0.01/qtr) adjustment is negligible; any split is adjusted back.\n- Model note: with 40-47% annualized vol, the 47-day horizon SD of log return is ~0.17-0.20; reflection principle on closes gives a meaningful but not dominant chance of exceeding the prior high.\n- Markets: Polymarket 'NVDA ATH by Dec 31, 2026' already resolved (intraday threshold $236.54 hit Oct 2); Polymarket year-end market-cap market exists (different instrument); no contract matching this question was found.\n- Searched for but not found: current implied volatility figure, any exact-match prediction market.",
+   "reference_class": "Running maximum of a high-vol mega-cap (NVDA, ~45% annualized vol) over a ~47-trading-day window starting ~11% below its prior ATH close"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0805,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1964,
+   "seconds": 31.5,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 17042,
+    "cache_write_1h": 17042,
+    "output": 2884,
+    "thinking": 1049,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1963858,
+    "web_fetch": 0,
+    "duration_api_ms": 30883
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 239.25,
+     "25": 239.3,
+     "50": 239.5,
+     "75": 249.5,
+     "90": 262.0
+    },
+    "p_above_upper": 0.13
+   },
+   "reasoning": "Resolution = max(239.24 existing ATH close, highest close Oct 23-Dec 31 2026). Spot ~213 after a 4.4% drop on AI-capex worries; a new high needs +12.4% in ~48 trading days, with Q3 FY27 earnings ~Nov 17-18 and the $150B buyback as catalysts. A barrier model with 40-45% vol and a daily-close correction gives ~45-50% for a new high; I use ~46%, so ~54% of the mass sits at exactly 239.24. P(max close >275) is ~13%, priced as the upper escape. Percentiles are conditional on the outcome landing in range.",
+   "sources": [],
+   "reconciliation": "All three runs agree on the facts: ATH close 239.24 on Oct 6, last close ~212-213, earnings ~Nov 17-18, Yahoo adjusted closes as the source, and no matching market. Their differences are judgment only: P(new ATH) 41-47% and P(>275) 10-14%. I re-derived both from a reflection-principle model with a discrete-monitoring correction at 40-45% vol (~45-50% touch, ~12-16% above 275). I found no evidence-based reason to haircut further for momentum, so I take ~46% and 13%. Upper percentiles follow from the conditional running-max distribution. The earnings date remains unconfirmed but falls inside the window either way. I retrieved nothing new.",
+   "disagreements": [
+    {
+     "claim": "Probability of a new ATH close before 2027 (41% vs 42% vs 47%)",
+     "kind": "judgment",
+     "verdict": "Re-derived ~45-50% from the barrier model at 40-45% vol with a discrete correction; no evidence justifies a momentum haircut beyond that, so ~46%"
+    },
+    {
+     "claim": "Probability the max close exceeds 275 (10% vs 14%)",
+     "kind": "judgment",
+     "verdict": "Barrier model gives ~12-16%; taking 13%"
+    },
+    {
+     "claim": "Exact Q3 FY27 earnings date",
+     "kind": "factual",
+     "verdict": "Unconfirmed (~Nov 17-18 per aggregators); inside the window regardless, so it doesn't change the estimate"
+    }
+   ],
+   "reference_class": "Running maximum of a high-volatility mega-cap stock (driftless GBM, ~45% vol) over ~10 weeks, starting ~11% below its prior high"
+  }
+ ]
+}
