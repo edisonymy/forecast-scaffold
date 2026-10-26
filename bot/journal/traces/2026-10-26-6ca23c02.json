@@ -1,0 +1,260 @@
+{
+ "record_id": "2026-10-26-6ca23c02",
+ "question": "How many mass shootings will the U.S. experience in November 2026?",
+ "question_id": 46430,
+ "url": "https://www.metaculus.com/questions/46203/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-26T21:02:39+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.3827,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 23.5,
+    "25": 27.666666666666668,
+    "50": 32.0,
+    "75": 36.166666666666664,
+    "90": 40.833333333333336
+   },
+   "p_below_lower": 0.01,
+   "p_above_upper": 0.01
+  },
+  "phase1": {
+   "10": 23.5,
+   "25": 27.666666666666668,
+   "50": 32.0,
+   "75": 36.166666666666664,
+   "90": 40.833333333333336
+  },
+  "phase2": null,
+  "spread_phase1": 3.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 24.0,
+   "25": 28.0,
+   "50": 32.0,
+   "75": 36.0,
+   "90": 40.5
+  },
+  "p_below_lower": 0.02,
+  "p_above_upper": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 2.1655,
+   "seconds": 105.1,
+   "usage": {
+    "num_turns": 19,
+    "input": 30,
+    "cache_read": 422290,
+    "cache_write": 24801,
+    "cache_write_1h": 24801,
+    "output": 5993,
+    "thinking": 1109,
+    "web_search": 2,
+    "cost_usd_envelope": 0.6831719999999998,
+    "web_fetch": 0,
+    "duration_api_ms": 112019
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 22.5,
+     "25": 26.5,
+     "50": 31.0,
+     "75": 35.0,
+     "90": 39.5
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Resolution source's own S3 JSON gives November counts of 33 (2024) and 27 (2025), with November typically a little below October (35->33, 32->27). 2026 is running similar to or slightly above 2025: Sep 2026 = 35 entries, Oct 2026 = 31 through Oct 25 (~37 full-month pace); GVA reports 354 mass shootings through Q3 2026, an increase over 2025. Applying the Nov/Oct seasonal ratio to the Oct 2026 pace gives about 30-32. Spread is Poisson plus level uncertainty plus possible reporting lag by the Dec 4 resolution. Market check: Polymarket/Manifold (harness) and Kalshi (search) — no market found. Counts came from model-assisted reading of the JSON (local parsing was blocked), so they may be off by a few.",
+   "sources": [
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2026-data.json",
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2025-data.json",
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2024-data.json",
+    "https://en.wikipedia.org/wiki/List_of_mass_shootings_in_the_United_States_in_2026",
+    "https://www.massshootingtracker.site/data/"
+   ],
+   "dossier": "- Resolves off the Mass Shooting Tracker (massshootingtracker.site) 2026 data, count of incidents dated November 2026. The definition is 4+ shot including the shooter, which is broader than GVA. It does NOT resolve off GVA or Wikipedia. Raw data: S3 JSON mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2026-data.json (the HTML page renders via JS).\n- Event window: 2026-11-01 -> 2026-11-30 per the criteria; as of 2026-10-26, 0% elapsed. Question resolves 2026-12-04, so late additions by the volunteer maintainers could be missing.\n- MST JSON, read via model-assisted extraction and possibly off by a few: Sep 2024 = 32, Oct 2024 = 35, Nov 2024 = 33.\n- MST JSON 2025: Jul 28, Aug 29, Sep 38, Oct 32, Nov 27, Dec 19. The Nov 2025 incidents were listed individually and add up to 27; six of them fell on 11/2 and five on 11/15.\n- MST JSON 2026: Sep 2026 = 35 listed (one extraction pass said 34). Oct 2026 = 31 listed through Oct 25 (another pass said 24), latest entry Oct 25, which scales to about 37 for the full month.\n- Nov/Oct ratio: 0.94 (2024), 0.84 (2025).\n- Wikipedia 2026 list (GVA definition): 365 mass shootings through Sep 30, 2026. A Trace Q3 2026 summary (via search snippet; the page itself returned 403) says GVA has 354 through Q3 2026, an increase from the previous year.\n- Poisson noise alone at a level of about 30 gives SD about 5.5. Weekend clusters (e.g. 6 on one day in Nov 2025) drive month-to-month variance.\n- Status quo: November counts in the high 20s to low 30s on MST over the last two years.\n- Markets: none found on Polymarket, Manifold, or Kalshi.\n- Searched for but not found: GVA official monthly Nov counts for 2023-2025; earlier-year MST November counts (2013-2023).",
+   "reference_class": "Monthly Mass Shooting Tracker counts for recent months (Nov 2024, Nov 2025, Sep-Oct 2024/2025/2026)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.4823,
+   "seconds": 102.6,
+   "usage": {
+    "num_turns": 17,
+    "input": 26,
+    "cache_read": 355495,
+    "cache_write": 26782,
+    "cache_write_1h": 26782,
+    "output": 5724,
+    "thinking": 1276,
+    "web_search": 1,
+    "cost_usd_envelope": 0.748683,
+    "web_fetch": 0,
+    "duration_api_ms": 119327
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 25.0,
+     "25": 29.5,
+     "50": 34.0,
+     "75": 38.5,
+     "90": 43.0
+    }
+   },
+   "reasoning": "Reference class: November counts on the Mass Shooting Tracker (MST) JSON data were about 35 in 2023, 33 in 2024 and 31-36 in 2025. 2026 pace: September 2026 had about 38 incidents and October 1-25 had 34, so October projects to about 40, similar to or a bit above 2025. November relative to October has varied (2025: 31 vs 38; 2024: 33 vs 31), which gives a median of about 34. The counts come from summaries of truncated data and are probably a slight undercount. A small reporting lag before the 2026-12-04 resolution is possible. No human market found on Kalshi, Polymarket, Manifold or bookmakers.",
+   "sources": [
+    "https://www.massshootingtracker.site/data/?year=2026",
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2026-data.json",
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2025-data.json",
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2024-data.json",
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2023-data.json",
+    "https://en.wikipedia.org/wiki/List_of_mass_shootings_in_the_United_States_in_2026"
+   ],
+   "dossier": "- Resolution instrument: resolves off the Mass Shooting Tracker (massshootingtracker.site, which counts 4+ shot including the shooter) 2026 data for November 2026, not off GVA or Wikipedia. Raw data: mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2026-data.json (ISO dates, newest first; latest entry seen 2026-10-25 when fetched 2026-10-26).\n- Event window: 2026-11-01 -> 2026-11-30 per the criteria; as of 2026-10-26, 0% elapsed. Scheduled resolution is 2026-12-04, so late-November entries have only about 4 days to be posted.\n- MST November counts, from LLM-summarised listings of truncated JSON (may undercount by a few): Nov 2023 ~35; Nov 2024 33; Nov 2025 ~31 in one enumeration and 36 in another.\n- MST October counts: Oct 2024 ~31; Oct 2025 38. November/October ratio: 2024 ~1.06, 2025 ~0.82-0.95.\n- MST 2026: September ~38 enumerated (no entries listed for Sep 28-30, possibly missed); October 1-25 had 34 enumerated (no entries listed for Oct 11-12, possibly missed), a full-month pace of ~40-42.\n- 2025 Sep ~34 per one summary, so 2026 looks similar to or modestly above 2025 in the same months.\n- Wikipedia 2026 list (a broader definition): 365 shootings as of 2026-09-30.\n- Thanksgiving weekend and early-November weekends historically hold clusters of incidents (e.g. Nov 1-2 2025 had 11 entries).\n- Poisson noise at a mean of ~34 gives SD ~6.\n- Markets: searched Kalshi, Polymarket and Manifold; none found.\n- Searched for but could not get: an exact machine count of the JSON (tool limits), and MST monthly totals from 2013-2022.",
+   "reference_class": "Monthly November mass-shooting counts on Mass Shooting Tracker, 2023-2025, adjusted by the 2026 Sep/Oct run rate"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7336,
+   "seconds": 82.2,
+   "usage": {
+    "num_turns": 23,
+    "input": 26,
+    "cache_read": 355800,
+    "cache_write": 24220,
+    "cache_write_1h": 24220,
+    "output": 5927,
+    "thinking": 1135,
+    "web_search": 2,
+    "cost_usd_envelope": 0.7335959999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 104048
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 23.0,
+     "25": 27.0,
+     "50": 31.0,
+     "75": 35.0,
+     "90": 40.0
+    }
+   },
+   "reasoning": "Reference class: November counts in the Mass Shooting Tracker (MST) data: ~32 (2023), ~32 (2024), ~33-35 (2025). 2026 pace is similar: Sep 2026 had ~31 MST entries; Wikipedia (Gun Violence Archive definition) shows 365 shootings through Sep 30, 2026, in line with 2025 (~425 for the full year). The usual autumn decline puts November around 30-33, with a Thanksgiving-weekend bump. Late additions before the Dec 4 scoring date could push the count slightly higher. Counts came from a web-fetch summarizer that gave inconsistent or truncated answers, so they are approximate. No market found on Kalshi, Polymarket or Manifold.",
+   "sources": [
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2023-data.json",
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2024-data.json",
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2025-data.json",
+    "https://mass-shooting-tracker-data.s3.us-east-2.amazonaws.com/2026-data.json",
+    "https://en.wikipedia.org/wiki/List_of_mass_shootings_in_the_United_States_in_2026",
+    "https://www.massshootingtracker.site/data/"
+   ],
+   "dossier": "- Resolves off the Mass Shooting Tracker 2026 database count for November 2026 (4+ shot, including the shooter), NOT the Gun Violence Archive or Wikipedia.\n- Event window: 2026-11-01 -> 2026-11-30 per the criteria; as of 2026-10-26 0% elapsed. Scoring around 2026-12-04, so late additions in the first days of December may matter.\n- MST November 2023: ~32 incidents (October 2023 ~41, December 2023 ~25), from an LLM summary of the 2023 JSON file, fetched 2026-10-26.\n- MST November 2024: ~32 (October 2024 ~36, December 2024 ~31), from an LLM summary of the 2024 JSON file; may be truncated.\n- MST November 2025: an enumerated list gave 35 entries, including 2 dated Oct 31, so ~33; another summary pass said 28. The data file is inconsistent through the summarizer. October 2025 ~28-33, September 2025 ~27-37, December 2025 ~19 (possibly truncated).\n- MST 2026: September ~27-31; October had at least 18 entries through Oct 25 (partial view). One summary claimed July 58 and August 49, but views were truncated.\n- Wikipedia (Gun Violence Archive definition, excludes the perpetrator): 365 shootings through 2026-09-30; 2025 full year ~425 (CNN/Wikipedia). The 2026 pace is roughly similar to 2025.\n- Seasonality: summer peak, autumn decline; November historically below October, and the Thanksgiving weekend often has clusters.\n- MST counts are typically at or above GVA counts because MST includes the shooter.\n- Market check: Kalshi, Polymarket and Manifold searched; none found.\n- Could not parse the JSON locally (tools blocked); counts come from an LLM summarizer and are approximate.",
+   "reference_class": "Monthly November counts of 4+ shot incidents in the Mass Shooting Tracker database, 2023-2025"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.3529,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1672,
+   "seconds": 20.0,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 16009,
+    "cache_write_1h": 16009,
+    "output": 1839,
+    "thinking": 344,
+    "web_search": 0,
+    "cost_usd_envelope": 0.16722179999999998,
+    "web_fetch": 0,
+    "duration_api_ms": 19494
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 24.0,
+     "25": 28.0,
+     "50": 32.0,
+     "75": 36.0,
+     "90": 40.5
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Mass Shooting Tracker November counts ~32-35 (2023), ~32-33 (2024), 27-36 (2025, readings conflict). 2026 runs at or slightly above 2025 (GVA Q3 up year over year; Sep/Oct 2026 roughly 31-38/month). November typically a bit below October; Thanksgiving weekend clusters. Small undercount risk from posting lag before Dec 4 resolution. No human market found.",
+   "sources": [],
+   "reconciliation": "Disputes were mostly factual (historical Nov counts, 2026 Sep/Oct counts) but came from inconsistent LLM summarization of the same JSON; with no web access they could not be settled, so I treated the cross-run readings as a noisy sample centred ~32 for past Novembers. Run 2's higher 2026 pace (~40/month October) vs Runs 1/3 (~31-37) remains unresolved; I weight it as a mild upward tilt offset by reporting lag. Median 32, width as in Run 3's dispersion basis plus level uncertainty. Low-side escape priced at 2% for volunteer-site update lapse.",
+   "disagreements": [
+    {
+     "claim": "MST Nov 2025 count (27 vs ~31-36)",
+     "kind": "factual",
+     "verdict": "Unsettled; extraction inconsistency, treated as ~31 ± 4"
+    },
+    {
+     "claim": "MST Sep/Oct 2026 pace (27-38 Sep; Oct projecting 30-42)",
+     "kind": "factual",
+     "verdict": "Unsettled; central reading ~35/month, slight upward tilt vs 2025"
+    },
+    {
+     "claim": "Nov/Oct seasonal ratio (0.82-1.06)",
+     "kind": "judgment",
+     "verdict": "Took ~0.9, consistent with autumn decline"
+    },
+    {
+     "claim": "Effect of Dec 4 resolution lag",
+     "kind": "judgment",
+     "verdict": "Small downward effect, ~0-2 incidents"
+    }
+   ],
+   "reference_class": "Mass Shooting Tracker November monthly counts 2023-2025, adjusted by the 2026 Sep/Oct pace"
+  }
+ ]
+}
