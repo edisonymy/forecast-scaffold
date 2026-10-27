@@ -1,0 +1,256 @@
+{
+ "record_id": "2026-10-27-f3f70926",
+ "question": "What will be the Powerball Advertised Jackpot on December 31, 2026?",
+ "question_id": 46431,
+ "url": "https://www.metaculus.com/questions/46204/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-10-27T03:03:34+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.9214,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 65000000.0,
+    "25": 135000000.0,
+    "50": 245000000.0,
+    "75": 366666666.6666667,
+    "90": 481666666.6666667
+   },
+   "p_above_upper": 0.008
+  },
+  "phase1": {
+   "10": 65000000.0,
+   "25": 135000000.0,
+   "50": 245000000.0,
+   "75": 366666666.6666667,
+   "90": 481666666.6666667
+  },
+  "phase2": null,
+  "spread_phase1": 80000000.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 65000000.0,
+   "25": 140000000.0,
+   "50": 260000000.0,
+   "75": 370000000.0,
+   "90": 465000000.0
+  },
+  "p_above_upper": 0.005
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.6693,
+   "seconds": 139.4,
+   "usage": {
+    "num_turns": 13,
+    "input": 18,
+    "cache_read": 251674,
+    "cache_write": 23584,
+    "cache_write_1h": 23584,
+    "output": 10614,
+    "thinking": 5946,
+    "web_search": 3,
+    "cost_usd_envelope": 0.5861947999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 148487
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 100000000.0,
+     "25": 180000000.0,
+     "50": 285000000.0,
+     "75": 405000000.0,
+     "90": 510000000.0
+    },
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Jackpot is $687M for Oct 26 with no winner since Aug 12, 2026; $716M is projected for Oct 28. The next-drawing jackpot as of Dec 31 is the Jan 2, 2027 estimate, which reflects 28 drawings (Oct 28 to Dec 30). Per-draw win odds rise from ~5% to 15-20%+ as the jackpot grows, so surviving all 28 drawings is ~1%. The most likely path is a win in Nov to early Dec, a reset to $20M, then 8-25 rollovers, landing at ~$100-500M. A win early in the window gives a higher end value. The upper tail requires no winner at all. No human market found (Polymarket/Manifold/Kalshi none).",
+   "sources": [
+    "https://www.texaslottery.com/export/sites/lottery/Games/Powerball/Estimated_Jackpot.html",
+    "https://www.powerball.com/",
+    "https://dknetwork.draftkings.com/2026/10/26/powerball-winning-numbers-for-monday-october-26-2026/",
+    "https://www.yahoo.com/news/us/articles/did-anyone-win-powerball-winning-024538753.html",
+    "https://lotteryheat.com/blog/no-powerball-jackpot-winner-as-rollover-streak-extends-to-12-drawings-kfzhd"
+   ],
+   "dossier": "- Powerball.com / TexasLottery (10/26/2026): estimated jackpot $687M annuity ($294.7M cash) for Mon Oct 26; TexasLottery lists the next estimate if no winner as $716M.\n- Last jackpot win: Aug 12, 2026, $1.04B (Quincy, IL), per DraftKings Network and search summaries; reset to $20M on Aug 15; 31 rollovers through Oct 24.\n- DraftKings Network Oct 26 results page states no Grand Prize winner on Oct 26 and the next drawing is Wed 10/28; the numbers field was blank, so it may be templated and is not fully confirmed.\n- Oct 24 drawing ($665M): no jackpot winner (powerball.com).\n- Prior runs (TexasLottery history): $1.5B (12/20/25) -> $1.6B -> $1.7B (12/24/25), i.e. ~$100M per draw increments at that level; $1.72B on 10/11/2023.\n- Drawings are Mon/Wed/Sat. From Oct 28 to Dec 30 inclusive there are 28 drawings. Dec 31 is a Thursday, so on Dec 31 the advertised 'next drawing' jackpot is the Sat Jan 2, 2027 estimate (it reflects the Dec 30 result). If 'as of Dec 31 00:00 UTC' is read literally, it would be the Dec 30 drawing (one fewer roll).\n- Mechanics: a win resets the jackpot to $20M. Post-reset growth example: $20M -> $687M over 31 rollovers (Aug-Oct 2026). Increments are ~$10-13M per draw early and ~$22-29M per draw at $650-700M.\n- Per-draw win probability ~ 1-exp(-unique tickets/292.2M). Rough estimates (my hand model): ~5% at ~$700M, ~9% at ~$1B, ~15%+ at $1.4B+.\n- Resolves off powerball.com advertised (annuity) jackpot for the next drawing; TexasLottery is the backup. Not the cash value.\n- Event window: value read as of Dec 31, 2026; as of Now (Oct 27) the Oct 28 -> Dec 30 draw sequence is 0% elapsed (28 draws remain).\n- Searched for Polymarket/Kalshi/Manifold/bookmaker markets on this value: none found.\n- Could not access usamega sales data (403); per-draw ticket sales are not confirmed.",
+   "reference_class": "Powerball post-reset jackpot growth runs and win hazard at $700M+ jackpots (2022-2026 runs, e.g. Aug 15 2026 reset at $20M reaching $687M after 31 rollovers; Dec 2025 run to $1.7B)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4974,
+   "seconds": 113.8,
+   "usage": {
+    "num_turns": 12,
+    "input": 18,
+    "cache_read": 242526,
+    "cache_write": 21272,
+    "cache_write_1h": 21272,
+    "output": 8290,
+    "thinking": 3967,
+    "web_search": 2,
+    "cost_usd_envelope": 0.49741719999999995,
+    "web_fetch": 0,
+    "duration_api_ms": 117026
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 55000000.0,
+     "25": 125000000.0,
+     "50": 245000000.0,
+     "75": 375000000.0,
+     "90": 490000000.0
+    },
+    "p_above_upper": 0.004
+   },
+   "reasoning": "Jackpot $687M on 10/26/2026 (31 rollovers since Aug 15 reset); reportedly no winner -> $716M on 10/28. Resolution is the advertised jackpot for the Jan 2, 2027 draw, set after the Dec 30 draw, so 28 more draws. With per-draw win odds of ~7% rising past 25% above $1.5B, a win before Dec 30 is almost certain (no-win path well under 1%). After a reset to $20M, ~15-26 draws of regrowth gives ~$200-550M (2026 path: 26 draws -> $562M). There is a ~35-45% chance of another win in that window, which would put the figure at ~$20-270M. No Polymarket/Manifold/Kalshi/bookmaker market found.",
+   "sources": [
+    "https://www.texaslottery.com/export/sites/lottery/Games/Powerball/Estimated_Jackpot.html",
+    "https://www.powerball.com/",
+    "https://www.yahoo.com/news/us/articles/did-anyone-win-powerball-winning-024538753.html",
+    "https://dknetwork.draftkings.com/2026/10/26/powerball-winning-numbers-for-monday-october-26-2026/",
+    "WebSearch: Powerball jackpot October 2026 (yahoo/forbes/wkyc snippets)"
+   ],
+   "dossier": "- Texas Lottery (fetched 2026-10-27): 10/26/2026 advertised $687M (cash $294.7M); next if no winner $716M. History: 10/14 $562M, 10/17 $600M, 10/19 $607M, 10/21 $635M, 10/24 $674M (earlier press said $665M).\n- Yahoo/press (Oct 2026): 31 rollovers since Aug 15, 2026 reset to $20M. No jackpot winner on 10/24.\n- DraftKings page (10/26/2026, flagged unofficial and possibly auto-generated): 'no Grand Prize winner' on 10/26; next draw Wed 10/28. Not independently confirmed; powerball.com still showed the 10/26 draw as upcoming.\n- Earlier 2026 run: Feb 4 $80M, Feb 9 $113M.\n- Draw schedule: Mon/Wed/Sat. Remaining draws 10/28 -> 12/30 inclusive = 28. Dec 31, 2026 is a Thursday, so the 'next scheduled drawing' as of Dec 31 is Sat Jan 2, 2027, whose advertised jackpot is set after the Dec 30 result.\n- Mechanics: jackpot odds 1 in 292.2M per ticket; resets to $20M after a win. Per-draw advertised growth ~+$28-39M at the $600-700M level and ~+$10M per draw near reset. Sales, and so win odds per draw, rise steeply above ~$1B.\n- Growth path for comparison: Aug 15 reset -> ~26 draws -> $562M; 31 draws -> $687M.\n- Status quo: the current run keeps rolling over. Holding through 28 more draws would push the jackpot well past $2B, but each draw's win chance grows as the jackpot does.\n- Resolves off powerball.com's advertised (annuity) jackpot, not the cash value; Texas Lottery is the backup source.\n- Event window: the value as of 2026-12-31 (after the Dec 30 draw); as of 2026-10-27 about 0% of the 28 remaining draws have happened.\n- Searched without finding: confirmed official 10/26 result; Polymarket/Manifold/Kalshi/bookmaker market (none found).",
+   "reference_class": "Powerball jackpot runs after a reset to $20M (2024-2026): roughly 4-6 wins per year, runs of ~25-35 draws; jackpot level reached as a function of draws since reset"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.0831,
+   "seconds": 126.3,
+   "usage": {
+    "num_turns": 12,
+    "input": 22,
+    "cache_read": 309879,
+    "cache_write": 25207,
+    "cache_write_1h": 25207,
+    "output": 8618,
+    "thinking": 4270,
+    "web_search": 4,
+    "cost_usd_envelope": 0.5857148,
+    "web_fetch": 0,
+    "duration_api_ms": 128430
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 40000000.0,
+     "25": 100000000.0,
+     "50": 205000000.0,
+     "75": 320000000.0,
+     "90": 445000000.0
+    },
+    "p_above_upper": 0.005
+   },
+   "reasoning": "As of Oct 27 2026 Powerball is at $716M for the Oct 28 draw after no winner Oct 26; 28 draws remain through Dec 30, and the resolving value is the advertised jackpot for Jan 2, 2027. Per-draw jackpot-hit probability rises from ~6% at $700M to 30%+ above $1.5B, so the current run almost surely ends between early Nov and mid Dec. A fresh run from $20M with ~11-27 draws reaches roughly $130M-$480M (2025 run went $20M->$549M in ~30 draws). Low tail from a second hit or a late current-run hit; upper escape above $2B requires surviving all 28 draws, which is negligible. No human market found (Polymarket, Manifold, Kalshi searched).",
+   "sources": [
+    "https://www.texaslottery.com/export/sites/lottery/Games/Powerball/Estimated_Jackpot.html",
+    "https://www.yahoo.com/news/us/articles/did-anyone-win-powerball-winning-024538753.html",
+    "https://www.wkyc.com/article/news/lottery/winning-powerball-numbers-665-million-jackpot-saturday-oct-24-2026-see-all-prizes-ohio-lottery-results/95-0e0887fa-8cd8-4a7a-b524-0418def0b975",
+    "https://www.forbes.com/sites/siladityaray/2025/11/20/powerball-jackpot-rises-to-629-million-heres-what-the-winner-could-take-home-after-taxes/",
+    "https://www.yahoo.com/news/articles/did-anyone-win-last-nights-121319432.html"
+   ],
+   "dossier": "- Texas Lottery estimated-jackpot page (fetched 2026-10-27): 10/26/2026 draw $687M (cash $294.7M); next draw if no winner $716M. History: 10/14 $562M, 10/17 $600M, 10/19 $607M, 10/21 $635M, 10/24 $674M (other outlets say $665M for 10/24).\n- Search results 2026-10-26/27: no jackpot winner on Oct 26, 2026. So the Oct 28 draw is $716M.\n- Draw schedule: Mon/Wed/Sat. From Oct 28 through Dec 30 inclusive there are 28 draws. Dec 31, 2026 is a Thursday, so the resolving value is the advertised jackpot for Sat Jan 2, 2027 (set after the Dec 30 draw).\n- Odds of hitting the jackpot: 1 in 292.2M per ticket. Implied sales from the per-draw increase: roughly 18-20M tickets at about $700M (per-draw hit chance about 6%), rising steeply at $1B+ (2025 run hit $1.1B, $1.7B, $1.8B before being won Dec 24, 2025).\n- 2025 analog run: reset to $20M on Sep 8, 2025; $549M on Nov 15 (~30 draws), $570M Nov 17, $629M Nov 19, $719M Nov 26, ~$930M early Dec, won at ~$1.8B Dec 24, 2025 (Forbes 2025-11-20; Yahoo Nov 15, 2025; CBS8 Nov 26, 2025).\n- 2026 early-run data point: $80M Feb 4, 2026 and $113M Feb 9, 2026 (about $15M per draw at that level).\n- Powerball's starting jackpot after a win is $20M.\n- Status quo: the current run continues, so the jackpot keeps growing each draw until someone hits it. Lasting all 28 draws from $716M would push it past $2B, but hit chances above $1.5B are about 30-50% per draw.\n- Resolves off the Powerball.com advertised (annuity) jackpot for the next draw as of Dec 31, 2026 (Texas Lottery as backup), not the cash value.\n- Event window: the single value as of Dec 31, 2026; the path covers draws Oct 28 -> Dec 30. As of Now (Oct 27), 0 of 28 draws are done.\n- Markets: searched Polymarket, Manifold, Kalshi; none found.\n- Could not fetch usamega.com ticket-sales data (403). Exact current per-draw ticket sales and interest-rate-driven annuity factor not confirmed.",
+   "reference_class": "Powerball jackpot runs post-2015 matrix: level of a fresh run N draws after reset, and per-draw hit probability vs jackpot size"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.3453,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2015,
+   "seconds": 41.9,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 16490,
+    "cache_write_1h": 16490,
+    "output": 3362,
+    "thinking": 1936,
+    "web_search": 0,
+    "cost_usd_envelope": 0.20152979999999998,
+    "web_fetch": 0,
+    "duration_api_ms": 41458
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 65000000.0,
+     "25": 140000000.0,
+     "50": 260000000.0,
+     "75": 370000000.0,
+     "90": 465000000.0
+    },
+    "p_above_upper": 0.005
+   },
+   "reasoning": "The jackpot is $716M for Oct 28 with no winner since Aug 12. 28 draws remain through Dec 30, and the resolving value is the Jan 2, 2027 advertised jackpot. The chance of a jackpot hit per draw climbs past 20% once the jackpot is above about $1.4B, so the current run survives all 28 draws with probability well under 1%. In the median case it is hit around draw 8 (mid-to-late November), leaving about 20 draws of regrowth from $20M, which is about $320M if no one hits again. A ~30% chance of a second hit in the fresh run pulls the lower half of the distribution down. No human market was found (none of the runs found Polymarket, Kalshi, Manifold or bookmaker pricing).",
+   "sources": [],
+   "reconciliation": "The facts are consistent across all three runs: $687M on 10/26, $716M next, 28 draws Oct 28-Dec 30, and the resolving draw is Jan 2, 2027. The 10/24 figure differs ($665M vs $674M), which does not matter. The no-winner result on 10/26 is only partly confirmed, but two runs report it and Texas Lottery lists $716M. The runs disagree only on judgment: how quickly hit odds rise (Run 3 is steepest, which means an earlier end and a later, higher regrowth... yet Run 3 has the lowest numbers) and how much weight a second hit gets. I rebuilt the hazard schedule myself. It puts the median hit at draw ~8 with about 20 regrowth draws, so the median lands near $260M, inside the runs' range of $205-285M because the evidence puts it there. There is a small ambiguity in the resolution criterion: Dec 31 00:00 UTC falls before the Dec 30 draw, so it could resolve one draw earlier. That shifts the value down by about one increment and is absorbed in the low side.",
+   "disagreements": [
+    {
+     "claim": "Speed of the hit-probability rise above $1B (Run 3: 30-50% above $1.5B; Run 1: 15-20%)",
+     "kind": "judgment",
+     "verdict": "I took a middle schedule (~21% at $1.4B, 30% at $1.8B) based on the 2025 run that ended at $1.8B. This barely moves the median end-of-run draw (7-9)."
+    },
+    {
+     "claim": "Probability of a second hit in the fresh run (~30-45%)",
+     "kind": "judgment",
+     "verdict": "Taken as ~30%, since the hit hazard is about 2-3% per draw at $100-300M over ~20 draws."
+    },
+    {
+     "claim": "Whether 10/26 had no winner",
+     "kind": "factual",
+     "verdict": "Probably true (Texas Lottery lists the next estimate as $716M, and two runs cite reports). Even if 10/26 was won, the result shifts later by only ~2 draws."
+    },
+    {
+     "claim": "Whether 'as of Dec 31 00:00 UTC' means the Dec 30 or the Jan 2 jackpot",
+     "kind": "factual",
+     "verdict": "Cannot be settled. The difference is one increment, so I read it as Jan 2 and widened the low side slightly."
+    }
+   ],
+   "reference_class": "Powerball jackpot runs after the 2022 matrix change. A post-reset regrowth curve ($20M to about $550M over 26-31 draws in the Sep-Dec 2025 and Aug-Oct 2026 runs), with run-ending hazard tied to the jackpot size."
+  }
+ ]
+}
