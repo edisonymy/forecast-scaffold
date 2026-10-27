@@ -1,0 +1,270 @@
+{
+ "record_id": "2026-10-27-cda0c4eb",
+ "question": "What will the first reported earnings per share after September 2026 be for the following companies? (Nvidia)",
+ "question_id": 46199,
+ "url": "https://www.metaculus.com/questions/45995/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-10-27T22:48:11+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.9299,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 2.35,
+    "25": 2.466666666666667,
+    "50": 2.57,
+    "75": 2.6733333333333333,
+    "90": 2.8033333333333332
+   }
+  },
+  "phase1": {
+   "10": 2.35,
+   "25": 2.466666666666667,
+   "50": 2.57,
+   "75": 2.6733333333333333,
+   "90": 2.8033333333333332
+  },
+  "phase2": null,
+  "spread_phase1": 0.21,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 2.36,
+   "25": 2.47,
+   "50": 2.58,
+   "75": 2.69,
+   "90": 2.82
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.7758,
+   "seconds": 158.7,
+   "usage": {
+    "num_turns": 18,
+    "input": 24,
+    "cache_read": 402518,
+    "cache_write": 26102,
+    "cache_write_1h": 26102,
+    "output": 9588,
+    "thinking": 4327,
+    "web_search": 11,
+    "cost_usd_envelope": 0.8097205999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 183146
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 2.33,
+     "25": 2.48,
+     "50": 2.62,
+     "75": 2.76,
+     "90": 2.92
+    }
+   },
+   "reasoning": "Q3 FY27 guide: revenue $108B±2%, GM 74%, GAAP opex $9.2B; Nvidia typically beats revenue guidance by 2-6%, implying core (ex-gains) EPS ~$2.50-2.62 at 16.5% tax and ~24.2B shares (consensus $2.47-2.53). GAAP EPS adds equity-security mark-to-market: +$0.52 in Q1, +$0.24 in Q2. For Q3 (~Jul 27-Oct 25) public holdings were mixed: SpaceX (~$21B stake) appears up ~35-40% from a late-July low; the Jul 24 price (~$105) is inferred from the 52-week low and the 'fell ~50% from peak' report, not a confirmed close. Intel was down ~7% and CoreWeave sharply down; no completed OpenAI/Anthropic round in the quarter. Net gain is modest positive but highly uncertain, so the median is ~$2.62 with a wide spread. No Kalshi/Polymarket/Manifold/bookmaker market found.",
+   "sources": [
+    "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027",
+    "https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000073/q2fy27pr.htm",
+    "https://beancount.io/blog/2026/07/13/nvidia-fy2027-q1-earnings-analysis",
+    "https://www.marketbeat.com/earnings/reports/2026-11-18-nvidia-co-stock/",
+    "https://financefeeds.com/nvidia-portfolio-companies-stakes-63-44bn-intel/",
+    "https://www.heygotrade.com/en/news/intel-intc-stock-news-october-26-2026/",
+    "https://www.heygotrade.com/en/us-stock/spcx/",
+    "https://en.wikipedia.org/wiki/Initial_public_offering_of_SpaceX",
+    "https://www.heygotrade.com/en/us-stock/crwv/",
+    "https://techcrunch.com/2026/10/22/openai-working-on-new-30b-raise-at-1-25t-valuation-ahead-of-ipo/",
+    "https://finance.yahoo.com/markets/stocks/article/intel-stock-falls-nearly-8-despite-big-q2-earnings-beat-121538508.html"
+   ],
+   "dossier": "- Nvidia Q2 FY27 (qtr ended Jul 26, 2026; release Aug 2026): revenue $96.2B (+18% q/q), GAAP diluted EPS $2.46, non-GAAP $2.22, GAAP op income $63.7B, other income $7.77B (mainly equity-security gains), effective tax ~16.5%, diluted shares 24.285B. Source: nvidianews.nvidia.com Q2 FY27 PR / SEC 8-K.\n- Q1 FY27 (ended Apr 26, 2026): GAAP EPS $2.39, non-GAAP $1.87; equity gains $15.9B pretax (of which $13.4B unrealized gains on publicly-held equities); shares 24.391B. Source: same PR; beancount.io analysis Jul 2026.\n- Q3 FY27 outlook: revenue $108.0B ±2%; GAAP/non-GAAP GM 74.0% ±50bp; GAAP opex ~$9.2B (non-GAAP $9.0B); FY27 tax 16-18% excl. discrete items; no guidance on other income. Source: Q2 FY27 PR.\n- Consensus Q3 FY27 normalized EPS $2.47 (MarketBeat/Yahoo), $2.53 (ChartMill); revenue consensus ~$108.8-109B. Nvidia beat EPS consensus in 7 of the last 8 quarters (MarketBeat, Oct 2026).\n- Rule of thumb: each $1B of pretax equity gain/loss ≈ $0.035 GAAP EPS (16.5% tax, 24.2B shares).\n- 13F as of Jun 30, 2026 (filed Aug 14): 8 positions worth $63.4B: Intel ~$30.0B, SpaceX ~$21.0B, CoreWeave ~$4.7B, Nokia ~$2.2B, Synopsys ~$2.15B, Nebius, Coherent, Generate Biomedicines. Source: financefeeds.com. Private stakes include OpenAI and a $10B Anthropic stake.\n- Intel: closed $100.10 on Jul 23, fell 7.89% on Jul 24 (~$92); ~$85.5 on Oct 23 (implied from $86.96 on Oct 26 after +1.7%). Intel reports Oct 29. Sources: Yahoo Finance Jul 2026; heygotrade Oct 26, 2026.\n- SpaceX (SPCX, IPO Jun 12, 2026 at $135): peak close $211 (Jun 16); fell ~50% from peak by late July; 52-week low $104.83; close $146.90 on Oct 26. Exact Jul 24 and Oct 23 closes not found. Sources: Wikipedia SpaceX IPO page; heygotrade SPCX.\n- CoreWeave: $87.12 on Sep 30, $54.24 on Oct 23 (-38%); July level not found. AI stocks sold off Oct 8 on an OpenAI revenue report (CNBC).\n- Private marks: Anthropic's last round closed in May 2026 at $965B (Nvidia Q2), IPO targeted mid-November (after Q3 ends); OpenAI was still negotiating a $30B raise at $1.25T+ as of Oct 22 (TechCrunch). No completed round during Q3 found.\n- Status quo: GAAP EPS = core operating EPS (guide implies ~$2.45-2.6) + equity mark-to-market term (+$0.52 in Q1, +$0.24 in Q2).\n- Resolves off the GAAP diluted EPS in Nvidia's Q3 FY27 earnings release (8-K), not non-GAAP/adjusted EPS. Q3 FY27 ends about Oct 25, 2026. Release date listed as Nov 18 or Nov 25, 2026.\n- Event window: first quarterly release after Sep 30, 2026 -> before Jan 1, 2027; as of Oct 27 the quarter has closed but results are not out.\n- Searched without finding: Kalshi/Polymarket/Manifold/bookmaker markets on Nvidia EPS (none found); Nvidia's exact Intel/SpaceX share counts; Q3 interest income guidance.",
+   "reference_class": "Nvidia recent quarterly GAAP diluted EPS (Q1 FY27 $2.39, Q2 FY27 $2.46) scaled by sequential revenue guidance, plus the historical spread of equity-gain contributions ($0.24-$0.52 per quarter)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9661,
+   "seconds": 153.6,
+   "usage": {
+    "num_turns": 20,
+    "input": 24,
+    "cache_read": 422627,
+    "cache_write": 31099,
+    "cache_write_1h": 31099,
+    "output": 9116,
+    "thinking": 4095,
+    "web_search": 15,
+    "cost_usd_envelope": 0.9660693999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 194331
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 2.46,
+     "25": 2.56,
+     "50": 2.65,
+     "75": 2.74,
+     "90": 2.86
+    }
+   },
+   "reasoning": "Q3 FY27 guide: revenue $108B±2%, GM 74%, GAAP opex $9.2B, tax 16-18%; Nvidia beat Q2 guide by ~$5B (rev $96.2B vs $92.1B consensus, non-GAAP EPS $2.22 vs $2.09). Assuming ~$111-114B revenue gives ex-gains EPS ~$2.53-2.60 on ~24.25B shares (consensus $2.47-2.49). GAAP adds equity gains (Q1 +$15.9B, Q2 +$7.8B, so Q2 GAAP $2.46 > non-GAAP $2.22). Q3 marks: SpaceX ~115 to 147.49 (+$3.5-4B), Intel 92.32 to 86.96 (-$1.15B), CoreWeave to $54 (about -$1.5-2B), plus private up-rounds, so net about +$2B pre-tax (+$0.07) with wide error. No human market found on Polymarket, Manifold or Kalshi for GAAP EPS; Manifold has only a Q3 revenue market, a different quantity, so it was not used.",
+   "sources": [
+    "https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000073/q2fy27pr.htm",
+    "https://www.marketbeat.com/earnings/reports/2026-11-18-nvidia-co-stock/",
+    "https://fortune.com/2026/08/15/nvidia-21-billion-spacex-stake-30-billion-intel-shares/",
+    "https://blockonomi.com/nvidia-nvda-holds-massive-17-2-billion-stake-in-spacex-after-stock-decline/",
+    "https://www.heygotrade.com/en/news/intel-intc-stock-news-october-26-2026/",
+    "https://www.fool.com/investing/2026/07/24/why-did-intel-stock-drop-friday/",
+    "https://www.fool.com/coverage/stock-market-today/2026/10/23/stock-market-today-oct-23-spacex-achieves-rare-double-upgrade-to-buy-on-ai-growth/",
+    "https://www.heygotrade.com/en/us-stock/crwv/",
+    "https://techcrunch.com/2026/10/22/openai-working-on-new-30b-raise-at-1-25t-valuation-ahead-of-ipo/",
+    "https://www.sci-tech-today.com/news/nvidia-q2-fiscal-2027-earnings/"
+   ],
+   "dossier": "- Resolves off GAAP diluted EPS in Nvidia's Q3 FY27 release (quarter ends ~Oct 25, 2026), not non-GAAP. Report expected Nov 17-18, 2026 (marketbeat; sources differ on the day). Event window: release after Sep 30, 2026 -> before Jan 1, 2027; as of Oct 27 the quarter has closed but is not yet reported.\n- Q2 FY27 (SEC 8-K, Aug 26, 2026): revenue $96.2B (+18% q/q, +106% y/y); GAAP diluted EPS $2.46; non-GAAP $2.22; GAAP net income $59.7B; diluted shares 24,285M; other income $7.8B (gains on equity securities $7.77B); tax rate 16.5%. Q1 FY27 GAAP EPS $2.39 vs non-GAAP $1.87 (Q1 equity gains $15.9B).\n- Q2 consensus was rev $92.07B / non-GAAP EPS $2.09; actual beat by 4.5% / 6.3% (sci-tech-today).\n- Q3 FY27 guide: revenue $108.0B ±2%; GAAP/non-GAAP GM 74.0% ±50bp; GAAP opex ~$9.2B, non-GAAP ~$9.0B; FY tax 16-18%; no China data-center compute assumed. Street Q3 EPS ~$2.47-2.49 (likely non-GAAP basis).\n- Equity book: marketable $42.8B, non-marketable $51.2B at end of Q2. 13F as of Jun 30: Intel 214.8M sh, SpaceX 122.8M sh, CoreWeave 47.2M sh, Coherent 7.8M, Nokia 166.4M, plus Synopsys, Nebius.\n- Intel: closed $92.32 Jul 24, 2026 (fool); ~$86.96 Oct 23 (heygotrade).\n- SpaceX (SPCX): just under $120 on Jul 20; $108.37 on Jul 31; low $108.27 on Aug 5; $147.49 on Oct 23 after a Q3 beat and a tech sell-off.\n- CoreWeave: $87.12 on Sep 30, $54.24 on Oct 23 (52-week low $53.50 on Oct 22); about $100 at end of June. Late-October tech/AI sell-off.\n- Private: OpenAI working on a $30B raise at $1.25-1.4T (TechCrunch Oct 22; not reported as closed); Anthropic IPO planned for mid-November (after quarter end); Anthropic Series H at $965B was in May.\n- Searched but not found: exact SPCX close on Jul 24, Coherent/Nokia/Nebius quarter moves, any Q3 private-round closings involving Nvidia, any GAAP EPS prediction market (none on Polymarket/Manifold/Kalshi; Manifold has only a Q3 revenue market).\n- Status quo: GAAP EPS = operating EPS from guidance plus beat, plus or minus after-tax equity mark-to-market (about $0.04 EPS per $1B pre-tax).",
+   "reference_class": "Nvidia recent quarters: GAAP EPS vs guidance-implied EPS, with equity-securities gains/losses swinging GAAP by $0.2-0.5 per quarter in FY27"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 2.5557,
+   "seconds": 169.0,
+   "usage": {
+    "num_turns": 15,
+    "input": 24,
+    "cache_read": 389157,
+    "cache_write": 26620,
+    "cache_write_1h": 26620,
+    "output": 9408,
+    "thinking": 4742,
+    "web_search": 12,
+    "cost_usd_envelope": 0.7798844,
+    "web_fetch": 0,
+    "duration_api_ms": 179933
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 2.26,
+     "25": 2.36,
+     "50": 2.44,
+     "75": 2.52,
+     "90": 2.63
+    }
+   },
+   "reasoning": "Ex-investment-gain GAAP EPS from Q3 guidance ($108B +/-2%, 74% GM, $9.2B GAAP opex, 16-18% tax, ~24.25B shares) plus Nvidia's typical ~2% revenue beat gives ~$2.48-2.49, consistent with $2.47-2.53 consensus. The swing factor is equity-portfolio marks: in the Q3 window Intel fell ~6% (92.32->86.96) and CoreWeave ~25% (71.88->54.24), SpaceX was roughly flat, and no private remeasurement looks recognizable in-quarter (OpenAI August tender at unchanged $852B; $1.25T round not signed by Oct 25; Anthropic S-1 filed Oct 26, after quarter end). So the central case is a modest net loss (~-$0.05 EPS), with right-skew from possible undisclosed private-round markups. Market check: no human market on GAAP EPS found; Polymarket/Kalshi only run non-GAAP beat/miss or call-mention contracts (near-miss, not used).",
+   "sources": [
+    "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Second-Quarter-Fiscal-2027/default.aspx",
+    "https://www.webull.com/blog/304-Nvidia-Q2-FY2027-Earnings-Beats-Revenue-EPS-Estimates-Guides-Q3-to-108B",
+    "https://www.marketbeat.com/earnings/reports/2026-11-18-nvidia-co-stock/",
+    "https://finance.yahoo.com/markets/stocks/articles/nvidia-reports-7-8-billion-010632699.html",
+    "https://stockanalysis.com/stocks/intc/history/",
+    "https://stockanalysis.com/stocks/crwv/history/",
+    "https://www.fool.com/coverage/stock-market-today/2026/07/24/stock-market-today-july-24-intel-reverses-gains-on-foundry-and-ai-spending-concerns/",
+    "https://www.fool.com/investing/2026/07/25/coreweave-stock-fell-114-on-friday-the-sell-off-is/",
+    "https://www.cnbc.com/2026/10/22/openai-funding-round-uae-investors.html",
+    "https://tastytrade.com/learn/markets/industry/anthropic-ipo/"
+   ],
+   "dossier": "- Q2 FY27 (ended ~Jul 26 2026; Nvidia IR press release, Aug 26 2026): revenue $96.2B; GAAP gross margin 75.0%; GAAP diluted EPS $2.46; non-GAAP $2.22; net income $59.69B; diluted shares 24,285M; other income net $7.773B incl. equity-securities gains $7.771B; pre-tax $71.5B; tax rate 16.5%. Q1 FY27 GAAP EPS $2.39 (equity gain $15.9B).\n- Q3 FY27 guidance (same release): revenue $108.0B +/-2%; GAAP GM 74.0% +/-50bp; GAAP opex ~$9.2B (non-GAAP $9.0B); tax 16-18%; no China data-center compute assumed.\n- Consensus Q3 EPS (non-GAAP): MarketBeat $2.47 on $108.8B revenue; ChartMill $2.53; EarningsCountdown $2.49 (Oct 2026). Non-GAAP opex is only ~$0.2B below GAAP, so non-GAAP excluding equity gains roughly equals GAAP excluding gains.\n- Equity portfolio ~$95.6B as of late July (CNBC/Yahoo, Sep 2026): ~$30B OpenAI, up to $10B Anthropic, $5B SSI (private); Intel stake ~214.8M shares; also CoreWeave, SpaceX (ex-xAI), Nokia, Synopsys, others.\n- Public marks over the Q3 window (quarter ends ~Oct 25 2026): Intel $92.32 (Jul 24) -> $120.23 (Sep 30) -> $86.96 (Oct 23), roughly -$1.2B on the stake. CoreWeave $71.88 (Jul 24) -> $87.12 (Sep 30) -> $54.24 (Oct 23), Nvidia's share count uncertain (~24-47M). SpaceX trading ~$150-165 in late July, $147.79 on Oct 20. Mid-October AI-stock selloff.\n- Private marks: OpenAI August 2026 tender at unchanged $852B; $1.25T round led by UAE/Coatue, signatures targeted ~Oct 30 (after quarter end) (CNBC Oct 22). Anthropic's last priced round was the May 28 Series H at $965B (prior quarter); S-1 filed Oct 26 (after quarter end), IPO targeting $1.5-2T.\n- Arithmetic: $110B revenue x 74% GM - $9.2B opex + ~$0.3B interest, taxed at 17%, over 24.25B shares = ~$2.48. At $108B: ~$2.43. Each $1B pre-tax equity gain/loss = ~$0.034 EPS.\n- Resolves off GAAP diluted EPS in Nvidia's Q3 FY27 earnings release / 8-K, not non-GAAP.\n- Event window: release after Sep 30 2026 and before Jan 1 2027; expected mid/late Nov 2026 (trackers list Nov 17-25). As of Oct 27 the fiscal quarter has ended but results are unreported.\n- Searched but not found: Nvidia's exact Q3 CoreWeave/Nokia/Synopsys share counts; any private-portfolio round closed in Aug-Oct 2026 that would trigger remeasurement; a human prediction market on GAAP EPS (Polymarket/Kalshi only offer non-GAAP beat or call-mention markets).",
+   "reference_class": "Nvidia recent quarters: GAAP EPS = guidance-implied operating EPS (Nvidia typically beats revenue guidance by 1-3%) plus volatile equity-investment gains (Q1 FY27 +$15.9B, Q2 FY27 +$7.8B)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "research",
+   "run_index": 1,
+   "spread": 1.0161,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3345,
+   "seconds": 45.2,
+   "usage": {
+    "num_turns": 5,
+    "input": 8,
+    "cache_read": 106534,
+    "cache_write": 22427,
+    "cache_write_1h": 22427,
+    "output": 3300,
+    "thinking": 754,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3345328,
+    "web_fetch": 0,
+    "duration_api_ms": 47947
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 2.36,
+     "25": 2.47,
+     "50": 2.58,
+     "75": 2.69,
+     "90": 2.82
+    }
+   },
+   "reasoning": "From the Q3 FY27 guide ($108B ±2%, 74% gross margin, $9.2B GAAP opex, 16-18% tax) plus a typical beat to about $111.5B, EPS before investment gains is about $2.52 on 24.25B shares, consistent with $2.47-2.53 consensus. GAAP EPS also includes gains and losses on equity stakes. Over Jul 24-Oct 23: SpaceX rose from about $115 to $147.5 (+~$4B), Intel fell (-~$1.15B) and CoreWeave fell (-~$0.8B), for a net of about +$1.5-2B pre-tax, or +$0.06 per share. No priced private round closed in the quarter. Median is $2.58. No human market prices GAAP EPS; the Polymarket and Kalshi contracts on non-GAAP beats differ from this question, so they were not used.",
+   "sources": [
+    "https://www.fool.com/investing/2026/07/25/coreweave-stock-fell-114-on-friday-the-sell-off-is/",
+    "https://www.nbcnews.com/business/markets/spacex-stock-below-ipo-price-rcna587717",
+    "https://en.wikipedia.org/wiki/Initial_public_offering_of_SpaceX"
+   ],
+   "reconciliation": "The main factual dispute was SpaceX's late-July price. Run 3 had it at about $150-165 (flat quarter); Runs 1 and 2 had it at about $105-120. Search: SpaceX closed $131.11 on Jul 16, its first close below the IPO price, and kept falling, about 50% off its peak by late July. That supports Runs 1 and 2, so SpaceX is a gain of about +$4B for the quarter, and Run 3's net-loss case is rejected. CoreWeave's Jul 24 close was confirmed at $71.88 (Motley Fool), down to $54.24, about -$0.8B on 47.2M shares, smaller than Run 2's $1.5-2B. Intel's loss of about -$1.15B is agreed. No priced private round closed in the quarter (from the runs' evidence; not re-checked). Net investment gains are about +$1.5-2B pre-tax, or +$0.06 EPS, on core EPS of about $2.52. The spread around Run 1's width is kept for the uncertainty in smaller holdings and private marks. Market check: none on GAAP EPS.",
+   "disagreements": [
+    {
+     "claim": "SpaceX price in late July (~$115 vs ~$155)",
+     "kind": "factual",
+     "verdict": "Settled toward ~$110-125: closed $131 on Jul 16 and kept falling to about a 50% drawdown by late July; the quarter's gain is about +$4B"
+    },
+    {
+     "claim": "CoreWeave loss over the quarter",
+     "kind": "factual",
+     "verdict": "Jul 24 close $71.88 confirmed; loss about -$0.8B, not -$1.5-2B"
+    },
+    {
+     "claim": "Private revaluations (OpenAI/Anthropic) inside Q3",
+     "kind": "judgment",
+     "verdict": "No priced round closed in the quarter, so assume minimal markup with some upside skew"
+    },
+    {
+     "claim": "Size of the revenue beat (108 vs 111-114B)",
+     "kind": "judgment",
+     "verdict": "Took about $111.5B, in line with Nvidia's recent beats"
+    }
+   ],
+   "reference_class": "Nvidia's quarterly GAAP diluted EPS against its guide-implied core EPS, FY26-FY27, including equity mark-to-market"
+  }
+ ]
+}
