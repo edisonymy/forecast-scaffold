@@ -1,0 +1,203 @@
+{
+ "record_id": "2026-10-27-727e3b36",
+ "question": "Will the Brent crude futures price reach at least $130 per barrel in the final quarter of 2026?",
+ "question_id": 46434,
+ "url": "https://www.metaculus.com/questions/46207/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "binary",
+ "forecast_at": "2026-10-27T15:03:14+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.6346,
+ "pools": {
+  "pooled_runs": 0.2838549252565675,
+  "phase1": 0.2838549252565675,
+  "phase2": null,
+  "spread_phase1": 0.12,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probability": 0.25
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.2416,
+   "seconds": 91.9,
+   "usage": {
+    "num_turns": 9,
+    "input": 12,
+    "cache_read": 150182,
+    "cache_write": 20977,
+    "cache_write_1h": 20977,
+    "output": 4285,
+    "thinking": 1186,
+    "web_search": 3,
+    "cost_usd_envelope": 0.4284694,
+    "web_fetch": 0,
+    "duration_api_ms": 107383
+   },
+   "estimate": 0.22,
+   "reasoning": "Yahoo BZ=F (now apparently the Jan-27 contract after the roll) is ~$109-112 on Oct 27; the October max high is $117.42 (Oct 26). The 2026 high was ~$126 (Apr 30) at the height of the Iran war, so $130 has not printed this year. Reaching it needs ~+17% within ~9.5 weeks. With implied vol ~49%, a driftless lognormal touch probability is ~35-40%, but steep backwardation means each monthly roll of the continuous series knocks the price down, and Saudi/Turkey/Pakistan-Iran talks are a de-escalation path. Against that, Houthi strikes on Saudi pipelines and record Hormuz shipping attacks keep upside tail risk high. Market check: Kalshi WTI 'hit by Dec 31' shows ~26% for $120 and ~37% for $115 with WTI ~$101 (a near-miss contract, different benchmark; the Brent-equivalent strike is roughly WTI $116-120). Kalshi reportedly has a Brent $130 line at ~20c, but its contract terms were unverified. No Polymarket/Manifold Brent match.",
+   "sources": [
+    "https://finance.yahoo.com/quote/BZ%3DF/history/",
+    "https://en.wikipedia.org/wiki/2026%E2%80%932028_world_oil_market_chronology",
+    "https://hdfcsky.com/news/brent-crude-oil-price-today-october-27-2026-brent-falls-below-115-wti-slips-to-100-8-as-middle-east-peace-hopes-emerge",
+    "https://defirate.com/prediction-markets/oil-spot-price/",
+    "https://www.barchart.com/futures/quotes/CB*0/volatility-greeks"
+   ],
+   "dossier": "- Yahoo BZ=F history (fetched 2026-10-27): Oct daily highs rose from ~103 (Oct 1) to 117.41 (Oct 23) and 117.42 (Oct 26); Oct 27 row O110.28 H111.92 L109.20 C109.46. This drop of ~$6 versus news quotes of ~$114.7 that day likely reflects a roll to the Jan-27 contract (backwardation). October max high so far: 117.42.\n- Wikipedia 2026-28 oil chronology: the Iran war began early March 2026; Brent hit a 4-yr high of ~$126 on Apr 30 and $118.03 on Apr 29. A ceasefire in early April caused a >13% one-day drop. Fighting resumed in September; diesel hit a record on Sep 11. In October, Iranian tanker attacks and a third US carrier lifted Brent toward $110 by mid-Oct.\n- HDFC Sky / news, 2026-10-27: Brent ~$114.70, down ~1%, as Saudi Arabia, Turkey and Pakistan held talks with Iran in Tehran to open negotiation channels. Houthis claimed strikes on Saudi East-West pipeline pumping stations and Riyadh airport. October was the worst month for Hormuz shipping attacks since 2017. Brent is near 6-month highs.\n- Barchart: Brent options IV ~49.6% (Oct-26 contract); BNO IV30 ~48.5%.\n- SeekingAlpha background: an economist says oil could spike to $125 if the US-Iran conflict returns to 'hot war'.\n- Prediction markets: Kalshi has WTI 'hit by Dec 31 2026' ladders and reportedly a Brent $130 line (terms unverified). Polymarket has monthly WTI contracts and perpetual oil futures. No exact Brent/Yahoo-sourced matching contract found.\n- Status quo: Brent ~$110-115 with the Yahoo continuous series below $120; $130 has not been reached at any point in 2026.\n- Resolution: resolves off the Yahoo Finance BZ=F daily HIGH (the continuous front month, which rolls monthly), not the close, not spot/Dated Brent, not other vendors. One intraday high >=130.00 on any day Oct 1-Dec 31 2026 is enough.\n- Event window: Oct 1 2026 -> Dec 31 2026 per the criteria; as of Oct 27, ~29% elapsed (Oct portion max high 117.42, below the threshold).\n- Required move: ~+16-19% from ~$110-112 (the post-roll contract) within ~9.5 weeks; backwardation lowers the continuous series at each monthly roll.\n- Upside drivers: Houthi attacks on Saudi infrastructure, Hormuz shipping attacks, US carrier buildup, possible return to full-scale war. Downside drivers: regional mediation with Iran, a prior ceasefire precedent producing >13% one-day drops, demand softness.\n- Searched, not found: Brent option pricing for the $130 strike for Dec/Jan; a verified Kalshi Brent contract spec; bank forecasts for Q4 Brent.",
+   "reference_class": "Touch probability for a front-month crude futures price reaching a strike ~17% above spot within ~2 months under ~45-55% implied vol in a backwardated, geopolitically stressed market"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.8131,
+   "seconds": 84.4,
+   "usage": {
+    "num_turns": 10,
+    "input": 12,
+    "cache_read": 147850,
+    "cache_write": 21032,
+    "cache_write_1h": 21032,
+    "output": 4085,
+    "thinking": 1140,
+    "web_search": 3,
+    "cost_usd_envelope": 0.427459,
+    "web_fetch": 0,
+    "duration_api_ms": 101309
+   },
+   "estimate": 0.3,
+   "reasoning": "Yahoo's BZ=F series shows October highs peaking at $117.42 on Oct 26. The latest quote is about $109-112, which may reflect the roll to the backwardated next contract. So Brent needs to rise about 12-18% within roughly 46 trading days. A barrier calculation at 40-55% implied volatility, the war-time level, gives about 35-45% before allowing for mean reversion. The 2026 intraday peak was only about $126, set during the April Hormuz crisis. BMI expects a Q4 average of $107, and diplomacy between Saudi Arabia, Turkey, Pakistan and Iran is under way. Upside risks: Houthi strikes on Saudi pipelines, October being the worst month for shipping attacks since 2017, and possible renewed US strikes on Iran. Kalshi's contract is a near-miss, not a match: it tracks WTI, not Brent. It prices WTI reaching $115+/$120+/$130+ by Dec 31 at 37%/26%/16%. With the spread at about $13, Brent $130 corresponds to WTI at roughly $117, which implies about 30-35%.",
+   "sources": [
+    "https://finance.yahoo.com/quote/BZ%3DF/history/",
+    "https://en.wikipedia.org/wiki/2026%E2%80%932028_world_oil_market_chronology",
+    "https://hdfcsky.com/news/brent-crude-oil-price-today-october-27-2026-brent-falls-below-115-wti-slips-to-100-8-as-middle-east-peace-hopes-emerge",
+    "https://rigzone.com/news/is_something_else_influencing_the_value_of_oil-27-oct-2026-184940-article",
+    "https://defirate.com/odds/oil-price/",
+    "https://www.geo.tv/latest/688036-brent-hits-six-month-high-above-116-as-houthi-attacks-stoke-supply-fears"
+   ],
+   "dossier": "- Resolution instrument: resolves off the daily High in Yahoo Finance's BZ=F history (continuous front-month Brent, which rolls), not Brent settlements quoted in news. Brent's front month rolls at the end of each month, and the curve is backwardated, so BZ=F can step down at each roll.\n- Event window: Oct 1 2026 -> Dec 31 2026 per the criteria; as of Oct 27 about 29% has elapsed (about 65 days remain).\n- Yahoo BZ=F October highs (fetched Oct 27): rising from about $103 (Oct 1-5) to about $107 (mid-Oct), $111-113 (Oct 20-22), $117.41 (Oct 23) and $117.42 (Oct 26, the October max so far). Oct 27 high was $111.92 with the latest quote about $109.44, possibly after the contract roll.\n- News Oct 23-27 (geo.tv, Benzinga, Nikkei): Brent settled at $116.72 on Fri Oct 23, the highest close since Apr 29. Drivers: Houthi strikes on Saudi East-West pipeline pumping stations and Riyadh airport, plus a UAE oil spill. On Oct 27 Brent was about $114.7 (-1%) as talks between Saudi Arabia, Turkey, Pakistan and Iran raised de-escalation hopes. WTI was about $100.8.\n- Washington Institute: October 2026 was the worst month for attacks on commercial shipping in and near Hormuz since 2017.\n- 2026 history (Wikipedia chronology): US-Iran conflict escalated in March, with WTI up more than 35% in one week. Brent peaked near $126 intraday on Apr 30 under a Hormuz blockade threat. Prices fell to about $70-80 in June-July as tanker traffic resumed, then went back above $100 in September.\n- Rigzone Oct 27: J.P. Morgan fundamental fair value is about $94, so roughly a $20 geopolitical premium. BMI forecasts a Q4 2026 average of $107 and $112 in Q1 2027. BMI says high-intensity warfare on energy infrastructure could spike prices above earlier peaks in this conflict.\n- Trump has left the door open to renewed strikes on Iran (Latin Times).\n- Needed move: about +12% from $116, or about +18% from $110, to reach a $130 high.\n- Prediction markets: Kalshi lists WTI 'how high by Dec 31 2026' ladders, which is a different benchmark from this question; WTI trades about $13 below Brent. No Brent-specific $130 Q4 market was found on Polymarket or Kalshi.\n- Searched but not found: Brent options implied volatility figures, and an exact Yahoo BZ=F roll date.",
+   "reference_class": "Probability of oil futures touching a level +12-18% above spot within about 2 months in a high-volatility geopolitical regime (barrier-hit estimates), checked against 2026 episodes where spikes peaked near $126"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3857,
+   "seconds": 78.0,
+   "usage": {
+    "num_turns": 9,
+    "input": 12,
+    "cache_read": 148889,
+    "cache_write": 20057,
+    "cache_write_1h": 20057,
+    "output": 4135,
+    "thinking": 895,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3856528,
+    "web_fetch": 0,
+    "duration_api_ms": 87198
+   },
+   "estimate": 0.34,
+   "reasoning": "Brent front-month ~$115 on Oct 27 2026 (six-month high $116.72 on Oct 23) amid an 8-month US-Iran war, Houthi strikes on Saudi Ras Tanura, Egypt troop authorization, offset by Saudi/Turkish/Pakistani/Qatari de-escalation diplomacy. Needs ~+13% intraday touch within ~9.5 weeks. Barrier-touch math at 40-55% vol gives ~45-60%, but the 2026 peak during the worst phase was ~$126 (never $130), and backwardation/contract rolls on BZ=F drag. Kalshi 'WTI high by Dec 31' prices $115 at 37% and $120 at 26%; with a ~$14 Brent-WTI spread, Brent $130 ~ WTI $116 -> ~35%. Near-miss contract (WTI, possibly settlement-based), used as evidence. Land at 34%.",
+   "sources": [
+    "https://www.5paisa.com/blog/crude-oil-price-today-27-oct-2026",
+    "https://en.wikipedia.org/wiki/2026%E2%80%932028_world_oil_market_chronology",
+    "https://www.cbsnews.com/live-updates/iran-war-trump-us-diplomacy-oil-prices-strait-of-hormuz/",
+    "https://defirate.com/odds/oil-price/",
+    "https://www.cnbc.com/2026/10/26/oil-prices-today-wti-brent.html"
+   ],
+   "dossier": "- Resolves off Yahoo Finance BZ=F (Brent Last Day Financial Futures, rolling front month) daily HIGH >= $130.00 on any day Oct 1-Dec 31 2026; not settlement, not other sources.\n- Event window: 2026-10-01 -> 2026-12-31 per criteria; as of 2026-10-27 ~29% elapsed. October high so far ~ $116.7-117 (no $130 print).\n- Price Oct 27 2026: Brent ~$115.1-116.2 (Fortune, 5paisa); Oct 26 close $115.81, WTI $101.76 (CNBC/search summary). Brent-WTI spread ~$14.\n- Oct 23 2026: Brent closed $116.72, six-month high, +6.2% week, third straight weekly gain (CNBC).\n- Brent +~18% over past month, +~80% y/y (Trading Economics).\n- 2026 price path (Wikipedia chronology): Jan low ~$63; late March $112.57 (Iraq force majeure); peak ~$126 Apr 30 (Trump threatens bombing/blockade); $114 May 4; late June $70-74 on Hormuz reopening prospects; crossed $100 Sep 9; ~$105 mid-Sep then fell; $102 Oct 1; $109.86 Oct 16. $130 not reached in 2026 to date.\n- Context Oct 27 (CBS): 8-month US-Iran war; Houthis claim strikes on Saudi Ras Tanura refinery with fires; Egypt parliament authorized troops to Saudi, Houthis call it 'declaration of war'; Israeli election with calls to 'finish the job'; Iran shadow fleet ran dry mid-Oct under US naval blockade.\n- De-escalation side: Saudi, Turkish, Pakistani delegations met Iran Oct 26 ('very good' talks, no agreement); Qatari mediation US-Iran; prices dipped ~1-2% on talks.\n- Background: an economist said oil could spike to $125 if the conflict returns to 'hot war' (SeekingAlpha).\n- Market check: no Polymarket/Manifold/Kalshi contract on Brent $130 Q4 found. Near-miss: Kalshi 'How high will WTI get by Dec 31 2026' ladder exists ($115 and $120 rungs active; WTI-based, possibly settlement-based) - see defirate.com/odds/oil-price. Brent $130 roughly corresponds to WTI ~$116 at current spread.\n- Mechanics: BZ=F rolls monthly; in backwardation, rolls lower the displayed front-month price.\n- Searched, not found: current Brent implied volatility (OVX-equivalent), Brent options skew for $130 calls, Brent-specific prediction market.",
+   "reference_class": "Probability that a front-month crude future in a high-volatility geopolitical regime touches a level ~13% above spot within ~2 months (barrier-touch under 40-55% annualized vol), cross-checked against Kalshi WTI max-price ladder"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "research",
+   "run_index": 1,
+   "spread": 0.12,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3413,
+   "seconds": 55.2,
+   "usage": {
+    "num_turns": 6,
+    "input": 10,
+    "cache_read": 133489,
+    "cache_write": 21429,
+    "cache_write_1h": 21429,
+    "output": 3428,
+    "thinking": 1039,
+    "web_search": 2,
+    "cost_usd_envelope": 0.3412748,
+    "web_fetch": 0,
+    "duration_api_ms": 57908
+   },
+   "estimate": 0.25,
+   "reasoning": "Yahoo BZ=F has rolled to the backwardated Jan-27 contract: Oct 27 quote ~$109.4 (high 111.92) vs Dec contract ~$115; October max high 117.42; 2026 peak ~$126 (Apr 30), so $130 never printed. Need ~+19% intraday touch within ~9 weeks, with a further roll lower at end-Nov. Vol-based touch math (~49% IV) gives ~35-40%, but IV embeds jump premium, geopolitical premia mean-revert, and Saudi/Turkey/Pakistan-Iran talks are underway. Upside tail is real (Houthi strikes on Saudi infrastructure, worst Hormuz shipping month since 2017, possible renewed US strikes). Kalshi WTI-by-Dec-31 ladder ($115 37%, $120 26%) maps to Brent-Yahoo $130 at roughly 25-30%; near-miss contract, evidence only.",
+   "sources": [
+    "https://finance.yahoo.com/quote/BZ%3DF/history/",
+    "https://tradingeconomics.com/commodity/brent-crude-oil",
+    "https://defirate.com/odds/oil-price/"
+   ],
+   "reconciliation": "Factual dispute 1: current BZ=F level (Run 3 used ~$115, Runs 1-2 suspected a roll to ~$110). Yahoo history fetched: Oct 27 O110.28 H111.92 C109.37, quote 109.43, while Trading Economics shows Brent ~$115.2 - confirms Yahoo has rolled to the backwardated next contract, so the required move is ~+19% not ~+13%, which undercuts Run 3's anchor. Dispute 2: existence of a Kalshi Brent $130 contract (~20c per Run 1). A search summary repeated a 'Brent $130 at 19.8c' claim, but defirate's tracker (observed Oct 27 11:00 ET) lists only WTI contracts on Kalshi and explicitly no Brent contract, so the 19.8c is likely the WTI $130 rung mislabeled; not used as an anchor. Judgment: how much to discount vol-based touch math for premium mean reversion and roll drag vs war tail risk - no evidence breaks this; I take ~25%, between the WTI-ladder mapping and the more skeptical run.",
+   "disagreements": [
+    {
+     "claim": "Yahoo BZ=F currently ~$115 (Run 3) vs ~$110 after roll (Runs 1-2)",
+     "kind": "factual",
+     "verdict": "Settled: Yahoo shows 109.4 on Oct 27 vs ~$115 in news; roll to backwardated contract confirmed, required move ~+19%"
+    },
+    {
+     "claim": "Kalshi has a Brent $130 contract priced ~20c",
+     "kind": "factual",
+     "verdict": "Likely false: defirate tracker shows only WTI ladders on Kalshi; the 20c figure is probably the WTI $130 rung"
+    },
+    {
+     "claim": "How much to discount barrier-touch math (35-60%) for mean reversion, roll drag and diplomacy",
+     "kind": "judgment",
+     "verdict": "Unresolved by evidence; I discount fairly heavily given the 2026 peak of $126 never reached $130 even at peak crisis"
+    },
+    {
+     "claim": "Mapping of Kalshi WTI ladder to Brent-Yahoo $130 (25-35%)",
+     "kind": "judgment",
+     "verdict": "With the Yahoo series on the lower Jan contract, Brent $130 maps to WTI ~$118-120, i.e. ~26-30%; near-miss contract"
+    }
+   ],
+   "reference_class": "Front-month oil futures touching a level ~19% above spot within ~2 months during an active Middle East supply-risk regime (2008, 2022, 2026 spring episodes)"
+  }
+ ]
+}
