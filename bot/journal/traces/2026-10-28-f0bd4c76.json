@@ -1,0 +1,230 @@
+{
+ "record_id": "2026-10-28-f0bd4c76",
+ "question": "How many US banks will fail in November or December 2026?",
+ "question_id": 46435,
+ "url": "https://www.metaculus.com/questions/46208/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "multiple_choice",
+ "forecast_at": "2026-10-28T06:02:26+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.1816,
+ "pools": {
+  "pooled_runs": {
+   "0": 0.4231985501938313,
+   "1": 0.3356388324291349,
+   "2": 0.15646126149707296,
+   "3+": 0.08470135587996094
+  },
+  "phase1": {
+   "0": 0.4231985501938313,
+   "1": 0.3356388324291349,
+   "2": 0.15646126149707296,
+   "3+": 0.08470135587996094
+  },
+  "phase2": null,
+  "spread_phase1": 0.13,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probabilities": {
+   "0": 0.41,
+   "1": 0.35,
+   "2": 0.16,
+   "3+": 0.08
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9087,
+   "seconds": 64.9,
+   "usage": {
+    "num_turns": 6,
+    "input": 10,
+    "cache_read": 120469,
+    "cache_write": 18073,
+    "cache_write_1h": 18073,
+    "output": 3274,
+    "thinking": 725,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3101638,
+    "web_fetch": 0,
+    "duration_api_ms": 67836
+   },
+   "estimate": {
+    "0": 0.36,
+    "1": 0.35,
+    "2": 0.18,
+    "3+": 0.11
+   },
+   "reasoning": "Six US bank failures Jan-Sep 2026 (four since July), no October failure found through Oct 28. Poisson at the 2026 pace gives lambda~1.1-1.3 for the two-month window. The 2017-2025 Nov-Dec history (about 3 of 9 windows had one failure, none had 2+) and fewer usable Fridays around the holidays pull toward 0/1. Thin Manifold full-year market '7+ failures in 2026' at ~0.51 implies roughly 50% chance of at least one more failure in Oct 28-Dec 31, a near-miss that also counts late October. No Polymarket/Kalshi market on this exact contract. Blend with overdispersion lands at ~64% for at least one failure.",
+   "sources": [
+    "https://www.fdic.gov/bank-failures/failed-bank-list",
+    "https://www.disruptionbanking.com/2026/10/01/six-us-banks-failed-in-2026-the-most-in-a-decade-what-that-says-about-the-economy/",
+    "https://www.fdic.gov/news/press-releases/2026/sunwest-bank-assumes-all-deposits-and-certain-assets-nano-banc-irvine",
+    "https://www.americanbanker.com/news/fifth-bank-fails-in-2026-as-drip-of-small-bank-closures-continues",
+    "https://manifold.markets/bessarabov/will-7-or-more-us-banks-fail-in-202-dLQps0QyuE"
+   ],
+   "dossier": "- FDIC Failed Bank List (fetched 2026-10-28, page last updated 2026-09-25): 2026 failures = Metropolitan Capital Bank & Trust, Chicago IL (Jan 30); Community Bank and Trust-West Georgia, LaGrange GA (May 1); Kentland Federal S&L, Kentland IN (Jul 10); Small Business Bank, Lenexa KS (Jul 17); Tioga-Franklin Savings Bank, Philadelphia PA (Aug 21); Nano Banc, Irvine CA (Sep 25, $736M assets).\n- 2025 failures per FDIC list: Pulaski Savings Bank (Jan 17), Santa Anna National Bank (Jun 27); none in Nov-Dec 2025.\n- Disruption Banking 2026-10-01: six failures in 2026 = most in a decade; marketintellabs: ~$1.43B assets, ~$243M DIF cost as of Oct 6. All small community banks; described as a steady 'drip', no systemic event.\n- Searches for an October 2026 failure (as of Oct 28) found none.\n- 2026 YTD pace: 6 failures in ~9 months (0.67/month); 4 of 6 in Jul-Sep (higher recent pace). Naive Poisson over 2 months: lambda ~1.1-1.3.\n- Historical Nov-Dec windows 2017-2025 (from memory, partly unverified): 2017 one (Washington Federal Bank for Savings, Dec 15), 2019 one (City National Bank of NJ, Nov 1), 2023 one (Citizens Bank Sac City, Nov 3), other years zero; no window with 2+. Over this low-failure era: about 3/9 windows with exactly 1, 6/9 with 0.\n- FDIC closures usually happen on Fridays; the late-December holidays reduce usable Fridays.\n- Resolution: resolves off the FDIC Failed Bank List closing dates only; event window Nov 1, 2026 -> Dec 31, 2026; as of Oct 28, 0% elapsed. An Oct 30 failure would not count.\n- Markets: Manifold has thin full-year 2026 total-count markets (7+, 8+, 9+, 10+); no Polymarket/Kalshi contract on Nov-Dec counts found.\n- Searched for but not found: FDIC Q3 2026 problem-bank list count, specific named troubled banks under enforcement action.",
+   "reference_class": "Nov-Dec two-month windows of US FDIC bank failures 2017-2025, combined with a Poisson rate from 2026 YTD failures"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5985,
+   "seconds": 54.0,
+   "usage": {
+    "num_turns": 6,
+    "input": 10,
+    "cache_read": 119976,
+    "cache_write": 18775,
+    "cache_write_1h": 18775,
+    "output": 3292,
+    "thinking": 754,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3167612000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 56652
+   },
+   "estimate": {
+    "0": 0.42,
+    "1": 0.33,
+    "2": 0.16,
+    "3+": 0.09
+   },
+   "reasoning": "FDIC list shows 6 failures in 2026 through Oct 28 (last: Nano Banc Sep 25), ~0.6/month, implying Poisson lambda ~1.2 for a 2-month window; trimmed toward ~1.0 because Nov-Dec failures were rare in 2019-2025 and December holiday timing may slow closures. Poisson(1.0) gives ~.37/.37/.18/.08. Manifold annual-count ladder (7+/8+/9+ at .51/.31/.15, thin volume, includes late-Oct window) implies ~.49/.20/.16/.15 for the Nov-Dec counts; used as near-miss evidence, not an anchor. Blended toward slightly more mass on 0 and a fatter tail than pure Poisson for overdispersion (Jul-Aug 2026 had 3).",
+   "sources": [
+    "https://www.fdic.gov/bank-failures/failed-bank-list",
+    "https://www.disruptionbanking.com/2026/10/01/six-us-banks-failed-in-2026-the-most-in-a-decade-what-that-says-about-the-economy/",
+    "https://marketintellabs.com/research/bank-failures-2026",
+    "https://www.fdic.gov/news/press-releases/2026/sunwest-bank-assumes-all-deposits-and-certain-assets-nano-banc-irvine",
+    "https://manifold.markets/bessarabov/will-7-or-more-us-banks-fail-in-202-dLQps0QyuE"
+   ],
+   "dossier": "- FDIC Failed Bank List (page last updated 2026-09-25): 2026 failures = Metropolitan Capital Bank & Trust, Chicago IL (Jan 30); Community Bank and Trust - West Georgia (May 1); Kentland Federal S&L, IN (Jul 10); Small Business Bank, Lenexa KS (Jul 17); Tioga-Franklin Savings Bank, Philadelphia PA (Aug 21); Nano Banc, Irvine CA (Sep 25, $736M assets, Sunwest assumed deposits).\n- 2025 had only 2 failures (Pulaski Savings Bank Jan 17; Santa Anna National Bank Jun 27), with none Jul-Dec 2025. 2024 had 2 (latest Oct 18, First National Bank of Lindsay), none Nov-Dec. 2023: Citizens Bank Sac City IA failed Nov 3 (from memory). Nov-Dec failures 2019-2025: roughly 1 across 7 years (memory, not verified this run).\n- Multiple outlets (disruptionbanking 2026-10-01, marketintellabs, coinlaw) say 6 failures in 2026 is the most since ~2017; failures are all small (total ~$1.43B assets, DIF cost ~$243M).\n- 2-month windows in 2026: Jan-Feb 1, Mar-Apr 0, May-Jun 1, Jul-Aug 3, Sep-Oct 1 (as of Oct 28). Overall 2026 rate ~0.6/month.\n- Searches for a seventh 2026 failure or any October 2026 closure returned nothing as of Oct 28.\n- Status quo: small community-bank failures arriving every 1-2 months; no systemic stress reported.\n- Market check: Manifold has 7+/8+/9+/10+ US bank failures in 2026 contracts (full-year, thin volume <900 mana); they include any Oct 29-31 failure, so they are not an exact match. Polymarket's markets are about single large banks failing (US Bank, Deutsche), so they don't apply.\n- Resolution: resolves off the FDIC Failed Bank List only; counts failures with closing dates after Oct 31, 2026 and before Jan 1, 2027.\n- Event window: 2026-11-01 -> 2026-12-31 per the criteria; as of 2026-10-28, 0% elapsed.\n- Searched but not found: FDIC problem-bank list count for Q2/Q3 2026, specific named troubled banks or consent orders pointing to imminent closure.",
+   "reference_class": "Count of FDIC-listed US bank failures per 2-month window, 2024-2026 (current 2026 run-rate), cross-checked against Nov-Dec windows 2019-2025"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2817,
+   "seconds": 49.7,
+   "usage": {
+    "num_turns": 6,
+    "input": 8,
+    "cache_read": 90815,
+    "cache_write": 17986,
+    "cache_write_1h": 17986,
+    "output": 3226,
+    "thinking": 822,
+    "web_search": 2,
+    "cost_usd_envelope": 0.281739,
+    "web_fetch": 0,
+    "duration_api_ms": 57823
+   },
+   "estimate": {
+    "0": 0.49,
+    "1": 0.32,
+    "2": 0.13,
+    "3+": 0.06
+   },
+   "reasoning": "Six US bank failures in 2026 through Oct 28 (last: Nano Banc Sep 25), a pace of ~0.6/month, which gives a Poisson lambda of ~1.2 for Nov-Dec. Recent historical Nov-Dec windows (2019-2025) averaged ~0.3 failures. Problem banks fell from 54 to 47 in Q2 2026. No failure in Oct so far. Manifold full-year markets (7+ at 0.51, 8+ at 0.31, 9+ at 0.15; thin volume, and the window includes the rest of Oct) imply roughly P(>=1 more) ~0.5, P(>=2) ~0.3. Not an exact contract match, so treated as evidence only. Blended lambda ~0.75 with overdispersion.",
+   "sources": [
+    "https://www.fdic.gov/bank-failures/failed-bank-list",
+    "https://marketintellabs.com/research/bank-failures-2026",
+    "https://www.disruptionbanking.com/2026/10/01/six-us-banks-failed-in-2026-the-most-in-a-decade-what-that-says-about-the-economy/",
+    "https://manifold.markets/bessarabov/will-7-or-more-us-banks-fail-in-202-dLQps0QyuE"
+   ],
+   "dossier": "- FDIC Failed Bank List (updated as of Sep 25, 2026): 2026 failures are Metropolitan Capital Bank & Trust, Chicago (Jan 30); Community Bank and Trust-West Georgia (May 1); Kentland Federal S&L, IN (Jul 10); Small Business Bank, Lenexa KS (Jul 17); Tioga-Franklin Savings Bank, Philadelphia (Aug 21); Nano Banc, Irvine CA (Sep 25, $736M assets). That is 6 failures through ~Oct 28.\n- 2025: 2 failures (Pulaski Savings Bank Jan 17; Santa Anna National Bank Jun 27). 2024: 2 failures (Apr, Oct). 2023: 5 failures, including Citizens Bank Sac City in Nov 2023.\n- Nov-Dec windows 2019-2025, from memory of the FDIC list (approximate): 2019=1, 2020=0, 2021=0, 2022=0, 2023=1, 2024=0, 2025=0.\n- 2026 YTD rate: ~6 failures in ~9.9 months, about 0.6/month. Failures were clustered Jul-Sep (4 in ~11 weeks).\n- MarketIntelLabs (Oct 2026): 6 failures, $1.43B assets, $243M estimated DIF cost. FDIC problem banks 47 as of Q2 2026, down from 54. DIF reserve ratio 1.48%.\n- Disruption Banking (Oct 1, 2026): 6 failures is the most in a decade, all small institutions.\n- Searched for a 7th 2026 failure in October: none found as of Oct 28.\n- Manifold has full-year 2026 count markets (thresholds 7/8/9/10+). They are low-volume and their window includes late Oct, so they are not an exact match.\n- Resolves off the FDIC Failed Bank List only. Event window: Nov 1, 2026 -> Dec 31, 2026 per the criteria; as of Oct 28, 0% elapsed.\n- FDIC closings typically happen on Fridays. Nov-Dec 2026 has ~9 Fridays, including holiday weeks.\n- Could not find: an FDIC Q3 2026 problem-bank count, or any reports of specific banks under consent orders likely to close imminently.",
+   "reference_class": "US FDIC bank failures in 2-month windows: Nov-Dec windows 2019-2025, plus 2026 year-to-date run rate"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "research",
+   "run_index": 1,
+   "spread": 0.13,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2227,
+   "seconds": 25.7,
+   "usage": {
+    "num_turns": 3,
+    "input": 6,
+    "cache_read": 69558,
+    "cache_write": 18726,
+    "cache_write_1h": 18726,
+    "output": 1733,
+    "thinking": 173,
+    "web_search": 1,
+    "cost_usd_envelope": 0.22273359999999998,
+    "web_fetch": 0,
+    "duration_api_ms": 25148
+   },
+   "estimate": {
+    "0": 0.41,
+    "1": 0.35,
+    "2": 0.16,
+    "3+": 0.08
+   },
+   "reasoning": "Six small-bank failures in 2026 through Oct 28 (latest Nano Banc, Sep 25; none found in October). The 2026 pace of ~0.6/month implies lambda ~1.2 for Nov-Dec. Pulling down: 2017-2025 Nov-Dec windows had at most one failure each, problem banks fell 54->47 in Q2 2026, and holiday weeks leave fewer closure Fridays. Pulling up: four failures came in Jul-Sep. Used lambda ~0.95 with overdispersion. The Manifold full-year ladders (thin; window includes late October) imply ~50% for at least one more failure, consistent with this.",
+   "sources": [
+    "https://www.disruptionbanking.com/2026/10/01/six-us-banks-failed-in-2026-the-most-in-a-decade-what-that-says-about-the-economy/",
+    "https://marketintellabs.com/research/bank-failures-2026"
+   ],
+   "reconciliation": "The runs agreed on the facts: 6 failures in 2026 through Sep 25, none in October, problem banks at 47, Manifold ladder at 7+ 0.51 / 8+ 0.31 / 9+ 0.15. I checked for an October 2026 failure: the search returned only the six known failures, with Nano Banc on Sep 25 the latest. The disagreement is how much weight the high 2026 pace (lambda 1.2) gets against the low Nov-Dec history (~0.3) and the falling problem-bank count. That is a judgment call. I took lambda ~0.95 with some overdispersion, near Run 2.",
+   "disagreements": [
+    {
+     "claim": "Whether a failure occurred in Oct 2026 (would signal the current pace)",
+     "kind": "factual",
+     "verdict": "Search found none; Nano Banc on Sep 25 is the latest"
+    },
+    {
+     "claim": "Weight of the 2026 YTD pace vs the 2017-2025 Nov-Dec history (lambda 0.75 vs 1.2)",
+     "kind": "judgment",
+     "verdict": "Took ~0.95. The current regime gets more weight, but the falling problem-bank count and holiday timing trim it"
+    },
+    {
+     "claim": "How much overdispersion (tail mass on 3+)",
+     "kind": "judgment",
+     "verdict": "Moderate. The Jul-Aug cluster of 3 justifies some, but all failures were idiosyncratic small banks"
+    }
+   ],
+   "reference_class": "US FDIC bank failures in 2-month windows, mixing the 2026 YTD rate with Nov-Dec windows 2017-2025"
+  }
+ ]
+}
