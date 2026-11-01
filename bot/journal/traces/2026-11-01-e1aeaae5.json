@@ -1,0 +1,260 @@
+{
+ "record_id": "2026-11-01-e1aeaae5",
+ "question": "What will be Bitcoin's hash rate on December 31, 2026?",
+ "question_id": 46523,
+ "url": "https://www.metaculus.com/questions/46293/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-01T18:02:00+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.2795,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 939333.3333333334,
+    "25": 999333.3333333334,
+    "50": 1057333.3333333333,
+    "75": 1114333.3333333333,
+    "90": 1175000.0
+   },
+   "p_below_lower": 0.0175,
+   "p_above_upper": 0.02333333333333333
+  },
+  "phase1": {
+   "10": 939333.3333333334,
+   "25": 999333.3333333334,
+   "50": 1057333.3333333333,
+   "75": 1114333.3333333333,
+   "90": 1175000.0
+  },
+  "phase2": null,
+  "spread_phase1": 7000.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 925000.0,
+   "25": 990000.0,
+   "50": 1050000.0,
+   "75": 1108000.0,
+   "90": 1168000.0
+  },
+  "p_below_lower": 0.02,
+  "p_above_upper": 0.025
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3484,
+   "seconds": 64.7,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 120827,
+    "cache_write": 20157,
+    "cache_write_1h": 20157,
+    "output": 3764,
+    "thinking": 704,
+    "web_search": 3,
+    "cost_usd_envelope": 0.34843939999999995,
+    "web_fetch": 0,
+    "duration_api_ms": 78948
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 935000.0,
+     "25": 995000.0,
+     "50": 1055000.0,
+     "75": 1115000.0,
+     "90": 1175000.0
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "CMBI hash rate is 1,036,222 PH/s (Oct 30, 2026); the Oct 31 difficulty of 148.36T implies ~1,062 EH/s. In 2026 hashrate fell from the ~1.07-1.12 ZH/s peak to a Q3 average of ~940 EH/s, then recovered in October, with readings from 930 to 1,230 EH/s depending on source. Hashprice back above $40 supports a modest upward drift; the miners' AI/HPC pivot and a projected -3.5% adjustment on Nov 12 push the other way. Median set near the current level (~1.055M), with a ~9% SD covering 2-month drift plus daily index noise. No matching human market: the only Manifold candidate (2^100 hashes/yr before 2035) is a different contract, so it was not used.",
+   "sources": [
+    "https://indexes.coinmetrics.io/cmbihash",
+    "https://www.tokenpost.com/news/investing/45471",
+    "https://hashrateindex.com/blog/global-hashrate-heatmap-update-q3-2026/",
+    "https://www.coinwarz.com/bitcoin-difficulty",
+    "https://www.pickaxe.io/resources/news/bitcoin-hashrate-surges-past-1000-ehs-amid-difficulty-hikes",
+    "https://beincrypto.com/bitcoin-hash-rate-near-record-ai/",
+    "https://shattered.io/bitcoin-mining-hashprice-tops-40-2026/"
+   ],
+   "dossier": "- CMBI hash rate (resolution source, units PH/s, 48h lookback): 1,036,221.55 PH/s on 2026-10-30; 24h range 995,658-1,058,347; +3.31% day-on-day (indexes.coinmetrics.io/cmbihash, fetched 2026-11-01).\n- Difficulty adjustment 2026-10-31 at block 973,728: +5.54% to 148.36T (~1,062 EH/s implied). Reported 7-day hashrate 1,064.8 EH/s vs 1,228.44 the week before. Next adjustment ~Nov 12, projected -3.49% to 143.19T. 2026 so far: 11 up and 11 down out of 22 adjustments (tokenpost, 2026-10-31).\n- Coinwarz 2026-11-01: hashrate 1.10 ZH/s, difficulty 148.36T.\n- October 2026 readings varied widely by source: 932 EH/s (Oct 13), 1,101 (Oct 15), 1,153 (Oct 20, SoChain), 1,131 (Oct 24), 980.9 (Oct 30) (pickaxe.io news).\n- Hashrate Index Q3 2026 heatmap: Q1 avg ~1,066 EH/s, Q2 ~1,004, Q3 ~940 (-6.3% QoQ, -12% below the Dec-2025 peak). BTC fell ~50% from ~$126K (Oct 2025) to the low $60Ks by mid-2026, and hashprice hit record lows (low $30s/PH/day). Some analysts expect hashrate to drift lower until price recovers.\n- BeInCrypto/Yahoo (Oct 2026): hashrate peaked ~1,123 EH/s in Oct 2025, bottomed ~850 EH/s in Feb 2026, and recovered to ~1,004 EH/s (8.8% below peak). Public miners' realized hashrate fell 15% in H1 2026; listed miners hold $70B+ in AI/HPC contracts, while private and international operators are filling the gap.\n- Hashprice ~$36/PH/day on Oct 25 (-11% month-on-month), then back above $40; October 2026 miner revenue ~$1.12B, the best month since January (shattered.io).\n- Status quo: about 1.04-1.06M PH/s now.\n- Resolves off CMBI daily 'close' for 2026-12-31 in PH/s, not off difficulty-implied or other trackers. Bounds 750k-1.25M are open both ways.\n- Event window: a single day (2026-12-31 close); as of 2026-11-01 about 60 days remain.\n- Noise: CMBI daily values move ~3-5% from one day to the next. Late-December winter curtailment (e.g., Texas storms) is a downside candidate; a BTC price rally or new-generation ASIC deployment is an upside candidate.\n- Searched without finding: the Dec 31, 2025 CMBI value, the current BTC spot price, and any Polymarket/Kalshi hashrate market.",
+   "reference_class": "Two-month changes in Bitcoin network hash rate (CMBI daily close) over 2024-2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.0485,
+   "seconds": 66.9,
+   "usage": {
+    "num_turns": 8,
+    "input": 12,
+    "cache_read": 151580,
+    "cache_write": 20197,
+    "cache_write_1h": 20197,
+    "output": 3975,
+    "thinking": 918,
+    "web_search": 3,
+    "cost_usd_envelope": 0.366838,
+    "web_fetch": 0,
+    "duration_api_ms": 73362
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 948000.0,
+     "25": 1005000.0,
+     "50": 1062000.0,
+     "75": 1118000.0,
+     "90": 1180000.0
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "CMBI close was 1,036k PH/s on Oct 30, 2026 (10-day mean ~1,044k, very noisy daily); difficulty 148.36T implies ~1,062 EH/s. Hashrate grew ~12% from Sep (934 EH/s) to late Oct with BTC flat near $78k, but hashprice has fallen to ~$33/PH/day (near breakeven) and the next adjustment is projected at -3.5%, so drift over the 60-day horizon looks slightly positive at most. Median ~1,062k, with a wide spread from single-day noise and the risk of BTC price swings or winter curtailment. Small upper escape (needs +18%); the lower bound needs a 29% collapse, which looks negligible. No matching human market found (the Manifold 2^100-hashes-before-2035 contract differs in threshold and deadline).",
+   "sources": [
+    "https://indexes.coinmetrics.io/cmbihash",
+    "https://news.bitcoin.com/mining/difficulty-rises-hashprice-rips-22-as-bitcoin-hashrate-stalls/",
+    "https://www.tokenpost.com/news/investing/45471",
+    "https://www.pickaxe.io/resources/news/bitcoin-hashrate-hits-1101-ehs-as-difficulty-eyes-october-16-shift",
+    "https://www.coindesk.com/price/bitcoin",
+    "https://manifold.markets/IsaacKing/bitcoin-hash-rate-breaks-2100-hashe"
+   ],
+   "dossier": "- Resolves off the CMBI Bitcoin Hash Rate 'close' for 2026-12-31 (indexes.coinmetrics.io/cmbihash), in PH/s; not off any other source. It is a daily estimate with a 48h lookback, not a 7-day average, so day-to-day noise is large.\n- CMBI closes (PH/s): Oct21 967,859; Oct22 1,044,729; Oct23 1,076,176; Oct24 1,002,800; Oct25 1,083,164; Oct26 1,128,587; Oct27 1,069,188; Oct28 1,028,846; Oct29 1,003,033; Oct30 1,036,222 (coinmetrics, fetched 2026-11-01).\n- CMBI page changes as of Oct 30: 1M +8.66%, 3M +8.64%, YTD +11.59% (implies ~928k at start of 2026), 1Y -7.19% (implies ~1.115M in late Oct 2025), 2Y +37.5%.\n- Difficulty: +5.92% on Oct 16, +5.54% to 148.36T on Oct 29 2026 (implies ~1,062 EH/s); next adjustment ~Nov 16, projected -3.49% (tokenpost/coinwarz, late Oct 2026). In 2026: 11 increases and 11 decreases out of 22 adjustments; a -10% adjustment occurred earlier in 2026 (theblock).\n- Sep 6 2026: hashrate 934 EH/s, hashprice $39.63/PH/day, BTC $77,984, fees ~0.4% of rewards (bitcoin.com).\n- Oct 30 2026: hashprice ~$33/PH/day, called near gross breakeven for many miners; BTC ~$77.9k on Nov 1 2026 (coindesk).\n- Hashrate fell ~27% from Oct 2025 to Feb 2026, then recovered (pluang/pickaxe). Some miners are pivoting to AI/HPC.\n- Status quo: ~1.04-1.06M PH/s on 7-day-ish smoothing; single-day closes vary roughly ±5-8% around that.\n- Upside drivers: new-generation ASIC deployments, a BTC price rally. Downside drivers: low hashprice, the AI pivot, a BTC drawdown, winter weather curtailment in the US.\n- Event window: the single daily close on 2026-12-31; as of 2026-11-01 about 60 days remain.\n- Searched for a human market on Dec-31 hashrate (Polymarket/Kalshi/Manifold): none matched. Could not find historical CMBI December-specific seasonality data.",
+   "reference_class": "Bitcoin network hashrate changes over ~2-month windows in 2025-2026, plus the daily dispersion of CMBI closes"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6817,
+   "seconds": 65.3,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 120090,
+    "cache_write": 19753,
+    "cache_write_1h": 19753,
+    "output": 3609,
+    "thinking": 995,
+    "web_search": 3,
+    "cost_usd_envelope": 0.33326700000000004,
+    "web_fetch": 0,
+    "duration_api_ms": 73391
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 935000.0,
+     "25": 998000.0,
+     "50": 1055000.0,
+     "75": 1110000.0,
+     "90": 1170000.0
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "CMBI hash index ~1,036k PH/s on Oct 30, 2026 (1M +8.7%, 3M +8.6%); Oct 29 difficulty 148.36T implies ~1,062 EH/s. Status quo/trend continuation over 2 months suggests ~1.05-1.08M, tempered by weak hashprice (~$36/PH/day, BTC ~$78k) and AI pivots, and by last year's Q4 decline (~1.12M to ~0.93M). Single-day index noise is large (±5%). No human market matches this contract (Manifold 2^100-by-2035 is unrelated). Small escape mass both sides.",
+   "sources": [
+    "https://indexes.coinmetrics.io/cmbihash",
+    "https://www.tokenpost.com/news/investing/45471",
+    "https://www.pickaxe.io/resources/news/bitcoin-hashrate-surges-past-1000-ehs-amid-difficulty-hikes",
+    "https://bitzo.com/2026/10/bitcoin-mining-profitability-falls-below-40-as-difficulty-climbs",
+    "https://www.coindesk.com/price/bitcoin",
+    "https://www.bitkub.com/en/blog/bitcoin-mining-difficulty-jumps-592-to-high-7uNgmzahAeVWDSDkyPqM9F"
+   ],
+   "dossier": "- CMBI hash index (indexes.coinmetrics.io/cmbihash, fetched 2026-11-01): Oct 30 close 1,036,221 PH/s; Oct 24-30 daily closes 1,002,800 / 1,083,164 / 1,128,587 / 1,069,188 / 1,028,846 / 1,003,033 / 1,036,221 (shows ±5% day-to-day noise; index uses 48h lookback).\n- Same page: Oct MTD +6.45% (Oct range 860,954-1,128,587); Q3 2026 +11.23%; Q2 +3.20%; Q1 -8.68%; YTD +11.59% (implies Dec 31 2025 close ~928k); 52-week return -7.19% (implies ~1,116k late Oct 2025); 52-wk high 1,157,801, low 732,405; 1M +8.66%, 3M +8.64%.\n- Difficulty: Oct 16 2026 +5.92% to 140.58T (bitkub/blockops); Oct 29 2026 +5.54% to 148.36T, 11th increase of 2026 (tokenpost). 148.36T implies ~1,062 EH/s.\n- Hashprice fell from $40.03/PH/day (Oct 3) to ~$36 (Oct 28) (bitzo, bitkub); miners pivoting capacity to AI/HPC (pickaxe news).\n- BTC price ~$77.9k on Nov 1 2026 (coindesk).\n- Pickaxe/CryptoQuant reports: ~932 EH/s Oct 13, 1,101 Oct 15, 1,153 Oct 20, 1,131 Oct 24 — different sources vary materially vs CMBI.\n- Status quo: index around 1.0-1.07M PH/s; prior year Q4 (Oct->Dec 2025) saw ~-17% decline in index.\n- Resolves off CMBI 'close' hash rate value for Dec 31, 2026 only, not other hash rate trackers.\n- Event window: single daily value on 2026-12-31; as of 2026-11-01 ~60 days remain.\n- Searched, absent: any human prediction market on this exact contract (only Manifold 2^100 hashes/yr before 2035, unrelated). Not found: mining-rig shipment forecasts for Nov-Dec 2026.",
+   "reference_class": "Two-month changes in Bitcoin network hash rate (CMBI daily close) over 2025-2026, plus daily index noise"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0609,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1804,
+   "seconds": 25.8,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 16771,
+    "cache_write_1h": 16771,
+    "output": 2194,
+    "thinking": 425,
+    "web_search": 0,
+    "cost_usd_envelope": 0.18041780000000002,
+    "web_fetch": 0,
+    "duration_api_ms": 25136
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 925000.0,
+     "25": 990000.0,
+     "50": 1050000.0,
+     "75": 1108000.0,
+     "90": 1168000.0
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.025
+   },
+   "reasoning": "CMBI close 1,036k PH/s on Oct 30 2026; difficulty 148.36T implies ~1,062 EH/s; recent 10-day mean ~1,044k. Hashprice near breakeven (~$33-36/PH/day, BTC ~$78k) and AI/HPC pivots cap growth, offset by Sep-Oct recovery momentum; median ~1.05M. Single-day index noise is large (Oct range 861k-1,129k), and late-December winter curtailment (52-wk low 732k) gives a fat left tail. No human market matches the contract (Manifold 2^100-by-2035 is unrelated).",
+   "sources": [],
+   "reconciliation": "All three runs share the same facts: CMBI 1,036k on Oct 30; difficulty implies ~1,062 EH/s; ±5% daily noise; hashprice near breakeven; a -17% Q4 decline in 2025. No factual conflicts. The disagreements are judgment calls about drift (taken as roughly flat to slightly up), the weight on last year's Q4 decline (limited, because that drop came from a price crash), and the size of the escape tails. The 52-week low of 732k, cited in Run 3, shows a single-day close can approach 750k during curtailment, so I set p_below at 2% and shaded p10 slightly lower. Carried forward the runs' ~235k dispersion and widened it modestly. No web access on this run.",
+   "disagreements": [
+    {
+     "claim": "Size of upward drift by Dec 31",
+     "kind": "judgment",
+     "verdict": "Roughly flat, small upward bias; hashprice at breakeven limits growth"
+    },
+    {
+     "claim": "Probability of a CMBI close below 750k",
+     "kind": "judgment",
+     "verdict": "~2%: the 52-wk low of 732k shows curtailment days can approach it"
+    },
+    {
+     "claim": "Probability above 1.25M",
+     "kind": "judgment",
+     "verdict": "~2.5%: needs +19% vs now, plausible only with a price rally plus a noisy daily high"
+    }
+   ],
+   "reference_class": "CMBI daily hash rate close 60 days ahead, from a status-quo level, in a low-hashprice regime (2025-2026)"
+  }
+ ]
+}
