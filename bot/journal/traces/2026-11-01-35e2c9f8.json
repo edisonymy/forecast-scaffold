@@ -1,0 +1,260 @@
+{
+ "record_id": "2026-11-01-35e2c9f8",
+ "question": "What will be the average price of diesel in the lower Atlantic U.S. on December 28, 2026?",
+ "question_id": 46521,
+ "url": "https://www.metaculus.com/questions/46291/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-01T03:02:35+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.6083,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 5.056666666666667,
+    "25": 5.453333333333333,
+    "50": 5.836666666666666,
+    "75": 6.213333333333334,
+    "90": 6.56
+   },
+   "p_below_lower": 0.03,
+   "p_above_upper": 0.06333333333333334
+  },
+  "phase1": {
+   "10": 5.056666666666667,
+   "25": 5.453333333333333,
+   "50": 5.836666666666666,
+   "75": 6.213333333333334,
+   "90": 6.56
+  },
+  "phase2": null,
+  "spread_phase1": 0.06,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 5.06,
+   "25": 5.46,
+   "50": 5.84,
+   "75": 6.2,
+   "90": 6.55
+  },
+  "p_below_lower": 0.03,
+  "p_above_upper": 0.06
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.3714,
+   "seconds": 95.1,
+   "usage": {
+    "num_turns": 11,
+    "input": 14,
+    "cache_read": 188461,
+    "cache_write": 23430,
+    "cache_write_1h": 23430,
+    "output": 5972,
+    "thinking": 1749,
+    "web_search": 4,
+    "cost_usd_envelope": 0.5018662,
+    "web_fetch": 0,
+    "duration_api_ms": 105659
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 5.05,
+     "25": 5.43,
+     "50": 5.8,
+     "75": 6.17,
+     "90": 6.5
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.07
+   },
+   "reasoning": "Lower Atlantic diesel was 5.890 on Oct 26 2026 (EIA), versus a $6.139 peak on Sep 21, during the US-Iran war supply shock. NYMEX ULSD was about $4.79 on Oct 30, with Dec/Jan contracts about $4.7/$4.6 (backwardation). Lower Atlantic retail has run about $0.9-1.2 above front futures, which implies roughly $5.7-5.8 at end-December. Upside risks: the Oct 30 Hormuz tanker attack (Brent at a 6-month high of $117.64), record-low distillate stocks, and the IEA's view that the market stays tight into 2027. Downside risks: a peace deal, Russian diesel deal volumes ramping up, administration pressure on refiners, and China lifting its fuel-export restrictions. Markets: no matching Polymarket/Manifold market. Kalshi has a year-end national (not Lower Atlantic) diesel market, a near-miss contract; its page was rate-limited and the snippet odds were incoherent, so it was not used as an anchor.",
+   "sources": [
+    "https://www.eia.gov/petroleum/gasdiesel/",
+    "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=EMD_EPD2D_PTE_R1Z_DPG&f=W",
+    "https://energynewsbeat.co/diesel/iea-says-the-diesel-squeeze-lasts-well-into-2027-futures-imply-about-6-diesel-into-january/",
+    "https://www.dtnpf.com/agriculture/web/ag/news/world-policy/article/2026/10/09/ulsd-futures-fall-4-us-russia-diesel",
+    "https://www.riotimesonline.com/oil-markets-latam-friday-october-30-2026/",
+    "https://oilprice.com/Latest-Energy-News/World-News/Trump-Administration-Pushes-Refiners-to-Boost-Diesel-Output-as-Prices-Soar.html"
+   ],
+   "dossier": "- EIA weekly Lower Atlantic (PADD1C) on-highway diesel, 2026: Jan-Feb ~3.48-3.71; Mar 2 3.808; Mar 9 4.880; Apr 6 5.624 (spring peak); Jul 6 4.477 (trough); Sep 21 6.139 (peak); Oct 5 5.699; Oct 12 5.645; Oct 19 5.740; Oct 26 5.890 (EIA dnav series EMD_EPD2D_PTE_R1Z_DPG). Late Dec 2025 values: ~3.52-3.56.\n- EIA Oct 26 2026: US average diesel 6.352 (+0.076 w/w); Central Atlantic 6.496; East Coast 6.079. Lower Atlantic runs ~$0.45 below the US average.\n- Context: US-Iran war began Feb 28 2026; Sep 11 bombing of Saudi East-West Pipeline (energynewsbeat, Oct 14).\n- NYMEX ULSD settlements Oct 13: Nov 4.934, Dec 4.777, Jan 4.677; the article added a $1.33 markup to get implied *national* retail of about 6.1 for Dec and 6.0 for Jan (energynewsbeat, Oct 14).\n- ULSD futures settled 4.73 on Oct 9 (-4.6%) after the Trump-Putin diesel deal: 300kt now, 500kt Nov, 1Mt/month thereafter. A US diesel export ban was proposed. China lifted fuel export restrictions (DTN, Oct 9).\n- ULSD futures about 4.79 on Oct 26 and Oct 30 (search snippets). Oct 30: Brent 117.64 / WTI 104.12, highest since end-April, after explosives hit a tanker in Hormuz and the US threatened strikes on Iran (Rio Times / The National, Oct 30).\n- US distillate stocks 105.1 mb (week to Oct 2): 11.3% below the 5-yr average, lowest for that week since 1982. The IEA says diesel stays tight well into 2027.\n- Policy: DPA $150M for refining, Russian sanctions waiver, federal tax removed on red-dye diesel, administration coaxing refiners to raise output (oilprice / CBS, Oct 2026).\n- Lower Atlantic retail minus front ULSD futures recently ~0.9-1.2 $/gal (e.g. Oct 12: 5.645 vs ~4.73; Oct 26: 5.89 vs ~4.79). Retail lags wholesale by 1-3 weeks.\n- Volatility: 2026 ~9-week changes ranged from about -0.7 (Apr-Jun) to +1.5 (Mar-May); Sep 21->Oct 12 was -0.49.\n- Markets: Kalshi has a year-end national diesel market (KXDIESELYE, likely AAA national) — not this regional EIA series; page could not be retrieved.\n- Status quo: the last print is 5.890; the futures curve is backwardated, about $0.1-0.2 lower for Dec/Jan than front.\n- Resolves off the EIA Gasoline and Diesel Fuel Update Lower Atlantic on-highway diesel for Dec 28 2026 (or the closest date), not AAA or the national average.\n- Event window: single weekly print dated Dec 28 2026; as of Nov 1 about 8 weekly prints remain before it.\n- Searched but not found: a Lower Atlantic-specific market, the current ULSD forward curve after Oct 13, and the current state of Iran peace talks.",
+   "reference_class": "Weekly Lower Atlantic retail diesel changes over ~9-week horizons during the 2026 war-shock regime, anchored on futures-implied retail (forward + regional retail markup)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.8695,
+   "seconds": 88.7,
+   "usage": {
+    "num_turns": 10,
+    "input": 16,
+    "cache_read": 209313,
+    "cache_write": 21736,
+    "cache_write_1h": 21736,
+    "output": 5253,
+    "thinking": 1238,
+    "web_search": 4,
+    "cost_usd_envelope": 0.46827759999999996,
+    "web_fetch": 0,
+    "duration_api_ms": 95310
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 5.0,
+     "25": 5.43,
+     "50": 5.85,
+     "75": 6.25,
+     "90": 6.6
+    },
+    "p_below_lower": 0.04,
+    "p_above_upper": 0.07
+   },
+   "reasoning": "Latest EIA Lower Atlantic on-highway diesel is $5.890 (Oct 26), up from 5.740. NYMEX ULSD closed $4.791 on Oct 30 (up from 4.625 Oct 27); Oct 13 curve showed backwardation (Dec 4.78, Jan 4.68). Lower Atlantic retail runs ~$1.25-1.35 above front futures, implying ~$5.9-6.0 for late Dec. Downside: aggressive federal supply measures (dyed-diesel waiver, Russian diesel deal, EU reserve release push), backwardation and mean reversion. Upside: IEA sees squeeze into 2027, winter heating demand, Russian refining outages, unusually wide US-vs-LowerAtlantic gap (0.46) could narrow upward. Market check: Kalshi has a year-end US diesel market (likely national/AAA, different instrument) with snippets suggesting ~$6.2-6.4 US center, consistent with ~5.8-5.9 Lower Atlantic after the regional gap; page not loadable (429), odds in snippets were inconsistent, so not used as an anchor. Polymarket/Manifold: none found.",
+   "sources": [
+    "https://www.eia.gov/petroleum/gasdiesel/",
+    "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=EMD_EPD2D_PTE_R1Z_DPG&f=W",
+    "https://energynewsbeat.co/diesel/iea-says-the-diesel-squeeze-lasts-well-into-2027-futures-imply-about-6-diesel-into-january/",
+    "https://www.cnn.com/2026/10/05/business/trump-diesel-prices-executive-order",
+    "https://www.dtnpf.com/agriculture/web/ag/news/world-policy/article/2026/10/09/ulsd-futures-fall-4-us-russia-diesel",
+    "https://kalshi.com/markets/kxdieselye/diesel-prices-at-year-end/kxdieselye-26dec31"
+   ],
+   "dossier": "- EIA weekly Lower Atlantic (PADD1C) on-highway diesel 2026 (EIA series EMD_EPD2D_PTE_R1Z_DPG): Jan ~3.50-3.59; Feb 3.61-3.71; Mar 2 3.808 -> Mar 9 4.880 (shock) -> Mar 23 5.395; Apr 6 5.624 (local peak); Jun 29 4.547; Jul 6 4.477 (year low); Sep 14 6.096, Sep 21 6.139 (year high); Sep 28 5.953; Oct 5 5.699; Oct 12 5.645; Oct 19 5.740; Oct 26 5.890.\n- Late 2025 same series: Nov ~3.68-3.79, Dec 29 2025 3.522 (seasonal Dec drift down in a normal year).\n- US average on-highway diesel Oct 26 2026: 6.352 (Oct 19: 6.276); Lower Atlantic-US gap ~0.46-0.54, versus ~0.06 in late 2025 (EIA).\n- NYMEX ULSD futures: closed 4.625 Oct 27, 4.791 Oct 30 2026 (search snippets/DTN). Oct 13 settlements: Nov 4.934, Dec 4.777, Jan 2027 4.677 — backwardated; 2027 strip ~4.05 (EnergyNewsBeat Oct 14 2026). That article adds $1.33 retail-over-futures (2025 US avg gap).\n- DTN Oct 9 2026: ULSD futures fell 4% after US-Russia diesel deal (Russia to supply >300k t in Oct).\n- CNN Oct 5 2026: Trump EO waiving restrictions on red-dyed (tax-exempt) diesel for highway use. Administration pressing refiners (93.5% utilization wk to Oct 9) and asked EU to release 120M bbl diesel reserves over 180 days (Al Jazeera Oct 2).\n- IEA (via EnergyNewsBeat Oct 14): diesel squeeze lasts well into 2027; EIA expects retail margins above 5-yr average in 2027.\n- Europe/Russia: Ukrainian drone strikes knocked out large share of Russian refining; Russia producer diesel export ban through Oct 31.\n- Kalshi has a year-end 2026 US diesel price market (KXDIESELYE) — different instrument (national, likely AAA), page not retrievable.\n- Status quo: last print 5.890; resolution ~8.5 weeks after last print.\n- Volatility: 8-week changes in 2026 ranged roughly -0.9 to +1.1 $/gal.\n- Resolution instrument: resolves off EIA Gasoline and Diesel Fuel Update weekly Lower Atlantic on-highway diesel for Dec 28 2026 (or closest date), not US average, not AAA, not futures.\n- Event window: single weekly print dated Dec 28 2026; as of Nov 1 2026, about 0% of a point-in-time window elapsed (~8 weeks of price path remain).\n- Searched but not found: Kalshi strike-level prices (429 error), current Dec/Jan HO settlements as of Oct 30, EIA STEO November regional forecast.",
+   "reference_class": "Random-walk-with-futures-drift of EIA weekly Lower Atlantic diesel over 8-week horizons in the 2026 supply-shock regime"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4013,
+   "seconds": 79.2,
+   "usage": {
+    "num_turns": 10,
+    "input": 14,
+    "cache_read": 182343,
+    "cache_write": 21162,
+    "cache_write_1h": 21162,
+    "output": 4323,
+    "thinking": 836,
+    "web_search": 3,
+    "cost_usd_envelope": 0.40126459999999997,
+    "web_fetch": 0,
+    "duration_api_ms": 90869
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 5.12,
+     "25": 5.5,
+     "50": 5.86,
+     "75": 6.22,
+     "90": 6.58
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Latest EIA Lower Atlantic diesel is $5.890 (Oct 26), up from $5.645 two weeks earlier. ULSD futures went from $4.625 (Oct 27) to $4.791 (Oct 30); the usual ~$1.10-1.25 retail-futures spread points to about $6.00 near-term. Shortage markets normally price later futures months lower and winter demand is arriving; the excise-tax deferral and the push for more refinery output pull down, while export-ban risk pushes up. 2026 volatility is very high (9-week moves of -0.7 to +1.4), so the distribution is wide. Kalshi year-end diesel market is national and internally inconsistent (54% >6.60 vs 38% >6.40) so not used as an anchor; no Polymarket/Manifold market.",
+   "sources": [
+    "https://www.eia.gov/petroleum/gasdiesel/",
+    "https://weeklydiesel.com/history/2026/",
+    "https://discoveryalert.com/analysis/diesel-prices-near-records-gasoline-falling-october-2026/",
+    "https://worldoilmonitor.com/diesel-market",
+    "https://cryptobriefing.com/kalshi-traders-us-diesel-prices-620/",
+    "https://kalshi.com/markets/kxdieselye/diesel-prices-at-year-end/kxdieselye-26dec31"
+   ],
+   "dossier": "- EIA Gasoline & Diesel Update (Oct 27, 2026): Lower Atlantic on-highway diesel 10/12 $5.645, 10/19 $5.740, 10/26 $5.890; US avg 10/12 $6.179, 10/19 $6.276, 10/26 $6.352. Lower Atlantic runs ~$0.46 below US avg.\n- US diesel weekly 2026 (weeklydiesel.com): Jan ~$3.48; jump in March (US-Iran conflict/Hormuz) to $5.4-5.6; fell to $4.58 by Jul 6; rose to record $6.529 Sep 21; $6.20 Oct 5; $6.35 Oct 26. Nine-week changes in 2026 range from about -0.70 (Apr 27->Jun 29) to +1.39 (Jul 6->Sep 7).\n- NYMEX ULSD futures: $4.625/gal Oct 27; $4.791 Oct 30 (worldoilmonitor). Diesel crack vs Brent ~$83-85/bbl. Retail-minus-front-futures spread for Lower Atlantic ~ $1.10-1.25 recently.\n- Distillate stocks ~102.8-104.3 mb, ~9-10% below 5-yr avg; global diesel/gasoil availability -1.7 mb/d y/y in Q3 (IEA via discoveryalert); US exports ~1.2 mb/d; winter demand ahead.\n- Oct 5, 2026 executive order: expanded tax-exempt dyed diesel for on-highway use, deferring federal excise tax through end-2026 (cryptobriefing); unclear effect on the EIA on-highway survey. Administration pressing refiners to raise diesel output (Yahoo Finance background).\n- Kalshi has a national US diesel year-end 2026 market (kxdieselye) and an export-ban market (11-17% quoted for ban by late Oct/Election Day). This question resolves on the Lower Atlantic series, not the national one.\n- Status quo: the price stays near the current ~$5.9-6.0 level.\n- Resolves off EIA weekly Lower Atlantic on-highway diesel for Dec 28, 2026 (or closest), not the national average or futures.\n- Event window: single weekly print dated Dec 28, 2026; as of Nov 1, 2026 about 8 weekly prints remain before it.\n- Searched, not found: the ULSD Dec-26/Jan-27 futures curve levels; EIA STEO regional diesel forecast; Lower Atlantic history beyond the last 3 weeks.",
+   "reference_class": "9-week changes in weekly EIA retail diesel prices during the 2026 supply-shock regime (and 2022 shock analog)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0789,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1864,
+   "seconds": 24.2,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 17482,
+    "cache_write_1h": 17482,
+    "output": 2211,
+    "thinking": 306,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1864458,
+    "web_fetch": 0,
+    "duration_api_ms": 23606
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 5.06,
+     "25": 5.46,
+     "50": 5.84,
+     "75": 6.2,
+     "90": 6.55
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.06
+   },
+   "reasoning": "Last EIA Lower Atlantic print is 5.890 (Oct 26). The ULSD curve slopes down (Dec ~4.78, Jan ~4.68 as of Oct 13; front ~4.79 Oct 30). The retail-over-futures markup implied by recent prints is ~0.9-1.1, so late-Dec fair value is ~5.75-5.85. Upside: the Oct 30 Hormuz tanker attack (Brent 117.64), record-low distillate stocks, winter demand, export-ban risk. Downside: peace deal, Russian diesel deal volumes, refiner pressure, the excise/dyed-diesel waiver, backwardation. High 2026 volatility keeps the distribution wide. Market check: Kalshi has a national year-end diesel market (different instrument, odds inconsistent, not used); no Polymarket/Manifold market found.",
+   "sources": [],
+   "reconciliation": "All runs agree on the facts: the 5.890 last print, ULSD ~4.79 front, a backwardated curve, and that the question resolves off the EIA Lower Atlantic series. The main factual dispute was the retail-over-futures markup: Run 2 said 1.25-1.35, Runs 1 and 3 said 0.9-1.25. The dossiers' own figures (Oct 26: 5.89 vs 4.79 = 1.10; Oct 12: 5.645 vs 4.73 = 0.92, with retail lagging) support ~1.0-1.1, which puts the median near 5.8. I nudged it to 5.84 for the Oct 30 crude spike, which has not yet reached retail. I carried forward the runs' ~1.45-1.6 dispersion, which matches 2026 realized volatility. I lean on the open-tail masses at 3% low and 6% high: the low tail needs a peace collapse in prices of about 1.5 in 8 weeks, the high tail an escalation adding about 0.9. Pure judgment remains on how big the upside escalation tail is.",
+   "disagreements": [
+    {
+     "claim": "Lower Atlantic retail premium over front ULSD futures is ~1.25-1.35 (Run 2) vs ~0.9-1.2 (Runs 1, 3)",
+     "kind": "factual",
+     "verdict": "Dossier data points (Oct 26: 1.10, Oct 12: 0.92) support ~1.0-1.1; Run 2's figure looks overstated"
+    },
+    {
+     "claim": "Weight of upside escalation risk (Hormuz, low stocks) vs downside policy and peace measures",
+     "kind": "judgment",
+     "verdict": "Roughly balanced, with a slight upside skew in the tails because of the recent crude spike"
+    },
+    {
+     "claim": "Size of the open-tail masses (low 2-4%, high 5-7%)",
+     "kind": "judgment",
+     "verdict": "Took 3% low and 6% high"
+    }
+   ],
+   "reference_class": "Weekly EIA Lower Atlantic on-highway diesel ~8.5 weeks ahead during the 2026 supply-shock regime, anchored on futures plus the retail markup"
+  }
+ ]
+}
