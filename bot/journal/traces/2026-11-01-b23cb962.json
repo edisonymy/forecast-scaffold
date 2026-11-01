@@ -1,0 +1,261 @@
+{
+ "record_id": "2026-11-01-b23cb962",
+ "question": "How many papers submitted to arXiv in November and December 2026 will mention agentic reinforcement learning in their abstracts?",
+ "question_id": 46522,
+ "url": "https://www.metaculus.com/questions/46292/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-01T06:02:38+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.9819,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 188.66666666666666,
+    "25": 220.33333333333334,
+    "50": 255.0,
+    "75": 292.3333333333333,
+    "90": 334.0
+   },
+   "p_above_upper": 0.03
+  },
+  "phase1": {
+   "10": 188.66666666666666,
+   "25": 220.33333333333334,
+   "50": 255.0,
+   "75": 292.3333333333333,
+   "90": 334.0
+  },
+  "phase2": null,
+  "spread_phase1": 26.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 188.0,
+   "25": 222.0,
+   "50": 255.0,
+   "75": 292.0,
+   "90": 335.0
+  },
+  "p_above_upper": 0.02
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5648,
+   "seconds": 90.8,
+   "usage": {
+    "num_turns": 15,
+    "input": 16,
+    "cache_read": 203012,
+    "cache_write": 20474,
+    "cache_write_1h": 20474,
+    "output": 7037,
+    "thinking": 1293,
+    "web_search": 1,
+    "cost_usd_envelope": 0.5647844,
+    "web_fetch": 0,
+    "duration_api_ms": 89975
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 200.0,
+     "25": 233.0,
+     "50": 268.0,
+     "75": 305.0,
+     "90": 345.0
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "The resolution search filters on most-recent-version submitted date, so a window queried right after it closes is at its largest (new papers plus revisions). Best analogs: Sep-Oct 2026 counted on Nov 1 = 221; Oct 2026 alone = 138. The count roughly doubled year over year (Nov-Dec 2025 = 106, though counted low because later revisions moved papers out). Nov should be boosted by ICLR rebuttal revisions; Dec is softer over the holidays. Projected Nov-Dec ≈ 250-300. Risks: the term plateaus or loses out to other wording; January revisions pull a few papers out before Metaculus queries. No human market found on Polymarket, Manifold or Kalshi.",
+   "sources": [
+    "https://arxiv.org/search/advanced (agentic RL abstract query, 2026-09-01 to 2026-10-31: 221)",
+    "https://arxiv.org/search/advanced (2026-10-01 to 2026-10-31: 138)",
+    "https://arxiv.org/search/advanced (2026-07-01 to 2026-08-31: 144)",
+    "https://arxiv.org/search/advanced (2026-05-01 to 2026-06-30: 184)",
+    "https://arxiv.org/search/advanced (2026-03-01 to 2026-04-30: 139)",
+    "https://arxiv.org/search/advanced (2026-01-01 to 2026-02-28: 105)",
+    "https://arxiv.org/search/advanced (2025-11-01 to 2025-12-31: 106)",
+    "https://arxiv.org/abs/2605.15155"
+   ],
+   "dossier": "- arXiv advanced search, phrase 'agentic reinforcement learning' in abstract, submitted_date filter, queried 2026-11-01: Nov-Dec 2025 = 106; Jan-Feb 2026 = 105; Mar-Apr 2026 = 139; May-Jun 2026 = 184; Jul-Aug 2026 = 144; Sep-Oct 2026 = 221; Oct 2026 alone = 138.\n- Resolution note: the query uses submitted_date (most recent version), not the original date. The top Oct result (2609.23377) shows 'Submitted 29 Oct 2026; v1 submitted 20 Sep 2026', so revisions move papers into later windows. Older windows are deflated as of now; a window queried just after it closes is at its largest.\n- Resolves off the arXiv result count for 2026-11-01 to 2026-12-31 as queried by Metaculus after Dec 31, 2026, not off original-submission counts.\n- Event window: 2026-11-01 -> 2026-12-31; as of 2026-11-01, 0% elapsed.\n- Seasonality candidates: ICLR rebuttal period in mid/late Nov (revisions of Sept-Oct postings); December holidays lower submissions; ICML deadline late Jan (some Dec preprints).\n- Term is widespread in LLM-agent RL papers (survey arXiv 2509.02547; many 2026 papers use it in titles, e.g. 2605.15155, 2604.27859, 2607.21419).\n- Regime-break candidates: up — continued compounding plus the revision wave; down — phrase saturates or is replaced by alternatives such as 'agent RL' or 'RL for LLM agents'.\n- Searched, absent: no prediction market on this. Could not get the Sept-only count (rate-limited); implied ~83 if Oct = 138 within Sep-Oct = 221.",
+   "reference_class": "arXiv abstract-search counts for 'agentic reinforcement learning' over two-month windows in 2025-2026, counted with the resolution query"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.1761,
+   "seconds": 95.3,
+   "usage": {
+    "num_turns": 15,
+    "input": 16,
+    "cache_read": 206580,
+    "cache_write": 22015,
+    "cache_write_1h": 22015,
+    "output": 7502,
+    "thinking": 1752,
+    "web_search": 2,
+    "cost_usd_envelope": 0.611266,
+    "web_fetch": 0,
+    "duration_api_ms": 91743
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 178.0,
+     "25": 208.0,
+     "50": 242.0,
+     "75": 280.0,
+     "90": 325.0
+    }
+   },
+   "reasoning": "Trend extrapolation of arXiv advanced-search counts for the exact query. 2-month windows: Nov-Dec25 106, Jan-Feb26 105, Mar-Apr 139, May-Jun 184, Jul-Aug 144, Sep-Oct 221 (Oct alone 138). Roughly 2x YoY growth with deadline seasonality. Nov at about Oct's pace plus a holiday-softened Dec (~0.8x) gives ~240-260; an October ICLR spike reverting argues lower; ICLR revisions in Nov (submitted-date filter seems to catch later versions) argue higher. Market check: no Polymarket/Manifold/Kalshi market found. Escape outside 100-500 requires a collapse or a doubling within two months, so I priced none.",
+   "sources": [
+    "https://arxiv.org/search/advanced (query \"agentic reinforcement learning\", abstract, 2026-09-01..2026-10-31: 221)",
+    "https://arxiv.org/search/advanced (same query, 2026-07-01..2026-08-31: 144)",
+    "https://arxiv.org/search/advanced (same query, 2025-11-01..2025-12-31: 106)",
+    "https://arxiv.org/search/advanced (same query, 2026-05-01..2026-06-30: 184; 2026-03-01..04-30: 139; 2026-01-01..02-28: 105; 2026-10-01..10-31: 138)",
+    "WebSearch: prediction markets for agentic RL arXiv counts (none found)"
+   ],
+   "dossier": "- Resolves off the arXiv advanced-search result count for \"agentic reinforcement learning\" in abstracts with cross-lists included and submitted_date 2026-11-01..2026-12-31. It does not resolve off Google Scholar or other indexes.\n- Event window: 2026-11-01 -> 2026-12-31 per the criteria; as of 2026-11-01 about 0% has elapsed.\n- The same query over earlier windows, checked 2026-11-01 (arxiv.org): Nov-Dec 2025 = 106; Jan-Feb 2026 = 105; Mar-Apr 2026 = 139; May-Jun 2026 = 184; Jul-Aug 2026 = 144; Sep-Oct 2026 = 221; Oct 2026 alone = 138 (so Sep is roughly 83).\n- Ratios between consecutive 2-month windows: 0.99, 1.32, 1.32, 0.78, 1.53; log SD is about 0.25.\n- Year over year (Nov-Dec 2025 vs Sep-Oct 2026) the count roughly doubled.\n- Seasonality candidates: the ICLR deadline (late Sep) inflates Oct postings; the ICLR rebuttal and revision period is in Nov; December holidays reduce submissions; ICML (late Jan) and CVPR (Nov) deadlines.\n- The submitted_date filter appears to match revised versions: a Sep-Oct result had v1 in May 2026 and a revision on 29 Oct. Revisions submitted in Nov-Dec may therefore count.\n- The term was popularized by the Sep 2025 survey (arXiv 2509.02547); the field is growing.\n- Searched for but not obtained (rate-limited): Sep-Oct 2025 vs Nov-Dec 2025 seasonal ratio; Dec 2025 alone; Sep 2026 alone.\n- Markets: none found on Polymarket/Manifold/Kalshi.\n- Regime-break candidates: down — the term fades in favor of synonyms, or October was a one-off spike; up — continued exponential growth plus revision churn.",
+   "reference_class": "Counts of arXiv abstract matches for \"agentic reinforcement learning\" in consecutive 2-month submitted-date windows, Nov 2025 - Oct 2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.7611,
+   "seconds": 97.1,
+   "usage": {
+    "num_turns": 16,
+    "input": 18,
+    "cache_read": 239114,
+    "cache_write": 21743,
+    "cache_write_1h": 21743,
+    "output": 7198,
+    "thinking": 1337,
+    "web_search": 1,
+    "cost_usd_envelope": 0.5850508,
+    "web_fetch": 0,
+    "duration_api_ms": 97559
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 188.0,
+     "25": 220.0,
+     "50": 255.0,
+     "75": 292.0,
+     "90": 332.0
+    }
+   },
+   "reasoning": "arXiv advanced-search counts for 'agentic reinforcement learning' in abstracts by two-month submitted-date window: Nov-Dec25 106, Jan-Feb26 105, Mar-Apr 139, May-Jun 184, Jul-Aug 144, Sep-Oct 221 (Oct alone 138, implying Sep ~83). Two months at October's pace gives ~276; I discount for the December holiday dip and the possibility that October was boosted by post-deadline conference uploads, and add back for continued growth. Window-to-window counts are noisy (-40 to +77). No human market found on Polymarket, Manifold, Kalshi, or bookmakers. Median ~255.",
+   "sources": [
+    "https://arxiv.org/search/advanced (agentic reinforcement learning, abstract, 2026-09-01 to 2026-10-31)",
+    "https://arxiv.org/search/advanced (2026-10-01 to 2026-10-31)",
+    "https://arxiv.org/search/advanced (2026-07-01 to 2026-08-31)",
+    "https://arxiv.org/search/advanced (2026-05-01 to 2026-06-30)",
+    "https://arxiv.org/search/advanced (2026-03-01 to 2026-04-30)",
+    "https://arxiv.org/search/advanced (2026-01-01 to 2026-02-28)",
+    "https://arxiv.org/search/advanced (2025-11-01 to 2025-12-31)",
+    "https://arxiv.org/abs/2610.29458",
+    "https://arxiv.org/abs/2610.23946"
+   ],
+   "dossier": "- arXiv advanced search, exact phrase 'agentic reinforcement learning', abstract field, cross-lists included, submitted_date filter (queried 2026-11-01): Nov-Dec 2025 = 106; Jan-Feb 2026 = 105; Mar-Apr 2026 = 139; May-Jun 2026 = 184; Jul-Aug 2026 = 144; Sep-Oct 2026 = 221; Oct 2026 alone = 138 (implies Sep ~83). Counts were read by an AI summarizer; a September-only re-query failed (HTTP 429), so it is unverified.\n- The October count may still rise slightly as late-October submissions are indexed.\n- Year over year: Nov-Dec 2025 106 vs Sep-Oct 2026 221, about 2.1x.\n- Window-to-window changes over the last year: -1, +34, +45, -40, +77.\n- Seasonality: December holiday dip in arXiv submissions is typical; NeurIPS is in December; ICML deadline is late January (pre-deadline uploads are less common than post-deadline ones); ICLR submissions from late September are often posted in Oct-Nov.\n- Many late-October 2026 titles use the phrase (e.g. 2610.29426 BIRD-RL, 2610.29458 Harness Scaling, 2610.23946 data scaling laws), so the phrase is entrenched as a term.\n- Status quo: continuation of the recent level of ~70-140 per month.\n- Resolves off the arXiv advanced-search result count for 2026-11-01 to 2026-12-31 (submitted date), queried by Metaculus after Dec 31; not off Google Scholar or other indexes.\n- Event window: 2026-11-01 -> 2026-12-31 per the criteria; as of 2026-11-01 0% elapsed.\n- Searched for but not found: any prediction market (Polymarket, Manifold, Kalshi, bookmakers) — none; a verified September-only count.",
+   "reference_class": "Two-month arXiv abstract-search counts for the exact phrase 'agentic reinforcement learning', Nov 2025-Oct 2026"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.3611,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1703,
+   "seconds": 22.4,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 16129,
+    "cache_write_1h": 16129,
+    "output": 1943,
+    "thinking": 451,
+    "web_search": 0,
+    "cost_usd_envelope": 0.17026180000000002,
+    "web_fetch": 0,
+    "duration_api_ms": 21847
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 188.0,
+     "25": 222.0,
+     "50": 255.0,
+     "75": 292.0,
+     "90": 335.0
+    },
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Counts for the exact arXiv query (submitted_date filter): Nov-Dec25 106, Jan-Feb26 105, Mar-Apr 139, May-Jun 184, Jul-Aug 144, Sep-Oct 221 (Oct alone 138, Sep ~83). The submitted_date filter appears to match the latest version, so a window counted soon after it closes is at its largest — the same condition as the Sep-Oct 221 anchor. Nov is likely near or above Oct's pace (growth plus ICLR rebuttal revisions); Dec is softer (holidays, NeurIPS). Projected total about 240-275, median 255. No human market found on Polymarket, Manifold, Kalshi or bookmakers.",
+   "sources": [],
+   "reconciliation": "All three dossiers report identical window counts from the same query run on 2026-11-01, so there is no factual dispute to settle. The differences are judgment calls: (1) how strongly November ICLR-rebuttal revisions inflate the count (Run 1 high, Runs 2-3 moderate); (2) whether October's 138 was a one-off post-ICLR-deadline spike; (3) the size of the December dip; (4) the growth rate. The claim that submitted_date matches the latest version rests on one observed result in Runs 1 and 2 and is plausible. It implies the Sep-Oct=221 count, taken right after that window closed, is the right analog for how Metaculus will query Nov-Dec. Nov ≈ 130-150 plus Dec ≈ 100-125 gives about 255. Run 1's dispersion analysis is kept, slightly widened. The chance of exceeding 500 is small: it would need about a doubling in one window.",
+   "disagreements": [
+    {
+     "claim": "Size of the November revision boost from ICLR rebuttals",
+     "kind": "judgment",
+     "verdict": "Moderate boost assumed. A spot check of one result suggests the filter does match revisions, but the size of the effect is unknown."
+    },
+    {
+     "claim": "Whether October 138 was a transient conference-deadline spike",
+     "kind": "judgment",
+     "verdict": "Partly. Growth trend and revisions offset any reversion, so November is put near October's level."
+    },
+    {
+     "claim": "Magnitude of the December holiday dip",
+     "kind": "judgment",
+     "verdict": "Assume about 0.75-0.85x November, per typical arXiv seasonality."
+    },
+    {
+     "claim": "submitted_date filter matches latest version rather than v1",
+     "kind": "factual",
+     "verdict": "Supported by a single observed example in two dossiers; cannot verify further without web access. Accepted as likely."
+    }
+   ],
+   "reference_class": "Recent 2-month arXiv abstract-search counts for the exact phrase 'agentic reinforcement learning' (submitted_date windows, Nov 2025 - Oct 2026)"
+  }
+ ]
+}
