@@ -1,0 +1,255 @@
+{
+ "record_id": "2026-11-02-694670fc",
+ "question": "How much will Nasdaq-100 Futures total price returns exceed S&P 500 Futures in these biweekly periods of Q4 2026? (Nov 9 - Nov 20)",
+ "question_id": 46220,
+ "url": "https://www.metaculus.com/questions/46011/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-02T17:10:11+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 0.9829,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -1.9333333333333333,
+    "25": -0.8833333333333333,
+    "50": 0.03333333333333333,
+    "75": 0.9500000000000001,
+    "90": 1.9666666666666668
+   },
+   "p_below_lower": 0.011,
+   "p_above_upper": 0.009000000000000001
+  },
+  "phase1": {
+   "10": -1.9333333333333333,
+   "25": -0.8833333333333333,
+   "50": 0.03333333333333333,
+   "75": 0.9500000000000001,
+   "90": 1.9666666666666668
+  },
+  "phase2": null,
+  "spread_phase1": 0.05,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -2.1,
+   "25": -0.95,
+   "50": 0.0,
+   "75": 0.95,
+   "90": 2.05
+  },
+  "p_below_lower": 0.01,
+  "p_above_upper": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2498,
+   "seconds": 49.3,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 130371,
+    "cache_write": 10822,
+    "cache_write_1h": 10822,
+    "output": 3455,
+    "thinking": 623,
+    "web_search": 2,
+    "cost_usd_envelope": 0.2498342,
+    "web_fetch": 0,
+    "duration_api_ms": 54620
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -2.0,
+     "25": -0.9,
+     "50": 0.05,
+     "75": 1.0,
+     "90": 2.1
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Reference class: biweekly NQ minus ES total return gaps, centred near zero with a slight positive long-run drift. In normal regimes the standard deviation is about 1-1.2pp. Right now tech is much more volatile than the broad market: on Oct 30 NQ fell 3.46% vs ES -1.82%, and NQ is down ~8% since Oct 9 on AI-trade rotation and earnings misses (Intel, AMD). Nvidia reports on Nov 17, inside the window, so the spread is widened to about 1.9pp SD. The median stays near zero because mean-reversion and rebound (NQ +0.88% vs ES +0.45% early Nov 2) offset negative momentum. Market check: the harness found nothing on Polymarket or Manifold, and I found no Kalshi or bookmaker contract for this spread. I could not pull the Yahoo price series directly, so the dispersion figures are estimates rather than computed from data.",
+   "sources": [
+    "https://www.prnewswire.com/news-releases/us-index-futures-turn-to-jobs-data-and-treasurys-refunding-after-fridays-3-46-nasdaq-100-drop-302926373.html",
+    "https://query1.finance.yahoo.com/v8/finance/chart/NQ=F?range=3mo&interval=1d",
+    "https://tradingeconomics.com/united-states/stock-market",
+    "https://www.benzinga.com/markets/equities/26/11/62766301/sp-500-dow-jones-and-nasdaq-100-outlook-top-drivers-for-us-stocks-this-week",
+    "https://www.tipranks.com/stocks/nvda/earnings"
+   ],
+   "dossier": "- Resolves off Yahoo Finance NQ=F and ES=F daily Close: P0 = Close Fri Nov 6 2026, P1 = Close Fri Nov 20 2026. Value = NQ% - ES%.\n- Event window: Nov 6 close -> Nov 20 close per the criteria; as of Now (Nov 2) 0% elapsed. The window starts at the Nov 6 close.\n- Oct 30 2026 (PRNewswire): Nasdaq-100 -3.46% to 28,384.85; S&P 500 -1.82% to 7,580.07, after tech earnings misses (Intel -28.6%, AMD -10.9%, Reddit -29%, SanDisk -13.5%).\n- Nov 2 2026 overnight: E-mini NQ +0.88%, ES +0.45% (PRNewswire); S&P ~7623, +0.56% (TradingEconomics).\n- Benzinga/stocktwits Nov 2026: Nasdaq-100 down ~8% since a Deutsche Bank downgrade on Oct 9; rotation out of AI bets; worst week in months.\n- Yahoo NQ=F chart (dates mislabeled, ~Oct 12-Nov 2 2026): ~30,790 -> ~28,640, i.e. ~-7% in 3 weeks, with daily moves of 1-3%.\n- Nvidia (largest NQ weight) reports Nov 17 2026 after close, inside the window (TipRanks/Earnings Whispers); consensus EPS ~$2.49.\n- Fed Oct 28 statement: inflation remains elevated. US midterms Nov 3 2026, before the window.\n- Normal-regime biweekly NQ-ES spread SD ~1.0-1.2pp (background estimate). The current regime has roughly double the relative volatility (daily spread of 1.6pp on Oct 30).\n- In this regime NQ beta to ES appears to be ~1.5-2x, so the spread sign tends to follow overall market direction.\n- Searched for but not found: a computed spread history (Yahoo API blocked), and any Polymarket/Kalshi/Manifold market on this spread.",
+   "reference_class": "Historical 2-week (10-trading-day) NQ minus ES futures return differences, 2023-2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.8353,
+   "seconds": 69.0,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 132880,
+    "cache_write": 12913,
+    "cache_write_1h": 12913,
+    "output": 3729,
+    "thinking": 745,
+    "web_search": 4,
+    "cost_usd_envelope": 0.314709,
+    "web_fetch": 0,
+    "duration_api_ms": 79816
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -2.0,
+     "25": -0.95,
+     "50": 0.05,
+     "75": 1.05,
+     "90": 2.1
+    },
+    "p_below_lower": 0.012,
+    "p_above_upper": 0.008
+   },
+   "reasoning": "Two-week NQ-ES spread is centred near zero to slightly positive historically (NQ higher beta). The current regime is high-dispersion: Oct 30 saw NQ -3.46% vs ES -1.82% after AI-capex earnings disappointments, and October was the Nasdaq's worst month in over a year. NVDA reports Nov 17 inside the window. The midterm election and jobs report fall before P0 (Nov 6 close). Rebound/mean-reversion vs continued rotation out of mega-cap tech roughly offset, so the median is near +0.05. Tails are widened; an escape beyond +/-5pp would need a crash-like tech-specific shock. No human market prices this spread (Kalshi lists only index-level markets).",
+   "sources": [
+    "https://www.prnewswire.com/news-releases/us-index-futures-turn-to-jobs-data-and-treasurys-refunding-after-fridays-3-46-nasdaq-100-drop-302926373.html",
+    "https://www.marketbeat.com/earnings/reports/2026-11-17-nvidia-co-stock/",
+    "https://www.cnn.com/2026/10/30/investing/us-stocks-ai-investment",
+    "https://finance.yahoo.com/markets/live/stock-market-today-friday-october-30-dow-sp-500-nasdaq-amazon-intel-ai-sell-off-191429143.html",
+    "https://www.cnbc.com/2026/11/01/stock-market-today-live-updates.html",
+    "https://kalshi.com/category/financials/indices"
+   ],
+   "dossier": "- Resolves off Yahoo Finance NQ=F and ES=F daily Close: P0 = close Fri Nov 6 2026, P1 = close Fri Nov 20 2026; value = NQ% - ES% (pp). Event window: Nov 9 -> Nov 20 2026; as of Nov 2 0% elapsed (P0 not yet set).\n- Oct 30 2026 (PRNewswire): Nasdaq-100 -3.46% to 28,384.85; S&P 500 -1.82% to 7,580.07, so a 1.64pp single-day spread. Dec NQ futures -1,028 pts, ES -140.25.\n- Nov 2 overnight Globex: ES +0.45%, NQ +0.88% (PRNewswire). S&P 500 near 7623 Nov 2 (CNBC/TradingEconomics).\n- October 2026: Nasdaq worst month in over a year on AI-capex doubts. Meta reported negative FCF; Amazon and Intel disappointed; Alphabet and Tesla fell (CNN, Yahoo Oct 30). Nasdaq-100 ~9.6% off YTD high vs S&P ~3.3% off. Nasdaq snapped a 7-month win streak.\n- Rotation: 9 of 11 S&P sector ETFs rose in the last October week while SPY fell; equal-weight beat cap-weight (Substack snippet).\n- NVDA Q3 FY27 earnings Tue Nov 17 after close, inside the window (MarketBeat; company notice Oct 28). Consensus EPS ~$2.47, revenue ~$108.8B.\n- Pre-window events: midterm elections Nov 3, JOLTS, Treasury refunding Nov 4, Oct jobs report Nov 6. All land before P0.\n- Base rate (from background knowledge, not retrieved): biweekly NQ-ES diff SD ~1.1-1.3pp in calm regimes, ~2pp in stress episodes (e.g., Jan/Apr 2025). Mean slightly positive over 2020-2026 due to NQ beta >1 and tech leadership. Example Jun 9-20 2025: +0.40.\n- Markets: no Kalshi, Polymarket or Manifold contract on the NQ-ES spread found; Kalshi lists only index-level markets.\n- Not found: current VXN level; the realized NQ/ES relative vol series for the last few months.",
+   "reference_class": "Biweekly NQ minus ES percent-return differences, 2020-2026, including high-volatility tech-rotation episodes"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5206,
+   "seconds": 57.8,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 132196,
+    "cache_write": 10780,
+    "cache_write_1h": 10780,
+    "output": 3286,
+    "thinking": 521,
+    "web_search": 3,
+    "cost_usd_envelope": 0.2707812,
+    "web_fetch": 0,
+    "duration_api_ms": 56300
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -1.8,
+     "25": -0.8,
+     "50": 0.0,
+     "75": 0.8,
+     "90": 1.7
+    }
+   },
+   "reasoning": "Reference class: 10-trading-day NQ minus ES return differentials, which centre near zero with a slight positive long-run drift. Current regime shows elevated relative volatility: the Nasdaq fell ~2.0% vs the S&P's ~0.6% in the last week of October on AI-capex fears and disappointing forecasts (Amazon, Intel), and value/equal-weight has outperformed for three weeks. Nvidia reports on Nov 17 inside the window. Momentum in the rotation and mean-reversion bounce roughly offset, so the median is ~0 with widened tails. Market check: no Polymarket or Manifold market found; Kalshi lists weekly SPX-vs-NDX total-return markets, but they cover different windows and instruments, the price was not checked, and they were not used as an anchor.",
+   "sources": [
+    "https://tickerdaily.com/article/stock-market-this-week-november-2-6-2026-earnings-calendar-and-key-catalysts (search snippet)",
+    "https://www.share-talk.com/share-talk-weekly-stock-market-news-review-sunday-1st-november-2026/",
+    "https://www.wallstreethorizon.com/nvidia-earnings-calendar (search result: NVDA earnings Nov 17, 2026)",
+    "https://www.nasdaq.com/articles/global-indexes/nasdaq-100-outperforms-the-sp-500"
+   ],
+   "dossier": "- Event window: P0 = Close on Fri Nov 6, 2026; P1 = Close on Fri Nov 20, 2026 (10 trading sessions), resolves off Yahoo Finance NQ=F and ES=F daily closes (continuous front-month futures), not cash indices. As of Now (Nov 2) 0% of window elapsed.\n- Week ending ~Oct 30, 2026: S&P 500 about -0.6%, Nasdaq about -2.0% (search snippets of weekly market summaries, Nov 1, 2026). Sharp tech selloff Friday Oct 30 on AI-investment fears and disappointing forecasts (Amazon, Intel cited) (Share Talk, Nov 1, 2026).\n- Equal-weight S&P beat cap-weighted; value beat growth for 3rd straight week (weekly outlook snippets, Nov 1-2, 2026), i.e., an ongoing rotation away from megacap tech.\n- Week Nov 2-6 (before window, affects P0 only): Apple earnings Nov 2 AMC, AMD Nov 3 AMC; ISM, JOLTS data (tickerdaily, Nov 2026).\n- Nvidia earnings confirmed Nov 17, 2026 after close, inside the window (earnings calendar search, Nov 2026). Large NQ-weighted catalyst.\n- Long run: NDX beat SPX in 14 of 18 calendar years 2008-2025; annualized vol ~22.9% NDX vs ~20.1% SPX (Nasdaq.com). Implies small positive drift in the differential (~0.1pp per 2 weeks) and tracking error large relative to drift.\n- Base rate: 2-week NQ-ES differential, over all windows (recent years), centred near 0 to +0.1pp with SD ~1.0-1.3pp (background estimate); in high-tech-volatility regimes (e.g., the 2022 bear market, AI-related selloffs) SD is closer to 1.5pp+.\n- Status quo: differential near zero; recent direction negative (rotation out of tech).\n- Markets: no Polymarket/Manifold contract; Kalshi lists weekly SPX vs NDX total-return markets (different window, not a match).\n- Searched but could not find: current VIX/VXN levels, exact October monthly NQ vs ES returns, Nov 13 CPI date confirmation.",
+   "reference_class": "Historical 2-week (10 trading day) Nasdaq-100 futures minus S&P 500 futures return differentials, 2020-2026"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0273,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1072,
+   "seconds": 17.3,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20105,
+    "cache_write": 8934,
+    "cache_write_1h": 8934,
+    "output": 1585,
+    "thinking": 298,
+    "web_search": 0,
+    "cost_usd_envelope": 0.10720099999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 16697
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -2.1,
+     "25": -0.95,
+     "50": 0.0,
+     "75": 0.95,
+     "90": 2.05
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Reference class: 10-trading-day NQ minus ES return gaps. These centre near zero with a slight positive long-run drift (~+0.1pp). The current regime has unusually high tech-specific volatility: October was the Nasdaq's worst month in over a year on AI-capex doubts, with value and equal-weight stocks outperforming. Nvidia earnings on Nov 17 fall inside the window, which widens the spread distribution. Two forces roughly cancel: negative momentum from the rotation out of megacap tech, and a mean-reversion rebound (NQ +0.88% vs ES +0.45% overnight on Nov 2). So the median is ~0 with widened tails. Market check: no Polymarket or Manifold market found. Kalshi has only index-level or weekly markets on different windows, so none was used as an anchor.",
+   "sources": [],
+   "reconciliation": "All three runs agree on the facts: P0 is the Nov 6 close and P1 the Nov 20 close; Oct 30 had NQ -3.46% vs S&P -1.82%; Nvidia reports Nov 17 inside the window; no matching human market exists. Run 3's weekly figures (Nasdaq -2.0%, S&P -0.6%) cover a different span from the Oct 30 single-day figures, so they don't conflict. The only real disagreement is a judgment call on dispersion: Run 3 has a 3.4pp 10-90 width, Runs 1 and 2 have ~4.0-4.1. The elevated regime evidence, especially the 1.6pp single-day spread, plus Nvidia earnings inside the window, support the wider reading. I keep Runs 1 and 2's width of ~4.1. For the median I bet on ~0: momentum and mean reversion offset, so a small positive drift isn't justified in a tech-rotation regime. I retrieved nothing new on this run (no web access).",
+   "disagreements": [
+    {
+     "claim": "Width of the 10-90 range: 3.4pp (Run 3) vs ~4.0-4.1pp (Runs 1 and 2)",
+     "kind": "judgment",
+     "verdict": "Took ~4.1. Elevated relative volatility and Nvidia earnings inside the window support the wider width."
+    },
+    {
+     "claim": "Median slightly positive (+0.05) vs exactly 0",
+     "kind": "judgment",
+     "verdict": "Took 0.0. Long-run drift is offset by the ongoing rotation out of megacap tech, and it's a negligible difference anyway."
+    },
+    {
+     "claim": "Whether to price escapes beyond ±5pp",
+     "kind": "judgment",
+     "verdict": "Priced ~1% on each side. A tech-specific crash or a squeeze around Nvidia earnings is a concrete mechanism in this regime."
+    }
+   ],
+   "reference_class": "Biweekly (10-session) NQ=F minus ES=F percent-return differentials, 2020-2026, weighted toward high-tech-volatility episodes"
+  }
+ ]
+}
