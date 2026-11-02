@@ -1,0 +1,262 @@
+{
+ "record_id": "2026-11-02-8912d750",
+ "question": "What will the EU aggregate gas storage filling level be for gas day 12 November 2026?",
+ "question_id": 46604,
+ "url": "https://www.metaculus.com/questions/46371/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-02T02:03:15+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.5503,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 69.96666666666665,
+    "25": 70.89999999999999,
+    "50": 71.73333333333333,
+    "75": 72.60000000000001,
+    "90": 73.5
+   },
+   "p_below_lower": 0.02333333333333333
+  },
+  "phase1": {
+   "10": 69.96666666666665,
+   "25": 70.89999999999999,
+   "50": 71.73333333333333,
+   "75": 72.60000000000001,
+   "90": 73.5
+  },
+  "phase2": null,
+  "spread_phase1": 0.5,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 69.8,
+   "25": 70.8,
+   "50": 71.6,
+   "75": 72.5,
+   "90": 73.4
+  },
+  "p_below_lower": 0.02
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.2967,
+   "seconds": 119.2,
+   "usage": {
+    "num_turns": 15,
+    "input": 20,
+    "cache_read": 285794,
+    "cache_write": 23160,
+    "cache_write_1h": 23160,
+    "output": 5403,
+    "thinking": 1325,
+    "web_search": 3,
+    "cost_usd_envelope": 0.45647879999999996,
+    "web_fetch": 0,
+    "duration_api_ms": 123743
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 70.3,
+     "25": 71.2,
+     "50": 72.0,
+     "75": 72.8,
+     "90": 73.7
+    },
+    "p_below_lower": 0.01
+   },
+   "reasoning": "Start: ~74.6% (845 TWh) on gas day 31 Oct per AGSI-derived trackers (Voltstack, EnergyRiskIQ); 12 gas days remain to 12 Nov. Reference class: EU 1-12 Nov changes 2021-2025 ranged ~+0.6 to -2.5 pp; cold/still Novembers (2021, 2024) drew 1.5-2.5 pp. Forecast cold snap (Germany 2-4C below normal, Dunkelflaute, possible SSW ~9 Nov) points to ~0.2-0.3 pp/day vs the recent ~0.13, giving a center near 72.0. Arguments for less drawdown: high TTF (~95-97 EUR/MWh) curbing demand and pulling in LNG, and third-party projections of ~71% only by 23 Nov. Below-68 would need ~0.55 pp/day sustained (~1%); above 77 has no mechanism. No human market found (Polymarket/Manifold none per harness; Kalshi and bookmakers not checked).",
+   "sources": [
+    "https://voltstack.energy/days-of-gas",
+    "https://voltstack.energy/insights/eu-gas-storage-tracker-winter-2026",
+    "https://energyriskiq.com/gas-storage-levels-in-europe",
+    "https://global-energy-flow.com/storage/trajectory/",
+    "https://www.energyconnects.com/news/gas-lng/2026/november/germany-misses-gas-storage-target-as-cold-snap-sets-in/",
+    "https://www.tokenpost.com/news/investing/42168"
+   ],
+   "dossier": "- Voltstack Days-of-Gas (gas day 31 Oct 2026): EU 845 TWh, 74.6% of capacity; average net withdrawal over the past week only ~0.32 TWh/day; 1 pp ≈ 11.3 TWh (working gas volume 1,132.8 TWh).\n- EnergyRiskIQ (page dated 2 Nov 2026): EU 74.6%, daily change shown as +0.10 pp vs prior day (gas day unclear, possibly stale); 15.4 pp below the seasonal norm of ~90%.\n- Global-energy-flow: 74.93% on gas day 26 Oct (848.8 TWh); Germany 61.65%, NL 65.5%, France 87%, Italy 91%.\n- Question background: 74.64% on 30 Oct, net withdrawal ~1.49 TWh/day (-0.13 pp/day); first net withdrawal of the season was 22 Oct (TokenPost, 27 Oct).\n- EnergyConnects/Bloomberg (31 Oct 2026): Germany 61.17%, missed its ~70% 1 Nov target; cold snap forecast 2-4C below normal for Berlin/Frankfurt/Munich, possible frost in the south/east, Dunkelflaute (low wind/solar) raising gas-for-power burn.\n- TokenPost (27 Oct 2026): TTF topped EUR 97/MWh on the cold forecast; temperatures 2-3C below normal from the weekend of 31 Oct/1 Nov; Asia also cold, so LNG competition.\n- Background: ECMWF ensembles show a possible polar-vortex disturbance/wind reversal around 9 Nov; a third-party extrapolation puts the EU at ~71% by 23 Nov.\n- Voltstack: average net withdrawal 1 Nov-31 Mar over winters 2016/17-2025/26 is 4.0 TWh/day (~0.35 pp/day); early November is typically well below that average.\n- Historical 1-12 Nov EU changes (from memory, not verified this run): 2021 about -1.5 pp (low-storage year), 2022 about +0.5 (mild), 2023 about 0 (mild), 2024 about -2 (Dunkelflaute), 2025 small (withdrawals started mid-Nov).\n- Pace arithmetic from 74.6 on 31 Oct over 12 days: -0.1/day -> 73.4; -0.2 -> 72.2; -0.3 -> 71.0; -0.4 -> 69.8.\n- Status quo: a gradual decline from ~74.6.\n- Resolution: resolves off the AGSI+ 'EU' dataset 'full' field for gas day 2026-11-12, first publication; not the 'Europe' aggregate; later revisions ignored.\n- Event window: gas days 31 Oct -> 12 Nov 2026 matter (the latest known datapoint is 31 Oct); as of 2 Nov, about 2 of 13 days (~15%) have elapsed with no datapoints seen for 1-2 Nov.\n- Searched but not found: AGSI+ data for 1-2 Nov (the API needs a key); detailed HDD forecasts for 5-12 Nov; any prediction market (none found on Polymarket/Manifold).",
+   "reference_class": "EU-aggregate AGSI+ storage change over 1-12 November, 2021-2025, conditioned on weather regime"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4051,
+   "seconds": 87.3,
+   "usage": {
+    "num_turns": 12,
+    "input": 14,
+    "cache_read": 188298,
+    "cache_write": 22824,
+    "cache_write_1h": 22824,
+    "output": 4499,
+    "thinking": 975,
+    "web_search": 3,
+    "cost_usd_envelope": 0.40512760000000003,
+    "web_fetch": 0,
+    "duration_api_ms": 91480
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 69.8,
+     "25": 70.7,
+     "50": 71.5,
+     "75": 72.4,
+     "90": 73.3
+    },
+    "p_below_lower": 0.03
+   },
+   "reasoning": "Last confirmed AGSI+ EU value 74.64% (gas day 30 Oct, -0.13 pp/day). A cold snap (2-4°C below normal plus low-wind, low-solar conditions) began around 31 Oct, and ECMWF signals a polar-vortex disturbance around 9 Nov, so withdrawals should speed up from late-Oct's ~1.5 TWh/day. Early-November falls in past years (2021, 2024, 2025) ran about 0.17-0.3 pp/day. €95-100 TTF demand destruction and LNG inflows dampen the decline, and mild spells could pause it. Central estimate about 0.24 pp/day over 13 days gives ~71.5%. Below 68% requires >0.5 pp/day sustained (severe cold), priced at 3%. No human market found on Polymarket/Manifold/Kalshi/bookmakers.",
+   "sources": [
+    "https://www.energyconnects.com/news/gas-lng/2026/november/germany-misses-gas-storage-target-as-cold-snap-sets-in/",
+    "https://energyriskiq.com/gas-storage-levels-in-europe",
+    "https://voltstack.energy/insights/eu-gas-storage-tracker-winter-2026",
+    "https://global-energy-flow.com/storage/trajectory/",
+    "https://global-energy-flow.com/storage/"
+   ],
+   "dossier": "- AGSI+ EU: 74.64% on gas day 30 Oct 2026 (845.5 TWh, net withdrawal ~1.49 TWh/d, -0.13 pp/d); 74.93% on 26 Oct; refill peak ~75% (question background, AGSI+). Working gas volume 1,132.8 TWh, so 1 pp ≈ 11.3 TWh.\n- Voltstack tracker: 74.7% on 30 Oct; 8.1 pp below the same date in 2025 (82.8%); 15.1 pp below the 5-yr average.\n- energyriskiq page: claims 74.6% 'as of 2 Nov' with +0.10 pp daily change and positive 7-day refill speed. Possibly stale or mislabelled, unverified.\n- AGSI+ API needs a key. Data after 30 Oct could not be verified directly (searched, absent).\n- Energy Connects/Bloomberg (~31 Oct/1 Nov 2026): cold snap setting in. Berlin/Frankfurt/Munich 2-4°C below norms, sub-freezing in the south/east, low-wind and low-solar conditions forecast. Germany storage 61.17%. TTF passed €100/MWh last week.\n- Tokenpost/Zerohedge (~29 Oct): TTF above €97, temps 2-3°C below average from the weekend of 31 Oct. ECMWF suggests a major polar-vortex disturbance in early Nov (background: wind reversal ~9 Nov in most ensemble members).\n- Austria, Slovakia and Czechia withdrawing for 2+ weeks (bne, 28 Oct). LNG supply constrained (Ras Laffan offline, Hormuz disruption).\n- Damping factors: high prices cut demand. ENTSOG winter outlook (8 Oct) judged the system flexible. Mild/windy days can bring near-zero or small net injection.\n- Historical: early-November EU daily changes ranged from small injections to roughly -0.3 to -0.45 pp in cold, low-wind spells (e.g. Nov 2024). Typical first-half-Nov averages ~0.15-0.3 pp/d in 2021/2024/2025 (recall, not re-verified).\n- Arithmetic: from 74.64 over 13 days: -0.13/d → 72.9; -0.2/d → 72.0; -0.3/d → 70.7; -0.4/d → 69.4; -0.5/d → 68.1.\n- Resolves off the AGSI+ 'EU' aggregate 'full' field, first publication for gas day 2026-11-12 (not the 'Europe' aggregate; later revisions ignored).\n- Event window: single gas day 12 Nov 2026 (06:00-06:00 CET). As of 2 Nov, 3 of 13 days since the last confirmed reading (30 Oct) have elapsed.\n- Searched for but not found: verified AGSI values for 31 Oct-1 Nov, quantitative HDD forecast for 2-12 Nov, any human prediction market (none on Polymarket/Manifold/Kalshi).",
+   "reference_class": "EU aggregate storage change over the first ~13 days of the withdrawal season (late Oct to mid Nov), 2021-2025 AGSI+"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.8402,
+   "seconds": 115.0,
+   "usage": {
+    "num_turns": 14,
+    "input": 20,
+    "cache_read": 284577,
+    "cache_write": 22786,
+    "cache_write_1h": 22786,
+    "output": 5565,
+    "thinking": 1279,
+    "web_search": 2,
+    "cost_usd_envelope": 0.43507840000000003,
+    "web_fetch": 0,
+    "duration_api_ms": 118783
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 69.8,
+     "25": 70.8,
+     "50": 71.7,
+     "75": 72.6,
+     "90": 73.5
+    },
+    "p_below_lower": 0.03
+   },
+   "reasoning": "Last confirmed AGSI EU level is 74.64% on 30 Oct, net withdrawals about 0.13 pp/day. Reference class: EU net withdrawals in early-to-mid November 2021-25, roughly 0.15-0.35 pp/day (about 0.4 pp/day in the Nov 2024 Dunkelflaute), which implies about 70-73% on 12 Nov. A cold snap is starting (Germany 2-4C below normal, low-wind Dunkelflaute) and a polar-vortex disturbance is signalled around 9 Nov, so I lean to about 0.23 pp/day, median about 71.7. Very high prices (TTF about €96/MWh) and the 31 Oct-1 Nov weekend argue for a slower decline. Under 68% would need about 0.5 pp/day sustained, which is unlikely. No human market found (Polymarket, Manifold, Kalshi, bookmakers).",
+   "sources": [
+    "https://www.energyconnects.com/news/gas-lng/2026/november/germany-misses-gas-storage-target-as-cold-snap-sets-in/",
+    "https://energyriskiq.com/gas-storage-levels-in-europe",
+    "https://voltstack.energy/insights/eu-gas-storage-tracker-winter-2026",
+    "https://global-energy-flow.com/storage/trajectory/",
+    "WebSearch result snippets for Europe gas storage / TTF, early Nov 2026 (hotair/euronews headlines)"
+   ],
+   "dossier": "- AGSI+ EU (per question background): 74.64% on gas day 30 Oct 2026 (845.5 TWh of 1132.8 TWh WGV; 1 pp ≈ 11.3 TWh); net withdrawal about 1.49 TWh/day (-0.13 pp d/d). 74.93% on 26 Oct, so the refill peak was about 75%.\n- global-energy-flow.com (28 Oct): 74.93% on 26 Oct; most recent day +0.02; 44-day average +0.16 pp/day during refill.\n- voltstack.energy: 74.7% on 30 Oct; withdrawal phase began 1 Nov; 8.1 pp below last year (82.8%), 15.1 pp below 5-year average.\n- energyriskiq.com: shows 74.6% 'as of 2 Nov' with a +0.10 pp daily change; gas-day mapping unclear and it conflicts with the withdrawal trend; reliability uncertain.\n- Energy Connects/Bloomberg (1 Nov 2026): Germany 61.17% on 31 Oct; cold snap setting in, Berlin/Frankfurt/Munich 2-4C below normal, possible frost in the south/east, calm cloudy Dunkelflaute (low wind means more gas-for-power); TTF above €100/MWh the previous week.\n- TTF front-month up to about €95.7/MWh on Mon 2 Nov, highest since 2022; up 7% the previous week as countries began withdrawing.\n- Question background: late-Oct ECMWF ensembles signalled a polar-vortex disturbance with wind reversal around 9 Nov; one tracker extrapolates about 71% by 23 Nov; Austria, Slovakia and Czechia withdrawing.\n- Base rates (background knowledge, not fetched): EU net change over early-to-mid November 2021-25 ranged from roughly flat (2023, mild, ~99% full) to about -0.35/-0.4 pp/day (Nov 2024 Dunkelflaute); typical about -0.15 to -0.3 pp/day. 2025: Nov 1 about 83%, end-Nov about 75% (about -0.27 pp/day).\n- Arithmetic from 30 Oct (13 days): -0.13/day -> 72.9; -0.2 -> 72.0; -0.3 -> 70.7; -0.4 -> 69.4; reaching 68 needs about -0.51/day sustained.\n- 31 Oct and 1 Nov 2026 are Sat/Sun (lower demand).\n- Resolves off the AGSI+ 'EU' aggregate 'full' field, first publication for gas day 2026-11-12, not the 'Europe' aggregate and not later revisions.\n- Event window: single gas day 12 Nov 2026 (06:00 CET 12 Nov -> 06:00 CET 13 Nov); as of 2 Nov about 0% of the window elapsed, with about 10 days of storage path remaining before it.\n- Searched but not found: AGSI daily values for 31 Oct-1 Nov (API needs a key); detailed ECMWF temperature anomalies for 5-12 Nov; any prediction market (none on Polymarket, Manifold, Kalshi or bookmakers).",
+   "reference_class": "EU aggregate AGSI net storage change over the first ~2 weeks of November, 2021-2025"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.2941,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2015,
+   "seconds": 26.3,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 18951,
+    "cache_write_1h": 18951,
+    "output": 2374,
+    "thinking": 459,
+    "web_search": 0,
+    "cost_usd_envelope": 0.2014578,
+    "web_fetch": 0,
+    "duration_api_ms": 25691
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 69.8,
+     "25": 70.8,
+     "50": 71.6,
+     "75": 72.5,
+     "90": 73.4
+    },
+    "p_below_lower": 0.02
+   },
+   "reasoning": "Starts at ~74.6% (30-31 Oct), with net withdrawals beginning. A cold, low-wind/low-solar spell in Germany (2-4C below normal) and an ECMWF polar-vortex signal around 9 Nov point to draws of ~0.2-0.3 pp/day, faster than late October's -0.13. Very high TTF (~95-100 EUR/MWh) curbs demand and pulls in LNG, damping the fall. Central path is -0.25 pp/day over 12 days, giving ~71.6%. Below 68% needs ~0.55 pp/day sustained (2%); no mechanism above 77. No human market found by the runs.",
+   "sources": [],
+   "reconciliation": "Factual: start level 74.6% on both 30 and 31 Oct, so the runs agree; Voltstack's 0.32 TWh/day weekly average vs the 1.49 TWh/day AGSI daily figure is explained by injection days earlier in the window; EnergyRiskIQ's +0.10 pp is likely stale and was down-weighted. No web access this run, so post-30-Oct AGSI values were unverified. Judgment: in a cold, still spell with storage low, the pace should run harder than late October's but be damped by price-driven demand cuts; I took -0.25 pp/day. My median sits near Runs 2 and 3; the lower-tail escape is set at 2%.",
+   "disagreements": [
+    {
+     "claim": "Start value and date (74.64 on 30 Oct vs 74.6 on 31 Oct)",
+     "kind": "factual",
+     "verdict": "Consistent; ~74.6 with 12-13 days to go"
+    },
+    {
+     "claim": "Recent withdrawal pace: 0.32 TWh/d (Voltstack weekly avg) vs 1.49 TWh/d (AGSI 30 Oct)",
+     "kind": "factual",
+     "verdict": "Reconciled: weekly avg diluted by injection days before the 22 Oct switch to withdrawal"
+    },
+    {
+     "claim": "EnergyRiskIQ shows +0.10 pp on 2 Nov",
+     "kind": "factual",
+     "verdict": "Unverifiable; likely stale/mislabelled, given low weight"
+    },
+    {
+     "claim": "Average draw pace 31 Oct-12 Nov (~0.2 vs ~0.24 pp/day)",
+     "kind": "judgment",
+     "verdict": "Took ~0.25 pp/day given cold, low wind/solar, polar-vortex risk and low storage, offset by price-driven demand cuts"
+    },
+    {
+     "claim": "Probability below 68 (1% vs 3%)",
+     "kind": "judgment",
+     "verdict": "2%: requires ~0.55 pp/day sustained"
+    }
+   ],
+   "reference_class": "EU-aggregate AGSI+ net change over 1-12 November, 2021-2025, scaled to pp/day"
+  }
+ ]
+}
