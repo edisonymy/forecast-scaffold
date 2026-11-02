@@ -1,0 +1,253 @@
+{
+ "record_id": "2026-11-02-93730dea",
+ "question": "What will the EIA report as the week-over-week change in U.S. commercial crude oil inventories (excluding SPR) for the week ending 6 November 2026?",
+ "question_id": 46639,
+ "url": "https://www.metaculus.com/questions/46406/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-02T16:12:40+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.3646,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -6933.333333333333,
+    "25": -3766.6666666666665,
+    "50": -733.3333333333334,
+    "75": 2366.6666666666665,
+    "90": 5500.0
+   },
+   "p_below_lower": 0.01,
+   "p_above_upper": 0.015
+  },
+  "phase1": {
+   "10": -6933.333333333333,
+   "25": -3766.6666666666665,
+   "50": -733.3333333333334,
+   "75": 2366.6666666666665,
+   "90": 5500.0
+  },
+  "phase2": null,
+  "spread_phase1": 600.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -7000.0,
+   "25": -3700.0,
+   "50": -600.0,
+   "75": 2600.0,
+   "90": 5900.0
+  },
+  "p_below_lower": 0.01,
+  "p_above_upper": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7497,
+   "seconds": 63.5,
+   "usage": {
+    "num_turns": 8,
+    "input": 12,
+    "cache_read": 157908,
+    "cache_write": 21609,
+    "cache_write_1h": 21609,
+    "output": 4225,
+    "thinking": 864,
+    "web_search": 3,
+    "cost_usd_envelope": 0.39356959999999996,
+    "web_fetch": 0,
+    "duration_api_ms": 71982
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -7400.0,
+     "25": -4000.0,
+     "50": -800.0,
+     "75": 2500.0,
+     "90": 5700.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Reference class: one-week changes in EIA commercial crude stocks over the last 1-2 years. These centre near zero with SD ~5M and fat tails; 2026 has been more volatile than 2025. Current regime: four straight draws to 410.6M, a wide Brent-WTI spread (~$14) that favours exports, and exports reportedly up to ~4.9 mb/d, which leans towards draws. Early-November seasonality (refineries finishing maintenance) and lumpy imports/exports lean towards builds; prior years' week-45 changes were mostly builds. Net median slightly negative (~-0.8M), wide spread, small escape mass reflecting two >15M weekly builds in 2026. No market found on Polymarket, Manifold or Kalshi for this number.",
+   "sources": [
+    "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=WCESTUS1&f=W",
+    "https://www.rigzone.com/news/usa_crude_oil_stocks_drop_week_on_week-30-oct-2026-184983-article/",
+    "https://cryptoslate.com/predictions/market/what-price-will-wti-crude-oil-hit-in-november-2026/",
+    "https://kalshisignals.net/blog/how-to-trade-oil-markets-on-kalshi"
+   ],
+   "dossier": "- EIA WCESTUS1 (accessed 2026-11-02): 2026 levels Oct 2 424,134; Oct 9 415,577; Oct 16 412,517; Oct 23 410,625 (kb). Four straight draws: -3.2M, -8.6M, -3.1M, -1.9M.\n- 2026 weekly changes include large outliers: Feb 20 +16.0M, Aug 7 +17.4M; May-Jun run of -7 to -8M draws; Mar builds of +6-7M. Rough SD of weekly changes over the past 52 weeks ~5-5.5M; median near zero/slightly negative. 2025 SD ~4.5M.\n- Early-November week changes in prior years (same week of year): 2025 Nov 7 +6.4M (421,168->427,581); 2025 Oct 31 +5.2M; 2024 ~+2.1M; 2023 ~+3.6M; 2022 ~-5.4M (approximate, from memory/series).\n- Week ending Oct 23 2026 (Reuters/BOE Report, Rigzone 2026-10-28/30): refinery utilisation 92.8%, crude runs -123 kb/d, Cushing -0.6M, net imports -796 kb/d; came against expectations of a small build.\n- Cryptoslate/commentary (late Oct 2026): crude exports rose from 3.44 to 4.85 mb/d in recent data; crude inputs 16.65->16.53 mb/d.\n- Prices: Brent ~$115, WTI ~$101 late Oct 2026 after Houthi strike on a Saudi refinery (Times of India); a wide Brent-WTI spread favours US exports.\n- Status quo: no systematic sign; weekly change dominated by noise from imports/exports (each can swing ±1 mb/d = ±7M bbl/week).\n- Resolves off the EIA WPSR 'week-on-week change' published Nov 12 2026 12:00 ET (Veterans Day delay), in thousand barrels, not the API figure.\n- Event window: the single week Oct 31 -> Nov 6 2026; as of Nov 2 ~30% elapsed, no data published yet. The prior week (ending Oct 30) is due Nov 4.\n- Searched for but not found: a Kalshi/Polymarket/Manifold market on this weekly number; analyst consensus for the Nov 6 week (not published yet); SPR exchange schedules affecting commercial stocks.",
+   "reference_class": "Weekly changes in EIA US commercial crude stocks (ex-SPR), Nov 2025-Oct 2026, plus early-November weeks 2022-2025"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.1343,
+   "seconds": 73.0,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 126535,
+    "cache_write": 21216,
+    "cache_write_1h": 21216,
+    "output": 4031,
+    "thinking": 846,
+    "web_search": 3,
+    "cost_usd_envelope": 0.384535,
+    "web_fetch": 0,
+    "duration_api_ms": 80784
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -6800.0,
+     "25": -3500.0,
+     "50": -400.0,
+     "75": 2800.0,
+     "90": 6200.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Two weeks ahead, the info set is mostly climatology: weekly changes over 2025-26 have SD ~5-6M with fat tails (+16.0M, +17.4M weeks in 2026). Seasonal early-Nov tendency is mildly toward builds (wk ending 7 Nov 2025 +6.4M), but exports are elevated (4.85M b/d, wide Brent-WTI spread), stocks have drawn 4 straight weeks and sit ~4% below 5-yr avg, and SPR releases have slowed to ~0.1M/wk. Net median slightly below zero. No Kalshi/Polymarket/Manifold market on this figure found. Tails priced ~1% each beyond ±15M.",
+   "sources": [
+    "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=WCESTUS1&f=W",
+    "https://www.rigzone.com/news/usa_crude_oil_stocks_drop_week_on_week-30-oct-2026-184983-article/",
+    "https://boereport.com/2026/10/28/us-crude-stocks-and-distillate-inventories-fall-gasoline-stocks-rise-the-eia-says/",
+    "https://www.readgeo.net/guides/eia-weekly-petroleum-report-schedule",
+    "https://www.botforkalshi.com/blog/how-to-trade-oil-on-kalshi"
+   ],
+   "dossier": "- Resolves off the EIA WPSR 'Week-on-week change' for commercial crude ex-SPR, week ending 6 Nov 2026, published Thu 12 Nov 2026 12:00 ET (Veterans Day shift); not the API figure, not later revisions. Units: thousand bbl, draw negative.\n- Event window: the week 31 Oct -> 6 Nov 2026 (stock change vs 30 Oct). As of Now (2 Nov), ~30% of the measured week has elapsed; the prior week's data (week ending 30 Oct) comes out 4 Nov.\n- Latest levels (EIA WCESTUS1, fetched 2 Nov 2026): 25 Sep 427,320; 2 Oct 424,134; 9 Oct 415,577; 16 Oct 412,517; 23 Oct 410,625 (4 straight draws: -3.2, -8.6, -3.1, -1.9M).\n- Week ending 23 Oct (Reuters/BOE Report, Rigzone 28-30 Oct 2026): exports +1.4M b/d to 4.85M b/d; imports +616k to 6.4M b/d; net imports -796k b/d; runs 16.5M b/d, utilisation 92.8%; production ~14.0M b/d; Cushing -0.6M; gasoline +3.9M; distillates -1.5M; consensus had expected a small build.\n- SPR 282.6M bbl on 23 Oct, -0.1M w/w but -126.5M y/y (large releases earlier in 2026; current weekly SPR moves small). Commercial stocks ~4% below 5-yr average, -1.3% y/y.\n- Brent ~$115, WTI ~$101 late Oct 2026 (Middle East escalation): a wide Brent-WTI spread supports US exports.\n- Base rate over all weeks Jan 2025-Oct 2026 (EIA series): changes centred near 0, SD ~5-6M; fat tails: +16.0M (20 Feb 2026), +17.4M (7 Aug 2026), -9.0M (13 Feb 2026), -11.5M (13 Jun 2025), -8.3M (12 Jun 2026). About 2 of ~95 weeks fell outside ±15M.\n- Seasonal: weeks around early Nov 2025: 24 Oct -6.9M, 31 Oct +5.2M, 7 Nov +6.4M, 14 Nov -3.4M, 21 Nov +2.8M. The Oct-Nov 2024 and 2023 series levels rose from Oct to Nov (post-maintenance import/builds pattern).\n- Weekly exports are noisy and a one-week export spike often reverses the following week; this matters most for the 30 Oct week, less for 6 Nov.\n- Markets: no Kalshi/Polymarket/Manifold contract on this EIA figure found.\n- Searched, not found: analyst consensus for the 6 Nov week (not yet published), SPR exchange/loan schedule for Nov 2026, refinery maintenance schedule details.",
+   "reference_class": "Weekly changes in US commercial crude stocks ex-SPR (EIA WCESTUS1), Jan 2025-Oct 2026, with an early-November seasonal check"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3561,
+   "seconds": 61.4,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 124093,
+    "cache_write": 20117,
+    "cache_write_1h": 20117,
+    "output": 2899,
+    "thinking": 471,
+    "web_search": 3,
+    "cost_usd_envelope": 0.35614760000000006,
+    "web_fetch": 0,
+    "duration_api_ms": 66510
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -6600.0,
+     "25": -3800.0,
+     "50": -1000.0,
+     "75": 1800.0,
+     "90": 4600.0
+    }
+   },
+   "reasoning": "Reference class: weekly EIA commercial crude changes, SD ~4-5M bbl; early-November seasonal mean near zero/slight build. 2026 regime: four straight October draws (-8.6, -3.1, -1.9M), elevated exports amid Middle East disruption with Brent ~$115, SPR at 44-year low releasing only small volumes. Shift median to ~-1.0M but keep wide spread since refinery post-maintenance ramp and import timing make the sign noisy. No market (Polymarket/Manifold/Kalshi) prices this weekly figure; Kalshi lists only oil price contracts.",
+   "sources": [
+    "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=WCESTUS1&f=W",
+    "https://tradingeconomics.com/united-states/crude-oil-stocks-change",
+    "https://oilprice.com/Latest-Energy-News/World-News/API-Crude-Products-Continu-eto-Draw.html",
+    "https://kalshisignals.net/blog/how-to-trade-oil-markets-on-kalshi"
+   ],
+   "dossier": "- Resolves off the EIA WPSR 'week-on-week change' for commercial crude ex-SPR, week ending 6 Nov 2026, published 12 Nov 2026 12:00 ET; not API, not later revisions.\n- Event window: stocks 30 Oct -> 6 Nov 2026; as of 2 Nov 2026 none of the target week's data is published (the 30 Oct week comes out 4 Nov).\n- EIA series (WCESTUS1): 2 Oct 2026 424.1M; 16 Oct 412.5M; 23 Oct 410.6M. Weekly changes: wk 9 Oct -8.557M (largest since Feb); wk 16 Oct -3.061M; wk 23 Oct -1.892M (fourth straight draw) (TradingEconomics, Oct 2026).\n- Wk 23 Oct: refinery runs -123k b/d, utilisation 92.8%, net imports -796k b/d, Cushing -0.6M, gasoline +3.9M, distillates -1.5M (Reuters/BOE Report 28 Oct 2026).\n- SPR ~282.2M bbl, a 44-year low; small releases of 0.3-0.8M/week in October (OilPrice/API, Oct 2026).\n- Crude exports 4.765M b/d in wk 2 Oct, +1.195M b/d w/w (OilPrice, Oct 2026).\n- API (Oct 2026): commercial crude down >58M bbl over 28 weeks, but only ~7M below the start of 2026.\n- Prices: Brent ~$115, WTI ~$101 in late Oct 2026 after a reported Houthi strike on a Saudi refinery; peace-talk headlines whipsawing prices.\n- Seasonal reference: 2024, wk 1 Nov +2.15M, wk 8 Nov +2.09M, wk 15 Nov +0.55M (EIA series). Early-November weekly changes historically average near zero or a slight build; weekly SD ~4-5M bbl.\n- Counter-direction: refineries returning from autumn maintenance raise crude runs (a draw driver), but import arrivals are lumpy (a build driver).\n- API release 10 Nov 2026 diverges from EIA by >1M bbl frequently.\n- Searched, absent: any prediction market on this weekly figure (Polymarket, Manifold, Kalshi); analyst consensus for the 6 Nov week; the 30 Oct week's data (not released yet).",
+   "reference_class": "EIA weekly changes in US commercial crude stocks ex-SPR, early-November weeks 2015-2025 and recent 2026 weeks"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0978,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1798,
+   "seconds": 20.5,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 17757,
+    "cache_write_1h": 17757,
+    "output": 1767,
+    "thinking": 256,
+    "web_search": 0,
+    "cost_usd_envelope": 0.17976579999999998,
+    "web_fetch": 0,
+    "duration_api_ms": 19924
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -7000.0,
+     "25": -3700.0,
+     "50": -600.0,
+     "75": 2600.0,
+     "90": 5900.0
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "With ten days to go, this is mostly climatology. Weekly changes are centred near zero with an SD of about 5M bbl and fat tails. Leaning towards a draw: four straight October draws, elevated exports (~4.85 mb/d) and a ~$14 Brent-WTI spread. Leaning towards a build: early-November seasonality (2023-25 week 45 were all builds), mean-reversion of the export spike, and lumpy imports. Net median slightly negative at -0.6M. No Polymarket, Kalshi or Manifold market was found by any run.",
+   "sources": [],
+   "reconciliation": "The runs agree on the facts: the WCESTUS1 levels, the October draws, exports of 4.85 mb/d, a weekly SD of 4.5-6M, and the 2026 outliers above 15M. The disagreements are judgment: median between -0.4M and -1.0M, 90-10 width between 11M and 13M, and tail mass. With no web access I could not check anything new. I took a width consistent with an SD of about 5M (the narrower 11M in run 3 looks too tight given the 2026 volatility) and a median of -0.6M. The draw momentum from exports is partly offset by weekly export spikes tending to reverse and by early-November build seasonality. Tails are priced at 1% each, since 2 of ~95 recent weeks fell outside ±15M.",
+   "disagreements": [
+    {
+     "claim": "Median sign/magnitude (-0.4M vs -1.0M)",
+     "kind": "judgment",
+     "verdict": "Took -0.6M: export-driven draw momentum offset by export mean-reversion and early-Nov build seasonality"
+    },
+    {
+     "claim": "Weekly SD 4-5M (run 3) vs 5-6M (runs 1-2)",
+     "kind": "factual",
+     "verdict": "Not checkable without web access; 2026 outliers (+16.0M, +17.4M) support about 5M, so width set at ~12.9M"
+    },
+    {
+     "claim": "Escape mass beyond ±15M",
+     "kind": "judgment",
+     "verdict": "1% each side, consistent with ~2/95 recent weeks being beyond ±15M (both builds)"
+    }
+   ],
+   "reference_class": "One-week changes in EIA commercial crude stocks ex-SPR, 2025-2026, with early-November same-week history"
+  }
+ ]
+}
