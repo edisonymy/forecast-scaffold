@@ -1,0 +1,244 @@
+{
+ "record_id": "2026-11-02-5c622f6f",
+ "question": "How many turkey poults will USDA NASS report as net placed in the United States during October 2026?",
+ "question_id": 46629,
+ "url": "https://www.metaculus.com/questions/46396/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-02T10:23:22+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.9944,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 20500.0,
+    "25": 21016.666666666668,
+    "50": 21493.333333333332,
+    "75": 21966.666666666668,
+    "90": 22450.0
+   }
+  },
+  "phase1": {
+   "10": 20500.0,
+   "25": 21016.666666666668,
+   "50": 21493.333333333332,
+   "75": 21966.666666666668,
+   "90": 22450.0
+  },
+  "phase2": null,
+  "spread_phase1": 300.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 20550.0,
+   "25": 21050.0,
+   "50": 21500.0,
+   "75": 21950.0,
+   "90": 22450.0
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.7552,
+   "seconds": 123.4,
+   "usage": {
+    "num_turns": 11,
+    "input": 20,
+    "cache_read": 282474,
+    "cache_write": 23697,
+    "cache_write_1h": 23697,
+    "output": 5582,
+    "thinking": 1909,
+    "web_search": 3,
+    "cost_usd_envelope": 0.5274968,
+    "web_fetch": 0,
+    "duration_api_ms": 125124
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 20650.0,
+     "25": 21150.0,
+     "50": 21600.0,
+     "75": 22050.0,
+     "90": 22550.0
+    }
+   },
+   "reasoning": "Prior: Oct 2025 revised level 21,284 times observed YoY growth (~+2% in Sep placements and Oct 1 eggs) ≈ 21,700. Sep→Oct seasonal ratio (1.084 in 2024, 1.115 in 2025) on 19,571 gives 21,220–21,820; egg-pipeline (Oct 1 eggs 26,695, +7.6% m/m vs +5.8% last year) via 2025 hatch/egg 0.88 and place/hatch 0.926 gives ~21,775. HPAI October wave in MN/ND/IA/WI turkey flocks (~175k birds depopulated) may defer some placements; shade median to ~21,600. Large 2026 benchmark revisions to history (Oct 2025 first print 19,684 vs current 21,284) widen uncertainty. No market found on Polymarket/Manifold/Kalshi.",
+   "sources": [
+    "https://esmis.nal.usda.gov/sites/default/release-files/796103/tkha1026.txt",
+    "https://esmis.nal.usda.gov/sites/default/release-files/796058/tkha0926.txt",
+    "https://esmis.nal.usda.gov/sites/default/release-files/795687/tkha1225.txt",
+    "https://esmis.nal.usda.gov/publication/turkey-hatchery",
+    "https://www.indexbox.io/blog/us-turkey-eggs-in-incubators-up-2-year-over-year-to-267-million/"
+   ],
+   "dossier": "- NASS Turkey Hatchery Oct 13 2026 (tkha1026.txt): Sep 2026 net placements 19,571k (102% of Sep 2025 19,096k); Aug 2026 revised 21,164k (first print 21,213k in Sep 14 2026 report). Eggs in incubators Oct 1 2026 26,695k vs 26,122k Oct 1 2025 (102%); Sep 1 2026 24,814k (Sep1→Oct1 +7.6% in 2026 vs +5.8% in 2025). Poults hatched Sep 2026 21,122k (102%).\n- Same report, prior-year (2025-26) current-basis placements: Sep 19,096; Oct 21,284; Nov 18,482; Dec 19,243; Jan 20,031; Feb 19,628; Mar 19,950; Apr 20,501; May 19,893; Jun 19,735; Jul 21,031; Aug 21,164. Hatched Oct 2025 22,981k; Sep 2025 20,738k.\n- Sep 14 2026 report (tkha0926.txt): 2024-25 placements Sep 18,601; Oct 20,165 (Sep→Oct ratio 1.084); 2025 Sep→Oct ratio 21,284/19,096 = 1.115.\n- Component ratios 2025: Oct hatch / Oct 1 eggs = 0.880; Oct placements / Oct hatch = 0.926; Sep 2026 placements/hatch = 0.927.\n- REVISION WARNING: Dec 2025 report (tkha1225.txt) had first-print Oct 2025 = 19,684k, Sep 2025 = 18,179k, Oct 1 2025 eggs = 25,461k; these were later revised up ~5-8% (current: 21,284 / 19,096 / 26,122). Feb 2026 first print 18.5M later 19,628k; Jan 2026 first 20.3M later 20,031k. 2026 first prints since at least Aug appear to be on the new, higher basis (Aug revision only -49k).\n- NASS reliability: net placements RMSE 4.2%, 90% CI ±7.1% (past 24 months).\n- HPAI (per question background, APHIS summary Oct 30 2026): 11 commercial flocks in 30 days, incl. turkey flocks ND Dickey 60.6k (Oct 21), MN Roseau 57.5k and WI Barron 13.5k (Oct 22), IA Sac 44.4k (Oct 28); MN 20 commercial flocks lost in 2026. Mechanisms both ways: deferred placements in control areas vs. restocking/holiday demand.\n- Status quo: Oct placements are seasonally among the highest months; YoY trend in recent months roughly +2% (Sep), +7% (Aug, vs revised 2025).\n- Resolution: first print of Oct 2026 US net poult placements in Nov 13 2026 Turkey Hatchery report (thousands), not later revisions; not eggs/hatch figures.\n- Event window: October 1–31, 2026 placements; as of Nov 2 2026 the month is 100% elapsed, figure unpublished until Nov 13.\n- Searched, absent: any prediction market (Polymarket, Manifold, Kalshi) on this; any industry estimate of Oct 2026 placements; Nov 1 eggs figure (not yet released).",
+   "reference_class": "October net poult placements on the current NASS basis, projected from September placements and Oct 1 eggs-in-incubators (2024, 2025 seasons)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.2277,
+   "seconds": 96.2,
+   "usage": {
+    "num_turns": 15,
+    "input": 22,
+    "cache_read": 315034,
+    "cache_write": 25236,
+    "cache_write_1h": 25236,
+    "output": 5535,
+    "thinking": 1709,
+    "web_search": 4,
+    "cost_usd_envelope": 0.6426148,
+    "web_fetch": 0,
+    "duration_api_ms": 106501
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 20250.0,
+     "25": 20800.0,
+     "50": 21300.0,
+     "75": 21800.0,
+     "90": 22350.0
+    }
+   },
+   "reasoning": "Revised Oct 2025 = 21,284; Sep 2026 first print 19,571 (+2% YoY vs revised base). Sep->Oct ratios 1.05-1.115 give ~20,550-21,800; Oct 1 eggs +2% YoY (and Oct1/Sep1 egg ratio 1.076 vs 1.058 last year) imply ~21,700; hatch-to-placement chain gives ~21,100. HPAI autumn wave in MN/ND/WI/IA turkey grow-outs a modest drag (~-1%). Median ~21,300, spread ~4% SD. No prediction market found (harness found none on Polymarket/Manifold; Kalshi/bookmakers not checked).",
+   "sources": [
+    "https://www.nass.usda.gov/Publications/Todays_Reports/reports/tkha1026.txt",
+    "https://esmis.nal.usda.gov/sites/default/release-files/795687/tkha1225.txt",
+    "https://www.indexbox.io/blog/us-turkey-eggs-in-incubators-up-2-year-over-year-to-267-million/",
+    "https://www.brownfieldagnews.com/news/mixed-month-for-turkey-hatchery-numbers/",
+    "https://esmis.nal.usda.gov/publication/turkey-hatchery"
+   ],
+   "dossier": "- NASS Turkey Hatchery Oct 13 2026 (tkha1026.txt): net placements 2025-26 season (revised): Sep 19,096; Oct 21,284; Nov 18,482; Dec 19,243; Jan 20,031; Feb 19,628; Mar 19,950; Apr 20,501; May 19,893; Jun 19,735; Jul 21,031; Aug 2026 21,164. Sep 2026 = 19,571 (102% of Sep 2025).\n- Same report: eggs in incubators Sep 1 2026 24,814 (2025: 24,681); Oct 1 2026 26,695 (2025: 26,122), +2% YoY. Oct1/Sep1 egg ratio 1.076 in 2026 vs 1.058 in 2025. Sep 2026 poults hatched 21,122 (+2% YoY).\n- Revision note: Dec 2025 report (tkha1225.txt) showed first prints Sep 2025 18,179, Oct 2025 19,684, Nov 2025 18,938; these were later revised to 19,096 / 21,284 / 18,482. The resolution uses the first-published Oct 2026 figure. Sep 2026's first print is already at the revised level.\n- Sep->Oct placement ratio: 2025 revised 1.115, 2025 first print 1.083; 2024 first print ~1.05 (17.9M -> 18.8M; Brownfield/NASS Nov 2024), 2024 revised 1.082 (18,030 -> 19,510).\n- Oct 2024 first print 18.8M was -9% vs Oct 2023 (~20.7M).\n- NASS reliability: placement RMSE 4.2% (first vs final), 90% band ~7.1%.\n- HPAI: autumn 2026 wave; per the question background (APHIS, Oct 30 2026), 11 commercial flocks hit in 30 days, incl. turkey grow-outs in ND (60.6k), MN (57.5k), WI (13.5k), IA (44.4k). Effect could go either way (depopulated barns defer placements; others may backfill).\n- Status quo: Oct placements are seasonally high, ~8-11% above Sep.\n- Resolves off the Nov 13 2026 NASS Turkey Hatchery October net placements first print, not later revisions. Event window: October 2026 placements (fully elapsed as of Nov 2 2026; data unpublished).\n- Searched but not found: any private/industry estimate of Oct 2026 placements; any prediction market (none on Polymarket/Manifold).",
+   "reference_class": "US NASS October net poult placements relative to September placements and Oct-1 eggs in incubators, 2023-2025"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5851,
+   "seconds": 87.9,
+   "usage": {
+    "num_turns": 14,
+    "input": 24,
+    "cache_read": 342692,
+    "cache_write": 23365,
+    "cache_write_1h": 23365,
+    "output": 5156,
+    "thinking": 1206,
+    "web_search": 3,
+    "cost_usd_envelope": 0.5850584,
+    "web_fetch": 0,
+    "duration_api_ms": 88317
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 20600.0,
+     "25": 21100.0,
+     "50": 21580.0,
+     "75": 22050.0,
+     "90": 22450.0
+    }
+   },
+   "reasoning": "Anchor: Oct 2025 placements 21,284k; YoY placements trending ~+2% through Sep 2026 (Sep +2%). Oct 1, 2026 eggs in incubators 26,695k (+2% YoY) mostly hatch in October; applying 2025 hatch/egg (0.88) and placed/hatched (0.926) ratios gives ~21,750k; the Sep->Oct seasonal step (+11% in 2025) gives ~21,720k. I trimmed ~1% for H5N1 grow-out losses and control-area placement deferrals in MN/ND/WI/IA, which are small relative to ~21M/month national placements. No market found on Polymarket, Manifold, Kalshi or bookmakers.",
+   "sources": [
+    "https://www.nass.usda.gov/Publications/Todays_Reports/reports/tkha1026.txt",
+    "https://esmis.nal.usda.gov/publication/turkey-hatchery",
+    "https://downloads.usda.library.cornell.edu/usda-esmis/files/k643b117x/ft84bh255/r494xf12n/tkha1124.pdf",
+    "https://www.brownfieldagnews.com/news/turkey-hatchery-numbers-fall/"
+   ],
+   "dossier": "- NASS Turkey Hatchery Oct 13 2026 (tkha1026): 2025-26 net placements (1,000): Sep 19,096; Oct 21,284; Nov 18,482; Dec 19,243; Jan 20,031; Feb 19,628; Mar 19,950; Apr 20,501; May 19,893; Jun 19,735; Jul 21,031; Aug 21,164. Sep 2026 = 19,571 (+2% YoY).\n- Same report, poults hatched 2025-26: Sep 20,738; Oct 22,981; Nov 19,900; ... Aug 21,873. Sep 2026 hatched 21,122 (+2% YoY).\n- Eggs in incubators (first of month) 2025: Sep 1 24,681; Oct 1 26,122. 2026: Sep 1 24,814; Oct 1 26,695 (+2% YoY, +8% vs Sep 1).\n- Ratios in 2025: Oct hatch / Oct-1 eggs = 0.880; Oct placed / Oct hatched = 0.926; Sep 2026 placed/hatched = 0.927. Sep->Oct placements step 2025 = +11.5%.\n- Oct 2024 placements were 18.8M, down 9% YoY (NASS Nov 15 2024 report; HPAI/aMPV year), so Oct 2023 was ~20.7M; YoY October swings of -9% and +13% in the last two years.\n- NASS reliability: RMSE for placements 4.2% (90% CI +/-7.1%).\n- H5N1 fall 2026 (question background, APHIS as of Oct 30): 11 commercial flocks in 30 days, including turkey grow-outs of 60.6k (ND), 57.5k (MN), 13.5k (WI), 44.4k (IA); MN has 20 commercial flocks hit in 2026. Mechanisms run both ways: deferred placements vs refilling elsewhere.\n- Status quo: placements tracking ~+2% YoY; Oct-1 eggs +2% YoY.\n- Resolves off the first-print Oct 2026 placement figure in the Nov 13 2026 NASS Turkey Hatchery report, not later revisions or hatched/eggs figures.\n- Event window: October 1-31, 2026 placements; as of Nov 2 the month is 100% elapsed but the figure is unpublished.\n- Searched, absent: any prediction market (Polymarket/Manifold/Kalshi) on this figure; the October 2026 figure itself; 2024-25 monthly text tables.",
+   "reference_class": "October US net poult placements (NASS Turkey Hatchery) projected from same-year Oct-1 eggs in incubators and the prior-year Oct ratios"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.3158,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1887,
+   "seconds": 25.9,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 17839,
+    "cache_write_1h": 17839,
+    "output": 2180,
+    "thinking": 467,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1886818,
+    "web_fetch": 0,
+    "duration_api_ms": 25404
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 20550.0,
+     "25": 21050.0,
+     "50": 21500.0,
+     "75": 21950.0,
+     "90": 22450.0
+    }
+   },
+   "reasoning": "Anchor: Oct 2025 placements 21,284k with placements and Oct-1 eggs both running ~+2% YoY → ~21,700. Egg pipeline (26,695k eggs x 0.88 hatch x 0.926 placed) ≈ 21,750; Sep→Oct step on 19,571 gives 21,200-21,800 (lower end from smaller first-print ratios). H5N1 autumn losses in MN/ND/WI/IA turkey grow-outs (~176k birds) are <1% of monthly placements; trim ~0.5-1% for deferrals. Median 21,500, SD ~3.3%. No prediction market found.",
+   "sources": [],
+   "reconciliation": "Runs differed on median (21,300 vs ~21,600). The main factual dispute is whether first-print Sep→Oct ratios (1.05 in 2024, 1.083 in 2025) or revised ratios (1.084, 1.115) are relevant. Sep 2026's first print already appears to be on the revised basis (Aug revision only -49k), so revised ratios and the egg chain (~21,750) are more relevant, but there is residual risk that the Oct first print comes in low and is revised up later, as Oct 2025 was (19,684 first print). The size of the HPAI drag is a judgment call: small relative to national volume. Median set at 21,500, between the egg-chain point and a modest HPAI/first-print-risk discount. Reference class and approximate dispersion carried forward from the runs, widened slightly. No web retrieval this run.",
+   "disagreements": [
+    {
+     "claim": "Relevant Sep→Oct ratio: first-print (~1.05-1.083) vs revised (1.084-1.115)",
+     "kind": "factual",
+     "verdict": "Partly settled: Sep 2026 first print looks to be on the revised basis, so revised ratios dominate; residual first-print-low risk kept as downside skew in the spread"
+    },
+    {
+     "claim": "Size of the HPAI drag on October placements (~0.5% vs ~1%+)",
+     "kind": "judgment",
+     "verdict": "Depopulated turkey birds ~176k vs ~21M placements; took ~0.5-1% trim"
+    },
+    {
+     "claim": "Hatch-to-placement chain gives ~21,100 (Run 2) vs ~21,750 (Runs 1, 3)",
+     "kind": "factual",
+     "verdict": "Using the dossier ratios, 26,695 x 0.880 x 0.926 ≈ 21,750; Run 2's lower figure is not supported by the stated ratios"
+    }
+   ],
+   "reference_class": "US monthly NASS net poult placements for October, scaled by YoY trend and Sep→Oct seasonal step (2024-2025)"
+  }
+ ]
+}
