@@ -1,0 +1,257 @@
+{
+ "record_id": "2026-11-02-8378cdfc",
+ "question": "What will Samolet's BO-P16 bond close at on 13 November 2026, as a percentage of par?",
+ "question_id": 46642,
+ "url": "https://www.metaculus.com/questions/46409/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-02T18:12:24+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.4408,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 45.333333333333336,
+    "25": 53.166666666666664,
+    "50": 59.333333333333336,
+    "75": 64.66666666666667,
+    "90": 70.5
+   },
+   "p_below_lower": 0.03666666666666667
+  },
+  "phase1": {
+   "10": 45.333333333333336,
+   "25": 53.166666666666664,
+   "50": 59.333333333333336,
+   "75": 64.66666666666667,
+   "90": 70.5
+  },
+  "phase2": null,
+  "spread_phase1": 1.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 45.0,
+   "25": 53.0,
+   "50": 59.5,
+   "75": 65.0,
+   "90": 71.0
+  },
+  "p_below_lower": 0.04
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3291,
+   "seconds": 52.7,
+   "usage": {
+    "num_turns": 8,
+    "input": 12,
+    "cache_read": 153698,
+    "cache_write": 20535,
+    "cache_write_1h": 20535,
+    "output": 3745,
+    "thinking": 409,
+    "web_search": 2,
+    "cost_usd_envelope": 0.32906559999999996,
+    "web_fetch": 0,
+    "duration_api_ms": 57189
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 44.0,
+     "25": 52.5,
+     "50": 59.0,
+     "75": 64.5,
+     "90": 71.5
+    },
+    "p_below_lower": 0.03
+   },
+   "reasoning": "Status quo: last trade 60.21 on 2 Nov 2026 (MOEX marketdata); October closes ranged 55.6-68.1 with frequent 5-10% daily swings on restructuring news. Base anchor is the current price (random walk for a distressed bond over 9 trading days). Downside: VTB's 30 Oct statement of a creditor-led 'complex sanation agreement' (Art. 31.1 127-FZ) focused on extending debt maturities could bind bondholders; a missed/late 13 Nov coupon or an announced maturity extension could push the price into the 40s or (low-prob) below 30. Upside: October payments made on schedule; a finalised bank plan that leaves bonds untouched could lift price back to ~70. No human prediction market found (Polymarket/Manifold/Kalshi/bookmakers: none).",
+   "sources": [
+    "https://iss.moex.com/iss/history/engines/stock/markets/bonds/boards/TQCB/securities/RU000A10BFX7.json",
+    "https://iss.moex.com/iss/engines/stock/markets/bonds/boards/TQCB/securities/RU000A10BFX7.json",
+    "https://ru.themoscowtimes.com/2026/10/30/vtb-ozhidaet-sanatsiyu-samoleta-obsuzhdaet-restrukturizatsiyu-dolgov-a210093",
+    "https://finance.mail.ru/article/obligatsii-samoleta-snizilis-na-fone-novostej-o-vozmozhnoj-sanatsii-69234986/",
+    "https://www.tbank.ru/invest/bonds/RU000A100QA0/"
+   ],
+   "dossier": "- MOEX ISS history, TQCB, RU000A10BFX7, Oct 2026 closes: 1 Oct 66.87; 5 Oct 68.05; 12 Oct 66.73; 13 Oct 62.80; 19 Oct 61.01; 20 Oct 56.22; 22 Oct 55.62 (Oct low); 23 Oct 59.10; 27 Oct 58.27; 28 Oct 65.20 (banks agree plan); 29 Oct 66.46; 30 Oct 60.05. 900-3000 trades per day; intraday ranges are often 3-6 pts.\n- MOEX marketdata as of 2 Nov 2026 21:10 MSK: LAST 60.21, 1294 trades that day.\n- Moscow Times, 30 Oct 2026: VTB (the No.2 creditor, ~RUB 85.9bn exposure) expects a sanation via a 'complex sanation agreement' under new Art. 31.1 of 127-FZ, which lets majority creditors bind other creditors. The focus is on 'comfortable timeframes' for restructuring existing debt (maturity extension), not equity conversion. Likely the first major case under this mechanism. Whether bonds are included is unclear.\n- mail.ru finance, 30 Oct: Samolet bonds lost up to 13% on the VTB pre-bankruptcy restructuring comments.\n- Interfax, 28 Oct: Sber and VTB agreed a comprehensive plan, not yet finalised. Sber says its provisions are adequate and it won't take equity.\n- Payment record: late coupons on two series in May 2026; БО-П20 redemption on 28 Sep was partial, with the remainder paid next day, and NSD flagged it as improper performance. All October payments were on time (П16 coupon 14 Oct, П18 20 Oct, П13 26 Oct, series 01 redemption 30 Oct). Upcoming: П06 coupon 5 Nov (RUB 46.75/bond); П16 coupon 13 Nov (~RUB 63m in aggregate, the resolution day); П13 coupon 25 Nov; RUB 24.5bn П13 maturity in Jan 2027.\n- Peer prices around 30 Oct: П13 ~77, П18 ~54-57, П21 ~52.\n- Status quo: the price stays near ~60 absent news.\n- Resolves off the MOEX ISS history CLOSE on TQCB for 2026-11-13 (clean price, % of par), falling back to the last prior trading day. It does not use the yield or the dirty price.\n- Event window: single day, 13 Nov 2026 close. As of 2 Nov, about 9 trading days remain (3 Nov to 13 Nov; 4 Nov is a Russian holiday).\n- Searched but not found: any statement on whether bondholders will face maturity extension or haircut, a date for finalising the plan, any prediction market (none on Polymarket/Manifold/Kalshi).",
+   "reference_class": "Short-horizon (2-week) price paths of actively traded Russian distressed corporate bonds at 50-70% of par amid restructuring talks (e.g. this bond's own October 2026 path)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7766,
+   "seconds": 80.2,
+   "usage": {
+    "num_turns": 10,
+    "input": 16,
+    "cache_read": 220692,
+    "cache_write": 23531,
+    "cache_write_1h": 23531,
+    "output": 5154,
+    "thinking": 815,
+    "web_search": 4,
+    "cost_usd_envelope": 0.44754039999999995,
+    "web_fetch": 0,
+    "duration_api_ms": 83578
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 46.0,
+     "25": 53.0,
+     "50": 59.0,
+     "75": 64.0,
+     "90": 69.0
+    },
+    "p_below_lower": 0.03
+   },
+   "reasoning": "Status quo: BO-P16 is about 60.1-60.2 on 2 Nov (closed 60.05 on 30 Oct) after a ~40-point slide from par since mid-Sept. The reference class is distressed Russian corporate bonds over a 9-trading-day horizon during a creditor-led restructuring negotiation; the anchor is the current price with a mild downward drift. VTB's 30 Oct remarks about using the new sanation law (which can impose haircuts or deferrals on dissenting creditors once 50%+ of claims approve) knocked the bonds down 10-14%. But the law takes effect 1 Jan 2027 at the earliest, Sber expects the agreement by year-end, all October payments were on time, and the 13 Nov coupon is small (~RUB 63m). So a missed payment before the resolution date is unlikely, though not impossible. Tails: a formal announcement that bonds will be included in a haircut or extension would push the price down; the coupon being paid or a state-support headline would push it up. No human prediction market was found (Polymarket, Manifold, Kalshi or bookmakers).",
+   "sources": [
+    "https://iss.moex.com/iss/history/engines/stock/markets/bonds/boards/TQCB/securities/RU000A10BFX7.json",
+    "https://iss.moex.com/iss/engines/stock/markets/bonds/boards/TQCB/securities/RU000A10BFX7.json",
+    "https://finance.mail.ru/article/obligatsii-samoleta-i-novyij-zakon-o-sanatsii-chto-zhdet-investorov-69235086/",
+    "https://ru.themoscowtimes.com/2026/10/30/vtb-ozhidaet-sanatsiyu-samoleta-obsuzhdaet-restrukturizatsiyu-dolgov-a210093",
+    "https://vedomosti.ru/realty/articles/2026/11/02/1241866-kreditori-samoleta-zayavili",
+    "https://smart-lab.ru/bonds/samolet"
+   ],
+   "dossier": "- MOEX ISS TQCB history (fetched 2026-11-02): BO-P16 closes were 99.8-100.5 from 1-14 Sep 2026; fell from 97.3 (15 Sep) to 71.49 (21 Sep); rebounded to 80.9 (23 Sep); fell to 64.96 (30 Sep) after the partial BO-P20 redemption; 66.7-68.1 from 1-12 Oct; 62.8 (13 Oct); 56.22 (20 Oct); 55.62 (22 Oct, the lowest close); 59.1 (23 Oct); 58.27 (27 Oct); 65.2 (28 Oct, banks agree recovery programme); 66.46 (29 Oct); 60.05 (30 Oct, VTB sanation remarks). Daily trade counts ~600-7,500.\n- MOEX ISS marketdata, 2 Nov 2026 evening: LAST 60.21, LCURRENTPRICE 60.13, 1,294 trades.\n- Realized vol: October daily close-to-close changes ran roughly -10% to +12%; SD ~5-6% per day. Event days account for most of the large moves (13, 20, 28, 30 Oct).\n- finance.mail.ru (~31 Oct 2026): new law 253-FZ (26 Jul 2026) creates a 'comprehensive sanation agreement'; creditors with 50%+ of claims plus court confirmation can bind dissenters; tools include deferral, instalments and principal reduction; main effective date 27 Jul 2027, possible early start 1 Jan 2027; Sber reportedly holds ~62% of debt; Apr-2028 bond at 59.21 (YTM ~101%) after a ~14% drop on 30 Oct.\n- Moscow Times / Interfax / Vedomosti (30 Oct-2 Nov 2026): VTB (Pyanov) says Samolet could be the first case under the sanation mechanism; restructuring of existing debt is favoured over debt-to-equity conversion; Sber expects the agreement by end-2026; total obligations ~773 bn RUB, of which ~360 bn are owed to Sber and VTB.\n- Interfax (28 Oct): Sber and VTB agreed a comprehensive recovery programme; Sber says provisions are adequate and it will not take equity.\n- Payment record: late coupons in May 2026; BO-P20 redemption on 28 Sep was partial (269.10 per 1,000) and marked improper performance by NSD, with the rest paid the next day; October payments on time (BO-P16 coupon 14 Oct, BO-P18 on 20 Oct, BO-P13 on 26 Oct, series 01 redemption of 1.5 bn on 30 Oct).\n- Upcoming payments before or at resolution: BO-P15 coupon 2 Nov; BO-P06 coupon 5 Nov (46.75 RUB); BO-P16 coupon 13 Nov (20.96 RUB/bond, ~63m RUB total, on the resolution day); BO-P18 on 19 Nov; BO-P13 maturity of 24.5 bn RUB in Jan 2027.\n- Resolution instrument: resolves off the MOEX ISS history CLOSE on TQCB for 2026-11-13 (clean price, % of par), not yield or dirty price; the coupon payment does not mechanically move the clean price.\n- Event window: single closing print on 13 Nov 2026 (falls back to the prior trading day's close if no trade); as of 2 Nov there are ~9 trading days remaining.\n- Pointing lower: risk that bonds are named in haircuts or extensions; downtrend over the past month; BO-P18/BO-P21 at 52-57.\n- Pointing higher: payments are current; the sanation law can't apply before 2027; the 28 Oct agreement news gave a +7-pt rebound; a paid coupon could bring relief.\n- Searched but not found: any official Samolet statement on bondholder treatment; any bondholder meeting notice; any prediction market or bookmaker price.",
+   "reference_class": "Distressed Russian high-yield developer bonds (Samolet series, Sept-Oct 2026) over ~9-trading-day horizons during pre-restructuring bank negotiations"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.2001,
+   "seconds": 91.9,
+   "usage": {
+    "num_turns": 10,
+    "input": 16,
+    "cache_read": 217736,
+    "cache_write": 23739,
+    "cache_write_1h": 23739,
+    "output": 4571,
+    "thinking": 522,
+    "web_search": 3,
+    "cost_usd_envelope": 0.4235342,
+    "web_fetch": 0,
+    "duration_api_ms": 94369
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 46.0,
+     "25": 54.0,
+     "50": 60.0,
+     "75": 65.5,
+     "90": 71.0
+    },
+    "p_below_lower": 0.05
+   },
+   "reasoning": "Status quo: BO-P16 closed 60.05 on 30 Oct and was trading at 60.21 on 2 Nov, so the median stays near 60, with a small downward lean because unresolved distress tends to drift down and bondholder treatment is still unknown. Over 9 trading days, realized volatility (moves of 5-10 points in a day are common) gives an SD of roughly 8-9 points. Low side: a missed or late coupon or bad news on haircuts sends it to 30-45, priced as a 5% escape below 30. High side: an explicit deal that keeps bondholders whole could lift it to 75-85. The 13 Nov coupon is unlikely to move the price mechanically because the quoted price excludes accrued interest. No human market found (Polymarket, Manifold, Kalshi and bookmakers do not price this).",
+   "sources": [
+    "https://iss.moex.com/iss/history/engines/stock/markets/bonds/boards/TQCB/securities/RU000A10BFX7.json",
+    "https://iss.moex.com/iss/engines/stock/markets/bonds/boards/TQCB/securities/RU000A10BFX7.json",
+    "https://ru.themoscowtimes.com/2026/10/30/russias-vtb-expects-samolet-restructuring-to-use-new-pre-bankruptcy-process-a210150",
+    "https://frontier.eninvs.com/region/ru/article/smlt-bonds-oct2026?lang=en",
+    "https://investfunds.ru/bonds/1835785/"
+   ],
+   "dossier": "- MOEX ISS TQCB history for RU000A10BFX7 (fetched 2026-11-02): roughly 100 through 14 Sep 2026; 15-21 Sep crash to 71.49 (18 Sep -11 pts); rebound to ~81 on 23-25 Sep; 29 Sep 69.62 (intraday low 53) after the BO-P20 redemption problem; October range 55.6-68 (13 Oct 62.8, 20 Oct 56.22, 22 Oct 55.62 low close, 28 Oct 65.20 after creditor plan news, 29 Oct 66.46, 30 Oct 60.05).\n- MOEX ISS marketdata 2026-11-02 21:10 MSK: LAST 60.21, day low 59, high 61.58, 1294 trades.\n- Typical daily trades 600-7500; daily close-to-close moves of 2-11 points since mid-September. Realized SD of daily moves since 1 Oct is about 2.5-3 pts; scaled to 9 trading days (3 Nov -> 13 Nov) that is about 8-9 pts SD.\n- BO-P16 coupon of 20.96 RUB due 13 Nov 2026 (coupon no. 19); the record date is likely the prior business day, so 13 Nov trades ex-coupon. The quoted price excludes accrued interest, so there is no mechanical price drop from the payment. The Oct 14 coupon was paid on time (background).\n- BO-P06 coupon of 46.75 RUB due 5 Nov 2026 (tbank search result): a nearer payment test inside the window. BO-P13 coupon due 25 Nov; BO-P13 maturity 23-24 Jan 2027.\n- Moscow Times, 30 Oct 2026: VTB CFO Pyanov expects Samolet to be the first major case under a new pre-bankruptcy 'comprehensive financial recovery agreement' law (expected to take effect in 2027); the approach is to extend timeframes and restructure existing debt, not convert to equity. Whether bondholders are covered is not specified.\n- Interfax, 28 Oct 2026: Sber and VTB agreed a programme to improve the company's financial condition, still to be finalised; Sber has adequate provisions and no plan to take equity.\n- eninvs Frontier (Oct 2026): Sber+VTB loans ~RUB 360bn; bonds ~9% of debt; escrow RUB 339bn covers 61% of project loans; ACRA A-(RU) stable; the PJSC holds ~RUB 0.17bn cash against ~RUB 1bn monthly coupons and is cash hand-to-mouth; interest accrued (102bn) exceeds EBITDA (82bn); two payment delays in six months; market pricing implied a 56-69% chance BO-P13 is paid on time.\n- Status-quo outcome: price stays in the current 55-67 band.\n- Tails: missed or delayed coupon (BO-P06 on 5 Nov, BO-P16 on 13 Nov) or an announced bondholder haircut or moratorium -> 30-45 or below; explicit protection of bondholders in the bank deal -> 70-85.\n- Resolves off the MOEX ISS history CLOSE for TQCB on 2026-11-13 (clean price, % of par); falls back to the prior trading day's close if no trade that day.\n- Event window: single close on 2026-11-13; as of 2026-11-02 the price path from 30 Oct is ~1 of 10 trading days elapsed.\n- Searched but not found: any Polymarket/Kalshi/Manifold/bookmaker market; details of how bondholders are treated in the bank plan; Samolet statements dated November.",
+   "reference_class": "Short-horizon (2-week) price changes of distressed Russian high-yield developer bonds trading at 55-70% of par during bank-led restructuring talks; anchored on this bond's own realized path since September 2026"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.087,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1901,
+   "seconds": 19.1,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 18983,
+    "cache_write_1h": 18983,
+    "output": 1791,
+    "thinking": 259,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1900538,
+    "web_fetch": 0,
+    "duration_api_ms": 18542
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 45.0,
+     "25": 53.0,
+     "50": 59.5,
+     "75": 65.0,
+     "90": 71.0
+    },
+    "p_below_lower": 0.04
+   },
+   "reasoning": "Status quo: BO-P16 last traded 60.21 on 2 Nov after closing 60.05 on 30 Oct. October closes ranged 55.6-68.1, and news days moved the price by 5-10 points. Treat the next 9 trading days as close to a random walk. Lean slightly downward, because distressed paper with unresolved bondholder treatment tends to drift lower, and VTB's sanation remarks put extensions or haircuts on the table. Offsetting that, all October payments were on time, the 13 Nov coupon is small (~RUB 63m), Sber expects the bank deal by year-end, and the new sanation law is unlikely to apply before 2027. A paid coupon, or a deal that leaves bonds untouched, could push the price to ~70+. A missed BO-P06 coupon (5 Nov) or BO-P16 coupon, or a bondholder haircut, would push it into the 30s-40s, and I price a 4% escape below 30. Market check: none of the runs found a market on Polymarket, Manifold, Kalshi or bookmakers, and the harness search found none either.",
+   "sources": [],
+   "reconciliation": "All three runs agree on the facts: the 2 Nov last trade of 60.21, the October path, the payment record, VTB's sanation comments, and that resolution is the clean-price CLOSE. They differ on how realized vol is expressed: Run 2 gives ~5-6% per day, Run 3 gives 2.5-3 pts per day. At a price of ~60 these are close and both imply ~8-9 pts SD over the horizon, so this is not a real dispute. Run 2 says the sanation law takes effect in 2027 at the earliest, and Run 1 describes how the mechanism works; these do not conflict, and I accept the 2027 timing, which lowers the chance of a binding bondholder action before 13 Nov. What is left is judgment about the size of the tails and the drift. I take a median a little below the current price and a 4% low escape, between Run 1/2's 3% and Run 3's 5%, because the BO-P06 and BO-P16 coupons are two separate payment tests inside the window. I carry forward the runs' shared reference class and the realized-vol dispersion basis. I had no web access on this run and retrieved nothing new.",
+   "disagreements": [
+    {
+     "claim": "Realized daily volatility: ~5-6% per day vs 2.5-3 pts per day",
+     "kind": "factual",
+     "verdict": "Consistent at a price of ~60; both imply ~8-9 pts SD over 9 trading days."
+    },
+    {
+     "claim": "Whether the sanation law can bind bondholders before 13 Nov",
+     "kind": "factual",
+     "verdict": "Per Run 2 the dossiers put the effective date at 1 Jan 2027 at the earliest, so a binding action in the window is unlikely; an announcement risk remains."
+    },
+    {
+     "claim": "Size of the escape probability below 30 (3% vs 5%)",
+     "kind": "judgment",
+     "verdict": "4%, given two coupon tests in the window and an on-time payment record in October."
+    },
+    {
+     "claim": "Upper tail reach (69 vs 71.5 at p90)",
+     "kind": "judgment",
+     "verdict": "71, since 28-29 Oct showed +7 pt rebounds on positive bank news."
+    }
+   ],
+   "reference_class": "Distressed Russian developer and corporate bonds trading at 55-70% of par during creditor-bank restructuring talks, over a ~2-week horizon"
+  }
+ ]
+}
