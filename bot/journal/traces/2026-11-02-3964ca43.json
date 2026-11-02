@@ -1,0 +1,262 @@
+{
+ "record_id": "2026-11-02-3964ca43",
+ "question": "What will the first reported earnings per share after September 2026 be for the following companies? (AMD)",
+ "question_id": 46179,
+ "url": "https://www.metaculus.com/questions/45995/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-11-02T23:04:50+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.6119,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 1.2266666666666666,
+    "25": 1.36,
+    "50": 1.4666666666666668,
+    "75": 1.5733333333333335,
+    "90": 1.7233333333333334
+   },
+   "p_below_lower": 0.03333333333333333,
+   "p_above_upper": 0.01
+  },
+  "phase1": {
+   "10": 1.2266666666666666,
+   "25": 1.36,
+   "50": 1.4666666666666668,
+   "75": 1.5733333333333335,
+   "90": 1.7233333333333334
+  },
+  "phase2": null,
+  "spread_phase1": 0.03,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 1.22,
+   "25": 1.36,
+   "50": 1.47,
+   "75": 1.58,
+   "90": 1.72
+  },
+  "p_below_lower": 0.03
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4092,
+   "seconds": 74.3,
+   "usage": {
+    "num_turns": 9,
+    "input": 14,
+    "cache_read": 200728,
+    "cache_write": 15185,
+    "cache_write_1h": 15185,
+    "output": 5406,
+    "thinking": 1554,
+    "web_search": 4,
+    "cost_usd_envelope": 0.4091656,
+    "web_fetch": 0,
+    "duration_api_ms": 74418
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1.17,
+     "25": 1.33,
+     "50": 1.45,
+     "75": 1.57,
+     "90": 1.73
+    },
+    "p_below_lower": 0.03
+   },
+   "reasoning": "Q2'26 GAAP EPS $1.38 included a $0.29 investment gain; underlying non-GAAP-to-GAAP gap ~$0.55-0.57 (SBC $0.30 + amortization $0.33 - tax $0.10). Q3 consensus non-GAAP ~$1.95 on $13.1B revenue guide; AMD beat by 3-15% in last 3 quarters, implying ~$2.00 non-GAAP -> ~$1.43-1.45 GAAP; one aggregator cites GAAP consensus $1.42. Main swing factors: investment gains/losses (Q1 +$66M, Q2 +$483M), OpenAI warrant contra-revenue as MI450 shipments begin H2'26, GAAP tax volatility. Polymarket 'AMD beat' (non-GAAP >$1.97, 76% Yes, ~$1.7k volume) is a different metric - evidence only, consistent with ~$2.00 non-GAAP. Small lower-escape mass for a large charge/impairment.",
+   "sources": [
+    "https://ir.amd.com/news-events/press-releases/detail/1295/amd-reports-second-quarter-2026-financial-results",
+    "https://www.stocktitan.net/sec-filings/AMD/8-k-advanced-micro-devices-inc-reports-material-event-ee8f3b6966f6.html",
+    "https://www.theta.md/earnings/amd/q3-2026",
+    "https://www.marketbeat.com/earnings/reports/2026-11-3-advanced-micro-devices-inc-stock/",
+    "https://www.streetinsider.com/Corporate+News/AMD+issues+warrant+to+OpenAI+for+up+to+160+million+shares+tied+to+GPU+purchases/25421652.html",
+    "https://polymarket.com/market/amd-quarterly-earnings-nongaap-eps-11-03-2026-1pt97"
+   ],
+   "dossier": "- AMD Q2'26 (released Aug 4 2026, ir.amd.com): revenue $11.536B; GAAP diluted EPS $1.38, non-GAAP $1.66; diluted shares 1,659M. Q1'26: GAAP $0.84, non-GAAP $1.37. Q2'25: GAAP $0.54, non-GAAP $0.48.\n- Q2'26 reconciliation (8-K): SBC $503M ($0.30/sh), amortization of acquisition intangibles $544M ($0.33), gains on long-term investments -$483M (-$0.29), acquisition costs $41M, legal $17M, tax adj -$161M (-$0.10). Q1'26: SBC $487M, amortization $551M, investment gains -$66M, tax adj -$100M, acq costs $27M. Non-GAAP tax rate 13% for 2026.\n- Holdings that generated the investment gains are not disclosed; they swing quarter to quarter in both directions.\n- Q3'26 guidance: revenue ~$13.0B +/- $0.3B, non-GAAP gross margin ~56%.\n- Consensus Q3'26 non-GAAP EPS $1.94-1.95, revenue ~$13.08-13.09B (theta.md, MarketBeat, Oct 30 2026); one search snippet cites a GAAP consensus of $1.42 (unverified source). Zacks figure of $1.68 also seen (likely stale).\n- Beat history vs non-GAAP consensus: Q2'26 +3.2%, Q1'26 +5.8%, Q4'25 +15.5%.\n- OpenAI warrant (Oct 2025): up to 160M shares at $0.01, vesting on MI450 purchases (first tranche at 1 GW, deployment from H2'26); AMD books warrant value as contra-revenue when the revenue is recognized. Whether non-GAAP excludes it: not found. Meta warrants also reported. Oracle MI450 deployment from Q3'26.\n- AMD stock fell ~11% heading into earnings (TradingKey preview); relevant if AMD holds marked-to-market equity stakes in AI names.\n- Resolves off the GAAP diluted EPS in the Q3'26 earnings release (8-K, expected Nov 3 2026 after close), not non-GAAP.\n- Event window: Q3 FY2026 release after Sep 30 2026; as of Nov 2 2026 the release is ~1 day away and not yet published.\n- Searched, not found: a reliable multi-analyst GAAP EPS consensus; Q3 investment gain/loss details; OpenAI contra-revenue size for Q3.",
+   "reference_class": "AMD recent quarters: GAAP diluted EPS = non-GAAP EPS minus ~0.53-0.60 recurring gap, plus volatile investment gains/losses"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.4322,
+   "seconds": 124.1,
+   "usage": {
+    "num_turns": 13,
+    "input": 18,
+    "cache_read": 278276,
+    "cache_write": 22042,
+    "cache_write_1h": 22042,
+    "output": 8011,
+    "thinking": 3477,
+    "web_search": 7,
+    "cost_usd_envelope": 0.6377502000000002,
+    "web_fetch": 0,
+    "duration_api_ms": 131880
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1.22,
+     "25": 1.36,
+     "50": 1.47,
+     "75": 1.57,
+     "90": 1.72
+    },
+    "p_below_lower": 0.06
+   },
+   "reasoning": "Consensus non-GAAP EPS for Q3 is about $1.94-1.97 on $13.0B revenue guidance, and AMD typically beats by $0.03-0.05. Excluding investment gains, the recurring GAAP gap (SBC ~$0.31 + intangibles amortization ~$0.32 + misc, minus tax adjustment ~$0.08-0.10) is about $0.55-0.60, giving core GAAP of about $1.45 (one source cites a GAAP consensus of $1.42). The main swing factor is gains or losses on long-term investments: equity stakes that went public in Q2 added $0.29 that quarter and are now marked to market. Lower-tail escape: the OpenAI/Meta warrants are liability-classified, and no tranche had vested as of June 27. If MI450 shipments in Q3 trigger contra-revenue or fair-value recognition at a share price of about $560, GAAP could collapse; I price this at about 6%. Polymarket's 'beat $1.97 non-GAAP' contract trades at 0.76 on about $1.7k volume. It is a near-miss contract (non-GAAP, not GAAP), so I use it only as evidence that non-GAAP lands near $2.00.",
+   "sources": [
+    "https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000121/q22026991.htm",
+    "https://ir.amd.com/financial-information/sec-filings/content/0000002488-26-000123/amd-20260627.htm",
+    "https://tradethepool.com/pre-market-prep/amd-stock-price-before-q3-earnings-openai-meta-and-taiwan/",
+    "https://www.fool.com/investing/2026/10/05/amd-has-promised-openai-and-meta-up-to-320-million-shares-for-a-penny-each-here-s-what-that-does-to-the-share-count/",
+    "https://finance.yahoo.com/markets/stocks/articles/expect-advanced-micro-devices-q3-222710236.html",
+    "https://www.marketbeat.com/earnings/reports/2026-11-3-advanced-micro-devices-inc-stock/",
+    "https://polymarket.com/market/amd-quarterly-earnings-nongaap-eps-11-03-2026-1pt97"
+   ],
+   "dossier": "- Resolves off AMD's Q3 FY2026 earnings release (8-K Ex-99.1), GAAP diluted EPS, not non-GAAP. Release scheduled Nov 3, 2026, after the close (multiple previews). Event window: first quarterly release after Sep 30, 2026 -> expected Nov 3, 2026; as of Nov 2, 2026 23:00 UTC the result is not yet reported.\n- Q2'26 (8-K, Aug 4, 2026): revenue $11.5B, GAAP EPS $1.38, non-GAAP EPS $1.66, diluted shares 1,659M. Reconciling items per share: SBC 0.30, intangibles amortization 0.33, gains on LT investments -0.29, tax adjustments -0.10.\n- Q1'26: GAAP EPS 0.84 vs non-GAAP 1.37 (SBC 0.30, amortization 0.33, investment gain -0.04, tax -0.07). Q3'25: GAAP 0.75 vs non-GAAP 1.20. Q2'25: GAAP 0.54 vs non-GAAP 0.48 (one-off tax reserve release -0.52, MI308 inventory charge).\n- Q3'26 guidance: revenue ~$13.0B +/- $0.3B, non-GAAP gross margin ~56%, non-GAAP opex ~$3.65B, non-GAAP tax rate 13%.\n- Consensus non-GAAP EPS ~$1.94-1.97 (Bloomberg $1.97; others $1.94-1.95); revenue ~$13.09B. One Yahoo preview cites a GAAP diluted EPS consensus of ~$1.67, another source ~$1.42 (conflicting).\n- 10-Q (Q2'26): $549M of H1 gains on LT investments came from previously private equity stakes that IPO'd in Q2; $425M of unrealized gains remain, and these are marked to market each quarter (swing factor in either direction).\n- 10-Q: OpenAI (Oct 2025) and Meta (Feb 2026) warrants, each for 160M shares at $0.01, are classified as liabilities, with fair-value changes through other income; vesting is tied to GPU purchase milestones (first tranche at the initial 1GW of MI450) and stock-price targets. No tranches vested as of Jun 27, 2026, so no financial statement impact to date. Shipments for the first GW are scheduled to begin in 2H 2026. Under ASC 606, customer warrants are generally recorded as contra-revenue. Whether the Q3 GAAP figure will include a warrant charge could not be found.\n- AMD stock ~$560 on Oct 27, 2026; record $649 on Oct 6 (tradethepool), far above the warrant grant-era price.\n- AMD's recurring non-GAAP-minus-GAAP gap excluding investment gains has been roughly $0.53-0.61 per share.\n- Status-quo outcome: GAAP = non-GAAP minus SBC and amortization, plus/minus investment marks and tax.\n- Searched without finding: any company statement on the size of Q3 warrant accounting; the identity of the IPO'd equity holdings; a human market on GAAP EPS (only a Polymarket non-GAAP beat contract exists).",
+   "reference_class": "AMD recent quarterly GAAP diluted EPS vs non-GAAP (Q3'25 0.75/1.20, Q1'26 0.84/1.37, Q2'26 1.38/1.66): GAAP = non-GAAP minus ~0.55 recurring adjustments, plus investment gains"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7945,
+   "seconds": 78.8,
+   "usage": {
+    "num_turns": 9,
+    "input": 12,
+    "cache_read": 166434,
+    "cache_write": 15001,
+    "cache_write_1h": 15001,
+    "output": 4831,
+    "thinking": 1666,
+    "web_search": 4,
+    "cost_usd_envelope": 0.38531879999999996,
+    "web_fetch": 0,
+    "duration_api_ms": 87832
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1.29,
+     "25": 1.39,
+     "50": 1.48,
+     "75": 1.58,
+     "90": 1.72
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Non-GAAP consensus ~$1.93-1.95; AMD beat by ~$0.05 in Q2 and the Polymarket beat contract (non-GAAP, threshold ~$1.97 per URL) trades 0.76 Yes, implying non-GAAP ~$1.98-2.03. Recurring GAAP adjustments (SBC ~$0.5B, acquisition amortization ~$0.54B, after tax) cost ~$0.53-0.58/share at ~1.66B diluted shares, giving GAAP ~$1.45 before investment items. Q2 GAAP ($1.38) included a $483M gain on long-term investments (~$0.29/sh). Such mark-to-market items can swing either way, so the spread is wide with a slight upward skew. Published GAAP consensus is $1.42. Human markets: only non-GAAP beat and earnings-call word markets on Polymarket; no GAAP EPS market.",
+   "sources": [
+    "https://www.stocktitan.net/news/AMD/amd-reports-second-quarter-2026-financial-s9qsl4zgkkw3.html",
+    "https://www.hudson-labs.com/research/amd-q3-2026-earnings-preview-revenue-guidance-key-drivers",
+    "https://247wallst.com/investing/2026/10/29/amd-regaining-its-1-trillion-valuation-faces-the-ultimate-test-on-nov-3/",
+    "https://ir.amd.com/news-events/press-releases/detail/1295/amd-reports-second-quarter-2026-financial-results",
+    "https://www.marketbeat.com/earnings/reports/2026-11-3-advanced-micro-devices-inc-stock/",
+    "https://polymarket.com/market/amd-quarterly-earnings-nongaap-eps-11-03-2026-1pt97"
+   ],
+   "dossier": "- Resolves off AMD's GAAP diluted EPS in its Q3 2026 earnings release (8-K), scheduled Nov 3 2026 after market close; NOT the non-GAAP EPS that headlines and consensus use.\n- Event window: first quarterly release after Sep 30 2026 -> expected Nov 3 2026; as of Nov 2 2026 the release is not out yet (0% resolved).\n- Q2 2026 (released Aug 4 2026, stocktitan/AMD IR): revenue $11.5B; GAAP EPS $1.38, non-GAAP $1.66; GAAP net income $2,297M vs non-GAAP $2,760M; other income, net $598M, including $483M net gains on long-term investments; diluted shares 1,659M; stock comp $503M; acquisition amortization $544M (total), of which $260M sits in the GAAP opex line.\n- Q1 2026: GAAP EPS $0.84, non-GAAP $1.37 (gap $0.53); other income, net $165M; GAAP net income $1,383M vs non-GAAP $2,265M.\n- Q3 2026 guidance (Aug 4): revenue ~$13.0B +/- $0.3B, non-GAAP gross margin ~56%.\n- Non-GAAP consensus for Q3 2026: ~$1.93 (247wallst, Oct 29) to $1.95 (MarketBeat) on revenue of ~$13.09B. Q2 non-GAAP beat consensus by $0.05 ($1.66 vs $1.61).\n- GAAP consensus quoted at $1.42 (Hudson Labs, MarketBeat); Q3 2025 GAAP EPS cited as $0.68.\n- Typical GAAP vs non-GAAP gap without investment items: ~$0.53-0.58/share (SBC + amortization, after tax). Investment gains/losses are excluded from non-GAAP and can swing GAAP by +/- $0.3/share (Q2 2026: +$0.29).\n- Searched for, not found: AMD disclosure of Q3 investment marks, restructuring or impairment charges, and any GAAP EPS prediction market (only non-GAAP beat and earnings-call word markets exist on Polymarket).",
+   "reference_class": "AMD recent quarterly GAAP diluted EPS vs non-GAAP EPS less recurring adjustments (Q3 2025-Q2 2026)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1406,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1395,
+   "seconds": 27.6,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20108,
+    "cache_write": 10052,
+    "cache_write_1h": 10052,
+    "output": 2753,
+    "thinking": 496,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1395056,
+    "web_fetch": 0,
+    "duration_api_ms": 26931
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1.22,
+     "25": 1.36,
+     "50": 1.47,
+     "75": 1.58,
+     "90": 1.72
+    },
+    "p_below_lower": 0.03
+   },
+   "reasoning": "Non-GAAP consensus ~$1.94-1.97 and AMD's beat history imply ~$2.00 non-GAAP. Recurring GAAP adjustments (SBC ~$0.30 + intangibles amortization ~$0.33, minus tax ~$0.08-0.10) give ~$1.45 core GAAP, consistent with the cited GAAP consensus of $1.42. Investment marks on IPO'd stakes are the main swing; Q3 equity markets and AMD's own stock were strong, so I tilt slightly up. The lower escape (3%) covers a GAAP-only warrant charge or impairment as MI450 shipments begin. No GAAP EPS market exists; Polymarket's non-GAAP beat contract (0.76) is near-miss evidence only.",
+   "sources": [],
+   "reconciliation": "All three runs agreed on the core arithmetic (non-GAAP ~$2.00 less a ~$0.53-0.60 gap gives ~$1.45 GAAP, with a $1.42 GAAP consensus) and on medians of 1.45-1.48. Factual dispute 1: whether OpenAI/Meta warrant accounting hits Q3 GAAP. The dossiers say no tranche had vested as of Jun 27 and shipments start in H2'26; whether Q3 carries a charge, and whether non-GAAP excludes it, could not be settled without web access, so I priced it as a 3% lower escape plus a left tail. Factual dispute 2: GAAP consensus of $1.42 vs $1.67; $1.42 fits the gap arithmetic, while $1.67 looks like a non-GAAP figure mislabeled. Judgment: direction of investment marks. Strong Q3 markets (AMD at a record in early October) tilt it modestly positive, which puts my median slightly above the core $1.45. Carried forward Run 1's dispersion (0.5) as the honest width given the unknown investment and warrant items.",
+   "disagreements": [
+    {
+     "claim": "Size of the lower-escape probability tied to warrant contra-revenue or fair-value charges in Q3",
+     "kind": "factual",
+     "verdict": "Unsettled; no disclosure in the dossiers. Priced at 3%, between the runs' estimates on evidence that no tranche had vested by June and that the timing of MI450 shipments within H2 is uncertain."
+    },
+    {
+     "claim": "Whether the GAAP consensus is $1.42 or $1.67",
+     "kind": "factual",
+     "verdict": "$1.42 fits the recurring-gap arithmetic; $1.67 is likely a non-GAAP or stale figure. Leaned on $1.42."
+    },
+    {
+     "claim": "Direction of Q3 investment marks on long-term equity stakes",
+     "kind": "judgment",
+     "verdict": "Slight upward tilt given strong late-Q3 equity markets; kept a wide band."
+    },
+    {
+     "claim": "Whether to price an upper escape above $2.995",
+     "kind": "judgment",
+     "verdict": "No credible mechanism; omitted."
+    }
+   ],
+   "reference_class": "AMD quarterly GAAP diluted EPS = non-GAAP EPS minus the recurring SBC/amortization gap (Q1'26-Q2'26 and Q3'25), adjusted for investment marks"
+  }
+ ]
+}
