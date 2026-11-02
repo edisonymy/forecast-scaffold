@@ -1,0 +1,251 @@
+{
+ "record_id": "2026-11-02-cdc2191a",
+ "question": "What percentage of respiratory specimens tested for influenza in U.S. clinical laboratories will be positive in CDC's FluView report for Week 44 (week ending November 7, 2026)?",
+ "question_id": 46631,
+ "url": "https://www.metaculus.com/questions/46398/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-11-02T12:42:30+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.506,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 8.766666666666667,
+    "25": 9.9,
+    "50": 11.200000000000001,
+    "75": 12.6,
+    "90": 14.200000000000001
+   }
+  },
+  "phase1": {
+   "10": 8.766666666666667,
+   "25": 9.9,
+   "50": 11.200000000000001,
+   "75": 12.6,
+   "90": 14.200000000000001
+  },
+  "phase2": null,
+  "spread_phase1": 0.7,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 8.6,
+   "25": 9.7,
+   "50": 11.0,
+   "75": 12.4,
+   "90": 14.0
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.8147,
+   "seconds": 72.7,
+   "usage": {
+    "num_turns": 12,
+    "input": 14,
+    "cache_read": 190542,
+    "cache_write": 22848,
+    "cache_write_1h": 22848,
+    "output": 4409,
+    "thinking": 890,
+    "web_search": 4,
+    "cost_usd_envelope": 0.4224784000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 78403
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 8.8,
+     "25": 10.1,
+     "50": 11.6,
+     "75": 13.2,
+     "90": 15.0
+    }
+   },
+   "reasoning": "Week 42 printed 7.6% (up from 5.7, 5.0, 3.9); weekly growth ratios ~1.14-1.33, avg ~1.25. Two weeks of compounding at that rate gives ~11.9%. Reference class: 2022-23 early H3N2 wave went 5.47 (wk42) -> 12.75 (wk44), ~1.5x/week. Upward: H1N1 G155E antigenic drift, West Coast positivity ~19%, hospital admissions +27% w/w, 8/10 regions rising. Downward: some regions flat, wk40->41 slowdown, specimen-mix noise, initial-edition values can run below revised. No human prediction market found (Polymarket/Kalshi/Manifold searched). Median ~11.6.",
+   "sources": [
+    "https://www.cdc.gov/fluview/surveillance/2026-week-42.html",
+    "https://www.cdc.gov/flu/weekly/weeklyarchives2022-2023/data/whoAllregt_cl44.html",
+    "https://www.cdc.gov/respiratory-viruses/data/index.html",
+    "WebSearch: flu positivity November 2026 H1N1 surge (Dr. Ruth Report 11/1/26 snippet: SF flu A positivity 19.2%)",
+    "WebSearch: Becker's/medicaldaily FluView week 42 notes (admissions 6,100, +27% w/w)",
+    "WebSearch: Kalshi/Polymarket flu percent positive (none found)"
+   ],
+   "dossier": "- CDC FluView Wk42 2026 (week ending Oct 24; fetched Nov 2): clinical lab 7.6% positive (4,061/53,102); cumulative since Oct 4 6.0%; flu A 98.2% of positives; 98.9% of subtyped A = H1N1pdm09.\n- 2026 series of clinical lab % positive: Wk37 2.7, Wk39 3.9, Wk40 5.0, Wk41 5.7, Wk42 7.6. Weekly ratios: 1.28 (39->40), 1.14 (40->41), 1.33 (41->42).\n- Wk42 regional: % positive increased in HHS regions 2,3,4,5,6,7,8,9; stable in regions 1 and 10.\n- Wk42 ILI 2.4%, up but below 2.9% baseline; NHSN admissions 6,100 (+27% from 4,811); FluSurv-NET 1.3/100k weekly; Wk41 hosp rate highest for that week since 2010-11.\n- Press (Nov 1 2026 Substack snippet): San Francisco flu A test positivity 19.2%; West Coast early surge tied to H1N1 with HA G155E mutation (possible partial immune escape).\n- 2022-23 reference (CDC archive, revised figures, clinical labs): Wk40 2.76, Wk41 3.57, Wk42 5.47, Wk43 8.52, Wk44 12.75 (Wk42->Wk44 ratio 2.33, ~1.53/week).\n- Other recent seasons were in mid-single digits by early-mid November (per question background).\n- Status quo/naive persistence: Wk44 = 7.6 (latest printed); simple continuation of avg recent growth (~1.25/wk) gives ~11.9.\n- Week 43 edition (week ending Oct 31) not yet published as of Nov 2; due Nov 6.\n- Resolves off the Week 44 FluView edition's clinical-lab table 'No. of positive specimens (%)' for Week 44 as first printed (published ~Nov 13), not later revisions.\n- Event window: MMWR week 44 = Nov 1-7, 2026; as of Nov 2 12:40 UTC ~25% elapsed; publication Nov 13.\n- No Kalshi/Polymarket/Manifold market found on this metric.\n- Searched but not found: Week 43 FluView numbers, national wastewater flu A level for late Oct, ED flu visit percentages.",
+   "reference_class": "Early-season fast-rising US influenza waves (2022-23, current 2026-27 weeks 39-42): 2-week multiplicative change in NREVSS clinical lab % positive during exponential growth phase"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3922,
+   "seconds": 68.7,
+   "usage": {
+    "num_turns": 10,
+    "input": 12,
+    "cache_read": 154967,
+    "cache_write": 22097,
+    "cache_write_1h": 22097,
+    "output": 3757,
+    "thinking": 772,
+    "web_search": 4,
+    "cost_usd_envelope": 0.3921874000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 73137
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 8.6,
+     "25": 9.7,
+     "50": 10.9,
+     "75": 12.2,
+     "90": 13.6
+    }
+   },
+   "reasoning": "Week 42 national clinical-lab positivity was 7.6% (53,102 specimens), up from 5.7%, 5.0%, 3.9%; weekly growth ratios 1.14-1.33. NHSN admissions +27% wk/wk confirm ~1.25x growth. Two-week projection at 1.15-1.33x gives 10.0-13.4%; median ~10.9. Downside: national wastewater still low/very low mid-Oct (West-driven wave), noisy indicator, plateaus common; 2009 H1N1 peaked ~wk42-43. Upside: 2022-23-like early wave hit double digits by mid-Nov, mutated H1N1 dominant. No human market found (Kalshi/Polymarket/Manifold).",
+   "sources": [
+    "https://www.cdc.gov/fluview/surveillance/2026-week-42.html",
+    "https://www.mlo-online.com/disease/flu/news/55414040/flu-activity-rises-as-2026-27-season-gets-underway",
+    "https://www.natureworldnews.com/articles/73676/20261029/early-h1n1-wave-pushes-mid-october-flu-hospitalization-rate-its-highest-since-2010-11.htm",
+    "https://medicaldaily.com/flu-hospital-admissions-rise-first-child-death-cdc-480661",
+    "https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Viral-Activity-Level-for-SARS-CoV-2/atcp-73re"
+   ],
+   "dossier": "- CDC FluView Wk42 (ending Oct 24, 2026; cdc.gov): clinical labs 4,061/53,102 positive = 7.6%; cumulative wk40-42 6.0% of 171,495. Flu A 98.2%; of subtyped A, 98.9% H1N1pdm09.\n- Series: wk37 2.7%, wk39 3.9%, wk40 5.0%, wk41 5.7%, wk42 7.6% (weekly abs changes +1.1, +0.7, +1.9; ratios 1.28, 1.14, 1.33).\n- Wk42 positivity rose in HHS regions 2,3,4,5,6,7,8,9; stable in 1 and 10. Highest admission rate Region 9 (CA/AZ/NV/HI) 2.5/100k.\n- ILI wk42 2.4%; only Region 10 above baseline.\n- NHSN admissions wk42 6,100, up 27% from 4,811 (Becker's/MedicalDaily, late Oct 2026). Wk41 hospitalization rate highest for that week since 2010-11.\n- CDC wastewater (week ending Oct 17): flu A Very Low in Northeast, Midwest, South; Low in West. Local high levels in Bay Area and Inland Empire, late Oct.\n- H1N1 subclade D.3.1.1 with new G155E mutation; prelim lab data suggest vaccine still matches.\n- Historical: 2022-23 early wave reached double digits by mid-Nov; in several other seasons still mid-single digits then. 2009 pandemic H1N1 peaked nationally ~wk42-43.\n- Status quo: continued rise. Simple continuation at observed ratios over 2 weeks: about 10-13.4%.\n- Resolves off the % in the 'No. of positive specimens (%)' row of the Wk44 edition (published ~Nov 13), not later revisions.\n- Event window: MMWR wk44, Nov 1-7, 2026; as of Nov 2 ~15% of the week elapsed. Wk43 edition (due Nov 6) not yet published at time of research.\n- Searched, absent: Wk43 data; Kalshi/Polymarket/Manifold markets (none found).",
+   "reference_class": "Early-onset US flu seasons (2009 pandemic, 2022-23, 2003-04): change in NREVSS clinical-lab % positive over 2 weeks starting from ~7-8% in late October"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.2705,
+   "seconds": 90.1,
+   "usage": {
+    "num_turns": 12,
+    "input": 14,
+    "cache_read": 187663,
+    "cache_write": 23380,
+    "cache_write_1h": 23380,
+    "output": 4517,
+    "thinking": 852,
+    "web_search": 4,
+    "cost_usd_envelope": 0.4558786,
+    "web_fetch": 0,
+    "duration_api_ms": 104898
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 8.9,
+     "25": 9.9,
+     "50": 11.1,
+     "75": 12.4,
+     "90": 14.0
+    }
+   },
+   "reasoning": "Week 42 = 7.6% (up from 5.7%); steady rise since late Aug driven by G155E-mutated H1N1 (98.9% of subtyped A). Weekly multiplicative growth 1.1-1.33x over W39-W42; two more weeks to W44 gives ~9-12.8%, with linear +1.9pt/wk giving ~11.4%. Hospital admissions +27% wk/wk, positivity rising in 8 of 10 HHS regions, wastewater high — supports continued growth. Downside: West Coast early-leader regions (R10 stable) may plateau, slowing national growth; noise in specimen mix. Upside: 2022-23-style acceleration (~+3pt/wk) gives 13-14%. No prediction market found (Polymarket/Manifold/Kalshi searched).",
+   "sources": [
+    "https://www.cdc.gov/fluview/surveillance/2026-week-42.html",
+    "https://today.com/health/cold-flu/early-flu-season-2026-mutated-virus-spreading-rcna605013",
+    "https://www.peoplespharmacy.com/articles/flying-blind-into-influenza-season-global-trends-vs-cdcs-lag",
+    "https://beckershospitalreview.com/quality/public-health/flu-admissions-climb-27-in-1-week-7-fluview-notes",
+    "https://www.scientificamerican.com/article/everything-you-need-to-know-about-flu-season-2026/"
+   ],
+   "dossier": "- CDC FluView Week 42 (wk ending Oct 24, 2026, pub Oct 30): clinical labs 4,061/53,102 positive = 7.6%; flu A 98.2% of positives; A(H1N1)pdm09 98.9% of subtyped A. Positivity increased in HHS regions 2-9; regions 1 and 10 stable.\n- Series (CDC FluView, initial editions): W37 2.7%, W39 3.9%, W40 5.0%, W41 5.7%, W42 7.6%. Week-on-week multiplicative growth ~1.10-1.33x; last step +1.9 pts.\n- Week 42 ILI 2.4% (baseline 2.9%), rising; ILI increased in regions 1,2,4,6,9,10; region 10 above baseline. 1 jurisdiction High, 2 Moderate.\n- NHSN Week 42: ~6,100 flu admissions (1.8/100k), up 27% from 4,811 in W41 (Becker's, Oct 30-31 2026). FluSurv-NET W42 weekly rate 1.3/100k, highest for Week 42 since 2010-11.\n- Early October: regional positivity ranged 1.7% (Region 2) to 9.5% (Region 9); West Coast led the wave (Sci Am / CDC W39-40). Prior-year same week <1%.\n- Strain: H1N1 with HA G155E mutation, first seen in Seattle in Sept; possible partial immune escape/vaccine mismatch (Today.com, CNN, Northeastern, Oct 22 2026).\n- WastewaterSCAN Oct 23, 2026: influenza A 'High' nationally (People's Pharmacy).\n- Analog (from memory, not verified this run): 2022-23 early season rose roughly +3 pts/week through late Oct-Nov, reaching double digits by mid-Nov; other recent seasons were mid-single digits in early Nov.\n- Status quo: continued rise; week-to-week fall changes typically flat to +2 pts; local plateaus/dips occur; early-leading regions (West, R10) may level off first.\n- Resolution instrument: resolves off the initial Week 44 FluView edition's clinical-lab 'No. of positive specimens (%)' cell (national), not later revisions or public-health-lab data.\n- Event window: MMWR Week 44 = Nov 1-7, 2026; as of Nov 2, 2026 ~15% of the week elapsed; Week 43 edition (wk ending Oct 31) due Nov 6, Week 44 edition due Nov 13.\n- Searched but not found: Week 43 data (not yet published as of Nov 2); any prediction market (Polymarket, Manifold, Kalshi) on this metric — none found; region-level W42 percentages.",
+   "reference_class": "Early-November week-over-week trajectory of NREVSS clinical-lab flu percent positive in early-onset seasons (2022-23, 2009) and the current 2026-27 growth series W37-W42"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.2593,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1851,
+   "seconds": 24.3,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 17722,
+    "cache_write_1h": 17722,
+    "output": 2049,
+    "thinking": 381,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1851258,
+    "web_fetch": 0,
+    "duration_api_ms": 23501
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 8.6,
+     "25": 9.7,
+     "50": 11.0,
+     "75": 12.4,
+     "90": 14.0
+    }
+   },
+   "reasoning": "Week 42 printed 7.6% (up from 5.7, 5.0, 3.9), H1N1-driven with the G155E mutation. Hospital admissions were up 27% week on week and positivity rose in 8 of 10 HHS regions. Weekly growth ratios of 1.14-1.33 project 10-13.4% two weeks out. 2022-23 analog: 5.5% to 12.75% from Week 42 to 44. Shaded slightly below pure compounding because the early-leading regions were flat, and early H1N1 waves (2009) peaked around Weeks 42-43. No human prediction market found.",
+   "sources": [],
+   "reconciliation": "The wastewater dispute (CDC Very Low/Low for the week ending Oct 17 vs WastewaterSCAN High nationally on Oct 23) cannot be settled without web access. They are different networks on different dates, so both may hold; given little weight. The 2022-23 analog figures from Run 1 (fetched) are consistent with Run 3's recollection; accepted. All runs agree there is no market and no Week 43 data. The remaining difference is judgment on growth: I take ~1.20x a week, below the recent ~1.25 average, because Regions 1 and 10 were plateauing. Median 11.0, with dispersion similar to Runs 2 and 3 but slightly wider.",
+   "disagreements": [
+    {
+     "claim": "National wastewater flu A level low vs high",
+     "kind": "factual",
+     "verdict": "Unsettled; different networks and dates; low weight"
+    },
+    {
+     "claim": "2022-23 Week 42 to Week 44 trajectory (5.47 to 12.75)",
+     "kind": "factual",
+     "verdict": "Run 1 fetched it and Run 3's recollection agrees; accepted"
+    },
+    {
+     "claim": "Pace of growth over Weeks 43-44 (1.15x vs 1.25x+ per week)",
+     "kind": "judgment",
+     "verdict": "Took ~1.20x/wk given plateauing leader regions; median 11.0"
+    },
+    {
+     "claim": "Upper-tail width (90th percentile at 13.6 vs 15.0)",
+     "kind": "judgment",
+     "verdict": "Set at 14.0; 2022-23-style acceleration is plausible but not the base case"
+    }
+   ],
+   "reference_class": "Early-season US clinical-lab flu percent positive, two-week-ahead change from ~7-8% in late October (2022-23 analog plus the current season's growth ratios)"
+  }
+ ]
+}
