@@ -1,0 +1,256 @@
+{
+ "record_id": "2026-11-02-ae150c24",
+ "question": "How many Washington dairy herds will WSDA have confirmed H5N1-positive as of November 12, 2026?",
+ "question_id": 46634,
+ "url": "https://www.metaculus.com/questions/46401/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-11-02T14:04:48+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.7146,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 36.333333333333336,
+    "25": 39.333333333333336,
+    "50": 44.0,
+    "75": 50.666666666666664,
+    "90": 59.666666666666664
+   },
+   "p_above_upper": 0.015
+  },
+  "phase1": {
+   "10": 36.333333333333336,
+   "25": 39.333333333333336,
+   "50": 44.0,
+   "75": 50.666666666666664,
+   "90": 59.666666666666664
+  },
+  "phase2": null,
+  "spread_phase1": 3.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 36.0,
+   "25": 39.0,
+   "50": 44.0,
+   "75": 51.0,
+   "90": 60.0
+  },
+  "p_above_upper": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.5627,
+   "seconds": 125.1,
+   "usage": {
+    "num_turns": 18,
+    "input": 22,
+    "cache_read": 345057,
+    "cache_write": 21344,
+    "cache_write_1h": 21344,
+    "output": 5285,
+    "thinking": 782,
+    "web_search": 7,
+    "cost_usd_envelope": 0.6420664,
+    "web_fetch": 0,
+    "duration_api_ms": 170905
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 37.0,
+     "25": 40.0,
+     "50": 45.0,
+     "75": 52.0,
+     "90": 63.0
+    },
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Table stood at 34 dairy herds as of Oct 29 (33 Yakima, 1 Benton); news through Nov 1-2 still cites 33 Yakima herds, with no newer count found. Recent rows (Oct 27: 3, Oct 29: 4) imply ~1 herd/day; continuing that for 14 days gives ~48. Yakima's dairy denominator (rough guess ~50-90) points to saturation and deceleration, but weekly whole-milkshed testing produces lumpy batches, and spread to Benton/Franklin/Grant is plausible. Reference class: early-phase state outbreaks (CO 2024, CA 2024), which kept climbing steadily for weeks. No prediction market found on Polymarket/Kalshi/Manifold. The floor of 34 is fixed by the resolution rules.",
+   "sources": [
+    "https://www.spokesman.com/stories/2026/oct/29/bird-flu-spreads-to-washington-dairy-farms/",
+    "https://astig.ph/yakima-county-bird-flu-death-washington-dairy-herds-2026/",
+    "https://www.yahoo.com/news/science/articles/1-person-dead-bird-flu-040628967.html",
+    "https://en.edairynews.com/bird-flu-outbreak-surges-across-washington-dairy-herds-as-h5n1-spreads-to-27-farms/",
+    "https://afludiary.blogspot.com/2026/11/washington-hospitalized-avian-flu-case.html",
+    "WebSearch: Kalshi/Polymarket/Manifold bird flu Washington dairy (no market found)"
+   ],
+   "dossier": "- WSDA table (per question text): 34 dairy herds as of Oct 29, 2026: 10/08 2, 10/15 1, 10/16 5, 10/21 1, 10/23 18 (17 Yakima + 1 Benton), 10/27 3, 10/29 4. The WSDA page could not be read directly this run (fetch returned only site navigation).\n- Spokesman/OPB, Oct 29: state vet Itle said 'virus is moving fast ... despite all the efforts within containment'; WSDA tests every farm in the targeted milkshed weekly; spread routes include cattle movement, equipment, and possibly flies, wind, birds.\n- astig.ph / Yahoo (McClatchy), Nov 1: Yakima County resident died of H5N1 after dairy exposure; these articles still cite '33 infected Yakima herds' plus 1 Benton. No newer statewide count was found as of Nov 2.\n- Third human case (Yakima dairy exposure) reported ~Nov 1 (Avian Flu Diary, Outbreak News Today).\n- eDairyNews, ~Oct 30: cites ~400 licensed commercial dairies statewide (the question text says ~300); spread via shared milk hauling, feed routes and service personnel; mandatory bulk tank milk testing was mentioned.\n- Yakima denominator: ~41 DNMP-regulated dairies in a 2023 count, plus others; the true count of susceptible Yakima herds is uncertain (perhaps 50-90). The 33 confirmed could be a large share.\n- Benton herd was found through routine surveillance before clinical signs (Oct 26 WSDA release). No Franklin/Grant dairy detections found as of Nov 2.\n- Comparison outbreaks: Colorado 2024 went from first detection to dozens of herds over ~3-4 months; California 2024 rose by tens of herds per week in autumn.\n- Status quo: the count only rises (confirmed herds keep counting). Floor is 34.\n- Event window: confirmations dated Oct 8 -> Nov 12, 2026, table read Nov 13 PT. As of Nov 2, about 25 of 35 days have elapsed (~71%); 10 days of confirmations remain after Nov 2, and 14 days remain after the last known table date (Oct 29).\n- Resolves off WSDA's 2026 cattle table (Dairy rows summed), not the USDA APHIS dashboard, which lagged the state count.\n- Searched for but not found: any WSDA table rows after Oct 29; news counts dated Oct 30-Nov 2; prediction markets (none on Polymarket/Kalshi/Manifold).",
+   "reference_class": "Early-phase (weeks 3-5) state-level H5N1 dairy outbreaks in the US (Colorado 2024, California 2024, Idaho 2024): growth over the following two weeks"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9206,
+   "seconds": 117.3,
+   "usage": {
+    "num_turns": 14,
+    "input": 18,
+    "cache_read": 272527,
+    "cache_write": 18333,
+    "cache_write_1h": 18333,
+    "output": 4944,
+    "thinking": 1109,
+    "web_search": 5,
+    "cost_usd_envelope": 0.5323894000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 151963
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 35.0,
+     "25": 38.0,
+     "50": 42.0,
+     "75": 48.0,
+     "90": 56.0
+    }
+   },
+   "reasoning": "As of Oct 29 the WSDA table showed 34 herds. News on Nov 1-2 (the first US bird flu death of 2026) still reported 34, which suggests few or no additions Oct 30-Nov 1, though the table could be ahead of the news. WSDA is testing all farms in affected milksheds weekly, so more detections are likely. But Yakima's pool of dairies is finite (roughly 41+ licensed in the nutrient program, possibly 60+ in total) and quarantines are in place. The last confirmed pace was about 7 herds per 6 days after the Oct 23 batch. Upside tail: spread into Benton/Franklin/Grant dairies or another retrospective batch. Downside floor: 34, since the count is cumulative. No human market found on Polymarket, Kalshi, Manifold or bookmakers.",
+   "sources": [
+    "https://www.yahoo.com/news/us/articles/washington-resident-dies-first-u-035340143.html",
+    "https://astig.ph/yakima-county-bird-flu-death-washington-dairy-herds-2026/",
+    "https://lynnwoodtimes.com/2026/10/29/bird-flu/",
+    "https://en.edairynews.com/bird-flu-outbreak-surges-across-washington-dairy-herds-as-h5n1-spreads-to-27-farms/",
+    "https://www.cidrap.umn.edu/avian-influenza-bird-flu/washington-state-confirms-first-h5n1-avian-flu-detection-dairy-cattle"
+   ],
+   "dossier": "- WSDA table timeline by date confirmed (from question background): 10/08 2, 10/15 1, 10/16 5, 10/21 1, 10/23 18 (17 Yakima + 1 Benton), 10/27 3, 10/29 4; total 34 as of 10/29 (33 Yakima, 1 Benton).\n- Yahoo/news, Nov 2 2026: Washington resident died (first US H5N1 death of 2026); article still cites 34 herds (33 Yakima, 1 Benton). A third human case was reported the same day.\n- astig.ph, Nov 1 2026: 33 Yakima herds plus Benton; 3 human cases, 1 death.\n- Lynnwood Times, Oct 29 2026: WSDA is doing weekly testing of all farms in affected milkshed areas. State vet Itle: 'virus is moving fast despite containment.' Spread mechanism not fully understood (flies, wind, birds suspected). More than 7,000 prior negative tests.\n- eDairyNews, late Oct: 27 herds was about 7% of roughly 400 licensed WA commercial dairies (other sources say about 300). Yakima had about 41 licensed facilities in the DNMP (2023), and more exist outside that program.\n- CIDRAP: about 96 US dairy herd detections in 2026 to date.\n- Status quo: 34. The count is cumulative, so the floor is 34.\n- 14-day increments within this outbreak: 7 (Oct 8-22) and 32 (Oct 15-29). Post-batch pace Oct 24-29: 7 herds.\n- Analogs: CO July 2024 roughly doubled from ~30 to 60+ within a few weeks under bulk-milk testing; UT Cache Co. Oct-Nov 2024 went 1 to ~13 over weeks; ID added 1-3 per week.\n- Resolves off the WSDA cattle-page table read Nov 13 PT, not the USDA dashboard (which lags).\n- Event window: cumulative through date-confirmed Nov 12, 2026. The count was 34 at Oct 29; as of Nov 2, about 4 of 14 days since then have elapsed.\n- Searched, absent: any count above 34 after Oct 29; direct table contents (the page fetch returned only navigation); total dairy counts for Benton, Franklin and Grant; any prediction market.",
+   "reference_class": "Two-week cumulative herd additions roughly 3-5 weeks after a state's first dairy H5N1 detection (CO, ID, UT, CA in 2024, plus WA's own first weeks)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3882,
+   "seconds": 77.4,
+   "usage": {
+    "num_turns": 10,
+    "input": 12,
+    "cache_read": 167834,
+    "cache_write": 13536,
+    "cache_write_1h": 13536,
+    "output": 4317,
+    "thinking": 882,
+    "web_search": 4,
+    "cost_usd_envelope": 0.3882078,
+    "web_fetch": 0,
+    "duration_api_ms": 86800
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 37.0,
+     "25": 40.0,
+     "50": 45.0,
+     "75": 52.0,
+     "90": 60.0
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Table stood at 34 (33 Yakima, 1 Benton) as of Oct 29; Nov 1 reporting still cites 33 Yakima herds, so no visible additions Oct 30-Nov 1. Remaining window Oct 30-Nov 12 (~10 days). Recent pace ~1.6/day, lumpy batches, last week +7. Yakima denominator (~41 DNMP dairies plus others) suggests depletion/deceleration, while Benton/Franklin/Grant spillover and retrospective batch confirmations push up. Reporting lag before Nov 13 reading trims the tail. No prediction market found (Polymarket/Manifold/Kalshi none).",
+   "sources": [
+    "https://agr.wa.gov/departments/animals-livestock-and-pets/avian-health/avian-influenza/hpai-(h5n1)-in-cattle-producer-resources",
+    "https://astig.ph/yakima-county-bird-flu-death-washington-dairy-herds-2026/",
+    "https://www.qualityassurancemag.com/news/wsda-confirms-hpai-in-benton-county-dairy-herd/",
+    "https://en.edairynews.com/bird-flu-outbreak-surges-across-washington-dairy-herds-as-h5n1-spreads-to-27-farms/",
+    "https://www.nbcrightnow.com/tricities/yakima-county-resident-dies-from-avian-influenza-complications/article_c7592c7d-7b25-46c6-8e0e-560428a3866f.html"
+   ],
+   "dossier": "- WSDA cattle table (per question text): confirmations 10/08 (2), 10/15 (1), 10/16 (5), 10/21 (1), 10/23 (17 Yakima + 1 Benton), 10/27 (3), 10/29 (4) = 34 as of Oct 29 (33 Yakima, 1 Benton).\n- astig.ph / Yakima reporting, Nov 1 2026: Yakima resident died of H5N1 after dairy exposure; county 'now counts 33 infected dairy herds' — no newer herd count found for Oct 30-Nov 1.\n- Yakima Health District (via news, ~Nov 1): third human case in Yakima County, linked to dairy exposure.\n- State vet Amber Itle, Oct 29: 'virus is moving fast ... despite all the efforts ... within containment'.\n- Benton County herd announced Oct 26 (WSDA release), dated Oct 23 in table; no Franklin/Grant detections found in searches.\n- Scale: WA ~300 licensed dairies, ~270k cows; Yakima ~41 DNMP-regulated dairies (2023), more licensed outside program — 33 confirmed may be a large share of Yakima herds.\n- Pace: 10-day increments within this outbreak: Oct 13->23 +25, Oct 19->29 +26; week Oct 23->29 +7 (excluding 10/23 batch). Batches reflect testing surges/retrospective confirmation.\n- USDA federal dashboard lags WSDA table (on Oct 27 not reflecting jump 9->27).\n- Other-state analogues: Colorado 2024 and California 2024 kept adding herds for weeks-months after first detection, with local clusters eventually depleting.\n- Resolution instrument: resolves off WSDA 2026 cattle table (Dairy rows, date confirmed <= Nov 12) as read Nov 13 PT, not USDA dashboard or news counts.\n- Event window: table rows dated through Nov 12, 2026, read Nov 13; as of Nov 2 the additions window Oct 30 -> Nov 12 is ~25% elapsed (3 of ~14 days, apparently with no visible additions).\n- Searched but not found: any WSDA count above 34; Franklin/Grant cases; exact count of all licensed Yakima dairies; any prediction market (none on Polymarket/Manifold/Kalshi).",
+   "reference_class": "Early-phase state H5N1 dairy outbreaks (Colorado 2024, California 2024, Idaho 2024) — cumulative herd additions in 2-week windows ~3-5 weeks after first detection"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.2647,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1128,
+   "seconds": 18.7,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20105,
+    "cache_write": 9612,
+    "cache_write_1h": 9612,
+    "output": 1596,
+    "thinking": 291,
+    "web_search": 0,
+    "cost_usd_envelope": 0.112845,
+    "web_fetch": 0,
+    "duration_api_ms": 18165
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 36.0,
+     "25": 39.0,
+     "50": 44.0,
+     "75": 51.0,
+     "90": 60.0
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "The WSDA table stood at 34 dairy herds (33 Yakima, 1 Benton) as of Oct 29. News on Nov 1-2 still cites 34, which suggests few visible additions so far, though the table may run ahead of the news. Every farm in the milkshed is tested weekly, and the state vet says the virus is 'moving fast'. The post-batch pace is about 1 herd/day, with lumpy batches. The Benton herd shows a lag of about 3 days from confirmation date to announcement, so rows dated close to Nov 12 may be missing from the Nov 13 reading. Yakima's finite pool of herds (33 confirmed out of perhaps 50-90) points to deceleration. Spread to Benton, Franklin or Grant, or another retrospective batch, would fatten the upper tail. A death and a third human case may push testing up further. No prediction market found on Polymarket, Kalshi, Manifold or bookmakers (per runs and the harness). The floor is 34 because the count is cumulative.",
+   "sources": [],
+   "reconciliation": "The runs agree on the facts: 34 at Oct 29, no newer count found in Nov 1-2 news, weekly milkshed testing, an uncertain Yakima denominator. The one factual conflict, ~300 vs ~400 licensed WA dairies, can't be settled here; it matters little for a 2-week window. The disagreements are judgment calls: how much Yakima saturation slows things, and how much the news silence on Oct 30-Nov 1 means. I gave weight to the reporting lag before the Nov 13 reading, which cuts the effective window to about 11 days. That puts my median slightly below Runs 1/3 and above Run 2. I kept a small upper-escape mass for a regime break (multi-county spread).",
+   "disagreements": [
+    {
+     "claim": "Statewide licensed dairy count ~300 vs ~400",
+     "kind": "factual",
+     "verdict": "Unsettled without web access; little effect on the 2-week increment"
+    },
+    {
+     "claim": "Yakima susceptible-herd depletion will sharply slow additions",
+     "kind": "judgment",
+     "verdict": "Partial weight; denominator unknown, but 33 is likely a large share"
+    },
+    {
+     "claim": "No additions visible Oct 30-Nov 1 signals slowdown",
+     "kind": "judgment",
+     "verdict": "Weak evidence; news lags the table, but slightly lowers the median"
+    },
+    {
+     "claim": "Size of upper tail from spread to new counties or batches",
+     "kind": "judgment",
+     "verdict": "p90 ~60 with 1% above 95.5"
+    }
+   ],
+   "reference_class": "Early-phase state dairy H5N1 outbreaks under bulk-milk or weekly testing (CO Jul 2024, CA autumn 2024, UT Cache Co. 2024): additions over the following two weeks after reaching ~30 herds"
+  }
+ ]
+}
