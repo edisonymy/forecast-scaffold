@@ -1,0 +1,249 @@
+{
+ "record_id": "2026-11-04-469d3fee",
+ "question": "What will voter turnout be in Spain's November 29, 2026 general election?",
+ "question_id": 46552,
+ "url": "https://www.metaculus.com/questions/46324/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-04T15:02:43+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.6484,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 62.699999999999996,
+    "25": 64.46666666666667,
+    "50": 66.13333333333333,
+    "75": 67.8,
+    "90": 69.43333333333334
+   }
+  },
+  "phase1": {
+   "10": 62.699999999999996,
+   "25": 64.46666666666667,
+   "50": 66.13333333333333,
+   "75": 67.8,
+   "90": 69.43333333333334
+  },
+  "phase2": null,
+  "spread_phase1": 0.1,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 62.6,
+   "25": 64.4,
+   "50": 66.1,
+   "75": 67.8,
+   "90": 69.6
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.4092,
+   "seconds": 96.7,
+   "usage": {
+    "num_turns": 9,
+    "input": 12,
+    "cache_read": 162157,
+    "cache_write": 23435,
+    "cache_write_1h": 23435,
+    "output": 5175,
+    "thinking": 2027,
+    "web_search": 5,
+    "cost_usd_envelope": 0.4889764,
+    "web_fetch": 0,
+    "duration_api_ms": 112456
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 62.5,
+     "25": 64.4,
+     "50": 66.1,
+     "75": 67.9,
+     "90": 69.7
+    }
+   },
+   "reasoning": "Resolution counts CERA voters in the electorate (2023 official was 66.59%, vs 70.40% for residents only). CERA is now 2.77M (7.2% of 38.73M), with roughly 10% CERA turnout in 2023, so total ≈ 0.928*resident + 0.7pp. Resident turnout reference: 2015-2023 range 69.8-75.8, mean ~71.8; one 29N poll projects 68.4% for residents; a polarized snap November election (no summer penalty) argues somewhat higher. Median resident ~70.5 gives total ~66.1. Polymarket turnout brackets (thin, ~$14k; 70%+ at 38-45c, implied median ~69) probably resolve on the resident-only figure, so they are a near-miss that implies a total of about 64.5-65.5; I treat them as evidence, not an anchor.",
+   "sources": [
+    "https://www.infobae.com/espana/2026/10/27/asi-estan-las-encuestas-para-el-29-de-noviembre-pp-y-vox-mantienen-la-mayoria-absoluta-el-psoe-gana-terreno-y-la-izquierda-fragmentada-no-logra-remontar/",
+    "https://en.wikipedia.org/wiki/2026_Spanish_general_election",
+    "https://www.ine.es/dyngs/Prensa/es/EG2026.htm",
+    "https://www.newtral.es/residentes-extranjero-voto-cera/20230728/",
+    "https://polymarket.com/market/will-voter-turnout-70-or-higher-in-the-2026-spanish-general-election",
+    "https://www.moncloa.com/2026/11/01/voto-correo-comunitat-valenciana-15-000-3459582/"
+   ],
+   "dossier": "- Election: snap general election 29 Nov 2026, called 5 Oct after Junts/PP/Vox defeated housing decrees; Cortes dissolved 6 Oct (BOE) (Wikipedia, Al Jazeera, Euronews, Oct 2026).\n- Census (INE press release EG2026): 38,728,356 total electors; CERA (abroad) 2,769,645 = 7.2%, +444,335 vs 2023 (probably partly new citizens under the Ley de Memoria Democrática 'nietos' route).\n- Resolution instrument: official turnout includes CERA in both numerator and denominator, i.e. the definitive Ministry/JEC figure, NOT the election-night resident-only figure. 2023: resident-only 70.40% vs official incl. CERA 66.59%. Nov 2019: ~69.9 vs 66.23. Apr 2019: ~75.75 vs 71.76.\n- CERA turnout 2023: 233,688 voters = 10.04% of CERA census (Newtral, 28 Jul 2023), first general election after voto rogado was abolished (2022); highest since 2008.\n- Arithmetic: total ≈ 0.928*resident turnout + 0.0715*CERA turnout. At CERA turnout 10%: resident 68 -> 63.8; 70.4 -> 66.0; 72 -> 67.5; 74 -> 69.4; 76 -> 71.3.\n- Poll (Infobae, 27 Oct 2026): one survey projects resident turnout of 68.43% ('below the 71% of 2023'), with 50% abstention among 18-29 year-olds vs 29.7% among those over 64.\n- Poll average Oct 2026: PP 32.0, PSOE 26.4, Vox 18.8, Sumar 6.0, Podemos 2.9; PP+Vox above 176 seats in most polls (Infobae/El Debate).\n- Postal vote: requests open until 19 Nov, deposit deadline 25 Nov; Comunitat Valenciana ~15k requests by 1 Nov, described as 'soaring' (moncloa.com). No national total found.\n- Context: housing protests, polarized campaign. November date avoids the July holiday effect of 2023; the Nov 2019 repeat election had low turnout from fatigue (66.23 incl. CERA).\n- Base rates: over all 16 elections since 1977, official turnout mean ~71.7, range 66.2-80.0. Over 2015-2023 (5 elections): 66.23-71.76, mean 68.1. Resident-only 2015-2023: ~69.8-75.8.\n- Status quo: a repeat of 2023 resident turnout (~70.4) with the larger CERA share gives ~66.0 official.\n- Event window: single election day 29 Nov 2026; the figure used is the latest published by 31 Dec 2026 (the CERA count is added a few days after election night). As of 4 Nov, 0% elapsed (election in 25 days).\n- Searched but not found: Polymarket's rule text on CERA inclusion; a national postal-vote request total; CIS turnout projection; turnout of new 'nietos' CERA voters.",
+   "reference_class": "Spanish general elections 2015-2023, turnout including CERA (69.67, 66.48, 71.76, 66.23, 66.59)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4273,
+   "seconds": 63.8,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 125323,
+    "cache_write": 22393,
+    "cache_write_1h": 22393,
+    "output": 4274,
+    "thinking": 1341,
+    "web_search": 4,
+    "cost_usd_envelope": 0.4273196,
+    "web_fetch": 0,
+    "duration_api_ms": 77865
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 62.6,
+     "25": 64.4,
+     "50": 66.2,
+     "75": 67.9,
+     "90": 69.6
+    }
+   },
+   "reasoning": "Total turnout ~= 0.928*resident-turnout + ~0.7 (CERA is 7.15% of the 38.73M census and votes at ~9-10%). Resident turnout ranged 69.8-75.8% in 2015-2023 and was 69.8-70.4% in the last three elections. Centring it at ~70.5% gives a total of ~66.2%. Upside: polarising housing crisis, possible change of government, multiple crises. Downside: late-November date, fatigue. Polymarket band markets (~$14.5k volume) imply a median of ~69%, but they probably resolve on the election-night figure that excludes CERA. After converting, they are consistent with ~65-66% on this question's basis, so I used them as evidence, not an anchor.",
+   "sources": [
+    "https://www.ine.es/dyngs/Prensa/es/EG2026.htm",
+    "https://en.wikipedia.org/wiki/2026_Spanish_general_election",
+    "https://www.newtral.es/residentes-extranjero-voto-cera/20230728/",
+    "https://theobjective.com/espana/2026-10-14/cis-macroencuesta-45000-entrevistas-elecciones-29n/",
+    "https://polymarket.com/market/will-voter-turnout-70-or-higher-in-the-2026-spanish-general-election",
+    "https://www.euronews.com/2026/10/05/pedro-sanchez-calls-early-elections-in-spain-after-defeat-of-housing-decrees"
+   ],
+   "dossier": "- INE press note (Oct 2026): 38,728,356 electors for 29-N 2026; 35,958,711 resident in Spain, 2,769,645 abroad (CERA, 7.15% of census); 1,615,127 first-time resident voters. Census up 3.4% vs 2023.\n- Overseas voters can vote without the old voto rogado (prior application) requirement, abolished in 2022; 2023 was already under the no-application regime.\n- 2023 CERA turnout: 233,688 votes, ~10% of 2.29M CERA (Newtral, 28 Jul 2023); the Junta Electoral Central (JEC) report gives 203,115 (8.9%).\n- Total turnout (incl. CERA), per question background: 2015 69.67, 2016 66.48, Apr-2019 71.76, Nov-2019 66.23, 2023 66.59. Resident-only election-night figures (recall): 2015 ~73.2, 2016 ~69.8, Apr-2019 ~75.75, Nov-2019 ~69.9, 2023 ~70.4.\n- Identity: total ~= (resident share 0.9285 x resident turnout) + (0.0715 x CERA turnout ~0.09-0.10). At resident turnouts of 68/70/72/74, total ~= 63.8/65.7/67.6/69.4.\n- Context (Al Jazeera/CNN/Euronews, 5 Oct 2026): Sánchez called a snap election after PP, Vox and Junts defeated his housing decrees amid mass housing protests. Polls show a PP+Vox majority as the most likely outcome. Wikipedia also lists floods, wildfires, an Iran war, a Ceuta migrant crisis and corruption scandals as salient issues.\n- CIS 45,000-interview pre-election survey (fieldwork 7 Oct-7 Nov) includes a 70%-turnout scenario; no explicit turnout forecast found.\n- Late-November date: no Spanish general-election precedent except Nov 2011 (68.94 total, under the old CERA rules) and Nov 2019 (66.23, a repeat election with fatigue).\n- Resolution instrument: resolves off the official total incl. CERA (Ministry of the Interior/JEC, latest figure as of 31 Dec), NOT the election-night resident-only figure, which runs ~3.5-4.5 pts higher. Betting markets on turnout bands may use the night figure.\n- Event window: single election day, 29 Nov 2026; final figure latest as of 31 Dec 2026. As of 4 Nov 2026, the vote has not occurred.\n- Searched but not found: published turnout projections for 2026; Polymarket resolution rules text.",
+   "reference_class": "Spanish general elections 2015-2023 (total turnout incl. CERA), adjusted for the growing CERA share after the 2022 abolition of the overseas-vote application requirement (voto rogado)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9203,
+   "seconds": 74.2,
+   "usage": {
+    "num_turns": 10,
+    "input": 12,
+    "cache_read": 159550,
+    "cache_write": 24533,
+    "cache_write_1h": 24533,
+    "output": 4992,
+    "thinking": 1605,
+    "web_search": 5,
+    "cost_usd_envelope": 0.49293600000000004,
+    "web_fetch": 0,
+    "duration_api_ms": 88252
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 63.0,
+     "25": 64.6,
+     "50": 66.1,
+     "75": 67.6,
+     "90": 69.0
+    }
+   },
+   "reasoning": "Resolves on the definitive CERA-inclusive figure (2023: 70.40% resident-only on election night vs 66.59% definitive). CERA is now 7.2% of the electorate (2.77M of 38.73M), up from ~6.2%, with low turnout (~9% in 2023), so the total is about 0.928*resident + ~0.65. Resident-turnout estimates for 29-N run from 67.6% to 74%; one poll gives 68.4%. Polarization over Vox possibly entering government argues for mobilization; a snap late-November vote argues against. Taking resident turnout at ~70.5% (SD ~2.5) gives a total median of ~66.1. Polymarket's ladder (~$14.5k volume) has 70%+ at 0.38-0.45 and 68-70% at ~0.29, an implied median of ~69-70%; its rules could not be read, but those prices only fit a resident-only figure, so it is used as evidence about resident turnout rather than as an anchor.",
+   "sources": [
+    "https://www.infobae.com/espana/2026/10/27/asi-estan-las-encuestas-para-el-29-de-noviembre-pp-y-vox-mantienen-la-mayoria-absoluta-el-psoe-gana-terreno-y-la-izquierda-fragmentada-no-logra-remontar/",
+    "https://en.wikipedia.org/wiki/2023_Spanish_general_election",
+    "https://www.newtral.es/participacion-23-j/20230918/",
+    "https://www.ine.es/dyngs/Prensa/es/EG2026.htm",
+    "https://www.democrata.es/en/general-elections-spain/the-participation-of-29-n-points-to-74-it-would-be-the-highest-in-general-election-since-2004/",
+    "https://polymarket.com/market/will-voter-turnout-70-or-higher-in-the-2026-spanish-general-election",
+    "https://www.aljazeera.com/news/2026/10/5/spanish-prime-minister-pedro-sanchez-announces-snap-election"
+   ],
+   "dossier": "- Election: Sánchez called a snap general election for 29 Nov 2026 after Junts, PP and Vox defeated his housing decrees; Cortes dissolved 6 Oct 2026 (Wikipedia/Al Jazeera/Euronews, 5-6 Oct 2026). Polls show PP ahead in all 13 October polls, with PP+Vox at ~203 seats (Infobae, 27 Oct 2026); the main story is whether Vox enters government.\n- Census (INE press note, Oct 2026): 38,728,356 electors in total, 35,958,711 resident (CER) and 2,769,645 abroad (CERA). CERA is 7.2% of the total, 444,335 more than in 2023; growth is driven partly by the 'ley de nietos'. Madrid's CERA rose 31.45%.\n- CERA no longer needs voto rogado (abolished 2022); documentation is sent automatically. Postal voting runs until 24 Nov; consular urns 21-26 Nov.\n- Instrument trap: the election-night provisional turnout EXCLUDES CERA. In 2023 it was 70.40% provisional vs 66.59% definitive including CERA (Newtral, 18 Sep 2023). The 2023 electorate was 37,469,458 with 24,952,447 votes cast; implied CERA turnout ~9%.\n- Formula: total ≈ 0.928 × resident turnout + 0.072 × CERA turnout. With CERA at 8-11%, total ≈ resident − ~4.4 pts.\n- Historical definitive (CERA-inclusive) turnout: 2011 68.94, 2015 69.67, 2016 66.48, Apr-2019 71.76, Nov-2019 66.23, 2023 66.59. Resident-only: Nov-2019 ~69.9, 2023 70.4, Apr-2019 ~75.8.\n- Poll turnout estimates for 29-N (resident basis): one poll 68.43% (expects ~50% abstention among 18-29s); a survey aggregate implies 67.6%; a Demócrata analysis says 'points to 74%', the highest since 2004.\n- CIS pre-electoral study 3584 has a 45,000-person sample; results not yet seen.\n- Upward factors: polarization over a PP-Vox government (the 2019-April mobilization analog), housing protests. Downward factors: late-November snap election, youth abstention, new low-propensity CERA registrants.\n- Resolves off the definitive CERA-inclusive figure (Interior Ministry / Junta Electoral Central), not the election-night provisional figure.\n- Event window: election day 29 Nov 2026; the latest figure as of 31 Dec 2026 is used. As of 4 Nov 2026 the vote has not happened.\n- Not found: Polymarket's exact rules on CERA inclusion; 2026 CERA turnout projections; CIS turnout estimate.",
+   "reference_class": "Spanish general elections 2011-2023, definitive CERA-inclusive turnout (68.94, 69.67, 66.48, 71.76, 66.23, 66.59), adjusted for CERA's growing share since the 2022 abolition of voto rogado"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.03,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1894,
+   "seconds": 21.9,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 18086,
+    "cache_write_1h": 18086,
+    "output": 2118,
+    "thinking": 456,
+    "web_search": 0,
+    "cost_usd_envelope": 0.18941780000000003,
+    "web_fetch": 0,
+    "duration_api_ms": 21351
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 62.6,
+     "25": 64.4,
+     "50": 66.1,
+     "75": 67.8,
+     "90": 69.6
+    }
+   },
+   "reasoning": "Resolves on the definitive figure that includes voters abroad (CERA). In 2023 that was 66.59%, against 70.40% for residents only on election night. CERA is now 2.77M of 38.73M electors (7.15%) and voted at roughly 9-10% in 2023, so total ≈ 0.928 × resident turnout + ~0.7. The reference class is resident turnout in 2015-2023: 69.8-75.8%, and 69.8-70.4% in the last three elections. For 29-N, polls put resident turnout at 68.4% and 67.6%; one analysis says 74%. Upward pressure: polarization over Vox possibly entering government and the housing protests. Downward pressure: a snap election in late November, youth abstention, and newly registered CERA voters who rarely vote. A resident median of ~70.5% gives a total of ~66.1%. The Polymarket band markets are thin (about $14.5k across the bands); 70%+ trades at 0.38, implying a median of ~69%. That price fits a resident-only basis, so I use it as evidence about resident turnout, not as an anchor. The basis could not be confirmed, so it adds slight upside risk.",
+   "sources": [],
+   "reconciliation": "All three runs agree on the facts: the CERA-inclusive definition, 2.77M CERA voters (7.15%), CERA turnout of ~9-10%, the 2023 figures of 70.40 resident-only vs 66.59 official, and polls of 67.6-74 for residents. The only open factual question is which figure the Polymarket bands resolve on. None of the runs could read the rules, and I have no web access to check. Its prices fit a resident-only basis (implying ~65.2 official), and Polymarket usually uses headline election-night figures. I therefore treat it as weak evidence, which slightly fattens the upper tail without moving the median. Where to centre resident turnout is a judgment call: November avoids the July holiday penalty and polarization is high, but this is a snap vote with low youth mobilization. The polls average about 70 for residents. I agree with the runs' ~70.5 for residents and carry their reference class and dispersion forward. I priced no escape mass beyond 55 or 80 because I see no mechanism for it.",
+   "disagreements": [
+    {
+     "claim": "Whether the Polymarket turnout bands resolve on the resident-only election-night figure or the CERA-inclusive one",
+     "kind": "factual",
+     "verdict": "Unsettled: no run could read the rules and no web access here. Their prices fit resident-only best, so I treat them as evidence about resident turnout, with a small upside-tail allowance."
+    },
+    {
+     "claim": "Where to centre 29-N resident turnout (polls 67.6-68.4 vs an analysis pointing to 74)",
+     "kind": "judgment",
+     "verdict": "Centred at ~70.5 resident, giving ~66.1 official. The polarization upside and the late-November/snap-vote downside roughly offset."
+    },
+    {
+     "claim": "Width of the distribution (runs gave a 10-90 width of 6.0-6.8)",
+     "kind": "judgment",
+     "verdict": "6.6, from a resident SD of ~2.7 scaled by the 0.928 resident share plus CERA uncertainty."
+    }
+   ],
+   "reference_class": "Spanish general elections 2015-2023: resident-only turnout converted to the official CERA-inclusive basis using the 2026 census shares"
+  }
+ ]
+}
