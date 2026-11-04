@@ -1,0 +1,256 @@
+{
+ "record_id": "2026-11-04-27f9723c",
+ "question": "What will be the maximum intraday value of the VIX over these biweekly periods in Q4 2026? (Nov 9 - Nov 20)",
+ "question_id": 46244,
+ "url": "https://www.metaculus.com/questions/46015/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-04T17:12:23+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.6941,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 15.966666666666667,
+    "25": 17.333333333333332,
+    "50": 19.099999999999998,
+    "75": 21.46666666666667,
+    "90": 25.099999999999998
+   },
+   "p_above_upper": 0.01
+  },
+  "phase1": {
+   "10": 15.966666666666667,
+   "25": 17.333333333333332,
+   "50": 19.099999999999998,
+   "75": 21.46666666666667,
+   "90": 25.099999999999998
+  },
+  "phase2": null,
+  "spread_phase1": 0.7,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 15.9,
+   "25": 17.2,
+   "50": 18.9,
+   "75": 21.2,
+   "90": 24.8
+  },
+  "p_above_upper": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.4636,
+   "seconds": 84.3,
+   "usage": {
+    "num_turns": 12,
+    "input": 16,
+    "cache_read": 213080,
+    "cache_write": 23056,
+    "cache_write_1h": 23056,
+    "output": 4607,
+    "thinking": 811,
+    "web_search": 5,
+    "cost_usd_envelope": 0.510203,
+    "web_fetch": 0,
+    "duration_api_ms": 91869
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 15.9,
+     "25": 17.1,
+     "50": 18.8,
+     "75": 21.0,
+     "90": 24.2
+    }
+   },
+   "reasoning": "VIX fell to ~17-17.8 on Nov 4 after the Democratic midterm sweep removed election uncertainty (down ~16-17%). The regime has been jumpy: mid-Oct spike above 22, Oct 30 intraday 22.31 (highest since April), ~20.5-21 around election day. Base rate: the 10-day max intraday high is typically 5-15% above the starting level, giving a median ~19 from a start near 17. Post-event vol crush could push spot to 15-16 before Nov 9 (downside); I assume CPI (~Nov 12-13), Nvidia earnings and VIX expiry (~Nov 18-19) fall inside the window, though I did not confirm those dates this run, and November VIX call buying targeted 23+ (upside). No human prediction market found (Kalshi activity is midterm-focused; harness found none on Polymarket/Manifold). No escape mass above 50: it would need a crash-level shock.",
+   "sources": [
+    "https://www.cnbc.com/2026/11/03/stock-market-today-live-updates.html",
+    "https://www.cnbc.com/2026/10/16/wall-streets-fear-gauge-is-ripping-traders-see-it-going-even-higher.html",
+    "https://www.ad-hoc-news.de/boerse/news/marktberichte/vix-closes-at-19-42-after-sharp-october-30-volatility-spike/70436732",
+    "https://www.ad-hoc-news.de/boerse/news/marktberichte/vix-closes-at-20-51-as-election-week-risks-remain-elevated/70452168",
+    "https://www.cnn.com/2026/11/04/investing/us-markets-midterm-elections",
+    "https://www.gurufocus.com/economic_indicators/234/vix",
+    "https://www.home.saxo/en-sg/content/articles/macro/market-quick-take---us-mid-term-elections-today-the-focus---3-november-2026-03112026"
+   ],
+   "dossier": "- Event window: market open Mon 2026-11-09 -> market close Fri 2026-11-20 per the criteria (10 trading days; Veterans Day Nov 11 is a normal equity trading day). As of Now (2026-11-04) 0% elapsed.\n- Resolves off the highest HIGH value in the Cboe VIX_History.csv (cdn-api.cboe.com) for those days, not closes and not futures.\n- Nov 4 2026 (CNN/Bloomberg/search snippet): VIX fell ~16-17% to ~17-17.84 intraday as stocks rallied (Dow +2.4-2.9%, S&P +1.7%) after the Democratic midterm sweep and Trump saying he would accept the results.\n- Nov 3 2026 (ad-hoc-news): VIX closed 20.51 on election day; other snippets give 20.83 and 21.15 for Nov 2/3 closes. Sources conflict, so the exact closes are unverified.\n- Nov 3-4 (CNBC live/Saxo): November VIX future around 20.9-21.1 overnight before the rally.\n- Oct 30 2026 (ad-hoc-news/Bloomberg): VIX intraday 22.31 (highest since April) after disappointing tech earnings, closed 19.42.\n- Oct 16 2026 (CNBC/roic.ai): VIX surged to 21.41-22+ on inflation and AI-debt fears, a four-month high; traders bought November VIX calls, one betting on a close above 23 by the third week of November.\n- Sep 10 2026 (CNBC): hedging demand into a seasonally volatile period.\n- Realized 30-day S&P volatility ~11.8 as of Nov 3 (gurufocus snippet), well below implied.\n- Assumed in-window catalysts (dates not confirmed this run): October CPI (~Nov 12-13), Nvidia earnings and VIX monthly expiry (~Nov 18-19).\n- Status quo: post-event vol crush with spot drifting in the mid-to-high teens; repeated autumn spikes to ~22 show the risk of a jump.\n- Base rate (approximate, from general VIX behavior, not computed this run): over 10-trading-day windows starting from spot 15-20, the max intraday high runs about 1.03x-1.45x start (10th-90th), median ~1.10x.\n- Searched but not found: Kalshi/Polymarket/Manifold VIX-max market for this window (none found); recent rows of the Cboe CSV (fetch came back cut off at 1997).",
+   "reference_class": "Max intraday VIX high over 10-trading-day windows, relative to the starting spot level, in moderate-vol regimes (spot 15-20) over 2024-2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.496,
+   "seconds": 71.0,
+   "usage": {
+    "num_turns": 11,
+    "input": 16,
+    "cache_read": 208691,
+    "cache_write": 21132,
+    "cache_write_1h": 21132,
+    "output": 3834,
+    "thinking": 640,
+    "web_search": 3,
+    "cost_usd_envelope": 0.49599220000000005,
+    "web_fetch": 0,
+    "duration_api_ms": 72447
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 16.0,
+     "25": 17.3,
+     "50": 19.0,
+     "75": 21.4,
+     "90": 25.5
+    }
+   },
+   "reasoning": "Spot VIX ~17.1 on Nov 4 after an ~18% post-midterm vol crush (from 20.83). Reference class: max intraday VIX over 10-trading-day windows relative to spot a few days before; median ratio ~1.10-1.15 -> ~19. Downward pull: event premium removed, low realized vol (11.8), mean reversion toward ~16. Upward pull: Nasdaq-100 just entered correction (AI trade cracking), hot inflation/rates, likely CPI and Nvidia earnings inside the window, Oct 30 intraday high 23.93. Right skew retained. No human market found (Polymarket/Manifold none per harness; Kalshi not found).",
+   "sources": [
+    "https://finance.yahoo.com/markets/stocks/articles/stock-market-news-nov-4-132500586.html",
+    "https://www.cnn.com/2026/11/04/investing/us-markets-midterm-elections",
+    "https://www.gurufocus.com/economic_indicators/234/vix",
+    "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+    "https://fred.stlouisfed.org/data/VIXCLS.txt"
+   ],
+   "dossier": "- Resolves off Cboe VIX_History.csv HIGH column (max over window days), not closes or TradingView/Yahoo unless Cboe fails.\n- Event window: market open Mon 2026-11-09 -> close Fri 2026-11-20 (10 trading days); as of 2026-11-04 17:10Z 0% elapsed (window starts in 3 trading days).\n- Nov 4 2026 (Yahoo/CNN): VIX fell ~17-18% intraday to ~17.05-17.13 after the Democratic sweep of House+Senate in midterms; Dow +1,240 (+2.4%), S&P/Nasdaq +1.4%.\n- Nov 3 2026 close 20.83; Nov 2 ~21.15-21.18, the highest close since June 10 (search snippets of Gurufocus/news).\n- Oct 30 2026: VIX intraday high 23.93, closed 19.41 (news snippet).\n- Nasdaq-100 closed in correction (>10% below Oct 6 record) on Nov 2; AI/semiconductor trade selling off; drivers cited: hotter inflation, higher rates, crowded AI trades, geopolitics.\n- Aug 14 2026 VIX at 14.25 (yearly low region, Gurufocus snippet); 30-day realized vol ~11.8 as of Nov 3.\n- JPMorgan note (Webull headline, pre-election): midterm risks not yet priced; VIX may rise in coming weeks.\n- Likely scheduled catalysts in window: October CPI (mid-Nov), Nvidia earnings (typically ~third week of Nov), Nov 20 monthly opex. Exact dates not verified.\n- Base-rate rule of thumb (forecaster knowledge, not computed this run): the 10-day max intraday high is typically ~1.10-1.15x the pre-window spot; 10th-90th ratio roughly 0.93-1.45x. Post-event vol crushes tend to drift lower absent a new shock.\n- Searched but not found: the full Oct 2026 daily OHLC (the Cboe CSV fetch returned only 1997 rows; the FRED summary was unreliable); Kalshi/Polymarket VIX contracts for this window; confirmed CPI/Nvidia dates.",
+   "reference_class": "Max intraday VIX high over 10-trading-day windows, as a ratio to spot VIX 3 trading days before window start, in moderate (15-22) regimes"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9534,
+   "seconds": 72.3,
+   "usage": {
+    "num_turns": 11,
+    "input": 16,
+    "cache_read": 207141,
+    "cache_write": 21007,
+    "cache_write_1h": 21007,
+    "output": 3952,
+    "thinking": 701,
+    "web_search": 4,
+    "cost_usd_envelope": 0.4574172,
+    "web_fetch": 0,
+    "duration_api_ms": 80732
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 16.0,
+     "25": 17.6,
+     "50": 19.5,
+     "75": 22.0,
+     "90": 25.6
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "VIX closed 20.83 on Nov 3 (high 21.91) but fell to ~17.1 intraday Nov 4 after the midterms as the S&P rallied ~1.5%. October had spikes to ~22 (Oct 16) and 22.31 (Oct 30) on AI/tech selloffs; Nasdaq-100 recently in correction; 30d realized vol ~11.8 vs implied ~20, so the implied premium is large and post-election vol crush is the status quo. Window Nov 9-20 (10 trading days) includes likely CPI, VIX expiry (~Nov 18), Nvidia earnings (~Nov 18-19), and monthly opex Nov 20. Historical 2-week max-high runs ~1.1-1.15x starting spot at the median with a fat right tail. No Kalshi/Polymarket/Manifold contract found.",
+   "sources": [
+    "https://www.gurufocus.com/economic_indicators/234/vix",
+    "https://finance.yahoo.com/markets/stocks/articles/stock-market-news-nov-4-132500586.html",
+    "https://www.ad-hoc-news.de/boerse/news/marktberichte/vix-closes-at-19-42-after-sharp-october-30-volatility-spike/70436732",
+    "https://www.roic.ai/news/wall-streets-fear-gauge-spikes-vix-jumps-to-four-month-high-as-inflation-fears-and-ai-debt-worries-rattle-markets-10-16-2026",
+    "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv"
+   ],
+   "dossier": "- Resolves off the Cboe VIX_History.csv HIGH column, max over trading days Mon Nov 9 to Fri Nov 20, 2026 (10 trading days), not closes.\n- Event window: Nov 9 -> Nov 20 per the criteria; as of Now (Nov 4) 0% elapsed, starts in 3 trading days.\n- Nov 2 VIX close 21.15 (search summary, FRED/Kalshi page). Nov 3: open 21.66, high 21.91, low 20.29, close 20.83 (gurufocus/Cboe, Nov 3 2026).\n- Nov 4 ~10am: VIX 17.13, down ~17.8% intraday after midterm results (Democrats sweep reported); S&P on track for its biggest gain in 3 months, ~+1.5% (Yahoo/Bloomberg live, Nov 4 2026). Bank of Vol substack headline: 'VIX 18.3'.\n- Oct 16 2026: VIX closed 21.41, a 4-month high, briefly above 22 intraday, on inflation fears and AI debt worries (roic.ai).\n- Oct 30 2026: VIX reached 22.31 intraday, highest since April, on big-tech earnings/AI capex worries; closed ~19.4-20.2 (ad-hoc-news, tokenpost).\n- 30-day realized S&P vol ~11.78 vs VIX ~20.8 on Nov 3; summer low VIX 14.25 on Aug 14 2026 (streetstats).\n- Nasdaq-100 recently entered correction territory; semis rebounded +3% on Nov 3 (Yahoo Nov 4 recap). Crude oil reported near $118 around Oct 30 (HDFC Sky India VIX note), unverified.\n- Likely events in window: Oct CPI (mid-Nov), VIX monthly expiry ~Nov 18, Nvidia earnings ~Nov 18-19, monthly opex Nov 20. Dates not verified.\n- Base rate: over all 10-trading-day windows historically, max intraday high / prior spot has a median of ~1.10-1.15 and a 10-90 range of ~0.95-1.45, with a fat right tail. Analog: Nov 2024 post-election window, where VIX fell to ~14-15 and the 2-week max stayed under ~18.\n- Status quo: VIX somewhere in the 16-22 range of the past month.\n- Searched but not found: Kalshi/Polymarket/Manifold VIX contract for this window (none); latest rows of the Cboe CSV (the fetch returned only 1997 data); Nov 4 closing VIX; VIX futures term structure.",
+   "reference_class": "Maximum intraday VIX over 10-trading-day windows relative to the spot level just before the window, 1990-2025"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1694,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1805,
+   "seconds": 21.6,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 16767,
+    "cache_write_1h": 16767,
+    "output": 2200,
+    "thinking": 372,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1805058,
+    "web_fetch": 0,
+    "duration_api_ms": 20959
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 15.9,
+     "25": 17.2,
+     "50": 18.9,
+     "75": 21.2,
+     "90": 24.8
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "VIX fell to about 17.1 on Nov 4 after the post-midterm vol crush (from a 20.83 close on Nov 3). The reference class of 10-trading-day maximum highs runs about 1.10-1.15x the starting spot at the median, with a fat right tail, which puts the median near 19. Upside: the Nasdaq-100 is in a correction, VIX spiked to about 22-24 intraday in October, and CPI, Nvidia earnings and expiry are probably in the window. Downside: the event premium is gone and realized vol is about 11.8, so VIX could drift to 16 before Nov 9. No human market found on Kalshi, Polymarket or Manifold.",
+   "sources": [],
+   "reconciliation": "Factual disputes: the Oct 30 intraday high (22.31 vs 23.93) could not be settled without web access, but both show low-to-mid-20s autumn spikes, so the tail is treated the same either way. Run 3's detailed bar for Nov 3 (close 20.83) agrees with Run 2, so Run 1's 20.51 is likely wrong; the difference is immaterial. In-window catalyst dates are unverified, so there is some chance they fall outside the window. The judgment dispute is the start level on Nov 9: given the post-election analog (Nov 2024 drift lower) and low realized vol, I expect a start of about 16.5-17.5, which gives a median near 18.9, closer to Runs 1 and 2. I kept a fat right tail because of the Nasdaq correction regime. I carried forward the shared reference class and Runs 2/3's dispersion (~9).",
+   "disagreements": [
+    {
+     "claim": "Oct 30 2026 VIX intraday high was 22.31 vs 23.93",
+     "kind": "factual",
+     "verdict": "Unresolved without web access; both imply low-to-mid-20s spikes, so the effect is small"
+    },
+    {
+     "claim": "Nov 3 close 20.51 vs 20.83",
+     "kind": "factual",
+     "verdict": "Run 3's detailed OHLC supports 20.83; immaterial"
+    },
+    {
+     "claim": "CPI, Nvidia earnings and VIX expiry fall within Nov 9-20",
+     "kind": "factual",
+     "verdict": "Unverified by all runs; likely but uncertain"
+    },
+    {
+     "claim": "Median 18.8 vs 19.5 (expected spot at window start and drift)",
+     "kind": "judgment",
+     "verdict": "Expect a start near 17 after the vol crush; median 18.9"
+    }
+   ],
+   "reference_class": "Maximum intraday VIX over 10-trading-day windows relative to spot a few days before the window, in regimes with spot at 15-20"
+  }
+ ]
+}
