@@ -1,0 +1,240 @@
+{
+ "record_id": "2026-11-05-6cb3b1b5",
+ "question": "What will be the highest intraday value of the VVIX for the two-week period through November 27, 2026?",
+ "question_id": 46574,
+ "url": "https://www.metaculus.com/questions/46341/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "multiple_choice",
+ "forecast_at": "2026-11-05T21:03:08+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 2.1742,
+ "pools": {
+  "pooled_runs": {
+   "Below 90": 0.04314508854418913,
+   "≥90 and <100": 0.15346247656445725,
+   "≥100 and <110": 0.30028134405232926,
+   "≥110 and <120": 0.2566950457962968,
+   "≥120": 0.2464160450427276
+  },
+  "phase1": {
+   "Below 90": 0.04314508854418913,
+   "≥90 and <100": 0.15346247656445725,
+   "≥100 and <110": 0.30028134405232926,
+   "≥110 and <120": 0.2566950457962968,
+   "≥120": 0.2464160450427276
+  },
+  "phase2": null,
+  "spread_phase1": 0.02,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probabilities": {
+   "Below 90": 0.04,
+   "≥90 and <100": 0.14,
+   "≥100 and <110": 0.3,
+   "≥110 and <120": 0.26,
+   "≥120": 0.26
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.106,
+   "seconds": 106.6,
+   "usage": {
+    "num_turns": 15,
+    "input": 20,
+    "cache_read": 268084,
+    "cache_write": 22840,
+    "cache_write_1h": 22840,
+    "output": 5725,
+    "thinking": 1895,
+    "web_search": 4,
+    "cost_usd_envelope": 0.5693378,
+    "web_fetch": 0,
+    "duration_api_ms": 116015
+   },
+   "estimate": {
+    "Below 90": 0.05,
+    "≥90 and <100": 0.16,
+    "≥100 and <110": 0.29,
+    "≥110 and <120": 0.26,
+    "≥120": 0.24
+   },
+   "reasoning": "Reference class: the highest intraday VVIX over a two-week window that starts roughly 7-16 trading days after a sharp VIX shock. Examples are Feb 2018, Aug 2024, Dec 2024 and Apr 2025. After those shocks the window high usually landed between about 100 and 125, because VVIX falls back but stays elevated while VIX is above about 18. Today (Nov 5, 2026) VIX rose about 64% to close near 27.65 in an AI and chip selloff, and VVIX hit an intraday high of 132 (Investing.com). VVIX has been spiking repeatedly since mid-October: intraday highs of 121, 118 and 124 came within three weeks before today. The window includes the reaction to Nvidia's earnings (reported Nov 17 after the close, so trading reacts Nov 18) and the VIX monthly expiration. Thanksgiving week is thin trading, which argues for lower values in the second half. Below 90 would need full calm. Early October's quiet regime showed highs of only 82-92.",
+   "sources": [
+    "https://www.investing.com/indices/cboe-vix-volatility-historical-data",
+    "https://www.investing.com/news/stock-market-news/wall-street-fear-gauge-jumps-most-since-liberation-day-as-ai-trade-stumbles-5005364",
+    "https://robomacro.com/notes/VIX_Daily/VIX_Daily_20261027.html",
+    "https://www.marketbeat.com/earnings/reports/2026-11-18-nvidia-co-stock/",
+    "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VVIX_History.csv"
+   ],
+   "dossier": "- Investing.com VVIX daily (open/high/low/close): Nov 5 2026 O 92.20 H 132.11 L 92.20 C 128.71 (may be live or near-close); Nov 4 C 90.41 H 96.21; Nov 3 C 107.40 H 111.28; Nov 2 C 110.47 H 111.85; Oct 30 C 106.43 H 124.06; Oct 29 C 98.01; Oct 28 C 96.61; Oct 27 C 99.45; Oct 26 C 101.43 H 108.57; Oct 23 C 109.70 H 118.17; Oct 22 C 107.94 H 111.76; Oct 21 C 94.55; Oct 20 C 97.15 H 109.31; Oct 19 C 106.93; Oct 16 C 109.91 H 121.17; Oct 15 C 92.57; Oct 13 C 85.38; Oct 5-12 closes 82.6-87.7 with highs of 84.9-92.2.\n- Reuters via Investing.com, Nov 5 2026: VIX rose 11.5 points to 28.09 intraday (an 8-month high), the biggest intraday jump since Liberation Day in April 2025, and closed near 27.65 (+63.6%). Cause: the chip and data-center selloff and the crowded AI trade unwinding after Democratic gains in Congress. Nasdaq fell about 5%, S&P 500 about 3.5%, Nvidia -7.3% (per other reports).\n- robomacro Oct 27 2026: VIX 17.85; VVIX 101.4 on Oct 26; VVIX/VIX ratio about 5.5.\n- Window events: Nvidia Q3 FY27 earnings on Tue Nov 17 after the close (MarketBeat/other listings), so the market reacts Nov 18. VIX monthly options expire Wed Nov 18. Thanksgiving: Nov 26 closed, Nov 27 likely a half day. Searched for an FOMC meeting in the window and found none (the December meeting is likely after the window).\n- Historical context: VVIX ranged roughly 36-208 over 2006-2026 with a long-run average near 94 (search summary). Shock analogs from memory, approximate: the window starting about 7 trading days after the Aug 5, 2024 peak had VVIX highs around 100-105. After the Apr 2025 tariff peak, the comparable window had highs around 110-120. After the Dec 18, 2024 spike, early-January 2025 highs were around 110-115.\n- Status quo: VVIX decays after a shock but stays tied to the VIX level. With VIX in the high 20s, VVIX tends to sit at 100 or more. With VIX near 16-18, VVIX tends to sit around 85-100.\n- Resolution: off the Cboe VVIX dashboard's maximum intraday value, not the close.\n- Event window: Nov 16 2026 open -> Nov 27 2026 close; as of Nov 5 the window has not started (0% elapsed), and it opens in 7 trading days.\n- Searched and not found: any VVIX prediction market (Polymarket, Manifold, Kalshi); the full Cboe CSV tail (fetch was truncated).",
+   "reference_class": "Two-week VVIX intraday maxima beginning ~7-16 trading days after a major VIX shock (2018, 2024, 2025 episodes), plus the 2026 Oct-Nov regime's two-week maxima"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5367,
+   "seconds": 76.5,
+   "usage": {
+    "num_turns": 14,
+    "input": 20,
+    "cache_read": 262930,
+    "cache_write": 22732,
+    "cache_write_1h": 22732,
+    "output": 5410,
+    "thinking": 1666,
+    "web_search": 4,
+    "cost_usd_envelope": 0.5366580000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 86858
+   },
+   "estimate": {
+    "Below 90": 0.04,
+    "≥90 and <100": 0.15,
+    "≥100 and <110": 0.3,
+    "≥110 and <120": 0.24,
+    "≥120": 0.27
+   },
+   "reasoning": "VVIX spiked to 132 intraday / ~130 close on Nov 5, 2026 amid an AI/chip-led selloff (Nasdaq -5%, VIX to ~28) after falling to 90.41 on Nov 4. The window (Nov 16-27, ~9 trading days incl. Thanksgiving half-day) starts 7 trading days after the shock. Reference class: max VVIX in 2-week windows starting 1-3 weeks after VVIX spikes to 130+ (Oct 2025 -> ~107; Apr 2025 -> ~125; Dec 2024 -> ~120; Aug 2024 -> ~105-110). The 2026 baseline is elevated (Oct 23-Nov 4 daily highs 96-124), and Nvidia earnings likely fall in the window, so the tail is fat. Intraday max over 9 days sits above typical closes. No VVIX market found on Polymarket, Kalshi, Manifold or bookmakers.",
+   "sources": [
+    "https://finance.yahoo.com/quote/%5EVVIX/history/",
+    "https://www.cnbc.com/2026/11/05/wall-streets-fear-gauge-surges-the-most-since-april-why-traders-think-it-should-be-even-higher.html",
+    "https://kucoin.com/news/flash/us-vix-volatility-index-surges-47-to-24-44-highest-since-april-7",
+    "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VVIX_History.csv",
+    "https://www.gurufocus.com/news/9175483/vix-surges-70-spy-drops-amid-market-volatility-on-november-5-2026"
+   ],
+   "dossier": "- Event window: market open Nov 16, 2026 -> Nov 27, 2026 inclusive (about 9 trading days; Nov 26 Thanksgiving closed, Nov 27 likely half-day). As of Now (2026-11-05) 0% elapsed; window starts in 7 trading days.\n- Resolves off the max INTRADAY VVIX per the Cboe VVIX dashboard, not closes.\n- Yahoo ^VVIX history (fetched 2026-11-05), daily high/close: Nov 5 high 132.11, close ~130.4 (+44%); Nov 4 high 96.21, low 88.38, close 90.41; Nov 3 high 111.28, close 107.40; Nov 2 high 111.85, close 110.47; Oct 30 high 124.06, close 106.43; Oct 29 high 98.02, close 98.01; Oct 28 high 99.50; Oct 27 high 100.53; Oct 26 high 108.57; Oct 23 high 118.17, close 109.70.\n- Nov 5, 2026 (CNBC/GuruFocus/KuCoin): AI/chip selloff after midterms (Democratic sweep; Texas governor result tied to data-center fears); Nasdaq -4 to -5%, S&P -2.6 to -3.5%; VIX intraday above 28, highest since Mar 31/Apr 7; intraday range more than 11 points; about 800k VIX calls traded by midday (3.5x average). A trader called it a liquidation 'blowout' with oil and rates steady (possible dip-buy), while his data said de-risk.\n- Nov 4, 2026: VIX closed 16.61 (-20%) after the midterms; election premium gone.\n- Late-2025 comparison (Yahoo): after the Oct 10, 2025 spike, Oct 23-Nov 5, 2025 daily highs ran about 98-109 and closes about 97-104.\n- Approximate historical analogs (from memory, not retrieved): Apr 2025 VVIX peak about 190 -> late-April highs about 110-125; Dec 18, 2024 spike -> early-Jan highs about 115-120; Aug 5, 2024 peak about 170 -> late-Aug highs about 100-110.\n- Long-run VVIX average about 94 (range 36-208, 2006-2026, per Cboe dashboard summary).\n- Catalyst: Nvidia earnings usually late November (about Nov 19-20), likely inside the window (date not confirmed).\n- Searched, absent: any Polymarket, Kalshi, Manifold or bookmaker VVIX market; the Cboe CSV came back truncated (only data to Feb 2025).",
+   "reference_class": "Max intraday VVIX over ~2-week windows beginning 1-3 weeks after a VVIX spike above ~130 (2024-2026 episodes), plus recent 2026 two-week window maxima"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.9389,
+   "seconds": 116.1,
+   "usage": {
+    "num_turns": 20,
+    "input": 26,
+    "cache_read": 373015,
+    "cache_write": 31285,
+    "cache_write_1h": 31285,
+    "output": 7287,
+    "thinking": 2592,
+    "web_search": 8,
+    "cost_usd_envelope": 0.8328659999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 139423
+   },
+   "estimate": {
+    "Below 90": 0.04,
+    "≥90 and <100": 0.15,
+    "≥100 and <110": 0.31,
+    "≥110 and <120": 0.27,
+    "≥120": 0.23
+   },
+   "reasoning": "Nov 5 2026 shock: S&P -4.35%, Nasdaq -5.5%, VIX +63% to 27.02 close (from 16.61). Window Nov 16-27 begins ~7 trading days later. Reference class: max VVIX in the 2-3 week window after major VIX shocks — fast-fade cases (Aug 2024) ~95-105, aftershock cases (Apr 2025, Oct 2018, Aug 2015) ~110-130. Pre-shock VVIX baseline 90-106 with Oct highs ~110. Upside: Nvidia earnings likely mid-window, VIX/opex expiries, ongoing AI deleveraging; intraday max over 9 days adds several points. Downside: VVIX mean-reverts faster than VIX; Thanksgiving week is thin. No human market found (Kalshi/Polymarket/Manifold searched).",
+   "sources": [
+    "https://www.cnbc.com/2026/11/05/wall-streets-fear-gauge-surges-the-most-since-april-why-traders-think-it-should-be-even-higher.html",
+    "https://finance.yahoo.com/markets/live/stock-market-today-thursday-november-5-dow-sp-500-nasdaq-oil-rises-chip-stocks-141439950.html",
+    "https://www.cboe.com/insights/posts/index-insights-october-2026",
+    "https://www.gurufocus.com/news/9175483/vix-surges-70-spy-drops-amid-market-volatility-on-november-5-2026",
+    "https://www.cnbc.com/quotes/.VVIX"
+   ],
+   "dossier": "- Resolves off Cboe VVIX Index Dashboard maximum INTRADAY value, market open Nov 16 2026 through Nov 27 2026 inclusive (9 trading days; Nov 26 Thanksgiving closed, Nov 27 half day). Not closing values.\n- Event window: Nov 16 -> Nov 27 2026 per the criteria; as of Nov 5 2026, 0% elapsed (window starts in ~7 trading days).\n- Nov 4 2026: VVIX close 90.41 (web search snippet citing CNBC/quote data); VIX close 16.61 after post-midterm relief drop of >4 points.\n- 52-week VVIX range 81.51 (Sep 22 2026) to 140.99 (Mar 6 2026); long-run 2006-2026 average ~94, range 36-208.\n- Oct 2026 (Cboe Index Insights): VVIX ended month at 106.43 (+18.9% m/m); VIX 16.34 -> 19.42. Search snippets show daily VVIX highs ~107-110 in mid/late October.\n- Nov 5 2026 (Yahoo Finance live blog, CNBC): S&P 500 -4.35% to 7353.81, Nasdaq -5.52% (correction), Dow -3.44%; VIX closed 27.02 (+63%), intraday >28, low-to-high range >11 pts, largest one-day move since Apr 2025; VIX calls ~800k traded (3.5x avg). Causes: chip/AI selloff (SOX -11%, Qualcomm miss, NVDA -8%), Democratic midterm sweep fears for data-center buildout, hedge fund liquidation/deleveraging. VVIX Nov 5 value not found.\n- Analogs (from memory, not retrieved): after Aug 5 2024 spike, VVIX fell to ~90-105 within 2 weeks as VIX dropped below 15 by Aug 16; after Apr 2025 tariff shock, VVIX stayed ~110-130 for 2-3 weeks with aftershocks; after Feb 2018 and Aug 2015, VVIX stayed 100-130 for weeks.\n- Possible in-window catalysts: Nvidia earnings typically ~Nov 19-20 (date not confirmed); VIX expiry Nov 18; monthly opex Nov 20.\n- Status quo: post-shock decay; VVIX usually mean-reverts faster than VIX; a 9-day intraday max usually sits several points above the average close.\n- Searched but not found: Nov 5 VVIX close/high; any Kalshi/Polymarket/Manifold VVIX market (none found); full Cboe VVIX OHLC history (endpoint truncated).",
+   "reference_class": "Maximum intraday VVIX over ~9 trading days starting ~1.5 weeks after a major single-day VIX spike (VIX +50%+), 2015-2026 episodes"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.02,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1848,
+   "seconds": 23.5,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 16845,
+    "cache_write_1h": 16845,
+    "output": 2386,
+    "thinking": 349,
+    "web_search": 0,
+    "cost_usd_envelope": 0.18484979999999998,
+    "web_fetch": 0,
+    "duration_api_ms": 22782
+   },
+   "estimate": {
+    "Below 90": 0.04,
+    "≥90 and <100": 0.14,
+    "≥100 and <110": 0.3,
+    "≥110 and <120": 0.26,
+    "≥120": 0.26
+   },
+   "reasoning": "VVIX hit 132 intraday on Nov 5, 2026 (VIX ~27-28 on an AI/chip deleveraging selloff); window Nov 16-27 starts 7 trading days later. Post-shock analogs (Aug 2024, Dec 2024, Apr 2025, Oct 2025) put the subsequent 2-week intraday max mostly at 100-125. The 2026 regime is elevated: late-Oct VVIX intraday highs of 108-124 with VIX only 16-19. Nvidia earnings and VIX/monthly expirations likely fall inside the window, which fattens the upper tail. Downside: VVIX mean-reverts faster than VIX, and Thanksgiving week is thin. Below 90 needs full calm, as on Nov 4 (low ~88). No human prediction market found.",
+   "sources": [],
+   "reconciliation": "The three runs were nearly identical in distribution. Factual disputes were minor. Nov 5 VVIX close: 128.71 (Investing, possibly a live quote) vs ~130.4 (Yahoo); both agree on the 132.11 high, which is immaterial to the window. VIX close: 27.02 vs 27.65; same shock magnitude either way. Nvidia earnings: Nov 17 AMC (one run citing MarketBeat) vs ~Nov 19-20 unconfirmed; inside the window in every case. None of these could be verified without web access, but none changes the bins. Judgment: how much mass goes to >=110 vs <100. Given repeated 118-124 intraday spikes in late Oct even at low VIX, plus the ongoing deleveraging and Nvidia catalyst, I put slightly more mass on >=120 and slightly less on 90-100 than runs 1 and 3. I carried the runs' post-shock reference class forward because I agree with it.",
+   "disagreements": [
+    {
+     "claim": "Nov 5 VVIX close 128.71 vs ~130.4",
+     "kind": "factual",
+     "verdict": "Unsettled without web access; immaterial, both agree the high was 132.11 and it falls outside the window"
+    },
+    {
+     "claim": "Nov 5 VIX close 27.02 vs 27.65",
+     "kind": "factual",
+     "verdict": "Unsettled; immaterial, a ~63% shock either way"
+    },
+    {
+     "claim": "Nvidia earnings date Nov 17 vs ~Nov 19-20",
+     "kind": "factual",
+     "verdict": "Unconfirmed, but every candidate date is inside the window, so the catalyst counts either way"
+    },
+    {
+     "claim": "Weight on >=120 (0.23-0.27) vs 90-100 (0.15-0.16)",
+     "kind": "judgment",
+     "verdict": "Took a slightly fatter upper tail given the elevated 2026 VVIX baseline and the in-window catalysts"
+    }
+   ],
+   "reference_class": "Max intraday VVIX in the 2-week window starting ~1-3 weeks after a sharp VIX/VVIX shock (Feb 2018, Aug 2024, Dec 2024, Apr 2025, Oct 2025)"
+  }
+ ]
+}
