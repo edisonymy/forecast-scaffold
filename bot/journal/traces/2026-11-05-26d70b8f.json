@@ -1,0 +1,245 @@
+{
+ "record_id": "2026-11-05-26d70b8f",
+ "question": "What will be Lake Mead’s elevation at the end of November 2026?",
+ "question_id": 46573,
+ "url": "https://www.metaculus.com/questions/46340/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-05T18:03:19+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.9864,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 1037.1166666666668,
+    "25": 1037.8166666666666,
+    "50": 1038.5,
+    "75": 1039.1666666666667,
+    "90": 1039.9166666666667
+   }
+  },
+  "phase1": {
+   "10": 1037.1166666666668,
+   "25": 1037.8166666666666,
+   "50": 1038.5,
+   "75": 1039.1666666666667,
+   "90": 1039.9166666666667
+  },
+  "phase2": null,
+  "spread_phase1": 0.6,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 1037.1,
+   "25": 1037.85,
+   "50": 1038.5,
+   "75": 1039.1,
+   "90": 1039.7
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.7478,
+   "seconds": 128.1,
+   "usage": {
+    "num_turns": 17,
+    "input": 28,
+    "cache_read": 414517,
+    "cache_write": 25456,
+    "cache_write_1h": 25456,
+    "output": 6554,
+    "thinking": 2078,
+    "web_search": 3,
+    "cost_usd_envelope": 0.6994804000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 132796
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1037.2,
+     "25": 1037.9,
+     "50": 1038.7,
+     "75": 1039.5,
+     "90": 1040.4
+    }
+   },
+   "reasoning": "Start: Nov 4 daily 1039.29 ft (Oct EOM 1038.85), rising after October storms but decelerating (+0.13, +0.15, +0.08 ft/day). Oct 24-Month Study most-probable expected Oct->Nov change of about -1.3 ft under 6.0 maf Powell release, but it underpredicted October by 3.56 ft because of storm inflow and lower demand. Nov 2025 gained 1.34 ft under a higher 7.48 maf Powell release. Median: a short continued rise, then a slow decline of ~0.04 ft/day, giving ~1038.7. Markets: only Polymarket contracts on minimum elevation through Apr 2027 (different contract, not used as an anchor); no market on November end-of-month found.",
+   "sources": [
+    "https://www.usbr.gov/lc/region/g4000/hourly/mead-elv.html",
+    "https://www.usbr.gov/lc/region/g4000/hourly/levels.html",
+    "https://www.autonocion.com/us/726-foot-dam-17-turbines-lake-mead-1035-feet-november-317-megawatts/",
+    "https://www.autonocion.com/us/726-foot-dam-three-feet-1035-line-lake-mead-weekly-sheet-year-end/",
+    "https://ktar.com/arizona-water-news/lake-powell-lake-mead-levels-colorado",
+    "https://www.western-water.com/2026/10/23/wet-year-forecast-shows-lake-powell-rebound/"
+   ],
+   "dossier": "- USBR end-of-month series (mead-elv.html, read 2026-11-05): 2026 values Jan 1065.37, Feb 1066.14, Mar 1062.05, Apr 1056.32, May 1050.00, Jun 1044.58, Jul 1041.10, Aug 1038.83, Sep 1037.80, Oct 1038.85. 2025 values: Oct 1057.57, Nov 1058.91 (+1.34), Dec 1062.24.\n- USBR daily levels (levels.html): Nov 1 1038.93, Nov 2 1039.06, Nov 3 1039.21, Nov 4 1039.29 ft (6,929 kaf content); about 70 kaf per ft at this elevation.\n- Record low around Oct 22, 2026 (~1037.2-1037.3); lake up ~2 ft by early Nov after Oct 11 and Oct 22 storms (KTAR; autonocion). Lake Mead basin precipitation was 465% of normal in October; CBRFC October inflow forecast 120 kaf vs 71 kaf in the model.\n- Oct 15, 2026 24-Month Study most probable (per autonocion): Oct EOM 1035.29 (actual 1038.85, so 3.56 ft too low), Nov EOM 1033.97 (an Oct->Nov change of -1.32 ft), Dec 31 1034.52. Weekly sheet of Oct 26 still projected Dec 31 at 1034.52.\n- Oct 2026 24MS probable-max: Dec 31 1035.36 (western-water.com). Probable-min trace much lower later in 2027.\n- Powell WY2027 release set at 6.0 maf, the bottom of the 6-7 maf range (autonocion); WY2025 was 7.48 maf, so Mead inflow is lower than last year.\n- Status quo: daily rise is decelerating; drivers of further change are Glen Canyon monthly release, Hoover release (lower demand after rain), and any new storms (El Nino hopes).\n- Resolves off the USBR mead-elv.html November 2026 end-of-month value; no re-resolution on revisions.\n- Event window: Nov 1 -> Nov 30, 2026 end-of-month value; as of Nov 5 ~13% elapsed.\n- Searched but not found: the exact Nov 2026 Glen Canyon and Hoover monthly release volumes; readable text of the Oct 24MS PDF and the Nov weekly update; any mid-November Glen Canyon high-flow experiment.\n- Markets: only Polymarket contracts on minimum elevation through Apr 2027 (a different quantity).",
+   "reference_class": "Lake Mead November end-of-month change vs October end-of-month in recent years (2023-2025), adjusted using the Oct 2026 24-Month Study most-probable Nov change"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.0483,
+   "seconds": 96.4,
+   "usage": {
+    "num_turns": 14,
+    "input": 20,
+    "cache_read": 269348,
+    "cache_write": 22132,
+    "cache_write_1h": 22132,
+    "output": 5334,
+    "thinking": 1221,
+    "web_search": 2,
+    "cost_usd_envelope": 0.5736995999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 104307
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1037.65,
+     "25": 1038.2,
+     "50": 1038.7,
+     "75": 1039.2,
+     "90": 1039.75
+    }
+   },
+   "reasoning": "End-Oct official value 1038.85 ft; lake 1039.29 on Nov 4 (+0.44 in 4 days). The Oct 24-Month Study projected an Oct->Nov change of -1.32 ft (1035.29->1033.97), but it was made before October storms that left the lake ~3.6 ft above its forecast, so use its delta, not its level. With Powell releasing 6.0 maf in WY2027 (less than last year, when Nov rose +1.34) and low November demand, the rest of November is likely flat to slightly falling. lakeprojections.com projects 1038.72 for Nov 30. No matching human market: the Polymarket contracts price the minimum elevation through Apr 2027, a different quantity.",
+   "sources": [
+    "https://www.usbr.gov/lc/region/g4000/hourly/mead-elv.html",
+    "https://www.lakeprojections.com/lake-mead/water-level",
+    "https://www.autonocion.com/us/726-foot-dam-17-turbines-lake-mead-1035-feet-november-317-megawatts/",
+    "https://www.autonocion.com/us/726-foot-dam-three-feet-1035-line-lake-mead-weekly-sheet-year-end/",
+    "https://polymarket.com/market/will-lake-meads-minimum-elevation-fall-below-1028-ft"
+   ],
+   "dossier": "- USBR end-of-month Lake Mead (resolution source): 2025 Oct 1057.57, Nov 1058.91 (+1.34), Dec 1062.24; 2026 Jun 1044.58, Jul 1041.10, Aug 1038.83, Sep 1037.80, Oct 1038.85 (usbr.gov mead-elv.html, accessed 2026-11-05).\n- Daily: Oct 31 1038.85, Nov 1 1038.93, Nov 2 1039.06, Nov 3 1039.21, Nov 4 ~1039.29; +0.92 ft over Oct 27-Nov 3 (lakeprojections.com, other trackers).\n- October 2026 24-Month Study most-probable run (published ~Oct 15): end-Oct 1035.29, end-Nov 1033.97, end-Dec 1034.52, so a modelled Nov change of -1.32 ft and Dec +0.55 (autonocion.com, Oct 17 2026). Actual end-Oct came in ~3.56 ft above that projection.\n- Reason for the gap: October storms; the Lake Mead basin had 5.78 in of precipitation in October (465% of normal). CBRFC put October side inflow at ~120 kaf vs the 24MS assumption of ~71 kaf (autonocion, Oct 29 2026).\n- WY2027 Glen Canyon (Powell) annual release is 6.0 maf, lower than in WY2025/2026; 1 maf moved from Flaming Gorge to Powell. Powell was at 3527.5 ft in late October.\n- The Oct 26 weekly sheet put Dec 31 at 1034.52.\n- lakeprojections.com's forecast line for Nov 30 2026: 1038.72 (accessed Nov 5).\n- 1035 ft is the turbine-cavitation threshold at Hoover (operational relevance only).\n- Status quo: the lake stays near its current ~1039; the 24MS pattern implies a modest Nov decline from the end-Oct level.\n- Resolves off the USBR end-of-month table value for Nov 2026, not daily readings or 24MS projections; no re-resolution on revisions.\n- Event window: Nov 1 -> Nov 30 2026 end-of-month value; as of Nov 5 ~13% of the month elapsed.\n- Searched for but could not read: the full text of the Oct/Nov 24MS PDFs (planned Hoover and Glen Canyon Nov release volumes); the Nov 24MS is not yet published (due ~mid-Nov).\n- Markets: Polymarket only has minimum-elevation-through-Apr-2027 bins, a different quantity.",
+   "reference_class": "Lake Mead end-of-November minus end-of-October elevation changes in recent years, adjusted for the 24-Month Study's planned releases"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4746,
+   "seconds": 81.5,
+   "usage": {
+    "num_turns": 10,
+    "input": 16,
+    "cache_read": 207935,
+    "cache_write": 18752,
+    "cache_write_1h": 18752,
+    "output": 4283,
+    "thinking": 824,
+    "web_search": 1,
+    "cost_usd_envelope": 0.474615,
+    "web_fetch": 0,
+    "duration_api_ms": 85079
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1036.5,
+     "25": 1037.35,
+     "50": 1038.1,
+     "75": 1038.8,
+     "90": 1039.6
+    }
+   },
+   "reasoning": "October 2026 end-of-month was 1038.85 ft (USBR), ~3.5 ft above the Oct 24-Month Study (1035.29) due to record October storms; lake was ~1039.2 on Nov 3 and rising ~0.1 ft/day. The Oct 24MS projected an Oct->Nov drop of 1.32 ft (to 1033.97); Reclamation reportedly says Oct/Nov will end ~3 ft above that study (~1037), while lakeprojections projects 1038.72 for Nov 30. Storm inflow should taper and planned Powell releases are low, so median slightly below current level. Polymarket contracts are on the seasonal minimum through April 2027 — a different contract, used only as context. No escape mass needed: bounds 1029-1043 are far from the plausible range.",
+   "sources": [
+    "https://www.usbr.gov/lc/region/g4000/hourly/mead-elv.html",
+    "https://www.lakeprojections.com/lake-mead/water-level",
+    "https://www.autonocion.com/us/726-foot-dam-three-feet-1035-line-lake-mead-weekly-sheet-year-end/",
+    "https://www.usbr.gov/lc/region/g4000/24mo.pdf"
+   ],
+   "dossier": "- USBR mead-elv dataset (updated Nov 2, 2026): 2026 end-of-month elevations Jan 1065.37, Feb 1066.14, Mar 1062.05, Apr 1056.32, May 1050.00, Jun 1044.58, Jul 1041.10, Aug 1038.83, Sep 1037.80, Oct 1038.85 ft.\n- Same dataset, 2025: Oct 1057.57, Nov 1058.91 (Oct->Nov +1.34), Dec 1062.24.\n- October 2026 24-Month Study (most probable, published Oct 15): end-Oct 1035.29, end-Nov 1033.97 (planned Oct->Nov change -1.32 ft); weekly sheet of Oct 26 cited Dec 31 at 1034.52 (autonocion article). Actual end-Oct came in ~3.56 ft above the 24MS.\n- Search summary attributes to Reclamation: Mead projected to end Oct and Nov about 3 ft higher than the Oct 24MS (implies roughly 1037 for end-Nov); I could not read the weekly PDF to confirm.\n- lakeprojections.com (Nov 2026): elevation 1039.21 on Nov 3; rose 0.92 ft Oct 27->Nov 3 with daily gains +0.08 to +0.19; their projection for Nov 30 is 1038.72.\n- Cause of the rise: Oct 11 storm (1.08 in at Las Vegas, record) and Oct 22 storm; Mead basin got 5.78 in since Oct 1 = 465% of normal (autonocion, citing Oct 29 data: 1038.44 ft).\n- Powell is rebounding on a wet-year forecast (western-water.com, Oct 23 2026); no evidence found of changed Nov Glen Canyon releases.\n- Status quo: the level holds near 1038.9-1039.2; the drivers are fading storm side-inflow and the low planned releases from Powell.\n- Resolves off the USBR mead-elv.html Nov 2026 end-of-month value (first publication, no re-resolution), not the 24MS or third-party trackers.\n- Event window: month-end value as of Nov 30, 2026; as of Nov 5 about 15% of November has elapsed.\n- Markets: Polymarket only has contracts on the seasonal minimum through Apr 2027, not a matching November month-end contract.\n- Searched but could not read: text of the USBR weekly.pdf and 24mo.pdf (binary parse failed).",
+   "reference_class": "Lake Mead Oct->Nov end-of-month elevation changes in recent low-reservoir years (2021-2025), anchored on the observed Oct 2026 end-of-month level"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.4444,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1864,
+   "seconds": 26.7,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 17239,
+    "cache_write_1h": 17239,
+    "output": 2306,
+    "thinking": 633,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1864018,
+    "web_fetch": 0,
+    "duration_api_ms": 26101
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1037.1,
+     "25": 1037.85,
+     "50": 1038.5,
+     "75": 1039.1,
+     "90": 1039.7
+    }
+   },
+   "reasoning": "End-Oct 1038.85; Nov 4 at 1039.29 with the storm-driven rise slowing. The Oct 24MS most-probable run has the lake falling 1.32 ft Oct->Nov under 6.0 maf Powell releases; its level is stale after the October storms (+3.56 ft above it) but its underlying rate of decline still applies. A small further rise and then ~-0.04 ft/day gives ~1038.5. lakeprojections.com says 1038.72; an unverified report that Reclamation expects ~1037 pulls the low tail down. No matching human market: Polymarket only prices the minimum through Apr 2027.",
+   "sources": [],
+   "reconciliation": "Factual items (Oct EOM 1038.85, early-Nov dailies, the 24MS Nov delta of -1.32, Powell's 6.0 maf release, the tracker's 1038.72) agree across all runs. The only factual dispute I could not settle is Run 3's unverified claim that Reclamation expects Nov ~3 ft above the 24MS (~1037). No web access this run, so I kept it as partial weight on the lower tail. The judgment dispute is how fast November declines once the storm runoff fades. Applying the 24MS daily rate to the remaining ~22 days after a short continued rise gives ~1038.5, slightly below Runs 1 and 2 and above Run 3. I carried forward a width of ~2.6 ft, between the runs' 2-3 ft.",
+   "disagreements": [
+    {
+     "claim": "Reclamation expects Nov EOM ~3 ft above the Oct 24MS (~1037)",
+     "kind": "factual",
+     "verdict": "Unverified (search summary only); given partial weight in the lower tail"
+    },
+    {
+     "claim": "How far the lake falls Nov 5-30 after the storm runoff fades (flat vs ~-1 to -2 ft)",
+     "kind": "judgment",
+     "verdict": "24MS rate of ~-0.044 ft/day after a small further rise; median 1038.5"
+    },
+    {
+     "claim": "Width of the distribution (2 vs 3 ft)",
+     "kind": "judgment",
+     "verdict": "~2.6 ft, allowing for storm or release-change risk over 3.5 weeks"
+    }
+   ],
+   "reference_class": "Lake Mead Oct->Nov end-of-month changes, adjusted with the 24-Month Study's planned monthly change for the current release regime"
+  }
+ ]
+}
