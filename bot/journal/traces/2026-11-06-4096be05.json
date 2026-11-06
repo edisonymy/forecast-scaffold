@@ -1,0 +1,263 @@
+{
+ "record_id": "2026-11-06-4096be05",
+ "question": "How much will Crude Oil Futures total price returns exceed S&P 500 Futures in these biweekly periods of Q4 2026? (Nov 9 - Nov 20)",
+ "question_id": 46202,
+ "url": "https://www.metaculus.com/questions/46007/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-06T17:33:37+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.0717,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -16.833333333333332,
+    "25": -8.0,
+    "50": -1.3333333333333333,
+    "75": 5.5,
+    "90": 13.833333333333334
+   },
+   "p_below_lower": 0.04666666666666667,
+   "p_above_upper": 0.04
+  },
+  "phase1": {
+   "10": -16.833333333333332,
+   "25": -8.0,
+   "50": -1.3333333333333333,
+   "75": 5.5,
+   "90": 13.833333333333334
+  },
+  "phase2": null,
+  "spread_phase1": 1.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -16.5,
+   "25": -8.0,
+   "50": -1.5,
+   "75": 5.5,
+   "90": 13.5
+  },
+  "p_below_lower": 0.04,
+  "p_above_upper": 0.04
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6001,
+   "seconds": 58.6,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 132168,
+    "cache_write": 10693,
+    "cache_write_1h": 10693,
+    "output": 4180,
+    "thinking": 1106,
+    "web_search": 3,
+    "cost_usd_envelope": 0.27288660000000003,
+    "web_fetch": 0,
+    "duration_api_ms": 62618
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -17.0,
+     "25": -7.5,
+     "50": -1.0,
+     "75": 6.0,
+     "90": 15.0
+    },
+    "p_below_lower": 0.05,
+    "p_above_upper": 0.05
+   },
+   "reasoning": "The window runs from the Nov 6 close to the Nov 20 close. Oil is in a Hormuz-closure/Iran supply-shock regime: WTI ~$90, down 13% this week on hopes of a deal after the midterms, while the blockade and Hormuz closure persist. The S&P 500 is also very volatile (-4.4% on Thursday). Peace news pushes oil down and stocks up, so the spread swings widely in both directions. The median sits slightly below zero because CL=F may roll from the Dec to the Jan contract around Nov 19-20, which would drag the oil return down if the curve is in backwardation. No matching human market was found on Polymarket, Manifold or Kalshi; Kalshi WTI price-level contracts exist but do not match this spread. Each tail beyond ±25pp is priced at about 5%, given that weekly oil moves of 13% are already occurring.",
+   "sources": [
+    "https://tradingeconomics.com/commodity/crude-oil",
+    "https://www.cnbc.com/amp/2026/11/06/oil-price-today-brent-wti.html",
+    "https://www.cnbc.com/2026/11/05/stock-market-today-live-updates.html",
+    "https://energynow.com/2026/11/oil-prices-fall-again-as-u-s-election-results-fuel-hopes-of-middle-east-peace-wti-below-90-brent-near-98/",
+    "https://kalshi.com/category/commodities/wti-crude"
+   ],
+   "dossier": "- Event window: P0 = Nov 6 2026 close, P1 = Nov 20 2026 close (CL=F and ES=F on Yahoo); as of Nov 6 17:32 UTC, 0% of the measured window has elapsed and the P0 close is pending.\n- Resolves off Yahoo CL=F continuous front month minus ES=F, not spot WTI or the cash S&P index.\n- Tradingeconomics (Nov 6 2026): WTI ~$90.14, down 13% this week, the steepest weekly decline since mid-April; driver is Trump-Qatar de-escalation talks and Iran reviewing nuclear proposals.\n- Same source: Iran demands lifting of the US naval blockade, sanctions relief and freed assets before reopening the Strait of Hormuz; vessel-attack incidents remain near record levels.\n- CNBC (Nov 6 2026): WTI futures down ~1.5% to ~$89.17 intraday; EnergyNow headline: 'WTI below $90, Brent near $98' on US election results fuelling Middle East peace hopes.\n- CNBC stock live updates (Nov 4-6 2026): S&P 500 +1.58% Wed to 7,688.62, -4.36% Thu to 7,353.73 (worst day since Apr 2025; AI/tech rout), about +1% midday Fri; S&P down ~2% for the week.\n- Contract roll: per the CME rule, the Dec CL contract's last trade is about Nov 19-20 2026, so CL=F may switch to the Jan contract inside the window. A backwardated curve, typical in a supply shock, would bias the CL=F return downward by the Dec-Jan spread. Curve shape not verified.\n- Regime: oil and equities tend to move in opposite directions on peace/escalation news, which widens the spread's dispersion.\n- Volatility: the realized weekly oil move of 13% implies roughly 70-80%+ annualized vol; ES realized vol is ~30%.\n- Base rate: over normal-regime biweekly periods the spread is centered near 0 with SD ~6-8pp; in crisis regimes (2022, 2026) SD is ~12-15pp.\n- Markets: no Polymarket, Manifold or Kalshi contract on this spread; Kalshi has WTI price-level contracts only.\n- Searched but not found: the exact Dec/Jan CL spread, the Yahoo roll date for CL=F, the dates of the next scheduled Iran talks, and the OPEC+ meeting calendar.",
+   "reference_class": "Biweekly CL minus ES return spreads during geopolitical oil-supply shock regimes (e.g., 2022 Russia-Ukraine and the 2026 Iran/Hormuz crisis)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9107,
+   "seconds": 59.0,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 132393,
+    "cache_write": 12578,
+    "cache_write_1h": 12578,
+    "output": 3961,
+    "thinking": 1038,
+    "web_search": 4,
+    "cost_usd_envelope": 0.3105516,
+    "web_fetch": 0,
+    "duration_api_ms": 71898
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -19.0,
+     "25": -9.5,
+     "50": -2.0,
+     "75": 5.0,
+     "90": 14.0
+    },
+    "p_below_lower": 0.04,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Normal-regime 2-week CL-ES spreads have ~6pp SD, but the current regime is extreme: WTI fell ~13-15% this week (≈$100->$90) on US-Iran/Qatar Hormuz-reopening talks and the Democratic midterm sweep; OVX ~60; S&P had its worst day since COVID (-4.36% Nov 5), VIX 28. Implied spread SD ~13pp with fat tails both ways (deal → oil crash; talks collapse/strikes → spike; Rapidan sees 80% chance fighting resumes). Median tilted slightly negative for likely Yahoo CL=F roll from Dec to Jan contract in backwardation near Nov 20 expiry plus peace momentum, offset by escalation risk. No human market found on Polymarket/Kalshi/Manifold/bookmakers.",
+   "sources": [
+    "https://tradingeconomics.com/commodity/crude-oil",
+    "https://www.cnbc.com/amp/2026/11/06/oil-price-today-brent-wti.html",
+    "https://www.investing.com/indices/cboe-crude-oil-volatility-historical-data",
+    "https://www.vantagemarkets.com/market-analysis/sp500-price-chip-stocks-slide-payrolls-november-6-2026/",
+    "https://www.agbi.com/oil-and-gas/2026/11/oil-retreats-as-diplomacy-raises-hopes-for-hormuz-reopening/"
+   ],
+   "dossier": "- WTI ~$90.1 on Nov 6 2026 (TradingEconomics/CNBC Nov 6); was above $100 early in the week; weekly drop ~13-15%, steepest since April. Brent ~$97-98 after a weekly peak above $110 on Monday Nov 2.\n- Drivers (CNBC/AGBI/TradingEconomics, Nov 2-6): US-Israeli war on Iran; Iran-Qatar talks on a 'two-day plan' to reopen the Strait of Hormuz; Iran sent a nuclear proposal via Qatar; Democratic midterm sweep seen as raising de-escalation odds (oil -8% on Wed Nov 4). Iran demands lifting of the US naval blockade, sanctions relief and release of frozen assets; tanker attacks near record levels.\n- Rapidan's Bob McNally (CNBC Nov 6): 80% probability fighting resumes, with both benchmarks back above $100. Escalation path exists alongside the deal path.\n- OVX ~57-64 in early November (Investing.com, Nov 5: 60.29); 52-week range 28-126. Implies roughly a 12% 2-week SD for crude.\n- S&P 500 closed 7,353.73 on Nov 5 (-4.36%, worst day since COVID crash; chip/data-center selloff); VIX 28.17 (+70% in a day). ES futures ~7,400 pre-market Nov 6. Implies a 2-week ES SD of ~5-6%.\n- Correlation in a geopolitical regime: peace → oil down and equities up, so the CL-ES spread tends to widen; the tech selloff is an independent equity shock.\n- Resolution instrument: Yahoo CL=F and ES=F closes. P0 = Nov 6 close, P1 = Nov 20 close. The CL Dec-26 contract's last trade is around Nov 19-20 (3 business days before the 25th), so Yahoo's continuous CL=F may roll to January inside the window; in backwardation that creates a downward artifact of perhaps 1-3%. ES Dec does not roll until December.\n- Event window: Nov 9 -> Nov 20 2026 (P0 = Nov 6 close); as of Nov 6 17:32Z, 0% elapsed.\n- Normal-regime base: biweekly CL-ES spread is centered near 0 with ~5-8pp SD; the current implied-vol regime is roughly double that.\n- Searched, not found: any Polymarket/Kalshi/Manifold/bookmaker market on this spread; a scheduled date for an Iran deal deadline.",
+   "reference_class": "Biweekly CL minus ES total return differences, scaled to current implied vol regime (OVX ~60, VIX ~28)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3272,
+   "seconds": 58.2,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 132401,
+    "cache_write": 12876,
+    "cache_write_1h": 12876,
+    "output": 4104,
+    "thinking": 1049,
+    "web_search": 4,
+    "cost_usd_envelope": 0.3272332,
+    "web_fetch": 0,
+    "duration_api_ms": 72549
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -14.5,
+     "25": -7.0,
+     "50": -1.0,
+     "75": 5.5,
+     "90": 12.5
+    },
+    "p_below_lower": 0.05,
+    "p_above_upper": 0.04
+   },
+   "reasoning": "Reference class: biweekly CL-ES return spreads; normal-regime SD ~6-7pp, but Nov 2026 is a war regime (US/Israel-Iran, Hormuz closure) with WTI moving 8%/day and S&P -4.4% on Nov 5. Status quo ~0 drift; slight negative median from possible CL=F roll in backwardation near Dec contract expiry (~Nov 20), partially offset by mean reversion after a 13% weekly drop and Kalshi year-end WTI expectations above current. Two-sided fat tails: peace deal/Hormuz reopening (oil -20%+, stocks up) vs talks collapse/tanker attacks (oil +20%+). No human market found pricing this spread; Kalshi WTI markets are near-miss only.",
+   "sources": [
+    "https://tradingeconomics.com/commodity/crude-oil",
+    "https://en.wikipedia.org/wiki/2026%E2%80%932028_world_oil_market_chronology",
+    "https://www.cnbc.com/2026/11/05/stock-market-today-live-updates.html",
+    "https://finance.yahoo.com/news/oil-falls-fourth-day-expectations-045943628.html",
+    "https://www.marketscreener.com/news/s-p-500-futures-pare-gains-after-october-non-farm-payrolls-data-ce785fd2d88ffe23",
+    "https://seekingalpha.com/news/4617518-wti-crude-will-near-115-bbl-by-the-end-of-2026-kalshi"
+   ],
+   "dossier": "- Event window: P0 = Yahoo Close on Fri Nov 6 2026; P1 = Close on Fri Nov 20 2026 (10 trading days); as of Now (Nov 6 17:32Z) 0% elapsed. Resolves off Yahoo CL=F and ES=F closes, CL_ret - ES_ret in pp.\n- CL=F is continuous front-month; Dec 2026 WTI contract last trading day is ~Nov 20 (3 business days before Nov 25), so Yahoo may roll to Jan within/at end of window; in backwardation a roll produces an apparent price drop (magnitude unverified — searched, not found).\n- WTI settled $90.52 Nov 5 (+2.72%) after falling >8% Nov 4 to lowest since Aug 31 (Yahoo/Reuters, Nov 5 2026); trading ~$90.1-90.7 Nov 6 (TradingEconomics). Week ~-13%, steepest since mid-April. Recent range $86.65-97.15.\n- Context: eight-month US-Israel war with Iran; Hormuz restricted; US naval blockade; Qatar-mediated indirect talks resumed; Iran offers Hormuz reopening within two days for sanctions relief (leprivatebanker, Nov 6). Tanker attacks near record (UKMTO); tanker hit mine Nov 5.\n- Brent peaked $109.86 Oct 16 2026; above $100 most of Sep-Oct (Wikipedia chronology).\n- S&P 500 fell 4.36% to 7,353.73 Nov 5 (biggest since Apr 2025) on Democratic midterm sweep / AI-regulation fears; ES futures ~7,400 Nov 6 premarket. Oct NFP +165k, unemployment 4.1%; talk of Fed hike in December (MarketScreener Nov 6).\n- Correlation regime: peace news -> oil down, stocks up (spread strongly negative); escalation -> oil up, stocks down (spread positive). Election shock pushed both down.\n- Kalshi: year-end WTI forecast ~$115; ~88% for WTI >=90 at year-end (Seeking Alpha/covers, dates approx). TradingEconomics model: $107 by quarter end.\n- Dispersion: wartime CL daily moves 3-8% imply ~75-90% annualized vol -> ~14% SD over 10 days; ES elevated ~4-5% over 10 days. Normal-regime biweekly spread SD ~6-7pp.\n- Status quo: zero-drift spread; no human market prices this CL-ES spread (Polymarket/Manifold none; Kalshi has WTI level markets only).\n- Searched but not found: Dec/Jan CL calendar spread level; exact Yahoo roll date.",
+   "reference_class": "Biweekly CL minus ES percent return differences, weighted toward high-volatility geopolitical oil regimes (2022 Ukraine, 2026 Iran war)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0741,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.121,
+   "seconds": 20.6,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20105,
+    "cache_write": 9251,
+    "cache_write_1h": 9251,
+    "output": 2149,
+    "thinking": 433,
+    "web_search": 0,
+    "cost_usd_envelope": 0.121017,
+    "web_fetch": 0,
+    "duration_api_ms": 20068
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -16.5,
+     "25": -8.0,
+     "50": -1.5,
+     "75": 5.5,
+     "90": 13.5
+    },
+    "p_below_lower": 0.04,
+    "p_above_upper": 0.04
+   },
+   "reasoning": "Biweekly CL-ES spread, P0 = Nov 6 close, P1 = Nov 20 close. War/Hormuz regime with WTI ~$90 after a -13% week; peace news pushes oil down and stocks up, so the spread is very wide in both directions. The median is shifted about -1.5pp because CL=F may roll from Dec to Jan around the Nov 20 expiry in a backwardated curve, with roughly zero drift otherwise (peace momentum vs 80% resumption risk and mean reversion). No human market found that matches this spread.",
+   "sources": [],
+   "reconciliation": "The runs agreed on the facts: P0/P1 dates, WTI ~$90, OVX ~60, the S&P -4.36% on Nov 5, and the Dec CL expiry ~Nov 20. Using the CME rule (3 business days before Nov 25, a Wednesday), the Dec contract's last trading day is Fri Nov 20, so P1 may come from Dec or Jan depending on Yahoo's roll; the Dec/Jan spread is unverified in every dossier, so I took only a partial ~-1pp shift for the roll. Width and tails are judgment: I kept the runs' implied ~12-13pp spread SD (10-90 ≈ 30) and 4% per tail beyond ±25, based on OVX and the war/peace regime. No web retrieval on this run.",
+   "disagreements": [
+    {
+     "claim": "Size of the CL=F roll artifact at P1",
+     "kind": "factual",
+     "verdict": "Unsettled; Dec expiry is Nov 20 per the CME rule but the Yahoo roll timing and Dec/Jan spread are unverified, so a partial -1pp shift"
+    },
+    {
+     "claim": "Median direction (peace momentum vs resumption risk/mean reversion)",
+     "kind": "judgment",
+     "verdict": "Roughly balanced; near-zero drift apart from the roll"
+    },
+    {
+     "claim": "10-90 width 27 vs 33",
+     "kind": "judgment",
+     "verdict": "~30, from OVX-implied SD and the negative correlation"
+    },
+    {
+     "claim": "Tail mass beyond ±25pp (3-5%)",
+     "kind": "judgment",
+     "verdict": "4% each side"
+    }
+   ],
+   "reference_class": "Biweekly CL minus ES return spreads in crisis/high-vol oil regimes (2022, 2026)"
+  }
+ ]
+}
