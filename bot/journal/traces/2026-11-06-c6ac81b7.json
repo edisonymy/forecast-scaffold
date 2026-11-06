@@ -1,0 +1,269 @@
+{
+ "record_id": "2026-11-06-c6ac81b7",
+ "question": "How much will Nvidia's stock price returns exceed Microsoft's in these biweekly periods of Q4 2026? (Nov 9 - Nov 20)",
+ "question_id": 46232,
+ "url": "https://www.metaculus.com/questions/46013/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-06T17:24:59+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.1136,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -9.333333333333334,
+    "25": -4.5,
+    "50": 0.3666666666666667,
+    "75": 5.166666666666667,
+    "90": 10.0
+   },
+   "p_below_lower": 0.05666666666666667,
+   "p_above_upper": 0.05666666666666667
+  },
+  "phase1": {
+   "10": -9.333333333333334,
+   "25": -4.5,
+   "50": 0.3666666666666667,
+   "75": 5.166666666666667,
+   "90": 10.0
+  },
+  "phase2": null,
+  "spread_phase1": 0.2,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -9.5,
+   "25": -4.5,
+   "50": 0.3,
+   "75": 5.0,
+   "90": 10.0
+  },
+  "p_below_lower": 0.05,
+  "p_above_upper": 0.05
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3254,
+   "seconds": 57.7,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 132628,
+    "cache_write": 13255,
+    "cache_write_1h": 13255,
+    "output": 4337,
+    "thinking": 991,
+    "web_search": 4,
+    "cost_usd_envelope": 0.32542459999999995,
+    "web_fetch": 0,
+    "duration_api_ms": 69472
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -9.5,
+     "25": -4.5,
+     "50": 0.5,
+     "75": 5.5,
+     "90": 10.5
+    },
+    "p_below_lower": 0.07,
+    "p_above_upper": 0.07
+   },
+   "reasoning": "Window: P0=Nov 6 close, P1=Nov 20 close (10 trading days), and it contains NVDA's Q3 FY27 earnings (Nov 17 after the close, reaction Nov 18). The regime is extreme: MSFT +6.6% while NVDA -3.1% on Nov 4; NVDA -9.3% on Nov 5 (SOX -12%) on election/AI-regulation fears; NVDA rebounded ~4-5.6% on Nov 6. Reference class: NVDA-MSFT 2-week return differences, historically centered near 0-1pp with SD ~5-6pp, roughly doubled now by realized vol plus earnings. Median kept near 0 with a slight positive tilt (oversold rebound and an expected beat vs a rotation into AI spenders like MSFT). Fat tails priced as ~7% escape mass on each side. No matching human market found: Manifold's candidate is Big Tech vs Bitcoin over the 2020s (unrelated); Polymarket has only NVDA price-level and earnings-beat contracts.",
+   "sources": [
+    "https://www.marketbeat.com/earnings/reports/2026-11-18-nvidia-co-stock/",
+    "https://jorgai.com/blog/nvidia-q3-fy2027-earnings-november-17-2026-what-nvda-did-the-day-after-every-report-since-2010",
+    "https://financefeeds.com/nvidia-nvda-stock-181-60-friday-after-9-3-percent-plunge-nasdaq-correction-ai-data-center-fears-bull-200-bear-165/",
+    "https://www.openingbelldailynews.com/p/microsoft-stock-ai-trade-nov-5-2026",
+    "https://finance.yahoo.com/markets/live/stock-market-today-friday-november-6-dow-sp-500-nasdaq-jobs-report-earnings-135953863.html",
+    "https://247wallst.com/investing/2026/11/02/polymarket-traders-missed-nvidias-october-drop-heres-what-they-predict-for-november/",
+    "https://coinpaper.com/38436/stock-market-today-nasdaq-rebounds-1-7-as-nvidia-jumps-5-6-after-historic-ai-selloff"
+   ],
+   "dossier": "- Resolution: resolves off Yahoo Finance Adj Close data: NVDA % return minus MSFT % return. P0 = Fri Nov 6 2026 close, P1 = Fri Nov 20 2026 close (10 trading days). It does not resolve off intraday prices or later Adj Close revisions.\n- Event window: Nov 9 -> Nov 20 2026 per the criteria; as of Nov 6 17:23 UTC, 0% elapsed. P0 is the Nov 6 close, which had not yet happened at that timestamp.\n- NVDA reports Q3 FY27 (quarter ended Oct 25) on Tue Nov 17 after the close, confirmed per marketbeat/jorgai. The Nov 18 reaction falls inside the window. Consensus is about $109B revenue (247wallst, Nov 2). Polymarket bettors price an EPS beat as very likely (Yahoo/Polymarket article).\n- Nov 4 2026: MSFT +6.6% ($520.99 -> $555.80) during a rotation into AI spenders; NVDA -3.1% (openingbelldailynews). Caveat: these MSFT levels sit oddly against the background's claim of MSFT -21% YTD as of Oct 7.\n- Nov 5 2026: NVDA -9.3% to $181.60, its biggest one-day drop in a year; Nasdaq -5.5%, S&P -4.4%, SOX -12%, worst chip selloff since 2020. Triggers: Democrats winning Congress raised AI-regulation and data-center fears; Bloomberg reported MSFT tightening oversight of neocloud data-center projects (financefeeds).\n- Nov 6 2026: rebound. NVDA +4 to +5.6% (sources differ), SOX +4-4.6%, Nasdaq +1.7%; jobs +165K (Yahoo live blog, coinpaper).\n- NVDA is about 24% below its October peak and roughly -2.5% YTD.\n- Volatility: NVDA realized vol is currently extreme (daily moves of 3-9%). Normal-regime NVDA-MSFT 2-week difference SD is about 5-6pp; adding earnings and the current regime gives roughly 9-11pp.\n- Arguments for NVDA outperforming: mean reversion after the selloff, an expected earnings beat. Arguments for MSFT outperforming: rotation into AI spenders, continuing data-center regulation fears, and the risk of a sell-the-news reaction to NVDA earnings.\n- Searched for but not found: NVDA/MSFT option-implied vol figures and MSFT's Nov 6 move.",
+   "reference_class": "Biweekly NVDA minus MSFT percent-return differences 2023-2026, high-vol and earnings-containing windows"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9572,
+   "seconds": 67.6,
+   "usage": {
+    "num_turns": 8,
+    "input": 12,
+    "cache_read": 163508,
+    "cache_write": 12249,
+    "cache_write_1h": 12249,
+    "output": 4548,
+    "thinking": 1206,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3261186,
+    "web_fetch": 0,
+    "duration_api_ms": 70665
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -10.0,
+     "25": -5.0,
+     "50": 0.3,
+     "75": 5.5,
+     "90": 10.5
+    },
+    "p_below_lower": 0.05,
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Base rate: NVDA-MSFT 2-week return differentials center near 0 with a typical SD of ~5-7pp, and wider in earnings windows. This window includes NVDA Q3 FY27 earnings (Nov 17 after close; median day-after move 4.9% historically) and starts in a high-volatility regime (Nov 5: Nasdaq -5.5%, NVDA -9.3%, after MSFT +6.7% on Nov 4 following Democratic midterm wins and data-center regulation fears). The wide distribution reflects both factors. The median is slightly positive for mean reversion after NVDA's ~24% drawdown, offset by unresolved policy risk. No prediction market prices this differential (Polymarket NVDA price/market-cap contracts differ in terms; Manifold candidate irrelevant). Tails beyond +/-15 are plausible via an earnings shock combined with a macro move.",
+   "sources": [
+    "https://jorgai.com/blog/nvidia-q3-fy2027-earnings-november-17-2026-what-nvda-did-the-day-after-every-report-since-2010",
+    "https://financefeeds.com/nvidia-nvda-stock-181-60-friday-after-9-3-percent-plunge-nasdaq-correction-ai-data-center-fears-bull-200-bear-165/",
+    "https://cnbc.com/2026/11/05/stock-market-today-live-updates.html",
+    "https://www.heygotrade.com/en/news/microsoft-msft-stock-news-november-5-2026/",
+    "https://247wallst.com/investing/2026/11/02/polymarket-traders-missed-nvidias-october-drop-heres-what-they-predict-for-november/"
+   ],
+   "dossier": "- Resolves off Yahoo Finance Adj Close: P0 = Nov 6 2026 close, P1 = Nov 20 2026 close; value = NVDA% - MSFT% (not log returns, not market cap).\n- Event window: Nov 9 -> Nov 20 2026 (10 trading days) per the criteria; as of Nov 6 2026 0% elapsed (P0 sets at the Nov 6 close).\n- NVDA Q3 FY27 earnings: Tue Nov 17 2026 after close (jorgai.com, financefeeds; one MarketBeat page listed Nov 18; both are inside the window). Guidance was $108B +/-2% revenue, 74% GM, no China DC.\n- NVDA day-after earnings history (67 reports since 2010, jorgai.com): 37 up / 30 down; median absolute move 4.9%; 33 moved >=5%, 11 moved >=10%; range +29.8% to -18.8%; November reports split 8/8 with median absolute move 3.3%; gap-and-fade pattern in 9 of the last 12.\n- Nov 4 2026: MSFT +6.68% to $555.80 in a post-election rally (Democrats won House and Senate); NVDA -3.2% (heygotrade).\n- Nov 5 2026: Nasdaq -5.5% (into correction), S&P -4.4%, Dow -3.4% (worst since Apr 2025); NVDA -9.26% to $181.60 (-$440B), MSFT -3.6%; catalyst was fear of data-center/AI restrictions (CNBC, financefeeds).\n- Nov 6 2026 intraday: NVDA up ~4% (rebound). NVDA ~24% below its October peak, ~-2.6% YTD; MSFT ~-21% YTD as of early Oct (question background).\n- Microsoft reportedly tightened oversight of some neocloud data-center projects (financefeeds).\n- Regime: realized vol far above normal (multiple 4-10% single-day moves in both names this week).\n- Base rates: the NVDA-MSFT biweekly differential historically centers near 0. Typical SD ~5-7pp in normal regimes, wider in windows containing NVDA earnings (earnings-day NVDA move alone has median absolute ~5%).\n- Upside case for the differential: NVDA mean-reverts after its -24% drawdown, strong earnings/guide. Downside case: further policy/data-center fears, earnings disappointment, MSFT seen as a relative safe haven.\n- Markets: no market found pricing the NVDA-MSFT differential. Polymarket has NVDA monthly price-level and largest-company contracts (different terms).\n- Searched but not found: options-implied NVDA earnings move for Nov 2026, current VIX level, MSFT implied vol.",
+   "reference_class": "Biweekly NVDA minus MSFT percent return differentials, 2023-2026, with emphasis on windows containing NVDA earnings"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6311,
+   "seconds": 58.0,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 131729,
+    "cache_write": 11808,
+    "cache_write_1h": 11808,
+    "output": 4229,
+    "thinking": 862,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3056548,
+    "web_fetch": 0,
+    "duration_api_ms": 65745
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -8.5,
+     "25": -4.0,
+     "50": 0.3,
+     "75": 4.5,
+     "90": 9.0
+    },
+    "p_below_lower": 0.05,
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Reference class: Nvidia-minus-Microsoft return over two-week windows, especially windows that include Nvidia earnings. Those center near zero with a standard deviation of about 6pp, or roughly 9pp when earnings fall inside. This window includes NVDA Q3 FY27 earnings (Nov 17 after the close, reaction Nov 18) and starts in a high-volatility regime: NVDA fell 9.3% on Nov 5 on midterm regulation fears, then bounced about 6% on Nov 6. NVDA's beta to the tech selloff is far higher than MSFT's. An oversold rebound favors NVDA; further regulation fear, or a repeat of NVDA's recent pattern of fading its post-earnings gap, favors MSFT. So the median is near zero with fat tails. No human market prices this spread: the only Manifold candidate (big tech vs Bitcoin) does not match.",
+   "sources": [
+    "https://www.marketbeat.com/earnings/reports/2026-11-18-nvidia-co-stock/",
+    "https://jorgai.com/blog/nvidia-q3-fy2027-earnings-november-17-2026-what-nvda-did-the-day-after-every-report-since-2010",
+    "https://finance.yahoo.com/markets/stocks/articles/nvidia-stock-oversold-setup-key-150936116.html",
+    "https://www.marketbeat.com/instant-alerts/price-microsoft-nasdaq-msft-stock-price-down-36-should-you-sell-2026-11-05/",
+    "https://www.gurufocus.com/news/9175745/tech-selloff-hits-nasdaq-microsoft-msft-shows-106-undervaluation-amid-market-volatility"
+   ],
+   "dossier": "- Resolves off Yahoo Finance Adj Close: P0 = Nov 6, 2026 close, P1 = Nov 20, 2026 close; value = NVDA% - MSFT%.\n- Event window: Nov 9 -> Nov 20, 2026 (10 trading days) per the criteria; as of Nov 6 17:23 UTC, 0% elapsed (P0 is still being set during Nov 6 trading).\n- NVDA Q3 FY27 earnings: Tue Nov 17, 2026 after the close, call at 5pm ET; first reaction day Nov 18 is inside the window (marketbeat, jorgai). Nvidia guided revenue to $108B ±2%; consensus EPS about $2.47 on about $108.8B revenue.\n- NVDA next-day earnings moves (jorgai, 67 reports since 2010): median absolute 4.9%; 33 of 67 moved at least 5%, 11 moved at least 10%; 37 up, 30 down. In 9 of the last 12 reports the stock closed below its next-day open. November reports: 8 up, 8 down, median 3.3%, extremes +29.8% (2016) and -18.8% (2018).\n- Nov 5, 2026: NVDA fell 9.3% to $181.60 (worst day since Jan 2025) on fears of tougher AI/data-center regulation after Democratic midterm wins. Nasdaq 100 fell about 6.4%, semiconductor index about 12%, volume 306M shares. NVDA was about 21-24% below its Oct 6 high ($243.37). Early Nov 6 it traded at $193.09 (+6.3%); RSI hit 25 (Yahoo/Barchart, Nov 6).\n- MSFT fell 3.6% on Nov 5 (about $536 per marketbeat, a level that conflicts with the question background's -21% YTD as of Oct 7; treat price levels with caution). MSFT fell 2.8% on Nov 2. MSFT concerns: capex, data-center delays, a declined Texas lease. One source says the large-cap names other than AI builders held up better.\n- In the selloff, NVDA's beta to the tech/AI shock was about 2.5x MSFT's.\n- Reference spread: normal-regime 2-week SD of the NVDA-MSFT difference is about 6pp; with an earnings jump of about 6pp SD it is about 8.5-9pp; the current regime is more volatile than that.\n- Comparable period Nov 10-21, 2025 (also contained NVDA earnings): spread was about 0pp (both stocks down about 5%).\n- Directional case for NVDA: oversold rebound, earnings beat history. For MSFT: regulation overhang on AI hardware, NVDA's habit of fading its post-earnings gap, defensive rotation.\n- Searched but not found: options-implied earnings move for Nov 2026; any prediction market on this spread (none found).",
+   "reference_class": "NVDA minus MSFT percentage return over 2-week windows containing an NVDA earnings report (2023-2026)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0207,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1159,
+   "seconds": 17.3,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20108,
+    "cache_write": 9507,
+    "cache_write_1h": 9507,
+    "output": 1790,
+    "thinking": 387,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1158856,
+    "web_fetch": 0,
+    "duration_api_ms": 16690
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -9.5,
+     "25": -4.5,
+     "50": 0.3,
+     "75": 5.0,
+     "90": 10.0
+    },
+    "p_below_lower": 0.05,
+    "p_above_upper": 0.05
+   },
+   "reasoning": "The window runs from the Nov 6 close to the Nov 20 close, 10 trading days. It includes NVDA's Q3 FY27 earnings: the report comes Nov 17 after the close and the market reacts Nov 18. Historically the median absolute next-day move is ~4.9%, and 11 of 67 reports moved 10% or more. The window opens in an extreme regime. NVDA fell 9.3% on Nov 5 (SOX -12%) on fears about AI and data-center regulation after the midterms, then rebounded 4-6% on Nov 6. NVDA's beta to the shock was ~2.5x MSFT's. Reference class: 2-week NVDA-MSFT return differences, which center near zero with SD ~6pp, or ~8.5-9pp when earnings fall inside the window. I put the median slightly positive: oversold mean reversion and an expected beat favor NVDA, while regulation fear and the gap-and-fade pattern (9 of the last 12 reports) favor MSFT. Tails are fat on both sides. No human market prices this spread. The Manifold candidate (Big Tech vs Bitcoin over the 2020s) is unrelated. Polymarket's NVDA price-level and earnings-beat contracts have different terms.",
+   "sources": [],
+   "reconciliation": "All three runs agree on the window, the earnings date (Nov 17 after the close, with the reaction inside the window either way, so the MarketBeat Nov 18 listing doesn't matter) and a median near zero. The MSFT price-level inconsistency with the background's -21% YTD can't be settled without web access. It doesn't affect a return differential. The remaining disputes are judgment calls: tail escape mass (5% vs 7%) and conditional width (17-20). Elevated realized vol will probably partly mean-revert over two weeks, but the earnings event is certain to land in the window. On that basis I take an SD of ~8.5-9pp with 5% escape mass on each side, which is close to Runs 1 and 2. The median is +0.3 because the directional arguments roughly cancel.",
+   "disagreements": [
+    {
+     "claim": "NVDA earnings date: Nov 17 vs Nov 18",
+     "kind": "factual",
+     "verdict": "Both dates fall inside the window, so it doesn't matter for resolution."
+    },
+    {
+     "claim": "MSFT price level (~$536-556) vs the background's -21% YTD",
+     "kind": "factual",
+     "verdict": "Can't be settled offline. It doesn't affect the return-difference distribution."
+    },
+    {
+     "claim": "Escape mass beyond ±15pp: 5% vs 7% per side",
+     "kind": "judgment",
+     "verdict": "5% per side. The high-vol regime may revert, but earnings plus a macro shock can still produce tails."
+    },
+    {
+     "claim": "Conditional 10-90 width: 17 vs 20",
+     "kind": "judgment",
+     "verdict": "~19.5, consistent with an SD of ~8.5-9pp."
+    },
+    {
+     "claim": "Median tilt: +0.3 vs +0.5",
+     "kind": "judgment",
+     "verdict": "+0.3. Mean reversion is roughly offset by regulation overhang and the post-earnings fade pattern."
+    }
+   ],
+   "reference_class": "NVDA minus MSFT percent returns over 2-week windows, especially windows that contain NVDA earnings"
+  }
+ ]
+}

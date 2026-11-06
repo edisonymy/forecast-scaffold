@@ -1,0 +1,264 @@
+{
+ "record_id": "2026-11-06-f5e56742",
+ "question": "How much will Nvidia's stock price returns exceed Apple's in these biweekly periods of Q4 2026? (Nov 9 - Nov 20)",
+ "question_id": 46226,
+ "url": "https://www.metaculus.com/questions/46012/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-06T17:26:32+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.1167,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -9.299999999999999,
+    "25": -4.7,
+    "50": 0.39999999999999997,
+    "75": 5.466666666666666,
+    "90": 10.166666666666666
+   },
+   "p_below_lower": 0.05000000000000001,
+   "p_above_upper": 0.05000000000000001
+  },
+  "phase1": {
+   "10": -9.299999999999999,
+   "25": -4.7,
+   "50": 0.39999999999999997,
+   "75": 5.466666666666666,
+   "90": 10.166666666666666
+  },
+  "phase2": null,
+  "spread_phase1": 0.2,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -9.8,
+   "25": -5.0,
+   "50": 0.4,
+   "75": 5.6,
+   "90": 10.6
+  },
+  "p_below_lower": 0.05,
+  "p_above_upper": 0.05
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9538,
+   "seconds": 68.1,
+   "usage": {
+    "num_turns": 9,
+    "input": 12,
+    "cache_read": 164679,
+    "cache_write": 13590,
+    "cache_write_1h": 13590,
+    "output": 5041,
+    "thinking": 1583,
+    "web_search": 4,
+    "cost_usd_envelope": 0.3620598,
+    "web_fetch": 0,
+    "duration_api_ms": 76504
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -8.9,
+     "25": -4.8,
+     "50": 0.3,
+     "75": 5.4,
+     "90": 9.5
+    },
+    "p_below_lower": 0.05,
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Base: the 2-week NVDA-AAPL return spread centres near zero with SD ~5-6pp in normal regimes. This window contains NVDA's Q3 FY27 earnings (Nov 17 after close; options implied ~±9.7% through Nov 20 as of Nov 5) and comes during a stressed tape (NVDA -9.3% on Nov 5, Nasdaq -5.5%, VIX 28, then a partial rebound on Nov 6). That puts the spread SD near 8.5pp, with fat tails and ~5% probability on each side beyond ±15. Median is slightly positive: VIX spikes have historically faded and NVDA has the higher beta, but margin, demand and DOJ concerns limit the lean. No matching human market was found; the Manifold big-tech-vs-BTC contract does not match.",
+   "sources": [
+    "https://www.heygotrade.com/en/news/nvidia-nvda-stock-news-november-6-2026/",
+    "https://www.trefis.com/stock/nvda/articles/623367/whats-going-to-happen-with-nvidia-stock-soon/2026-11-06",
+    "https://earnings-watcher.com/wiki/nvda-earnings-options",
+    "https://www.marketbeat.com/earnings/reports/2026-11-18-nvidia-co-stock/",
+    "https://www.openingbelldailynews.com/p/vix-pandemic-peak-nov-6-2026",
+    "https://247wallst.com/investing/2026/11/06/apple-is-now-worth-600-billion-more-than-nvidia/"
+   ],
+   "dossier": "- Resolves off Yahoo Finance Adj Close: P0 = Nov 6 2026 close, P1 = Nov 20 2026 close; value = NVDA% - AAPL%. Event window: Nov 9 -> Nov 20 2026 (10 trading days); as of Nov 6 2026, 0% elapsed.\n- NVDA closed $187.96 on Nov 6 (+3.5%) after falling 9.26% to $181.60 on Nov 5 on 3x normal volume (heygotrade, Nov 6). AAPL closed $343.93 on Nov 6 (-0.07%) (search summary of 24/7 Wall St, Nov 6).\n- Nov 5 selloff: Nasdaq -5.5%, AMD -17%, MU -17%, attributed to midterm-election uncertainty and doubts about data-center demand (heygotrade).\n- VIX closed 28.17 on Nov 5 (+70%, one of the largest one-day jumps since 1990) and fell ~16% on Nov 6. In the 5 prior 60%+ VIX spikes, the S&P was higher a month later every time (openingbelldailynews/Yahoo, Nov 6).\n- NVDA Q3 FY27 earnings are Tue Nov 17 after close, inside the window (earnings-watcher, unusualwhales; MarketBeat lists Nov 18). Options implied about ±8.7-8.8% (Oct 29-30) and ±9.7% (Nov 5) through the Nov 20 expiry. Average earnings-day move over the last 10 years is ±8.4%. Last report (Aug 26 2026): +8.7% vs ±5.9% implied.\n- NVDA was down 24% from its Oct 6 peak to Nov 5 and -2.4% YTD (Trefis, Nov 6). Concerns: gross-margin pressure from memory costs (guided 71-72%), DOJ probe of the $12.9B Hugging Face deal. Revenue guide is $108B ±2%. Rubin ramp is under way.\n- AAPL has already reported its fiscal Q4 (late Oct) and has no scheduled earnings in the window.\n- Dispersion components: NVDA 2-week SD with earnings in elevated vol is roughly 9-12%; AAPL 2-week SD at VIX mid-20s is roughly 4-6%; NVDA-AAPL correlation is roughly 0.4-0.6, giving a spread SD of roughly 7-10pp. In normal regimes without NVDA earnings, the spread SD is roughly 5-6pp.\n- Status quo / base rate: the historical 2-week NVDA-AAPL spread has a median near zero to slightly positive (NVDA's long-run outperformance), over all 2-week windows.\n- Prediction-market check: no human market found that prices this spread.\n- Searched, not found: current NVDA/AAPL implied volatilities as of Nov 6, and the contents of the question's spreadsheet.",
+   "reference_class": "Historical 2-week NVDA minus AAPL return differences, especially windows containing an NVDA earnings report"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5918,
+   "seconds": 64.4,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 132570,
+    "cache_write": 12604,
+    "cache_write_1h": 12604,
+    "output": 4676,
+    "thinking": 1343,
+    "web_search": 4,
+    "cost_usd_envelope": 0.327082,
+    "web_fetch": 0,
+    "duration_api_ms": 71270
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -9.5,
+     "25": -4.8,
+     "50": 0.4,
+     "75": 5.5,
+     "90": 10.5
+    },
+    "p_below_lower": 0.05,
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Window: P0 = Nov 6 close, P1 = Nov 20 close (10 trading days). NVDA Q3 FY27 earnings Nov 17 AMC fall inside the window; historical median next-day move ~4.9%, 11 of 67 moves >10%. Volatility is extreme: NVDA -9% on Nov 5 (midterm/data-center fears), Nasdaq -5.5%, then NVDA +6% on Nov 6. AAPL near record highs and acting as a safe haven. The median is near zero because post-crash rebound and continuing rotation out of AI stocks pull in opposite directions; the tails are fat. No market matches this contract. Polymarket's 'largest company end of Nov' (~77% AAPL / 23% NVDA, Nov 5-6) is a near-miss; it implies a relative-return spread volatility of ~10-12pp over 3.5 weeks, which fits this width.",
+   "sources": [
+    "https://jorgai.com/blog/nvidia-q3-fy2027-earnings-november-17-2026-what-nvda-did-the-day-after-every-report-since-2010",
+    "https://www.marketbeat.com/earnings/reports/2026-11-18-nvidia-co-stock/",
+    "https://finance.yahoo.com/technology/ai/articles/nvidia-shares-suffer-worst-day-104000765.html",
+    "https://www.tradingkey.com/news/market-movers/262292423-market-movers-nvda-20261106",
+    "https://rg.org/news/prediction-markets/polymarket-daily-gpt-astra-apple-nvidia-mississippi-senate-november-5-2026",
+    "https://pluang.com/en/news-feed/nvidia-turun-di-bawah-200-saat-pasar-naik-apple-kuasai-posisi-teratas"
+   ],
+   "dossier": "- Resolution: resolves off Yahoo Finance Adj Close, not intraday prices. Value = NVDA % return minus AAPL % return, from the Nov 6, 2026 close (P0) to the Nov 20, 2026 close (P1).\n- Event window: Nov 9 -> Nov 20, 2026 per the criteria (10 trading days). As of Nov 6 17:25 UTC, 0% elapsed, and P0 (the Nov 6 close) is not yet set.\n- NVDA Q3 FY2027 earnings: Tue Nov 17 after the close, call at 5pm ET (jorgai.com; tradingkey and Polymarket news; MarketBeat URL says Nov 18). Either date is inside the window. Guidance $108B +/-2%, gross margin 74%.\n- NVDA earnings-reaction history (jorgai, 67 reports since 2010): 37 up / 30 down; median absolute next-day move 4.9%; 33 moves of 5% or more; 11 moves over 10%; range -18.8% to +29.8%. The 16 November reports split 8 up / 8 down with a median absolute move of 3.3%.\n- Nov 5, 2026: NVDA fell about 9% to about $181.60, its worst day since Jan 2025 (Yahoo Finance), on post-midterm fears of state limits on data centers. Nasdaq Composite fell about 5.5% into correction, and the VIX spiked.\n- Nov 6 intraday: NVDA about $193 (+6.3%), having opened up 6.7% (tradingkey).\n- AAPL: record high near $355 on Nov 5, closed down 1.4%. Up about 27% YTD and described as a haven (rotation out of AI stocks). Apple market cap about $5.08T vs NVDA about $4.8T on Nov 5.\n- Story conflict: some sources show NVDA closing about $200 on Nov 5 rather than about $181.60. The exact level is uncertain.\n- Rough vol inputs: normal NVDA daily vol about 2.5-3% and AAPL about 1.5%; the current regime is elevated. NVDA/AAPL daily correlation is roughly 0.4-0.6.\n- Crowd: no market prices this exact spread. Polymarket has a 'largest company by end of Nov/Dec' contract (a near-miss: market-cap ranking, Nov 30 deadline).\n- Status quo: the spread is centred near zero over biweekly windows, with a fat-tailed distribution; earnings windows have a wider spread.\n- Searched but not found: options-implied NVDA earnings move for Nov 2026; the Metaculus spreadsheet of past fortnightly spreads (not opened).",
+   "reference_class": "Biweekly NVDA minus AAPL return spreads (2023-2026), especially windows containing an NVDA earnings release"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2647,
+   "seconds": 46.8,
+   "usage": {
+    "num_turns": 6,
+    "input": 8,
+    "cache_read": 101748,
+    "cache_write": 10370,
+    "cache_write_1h": 10370,
+    "output": 3766,
+    "thinking": 1248,
+    "web_search": 3,
+    "cost_usd_envelope": 0.2646786,
+    "web_fetch": 0,
+    "duration_api_ms": 52018
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -9.5,
+     "25": -4.5,
+     "50": 0.5,
+     "75": 5.5,
+     "90": 10.5
+    },
+    "p_below_lower": 0.05,
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Nvidia reports Q3 FY27 on Nov 17 after close, so the earnings reaction falls inside the Nov 9-20 window. Options priced about ±8.7% for the earnings move, and the last report moved +8.7% against ±5.9% implied. NVDA is in a high-volatility regime (-9.3% on Nov 5, +3.5% on Nov 6), while AAPL has no catalyst in the window. The relative return is centred near zero with a slight positive tilt and a wide, fat-tailed spread; each tail beyond ±15pp is priced at about 5%. No human prediction market prices this spread; the Manifold Big Tech vs Bitcoin contract is not a match.",
+   "sources": [
+    "https://www.heygotrade.com/en/news/nvidia-nvda-stock-news-november-6-2026/",
+    "https://www.marketbeat.com/earnings/reports/2026-11-18-nvidia-co-stock/",
+    "https://earnings-watcher.com/wiki/nvda-earnings-options",
+    "https://247wallst.com/investing/2026/11/06/apple-is-now-worth-600-billion-more-than-nvidia/",
+    "https://optionscout.ai/earnings/nvda"
+   ],
+   "dossier": "- Nvidia Q3 FY2027 earnings: Tue Nov 17, 2026 after close (5pm ET); first reaction session Wed Nov 18, inside the window (heygotrade Nov 6 2026; earnings-watcher). MarketBeat lists Nov 18; either date is inside the window.\n- Options-implied earnings move about ±8.7-8.8% (as of Oct 30, when NVDA was ~$214); weekly implied 8.55% (Nov 18 expiry), monthly 9.03% (Nov 20 expiry) (earnings-watcher/optionscout). Last report (Aug 26, 2026) moved +8.7% against ±5.9% implied. NVDA topped its implied move in about 1/4 of recent reports.\n- NVDA fell 9.26% on Nov 5, 2026 to $181.60 on 306M shares (192% above average), in an AI/chip selloff tied to election uncertainty and data-center demand worries; it closed Nov 6 at $187.96 (+3.5%). 52-week high $243.37, low $164.27 (heygotrade).\n- AAPL closed Nov 6 at $343.93 (-0.07%); up about 27% YTD vs NVDA about -2.4% YTD; Apple's market cap exceeds NVDA's by about $600B (247wallst Nov 6). AAPL has no scheduled earnings in the window (its FQ4 report was in late October).\n- Status quo: the difference is centred near 0, and the spread is dominated by NVDA's idiosyncratic move.\n- Rough vol inputs: NVDA ~50% annualised IV implies ~10% 2-week SD before earnings; AAPL ~25% gives ~5%; NVDA/AAPL correlation ~0.4-0.6.\n- Resolves off Yahoo Finance Adj Close: P0 = Nov 6 close, P1 = Nov 20 close; value = NVDA return minus AAPL return in pp.\n- Event window: Nov 9 -> Nov 20, 2026 per the criteria; as of Nov 6, 0% elapsed (window not yet started; P0 is set at the Nov 6 close).\n- Searched, absent: any prediction market on this spread; the historical spreadsheet of past fortnightly diffs (not fetched).",
+   "reference_class": "Biweekly NVDA-minus-AAPL return differences in 2024-2026, specifically fortnights containing an NVDA earnings release"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0197,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1225,
+   "seconds": 21.5,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20108,
+    "cache_write": 9244,
+    "cache_write_1h": 9244,
+    "output": 2227,
+    "thinking": 545,
+    "web_search": 0,
+    "cost_usd_envelope": 0.12252160000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 20879
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -9.8,
+     "25": -5.0,
+     "50": 0.4,
+     "75": 5.6,
+     "90": 10.6
+    },
+    "p_below_lower": 0.05,
+    "p_above_upper": 0.05
+   },
+   "reasoning": "P0 = Nov 6 close, P1 = Nov 20 close. NVDA's Q3 FY27 earnings (Nov 17 AMC) fall inside the window, and the tape is stressed: NVDA -9% on Nov 5, VIX 28, partial rebound Nov 6. AAPL has no catalyst. The spread is centred near zero with a slight positive tilt: NVDA's higher beta after the VIX spike, offset by rotation into AAPL as a haven. Options pricing implies a spread SD of about 9pp, with about 5% beyond each ±15 bound. No human market prices this spread.",
+   "sources": [],
+   "reconciliation": "Factual disputes (NVDA's Nov 5 close; earnings Nov 17 vs 18) do not affect resolution: P0 is the Nov 6 close and both dates fall inside the window. Width was a judgment call. I checked it against the options-implied NVDA vol (Nov 20 straddle ~9% gives a 2-week SD of ~11%), AAPL at ~5% and a correlation of ~0.5, which gives a spread SD of ~9pp. That supports ~5% per tail beyond ±15 and a conditional 10-90 near 20pp, slightly wider than Run 1. I carried forward the runs' reference class and slight positive median. No web retrieval this run.",
+   "disagreements": [
+    {
+     "claim": "NVDA Nov 5 close $181.60 vs ~$200",
+     "kind": "factual",
+     "verdict": "Irrelevant; P0 is the Nov 6 close"
+    },
+    {
+     "claim": "NVDA earnings Nov 17 AMC vs Nov 18",
+     "kind": "factual",
+     "verdict": "Both inside the window; no effect"
+    },
+    {
+     "claim": "Spread 10-90 width 18.4 vs 20",
+     "kind": "judgment",
+     "verdict": "Implied-vol arithmetic gives ~20; took the wider reading"
+    },
+    {
+     "claim": "Median +0.3 to +0.5",
+     "kind": "judgment",
+     "verdict": "Kept a slight positive tilt at +0.4"
+    }
+   ],
+   "reference_class": "Biweekly NVDA-minus-AAPL return spreads in windows containing an NVDA earnings report"
+  }
+ ]
+}

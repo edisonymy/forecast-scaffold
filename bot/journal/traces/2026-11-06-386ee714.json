@@ -1,0 +1,243 @@
+{
+ "record_id": "2026-11-06-386ee714",
+ "question": "What will be the ending value of the UST 10Y Yield for these biweekly periods of Q4 2026? (Nov 9 - Nov 20)",
+ "question_id": 46238,
+ "url": "https://www.metaculus.com/questions/46014/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-11-06T17:23:30+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 0.8887,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 4.6433333333333335,
+    "25": 4.758333333333333,
+    "50": 4.87,
+    "75": 4.9816666666666665,
+    "90": 5.101666666666667
+   }
+  },
+  "phase1": {
+   "10": 4.6433333333333335,
+   "25": 4.758333333333333,
+   "50": 4.87,
+   "75": 4.9816666666666665,
+   "90": 5.101666666666667
+  },
+  "phase2": null,
+  "spread_phase1": 0.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 4.64,
+   "25": 4.76,
+   "50": 4.87,
+   "75": 4.98,
+   "90": 5.1
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4853,
+   "seconds": 44.9,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 128535,
+    "cache_write": 11077,
+    "cache_write_1h": 11077,
+    "output": 3246,
+    "thinking": 595,
+    "web_search": 3,
+    "cost_usd_envelope": 0.268368,
+    "web_fetch": 0,
+    "duration_api_ms": 49927
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.64,
+     "25": 4.76,
+     "50": 4.87,
+     "75": 4.98,
+     "90": 5.1
+    }
+   },
+   "reasoning": "Random-walk anchor at the current level: DGS10 was 4.90 on Nov 4 and about 4.86-4.88 intraday on Nov 6, after strong October payrolls (+165k vs ~65k expected). The yield is down ~44bp from its 5.31 peak on Oct 5. Oct CPI on Nov 10 falls inside the window. Volatility has been high lately (two-week moves of 15-30bp), so the spread is set to an SD of ~17bp with no directional drift: the up-pressure from strong jobs offsets the recent downtrend momentum. Kalshi only has daily/monthly 10Y high/low contracts that don't match this close, and I found no matching Polymarket or Manifold market. Leaving the 4.255-6.255 range would need a move of more than 60bp in two weeks, so I declared no escape mass.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-08-01",
+    "https://www.cnbc.com/amp/2026/11/05/treasury-yields-bonds-interest-rates.html",
+    "https://tradingeconomics.com/united-states/government-bond-yield",
+    "https://cpichart.com/cpi-release-calendar/",
+    "https://kalshi.com/markets/kx10yrdirlm/10y-how-low-monthly/kx10yrdirlm-26oct30l"
+   ],
+   "dossier": "- FRED DGS10 (fetched 2026-11-06): Aug 2026 range 4.63-4.75; climbed from 4.80 (Sep 8) to a peak of 5.31 (Oct 5); then 5.21 (Oct 13), 5.13 (Oct 21), 4.96 (Oct 22), 5.05 (Oct 28), 4.94 (Oct 30), 4.91 (Nov 2), 4.95 (Nov 3), 4.90 (Nov 4, the latest published).\n- CNBC 2026-11-05/06: the 10Y fell to about 4.84 on Nov 5 on a tech-stock selloff and a flight to safety. Democratic midterm gains eased Iran-escalation concerns and oil fell. Jobless claims came in at 189k.\n- TradingEconomics 2026-11-06: the 10Y was at 4.86-4.88 (+2 to +4bp on the day) after October nonfarm payrolls of +165k vs ~65k expected, with unemployment down and wages above expectations. Down 44bp over 1 month; up ~75bp over 12 months. TE's Q4 model forecast is 4.89.\n- Upcoming in the window: October CPI on Tue Nov 10, 8:30 ET (cpichart.com). Reportedly it will have no headline YoY figure.\n- Status quo: the last observed level is about 4.86-4.90.\n- Realized dispersion: 10-trading-day changes since September were about +28, +17, -15 and -23bp; August windows moved only about ±5bp. That implies an SD of roughly 15-20bp in the current regime.\n- Resolves off the FRED DGS10 value initially published for Fri Nov 20, 2026, not intraday quotes from CNBC or TradingEconomics.\n- Event window: Nov 9 -> Nov 20 close per the criteria. As of Nov 6, 0% has elapsed and 10 trading days remain.\n- Markets: Kalshi has daily/monthly 10Y high/low contracts that don't match a Nov 20 close. No Polymarket or Manifold market was found.\n- Searched for but not found: a Fed meeting date inside the window, and the size of the Treasury refunding auctions.",
+   "reference_class": "10-trading-day changes in DGS10 during the elevated-volatility regime Aug-Nov 2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.217,
+   "seconds": 36.0,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 126505,
+    "cache_write": 9933,
+    "cache_write_1h": 9933,
+    "output": 2767,
+    "thinking": 355,
+    "web_search": 2,
+    "cost_usd_envelope": 0.21697000000000002,
+    "web_fetch": 0,
+    "duration_api_ms": 40922
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.65,
+     "25": 4.76,
+     "50": 4.87,
+     "75": 4.98,
+     "90": 5.1
+    }
+   },
+   "reasoning": "Latest FRED DGS10 is 4.90 (Nov 4); Nov 6 market close ~4.86-4.88 after a strong October payrolls print (165k vs 59k expected). Horizon is 10 trading days to Nov 20. The yield fell from a 5.31 peak in early October, while futures price a 76% chance of a December hike, so I assume no strong drift. October CPI falls in the window. Recent volatility is high (daily moves of 5-6bp, jumps of 15-17bp), so I set the spread at about 17bp per 10 days. Market check: no Polymarket or Manifold contract found; Kalshi only lists daily and monthly 10Y high/low contracts that don't match the Nov 20 FRED close. No market blend.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-08-01",
+    "https://www.cnbc.com/2026/11/06/treasury-yields-inch-lower-as-investors-look-ahead-to-key-jobs-data-.html",
+    "https://tradingeconomics.com/united-states/government-bond-yield",
+    "https://kalshi.com/markets/kx10yrdirlm/10y-how-low-monthly/kx10yrdirlm-26oct30l"
+   ],
+   "dossier": "- FRED DGS10 (fetched 2026-11-06): Oct 5 peak 5.31; Oct 22 4.96; Oct 30 4.94; Nov 2 4.91; Nov 3 4.95; Nov 4 4.90 (latest published). Sep 1 4.79 -> Sep 30 5.29 (a rise of about 50bp in a month).\n- Daily changes Sep-Nov 2026 typically 2-7bp, with jumps of +12bp (Sep 10), +15bp (Sep 23), -9bp (Oct 15), -17bp (Oct 22).\n- Tradingeconomics: 10Y 4.88 on Nov 6, +4bp on the day; down 0.41 over the past month; up 0.78 year on year.\n- CNBC 2026-11-06: 10Y about 4.855-4.868 after October NFP of 165k (consensus 59k; September was 29k); unemployment 4.1%. Fed funds 3.75-4.00%. Futures price a 76% chance of a 25bp hike at the Dec 9 FOMC (66% the day before).\n- Upcoming in window: October CPI (exact date not confirmed; usually mid-month). No FOMC meeting before Dec 9.\n- Resolves off FRED DGS10 initial print for Fri Nov 20, 2026 (market open; no holiday). Not intraday or Tradingeconomics quotes.\n- Event window: value on 2026-11-20; as of 2026-11-06, 10 trading days remain.\n- Dispersion: SD of 10-day changes in the current regime is roughly 15-20bp.\n- Upward case: hot labor data, hike pricing, inflation. Downward case: month-long decline from 5.31, possible soft CPI.\n- Markets: no Polymarket or Manifold contract; Kalshi has daily and monthly 10Y high/low contracts only (no exact match).",
+   "reference_class": "10-trading-day changes in DGS10 during the 2025-2026 high-volatility regime, centered on the current level"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7475,
+   "seconds": 51.9,
+   "usage": {
+    "num_turns": 8,
+    "input": 12,
+    "cache_read": 157086,
+    "cache_write": 10874,
+    "cache_write_1h": 10874,
+    "output": 3492,
+    "thinking": 714,
+    "web_search": 2,
+    "cost_usd_envelope": 0.2621232,
+    "web_fetch": 0,
+    "duration_api_ms": 54778
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.64,
+     "25": 4.755,
+     "50": 4.87,
+     "75": 4.985,
+     "90": 5.105
+    }
+   },
+   "reasoning": "DGS10 last published 4.90 (Nov 4); live yield ~4.86-4.88 on Nov 6 after a strong Oct jobs report (165k vs ~59k exp, UE 4.1%), Dec hike odds ~76%. Random-walk center at current level; 10 trading days to Nov 20 including Oct CPI. Recent realized daily vol ~5.5bp gives a ~17bp 2-week SD. Upside risks: hawkish Fed and hot data; downside: AI equity selloff and safe-haven flows, plus the 1-month downtrend from 5.31 peak. Market check: Kalshi has weekly 10Y contracts and Robinhood daily ones, but I found no price for a Nov 20 contract. Lower bound 4.255 is ~3.5 SD away, so no escape mass declared.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-08-01",
+    "https://www.cnbc.com/2026/11/06/treasury-yields-inch-lower-as-investors-look-ahead-to-key-jobs-data-.html",
+    "https://tradingeconomics.com/united-states/government-bond-yield",
+    "https://cryptostruct.com/prediction-markets/kalshi-kxtnotew"
+   ],
+   "dossier": "- FRED DGS10 (fetched 2026-11-06): Aug 2026 range 4.63-4.75; Sep rose from 4.79 to 5.29 (Sep 30); Oct peak 5.31 (Oct 5), then fell to 4.94 (Oct 30); Nov 2: 4.91, Nov 3: 4.95, Nov 4: 4.90. Nov 5/6 not yet on FRED at fetch.\n- CNBC 2026-11-06: 10Y 4.855% intraday (+~2bp), 2Y 4.512%, 30Y 5.254%. Oct NFP +165k vs ~59k forecast; UE 4.1%; Sept was +29k. Fed funds 3.75-4.00%; market prices ~76% odds of a 25bp HIKE at the Dec FOMC (66% the day before). Thursday Nov 5: big AI stock selloff, worst day since Apr 2025.\n- TradingEconomics 2026-11-06: 10Y 4.855-4.88%; ~-0.41 to -0.44 pts over the month, ~+0.75 pts y/y; their model shows ~4.89 at end-Q4 and ~4.68 in 12 months. Notes election results (Democratic gains) and AI regulation worries in the background.\n- Realized vol: RMS daily DGS10 change Sep-Oct 2026 ~5.5bp; largest single-day moves -17bp (Oct 22) and +15bp (Sep 23). Implied 10-trading-day SD ~17bp.\n- Event window: single-date value, DGS10 for Fri 2026-11-20 (first-published print); horizon from Now (Nov 6) is 10 trading days; 0% elapsed. Oct CPI release expected within the window (mid-Nov).\n- Resolves off FRED DGS10 constant-maturity (rounded to 2 decimals), not intraday CNBC/Tradingeconomics quotes; these can differ by 1-3bp.\n- Markets: Kalshi lists weekly 10Y yield contracts (KXTNOTEW) and Robinhood lists daily 10Y markets; no Nov 20 contract price found. No Polymarket/Manifold market.\n- Status quo: the yield stays near the ~4.86-4.88 level of Nov 6. Upside drivers: hawkish repricing, hot CPI, term premium. Downside drivers: continuing the Oct downtrend, risk-off from the equity selloff.\n- Searched but not found: the Fed's exact December meeting date and the exact CPI release date; Kalshi prices.",
+   "reference_class": "2-week (10 trading day) changes in DGS10 during the Aug-Nov 2026 high-vol regime, centered on current level"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1034,
+   "seconds": 17.0,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20108,
+    "cache_write": 8198,
+    "cache_write_1h": 8198,
+    "output": 1689,
+    "thinking": 252,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1033936,
+    "web_fetch": 0,
+    "duration_api_ms": 16403
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.64,
+     "25": 4.76,
+     "50": 4.87,
+     "75": 4.98,
+     "90": 5.1
+    }
+   },
+   "reasoning": "Random-walk anchor at the current level: FRED DGS10 was 4.90 on Nov 4 and about 4.86-4.88 intraday Nov 6 after a strong October NFP (+165k vs ~60k expected). There is no clear drift: the downtrend from the 5.31 Oct peak offsets hawkish repricing (~76% odds of a December hike). October CPI falls inside the window. Recent vol implies a ~17bp 2-week SD. The bounds are 3.5+ SD away, so no escape mass. Market check: no matching Polymarket, Manifold, or Kalshi contract for the Nov 20 FRED close (Kalshi only has daily/weekly/monthly 10Y contracts).",
+   "sources": [],
+   "reconciliation": "All three runs agree on the facts: last FRED print 4.90 (Nov 4), ~4.86-4.88 on Nov 6, Oct peak 5.31, strong Oct NFP, Dec hike odds ~76%, CPI in the window, no matching market. The only factual differences were the exact CPI date (Run 1 says Nov 10; the others couldn't confirm it) and small differences in how each run computed the spread. Neither matters for a Nov 20 close. I carried forward the shared random-walk center at ~4.87 and the ~17bp 10-day SD, which I agree with. No web access on this run.",
+   "disagreements": [
+    {
+     "claim": "October CPI is released Nov 10",
+     "kind": "factual",
+     "verdict": "Unconfirmed from the dossiers, but every run places CPI inside the window either way, so it doesn't matter"
+    },
+    {
+     "claim": "Whether there is net drift (downtrend momentum vs hawkish data)",
+     "kind": "judgment",
+     "verdict": "All runs choose no drift; I agree, since the opposing forces roughly offset"
+    },
+    {
+     "claim": "Size of the 10-day SD (15-20bp)",
+     "kind": "judgment",
+     "verdict": "~17bp, carried forward with slightly fatter tails"
+    }
+   ],
+   "reference_class": "10-trading-day changes in the 10Y CMT yield during the high-volatility Sep-Nov 2026 regime"
+  }
+ ]
+}
