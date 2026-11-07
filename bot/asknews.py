@@ -26,11 +26,14 @@ Stdlib only (urllib); no third-party AskNews SDK, so the scaffold stays portable
 from __future__ import annotations
 
 import json
+import math
 import os
+import threading
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -116,14 +119,95 @@ def _search_once(
 
 
 _KEY_ALERTED = False
+# Set once AskNews refuses a call: the rest of the process skips it (the answer won't change
+# inside one run, and each refused call still costs a round trip per forecast).
+_REFUSED = False
+
+# Pacing [ADDED 2026-11-07]. The plan includes 500 credits per billing period (resets about
+# the 11th) and blocks usage past that until the reset. Fetching for every forecast burned
+# through it in 10 days each time (2026-09-07, 09-29, 10-21), leaving 2-3 weeks per period
+# with no news at all. October's 500 credits covered ~197 forecasts (two calls each), about
+# 2.5 credits per forecast, and bench and test runs share the key. So the allowance is
+# metered in forecasts, spread evenly over the period, and new questions come first.
+RESET_DAY = 11                  # day of month the allowance resets (UTC midnight)
+FETCHES_PER_PERIOD = 180        # ~450 credits: the rest is headroom for bench/test use
+BURST_DAYS = 3.0                # allowance runs this many days ahead of a flat pace
+REFRESH_SHARE = 0.8             # refreshes stop at this share of the allowance so far
+_USE_LOCK = threading.Lock()
+_USED: int | None = None        # fetches this period: counted from traces once, then in-process
+
+
+def period_bounds(now: datetime, reset_day: int = RESET_DAY) -> tuple[datetime, datetime]:
+    """The billing period containing ``now``: [the last reset, the next reset)."""
+    def reset(year: int, month: int) -> datetime:
+        return datetime(year, month, reset_day, tzinfo=UTC)
+
+    start = reset(now.year, now.month)
+    if now < start:
+        start = reset(now.year - 1, 12) if now.month == 1 else reset(now.year, now.month - 1)
+    end = reset(start.year + 1, 1) if start.month == 12 else reset(start.year, start.month + 1)
+    return start, end
+
+
+def fetch_allowance(now: datetime, per_period: int = FETCHES_PER_PERIOD) -> int:
+    """Fetches the period may have used by ``now``: a flat pace plus BURST_DAYS of slack."""
+    start, end = period_bounds(now)
+    days = (end - start).total_seconds() / 86400
+    elapsed = (now - start).total_seconds() / 86400
+    return min(per_period, math.ceil(per_period * min(1.0, (elapsed + BURST_DAYS) / days)))
+
+
+def fetches_used(traces_dir: Path, since: datetime) -> int:
+    """Forecasts since ``since`` whose trace records that AskNews news was used.
+
+    Trace files are named ``YYYY-MM-DD-<id>.json``, so whole earlier days are skipped by name."""
+    floor = since.strftime("%Y-%m-%d")
+    count = 0
+    for path in traces_dir.glob("*.json"):
+        if path.name[:10] < floor:
+            continue
+        try:
+            trace = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if (isinstance(trace, dict) and trace.get("asknews")
+                and str(trace.get("forecast_at") or "") >= since.isoformat()[:19]):
+            count += 1
+    return count
+
+
+def fetch_allowed(traces_dir: Path, refresh: bool, now: datetime | None = None) -> bool:
+    """Whether this forecast may spend AskNews credits now (see the pacing notes above).
+
+    A new question may use the whole allowance so far; a refresh only REFRESH_SHARE of it,
+    so standing forecasts never starve questions the bot has not forecast yet."""
+    global _USED
+    if _REFUSED:
+        return False
+    now = now or datetime.now(UTC)
+    per_period = int(os.environ.get("ASKNEWS_FETCHES_PER_PERIOD") or FETCHES_PER_PERIOD)
+    with _USE_LOCK:
+        if _USED is None:
+            _USED = fetches_used(traces_dir, period_bounds(now)[0])
+        allowance = fetch_allowance(now, per_period)
+        limit = math.floor(allowance * REFRESH_SHARE) if refresh else allowance
+        return limit > _USED
+
+
+def note_fetch() -> None:
+    """Count a forecast that used AskNews news (the trace records it for later runs)."""
+    global _USED
+    with _USE_LOCK:
+        _USED = (_USED or 0) + 1
 
 
 def _alert_key_rejected(code: int) -> None:
     """Once per process: AskNews refused the call. A lapsed key (401/403) or a used-up
     monthly credit allowance (the plan blocks usage past 500 credits until the billing
-    period resets — it did on 2026-09-07 and 09-29) otherwise just drops the news section
+    period resets — it did on 2026-09-07, 09-29 and 10-21) otherwise just drops the news section
     silently."""
-    global _KEY_ALERTED
+    global _KEY_ALERTED, _REFUSED
+    _REFUSED = True
     if _KEY_ALERTED:
         return
     _KEY_ALERTED = True

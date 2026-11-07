@@ -24,6 +24,11 @@ import run_manifold  # noqa: E402  — needs the bot/ path above
 def _asknews_dark(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("ASKNEWS_DISABLE", "1")
     monkeypatch.delenv("ASKNEWS_API_KEY", raising=False)
+    # Per-process pacing state (asknews.fetch_allowed): one test's refused call or count
+    # must not leak into the next.
+    import asknews
+    monkeypatch.setattr(asknews, "_USED", None)
+    monkeypatch.setattr(asknews, "_REFUSED", False)
 
 
 @pytest.fixture(autouse=True)

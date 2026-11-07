@@ -1830,7 +1830,14 @@ def forecast_question(
     # dossier, so neither needs it. It is ADDITIONAL evidence to verify and search beyond,
     # never a replacement, and carries no yes/no lean (see bot/asknews.py). Metaculus-only key
     # terms are why this rides the tournament run and not run_manifold.
-    news = asknews.news_section(question.get("title") or post.get("title") or "")
+    # Paced to last the billing period, new questions first (asknews.fetch_allowed). A
+    # question we already hold a forecast on is a refresh.
+    refresh = bool((question.get("my_forecasts") or {}).get("latest"))
+    news = ""
+    if asknews.fetch_allowed(Path(journal.path).parent / "traces", refresh=refresh):
+        news = asknews.news_section(question.get("title") or post.get("title") or "")
+        if news:
+            asknews.note_fetch()
     # The market-scan mandate (sighted only). Kept as a SEPARATE string so angle mode can
     # hand it to sighted angles and WITHHOLD it from the blind angle F, which must stay
     # market-blind by design even when the overall run is sighted.
@@ -3212,6 +3219,7 @@ def forecast_question(
             "supervisor_enabled": use_supervisor,
             "aggregation": aggregation_note,
             "cost_usd": round(run_cost, 4),
+            "asknews": bool(news),  # counted by asknews.fetches_used for pacing
             "pools": {
                 "pooled_runs": pooled_estimate,
                 "phase1": pool_phase1,
