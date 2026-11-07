@@ -1555,10 +1555,15 @@ def validate_cdf(
         errors.append(f"CDF has {len(cdf)} points, expected {cdf_size}")
         return errors
     cap = min(1.0, MAX_PMF_VALUE * (200.0 / (cdf_size - 1)))
+    # The platform's floor scales with the outcome count exactly like the cap: 0.01 per
+    # inbound outcome, i.e. MIN_CDF_STEP only at the default 200 bins. A fixed 5e-05 rejected
+    # every CDF for a 232-outcome question (q46709, Nov 2026) that the platform accepts, and
+    # was looser than the platform below 200 outcomes.
+    min_step = CDF_UNIFORM_MIX / (cdf_size - 1)
     for i, (a, b) in enumerate(zip(cdf, cdf[1:], strict=False)):
         step = b - a
-        if step < MIN_CDF_STEP - eps:
-            errors.append(f"step {step:.2e} at index {i} below minimum {MIN_CDF_STEP}")
+        if step < min_step - eps:
+            errors.append(f"step {step:.2e} at index {i} below minimum {min_step:.3g}")
             break
         if step > cap + eps:
             errors.append(f"bin mass {step:.4f} at index {i} above cap {cap}")

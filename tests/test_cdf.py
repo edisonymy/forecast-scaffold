@@ -95,6 +95,29 @@ def test_discrete_size() -> None:
     assert validate_cdf(cdf, cdf_size=21) == []
 
 
+@pytest.mark.parametrize("cdf_size", [21, 101, 201, 233, 401])
+@pytest.mark.parametrize("bounds", [(False, False), (True, False), (False, True), (True, True)])
+def test_min_step_scales_with_outcome_count(cdf_size: int, bounds: tuple[bool, bool]) -> None:
+    # The platform's floor is 0.01 / inbound_outcome_count (5e-05 only at 200 bins), the same
+    # scaling as the per-bin cap. Q46709 (a "wider range" HY OAS bin, 232 outcomes) failed
+    # every attempt Nov 2-7 2026 because validation held it to the fixed 200-bin floor.
+    lower_open, upper_open = bounds
+    narrow = {"10": 45.0, "25": 47.0, "50": 50.0, "75": 53.0, "90": 55.0}
+    cdf = percentiles_to_cdf(
+        narrow, 0.0, 100.0, lower_open=lower_open, upper_open=upper_open,
+        cdf_size=cdf_size, interpolation="pchip",
+    )
+    assert validate_cdf(cdf, lower_open=lower_open, upper_open=upper_open, cdf_size=cdf_size) == []
+    floor = 0.01 / (cdf_size - 1)
+    assert all(b - a >= floor - 1e-9 for a, b in zip(cdf, cdf[1:], strict=False))
+
+
+def test_min_step_floor_is_stricter_for_fewer_outcomes() -> None:
+    flat_tail = [0.0] + [0.6 * (i / 20) + 0.4 * (i / 20) ** 8 for i in range(1, 21)]
+    flat_tail[1] = 6e-05  # clears 5e-05 but not 0.01/20 = 5e-04
+    assert any("below minimum" in e for e in validate_cdf(flat_tail, cdf_size=21))
+
+
 def test_rejects_bad_inputs() -> None:
     with pytest.raises(ValueError, match="strictly increasing"):
         percentiles_to_cdf({"10": 30.0, "25": 20.0, "50": 50.0, "75": 60.0, "90": 70.0}, 0, 100)
