@@ -422,3 +422,88 @@ class TestManifoldCompliance:
             brief = run_manifold.build_manifold_brief(market, sighted=sighted)
             assert asknews.NEWS_HEADER not in brief
             assert "AskNews" not in brief
+
+
+# --------------------------------------------------------------- pacing [ADDED 2026-11-07]
+
+from datetime import UTC, datetime  # noqa: E402
+
+
+def _trace(dirpath: Path, name: str, forecast_at: str, used: bool) -> None:
+    (dirpath / name).write_text(json.dumps({"forecast_at": forecast_at, "asknews": used}),
+                                encoding="utf-8")
+
+
+@pytest.fixture
+def _fresh_pacing(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(asknews, "_USED", None)
+    monkeypatch.setattr(asknews, "_REFUSED", False)
+    monkeypatch.delenv("ASKNEWS_FETCHES_PER_PERIOD", raising=False)
+
+
+class TestPacing:
+    def test_period_bounds_cross_year(self) -> None:
+        start, end = asknews.period_bounds(datetime(2026, 1, 5, tzinfo=UTC))
+        assert start == datetime(2025, 12, 11, tzinfo=UTC)
+        assert end == datetime(2026, 1, 11, tzinfo=UTC)
+        start, end = asknews.period_bounds(datetime(2026, 11, 11, tzinfo=UTC))
+        assert (start.month, end.month) == (11, 12)
+
+    def test_allowance_is_paced_not_front_loaded(self) -> None:
+        # Day 0 of a 31-day period: a burst of 3 days' worth, not the whole month.
+        day0 = asknews.fetch_allowance(datetime(2026, 10, 11, tzinfo=UTC), 180)
+        assert day0 == 18
+        # Ten days in (when October actually ran dry) about 13/31 of it is available.
+        day10 = asknews.fetch_allowance(datetime(2026, 10, 21, tzinfo=UTC), 180)
+        assert 70 <= day10 <= 80
+        # The full allowance only near the period's end, never more.
+        assert asknews.fetch_allowance(datetime(2026, 11, 10, 23, tzinfo=UTC), 180) == 180
+
+    def test_counts_only_this_periods_traces_that_used_news(
+        self, tmp_path: Path, _fresh_pacing: None
+    ) -> None:
+        _trace(tmp_path, "2026-10-10-a.json", "2026-10-10T12:00:00+00:00", True)   # last period
+        _trace(tmp_path, "2026-10-12-b.json", "2026-10-12T12:00:00+00:00", True)
+        _trace(tmp_path, "2026-10-12-c.json", "2026-10-12T13:00:00+00:00", False)  # no news
+        _trace(tmp_path, "2026-10-13-d.json", "2026-10-13T12:00:00+00:00", True)
+        since = datetime(2026, 10, 11, tzinfo=UTC)
+        assert asknews.fetches_used(tmp_path, since) == 2
+
+    def test_new_questions_outrank_refreshes(
+        self, tmp_path: Path, _fresh_pacing: None, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("ASKNEWS_FETCHES_PER_PERIOD", "31")
+        now = datetime(2026, 10, 11, 1, tzinfo=UTC)  # allowance ceil(31*3.04/31) = 4
+        for i in range(3):
+            _trace(tmp_path, f"2026-10-11-{i}.json", "2026-10-11T00:30:00+00:00", True)
+        # 3 used of 4: a new question still gets news, a refresh (limit floor(4*0.8)=3) not.
+        assert asknews.fetch_allowed(tmp_path, refresh=False, now=now)
+        assert not asknews.fetch_allowed(tmp_path, refresh=True, now=now)
+        asknews.note_fetch()
+        assert not asknews.fetch_allowed(tmp_path, refresh=False, now=now)
+
+    def test_refused_call_stops_the_rest_of_the_run(
+        self, tmp_path: Path, _fresh_pacing: None, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(asknews, "_KEY_ALERTED", False)
+        monkeypatch.setenv("ASKNEWS_DISABLE", "0")
+        monkeypatch.setenv("ASKNEWS_API_KEY", "testkey")
+
+        def refuse(request: Any, timeout: Any = None) -> _Resp:
+            raise urllib.error.HTTPError(request.full_url, 402, "Payment Required", {}, None)
+
+        monkeypatch.setattr(asknews.urllib.request, "urlopen", refuse)
+        now = datetime(2026, 10, 20, tzinfo=UTC)
+        assert asknews.fetch_allowed(tmp_path, refresh=False, now=now)
+        assert asknews.news_section("Will X happen?") == ""
+        assert not asknews.fetch_allowed(tmp_path, refresh=False, now=now)
+
+    def test_forecast_trace_records_news_use(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, _fresh_pacing: None
+    ) -> None:
+        _enable(monkeypatch, {"latest news": [_article(1, "https://ex.com/a")],
+                              "news knowledge": []})
+        _run_forecast(monkeypatch, tmp_path, [_fenced(_RESEARCH), _fenced(_REASONING)])
+        traces = list((tmp_path / "traces").glob("*.json"))
+        assert traces and json.loads(traces[0].read_text(encoding="utf-8"))["asknews"] is True
+        assert asknews._USED == 1
