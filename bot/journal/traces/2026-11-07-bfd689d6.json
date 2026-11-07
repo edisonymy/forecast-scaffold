@@ -1,0 +1,264 @@
+{
+ "record_id": "2026-11-07-bfd689d6",
+ "question": "What will be New England's spark spread on December 1, 2026?",
+ "question_id": 46578,
+ "url": "https://www.metaculus.com/questions/46345/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-07T21:02:41+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.7375,
+ "asknews": false,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 15.666666666666666,
+    "25": 22.833333333333332,
+    "50": 30.666666666666668,
+    "75": 39.166666666666664,
+    "90": 49.666666666666664
+   },
+   "p_below_lower": 0.10333333333333333,
+   "p_above_upper": 0.06333333333333334
+  },
+  "phase1": {
+   "10": 15.666666666666666,
+   "25": 22.833333333333332,
+   "50": 30.666666666666668,
+   "75": 39.166666666666664,
+   "90": 49.666666666666664
+  },
+  "phase2": null,
+  "spread_phase1": 1.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 16.0,
+   "25": 23.5,
+   "50": 31.0,
+   "75": 39.0,
+   "90": 50.0
+  },
+  "p_below_lower": 0.09,
+  "p_above_upper": 0.06
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.5031,
+   "seconds": 104.8,
+   "usage": {
+    "num_turns": 15,
+    "input": 20,
+    "cache_read": 289585,
+    "cache_write": 27978,
+    "cache_write_1h": 27978,
+    "output": 6624,
+    "thinking": 2576,
+    "web_search": 6,
+    "cost_usd_envelope": 0.5725140000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 122319
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 17.0,
+     "25": 23.5,
+     "50": 31.0,
+     "75": 39.5,
+     "90": 51.0
+    },
+    "p_below_lower": 0.07,
+    "p_above_upper": 0.07
+   },
+   "reasoning": "Reference class: EIA/ISO-NE early-December New England on-peak spark spreads (E-7G). Monthly-average spreads were ~46 (Dec 2025, gas ~$14.9), ~34 (Dec 2024, gas ~$9), ~17 (Dec 2023, mild). Current spot on Nov 5, 2026 is 46.99/1.35 → 37.5; Henry Hub Dec <$3, Algonquin winter strip ~$11.67 with the premium peaking in January, and a mild NOAA outlook. The spread is fairly gas-level-invariant because power tracks gas at heat rates around 8.5-10. Median ~31, with tails for cold-snap gas spikes (low/negative) and power spikes (>65). No human market found; the harness candidate (a Polymarket New England Revolution soccer match) is unrelated.",
+   "sources": [
+    "https://www.eia.gov/todayinenergy/prices.php",
+    "https://isonewswire.com/2026/02/02/monthly-wholesale-electricity-prices-and-demand-in-new-england-december-2025/",
+    "https://isonewswire.com/2025/01/31/monthly-wholesale-electricity-prices-and-demand-in-new-england-december-2024/",
+    "https://kilowattlogic.com/news/northeast-winter-gas-basis-differential-algonquin-2026",
+    "https://www.premierenergymanagement.com/post/natural-gas-marketwatch-november-2-2026-mild-november-start-keeps-december-below-3-00",
+    "https://naturalgasintel.com/news/natural-gas-forward-prices-slide-as-northeast-winter-premiums-retreat/"
+   ],
+   "dossier": "- Resolution: EIA Today in Energy Daily Prices page, New England row, for delivery Dec 1, 2026 (a Tuesday; traded Mon Nov 30). Spread = E - 7G, where E = ICE Mass Hub on-peak day-ahead $/MWh and G = Algonquin Citygate next-day $/MMBtu. Resolves off E and G as displayed, not off EIA's displayed spread column.\n- Event window: single delivery day Dec 1, 2026; as of 2026-11-07 the value is not yet observable (~24 days out).\n- EIA page 11/05/26: New England E 46.99, G 1.35, spread 37.54. Other regions' spreads that day ran 6-66.\n- ISO Newswire Dec 2025: DA all-hours avg $136.13, RT $129.89, gas avg $14.90 (all-hours spread ~32; on-peak likely higher).\n- ISO Newswire Dec 2024: RT avg $84.03 (+126% y/y); gas avg ~$9.1 (implied by Dec 2025 being +63%).\n- Dec 2023 (mild): RT ~$37; gas low (from memory, not checked).\n- NGI early Nov 2026: Algonquin winter 26/27 strip $11.666 (premium $8.27 over Henry Hub); January 2027 forwards above $20; winter premium peaks ~$16-17.5 in Dec-Jan; one undated snippet put Algonquin Dec fixed at $8.686. Algonquin spot recently ~$1.3-2.1 on mild weather and an operational flow order from Nov 1.\n- PremierEnergy Nov 2, 2026: NYMEX Dec below $3.00 on mild forecasts and a big storage build.\n- NOAA winter 2026/27 outlook favors warmer than normal in New England.\n- Kilowattlogic: Apr-Jul 2026 Algonquin traded $0.43 under Henry Hub; record Canadian imports; more renewables.\n- Mechanisms: cold snap → gas spikes can outpace power (narrow or negative spread); power-side scarcity → spread above 65. Carbon (RGGI) adds ~$7/MWh floor-ish to the spread.\n- Not found: EIA daily historical Dec 1 values (xlsx download not executed); current Mass Hub Dec forward; any prediction market on this.",
+   "reference_class": "Early-December daily New England (Mass Hub on-peak vs Algonquin) spark spreads at 7,000 heat rate, 2022-2025"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9306,
+   "seconds": 93.1,
+   "usage": {
+    "num_turns": 14,
+    "input": 18,
+    "cache_read": 253987,
+    "cache_write": 25038,
+    "cache_write_1h": 25038,
+    "output": 5977,
+    "thinking": 1525,
+    "web_search": 5,
+    "cost_usd_envelope": 0.5053044,
+    "web_fetch": 0,
+    "duration_api_ms": 102889
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 15.0,
+     "25": 23.0,
+     "50": 31.0,
+     "75": 40.0,
+     "90": 50.0
+    },
+    "p_below_lower": 0.12,
+    "p_above_upper": 0.08
+   },
+   "reasoning": "Current EIA New England spread is $37.54 (gas $1.35, power $46.99 on 11/5/26) amid historically cheap Algonquin gas from storage limits and Canadian/Appalachian supply. By Dec 1 gas should rise toward winter levels (winter strip ~$11.7, Jan >$20, though early-Nov spot collapsed), but NE power tends to track gas with market heat rates that leave E-7G mostly in the $20-45 band. Low tail: cold snap where gas spikes faster than power (spread <10 or negative). High tail: power spike with moderate gas. No human prediction market found (harness candidate was an unrelated MLS soccer market). Evidence on exact historical Dec-1 values was thin, so distribution kept wide.",
+   "sources": [
+    "https://www.eia.gov/todayinenergy/prices.php",
+    "https://www.eia.gov/todayinenergy/detail.php?id=68124",
+    "https://www.premierenergymanagement.com/post/natural-gas-marketwatch-november-2-2026-mild-november-start-keeps-december-below-3-00",
+    "https://www.eia.gov/todayinenergy/detail.php?id=66984 (via search summary)",
+    "NGI Forward Look search-result summaries (naturalgasintel.com)"
+   ],
+   "dossier": "- EIA Daily Prices page (report date 11/05/26, page dated Nov 6 2026): New England natural gas $1.35/MMBtu, electricity $46.99/MWh, displayed spark spread $37.54 (equals E-7G exactly). Other regions same day: NYC gas 1.23/power 43.61; Mid-Atlantic 1.19/74.31.\n- EIA Today in Energy (2026, id=68124): Algonquin averaged 43c below Henry Hub Apr-Jul 2026, 2nd-largest discount since 1999; record Canadian imports 0.4 Bcf/d; NE gas burn for power -6% y/y, wind +59%, solar +29%. Notes Algonquin historically flips to premium in winter.\n- NGI headlines (Oct-Nov 2026): 'Storage Limits Force Northeast Pipelines to Turn Away Excess Supply'; 'Abundant Appalachian, Canadian Supply Take New England Gas Prices to Historic Lows'; Algonquin Nov 2026 averages reported ~$1.29-1.33.\n- NGI Forward Look (per search summary, ~Oct 31 2026): Algonquin winter 2026/27 strip ~$11.67/MMBtu (earlier ~$12.85); Jan 2027 Algonquin forwards >$20; December Algonquin forward not directly retrieved (sources blocked).\n- Premier Energy MarketWatch Nov 2 2026: NYMEX Dec settled $2.898 Oct 30; Algonquin spot recently ~$2.09; NOAA favored above-normal temps into mid-Nov; storage 3,724 Bcf (+38 vs 5-yr avg, -147 vs yr-ago).\n- EIA (id=66984): late Nov/early Dec 2025 polar vortex; Algonquin rose from ~$4.22 to $5.95 to $18.76 on Dec 31 2025 over a few weeks — shows rapid winter spot escalation.\n- Platts (Nov 2025): Mass Hub on-peak Jan 2026 forward ~$146/MWh, Feb ~$138 — winter power tracks high gas.\n- Mechanism: NE market heat rate at low gas is very high (current ~35 MMBtu/MWh); at high gas it compresses toward ~8-10, so E-7G stays positive unless gas spikes faster than power in a cold snap.\n- Status quo: spread of mid-$30s at current cheap gas; seasonal transition into December typically raises both legs.\n- Resolution: resolves off EIA Daily Prices page New England electricity (ICE Mass Hub next-day on-peak) and gas (Algonquin) for delivery Dec 1 2026 (Tuesday; trade date ~Nov 30), computed as E-7G regardless of displayed spread.\n- Event window: single delivery day Dec 1 2026 per criteria; as of 2026-11-07 ~0% of event elapsed (day is ~24 days away).\n- Searched but not found: exact EIA Dec 1 values for 2023/2024/2025; December 2026 Mass Hub on-peak forward; December 2026 Algonquin forward specifically. No human prediction market on this question (only an unrelated MLS Polymarket candidate).",
+   "reference_class": "Daily EIA/ICE New England (Mass Hub on-peak minus 7x Algonquin) spark spreads on early-December delivery days, 2023-2025, plus current Nov 2026 readings"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4253,
+   "seconds": 71.1,
+   "usage": {
+    "num_turns": 12,
+    "input": 14,
+    "cache_read": 182703,
+    "cache_write": 22751,
+    "cache_write_1h": 22751,
+    "output": 4759,
+    "thinking": 1185,
+    "web_search": 4,
+    "cost_usd_envelope": 0.42529659999999997,
+    "web_fetch": 0,
+    "duration_api_ms": 84274
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 15.0,
+     "25": 22.0,
+     "50": 30.0,
+     "75": 38.0,
+     "90": 48.0
+    },
+    "p_below_lower": 0.12,
+    "p_above_upper": 0.04
+   },
+   "reasoning": "As of the Nov 5, 2026 EIA Daily Prices, Algonquin was $1.35 and Mass Hub $46.99 (spread $37.54), with gas depressed by a regional glut and mild weather. December normally brings the winter gas premium: the winter strip was ~$11.67 on Oct 29, with forwards peaking near $16 in Dec-Jan. Higher gas usually compresses E-7G because power's implied heat rate does not scale linearly with gas. A warm NOAA outlook and surplus supply argue for moderate Dec 1 spot gas (~$3-10), which historically gives spreads of ~$20-45. The low tail (cold snap, gas >$15) can push the spread below $10 or negative; the high tail is a power spike while gas stays cheap. No human market found (only an unrelated Polymarket soccer contract).",
+   "sources": [
+    "https://www.eia.gov/todayinenergy/prices.php",
+    "https://www.eia.gov/todayinenergy/detail.php?id=68124",
+    "https://marcellusdrilling.com/2026/11/too-much-gas-too-little-cold-northeast-spot-prices-stuck-near-1/",
+    "https://kilowattlogic.com/news/northeast-winter-gas-basis-differential-algonquin-2026",
+    "https://naturalgasintel.com/news/noaas-new-winter-outlook-tests-northeast-natural-gas-price-premiums/"
+   ],
+   "dossier": "- EIA Daily Prices (trade date Nov 5, 2026): Algonquin Citygate $1.35/MMBtu, Mass Hub $46.99/MWh, spread shown $37.54. Other regions: NYC gas $1.23/power $43.61; Henry-area Louisiana $2.63.\n- Marcellus Drilling News (Nov 2026): Algonquin $1.31 for Thursday delivery, Henry Hub $2.61; Northeast cash under half of HH; Eastern heating demand well behind last year after weeks of mild fall weather.\n- NGI search snippets (Nov 2026): Algonquin November average about $1.33; storage limits forcing Northeast pipelines to turn away excess supply.\n- NGI Forward Look (~Oct 29, 2026): Algonquin winter 2026/27 strip $11.666/MMBtu, down after NOAA's warm-leaning winter outlook; early-Nov snippets say winter premiums peak near $16 at Algonquin/Iroquois Z2 (Dec-Jan). An earlier snippet cited ~$17.50 for Dec-Jan. Exact Dec-2026 contract price not retrieved.\n- EIA TIE (2026): Algonquin averaged $0.43 below HH Apr-Jul 2026 (second-largest discount since 1999); Canadian imports at a record 0.4 Bcf/d; NE gas burn down 6%, wind up 59%, solar up 29%.\n- Mechanics: spread = E - 7G. When gas spikes in a cold snap (G $15-30), past NE spreads have compressed toward or below zero because power's implied heat rate falls under ~7-9. With moderate gas, implied heat rates of ~9-12 give spreads of roughly $20-45.\n- Status quo: today's spread is about $37.5 with very cheap gas. Dec 1 (Tuesday) typically sees a seasonal step-up in gas.\n- Resolution: resolves off the EIA Daily Prices page's New England electricity ($/MWh, Mass Hub) and gas (Algonquin, $/MMBtu) values for Dec 1 delivery, computed as E - 7G — not off EIA's displayed spark spread.\n- Event window: single delivery day, Dec 1, 2026; as of Nov 7, 2026, roughly 24 days remain.\n- Searched but not found: exact Dec-2026 Algonquin and Mass Hub forward quotes; historical Dec 1 EIA values for 2023-2025; any prediction market on this (none found).",
+   "reference_class": "Daily EIA New England spark spreads (Mass Hub day-ahead on-peak minus 7x Algonquin Citygate) on late-Nov/early-Dec weekdays in recent years"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0612,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.182,
+   "seconds": 22.2,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 17121,
+    "cache_write_1h": 17121,
+    "output": 2134,
+    "thinking": 404,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1820178,
+    "web_fetch": 0,
+    "duration_api_ms": 21675
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 16.0,
+     "25": 23.5,
+     "50": 31.0,
+     "75": 39.0,
+     "90": 50.0
+    },
+    "p_below_lower": 0.09,
+    "p_above_upper": 0.06
+   },
+   "reasoning": "Current EIA NE spread $37.54 (gas $1.35, power $46.99, 11/5/26) amid a regional gas glut. By Dec 1 (Tuesday) gas should rise toward the winter premium (strip ~$11.67, but warm NOAA outlook and surplus supply suggest spot ~$3-10). Power tracks gas at heat rates that compress as gas rises, so on-peak E-7G mostly lands $20-45. Low tail: a cold snap where gas spikes faster than power; high tail: a power spike while gas stays cheap. No human market found (the harness candidate was an unrelated Polymarket soccer match).",
+   "sources": [],
+   "reconciliation": "All three runs shared the same facts (11/5/26 EIA values, winter strip ~$11.67, warm outlook, glut) and medians of 30-31. Disputes were judgment calls on how much mass to put past the bounds and on width. The one open factual point, the December Algonquin forward ($8.686 snippet vs peaks near $16), could not be settled without web access, so I kept that uncertainty in the distribution. I took median 31, a 10-90 band close to the runs' consensus, the low-tail escape at 9% (a cold snap compressing the spread is a real mechanism, but the warm outlook and glut temper it) and the high-tail escape at 6%.",
+   "disagreements": [
+    {
+     "claim": "Level of the December 2026 Algonquin forward (~$8.7 vs ~$16 peak)",
+     "kind": "factual",
+     "verdict": "Unresolved without web access; carried as uncertainty"
+    },
+    {
+     "claim": "Probability spread falls below $10 (0.07-0.12)",
+     "kind": "judgment",
+     "verdict": "0.09 given warm outlook and glut against cold-snap risk"
+    },
+    {
+     "claim": "Probability spread exceeds $65 (0.04-0.08)",
+     "kind": "judgment",
+     "verdict": "0.06"
+    },
+    {
+     "claim": "Median ~30-31",
+     "kind": "judgment",
+     "verdict": "Consensus; 31 adopted"
+    }
+   ],
+   "reference_class": "Early-December New England on-peak spark spreads (Mass Hub minus 7x Algonquin) from EIA/ISO-NE, 2023-2025"
+  }
+ ]
+}
