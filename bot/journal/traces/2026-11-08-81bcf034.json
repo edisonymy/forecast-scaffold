@@ -1,0 +1,257 @@
+{
+ "record_id": "2026-11-08-81bcf034",
+ "question": "What will be the maximum intraday value of the VIX over these biweekly periods in Q4 2026? (Nov 9 - Nov 20)",
+ "question_id": 46244,
+ "url": "https://www.metaculus.com/questions/46015/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-08T17:32:25+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.5393,
+ "asknews": false,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 23.866666666666664,
+    "25": 25.7,
+    "50": 28.099999999999998,
+    "75": 31.599999999999998,
+    "90": 36.53333333333333
+   },
+   "p_above_upper": 0.02666666666666667
+  },
+  "phase1": {
+   "10": 23.866666666666664,
+   "25": 25.7,
+   "50": 28.099999999999998,
+   "75": 31.599999999999998,
+   "90": 36.53333333333333
+  },
+  "phase2": null,
+  "spread_phase1": 0.8,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 23.8,
+   "25": 25.6,
+   "50": 27.8,
+   "75": 31.3,
+   "90": 36.2
+  },
+  "p_above_upper": 0.03
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.3106,
+   "seconds": 79.4,
+   "usage": {
+    "num_turns": 12,
+    "input": 18,
+    "cache_read": 234339,
+    "cache_write": 21964,
+    "cache_write_1h": 21964,
+    "output": 4015,
+    "thinking": 782,
+    "web_search": 4,
+    "cost_usd_envelope": 0.4755098,
+    "web_fetch": 0,
+    "duration_api_ms": 87233
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 24.0,
+     "25": 25.9,
+     "50": 28.4,
+     "75": 32.0,
+     "90": 36.6
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "VIX closed Fri Nov 6 at 25.64 (high 27.76) after Thu spike to 28.36 intraday (close 28.18 from 16.61). Window max must include Monday's high, so floor ~24-25 unless a weekend calm drives a gap down. Spike-regime mean reversion argues the prior high may not be exceeded; catalysts (CPI Nov 10, AMAT/CoreWeave earnings, likely NVDA ~Nov 18-19, AI/semis selloff, rate-hike odds) argue for retests. No matching human market found on Polymarket/Manifold/Kalshi/bookmakers.",
+   "sources": [
+    "https://www.investing.com/indices/volatility-s-p-500-historical-data",
+    "https://pro.thestreet.com/stock-market-today/2026-11-06",
+    "https://www.marketalleys.com/post/marketalleys-week-ahead-2026-11-09",
+    "https://ts2.tech/en/u-s-stocks-rebound-vix-still-54-above-wednesday/",
+    "https://palmafutures.substack.com/p/sunday-post-recap-and-week-ahead-19f"
+   ],
+   "dossier": "- Investing.com VIX daily data (fetched 2026-11-08): Nov 6 O27.68 H27.76 L23.47 C25.64; Nov 5 O17.14 H28.36 L16.70 C28.18; Nov 4 C16.61 (H19.22); Nov 3 C20.83 (H21.91); Nov 2 C21.15 (H21.77); Oct 30 C19.42 (H23.93); Oct 19-29 closes between 16.7 and 19.5, highs up to 20.7.\n- TheStreet (2026-11-06): the Nov 5 jump of +69.7% was the biggest one-day % gain since 2024-12-18 and the second-largest since Feb 2018; VVIX +49.3%; 1-day VIX hit 36.80 on Nov 6. In all 5 cases since 1990 where the VIX jumped 60%+ in a day, the S&P 500 was higher a month later.\n- Market context (several recaps, 2026-11-06/08): semiconductors ~30% off their peaks on worries about AI-infrastructure funding; Nov 6 jobs report +165K vs +59K expected, unemployment 4.1%, raising rate-hike odds; S&P down for the week; Dow at its lowest close since Oct 8; 10-year yield 4.86%; crude down ~12% on the week.\n- Calendar for the window: October CPI on Tue Nov 10 (headline expected 3.7%); earnings from CEG and TTWO (Mon), CoreWeave (Tue, implied move ±21%), Applied Materials (Thu Nov 12); Nvidia usually reports around Nov 18-20 (date not confirmed).\n- Status quo: VIX at 25.64 entering the window, with a prior intraday high of 28.36 two sessions earlier.\n- Resolves off the highest HIGH in Cboe's VIX_History.csv for Nov 9-20 (10 trading days, no holidays), not off closes.\n- Event window: Nov 9 open -> Nov 20 close per the criteria; as of Nov 8 17:30 UTC, 0% elapsed.\n- Searched for but not found: a Polymarket/Manifold/Kalshi contract on this window; Sunday-evening futures/VIX futures levels; the confirmed Nvidia earnings date.",
+   "reference_class": "Max intraday VIX over 10 trading days starting the week after a >60% one-day VIX spike, with the VIX near 25"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.8351,
+   "seconds": 67.9,
+   "usage": {
+    "num_turns": 10,
+    "input": 16,
+    "cache_read": 203895,
+    "cache_write": 20119,
+    "cache_write_1h": 20119,
+    "output": 3723,
+    "thinking": 785,
+    "web_search": 3,
+    "cost_usd_envelope": 0.40925600000000006,
+    "web_fetch": 0,
+    "duration_api_ms": 70911
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 23.4,
+     "25": 25.3,
+     "50": 27.6,
+     "75": 30.8,
+     "90": 35.5
+    },
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Starting point: VIX closed 25.64 on Fri Nov 6 after a 70% spike to 28.18 (intraday ~28.4) on Nov 5, driven by a post-midterm AI/semis selloff. The 10-day window max is floored near Monday's intraday high (~24-26). Post-spike VIX usually mean-reverts, but catalysts (CPI Nov 10, AMAT/CSCO/CoreWeave earnings, likely Nvidia earnings ~Nov 18-19) and persistent stress give real odds of exceeding 28 again. Median ~27.6 with right skew. No human prediction market found on Polymarket/Kalshi/Manifold.",
+   "sources": [
+    "https://fred.stlouisfed.org/series/VIXCLS",
+    "https://www.cnbc.com/2026/11/05/stock-market-selloff-ai-fears.html",
+    "https://www.gurufocus.com/news/9175483/vix-surges-70-spy-drops-amid-market-volatility-on-november-5-2026",
+    "https://www.marketalleys.com/post/marketalleys-week-ahead-2026-11-09",
+    "https://pro.thestreet.com/stock-market-today/2026-11-06"
+   ],
+   "dossier": "- FRED VIXCLS closes: Oct 30 19.42; Nov 2 21.15; Nov 3 20.83; Nov 4 16.61; Nov 5 28.18 (FRED, retrieved 2026-11-08).\n- Nov 5 2026: VIX +69.7%, biggest one-day % gain since Dec 18 2024; intraday high ~28.36; highest since March/April 2026 (CNBC, GuruFocus, Nov 5).\n- Cause: AI/semis selloff after Democratic midterm wins raised data-center regulation fears; S&P -3.5%, Nasdaq Comp -5.2%, Nasdaq 100 -6.4% reported; Mag 7 lost ~$1T; record 11.23M put contracts at Cboe (CNBC/Quartz, Nov 5).\n- Fri Nov 6 VIX close 25.64, up 32% on the week (news summaries, Nov 6).\n- Upcoming: October CPI Tue Nov 10 (consensus headline ~3.7%); earnings week of Nov 9: OXY, HIMS (Mon), KKR, RKLB, TTWO, CSCO, CoreWeave, AMAT (Thu after close, implied +/-10%), Nebius (week-ahead previews, Nov 7-8). Nvidia earnings typically ~Nov 18-20 (not verified this run).\n- One analyst week-ahead base case for Nov 9-13: VIX 22-28.\n- Status quo: VIX mid-20s after a spike; mean reversion typical post-spike, but elevated regime persists.\n- Resolves off Cboe VIX_History.csv HIGH column (max over Nov 9-20 trading days), not closes.\n- Event window: Nov 9 open -> Nov 20 close; as of Nov 8 17:30 UTC 0% elapsed. 10 trading days, no holidays (Thanksgiving is Nov 26).\n- Searched for but not found: latest Cboe CSV tail (fetch truncated), VIX futures term structure for Nov, any prediction market on this (none found).",
+   "reference_class": "10-trading-day max intraday VIX in the two weeks following a >50% one-day VIX spike (e.g. Dec 2024, Aug 2024, Apr 2025)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4258,
+   "seconds": 67.8,
+   "usage": {
+    "num_turns": 10,
+    "input": 16,
+    "cache_read": 202774,
+    "cache_write": 20467,
+    "cache_write_1h": 20467,
+    "output": 3703,
+    "thinking": 851,
+    "web_search": 3,
+    "cost_usd_envelope": 0.4258408,
+    "web_fetch": 0,
+    "duration_api_ms": 76932
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 24.2,
+     "25": 25.9,
+     "50": 28.3,
+     "75": 32.0,
+     "90": 37.5
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "VIX closed Fri Nov 6 at 25.64 after a 70% Thursday spike to 28.17 (AI/chip selloff after a Democratic sweep; S&P -4.4%). Window max includes Monday's high, so the floor is near 24. Mean reversion after big spikes argues for a max around 26-28, but VVIX near 135, Fed hike odds after hot jobs, CPI on Nov 10 and a likely Nvidia report late in the window (date unconfirmed) give a fat right tail into the 30s. No human market found on Polymarket, Manifold or Kalshi.",
+   "sources": [
+    "https://www.theclosingprint.net/2026/11/post-market-and-weekly-summary-2026-11-06/",
+    "https://ts2.tech/en/u-s-stocks-rebound-vix-still-54-above-wednesday/",
+    "https://www.stocktitan.net/articles/stock-market-today-live-november-5-2026",
+    "https://cappnotes.substack.com/p/closing-look-friday-november-6-2026",
+    "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv"
+   ],
+   "dossier": "- VIX closed Thu Nov 5 2026 at 28.17-28.18, up 69.7%, the biggest one-day % gain since Dec 18 2024; highest close since Mar 30 (Reuters via search; theclosingprint.net 2026-11-06).\n- VIX closed Fri Nov 6 at 25.64 (-9.01%); up 32% on the week from 19.42; 54% above Wednesday's close (~16.6) (theclosingprint.net, ts2.tech 2026-11-06).\n- Thursday intraday VIX reportedly reached ~28.09-28.2 (search summary). Friday intraday high not found.\n- Cause: AI/chip selloff after a Democratic sweep of Congress (fear of AI/data-center regulation); SOX -12.25% Thu, Nasdaq -5.5%, S&P -4.4%, worst day since Apr 2025; record 11.23M put contracts Thu (stocktitan, coin-turk 2026-11-05).\n- Fri Nov 6: S&P +0.3%, Nasdaq +1.1%; hot jobs data raised Fed hike odds; Asia chips plunged (cappnotes).\n- VVIX jumped 49.3% to 134.99 Thu, its biggest % gain since Feb 2007.\n- Before Nov 5, VIX had risen 60%+ in a day only 5 times since 1990; the S&P was higher a month later in all 5.\n- Upcoming in window: Oct CPI Tue Nov 10, 8:30 ET; Nebius/Oklo earnings Nov 10; Nvidia earnings typically ~Nov 18-20 (not confirmed).\n- Status quo: VIX starts the window ~25-26; Monday's high alone is likely about 24-27.\n- Resolves off the max HIGH in Cboe's VIX_History.csv, Nov 9 to Nov 20 (10 trading days), not off closes.\n- Event window: Nov 9 open -> Nov 20 close; as of Nov 8 17:30 UTC, 0% elapsed.\n- Searched but not found: Friday intraday high, weekend futures/VIX futures levels, any prediction market on this.",
+   "reference_class": "10-trading-day max intraday VIX following a starting close of ~25-26 shortly after a large one-day VIX spike"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1356,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1787,
+   "seconds": 24.3,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 16267,
+    "cache_write_1h": 16267,
+    "output": 2309,
+    "thinking": 428,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1786858,
+    "web_fetch": 0,
+    "duration_api_ms": 23811
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 23.8,
+     "25": 25.6,
+     "50": 27.8,
+     "75": 31.3,
+     "90": 36.2
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "VIX closed 25.64 Fri Nov 6 after a ~70% spike to ~28.2-28.4 intraday on Nov 5 (AI/semis selloff after midterms). Window max includes Monday's high, flooring the distribution near 24 barring a calm-weekend gap down. Post-spike mean reversion argues the prior high may not be retaken; CPI Nov 10, AMAT/CoreWeave earnings, likely Nvidia earnings ~Nov 18-19, hike odds after hot jobs and VVIX ~135 give a fat right tail into the 30s. No human market found on Polymarket/Manifold/Kalshi/bookmakers.",
+   "sources": [],
+   "reconciliation": "Runs agreed on all load-bearing facts: Fri close 25.64, Nov 5 spike to ~28.2 close, 10 trading days, CPI Nov 10, Nvidia date unconfirmed. Minor factual disputes (Nov 5 intraday high 28.09-28.36; S&P drop -3.5% vs -4.4%) are outside the window or immaterial and could not be settled without web access. The remaining difference is judgment on how much mean reversion offsets catalysts. I take a median near 27.8: about even odds of retesting the Nov 5 high, with right skew. I kept the runs' dispersion (~12) and reference class.",
+   "disagreements": [
+    {
+     "claim": "Nov 5 intraday high was 28.36 vs ~28.09-28.2",
+     "kind": "factual",
+     "verdict": "Unsettled without web access; immaterial since outside window, only sets the retest level ~28.2-28.4"
+    },
+    {
+     "claim": "S&P 500 fell 3.5% vs 4.4% on Nov 5",
+     "kind": "factual",
+     "verdict": "Unsettled; both describe the same severe shock, immaterial to the forecast"
+    },
+    {
+     "claim": "Median window max ~27.6 vs ~28.4",
+     "kind": "judgment",
+     "verdict": "Mean reversion vs catalyst density roughly balanced; took ~27.8"
+    },
+    {
+     "claim": "Right tail p90 35.5 vs 37.5",
+     "kind": "judgment",
+     "verdict": "Elevated VVIX and Nvidia/CPI catalysts support a fat tail; took ~36.2"
+    }
+   ],
+   "reference_class": "10-trading-day forward max intraday VIX following a >50% one-day VIX spike with VIX starting in the mid-20s"
+  }
+ ]
+}
