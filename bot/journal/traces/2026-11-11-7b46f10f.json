@@ -1,0 +1,249 @@
+{
+ "record_id": "2026-11-11-7b46f10f",
+ "question": "What will be the highest earthquake magnitude recorded during December 2026?",
+ "question_id": 46587,
+ "url": "https://www.metaculus.com/questions/46354/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-11-11T06:02:33+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.1658,
+ "asknews": false,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 6.633333333333333,
+    "25": 6.873333333333334,
+    "50": 7.166666666666667,
+    "75": 7.510000000000001,
+    "90": 7.789999999999999
+   },
+   "p_above_upper": 0.06333333333333334
+  },
+  "phase1": {
+   "10": 6.633333333333333,
+   "25": 6.873333333333334,
+   "50": 7.166666666666667,
+   "75": 7.510000000000001,
+   "90": 7.789999999999999
+  },
+  "phase2": null,
+  "spread_phase1": 0.2,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 6.6,
+   "25": 6.82,
+   "50": 7.1,
+   "75": 7.52,
+   "90": 7.75
+  },
+  "p_above_upper": 0.06
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9236,
+   "seconds": 75.8,
+   "usage": {
+    "num_turns": 5,
+    "input": 8,
+    "cache_read": 91677,
+    "cache_write": 22468,
+    "cache_write_1h": 22468,
+    "output": 4580,
+    "thinking": 1825,
+    "web_search": 1,
+    "cost_usd_envelope": 0.35290940000000004,
+    "web_fetch": 0,
+    "duration_api_ms": 80195
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 6.55,
+     "25": 6.75,
+     "50": 7.05,
+     "75": 7.45,
+     "90": 7.72
+    },
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Reference class: 130 calendar months (Jan 2016-Oct 2026) of USGS monthly-max magnitude. 61% of months had an M7.0+, 32% had M7.5+, ~5% had M8.0+ (6/130 exceeded 8.05). Sub-M7 months follow Gutenberg-Richter: ~3 M6.5+/month means only ~5% of months top out below 6.5; below 6.0 is essentially impossible. 2026 activity so far is normal (7 of 10 months had M7+), with no regime signal for December. Market check: Polymarket only prices the 2026 annual maximum (already at least 7.8) and an M9+ before 2027 (~4%); I found no market on December's maximum on Kalshi, Manifold or with bookmakers, so there is no matching anchor.",
+   "sources": [
+    "https://earthquake.usgs.gov/fdsnws/event/1/query?format=csv&starttime=2016-01-01&endtime=2026-11-11&minmagnitude=7.0",
+    "https://polymarket.com/event/megaquake-in-december",
+    "https://polym.trade/event/9pt0-or-above-earthquake-before-2027",
+    "https://predictiongenius.io/markets/eq-threshold-worldwide-m100-2027"
+   ],
+   "dossier": "- USGS catalogue (fetched 2026-11-11), M7+ events Jan 2016-Oct 2026: 79 of 130 calendar months contained at least one M7.0+ (61%); 41/130 months had max >=7.5 (32%); 7/130 had max >=8.0 (2017-09 8.2, 2018-08 8.2, 2019-05 8.0, 2021-03 8.1, 2021-07 8.2, 2021-08 8.1, 2025-07 8.8), so 6/130 had max >8.05.\n- Past Decembers' max (USGS): 2016 7.9; 2017 <7; 2018 7.5; 2019 <7; 2020 <7; 2021 7.3; 2022 <7; 2023 7.6; 2024 7.3; 2025 7.6.\n- 2026 so far (USGS): Feb 7.1, Mar 7.5, Apr 7.4, Jun 7.8, Jul 7.3, Aug 7.8, Oct 7.7 (+7.0 on Oct 22); Jan, May and Sep 2026 had no M7.\n- Gutenberg-Richter global rates (USGS long-term): ~12-15 M6+/month, ~3-4 M6.5+/month, ~1.2 M7+/month, ~0.08 M8+/month; so a month with nothing at 6.5+ is ~5%, and one with nothing at 6.0+ is essentially never.\n- Months without M7 typically top out at 6.5-6.9 (estimated from the rates above, not counted here).\n- Magnitudes are reported to 0.1, so the outcome is discrete; USGS sometimes revises magnitude by 0.1 to 0.2 in the days after an event.\n- Resolves off USGS earthquake search (reported magnitude, generally Mw for large events), not other agencies.\n- Event window: 2026-12-01 -> 2026-12-31 per the criteria; as of 2026-11-11, 0% elapsed.\n- Markets: Polymarket only has 2026 annual-max and M9+/M10+ before 2027 markets; no market on December's maximum found.\n- Searched for but did not get: a full M6-6.9 monthly-max table (shell download blocked).",
+   "reference_class": "Monthly maximum USGS earthquake magnitude, Jan 2016-Oct 2026 (130 months)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5707,
+   "seconds": 64.5,
+   "usage": {
+    "num_turns": 5,
+    "input": 8,
+    "cache_read": 93498,
+    "cache_write": 19372,
+    "cache_write_1h": 19372,
+    "output": 4081,
+    "thinking": 1408,
+    "web_search": 1,
+    "cost_usd_envelope": 0.29494360000000003,
+    "web_fetch": 0,
+    "duration_api_ms": 65660
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 6.75,
+     "25": 6.97,
+     "50": 7.25,
+     "75": 7.58,
+     "90": 7.85
+    },
+    "p_above_upper": 0.08
+   },
+   "reasoning": "Reference class: monthly maximum global Mw. With ~15 M7+/yr and b=1, P(no M7 in a month)~27%, P(M8+)~10%, implying median ~7.2. USGS Jan 2025-Oct 2026 monthly maxima have median ~7.45 (an active period: 8.8 Kamchatka, several 7.7-7.8 in 2026), so I shade the median up a little to ~7.25. November 2026 so far tops out at M6.4, which carries no information about December. No human market prices December 2026; Polymarket's full-year 2026 max market (7.9 or below ~76-84%) is a different contract, used as context only. Upper escape >8.05 priced at ~8%, the base-rate monthly chance of an M8.1+.",
+   "sources": [
+    "https://earthquake.usgs.gov/fdsnws/event/1/query (M6.8+ 2025-01-01 to 2026-11-11)",
+    "https://earthquake.usgs.gov/fdsnws/event/1/query (M6+ Nov 2026)",
+    "https://polymarket.com/event/highest-earthquake-magnitude-in-2026",
+    "https://polym.trade/event/9pt0-or-above-earthquake-before-2027"
+   ],
+   "dossier": "- USGS catalog M6.8+ (fetched 2026-11-11), monthly maxima: 2025 Jan 7.1, Feb 7.6, Mar 7.7, Apr 6.9, May 7.4, Jun <6.8, Jul 8.8 (Kamchatka), Aug 7.5, Sep 7.8, Oct 7.6, Nov 6.8, Dec 7.6; 2026 Jan <6.8, Feb 7.1, Mar 7.5, Apr 7.4, May 6.9, Jun 7.8 (Philippines), Jul 7.3, Aug 7.8 (Indonesia), Sep <6.8, Oct 7.7 (Panama). So over 22 months: 3 months below 6.8, 3 months at 6.8-6.9, 16 months at 7.0 or above, 1 month at 8.0 or above.\n- The 2025-2026 period had about 19 M7+/yr, above the long-run average of ~15/yr (USGS long-term statistic, background knowledge).\n- Gutenberg-Richter model, b~1, ~1.25-1.3 M7+/month: P(monthly max <6.8)~13%, <7.0~27%, <7.2~44%, <7.4~60%, <7.6~72%, <7.8~81%, <8.05~89%. M8+ happens ~1/yr, so ~8-10% per month.\n- November 2026 so far (through Nov 11, USGS): largest M6.4 Solomon Islands (Nov 9); also M6.1 Fiji, M6.1 off Japan, M6.0 Vanuatu.\n- No human market for December 2026 alone. Polymarket has a full-year 2026 max-magnitude market (closes 2027-01-07); the 2026 max to date is 7.8.\n- Resolves off USGS Mw of the largest event dated in December 2026 (UTC presumably), not off other agencies unless USGS is unavailable.\n- Event window: 2026-12-01 -> 2026-12-31 per the criteria; as of 2026-11-11, 0% elapsed.\n- Bounds 5.95-8.05, both open: a monthly max below 6.0 is essentially impossible (expected ~10+ M6+ events/month); above 8.05 needs an M8.1+, ~8-10%/month base rate.\n- Searched for: a Metaculus/human market specific to December 2026 (none found).",
+   "reference_class": "Global monthly maximum earthquake magnitude (USGS), Gutenberg-Richter with ~15 M7+/yr; empirical monthly maxima Jan 2025-Oct 2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2758,
+   "seconds": 49.7,
+   "usage": {
+    "num_turns": 4,
+    "input": 6,
+    "cache_read": 64396,
+    "cache_write": 17957,
+    "cache_write_1h": 17957,
+    "output": 4142,
+    "thinking": 1602,
+    "web_search": 1,
+    "cost_usd_envelope": 0.27576919999999994,
+    "web_fetch": 0,
+    "duration_api_ms": 52658
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 6.6,
+     "25": 6.9,
+     "50": 7.2,
+     "75": 7.5,
+     "90": 7.8
+    },
+    "p_above_upper": 0.06
+   },
+   "reasoning": "Reference class: USGS monthly maximum magnitude over the 34 months Jan 2024-Oct 2026. 7 of 34 months had a max below 6.8, the median is ~7.3, ~90% are at or below 7.8, and one month (Jul 2025, M8.8) exceeded 8.05. Gutenberg-Richter at ~1.2 M7+/month gives P(no M7+) ~29%, median ~7.25 and P(>8.05) ~8-10%. Long-run M8+ is ~1/yr, so I put 6% on the upper escape. I declared nothing below 5.95 since ~11 M6+ quakes occur per month. Market check: only Polymarket contracts on the 2026 annual maximum exist, which is a different contract (whole year, not December). I used it only as background, not as an anchor; no December-specific market was found. Quakes are essentially memoryless, so I applied no case-specific adjustment.",
+   "sources": [
+    "https://earthquake.usgs.gov/fdsnws/event/1/query?format=csv&starttime=2024-01-01&endtime=2026-11-11&minmagnitude=6.8",
+    "https://en.wikipedia.org/wiki/List_of_earthquakes_in_2026",
+    "https://www.volcanodiscovery.com/earthquakes/news/402622/World-earthquake-report-for-6-Nov-2026.html",
+    "https://polymarket.com/market/will-the-highest-magnitude-earthquake-in-2026-be-7pt9-or-below"
+   ],
+   "dossier": "- Resolves off the USGS catalog Mw of the largest quake dated December 2026, not any other agency's figure unless USGS is unavailable.\n- Event window: 2026-12-01 -> 2026-12-31 (UTC) per the criteria; as of 2026-11-11 0% elapsed (the window has not started).\n- USGS query, M>=6.8, Jan 2024-Oct 2026: monthly maximums were 2024: Jan 7.5, Feb <6.8, Mar 6.9, Apr 7.4, May <6.8, Jun 7.2, Jul 7.4, Aug 7.1, Sep <6.8, Oct <6.8, Nov 6.8, Dec 7.3; 2025: Jan 7.1, Feb 7.6, Mar 7.7, Apr 7.4, May 7.4, Jun <6.8, Jul 8.8, Aug 7.5, Sep 7.8, Oct 7.6, Nov 6.8, Dec 7.6; 2026: Jan <6.8, Feb 7.1, Mar 7.5, Apr 7.4, May 6.9, Jun 7.8, Jul 7.3, Aug 7.8, Sep <6.8, Oct 7.7.\n- Over those 34 months: 7 had a max below 6.8 (21%); 1 exceeded 8.05 (Jul 2025, M8.8 Kamchatka); 3 had a max of 7.8.\n- Over Decembers only: Dec 2024 max 7.3, Dec 2025 max 7.6.\n- Long-run USGS global rates: ~12-18 M7+ per year (~1.0-1.5 per month), ~1 M8+ per year, ~130 M6+ per year. A Poisson model with b=1 gives P(month with no M7+) of roughly 22-37%.\n- Below 5.95: a month with no M6+ quake is essentially unprecedented in the modern catalog.\n- Early November 2026: largest events found were M5.7 central Japan (Nov 8) and M5.2 Puerto Rico (Nov 5); no major ongoing sequence found.\n- Searched for but not found: any December-specific market. Polymarket only lists contracts on the 2026 annual maximum, which is a different contract.\n- Earthquake occurrence is close to memoryless at the global monthly scale; aftershock clustering from a large late-November event would raise December's maximum.",
+   "reference_class": "USGS monthly maximum earthquake magnitude, Jan 2024-Oct 2026 (34 months), cross-checked with Gutenberg-Richter global rates"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.3141,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1917,
+   "seconds": 28.1,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 17035,
+    "cache_write_1h": 17035,
+    "output": 2653,
+    "thinking": 768,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1917098,
+    "web_fetch": 0,
+    "duration_api_ms": 27585
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 6.6,
+     "25": 6.82,
+     "50": 7.1,
+     "75": 7.52,
+     "90": 7.75
+    },
+    "p_above_upper": 0.06
+   },
+   "reasoning": "Reference class is USGS monthly-max magnitude over 130 months, 2016-2026. Empirically about 37-39% of months have no M7+, which is more than the textbook Poisson 27-29% because large quakes cluster. 32% of months reach M7.5+ and about 4.6-7% exceed M8.05. December has no seasonal effect and early November shows no active sequence, so the base rate applies with little adjustment. Conditional on staying inside the range, the median is about 7.1.",
+   "sources": [],
+   "reconciliation": "The main factual dispute was the chance of a month with no M7+. Runs 2 and 3 used a Gutenberg-Richter rate model (~27-29%). Run 1's 130-month count gives 39%, and Run 3's own 34-month table gives 12/34 = 35%, so the empirical figure of about 37% wins and puts the median near 7.1 rather than 7.2-7.25. For the chance above 8.05, the empirical 4.6% and the long-run rate model's 7-8% were combined into 6%. How much to weight the recent active period is a judgment call; I treated monthly activity as close to memoryless and weighted the longer record. No December-specific market exists; the Polymarket annual-max contracts are a different contract and were not used as an anchor. No web retrieval was done on this run.",
+   "disagreements": [
+    {
+     "claim": "Chance of a month with no M7+: ~27-29% (rate model) vs ~37-39% (counted)",
+     "kind": "factual",
+     "verdict": "Settled in favour of the counted figure: Run 3's own table gives 35% and Run 1's 130-month count gives 39%. Used ~37%."
+    },
+    {
+     "claim": "Monthly chance of a quake above M8.05: 5% vs 8%",
+     "kind": "factual",
+     "verdict": "Counted record gives 4.6% and the long-run rate gives 7-8%. Could not settle further; used 6%."
+    },
+    {
+     "claim": "Shade the median up for the active 2025-2026 period",
+     "kind": "judgment",
+     "verdict": "Little weight given, since activity is close to memoryless and early November shows no sequence. Weighted the long record."
+    }
+   ],
+   "reference_class": "USGS global monthly maximum moment magnitude, Jan 2016-Oct 2026 (130 months), cross-checked against the Jan 2024-Oct 2026 monthly table"
+  }
+ ]
+}
