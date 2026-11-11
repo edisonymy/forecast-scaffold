@@ -1,0 +1,255 @@
+{
+ "record_id": "2026-11-11-2d052f83",
+ "question": "How many miles driven autonomously will Tesla Robotaxi have driven as of December 1, 2026?",
+ "question_id": 46721,
+ "url": "https://www.metaculus.com/questions/46465/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-11T21:02:49+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.4234,
+ "asknews": false,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 6.3500000000000005,
+    "25": 6.656666666666666,
+    "50": 6.983333333333333,
+    "75": 7.41,
+    "90": 8.049999999999999
+   },
+   "p_below_lower": 0.02
+  },
+  "phase1": {
+   "10": 6.3500000000000005,
+   "25": 6.656666666666666,
+   "50": 6.983333333333333,
+   "75": 7.41,
+   "90": 8.049999999999999
+  },
+  "phase2": null,
+  "spread_phase1": 0.45,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 6.33,
+   "25": 6.6,
+   "50": 6.88,
+   "75": 7.25,
+   "90": 7.8
+  },
+  "p_below_lower": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.1957,
+   "seconds": 92.4,
+   "usage": {
+    "num_turns": 11,
+    "input": 14,
+    "cache_read": 185278,
+    "cache_write": 22409,
+    "cache_write_1h": 22409,
+    "output": 4827,
+    "thinking": 1345,
+    "web_search": 4,
+    "cost_usd_envelope": 0.4270376,
+    "web_fetch": 0,
+    "duration_api_ms": 102452
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 6.3,
+     "25": 6.52,
+     "50": 6.75,
+     "75": 7.08,
+     "90": 7.65
+    }
+   },
+   "reasoning": "Robotaxi Stats read Tesla's live counter at 4.81M on Nov 9 3:20 AM PT; confirmed 3.1M thru Oct 18. Counter readings (>3.3M Oct 21, >3.4M ~Oct 24, 4.81M Nov 9) imply a near-constant ~80-88k mi/day extrapolation, consistent with the confirmed 550k-mile week of Oct 12-18. Continuing at that pace for ~22.5 days to Dec 1 adds ~1.8M -> ~6.6-6.7M. Upside: actual pace is higher (~700k/wk as of Oct 31, growing ~17-20%/wk, Cybercab additions in Nov); a new safety report could recalibrate the counter to a higher base and pace (7-8M+). Downside: a downward recalibration or an early-day snapshot. No human prediction market found (the Manifold candidate asks about a level-4 launch in summer 2025, not miles).",
+   "sources": [
+    "https://www.robotaxistats.com/",
+    "https://dockduty.com/blog/tesla-robotaxi-safety-report.html",
+    "https://www.nextbigfuture.com/2026/10/tesla-robotaxi-ramp-in-texas-and-florida-tracking-to-pass-waymo-by-end-of-2026.html",
+    "https://electrek.co/2026/09/03/tesla-announces-1-million-unsupervised-miles-driven-by-robotaxi/",
+    "https://www.notateslaapp.com/news/4860/tesla-names-next-robotaxi-cities-shares-miles-driven-safety-data"
+   ],
+   "dossier": "- Robotaxi Stats (robotaxistats.com) shows Tesla live counter estimate 4.81M miles, 'read Nov 9, about 3:20 AM PT'; labels it 'Tesla Robotaxi Safety Report live counter (estimate at fleet's current pace)'. Snapshot frequency is not disclosed; readings look opportunistic.\n- Tesla Robotaxi Safety Report (published Oct 21, 2026): 3.1M driverless miles Jan 22-Oct 18, 2026 (Austin 2.118M, Dallas 0.608M, Houston 0.226M, Orlando 61k, Tampa 53k, Miami 46k) (dockduty.com, notateslaapp).\n- Live counter >3.3M on Oct 21 (Not a Tesla App); >3.4M around Oct 23-24 (press reports).\n- Implied counter pace: Oct 21->Nov 9 ~79k/day; Oct 24->Nov 9 ~88k/day; confirmed week Oct 12-18 = ~550k miles (~79k/day) (NextBigFuture). The counter appears to extrapolate the last reported pace.\n- NextBigFuture (late Oct): ~4.1M unsupervised miles as of Oct 31; ~700k miles/week, growing 17-20%/week; 1,325 unsupervised vehicles in TX+FL; 300 Cybercabs each planned for Dallas and Houston in November; projects ~2M miles/week by late Nov (advocate source, optimistic).\n- Earlier milestones: 1M unsupervised miles announced Sep 3, 2026 (Electrek); ~2M by end of Q3 2026.\n- Texas DMV registry: 1,302 Tesla vehicles on Nov 10 (robotaxistats).\n- Status quo: counter keeps rising at ~80-88k/day -> roughly 6.6-6.7M by late Dec 1. A new safety report before Dec 1 could reset the counter base and pace (direction uncertain; actual activity is likely above the counter pace).\n- Resolves off the robotaxistats.com snapshot timestamped Dec 1, 2026 PST (fallback: tesla.com/robotaxi), in millions.\n- Event window: point reading on Dec 1, 2026 (PST); as of Nov 11 21:00 UTC, ~20 days remain (about 2.5 days elapsed since the last known reading of Nov 9).\n- Searched, could not find: any counter reading after Nov 9; Tesla's safety-report update cadence; tesla.com/robotaxi page (403).\n- No human prediction market found on this quantity.",
+   "reference_class": "Linear extrapolation of Tesla's live-counter pace (fixed rate from the last safety-report period) over the remaining horizon"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3608,
+   "seconds": 67.5,
+   "usage": {
+    "num_turns": 10,
+    "input": 12,
+    "cache_read": 149585,
+    "cache_write": 20685,
+    "cache_write_1h": 20685,
+    "output": 3979,
+    "thinking": 802,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3607659999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 76856
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 6.5,
+     "25": 6.85,
+     "50": 7.2,
+     "75": 7.65,
+     "90": 8.3
+    },
+    "p_below_lower": 0.01
+   },
+   "reasoning": "Tesla live counter read 4,806,465 on Nov 9 3:20 AM PT (robotaxistats); NextBigFuture had 4.1M on Nov 1, implying ~90k mi/day (~630-700k/wk), with claimed 17-20% weekly growth and 600 Cybercabs added in Nov. ~22.9 days remain to end of Dec 1 PST. Flat pace gives ~6.9M; moderate growth ~7.4M; aggressive ~8.1M+. Downside risks: counter is an extrapolation that could be rebased to a lower confirmed figure at the next safety report; pace stall. No human market found matching this contract (Manifold candidate is about a summer-2025 L4 launch, irrelevant).",
+   "sources": [
+    "https://www.robotaxistats.com/",
+    "https://www.nextbigfuture.com/2026/10/tesla-robotaxi-ramp-in-texas-and-florida-tracking-to-pass-waymo-by-end-of-2026.html",
+    "https://driveteslacanada.ca/robotaxi/tesla-robotaxi-safety-report-zero-injuries/",
+    "https://electrek.co/2026/09/03/tesla-announces-1-million-unsupervised-miles-driven-by-robotaxi/"
+   ],
+   "dossier": "- robotaxistats.com (read 2026-11-11): Tesla live counter 4,806,465 miles on Nov 9 ~3:20 AM PT; counter described as an estimate at the fleet's current pace, not confirmed total.\n- Tesla Robotaxi Safety Report (launched ~Oct 23 2026): 3.1M confirmed driverless miles through Oct 18; live counter passed 3.3M at time of press coverage (~Oct 23-24) (driveteslacanada, notateslaapp).\n- Electrek 2026-09-03: 1M unsupervised miles announced early Sept 2026.\n- Q3 2026 earnings coverage: nearly 2M unsupervised miles in Q3.\n- NextBigFuture (late Oct/early Nov 2026): 4.1M total as of Nov 1; ~700k miles/week; up from 550k in week Oct 12-18; author claims 17-20% weekly growth; fleet ~1,325 in TX+FL; 600 Cybercabs planned for Dallas/Houston in November; author projects ~2M miles/week by last week of Nov (advocate source, optimistic).\n- Implied counter pace Nov 1->Nov 9: ~0.7M in 8 days (~88k/day). Oct ~23 (3.3M) -> Nov 1 (4.1M): ~0.8M in ~9 days.\n- Operations: driverless in Austin, Dallas, Fort Worth, Houston, Miami, Orlando, Tampa; supervised in SF Bay Area (Wikipedia).\n- Status quo: counter continues accumulating at ~90-100k/day; flat-pace extrapolation from Nov 9 to end of Dec 1 PST (~22.9 days) gives ~6.9M.\n- Downside mechanisms: counter is an extrapolation and could be rebased to a lower confirmed figure if a new safety report publishes; operational pause/incident.\n- Resolution: resolves off robotaxistats.com latest snapshot dated Dec 1 2026 PST (in millions), fallback tesla.com/robotaxi.\n- Event window: value read at Dec 1 2026 PST snapshot; as of Nov 11 the Oct 18 confirmed-data -> Dec 1 span is ~55% elapsed.\n- Searched but not found: a counter reading after Nov 9; the counter's exact update methodology; any prediction market on this number.",
+   "reference_class": "Linear/compound extrapolation of Tesla's live robotaxi mileage counter over a ~3-week horizon, based on Oct-Nov 2026 accumulation rates"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7686,
+   "seconds": 85.8,
+   "usage": {
+    "num_turns": 12,
+    "input": 16,
+    "cache_read": 215421,
+    "cache_write": 21862,
+    "cache_write_1h": 21862,
+    "output": 4833,
+    "thinking": 1133,
+    "web_search": 3,
+    "cost_usd_envelope": 0.4078581999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 91201
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 6.25,
+     "25": 6.6,
+     "50": 7.0,
+     "75": 7.5,
+     "90": 8.2
+    },
+    "p_below_lower": 0.03
+   },
+   "reasoning": "Live counter 4.81M on Nov 9 03:20 PT (robotaxistats); 4.0M Oct 30, 3.1M confirmed Oct 18 -> pace ~75k/day rising to ~84k/day. ~22.9 days remain to end of Dec 1 PST. Flat pace gives ~6.7M; modest acceleration from Austin expansion (442 sq mi) and fleet growth gives ~7.0M; aggressive Cybercab ramp (NBF claims ~2,000 vehicles, 2M mi/wk) gives ~8M+, though observed growth is far below NBF's 17-20%/wk claim. Small tail for counter stall/recalibration to confirmed figures. No human market found on this quantity; Manifold candidate (L4 summer 2025) is unrelated.",
+   "sources": [
+    "https://www.robotaxistats.com/",
+    "https://www.nextbigfuture.com/2026/10/tesla-robotaxi-ramp-in-texas-and-florida-tracking-to-pass-waymo-by-end-of-2026.html",
+    "https://www.nextbigfuture.com/2026/10/tesla-robotaxi-have-over-4-million-unsupervised-miles.html",
+    "https://teslanorth.com/2026/11/09/tesla-austin-robotaxi-area-expansion-442/",
+    "https://electrek.co/2026/09/03/tesla-announces-1-million-unsupervised-miles-driven-by-robotaxi/"
+   ],
+   "dossier": "- robotaxistats.com (fetched 2026-11-11): Tesla live counter 4,806,465 miles at Nov 9 2026 ~03:20 PT; described as 'estimate at the fleet's current pace'; confirmed 3.1M through Oct 18 (Safety Report, published Oct 21). Only one live snapshot visible on page.\n- NextBigFuture Oct 30 2026: 'over 4 million unsupervised miles' per @robotaxi X account; ~1,200 unsupervised robotaxis in TX+FL.\n- NextBigFuture Oct 31 2026: 1,325 robotaxis, 4.1M cumulative, claims 700k mi/week growing 17-20%/week; projects ~2,000 vehicles and ~2M mi/week by end Nov (300 Cybercabs each to Dallas, Houston) — promotional source, not verified.\n- Electrek Sep 3 2026: 1M unsupervised miles announced. Q3 end: ~2M cumulative (cryptobriefing). Late Jul 2026: 380k.\n- Implied pace: Oct18->Oct30 ~75k/day; Oct30->Nov9 ~84k/day (~590k/wk), i.e. lower than NBF's 700k/wk claim and growth much slower than 17-20%/wk.\n- TeslaNorth Nov 9 2026: Austin service area expanded 272->442 sq mi (Robotaxi Tracker estimate); vehicle count in zone unknown.\n- Forbes (Templeton) Oct 28 2026 questions 'unsupervised' label (remote oversight) — definitional critique, resolution uses Tesla's counter regardless.\n- Status quo: counter keeps ticking at current pace; constant 84k/day from Nov 9 03:20 to Dec 1 end PST (~22.9 days) adds ~1.9M.\n- Resolution instrument: resolves off Tesla's live estimate as shown on robotaxistats.com latest snapshot dated Dec 1 2026 PST; fallback tesla.com/robotaxi. Not off confirmed safety-report miles (which lag and are lower).\n- Event window: value read at latest Dec 1 2026 PST snapshot; as of Nov 11 21:00 UTC, ~23% of the Nov 9->Dec 1 extrapolation span elapsed.\n- Downside mechanisms: counter recalibration to confirmed figures, counter stall, snapshot timing earlier in the day, pace slowdown (incidents/regulatory pause).\n- Upside: Cybercab fleet additions, new cities, larger service areas raising per-vehicle utilization.\n- Searched but not found: robotaxistats historical snapshot series; tesla.com page (403); any prediction market on this quantity.",
+   "reference_class": "Linear/modestly accelerating extrapolation of Tesla live miles counter using its Oct-Nov 2026 observed daily pace"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.5973,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1763,
+   "seconds": 21.0,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 16881,
+    "cache_write_1h": 16881,
+    "output": 1945,
+    "thinking": 622,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1763178,
+    "web_fetch": 0,
+    "duration_api_ms": 20375
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 6.33,
+     "25": 6.6,
+     "50": 6.88,
+     "75": 7.25,
+     "90": 7.8
+    },
+    "p_below_lower": 0.01
+   },
+   "reasoning": "Robotaxi Stats read Tesla's live counter at 4,806,465 miles on Nov 9 at about 3:20 AM PT. Earlier readings were >3.3M on Oct 21 and ~4.1M around Oct 31/Nov 1. Those imply the counter's pace rose from ~79k/day to ~88k/day, so it seems to be refreshed upward slowly. It is not growing at the 17-20%/week NextBigFuture claims. About 22.9 days remain to the end of Dec 1 PST. Flat pace gives ~6.7-6.85M. Modest growth from adding Cybercabs and expanding the Austin area points to ~6.9-7.1M. A new safety report could rebase the counter higher or lower. No human prediction market matches: the Manifold candidate asks about an L4 launch in summer 2025 and says nothing about miles.",
+   "sources": [],
+   "reconciliation": "All three runs agree on the anchor: 4.806M on Nov 9 at 3:20 PT, with a counter pace of ~80-90k/day. Their gaps are almost all judgment calls: how much the pace grows, and how heavily to weight NBF's optimistic claims. Run 2's 88k/day from Nov 1 and Run 1's 79k/day from Oct 21 are consistent once you allow that the pace rose over time, so the factual inputs fit together. One factual point stays unsettled: whether the counter's pace updates continuously or only when a safety report comes out. I can't confirm that without web access, so I priced both. The observed growth in pace (~10% over about 2 weeks) supports a median a little above flat extrapolation, about 6.9M. I put little weight on NBF's figure of 2M miles/week, because counter readings so far don't show that kind of acceleration. Going below 5M would take a collapse or a large downward rebase, so that tail is tiny.",
+   "disagreements": [
+    {
+     "claim": "Current counter pace: ~79-84k/day vs ~88-90k/day",
+     "kind": "factual",
+     "verdict": "Both are right over different windows. The pace rose from ~79k/day (from Oct 21) to ~88k/day (Nov 1-9)."
+    },
+    {
+     "claim": "Whether the counter's pace accelerates before Dec 1 (fleet and Cybercab additions)",
+     "kind": "judgment",
+     "verdict": "Modest acceleration is likely given the observed upward drift. NBF's 17-20%/week is not supported by the counter readings."
+    },
+    {
+     "claim": "Whether the counter updates continuously or only at safety-report releases",
+     "kind": "factual",
+     "verdict": "Couldn't settle without web access. I priced it through the width of the distribution, including a possible rebase either way."
+    },
+    {
+     "claim": "Size of the low tail (stall or rebase down to confirmed miles)",
+     "kind": "judgment",
+     "verdict": "Small. Even confirmed miles through mid-to-late November would probably be ≥5M, so p_below_lower is about 1%."
+    }
+   ],
+   "reference_class": "Short-horizon extrapolation of Tesla's live robotaxi mile counter, using its own pace in Oct-Nov 2026"
+  }
+ ]
+}
