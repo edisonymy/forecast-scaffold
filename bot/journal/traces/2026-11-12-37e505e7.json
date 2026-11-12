@@ -1,0 +1,253 @@
+{
+ "record_id": "2026-11-12-37e505e7",
+ "question": "How many French departments will VigiEau show at the \"Crise\" drought level on December 4, 2026?",
+ "question_id": 46723,
+ "url": "https://www.metaculus.com/questions/46467/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-11-12T21:02:58+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.8194,
+ "asknews": true,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 18.0,
+    "25": 24.5,
+    "50": 31.0,
+    "75": 36.833333333333336,
+    "90": 42.0
+   },
+   "p_below_lower": 0.043333333333333335
+  },
+  "phase1": {
+   "10": 18.0,
+   "25": 24.5,
+   "50": 31.0,
+   "75": 36.833333333333336,
+   "90": 42.0
+  },
+  "phase2": null,
+  "spread_phase1": 3.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 17.0,
+   "25": 24.0,
+   "50": 30.0,
+   "75": 36.0,
+   "90": 42.0
+  },
+  "p_below_lower": 0.05
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4572,
+   "seconds": 72.4,
+   "usage": {
+    "num_turns": 10,
+    "input": 14,
+    "cache_read": 182875,
+    "cache_write": 23017,
+    "cache_write_1h": 23017,
+    "output": 4548,
+    "thinking": 989,
+    "web_search": 3,
+    "cost_usd_envelope": 0.4571820000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 85443
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 20.0,
+     "25": 26.5,
+     "50": 33.0,
+     "75": 38.5,
+     "90": 43.0
+    },
+    "p_below_lower": 0.04
+   },
+   "reasoning": "VigiEau API on Nov 12 shows ~42 departments with max level crise (79 on Oct 5, 72 Oct 26, 48 Nov 2, 44 Nov 9). Decline has slowed after the Oct 31 decree-expiry cliff to ~0.5/day. Several prefectures (Ardennes, Aube, Nord, Rhône) extended decrees to Dec 31; groundwater 64% below normal favors persistence; but a wetter late November and expiries on Nov 15/30 (Côte-d'Or, Côtes-d'Armor) push down. Extrapolation gives low-30s median by Dec 4. No human market found on Polymarket/Manifold/Kalshi.",
+   "sources": [
+    "https://api.vigieau.gouv.fr/api/departements",
+    "https://www.data.gouv.fr/api/1/datasets/donnee-secheresse-vigieau/",
+    "https://www.actu-alt-plus.com/nature-science-planete/secheresse-france-2026-fin-pluie-octobre-nappes-restrictions/41569/",
+    "https://www.ardennes.gouv.fr/Actions-de-l-Etat/Environnement/Eaux-Milieux-aquatiques/La-mission-inter-service-de-l-eau-et-de-la-nature-Misen/Les-mesures-en-cas-de-secheresse/Arretes-limitant-certains-usages-de-l-eau-en-cours",
+    "https://www.letribunaldunet.fr/meteo/blocage-anticyclonique-effondrement-mi-novembre-secheresse.html"
+   ],
+   "dossier": "- VigiEau API (api.vigieau.gouv.fr/api/departements, fetched 2026-11-12): ~42 departments with niveauGraviteMax = crise, incl. 974 Réunion; list: 01,02,08,09,10,11,16,17,18,21,22,25,28,29,31,32,33,34,35,36,37,39,40,44,45,46,47,49,56,58,63,65,66,69,70,71,81,82,85,89,90,974 (the summary I fetched had minor inconsistencies, so ±2).\n- Crise department counts from actu-alt-plus / news citing VigiEau: Jul 10: 42; Jul 27: 62; Aug 25: 79; Aug 31: 77; Sep 28: 78; Oct 5: 79; Oct 26: 72; Nov 2: 48; Nov 9: 44 (search snippet).\n- Large drop between Oct 26 and Nov 2 coincided with many decrees expiring Oct 31.\n- Decrees extended to Dec 31 2026: Ardennes (crise department), Aube, Nord/Pas-de-Calais, Rhône/Grand Lyon (prefecture sites and news, late Oct 2026).\n- Côtes-d'Armor in crise since Aug 14, decrees to Nov 30; water pressure cuts extended around Saint-Brieuc (Ouest-France, Nov 10). Côte-d'Or decree to Nov 15.\n- BRGM, Nov 1: 64% of groundwater points below monthly normal; Breton bedrock, Limousin, Jura and Champagne chalk flagged.\n- Weather (letribunaldunet / meteo-paris, early Nov): heavy rain Nov 9-15 mainly south/southeast; high pressure Nov 16-22; oceanic, more disturbed flow possible late Nov; seasonal outlook above-normal rain for northern France Nov-Jan.\n- Background: low Rhine water levels disrupting fuel transport (CNEWS, Nov 12).\n- Status quo: counts move only when prefects issue or repeal decrees; recent pace about -0.5/day after the Oct 31 cliff.\n- Resolution: resolves off the VigiEau carte-historique count of departments at Crise for Dec 4 2026 (likely departments with at least one zone at crise); data.gouv dataset is the fallback.\n- Event window: single-day snapshot on 2026-12-04; as of Nov 12, 22 days remain.\n- Searched, absent: historical early-December crise counts from past years (2022/2023); full list of expiry dates for current decrees.",
+   "reference_class": "Short-horizon (3-week) persistence/decay of VigiEau crise department counts during autumn recession of a severe drought year (2026 trajectory Oct-Nov)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9445,
+   "seconds": 81.4,
+   "usage": {
+    "num_turns": 10,
+    "input": 14,
+    "cache_read": 185142,
+    "cache_write": 23508,
+    "cache_write_1h": 23508,
+    "output": 5286,
+    "thinking": 1643,
+    "web_search": 3,
+    "cost_usd_envelope": 0.48731040000000003,
+    "web_fetch": 0,
+    "duration_api_ms": 93396
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 18.0,
+     "25": 24.0,
+     "50": 30.0,
+     "75": 35.0,
+     "90": 40.0
+    },
+    "p_below_lower": 0.04
+   },
+   "reasoning": "The live VigiEau API (Nov 12) lists 42 departments with at least one zone at Crise, down from 48 on Nov 2 and 44 on Nov 9 (79 on Oct 5). The decline is slowing to about 2-4 per week. 22 days remain to Dec 4. Above-normal rain is forecast for northern France, and many restriction orders expire mid- or end-November, which argues for further falls. Persistent groundwater-driven crises (Brittany socle, Charente/Vendée, Gironde, Pyrénées-Orientales, La Réunion before its rains) set a floor. Median about 30; small tail below 9.5 if orders are lifted en masse. No human market found on Polymarket, Kalshi, Manifold or bookmakers.",
+   "sources": [
+    "https://api.vigieau.gouv.fr/api/departements",
+    "https://www.data.gouv.fr/api/1/datasets/donnee-secheresse-vigieau/",
+    "https://www.actu-alt-plus.com/nature-science-planete/secheresse-france-2026-fin-pluie-octobre-nappes-restrictions/41569/",
+    "https://www.actu-alt-plus.com/nature-science-planete/nappes-phreatiques-france-novembre-2026-recharge-brgm/42253/",
+    "https://fr.wikipedia.org/wiki/S%C3%A9cheresse_de_2022_en_France_m%C3%A9tropolitaine"
+   ],
+   "dossier": "- VigiEau API api.vigieau.gouv.fr/api/departements, fetched 2026-11-12: 42 departments with max level 'crise' (Ain, Aisne, Ardennes, Ariège, Aude, Aveyron, Charente, Charente-Maritime, Cher, Côte-d'Or, Côtes-d'Armor, Doubs, Eure-et-Loir, Finistère, Haute-Garonne, Gers, Gironde, Hérault, Ille-et-Vilaine, Indre, Indre-et-Loire, Jura, Loire-Atlantique, Loiret, Lot, Lot-et-Garonne, Maine-et-Loire, Morbihan, Nièvre, Puy-de-Dôme, Rhône, Haute-Saône, Saône-et-Loire, Tarn, Tarn-et-Garonne, Vendée, Yonne, Territoire de Belfort, La Réunion, Pyrénées-Atlantiques, Pyrénées-Orientales, Hautes-Pyrénées); about 17 at alerte renforcée.\n- actu-alt-plus (Nov 2026, citing VigiEau): Crise departments 42 on Jul 10, 79 on Aug 25, 79 on Oct 5, 48 on Nov 2 (21 at alerte renforcée), 44 on Nov 9. -39% Oct 5 to Nov 2.\n- One unverified web-search summary claimed 32 at crise on Nov 12; this conflicts with the API's 42.\n- October 2026 rain: normal nationally but uneven; Mediterranean 234-600% of normal, Atlantic-facing areas -40 to -50%.\n- Météo-France seasonal outlook Nov 2026-Jan 2027: above-normal rain favored across about 3/4 of northern France; no dominant scenario in the Southeast; temperatures above normal everywhere.\n- BRGM: 66% of aquifers below normal in early Nov; recovery needs excess winter rain; Brittany socle, Limousin, Jura limestone and Champagne chalk most vulnerable.\n- Local news: Calvados lifted all restrictions (order of Nov 4); Mayenne eased (Nov 10); Savoie eased restrictions until Nov 20; Côtes-d'Armor in crise since Aug 14 with water-pressure cuts extended Nov 10; Finistère in crise since Aug 7 with orders to Nov 15; Gironde (Barbanne/Pomerol) crise persisting in November.\n- Restriction orders commonly carry expiry dates of mid- or end-November; renewal is a prefecture decision.\n- Resolves off the VigiEau carte-historique count of departments at 'Crise' for 2026-12-04 (fallback: the data.gouv VigiEau dataset), not off news counts.\n- Event window: single-day snapshot of 2026-12-04; as of Nov 12, 22 days remain.\n- Searched for but not found: an exact late-Nov/Dec 2022 Crise-department count as an analog; a human market (none on Polymarket, Manifold, Kalshi).",
+   "reference_class": "Autumn decay of the national VigiEau/Propluvia Crise-department count after severe summer droughts (2022, 2026 trajectory to date)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.5855,
+   "seconds": 101.5,
+   "usage": {
+    "num_turns": 15,
+    "input": 20,
+    "cache_read": 299398,
+    "cache_write": 29154,
+    "cache_write_1h": 29154,
+    "output": 5736,
+    "thinking": 1410,
+    "web_search": 5,
+    "cost_usd_envelope": 0.6409895999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 117362
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 16.0,
+     "25": 23.0,
+     "50": 30.0,
+     "75": 37.0,
+     "90": 43.0
+    },
+    "p_below_lower": 0.05
+   },
+   "reasoning": "Count in crisis (departments with at least one zone at crise): 79 (Oct 5), 72 (Oct 26), 48 (Nov 2), 44 (Nov 9); a third-party site showed 32 on Nov 12, but with 23 departments' data unavailable. The decline is slowing. Many orders expire Nov 15 or Nov 30 and are usually lowered one level when they do, and above-normal rain is forecast for the north. That argues for further step drops. But groundwater stays very low (64% of points below normal; Brittany, Limousin and the northeast are worst), and some crisis orders already run to Dec 31 (Vosges, Rhône Val de Saône), so a hard core should persist. Status-quo extrapolation of about 4 per week gives the low 30s. Median ~30. No human market found (harness: none on Polymarket/Manifold; Kalshi and bookmakers not searched).",
+   "sources": [
+    "https://www.actu-alt-plus.com/nature-science-planete/secheresse-france-2026-fin-pluie-octobre-nappes-restrictions/41569/",
+    "https://www.actu-alt-plus.com/nature-science-planete/nappes-phreatiques-france-novembre-2026-recharge-brgm/42253/",
+    "https://www.reussir.fr/articles/secheresse-2026-encore-75-departements-en-situation-de-crise-quelles-consequences-sur-les",
+    "https://vigirisque.fr/restrictions-eau/",
+    "https://www.data.gouv.fr/api/1/datasets/donnee-secheresse-vigieau/",
+    "web search results: Vosges/Rhône/Nord/Ardennes prolongation to Dec 31, Loire-Atlantique to Nov 30, Saône-et-Loire to Nov 15"
+   ],
+   "dossier": "- Departments with >=1 zone in 'crise' (media counts from VigiEau): 62 (Jul 27), 75 (Sep 3, reussir.fr), 77 (Aug 31), 78 (Sep 28), 79 (Oct 5 peak), 72 (Oct 26), 48 (Nov 2), 44 (Nov 9) [actu-alt-plus.com Nov 2026 articles].\n- vigirisque.fr snapshot cited ~Nov 12: 32 crise, 22 alerte renforcée, 17 alerte, 7 vigilance, 23 'data unavailable' (the gaps make it unreliable as a full count). Its Sep 15 snapshot showed 74 crise.\n- Weekly change: -7 over 3 weeks (Oct 5-26), -24 (Oct 26-Nov 2, after late-October rains), -4 (Nov 2-9).\n- Order expiries: Finistère crise to Nov 15; Saône-et-Loire extended to Nov 15 with 6 of 8 zones lowered; Loire-Atlantique extended to Nov 30 with the Maine basin lowered from crise to alerte renforcée; Calvados fully lifted Nov 2; Corrèze moved to alerte Nov 7.\n- Orders extended to Dec 31: Vosges crise across the whole department; Rhône with Val de Saône in crise (Oct 29); Nord/Lille restrictions; Ardennes; Grand Lyon area.\n- Côtes-d'Armor in crise since Aug 14; water-pressure cuts extended Nov 10 (Ouest-France).\n- BRGM Nov 1: 64% of groundwater points below normal, recharge begun at only 27%; worst in Breton bedrock, Limousin, Champagne chalk, Jura, Vosges sandstone, Lorraine.\n- October rain about normal nationally; southeast ~2x normal; Atlantic coast and southern Occitanie -40 to -50%.\n- Météo-France Nov-Jan outlook: above-normal rain over ~3/4 of northern France, warm everywhere, no preferred scenario for the southeast.\n- Low Rhine water mid-November disrupting fuel transport in Alsace (CNEWS Nov 12): east still dry.\n- Status quo: crisis count keeps falling slowly as orders expire, with a groundwater-driven core persisting.\n- Resolves off the VigiEau carte-historique count of departments at 'Crise' for Dec 4, 2026 (fallback: the data.gouv VigiEau dataset or credible sources). Not off media tallies of a different date.\n- Event window: single-day snapshot on Dec 4, 2026; as of Nov 12, about 22 days remain.\n- Searched but not found: an official VigiEau count for Nov 12 (could not download the geojson), a 2022 December count for an analog, and any prediction market (none found).",
+   "reference_class": "Autumn de-escalation of French drought crisis counts after severe summers (2022 Propluvia, 2026 trajectory to date), extrapolated from the current level at the recent weekly decline rate"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.2432,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1836,
+   "seconds": 23.0,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 16939,
+    "cache_write_1h": 16939,
+    "output": 2288,
+    "thinking": 378,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1836418,
+    "web_fetch": 0,
+    "duration_api_ms": 22422
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 17.0,
+     "25": 24.0,
+     "50": 30.0,
+     "75": 36.0,
+     "90": 42.0
+    },
+    "p_below_lower": 0.05
+   },
+   "reasoning": "Official VigiEau API shows 42 departments at Crise on Nov 12 (79 Oct 5, 72 Oct 26, 48 Nov 2, 44 Nov 9). Status-quo drift of ~2-4/week over 22 days gives low-30s; Nov 15 and Nov 30 decree expiries plus forecast above-normal northern rain argue for further step drops, while very low groundwater (64-66% of points below normal) and orders running to Dec 31 (Vosges, Rhône, Ardennes) keep a hard core. Median ~30. No human market found (Polymarket, Manifold, Kalshi, bookmakers).",
+   "sources": [],
+   "reconciliation": "Factual dispute: Nov 12 count 42 (official API, runs 1-2) vs 32 (vigirisque snapshot, run 3). The vigirisque figure was missing data for 23 departments, so the API value of 42, consistent with 44 on Nov 9, is taken as the starting point. All three runs carry essentially the same evidence (decline trajectory, decree expiries, groundwater deficit, seasonal rain outlook); the remaining disagreement is judgment on how steep the Nov 15/Nov 30 expiry drops will be. I take median 30 with a slightly fatter low tail for a possible Nov 30 cliff akin to Oct 31, and keep ~5% below 9.5. Upper escape (>75.5) needs a winter re-intensification, implausible. Run 3's dispersion basis broadly carried forward.",
+   "disagreements": [
+    {
+     "claim": "Number of Crise departments on Nov 12: 42 vs 32",
+     "kind": "factual",
+     "verdict": "42 favored: official API, consistent with Nov 9 = 44; the 32 snapshot lacked data for 23 departments"
+    },
+    {
+     "claim": "Pace of decline through Dec 4 (slow drift vs expiry cliffs)",
+     "kind": "judgment",
+     "verdict": "Unresolvable from evidence; median 30 with wider lower tail for a Nov 30 cliff"
+    },
+    {
+     "claim": "Size of the low tail below 9.5 (4% vs 5%)",
+     "kind": "judgment",
+     "verdict": "5%, given the Oct 31 precedent of a -24 single-week drop"
+    }
+   ],
+   "reference_class": "Autumn decline of VigiEau Crise department counts after a severe summer drought (2026 trajectory Oct-Nov; 2022 autumn analog)"
+  }
+ ]
+}
