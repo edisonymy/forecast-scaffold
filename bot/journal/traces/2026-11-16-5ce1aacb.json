@@ -1,0 +1,253 @@
+{
+ "record_id": "2026-11-16-5ce1aacb",
+ "question": "What will be the highest significant wave height at NDBC buoy 46026 (18 NM west of San Francisco) on November 26, 2026 (UTC)?",
+ "question_id": 46857,
+ "url": "https://www.metaculus.com/questions/46597/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-11-16T18:52:05+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.5708,
+ "asknews": false,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 2.0333333333333337,
+    "25": 2.533333333333333,
+    "50": 3.1333333333333333,
+    "75": 3.9,
+    "90": 4.833333333333333
+   },
+   "p_above_upper": 0.015
+  },
+  "phase1": {
+   "10": 2.0333333333333337,
+   "25": 2.533333333333333,
+   "50": 3.1333333333333333,
+   "75": 3.9,
+   "90": 4.833333333333333
+  },
+  "phase2": null,
+  "spread_phase1": 0.4,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 1.9,
+   "25": 2.4,
+   "50": 3.0,
+   "75": 3.8,
+   "90": 4.8
+  },
+  "p_above_upper": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.3349,
+   "seconds": 78.9,
+   "usage": {
+    "num_turns": 10,
+    "input": 16,
+    "cache_read": 211581,
+    "cache_write": 21534,
+    "cache_write_1h": 21534,
+    "output": 4652,
+    "thinking": 613,
+    "web_search": 2,
+    "cost_usd_envelope": 0.48882320000000007,
+    "web_fetch": 0,
+    "duration_api_ms": 83484
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 2.1,
+     "25": 2.6,
+     "50": 3.2,
+     "75": 3.9,
+     "90": 4.7
+    }
+   },
+   "reasoning": "Anchor on late-November daily-max WVHT climatology at 46026 (median ~2.5-2.8 m). Shift upward for an exceptionally active, strong-El Nino storm pattern: buoy daily maxima Nov 9-16 ran 2.9-7.0 m, NWS MTR forecasts more large swells midweek, and a news summary I could not verify cites seven or eight swell pulses through Thanksgiving week, with heights staying above 10 ft. At a 10-day lead persistence is weak, so the spread stays near climatological; a lull is possible (~1.5-2 m) and another major groundswell could reach 5-6 m. Markets: the harness found no market on Polymarket or Manifold; I did not search Kalshi or bookmakers myself.",
+   "sources": [
+    "https://www.ndbc.noaa.gov/data/realtime2/46026.txt",
+    "https://forecast.weather.gov/product.php?site=MTR&issuedby=MTR&product=AFD",
+    "https://santamariatimes.com/news/local/periods-of-rain-winds-cooler-temps-on-tap-unsettled-through-thanksgiving-central-coast-weather-report/article_32dee22b-1c85-4bbd-88ac-aa42b0da91d5.html",
+    "WebSearch results page: 'San Francisco swell forecast Thanksgiving week November 2026 surf' (summaries of SF Chronicle/Yahoo coverage)"
+   ],
+   "dossier": "- Resolves off the max WVHT in the NDBC 46026 realtime2 txt file for rows timestamped 2026-11-26 00:00-23:50 UTC; MM rows are ignored; annulled if there is no valid value.\n- Event window: 2026-11-26 00:00 -> 23:50 UTC. As of Now (2026-11-16 18:50Z), 0% elapsed; the window opens in about 9.2 days.\n- Buoy realtime file (read 2026-11-16 via a summarizing fetch tool; values approximate): daily max WVHT Nov 9 4.3, Nov 10 3.1, Nov 11 2.9, Nov 12 2.9, Nov 13 4.5, Nov 14 7.0 (another pass said 6.7), Nov 15 4.4, Nov 16 (partial) 6.6. Readings Nov 16 15:50-17:50Z were 5.2 -> 4.4 m at 11-11.6 s dominant period, with NW wind 6-8 m/s. Reported water temp 18.5 C.\n- NWS MTR AFD (issued 10:20 AM PST Mon Nov 16): seas up to 20 ft through Tue morning, easing Tue afternoon, then building again Wed with larger swells, gale gusts and thunderstorms; no marine detail for Nov 23-27.\n- Santa Maria Times (Nov 14, updated Nov 15): another 8-10 ft WNW swell (285 deg, 15-17 s) arrives Thu Nov 19 and holds through Fri; 'unsettled through Thanksgiving'; no Nov 26 specifics.\n- Web search summary of SF Chronicle/Yahoo coverage (mid-Nov 2026; the article itself would not load): 'seven or eight pulses' of swell possible through Thanksgiving week, forecast wave heights not dropping below 10 ft all week, and king tides near Thanksgiving.\n- Context: a strong El Nino is cited, and the Nov 14 event was called the biggest waves in years (Mavericks 40-60 ft).\n- Climatology (from the question background; no buoy-specific percentile table found): typical late-Nov daily max at 46026 is about 2-3.5 m, calm days near 1.5 m, major NW groundswell days above 4-5 m. Monthly-mean Hs at offshore central CA is 1.6-2.5 m in winter. A daily max over about 72 hourly-equivalent reports runs about 0.2-0.5 m above the daily mean.\n- Status quo: an active, swell-dominated regime at present, but persistence of a specific level over 10 days is weak; lulls between systems are common.\n- Searched but not found: WW3/surf-forecast guidance reaching Nov 26; CDIP or NDBC historical percentile tables for 46026 in November; any prediction market (none on Polymarket or Manifold per the harness search; Kalshi and bookmakers not checked).",
+   "reference_class": "Daily maximum WVHT at NDBC 46026 on late-November days (climatology), adjusted for an active El Nino storm regime"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.8461,
+   "seconds": 72.7,
+   "usage": {
+    "num_turns": 11,
+    "input": 20,
+    "cache_read": 276850,
+    "cache_write": 22603,
+    "cache_write_1h": 22603,
+    "output": 4246,
+    "thinking": 635,
+    "web_search": 2,
+    "cost_usd_envelope": 0.503772,
+    "web_fetch": 0,
+    "duration_api_ms": 76525
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 2.2,
+     "25": 2.7,
+     "50": 3.3,
+     "75": 4.1,
+     "90": 5.1
+    },
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Target day is 10 days out, beyond deterministic wave forecast range, so climatology dominates: typical late-Nov daily max at 46026 ~2-3.5 m (median ~2.7). Shifted up for an exceptionally active strong-El Nino storm track (news: 7-8 swell pulses through Thanksgiving; buoy daily maxima Nov 9-16 of 2.9-7.0 m, per the realtime file read through WebFetch). NWS CWF shows seas easing to 4-6 ft by Fri Nov 20, showing lulls occur. Right skew for NW groundswell events; small >7.05 m tail. No human market found on Polymarket/Kalshi/Manifold/bookmakers.",
+   "sources": [
+    "https://www.ndbc.noaa.gov/data/realtime2/46026.txt",
+    "https://forecast.weather.gov/shmrn.php?mz=pzz545",
+    "https://www.yahoo.com/news/weather-news/articles/california-could-see-another-round-015230212.html",
+    "WebSearch results: SF Chronicle/Surfer/SFist coverage of Nov 2026 El Nino swells"
+   ],
+   "dossier": "- NDBC 46026 realtime file (read 2026-11-16 via WebFetch, where a helper model summarized and quoted rows; not verified by a direct script): daily max WVHT Nov 9: 4.3, Nov 10: 3.1, Nov 11: 2.9, Nov 12: 3.0, Nov 13: 4.5, Nov 14: 7.0, Nov 15: 4.4, Nov 16 (partial): 6.6 m. At 18:00 UTC Nov 16 the reading was ~4.4 m, DPD 17 s, MWD ~265-280.\n- NWS MTR coastal waters forecast PZZ545 (issued 10:05 AM PST Mon Nov 16): seas 10-14 ft Mon; 7-10 ft Tue; S gale Tue night-Wed (25-30 kt, gusts 40 kt), seas 8-11 ft; 9-13 ft Wed night-Thu (W 12 ft at 15 s); 6-9 ft falling to 5-7 ft Fri; 4-6 ft Fri night Nov 20. Nothing covers Nov 26.\n- Yahoo/SF Chronicle (Nov 15, 2026): a strong El Nino is underway; SSTs are 10+ F above normal; NWS said 'we don't drop below 10 ft forecast wave heights this week'; seven or eight swell pulses are expected through Thanksgiving; and lunar cycles will raise water levels during Thanksgiving week. No specific swell forecast for Nov 26 was found.\n- Climatology (question background): winter monthly-mean Hs at central CA offshore buoys is 1.6-2.5 m; a typical late-Nov daily peak at 46026 is ~2-3.5 m; calm days bottom out near 1.5 m; major NW swells push daily maxima above 4-5 m. The buoy sits in 53 m of water on the shelf, so readings run somewhat below deep-water offshore values.\n- Resolves off the maximum WVHT among rows with UTC timestamps on 2026-11-26 in the 46026 realtime2 txt file, not off station-page summaries or QC'd archives.\n- Event window: 2026-11-26 00:00 to 23:50 UTC. As of 2026-11-16T18:50Z, 0% has elapsed (the window starts in ~9.2 days).\n- Searched but not found: any wave-model (WW3/GFS-Wave) forecast or Surfline outlook specific to Nov 25-27; any Polymarket/Kalshi/Manifold market (none found).\n- Two-sided evidence: the active storm track favors repeated large NW swells; on the other hand, lulls of 4-6 ft seas (~1.5 m) appear in the forecast even this week (Fri night Nov 20).",
+   "reference_class": "Daily maximum WVHT at NDBC 46026 on late-November days (climatology), adjusted for active El Nino winters"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3423,
+   "seconds": 61.5,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 120838,
+    "cache_write": 19050,
+    "cache_write_1h": 19050,
+    "output": 3399,
+    "thinking": 574,
+    "web_search": 1,
+    "cost_usd_envelope": 0.3423406,
+    "web_fetch": 0,
+    "duration_api_ms": 68554
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1.8,
+     "25": 2.3,
+     "50": 2.9,
+     "75": 3.7,
+     "90": 4.7
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "Resolution is 10 days out, beyond deterministic wave skill, so anchor on late-November climatology for daily max of 10-min WVHT at 46026 (median ~2.5-2.7 m). Adjust up modestly for a very active regime: Nov 9-16 daily maxima were 4.3,3.1,2.9,3.1,4.5,6.7,4.4,6.6 m, strong El Nino reported, NWS forecasts another system around Nov 21. Persistence of regime at 10 days is weak, and calm days near 1.5-2 m remain plausible. No human market found (Polymarket/Manifold/Kalshi none). Small upper escape >7.05 m only for an extreme direct storm.",
+   "sources": [
+    "https://www.ndbc.noaa.gov/data/realtime2/46026.txt",
+    "https://forecast.weather.gov/product.php?site=MTR&issuedby=MTR&product=CWF",
+    "https://forecast.weather.gov/product.php?site=MTR&issuedby=MTR&product=AFD",
+    "https://watchers.news/2026/11/16/huge-waves-pummel-california-coast-el-nino-piers-closed-pacifica-san-diego/"
+   ],
+   "dossier": "- NDBC 46026 realtime file (fetched 2026-11-16): daily max WVHT Nov 9: 4.3, Nov 10: 3.1, Nov 11: 2.9, Nov 12: 3.1, Nov 13: 4.5, Nov 14: 6.7, Nov 15: 4.4, Nov 16 (partial): 6.6 m.\n- NWS MTR coastal waters forecast, Point Reyes-Pigeon Point 10-60 NM (issued 1005 AM PST Mon Nov 16 2026): seas 10-14 ft today, 7-10 ft Tue, 8-11 ft Wed, 9-13 ft Thu (W 12 ft @15 s), 6-9 ft subsiding to 5-7 ft Fri afternoon, 4-6 ft Fri night (Nov 20).\n- NWS MTR forecast discussion (Nov 16): impactful system Wed-Thu (Nov 18-19) with gale gusts; another system bringing rain by Saturday Nov 21; temperatures below normal (troughy pattern).\n- watchers.news (2026-11-16): huge waves on CA coast attributed to a strong El Nino; piers closed from Pacifica to San Diego.\n- Some Thanksgiving-week swell news results (SF Chronicle, Lompoc Record) may come from earlier years; treat them as unverified.\n- Climatology (question background): late-November peak WVHT at 46026 is typically ~2-3.5 m; calm days ~1.5 m; major NW groundswell events push it above 4-5 m. A daily max over 10-min records runs ~0.2-0.4 m above the daily mean.\n- Status quo: no deterministic skill at 10-day lead; climatology plus regime.\n- Resolves off the max WVHT in the 46026 realtime2 txt file for rows 2026-11-26 00:00-23:50 UTC; MM rows ignored; an outage annuls the question.\n- Event window: 2026-11-26 00:00 -> 23:50 UTC; as of Nov 16 18:50Z, 0% elapsed (window starts in ~9.2 days).\n- Searched, absent: any wave model output valid Nov 26; any prediction market (none on Polymarket/Manifold/Kalshi).",
+   "reference_class": "Daily maximum WVHT at NDBC 46026 on late-November days (climatology), adjusted for an active El Nino storm regime"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.2927,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1852,
+   "seconds": 19.7,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 17716,
+    "cache_write_1h": 17716,
+    "output": 2056,
+    "thinking": 260,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1852178,
+    "web_fetch": 0,
+    "duration_api_ms": 19026
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 1.9,
+     "25": 2.4,
+     "50": 3.0,
+     "75": 3.8,
+     "90": 4.8
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "This is a climatology-dominated forecast: Nov 26 is about 10 days out, beyond wave-model skill. Late-Nov daily-max WVHT at 46026 has a median of about 2.6 m. I shifted it up modestly for an exceptionally active strong-El Nino storm track (every daily max Nov 9-16 was 2.9-7.0 m, and news reports more swell pulses through Thanksgiving). Lulls still occur, though: NWS forecasts 4-6 ft seas by Nov 20. Right skew for NW groundswell events, with a tiny chance of exceeding 7.05 m. No human market found.",
+   "sources": [],
+   "reconciliation": "The runs shared the same evidence. The only factual dispute is the Nov 14 max (6.7 vs 7.0 m, both read via summarizing fetch tools). I cannot settle it without web access, and it is immaterial at a 10-day lead. The main dispute is a judgment: how far to shift above climatology for the active El Nino regime (run medians 2.9-3.3). I weighed the regime evidence (8 straight days at or above 2.9 m, news of repeated pulses) against forecast lulls to about 1.5 m and the fact that the news claim is unverified and may date from an earlier year. That lands me at a median of about 3.0 m. I keep each run's climatological reference class and a dispersion near Run 2's, since at this lead skill is near zero.",
+   "disagreements": [
+    {
+     "claim": "Nov 14 daily max WVHT was 7.0 m vs 6.7 m",
+     "kind": "factual",
+     "verdict": "Unresolvable without web access; immaterial to a 10-day-ahead forecast"
+    },
+    {
+     "claim": "Size of the upward regime shift from the ~2.6 m climatological median (medians 2.9 vs 3.2 vs 3.3)",
+     "kind": "judgment",
+     "verdict": "Modest shift to ~3.0: regime persistence is real but weak at 10 days, the forecast already shows lulls, and the 'pulses through Thanksgiving' report is unverified"
+    },
+    {
+     "claim": "Width and upper tail (90th pct 4.7 vs 5.1; p_above_upper 0-0.02)",
+     "kind": "judgment",
+     "verdict": "90th ~4.8 with right skew; 1% escape above 7.05 m"
+    },
+    {
+     "claim": "Whether a human market exists",
+     "kind": "factual",
+     "verdict": "Run 1 didn't check Kalshi, but Runs 2-3 found none on Polymarket, Manifold or Kalshi; I take none as existing"
+    }
+   ],
+   "reference_class": "Late-November daily maximum 10-min WVHT at NDBC 46026 (central California shelf buoy), adjusted for active El Nino winters"
+  }
+ ]
+}
