@@ -1,0 +1,243 @@
+{
+ "record_id": "2026-11-16-b8023fd9",
+ "question": "Which of Nvidia, AMD, Broadcom, or Micron will post the highest percentage change in closing share price from the November 13, 2026 close to the November 27, 2026 close?",
+ "question_id": 46831,
+ "url": "https://www.metaculus.com/questions/46571/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "multiple_choice",
+ "forecast_at": "2026-11-16T04:41:47+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.3759,
+ "asknews": true,
+ "pools": {
+  "pooled_runs": {
+   "Nvidia (NVDA)": 0.2667504076702639,
+   "AMD": 0.26341567798973997,
+   "Broadcom (AVGO)": 0.20320553340573103,
+   "Micron (MU)": 0.26662838093426505
+  },
+  "phase1": {
+   "Nvidia (NVDA)": 0.2667504076702639,
+   "AMD": 0.26341567798973997,
+   "Broadcom (AVGO)": 0.20320553340573103,
+   "Micron (MU)": 0.26662838093426505
+  },
+  "phase2": null,
+  "spread_phase1": 0.01,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probabilities": {
+   "Nvidia (NVDA)": 0.27,
+   "AMD": 0.27,
+   "Broadcom (AVGO)": 0.19,
+   "Micron (MU)": 0.27
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3493,
+   "seconds": 43.4,
+   "usage": {
+    "num_turns": 6,
+    "input": 8,
+    "cache_read": 96973,
+    "cache_write": 21629,
+    "cache_write_1h": 21629,
+    "output": 3100,
+    "thinking": 459,
+    "web_search": 4,
+    "cost_usd_envelope": 0.3493446,
+    "web_fetch": 0,
+    "duration_api_ms": 53665
+   },
+   "estimate": {
+    "Nvidia (NVDA)": 0.26,
+    "AMD": 0.27,
+    "Broadcom (AVGO)": 0.19,
+    "Micron (MU)": 0.28
+   },
+   "reasoning": "Prior: four highly correlated chip names over a 2-week window start near 25% each; higher-volatility names (AMD, MU) get a slight edge for the max, and Broadcom (lowest vol) is shaded down. NVDA has an idiosyncratic catalyst (Q3 FY27 earnings Nov 17, first under interim CEO Kress; options imply ~8.3% move), which raises its variance, and it sits at a depressed valuation after the Huang exit, so a relief rally is plausible. Good NVDA results would also lift MU (HBM supplier). An unconfirmed-date report of a premarket rebound (NVDA +4%, AMD/MU +6%) was not weighted heavily. Market check: no Polymarket/Kalshi/Manifold/bookmaker contract matching this question found; a Lines.com contract on NVDA closing above $150 on Nov 13 is not comparable.",
+   "sources": [
+    "https://financefeeds.com/nvidia-nvda-stock-162-85-saturday-week-ahead-q3-results-17-november-first-under-kress-bull-187-bear-149/",
+    "https://247wallst.com/investing/2026/11/13/amd-tumbles-11-broadcom-and-intel-slide-6-as-chip-rally-reverses/",
+    "https://finance.yahoo.com/markets/stocks/articles/micron-stocks-fall-3-96-175931806.html",
+    "https://www.tradingkey.com/analysis/stocks/us-stocks/262300663-coreweave-nvda-mu-amd-sndk-tradingkey",
+    "https://finance.biggo.com/news/e3955735-3864-4d91-9410-1bb343753cb8",
+    "https://www.lines.com/prediction-markets/finance/stocks/nvda-close-above-on-november-13-2026"
+   ],
+   "dossier": "- NVDA closed Nov 13, 2026 at $162.85, -2.01% on the day; -12.75% from $186.64 on Nov 6 (financefeeds, Nov 14).\n- Broadcom closed Nov 13 at $347.01, -4.76% (stockanalysis/247wallst search summary, Nov 13).\n- AMD fell ~10-11% on Nov 13, trading near $523 intraday (247wallst, Nov 13); the exact close was not verified.\n- MU fell ~4-5% Nov 13, intraday ~$767, Friday low $750.25, after-hours $761.20 (Yahoo/financefeeds, Nov 13-15). One preview says MU is 'up 12.8% into Nvidia week' (financefeeds).\n- Catalyst: NVDA Q3 FY27 earnings after the close Tue Nov 17, the first under interim CEO Kress; consensus EPS $2.47, revenue $109.2B; the options market implies an ~8.3% move (biggo, Nov). Forbes (Nov 13) says NVDA is at its lowest valuation since 2012.\n- MU sells HBM to NVDA, so NVDA results feed through to memory names.\n- A TradingKey premarket report (date not fully verified, possibly Nov 16) shows NVDA +4%, AMD and MU +6%, and CoreWeave +16% on its debt/guidance news.\n- Volatility ordering: AMD and MU have the highest realized daily moves recently (5-11%), AVGO the lowest of the four, and NVDA elevated by the CEO shock.\n- The 1-year return leader is MU (~+293%), ahead of AMD (~+98%) (NerdWallet, Nov 2).\n- Status quo: no information on relative performance after Nov 13. Base rate for an equal-vol 4-way race is 25% each; high-vol names are favored somewhat for the max.\n- Resolves off Yahoo Finance daily Close figures, Nov 13 vs Nov 27, 2026 (Nov 27 is a 1pm early close); not total return or after-hours prices.\n- Event window: Nov 13 close -> Nov 27 close. As of Nov 16 04:40 UTC, 0 of 9 trading sessions have elapsed.\n- Searched for Polymarket/Kalshi/Manifold/bookmaker contracts on this question: none found.",
+   "reference_class": "Best performer among 4 highly correlated large-cap semiconductor stocks over 2-week windows, weighted by relative volatility"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7453,
+   "seconds": 50.7,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 128789,
+    "cache_write": 22268,
+    "cache_write_1h": 22268,
+    "output": 3195,
+    "thinking": 314,
+    "web_search": 4,
+    "cost_usd_envelope": 0.3959668,
+    "web_fetch": 0,
+    "duration_api_ms": 61042
+   },
+   "estimate": {
+    "Nvidia (NVDA)": 0.27,
+    "AMD": 0.26,
+    "Broadcom (AVGO)": 0.21,
+    "Micron (MU)": 0.26
+   },
+   "reasoning": "Four highly correlated high-vol chip names over a 10-session window: relative winner is near-random, tilted toward the highest-idiosyncratic-vol names (largest right tails). NVDA gets an extra idiosyncratic variance boost from its Nov 17 earnings (first under interim CEO) and is oversold after a 6-week losing streak and an HSBC downgrade; AMD and MU are the highest-beta names. AVGO is somewhat lower vol and still under a cloud from its weak AI outlook. No human market prices this contract (Polymarket/Manifold/Kalshi checked: only NVDA price-level contracts and Kalshi stock perps exist, not matching).",
+   "sources": [
+    "https://finance.yahoo.com/markets/stocks/articles/stock-market-today-nov-13-222002466.html",
+    "https://www.heygotrade.com/en/news/nvidia-nvda-stock-news-november-16-2026/",
+    "https://stockinvest.us/stock-news/micron-falls-252-to-77831-on-friday-2026-11-13",
+    "https://finance.yahoo.com/markets/stocks/articles/micron-stocks-fall-3-96-175931806.html",
+    "https://247wallst.com/investing/2026/11/02/polymarket-traders-missed-nvidias-october-drop-heres-what-they-predict-for-november/"
+   ],
+   "dossier": "- Nov 13 2026 closes (Yahoo Finance market wrap): NVDA $162.85 (-2.01%), AMD $534.06 (-8.75%), AVGO $347.01 (-4.76%). MU close is reported inconsistently: $773.07 (-3.18%) in some reports, $778.31 (-2.52%) per stockinvest.us. S&P 500 -0.41%, Nasdaq -0.90%.\n- HSBC downgraded NVDA to hold on Nov 13 and cut its price target from $375 to $170, citing the CEO exit and possible export restrictions on non-US/Taiwan revenue (~11% of revenue) (Yahoo, Nov 13).\n- NVDA: sixth straight weekly decline, the longest since 2012; down 33% from its 52-week high of $243.37; 52-week low $148.80; Q3 FY27 consensus revenue ~$108.9B, +91% y/y (heygotrade, Nov 13-16).\n- NVDA reports Q3 FY27 after the close on Nov 17, its first report under interim CEO Kress. This is the main scheduled idiosyncratic catalyst in the window.\n- MU is down from $1,065 to ~$762 since late-September earnings (-28%), and is up ~1,350% YTD per Motley Fool (Nov 15). Its latest guide is ~$61.5B quarterly revenue.\n- AMD is ~20% below its highs and AVGO ~30% below its highs. The earlier sector selloff was blamed on a weak AI outlook from Broadcom (Motley Fool / Yahoo, Nov 2026).\n- On Nov 11, AMD rallied ~7% and AVGO ~4% after hours on reports of Huang's possible removal (question background).\n- Daily moves of 4-10% are routine in all four names; the group is highly correlated.\n- Markets are closed Nov 26 and close early at 1pm ET on Nov 27.\n- Resolves off Yahoo Finance historical Close values, Nov 13 to Nov 27, not intraday or after-hours prices.\n- Event window: Nov 13 close -> Nov 27 close. As of Nov 16 04:40 UTC, 0 of 10 sessions have elapsed.\n- Markets searched: no Polymarket, Manifold or Kalshi contract matches this question. Only NVDA price-level markets and Kalshi stock perps exist.\n- Base-rate framing: the winner of a 4-stock race is roughly uniform, tilted toward the names with the highest idiosyncratic volatility. A beaten-down stock with an earnings catalyst has a fatter tail in both directions.\n- Searched but not found: options-implied move for NVDA earnings, and any scheduled catalysts for AMD/AVGO/MU in the window.",
+   "reference_class": "Two-week relative-performance races among 4 correlated large-cap semiconductor stocks; winner probability ~ proportional to idiosyncratic volatility"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.1378,
+   "seconds": 56.3,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 129816,
+    "cache_write": 22328,
+    "cache_write_1h": 22328,
+    "output": 3566,
+    "thinking": 476,
+    "web_search": 5,
+    "cost_usd_envelope": 0.3924472,
+    "web_fetch": 0,
+    "duration_api_ms": 64389
+   },
+   "estimate": {
+    "Nvidia (NVDA)": 0.27,
+    "AMD": 0.26,
+    "Broadcom (AVGO)": 0.21,
+    "Micron (MU)": 0.26
+   },
+   "reasoning": "With roughly zero expected drift over a two-week window, a four-way race among highly correlated semis is close to uniform, with a small tilt toward the most volatile names, which reach the top more often. NVDA carries the window's only scheduled catalyst (Q3 FY27 earnings Nov 17, the first report under interim CEO Kress), which adds stock-specific variance, and it is down about 13% on the week, so it can bounce or keep falling. AMD and MU have the largest daily moves in this regime, and MU is tied to Nvidia demand as Nvidia is its biggest customer. AVGO had a strong prior-week rally per one weekly recap (fell 4.76% Nov 13) and is lower-beta; its earnings are normally in December, outside the window. No human market prices this race: Polymarket's NVDA monthly price-level markets and Kalshi's CEO-succession and earnings markets do not match the contract.",
+   "sources": [
+    "https://stockinvest.us/stock-news/nvidia-down-201-at-16285-on-friday-2026-11-13",
+    "https://stockinvest.us/stock-news/micron-falls-252-to-77831-on-friday-2026-11-13",
+    "https://www.fool.com/investing/2026/11/13/why-micron-stock-was-sliding-today/",
+    "https://finance.yahoo.com/markets/article/amd-broadcom-stocks-jump-as-nvidia-ceo-jensen-huang-resigns-143725561.html",
+    "https://www.openingbelldailynews.com/p/stock-market-this-week-broadcom-18-percent-nov-14-2026",
+    "https://polymarket.com/event/what-price-will-nvda-hit-in-november-2026",
+    "https://kalshi.com/company-reports/nvda",
+    "https://finance.yahoo.com/markets/stocks/articles/stock-market-today-nov-13-222002466.html"
+   ],
+   "dossier": "- Nov 13 2026 closes (search snippets from news recaps, not checked against Yahoo history pages): NVDA $162.85 (-2.01%, stockinvest.us); MU $778.31 (-2.52%, stockinvest.us / globalbankingandfinance); AMD $534.06 (-8.75%) and AVGO $347.01 (-4.76%) (search-result summary of Yahoo/news articles).\n- NVDA: Jensen Huang resigned Nov 12; CFO Kress is interim CEO; NVDA fell ~13% over the five sessions to Nov 13, its worst week since Apr 2025 (Bloomberg/stockinvest, Nov 13). HSBC downgraded NVDA to Hold on CEO uncertainty Nov 13 (Yahoo Finance).\n- NVDA reports Q3 FY27 after the close on Tue Nov 17; consensus EPS ~$2.49 vs $1.24 a year ago (Kalshi company-reports page). This is the only major scheduled catalyst in the window.\n- MU: down ~20% in a month (24/7 Wall St, Nov 13); Nvidia is its biggest customer; record fiscal Q4 revenue of $54.2B; trades under 5x forward earnings (Motley Fool, Nov 13-15). Fell 5.4% intraday Nov 13 and closed -2.52%.\n- AVGO: a weekly recap headline reads 'Broadcom jumps 18.2%' for the week ending Nov 14 (openingbelldailynews); a Yahoo headline cites a '24% weekly rally cools before Nvidia results'. AVGO fiscal Q4 earnings are normally in early-to-mid December, outside the window (no 2026 date confirmed).\n- AMD and AVGO rose ~5% on news of Huang's exit and then reversed lower (Yahoo Finance, Nov 12-13).\n- Regime: daily moves of 4-10% are routine for all four names (question background).\n- No ex-dividend dates in the window; Nov 26 market holiday; Nov 27 half-day session.\n- Status quo / base rate: with ~zero drift, a 4-way best-performer race is ~25% each, tilted toward higher-volatility names (MU and AMD have the largest realized moves; NVDA has earnings-event variance; AVGO is somewhat lower-beta).\n- Market check: no Polymarket, Kalshi or Manifold contract on this relative race; only NVDA price-level and CEO-succession markets, which don't match.\n- Resolves off Yahoo Finance historical 'Close' figures, Nov 13 close to Nov 27 close (not intraday, not after-hours).\n- Event window: Nov 13 2026 close -> Nov 27 2026 close (9 trading sessions); as of Nov 16 04:40 UTC, 0% of trading sessions have elapsed.\n- Searched, not found: options-implied volatility for each name; AVGO's exact earnings date; any Monday Nov 16 premarket moves.",
+   "reference_class": "Relative 2-week performance races among 4 correlated large-cap semiconductor stocks with no expected drift (winner probability ~ uniform, tilted by relative volatility)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.01,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1881,
+   "seconds": 21.3,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 17867,
+    "cache_write_1h": 17867,
+    "output": 2140,
+    "thinking": 146,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1881058,
+    "web_fetch": 0,
+    "duration_api_ms": 20775
+   },
+   "estimate": {
+    "Nvidia (NVDA)": 0.27,
+    "AMD": 0.27,
+    "Broadcom (AVGO)": 0.19,
+    "Micron (MU)": 0.27
+   },
+   "reasoning": "Four highly correlated semis over a 9-session window with ~zero expected relative drift: the winner is near-uniform, tilted toward the names with the most idiosyncratic volatility. AMD and MU have the largest realized moves; NVDA adds earnings-event variance (Nov 17, first report under interim CEO Kress) and is oversold after a six-week losing streak, giving it a fat two-sided tail. AVGO is the lowest-vol name and the least likely to top a dispersion race. No human market prices this contract.",
+   "sources": [],
+   "reconciliation": "The runs agree on structure (near-uniform, AVGO shaded down) and differ by at most 2 points. Factual: the MU Nov 13 close is reported as $773.07 or $778.31. I could not settle it without web access, and it does not affect the ranking. The premarket rebound report (NVDA +4%, AMD/MU +6%) has an unverified date and is not a close, so it gets almost no weight. The claimed AVGO weekly rally of 18-24% conflicts with the Nov 13 -4.76% close; I could not settle it and it matters little. Judgment: how much to favour high-vol AMD/MU versus NVDA's earnings variance. No evidence breaks the tie, so I set NVDA, AMD and MU equal and kept AVGO's lower-vol discount, which I carried forward from Run 1.",
+   "disagreements": [
+    {
+     "claim": "MU Nov 13 close $773.07 vs $778.31",
+     "kind": "factual",
+     "verdict": "Unsettled without web access; under 1% and immaterial to the forecast"
+    },
+    {
+     "claim": "Premarket rebound with NVDA +4%, AMD/MU +6%",
+     "kind": "factual",
+     "verdict": "Date unverified and it is pre-open, not a close; minimal weight"
+    },
+    {
+     "claim": "AVGO rallied 18-24% in the week to Nov 14",
+     "kind": "factual",
+     "verdict": "Conflicts with the Nov 13 -4.76% close and the background; unsettled, little bearing on the forward race"
+    },
+    {
+     "claim": "Relative edge of high-vol AMD/MU vs NVDA's earnings variance",
+     "kind": "judgment",
+     "verdict": "No tie-breaking evidence; set equal at 0.27"
+    },
+    {
+     "claim": "Size of AVGO's downweight (0.19-0.21)",
+     "kind": "judgment",
+     "verdict": "Took 0.19: AVGO is the lowest-vol name with no catalyst in the window"
+    }
+   ],
+   "reference_class": "Best performer among 4 correlated high-volatility large-cap semiconductor stocks over a ~2-week window, with weights tilted by relative idiosyncratic volatility"
+  }
+ ]
+}
