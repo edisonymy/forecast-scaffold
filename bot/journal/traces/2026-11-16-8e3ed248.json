@@ -1,0 +1,239 @@
+{
+ "record_id": "2026-11-16-8e3ed248",
+ "question": "How much precipitation will San Francisco International Airport record on Thanksgiving Day (November 26, 2026)?",
+ "question_id": 46847,
+ "url": "https://www.metaculus.com/questions/46587/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "multiple_choice",
+ "forecast_at": "2026-11-16T13:42:35+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.4348,
+ "asknews": true,
+ "pools": {
+  "pooled_runs": {
+   "0.00 in (no measurable precipitation)": 0.5106494430673333,
+   "0.01–0.09 in": 0.15377472753710125,
+   "0.10–0.49 in": 0.1906185661398775,
+   "0.50–0.99 in": 0.09222014538592872,
+   "1.00 in or more": 0.052737117869759195
+  },
+  "phase1": {
+   "0.00 in (no measurable precipitation)": 0.5106494430673333,
+   "0.01–0.09 in": 0.15377472753710125,
+   "0.10–0.49 in": 0.1906185661398775,
+   "0.50–0.99 in": 0.09222014538592872,
+   "1.00 in or more": 0.052737117869759195
+  },
+  "phase2": null,
+  "spread_phase1": 0.12,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "probabilities": {
+   "0.00 in (no measurable precipitation)": 0.48,
+   "0.01–0.09 in": 0.15,
+   "0.10–0.49 in": 0.2,
+   "0.50–0.99 in": 0.11,
+   "1.00 in or more": 0.06
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3255,
+   "seconds": 55.4,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 131202,
+    "cache_write": 21145,
+    "cache_write_1h": 21145,
+    "output": 3578,
+    "thinking": 494,
+    "web_search": 2,
+    "cost_usd_envelope": 0.3255083999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 62255
+   },
+   "estimate": {
+    "0.00 in (no measurable precipitation)": 0.46,
+    "0.01–0.09 in": 0.17,
+    "0.10–0.49 in": 0.2,
+    "0.50–0.99 in": 0.11,
+    "1.00 in or more": 0.06
+   },
+   "reasoning": "Climatology: late-Nov SFO measurable-rain day frequency ~22%, right-skewed amounts. CPC hazards outlook (issued Nov 15) puts a moderate risk of heavy precip/high winds over N. California Nov 24-25 tied to atmospheric-river activity before Thanksgiving, with slight risks lingering Nov 23-29; Fox Weather (Nov 10) showed the West still showery on Thanksgiving. Main AR timing is Nov 24-25, so Nov 26 may be post-frontal showers or a lull; day-10 timing error is large. Raised P(measurable) from ~22% to ~54%, with the mass weighted toward light-moderate amounts. No human market found (Polymarket candidates are SF temperature contracts only).",
+   "sources": [
+    "https://www.cpc.ncep.noaa.gov/products/predictions/threats/threats.php",
+    "https://forecast.weather.gov/product.php?site=MTR&product=AFD&issuedby=MTR",
+    "https://www.foxweather.com/weather-news/thanksgiving-week-weather-outlook-rain-storms-snow",
+    "https://www.kcra.com/article/northern-california-evening-forecast-nov-14-2026/74432036"
+   ],
+   "dossier": "- Resolution: resolves off the CLISFO 'PRECIPITATION (IN) YESTERDAY' value in the report dated 2026-11-27 (last issuance that day), not the downtown SF station; T=trace counts as 0.00.\n- Event window: 2026-11-26 00:00 -> 23:59 PST (calendar day); as of 2026-11-16T13:40Z, 0% elapsed, ~10 days lead time.\n- CPC Probabilistic Hazards Outlook (issued 2026-11-15, covers Nov 24-30): moderate risk of heavy precipitation for N. California/SW Oregon on Nov 24-25; moderate risk of high winds on the N/central West Coast; slight risks of heavy precip/wind/snow kept across CA through Nov 23-29; PETs show 40-50% chances of 3-day totals >2 in over N. California/SW Oregon; tied to atmospheric-river activity 'in the days leading up to' Thanksgiving.\n- NWS MTR forecast discussion (2026-11-16): impactful system Wed-Thu Nov 18-19 (wind, thunderstorms, WPC marginal excessive-rain risk), tapering Nov 20, another system possible by Nov 22; highs 5-10F below normal; no detail beyond Nov 22.\n- Fox Weather (2026-11-10): long-range models showed 'higher confidence than usual'; the West continues seeing showers and mountain snow on Thanksgiving, expanding inland.\n- KCRA (2026-11-15): three-storm series mid-November in NorCal; wet and windy through Thu Nov 19.\n- Background: SFO month-to-date 0.24 in as of Nov 12; dry water year to date before the Nov 13 storms.\n- Climatology (Weather Spark): daily chance of measurable rain at SFO is ~14% in early Nov rising to ~24% by end of Nov; 1991-2020 November normal ~2.5 in; daily amounts strongly right-skewed (many wet days are a few hundredths; AR days can exceed 1 in).\n- Rough conditional climatology for a late-Nov day (over all days): ~78% dry/trace, ~8% 0.01-0.09, ~8% 0.10-0.49, ~3.5% 0.50-0.99, ~1.5% >=1.00. Given a wet day: roughly 35-40% are 0.01-0.09, 35-40% are 0.10-0.49, ~15% are 0.50-0.99, ~7% are >=1.00.\n- Key uncertainty: the main AR signal centers on Nov 24-25, not Nov 26; Nov 26 could see trailing showers, a lull, or a slower storm arriving. Day-10 timing error is often more than 24h.\n- Searched for but not found: a deterministic or ensemble QPF for Nov 26 specifically; any prediction market on SFO precipitation (only SF temperature markets on Polymarket).",
+   "reference_class": "Late-November (Nov 20-Dec 1) calendar days at SFO, 1991-2020 climatology, adjusted for an active wet-regime outlook"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6913,
+   "seconds": 64.1,
+   "usage": {
+    "num_turns": 10,
+    "input": 14,
+    "cache_read": 199168,
+    "cache_write": 22651,
+    "cache_write_1h": 22651,
+    "output": 3996,
+    "thinking": 585,
+    "web_search": 2,
+    "cost_usd_envelope": 0.36576960000000003,
+    "web_fetch": 0,
+    "duration_api_ms": 71294
+   },
+   "estimate": {
+    "0.00 in (no measurable precipitation)": 0.49,
+    "0.01–0.09 in": 0.15,
+    "0.10–0.49 in": 0.2,
+    "0.50–0.99 in": 0.1,
+    "1.00 in or more": 0.06
+   },
+   "reasoning": "Base rate: late-November daily measurable-rain frequency at SFO is about 23%, and wet-day amounts are right-skewed. The update is strong: the CPC week-2 hazards outlook (issued Nov 15) has a moderate heavy-precipitation risk for NorCal on Nov 24-25 and a slight risk through Nov 29 under persistent offshore troughing; Fox Weather (Nov 10) showed Western showers continuing through Thanksgiving. Counterpoint: CPC notes reduced exceedance probabilities in mid-week-2, Thanksgiving could fall in a gap after the Nov 24-25 storm, and day-10 skill at a single point is limited. So I raise measurable-rain odds to about 51% without going heavier. Market check: no human market found; the Polymarket SF high-temperature contracts for Nov 16-17 don't apply.",
+   "sources": [
+    "https://www.cpc.ncep.noaa.gov/products/predictions/threats/threats.php",
+    "https://forecast.weather.gov/product.php?site=MTR&product=AFD&issuedby=MTR",
+    "https://www.foxweather.com/weather-news/thanksgiving-week-weather-outlook-rain-storms-snow",
+    "https://watchers.news/2026/11/16/2-atmospheric-rivers-to-bring-heavy-sierra-snow-and-california-flood-risk/"
+   ],
+   "dossier": "- Resolves off the CLISFO 'YESTERDAY' precipitation value in the report dated 2026-11-27 (covers Nov 26 Pacific time), not downtown SF and not regional totals. A trace (T) counts as 0.00.\n- Event window: 2026-11-26 00:00 -> 23:59 PST per the criteria; as of Now (2026-11-16 13:40Z) 0% elapsed, about 10 days lead.\n- Climatology (Weather Spark, per the question background): SFO daily measurable-rain chance rises from about 14% at the start of November to about 24% by month's end. Climatological split over late-Nov days, roughly: 0.00 77%, 0.01-0.09 8%, 0.10-0.49 9%, 0.50-0.99 4%, >=1.00 2% (constructed estimate, not published). Given a wet day: about 35% / 40% / 15% / 10% across the four wet bins.\n- CPC week-2 hazards outlook (issued 2026-11-15, valid Nov 23-29): MODERATE risk of heavy precipitation for portions of NorCal/SW Oregon on Nov 24-25 (days 9-10); SLIGHT risk of heavy precipitation across much of CA/PNW for Nov 23-29; atmospheric-river activity is the main hazard; strong mean troughing persists offshore; precipitation tools show reduced exceedance probabilities toward mid-week-2.\n- NWS MTR AFD (2026-11-16): a separate strong system Wed-Thu Nov 18-19 with post-frontal rain tapering Fri Nov 20; temperatures 5-10F below normal; no Thanksgiving-specific discussion.\n- Fox Weather (2026-11-10): the West is expected to see continued showers and mountain snow around Nov 25-27, expanding inland; it cited higher-than-usual long-range confidence.\n- Some search snippets cite '1.5-6 in Wed-Fri' and 'NWS 2-3 in storm totals' for the Bay Area; these appear to refer to the Nov 17-20 storm, not Thanksgiving week (unverified).\n- Oct 23 newsbreak analysis (per background): NorCal Thanksgiving weather uncertain.\n- King tides peak Nov 24-26 (SF Chronicle snippet); not relevant to the precipitation count.\n- Season so far is dry: SFO Nov 1-12 total 0.24 in.\n- Searched for but not found: a deterministic or ensemble QPF specific to Nov 26, CPC 8-14 day probabilities in numbers, and any human prediction market on SFO precipitation.",
+   "reference_class": "Late-November calendar days at SFO (USW00023234), climatological daily precipitation distribution"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.0881,
+   "seconds": 68.2,
+   "usage": {
+    "num_turns": 10,
+    "input": 14,
+    "cache_read": 198017,
+    "cache_write": 22516,
+    "cache_write_1h": 22516,
+    "output": 3933,
+    "thinking": 402,
+    "web_search": 2,
+    "cost_usd_envelope": 0.3967744,
+    "web_fetch": 0,
+    "duration_api_ms": 76217
+   },
+   "estimate": {
+    "0.00 in (no measurable precipitation)": 0.58,
+    "0.01–0.09 in": 0.14,
+    "0.10–0.49 in": 0.17,
+    "0.50–0.99 in": 0.07,
+    "1.00 in or more": 0.04
+   },
+   "reasoning": "Late-November climatology at SFO gives ~24% daily chance of measurable rain, with the wet-day amount distribution right-skewed (most wet days <0.5 in). Strong signal of an active storm pattern: CPC 6-10/8-14 day outlooks (issued Nov 15) favor above-normal precip for coastal N. California through Nov 29; NWS MTR AFD (Nov 16) shows storm after storm; local media mention possible rain on Thanksgiving Day itself. At a 10-day lead, single-day skill is limited, so I raise P(measurable) to ~42% (not higher) and shift the wet-day amounts toward heavier bins. No matching human market found; the only Polymarket candidates are SF temperature contracts, which don't match.",
+   "sources": [
+    "https://forecast.weather.gov/product.php?site=MTR&product=AFD&issuedby=MTR",
+    "https://www.cpc.ncep.noaa.gov/products/predictions/610day/fxus06.html",
+    "https://www.yahoo.com/news/weather-news/articles/thanksgiving-cold-dry-wet-california-160926373.html",
+    "https://www.yahoo.com/news/weather-news/articles/one-storm-another-marching-toward-004206445.html",
+    "WebSearch: Bay Area Thanksgiving forecast rain Nov 26 2026 (farmersalmanac/sfbayweather snippets)"
+   ],
+   "dossier": "- Resolution: CLISFO report dated Nov 27 2026, 'YESTERDAY' precipitation value for Nov 26 (local calendar day); a trace (T) counts as 0.00. Resolves off NWS CLISFO, not downtown SF or another station.\n- Event window: Nov 26 2026 00:00-23:59 PST, per the criteria; as of Nov 16 13:40Z, 0% has elapsed (lead time ~10 days).\n- Climatology (Weather Spark, over all late-Nov days at SFO): daily chance of measurable rain rises from ~14% at Nov 1 to ~24% at Nov 30. Wet-day amounts are right-skewed; most wet days are <0.5 in (rough, not station-computed).\n- CPC outlook issued Nov 15 2026: 6-10 day (Nov 21-25) favors above-normal precip on the West Coast, greatest confidence in coastal central/northern CA; 8-14 day (Nov 23-29) above-normal for N and S CA; deep troughs over the NE Pacific.\n- NWS MTR AFD issued 12:25 AM PST Nov 16: strong system Wed-Thu (Nov 18-19) with slight risk of excessive rainfall, rain tapering Fri Nov 20, another system by Sat Nov 21; no mention of Thanksgiving Day.\n- KCRA Nov 15: three-storm series, with the stronger storm Wed-Thu Nov 18-19.\n- News search summary (Nov 13-15 articles): a 'parade of storms' through Thanksgiving week; extra rain possible Mon Nov 23 and on Thanksgiving Day Nov 26; king tides plus saturated ground near Thanksgiving (KTVU meteorologist quoted).\n- Fox Weather Nov 10: wet pattern over the West around Nov 26-27, with 'higher confidence than usual' in long-range models.\n- Counterpoint: a San Jose Thanksgiving forecast page (sfbayweather) cited ~20% chance of rain; an Oct 23 analysis called NorCal Thanksgiving weather uncertain; CPC outlooks cover multi-day windows and do not predict a specific day.\n- Status quo: no measurable rain is the climatological majority outcome for any single late-November day.\n- Searched, not found: deterministic/ensemble QPF for Nov 26 specifically; a market on SFO Thanksgiving precipitation (none found).",
+   "reference_class": "SFO daily precipitation on late-November calendar days (climatological daily measurable-rain frequency ~24%, Weather Spark), with wet-day amounts conditional on measurable rain"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "research",
+   "run_index": 1,
+   "spread": 0.12,
+   "threshold": 0.1,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2957,
+   "seconds": 41.5,
+   "usage": {
+    "num_turns": 4,
+    "input": 8,
+    "cache_read": 105965,
+    "cache_write": 21821,
+    "cache_write_1h": 21821,
+    "output": 2756,
+    "thinking": 331,
+    "web_search": 2,
+    "cost_usd_envelope": 0.295721,
+    "web_fetch": 0,
+    "duration_api_ms": 41000
+   },
+   "estimate": {
+    "0.00 in (no measurable precipitation)": 0.48,
+    "0.01–0.09 in": 0.15,
+    "0.10–0.49 in": 0.2,
+    "0.50–0.99 in": 0.11,
+    "1.00 in or more": 0.06
+   },
+   "reasoning": "Late-November SFO climatology gives ~22-24% daily chance of measurable rain, with right-skewed amounts. The CPC hazards outlook issued Nov 15 has a moderate heavy-precipitation risk for NorCal on Nov 24-25 from atmospheric-river activity, a slight risk through Nov 29 and persistent offshore troughing. A report citing NWS flags increased heavy-rain and wind risk for Nov 25-27, which includes Thanksgiving. Single-day timing at a 10-day lead is uncertain: Nov 26 may be a lull after the main storm. So I raise P(measurable) to ~52%, with wet outcomes weighted toward 0.10-0.49 in. No human market found.",
+   "sources": [
+    "https://www.cpc.ncep.noaa.gov/products/predictions/threats/threats.php",
+    "https://watchers.news/2026/11/16/2-atmospheric-rivers-to-bring-heavy-sierra-snow-and-california-flood-risk/",
+    "https://www.sfchronicle.com/weather-forecast/article/rain-storm-weather-san-francisco-california-22529476.php",
+    "https://www.sfbayweather.com/events/silicon-valley-turkey-trot-weather"
+   ],
+   "reconciliation": "The runs differed mainly on P(measurable): 42-54%. Run 3 discounted day-10 single-day skill more, which is a judgment call. Factual check: is the hazard signal confined to Nov 24-25 or does it extend to Nov 26? Searches returned CPC moderate heavy-precip risk Nov 24-25 and slight risk Nov 23-29, plus a report citing NWS 'increased risk of heavy precipitation and strong winds November 25-27', which overlaps Thanksgiving. Also confirmed: a San Jose page gives ~20% chance of rain, and no precipitation market exists (Polymarket has only SF temperature contracts). The Nov 25-27 overlap supports the higher readings, so P(measurable) is ~0.52. I carried the runs' constructed climatological base rate forward, as I agree with it.",
+   "disagreements": [
+    {
+     "claim": "How much to raise P(measurable) from ~23% given a 10-day-lead active pattern",
+     "kind": "judgment",
+     "verdict": "Took ~52%; the NWS-cited Nov 25-27 risk window overlapping Thanksgiving favors Runs 1-2 over Run 3"
+    },
+    {
+     "claim": "Whether the heavy-precip signal is limited to Nov 24-25 or extends to Nov 26",
+     "kind": "factual",
+     "verdict": "CPC moderate risk is Nov 24-25, but slight risk runs through Nov 29 and a report cites NWS increased risk Nov 25-27"
+    },
+    {
+     "claim": "Local media mention possible rain on Thanksgiving Day itself (Run 3)",
+     "kind": "factual",
+     "verdict": "Partly confirmed: 'parade of storms through Thanksgiving' and the Nov 25-27 risk window; a San Jose page lists ~20%"
+    }
+   ],
+   "reference_class": "Late-November calendar days at SFO (USW00023234), daily precipitation climatology, conditioned on a forecast active/AR pattern in week 2"
+  }
+ ]
+}
