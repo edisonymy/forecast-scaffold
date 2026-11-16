@@ -1,0 +1,264 @@
+{
+ "record_id": "2026-11-16-4b5df199",
+ "question": "How much will Nvidia's stock price returns exceed Apple's in these biweekly periods of Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46227,
+ "url": "https://www.metaculus.com/questions/46012/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-16T17:08:07+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 0.9979,
+ "asknews": false,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -9.133333333333333,
+    "25": -4.233333333333333,
+    "50": 0.16666666666666666,
+    "75": 4.466666666666666,
+    "90": 9.299999999999999
+   },
+   "p_below_lower": 0.04,
+   "p_above_upper": 0.03666666666666667
+  },
+  "phase1": {
+   "10": -9.133333333333333,
+   "25": -4.233333333333333,
+   "50": 0.16666666666666666,
+   "75": 4.466666666666666,
+   "90": 9.299999999999999
+  },
+  "phase2": null,
+  "spread_phase1": 0.3,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -9.6,
+   "25": -4.6,
+   "50": 0.2,
+   "75": 4.9,
+   "90": 9.9
+  },
+  "p_below_lower": 0.04,
+  "p_above_upper": 0.035
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.8407,
+   "seconds": 68.9,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 132710,
+    "cache_write": 11487,
+    "cache_write_1h": 11487,
+    "output": 3909,
+    "thinking": 856,
+    "web_search": 3,
+    "cost_usd_envelope": 0.278999,
+    "web_fetch": 0,
+    "duration_api_ms": 71792
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -9.5,
+     "25": -4.5,
+     "50": 0.2,
+     "75": 4.8,
+     "90": 9.8
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Window Nov 23-Dec 4 is 9 trading days (Thanksgiving closed, Nov 27 half day); P0 = Nov 20 close, so NVDA's Nov 17 earnings reaction lands before the window. Reference class: two-week NVDA-minus-AAPL spreads, roughly zero mean, SD ~6-6.5pp in normal times. Current regime is stressed: Huang resigned ~Nov 12, Kress is interim CEO, NVDA is down ~24% in a month, IV is ~60% vs ~45% realized, and AAPL is at a safe-haven record high. That widens the spread SD to ~7.5pp with fat tails, since a succession announcement could hit in the window. Centre near zero: a post-selloff bounce and continued rotation into AAPL roughly cancel. No human market matches (Kalshi has a Huang-return market; the Manifold Big Tech vs BTC market is unrelated).",
+   "sources": [
+    "https://www.cnbc.com/2026/11/12/stock-market-today-live-updates.html",
+    "https://www.marketbeat.com/earnings/reports/2026-11-17-nvidia-co-stock/",
+    "https://www.fool.com/investing/2026/11/13/apple-is-the-world-s-largest-company-and-nvidia-is-second-here-s-what-usd10-000-in-each-could-be-worth-by-the-end-of-next-year/",
+    "https://www.benzinga.com/markets/equities/26/11/63277138/nvidia-stock-faces-first-earnings-since-jensen-huangs-ouster-as-options-signal-a-big-move",
+    "https://www.fool.com/investing/2026/11/16/nvidia-stock-is-down-32-is-it-a-no-brainer-buy-at-usd163-or-a-value-trap/"
+   ],
+   "dossier": "- Resolves off Yahoo Finance Adj Close: P0 = close on Fri Nov 20 2026, P1 = close on Fri Dec 4 2026; value = NVDA% - AAPL%, in pp.\n- Event window: Nov 23 -> Dec 4 2026 per the criteria; as of Nov 16 0% elapsed. 9 trading days (Nov 26 Thanksgiving closed, Nov 27 half day).\n- NVDA Q3 FY27 earnings: Tue Nov 17 2026 after close (MarketBeat; FXStreet preview). The earnings reaction falls BEFORE the window (it is in P0).\n- Jensen Huang resigned ~Thu Nov 12 2026 after reports of affairs, including one with a suspected Chinese intelligence asset; CFO Colette Kress is interim CEO; the board is searching internally and externally (CNBC Nov 13). Kalshi lists a market on Huang returning (BigGo).\n- HSBC downgraded NVDA to hold, PT $170: 'uncertainties will prevail until a permanent succession plan is laid out' (CNBC Nov 13). Goldman flagged risk to NVDA's role as an AI-ecosystem financier.\n- NVDA ~-24% over 1 month, ~-28% over 3 months; fell from ~$200 to a $150 low, back to ~$162 (Benzinga/Fool, Nov 16). IV ~60% (earnings included) vs ~45% historical; daily ATR ~6% of price.\n- AAPL record intraday high ~$360.80 on Nov 13; market cap ~$5.1-5.2T vs NVDA ~$4T; described as a safe-haven rotation target (Bernstein 'safe Costco of tech', PT $380); AAPL +27% YTD.\n- Reference class: biweekly NVDA-AAPL spreads, mean roughly zero, SD roughly 6-6.5pp in normal regimes (reconstructed from typical vols of ~40% and ~25% with corr ~0.4-0.5); in the current regime (NVDA vol 45-60%) the 9-day spread SD implied is ~7.5-9pp.\n- Two-sided risks inside the window: a permanent-CEO announcement (could jump NVDA either way), further scandal or national-security news (downside), mean-reversion bounce after a ~25% drawdown (upside), continued rotation into AAPL (downside for the spread).\n- Searched for but not found: any market pricing this spread; the scheduled date of a succession announcement; post-earnings implied volatility (not yet available).",
+   "reference_class": "Historical biweekly (10-trading-day) NVDA return minus AAPL return spreads, 2023-2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5617,
+   "seconds": 62.2,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 132530,
+    "cache_write": 12634,
+    "cache_write_1h": 12634,
+    "output": 3985,
+    "thinking": 806,
+    "web_search": 4,
+    "cost_usd_envelope": 0.312077,
+    "web_fetch": 0,
+    "duration_api_ms": 71074
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -8.9,
+     "25": -4.0,
+     "50": 0.0,
+     "75": 4.0,
+     "90": 8.6
+    },
+    "p_below_lower": 0.04,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Window Nov 23-Dec 4 (P0 = Nov 20 close) has 9 trading days and excludes the Nov 17 NVDA earnings jump. Reference class: historical fortnightly NVDA-AAPL return spreads, centered ~0 with SD ~5-6 pp. NVDA is in a stress regime (Huang resignation, class action, board investigation, -25% in a month, IV ~60%), so I widened the SD to ~7.5-8 pp with fat tails. Apple is calm at record highs. No directional edge, so the median is ~0. Tail escape is priced for investigation or leadership news, slightly skewed to the downside. No matching human market found (the Manifold BTC-vs-big-tech contract is unrelated).",
+   "sources": [
+    "https://www.trefis.com/stock/nvda/articles/624393/what-just-happened-to-nvidia-stock/2026-11-11",
+    "https://www.benzinga.com/markets/options/26/11/63277522/nvidia-earnings-without-jensen-huang-could-trigger-341-billion-stock-swing-as-options-traders-brace-for-volatility",
+    "https://www.marketbeat.com/earnings/reports/2026-11-17-nvidia-co-stock/",
+    "https://www.tradingkey.com/analysis/stocks/us-stocks/262306622-apple-record-close-356-27-tech-selloff-aapl-eyes-363-34-november-16-2026-tradingkey",
+    "https://cryptobriefing.com/nvidia-stock-drops-35-amid-leadership-turmoil-earnings-report-looms/",
+    "https://manifold.markets/elf/will-a-big-tech-stock-meta-apple-am"
+   ],
+   "dossier": "- Resolves off Yahoo Finance Adj Close: NVDA_return - AAPL_return, P0 = last close before Nov 23 (Fri Nov 20, 2026), P1 = Dec 4, 2026 close. Event window: Nov 23 -> Dec 4 2026 per the criteria; as of Nov 16 0% elapsed. 9 trading days (Thanksgiving Nov 26 closed, Nov 27 half day).\n- NVDA reports FQ3 FY27 on Nov 17 after close (MarketBeat/Benzinga), before the window. Consensus EPS $2.47, revenue ~$108.9B; guidance was $108B +/-2%.\n- Jensen Huang resigned as CEO/director. CFO Colette Kress is interim CEO; Harvey Jones is board chair (SEC 8-K, Benzinga Nov 2026).\n- Class action filed Nov 9. Independent directors retained a former acting SDNY US Attorney (Trefis Nov 11). NVDA -9.3% Nov 5, -4.3% Nov 9, -5.5% Nov 10; -25% in a month; YTD about -12.5%; ~$163-169 (Nov 13).\n- NVDA implied vol ~60-64% (88th percentile of the past year) vs 45% historical vol. Options priced ~9% earnings move, about 3x its recent average (Benzinga).\n- Baird downgraded to Neutral, PT $500->$200. Consensus 12-month PT ~$240.\n- AAPL record close $356.27 on Nov 13, ~$358 on Nov 16; +5% week, +31% y/y; >$5T market cap; ex/pay dividend $0.27 mid-Nov (minor Adj Close effect).\n- Base rate: historical fortnightly NVDA-AAPL spreads center near 0 with SD ~5-6 pp in normal regimes (Metaculus series spreadsheet, not opened). The current NVDA regime is elevated vol: at 45-50% ann. vol and AAPL 25%, corr 0.4, the 9-day spread SD is ~7.5-8.5 pp.\n- Both-direction considerations: post-selloff rebound/mean reversion potential for NVDA vs further governance/legal revelations; AAPL momentum at highs vs rotation.\n- No Polymarket/Kalshi/Manifold contract on this spread found; the Manifold big-tech vs BTC 2020-2030 market is unrelated.\n- Not found: December NVDA option IV term structure post-earnings; details of investigation timeline.",
+   "reference_class": "Historical biweekly (10-trading-day) NVDA minus AAPL percent return spreads, 2023-2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2496,
+   "seconds": 50.7,
+   "usage": {
+    "num_turns": 6,
+    "input": 8,
+    "cache_read": 102167,
+    "cache_write": 10331,
+    "cache_write_1h": 10331,
+    "output": 3683,
+    "thinking": 761,
+    "web_search": 2,
+    "cost_usd_envelope": 0.2496194,
+    "web_fetch": 0,
+    "duration_api_ms": 57531
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -9.0,
+     "25": -4.2,
+     "50": 0.3,
+     "75": 4.6,
+     "90": 9.5
+    },
+    "p_below_lower": 0.05,
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Reference class: past biweekly NVDA-AAPL return spreads, mean ~0, SD ~6-7pp. Nvidia is in a leadership crisis: Huang resigned Nov 12, Kress is interim CEO, the stock was down ~20% in November and hit an intraday low of $148.80. HSBC downgraded it to hold with a $170 target. Congressional testimony (possibly before Nov 26) and a permanent-CEO announcement could both land inside the window, so I widened the spread SD to ~8pp with fat tails. Nov 17 earnings fall before P0 (the Nov 20 close), so they are excluded. Rebound/CEO-clarity upside roughly offsets the continued rotation into Apple as a safe haven, so the median is near zero. No human market prices this contract; the Manifold big-tech-vs-Bitcoin market doesn't match.",
+   "sources": [
+    "https://www.cnbc.com/2026/11/12/stock-market-today-live-updates.html",
+    "https://roboforex.com/blog/analysis/nvidia-earnings-date-interim-ceo-scenarios/",
+    "https://247wallst.com/investing/2026/11/06/apple-is-now-worth-600-billion-more-than-nvidia/",
+    "https://finance.yahoo.com/markets/stocks/articles/aapl-goog-stocks-gain-overnight-044812778.html",
+    "https://manifold.markets/elf/will-a-big-tech-stock-meta-apple-am"
+   ],
+   "dossier": "- Resolves off Yahoo Finance Adj Close: NVDA return minus AAPL return, P0 = Nov 20, 2026 close, P1 = Dec 4, 2026 close. Not intraday, not the earnings-day move.\n- Event window: Nov 23 -> Dec 4, 2026 per the criteria; as of Nov 16 0% elapsed (the window hasn't started; P0 is set Nov 20). About 9 trading days: market closed Nov 26 (Thanksgiving), half day Nov 27.\n- Nvidia earnings (FQ3 FY27) Nov 17 after the close, consensus ~$108.8B revenue / $2.47 EPS (roboforex / onestopprop via search, checked Nov 9). The reaction lands before P0.\n- Jensen Huang resigned as CEO and from the board Nov 12, 2026 after affair / alleged-Chinese-spy reports. CFO Colette Kress is interim CEO; Harvey Jones became board chair (roboforex, CNBC Nov 13).\n- NVDA: $173.73 close Nov 11, $166.19 close Nov 12 (opened -13.1%, intraday low $148.80), -4% Thu and -2% Fri that week. Closing high $239.24 on Oct 6; down ~20% in November (CNBC, roboforex, 24/7 Wall St).\n- HSBC downgraded NVDA to hold with a $170 target (from $365) (CNBC Nov 13).\n- AAPL hit a record close of $355.63 on Nov 11 and an intraday record of $360.80 Nov 13. Market cap ~$5.1T vs NVDA ~$4.0-4.2T. Bernstein called it a 'safe haven' with a $380 target (CNBC, 24/7 Wall St Nov 6).\n- Retail rotation out of NVDA into AAPL/GOOG has been reported (Yahoo Finance).\n- Pending catalysts possibly inside the window: House Foreign Affairs Committee testimony (date TBD, reportedly before Nov 26); permanent CEO announcement (TBD).\n- Nasdaq +2.3%, S&P 500 +2.5% for the week ending Nov 13.\n- Base rate: historical biweekly NVDA-AAPL spread has mean ~0 and SD ~6-7pp in 2024-25 (rough estimate, not computed from the spreadsheet). NVDA's current volatility is well above that regime.\n- Searched and absent: NVDA implied volatility figures; the testimony date; any prediction market on this spread (only an unrelated Manifold big-tech-vs-BTC market).",
+   "reference_class": "Biweekly (≈9-10 trading day) NVDA minus AAPL percent return spreads, 2023-2026"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0345,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1189,
+   "seconds": 21.5,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20105,
+    "cache_write": 9240,
+    "cache_write_1h": 9240,
+    "output": 2047,
+    "thinking": 547,
+    "web_search": 0,
+    "cost_usd_envelope": 0.11888900000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 20788
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -9.6,
+     "25": -4.6,
+     "50": 0.2,
+     "75": 4.9,
+     "90": 9.9
+    },
+    "p_below_lower": 0.04,
+    "p_above_upper": 0.035
+   },
+   "reasoning": "P0 is the Nov 20 close and P1 is the Dec 4 close: 9 trading days, so the Nov 17 earnings move falls before the window. Reference class: fortnightly NVDA-minus-AAPL spreads, mean about 0, SD 5-7pp in normal regimes. NVDA is in a leadership and governance crisis (Huang resigned Nov 12, Kress is interim CEO, a class action is pending, the stock is down about 25% in a month, IV about 60%). A permanent-CEO announcement or congressional testimony could land inside the window, so I raised the spread SD to about 8-9pp with fat tails. A rebound from the selloff roughly offsets the continued rotation into AAPL as a safe haven at record highs, so the median is about 0. No human market prices this spread.",
+   "sources": [],
+   "reconciliation": "All three runs agree on the window (P0 = Nov 20 close, P1 = Dec 4 close, 9 trading days, earnings excluded), on the facts of the crisis, on a median near 0, and that no market matches. They differ in three places. (1) Normal-regime spread SD: 5-6 vs 6-7pp. Nobody opened the spreadsheet, so this cannot be settled here; it matters little because the current regime dominates. (2) How wide the current regime is: the runs' 90-10 widths of 17-18.5 imply SD of about 7-7.5pp, but their own volatility inputs (NVDA 45-60%, AAPL 25%, correlation 0.4-0.5) give 7.9-9.5pp over 9 days. I followed the inputs and widened slightly. (3) Tail mass: 3-5% per side. With SD about 8.3pp, a normal distribution gives about 3.5-4% per side beyond ±15. I put slightly more on the downside because pending investigation and testimony news is asymmetric. I retrieved nothing on this run.",
+   "disagreements": [
+    {
+     "claim": "Normal-regime biweekly spread SD is 5-6pp vs 6-7pp",
+     "kind": "factual",
+     "verdict": "Unsettled (spreadsheet not opened by any run). Low impact given the current stress regime."
+    },
+    {
+     "claim": "Current 9-day spread SD of about 7.5pp vs about 8-9pp",
+     "kind": "judgment",
+     "verdict": "The runs' own vol inputs imply about 8-9.5pp, so I widened slightly to a 19.5 width."
+    },
+    {
+     "claim": "Escape probability beyond ±15 of 3-5% per side",
+     "kind": "judgment",
+     "verdict": "4% low and 3.5% high, consistent with SD of about 8.3pp and modest downside skew from pending governance news."
+    },
+    {
+     "claim": "Median slightly positive (rebound) vs zero",
+     "kind": "judgment",
+     "verdict": "No evidence breaks the tie; I set the median at +0.2."
+    }
+   ],
+   "reference_class": "Historical biweekly NVDA-minus-AAPL percent-return spreads (2023-2026), scaled to NVDA's current stressed-volatility regime"
+  }
+ ]
+}

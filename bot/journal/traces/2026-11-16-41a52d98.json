@@ -1,0 +1,260 @@
+{
+ "record_id": "2026-11-16-41a52d98",
+ "question": "How much will Gold Futures total price returns exceed S&P 500 Futures in these biweekly periods of Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46209,
+ "url": "https://www.metaculus.com/questions/46008/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-16T17:11:16+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.076,
+ "asknews": false,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -5.833333333333333,
+    "25": -2.9333333333333336,
+    "50": -0.03333333333333333,
+    "75": 2.9333333333333336,
+    "90": 5.833333333333333
+   },
+   "p_below_lower": 0.03166666666666667,
+   "p_above_upper": 0.03333333333333333
+  },
+  "phase1": {
+   "10": -5.833333333333333,
+   "25": -2.9333333333333336,
+   "50": -0.03333333333333333,
+   "75": 2.9333333333333336,
+   "90": 5.833333333333333
+  },
+  "phase2": null,
+  "spread_phase1": 0.2,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -5.8,
+   "25": -2.9,
+   "50": 0.0,
+   "75": 2.9,
+   "90": 5.7
+  },
+  "p_below_lower": 0.03,
+  "p_above_upper": 0.03
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2945,
+   "seconds": 60.8,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 132134,
+    "cache_write": 11558,
+    "cache_write_1h": 11558,
+    "output": 3928,
+    "thinking": 1000,
+    "web_search": 3,
+    "cost_usd_envelope": 0.2945458,
+    "web_fetch": 0,
+    "duration_api_ms": 69321
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -5.5,
+     "25": -2.8,
+     "50": 0.1,
+     "75": 3.0,
+     "90": 5.7
+    },
+    "p_below_lower": 0.025,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Gold-minus-ES over ~9.5 trading days (Nov 20 close -> Dec 4 close). Gold in a high-vol correction regime (GVZ ~25, daily moves 1-3%, -27% from Jan peak); ES volatile on AI news (Nvidia earnings, Anthropic IPO). Median ~0: no reliable directional edge; momentum negative for gold vs central-bank support and mild positive Dec equity seasonality. Spread SD ~5pp from implied vols, wider than the pre-2025 historical ~3pp. Fat tails; ~2.5-3% escape mass on each side. No human market found (Polymarket/Manifold/Kalshi none matching).",
+   "sources": [
+    "https://tradingeconomics.com/commodity/gold",
+    "https://www.xauusdglobal.com/gold-price-history/2026/11/",
+    "https://www.iforex.com/market-analysis/gold-price-november-2026-review/",
+    "https://en.macromicro.me/series/7147/gvz",
+    "https://www.cnbc.com/2026/11/15/stock-market-today-live-updates.html",
+    "https://www.bbntimes.com/financial/s-p-500-futures-end-the-week-near-7-402-as-traders-brace-for-cpi"
+   ],
+   "dossier": "- Resolves off Yahoo Finance GC=F and ES=F closes: P0 = close on last trading day before Nov 23 (Fri Nov 20, 2026), P1 = close Fri Dec 4, 2026; value = GC% - ES%. Thanksgiving Nov 26 closed, Nov 27 half day -> ~9.5 trading days.\n- Event window: Nov 20 close -> Dec 4 close per the criteria; as of 2026-11-16 0% elapsed.\n- Gold spot/futures ~3,866-3,873 on Nov 16, 2026 (tradingeconomics; xauusdglobal). Lowest since Oct 2025. -6.85% over past 4 weeks, -4.7% y/y.\n- Gold peaked $5,405 on Jan 29, 2026; ~27% below peak by November (iforex).\n- November gold daily closes: Nov 4 +3.37%, Nov 10 -2.05%, Nov 12 -2.88%, Oct 30 -3.6%; typical daily abs move 1-2% (xauusdglobal, iforex).\n- GVZ (gold 30d implied vol) 25.35 on Nov 13, 2026; 2026 avg 27.96, 2025 avg 19.5; 52w range 19.6-46.0 (macromicro). Implies gold 2-week SD ~4.8%.\n- Gold drivers: rising yields/stronger USD, deleveraging (bearish); central bank buying 321t in Q3 (+42% y/y), ETF inflows 211t Q3, geopolitics (bullish) (iforex).\n- S&P futures ~7,400 mid-Nov 2026; worst week since Apr 2025 then +2% week; Nov 16 E-minis -0.36% on AI-stock pressure ahead of Nvidia earnings and Anthropic IPO this week (CNBC, bbntimes, SRN). VIX level not found (searched, absent).\n- Pre-2025 historical biweekly GC-ES diff SD roughly ~3pp; 2025-26 regime wider given gold vol.\n- Gold-equity correlation over short windows typically near zero; in equity crashes gold sometimes rallies (safe haven) but also sometimes sold for liquidity.\n- Market check: no Polymarket/Manifold/Kalshi contract on this spread found.\n- Searched but not found: current VIX value, the Metaculus spreadsheet of past GC-ES biweekly returns contents.",
+   "reference_class": "Biweekly GC minus ES return differences, 2025-2026 high-gold-vol regime (scaled by current implied vols)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9242,
+   "seconds": 65.6,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 133254,
+    "cache_write": 12139,
+    "cache_write_1h": 12139,
+    "output": 3866,
+    "thinking": 989,
+    "web_search": 4,
+    "cost_usd_envelope": 0.30414379999999996,
+    "web_fetch": 0,
+    "duration_api_ms": 74426
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -6.4,
+     "25": -3.2,
+     "50": -0.1,
+     "75": 3.1,
+     "90": 6.3
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Resolves as GC two-week return minus ES two-week return, from the 20 Nov close to the 4 Dec close (~9.5 trading days because of Thanksgiving). With no directional edge the median is about 0. The spread's SD of about 5.5-6 pp comes from GVZ 25 / VIX 19 with low correlation. Gold is at a 1-year low after -7.7% in a week, with a December Fed hike ~93% priced; ES rose 2.5% last week amid the Nvidia turmoil. Momentum and mean reversion offset, so the median stays at about 0. Fat tails plus open bounds: 3% each side beyond +/-10. No human market prices this spread; Kalshi's year-end gold and S&P brackets are not matching contracts.",
+   "sources": [
+    "https://finance.yahoo.com/personal-finance/investing/article/gold-prices-today-monday-november-16-2026-gold-prices-hit-lowest-levels-in-over-a-year-heres-why-123541464.html",
+    "https://cappnotes.substack.com/p/closing-look-friday-november-13-2026",
+    "https://finance.yahoo.com/quote/%5EGVZ/history/",
+    "https://kalshi.com/markets/kxgolddiry/golddiry/kxgolddiry-26dec31h1700",
+    "https://www.ssga.com/library-content/products/fund-docs/etfs/us/insights-investment-ideas/monthly-gold-monitor.pdf"
+   ],
+   "dossier": "- Resolves off Yahoo Finance GC=F and ES=F closes: GC_return - ES_return in pp. P0 = close on Fri Nov 20 2026, P1 = close on Fri Dec 4 2026. Event window: Nov 23 -> Dec 4 2026 per the criteria; as of Nov 16 0% elapsed (it starts in a week). About 9.5 trading days: Thanksgiving Nov 26 closed, Nov 27 half-day.\n- Gold (Yahoo Finance, Nov 16 2026): Dec GC opened at $3,869.70, the lowest open since Sep 30 2025. Down 7.7% over 1 week, 5% over 1 month, 7.3% over 1 year. Had been up 95.6% YTD as of Jan 29, so a large spike and then a reversal in 2026.\n- Gold drivers: stronger USD, high 10y yields. CME FedWatch puts a 25bp hike at ~90-93% for the Dec 8-9 FOMC, just after the window ends (Yahoo, Nov 12/16).\n- Gold opened at $4,043.70 on Nov 11 and back under $4,000 on Nov 12 (Yahoo daily articles).\n- S&P 500 (CappNotes, Nov 13 2026): closed at 7,561.67, -0.40% on Friday but +2.51% for the week, ending a 4-week losing streak. Nvidia leadership turmoil (NVDA -12.75% on the week); AMD and AVGO up ~18%. Reports say Nvidia earnings and an Anthropic IPO are coming up.\n- Implied vol: GVZ closed at 25.35 on Nov 13 (Nov range 24.1-26.9); VIX about 19.3. SSGA Nov 2026 Gold Monitor: gold implied vol spiked to historic highs in Q1 and has subsided since; gold fell 6.8% in October.\n- Spread scale: GVZ 25 over 9.5 days is about 4.9% SD for gold; VIX 19 is about 3.7% for ES. With correlation near zero the spread SD is ~6 pp before any implied-vs-realized discount. Realized moves of 7-8% in a week for gold have happened recently.\n- Kalshi has year-end S&P and gold bracket markets plus weekly gold markets. None prices the GC-ES spread for this window, so they are not matching contracts.\n- Searched for but not found: realized vol figures for the last 2-week windows; the Metaculus spreadsheet of past spreads (not opened); data on the GC-ES correlation in 2026.\n- Upside case for the spread: gold mean reversion after an oversold week, or an AI or Nvidia equity selloff. Downside case: continued gold liquidation ahead of the Fed hike plus an equity rebound.",
+   "reference_class": "Biweekly GC-minus-ES return spreads, 2025-2026 high-gold-vol regime"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6201,
+   "seconds": 64.6,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 132193,
+    "cache_write": 12646,
+    "cache_write_1h": 12646,
+    "output": 4010,
+    "thinking": 990,
+    "web_search": 4,
+    "cost_usd_envelope": 0.32552559999999997,
+    "web_fetch": 0,
+    "duration_api_ms": 78612
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -5.6,
+     "25": -2.8,
+     "50": -0.1,
+     "75": 2.7,
+     "90": 5.5
+    },
+    "p_below_lower": 0.04,
+    "p_above_upper": 0.04
+   },
+   "reasoning": "Two-week GC-ES spread is near zero-mean; dispersion dominates. Gold implied vol (GVZ ~25) and November realized daily moves (avg |move| 1.35%) imply ~4.3-5% gold SD over the 9-session Thanksgiving-shortened window; ES ~3-3.5%; low correlation -> spread SD ~5pp, fat-tailed. Gold in a downtrend (-7% in 4 weeks, -27% from Jan record) vs strong CB/ETF demand; equities face Nvidia earnings/Anthropic IPO event risk. No matching market found (Kalshi has only year-end gold-level brackets, a different contract). Median set marginally negative for equity drift; ~4% mass beyond each ±10 bound given 2026's gold swings.",
+   "sources": [
+    "https://www.xauusdglobal.com/gold-price-history/2026/11/",
+    "https://www.iforex.com/market-analysis/gold-price-november-2026-review/",
+    "https://tradingeconomics.com/commodity/gold",
+    "https://www.cnbc.com/2026/11/15/stock-market-today-live-updates.html",
+    "https://finance.yahoo.com/quote/%5EGVZ/history/",
+    "https://kalshi.com/markets/kxgolddiry/golddiry/kxgolddiry-26dec31h1700"
+   ],
+   "dossier": "- Resolution: GC=F return minus ES=F return (Yahoo Finance), P0 = close of last trading day before Nov 23 (Fri Nov 20), P1 = close Dec 4. Event window: Nov 20 close -> Dec 4 close per the criteria; as of 2026-11-16 0% elapsed. ~9 sessions (Thanksgiving Nov 26 closed, Nov 27 half-day).\n- Gold (xauusdglobal, Nov 16 2026): Nov daily closes 3969.6 (Nov 2) -> 4114.5 high (Nov 9) -> 3873.2 (Nov 16); avg absolute daily move 1.35%; best day +3.37% (Nov 4), worst -2.88% (Nov 12).\n- Tradingeconomics (Nov 16): gold ~3,866, -6.85% over 4 weeks, -4.68% y/y, lowest since Oct 2025.\n- iForex review: gold ~27% below Jan 2026 record ~$5,405; 3.6% selloff Oct 30; drivers: Fed outlook/higher yields, USD strength, deleveraging; supports: CB buying 321t Q3 (+42% y/y), ETF inflows 211t, record holdings.\n- GVZ (gold implied vol) Nov 2-13 2026: 24.1-26.0, last 25.35 (Nov 13); spiked much higher in Q1 2026.\n- Equities (CNBC Nov 15-16): prior week S&P biggest weekly gain since August (>2%); ES ~7,570-7,614 Nov 16, down ~0.35% on AI/Nvidia selloff; Nvidia earnings Nov 17, expected Anthropic IPO Nov 19 (before window start).\n- Base rates: two-week GC-ES spread mean ~0 over long history; SD scales with vols: gold ~4.3-5% over 9-10 sessions at 22-25% annual vol, ES ~3-3.5% at ~16-18% vol (ES vol estimated, VIX not checked); GC/ES correlation low (~0-0.2) in 2026, occasionally positive during liquidation episodes (late Oct).\n- Status quo: no drift assumption -> spread near 0; tails fat (gold had multi-week moves >10% in 2026).\n- Markets: no market on this spread; Kalshi only has year-end gold level brackets (different contract, data possibly stale).\n- Not found: Metaculus community values for prior periods, the linked historical spreadsheet contents, current VIX level.",
+   "reference_class": "Biweekly (10-trading-day) GC minus ES percent return differences, 2025-2026 high-gold-volatility regime"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0341,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.112,
+   "seconds": 18.2,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20105,
+    "cache_write": 9149,
+    "cache_write_1h": 9149,
+    "output": 1741,
+    "thinking": 356,
+    "web_search": 0,
+    "cost_usd_envelope": 0.11204099999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 17659
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -5.8,
+     "25": -2.9,
+     "50": 0.0,
+     "75": 2.9,
+     "90": 5.7
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "GC minus ES two-week return, Nov 20 close to Dec 4 close (~9.5 sessions). No reliable directional edge: gold's downtrend and the expected Dec Fed hike offset oversold mean reversion and central-bank buying, and equity AI event risk is two-sided. Median 0. Spread SD ~5pp from implied vols after discounting implied over realized. 2026 gold swings justify fat tails, so ~3% sits beyond each ±10 bound. No human market prices this spread.",
+   "sources": [],
+   "reconciliation": "All three runs agreed on the facts: window, gold ~3,870, GVZ 25.35, VIX ~19, no matching market. The disagreements were judgment only. (1) Spread SD: about 5pp (Runs 1 and 3) vs 5.5-6pp (Run 2). Run 2 used raw implied vols, and implied vol typically exceeds realized, so I sit at about 5pp but keep fat tails. (2) Median: 0 to -0.1. The equity-drift effect over two weeks is negligible, so I use 0. (3) Escape mass: 2.5-4% per side. I take 3% per side, since ±10pp is about 2 SD under fat tails. No web access on this run; nothing new retrieved.",
+   "disagreements": [
+    {
+     "claim": "Spread SD ~5pp vs ~6pp",
+     "kind": "judgment",
+     "verdict": "Took ~5pp: implied vols, discounted for the usual implied-over-realized premium"
+    },
+    {
+     "claim": "Median slightly negative (equity drift) vs 0",
+     "kind": "judgment",
+     "verdict": "Drift over two weeks is under 0.2pp and offset by gold mean-reversion risk; set 0"
+    },
+    {
+     "claim": "Tail mass beyond ±10: 2.5% vs 4% per side",
+     "kind": "judgment",
+     "verdict": "3% per side, consistent with ~2 SD under fat tails"
+    }
+   ],
+   "reference_class": "Biweekly GC-minus-ES return spreads, scaled to the current implied-vol regime (GVZ ~25, VIX ~19)"
+  }
+ ]
+}

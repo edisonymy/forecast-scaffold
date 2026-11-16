@@ -1,0 +1,268 @@
+{
+ "record_id": "2026-11-16-75ed6105",
+ "question": "How much will Nvidia's stock price returns exceed Microsoft's in these biweekly periods of Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46233,
+ "url": "https://www.metaculus.com/questions/46013/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-16T17:06:20+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.0345,
+ "asknews": false,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -8.4,
+    "25": -3.9333333333333336,
+    "50": 0.0,
+    "75": 3.966666666666667,
+    "90": 8.266666666666666
+   },
+   "p_below_lower": 0.02666666666666667,
+   "p_above_upper": 0.024999999999999998
+  },
+  "phase1": {
+   "10": -8.4,
+   "25": -3.9333333333333336,
+   "50": 0.0,
+   "75": 3.966666666666667,
+   "90": 8.266666666666666
+  },
+  "phase2": null,
+  "spread_phase1": 0.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -9.0,
+   "25": -4.2,
+   "50": 0.0,
+   "75": 4.2,
+   "90": 9.0
+  },
+  "p_below_lower": 0.03,
+  "p_above_upper": 0.03
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2466,
+   "seconds": 54.4,
+   "usage": {
+    "num_turns": 6,
+    "input": 8,
+    "cache_read": 101850,
+    "cache_write": 10138,
+    "cache_write_1h": 10138,
+    "output": 3706,
+    "thinking": 716,
+    "web_search": 2,
+    "cost_usd_envelope": 0.246643,
+    "web_fetch": 0,
+    "duration_api_ms": 60950
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -8.5,
+     "25": -4.0,
+     "50": 0.0,
+     "75": 4.0,
+     "90": 8.0
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.025
+   },
+   "reasoning": "Window Nov 23-Dec 4 (P0 = Nov 20 close), 9 trading days incl. Thanksgiving half-day. Nvidia reports Nov 17, before the window, so the earnings jump sits in P0 and only drift remains. Base: two-week NVDA-MSFT spread centered near 0, SD ~6.5 pp in normal regimes. Widened for regime: Jensen Huang resigned in the week of Nov 9-13 amid a spy-linked scandal; CFO Kress is interim CEO; a House interview with Huang is proposed for Dec 1, inside the window; a CEO-succession announcement could also land. Median kept ~0 since rebound and further slide both look plausible. No human market prices this spread; the Manifold candidate (big tech vs Bitcoin since 2020) does not match.",
+   "sources": [
+    "https://www.trefis.com/stock/nvda/articles/625138/nvidia-reports-tuesday-which-stocks-held-up-either-way/2026-11-16",
+    "https://www.cnbc.com/2026/11/12/stock-market-today-live-updates.html",
+    "https://finance.yahoo.com/markets/stocks/articles/microsoft-tops-nvidia-market-cap-193114512.html",
+    "https://247wallst.com/investing/2026/11/10/microsoft-is-back-above-4-trillion-and-only-266-billion-behind-nvidia/",
+    "https://www.tipranks.com/stocks/nvda/earnings"
+   ],
+   "dossier": "- Resolution: NVDA % return minus MSFT % return, Yahoo Adj Close; P0 = close Fri Nov 20 2026, P1 = close Fri Dec 4 2026. Event window: Nov 23 -> Dec 4 per the criteria; as of Now (Nov 16) 0% elapsed. 9 trading days, incl. the Nov 27 half-day after Thanksgiving.\n- Nvidia Q3 FY27 earnings: Nov 17 2026 after close (TipRanks/search results), so before the window and priced into P0. Consensus EPS ~$2.49.\n- Trefis (Nov 16): NVDA ~$162.85, down ~12.5% YTD vs S&P +11.5%. The last 12 earnings reactions had a median move of +/-4.4% (range +16.4% to -8.5%). Stock fell in the week after earnings 8 of 12 times. MSFT barely moved after NVDA earnings (+0.3%).\n- CNBC (Nov 13): Jensen Huang resigned as CEO after reports of multiple affairs, including one with a woman US intelligence believes is a Chinese spy. CFO Colette Kress is interim CEO. HSBC downgraded NVDA to hold, citing uncertainty until a permanent successor is named. NVDA fell >4% Thursday and kept falling Friday.\n- Trefis: House committees requested a closed-door interview with Huang, proposed for Dec 1, inside the window. The scandal also involves Megaspeed, a Singapore customer.\n- Yahoo/24-7 Wall St (Nov 10): NVDA fell >6% to ~$167 on Nov 10, and MSFT (~$543) passed NVDA in market cap for the first time since June 2025. MSFT up ~12.7% YTD at that point. MSFT positives: cloud growing ~48%/yr, ~$170B capex plan, Ignite conference.\n- CNBC (Nov 13): MSFT fell ~3% premarket on an Outlook/Teams outage. Nasdaq +2.3% that week.\n- Volatility (assumed, not measured): normal-regime daily vols NVDA ~2.5-3%, MSFT ~1.6%, corr ~0.5 -> two-week spread SD ~6-7.5 pp, mean ~0. NVDA idiosyncratic vol currently elevated by the CEO scandal.\n- Upside drivers for the spread: post-scandal rebound, permanent-CEO announcement, strong earnings drift. Downside drivers: worse scandal disclosures, Dec 1 testimony, customer/financing worries, a post-earnings fade.\n- Searched for but not found: a Polymarket/Kalshi/Manifold market on this spread; the actual NVDA options implied vol for late November.",
+   "reference_class": "Historical two-week (9-10 trading day) NVDA minus MSFT return spreads, 2023-2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.867,
+   "seconds": 84.4,
+   "usage": {
+    "num_turns": 8,
+    "input": 12,
+    "cache_read": 164482,
+    "cache_write": 11899,
+    "cache_write_1h": 11899,
+    "output": 4272,
+    "thinking": 1103,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3212974,
+    "web_fetch": 0,
+    "duration_api_ms": 101569
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -8.2,
+     "25": -3.9,
+     "50": 0.0,
+     "75": 3.9,
+     "90": 8.2
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Relative return over ~8.5 trading days (Nov 23-Dec 4, Thanksgiving week) has zero predictable drift; center at 0. NVDA is in an elevated-volatility regime after Jensen Huang resigned as CEO Nov 12 (stock $162.85, six straight weekly declines, HSBC downgrade) and its Nov 17 earnings land before the window, so earnings-day jump risk is excluded but leadership news risk stays. MSFT has also been volatile ($507-556 in November). Spread SD ~6.5pp; fat tails, with ~3% priced on each side outside ±15. No human market prices this contract (the Manifold candidate is big tech vs Bitcoin over the 2020s, which doesn't match).",
+   "sources": [
+    "https://www.heygotrade.com/en/news/nvidia-nvda-stock-news-november-16-2026/",
+    "https://www.fool.com/coverage/stock-market-today/2026/11/13/stock-market-today-nov-13-nvidia-slides-after-hsbc-downgrades-stock-to-hold-on-ceo-uncertainty/",
+    "https://www.trefis.com/stock/msft/articles/624529/how-big-could-microsoft-stocks-next-fall-be/2026-11-12",
+    "https://www.heygotrade.com/en/news/microsoft-msft-stock-news-november-16-2026/",
+    "https://unusualwhales.com/stock/NVDA/earnings"
+   ],
+   "dossier": "- Resolves off Yahoo Finance Adj Close: P0 = close on Fri Nov 20 2026; P1 = close on Fri Dec 4 2026; value = NVDA% - MSFT%. Not computed from intraday prices or market cap.\n- Event window: Nov 23 -> Dec 4 2026 per the criteria; as of Nov 16 0% elapsed (the window opens in a week). Thanksgiving Nov 26 is a market holiday and Nov 27 is a half-day, so ~8.5 trading days.\n- NVDA Q3 FY27 earnings: Nov 17 2026 after the close (unusualwhales, fool.com). This is BEFORE P0, so the earnings jump is baked into P0.\n- Jensen Huang resigned as CEO/President/director effective Nov 12 2026; CFO Colette Kress is interim CEO; no official reason given; media cited reports about personal conduct (heygotrade, Nov 16).\n- NVDA closed $162.85 on Nov 13 (-2.01%), its sixth straight weekly decline (longest since 2012); 52-week range $148.80-$243.37. HSBC cut it to hold with a $170 target. AMD fell 8.75% and AVGO 4.76% the same day: a sector-wide chip selloff (heygotrade, fool.com, Nov 13).\n- MSFT closed $523.88 on Nov 13 (+0.17% while the Nasdaq fell 0.91%); November range $507-556; 52-week high $559.15; +29% over six months to Nov 11; $0.98 ex-dividend Nov 19 (before the window) (heygotrade; trefis Nov 12).\n- MSFT fundamentals: Azure +48% y/y; capex >$50B guided for Q2; Windows OEM -27%; next earnings late Jan 2027, outside the window (trefis).\n- Question background: as of Oct 7 2026, NVDA market cap +7% YTD and MSFT -21% YTD, so MSFT has rallied strongly since then.\n- Base rate: biweekly NVDA-MSFT spread differences historically center near 0, with SD of roughly 4-6pp in calmer regimes. A volatility-model estimate for the current regime (NVDA ~3%/day, MSFT ~1.8%/day, corr ~0.5) gives ~7-8pp over 8.5 days.\n- Two-way risks: NVDA leadership news (successor named = rebound; further revelations = drop); continued chip-sector selloff vs. a mean-reversion bounce after six down weeks; MSFT Azure/capex sentiment.\n- Searched, not found: implied volatility for the window; the resolution spreadsheet's values; any human prediction market on this contract (none found).",
+   "reference_class": "Biweekly (9-10 trading-day) NVDA minus MSFT percent-return differences, 2024-2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5457,
+   "seconds": 57.8,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 133392,
+    "cache_write": 12685,
+    "cache_write_1h": 12685,
+    "output": 3305,
+    "thinking": 752,
+    "web_search": 4,
+    "cost_usd_envelope": 0.29902340000000005,
+    "web_fetch": 0,
+    "duration_api_ms": 67665
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -8.5,
+     "25": -3.9,
+     "50": 0.0,
+     "75": 4.0,
+     "90": 8.6
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Window: Nov 20 close to Dec 4 close, 9 trading days. NVDA's Nov 17 earnings land before P0, so the earnings jump itself is excluded, but NVDA is in a crisis regime (Huang resigned, stock down ~35% in 6 weeks, IV 60-86%) and should stay volatile. MSFT also moved a lot (-6% in a week on news of Anthropic's Office competitors). Median 0: no reliable drift edge in a 2-week relative return. Spread is wider than a normal regime (~4-6pp SD), set at ~6.6-7pp with fat tails and ~2% mass beyond +/-15pp on each side. No human market prices this contract. Polymarket lists only largest-company and market-cap contracts, which don't match.",
+   "sources": [
+    "https://cryptobriefing.com/nvidia-stock-drops-35-amid-leadership-turmoil-earnings-report-looms/",
+    "https://www.heygotrade.com/en/news/microsoft-msft-stock-news-november-16-2026/",
+    "https://earnings-watcher.com/wiki/nvda-earnings-november-2026",
+    "https://polymarket.com/event/largest-company-end-of-december-2026",
+    "https://www.vantagemarkets.com/en/market-analysis/nvda-stock-monthly-outlook-analysis-nvidia/"
+   ],
+   "dossier": "- Event window: P0 = Adj Close Fri Nov 20 2026; P1 = close Fri Dec 4 2026; 9 trading days (Nov 23-25, Nov 27 half-day, Nov 30-Dec 4; Thanksgiving Nov 26 closed). As of Nov 16, 0% elapsed. Resolves off Yahoo Finance Adj Close, NVDA% minus MSFT%.\n- NVDA reports fiscal Q3 on Nov 17 after close (searches, Nov 2026). The reaction lands before P0 and is excluded from the window.\n- NVDA ~$159 on Nov 16; six straight weekly declines (longest since 2012), ~-35% over six weeks; YTD ~-13% (stockanalysis/cryptobriefing, Nov 16 2026).\n- Jensen Huang resigned amid conduct and China export-control investigations; Colette Kress is interim CEO; Treasury Sec. Bessent pressured the company (cryptobriefing, Benzinga, Nov 2026).\n- Options implied earnings move +/-7.8% to 9.2%; ATM IV quoted 60-86% vs historical vol ~45% (earnings-watcher, Benzinga, Nov 2026).\n- MSFT closed $523.88 on Nov 13, -6.3% on the week after Anthropic released Office/Excel competitor tools; 52-week range $349-$559 (heygotrade, Nov 13 2026).\n- Polymarket: only largest-company and NVDA market-cap year-end contracts; no contract on 2-week relative returns. No matching market found.\n- Base-rate components: in normal regimes the 2-week NVDA-MSFT difference has SD of roughly 4-6pp with mean near 0. In the current regime, NVDA ~50%/yr and MSFT ~30%/yr vol with corr ~0.5 imply ~7-8pp SD over 9 days.\n- Upside drivers for NVDA vs MSFT: relief rally after earnings or a leadership resolution; further MSFT pressure from AI competition. Downside: more regulatory or investigation news, continued NVDA de-rating, MSFT defensive rotation.\n- Searched but not found: the Metaculus spreadsheet of past resolutions (not opened); post-earnings NVDA price.",
+   "reference_class": "Biweekly NVDA-minus-MSFT return differences (Metaculus Q-series 2025-2026), adjusted to the current high-vol NVDA regime"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1272,
+   "seconds": 25.2,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20105,
+    "cache_write": 9147,
+    "cache_write_1h": 9147,
+    "output": 2499,
+    "thinking": 569,
+    "web_search": 0,
+    "cost_usd_envelope": 0.127185,
+    "web_fetch": 0,
+    "duration_api_ms": 24524
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -9.0,
+     "25": -4.2,
+     "50": 0.0,
+     "75": 4.2,
+     "90": 9.0
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Window: Nov 20 close to Dec 4 close, about 8.5 trading days including the Thanksgiving half-day. NVDA's Nov 17 earnings land before P0. A two-week relative return has no predictable drift, so the median is 0. NVDA is in a crisis regime (Huang resigned, six straight weekly declines, a House interview proposed for Dec 1, a possible CEO-succession announcement), and MSFT is also volatile (AI-competition news). Spread SD is about 7pp, with fat tails and about 3% on each side beyond +/-15. No human market prices this contract.",
+   "sources": [],
+   "reconciliation": "The runs agreed on the window (P0 = Nov 20 close, P1 = Dec 4 close), that earnings are excluded, and on a median of 0. The apparent factual conflicts are different dates or timeframes: NVDA $159 vs $162.85, and MSFT +0.17% on the day vs -6.3% on the week. The cause of Huang's resignation is framed differently across the dossiers and can't be settled without web access, but it doesn't change the volatility regime. The only substantive difference is the width (SD about 6.5pp in the runs). A volatility model built from the dossiers' IV and historical-vol figures implies about 7-8pp, so I widened slightly to a 10-90 width of about 18 and kept about 3% tail mass on each side. I retrieved nothing on this run.",
+   "disagreements": [
+    {
+     "claim": "NVDA current price $159 vs $162.85",
+     "kind": "factual",
+     "verdict": "Different dates (Nov 16 vs Nov 13 close); compatible"
+    },
+    {
+     "claim": "MSFT +0.17% vs -6.3% move",
+     "kind": "factual",
+     "verdict": "Daily vs weekly figure; compatible; MSFT is also volatile"
+    },
+    {
+     "claim": "Reason for Huang's resignation (spy-linked affair vs conduct/export probe vs unstated)",
+     "kind": "factual",
+     "verdict": "Can't settle without web access; doesn't matter for the volatility regime"
+    },
+    {
+     "claim": "Spread SD ~6.5pp vs higher",
+     "kind": "judgment",
+     "verdict": "Vol model from the dossiers' IV/HV implies ~7-8pp; set ~7pp, 10-90 width 18"
+    },
+    {
+     "claim": "Tail mass beyond +/-15: 2% vs 3% per side",
+     "kind": "judgment",
+     "verdict": "Took 3% per side given the crisis regime and fat tails"
+    }
+   ],
+   "reference_class": "Biweekly NVDA-minus-MSFT percent return spreads, 2023-2026, adjusted for elevated-volatility regimes"
+  }
+ ]
+}

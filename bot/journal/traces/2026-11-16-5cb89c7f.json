@@ -1,0 +1,252 @@
+{
+ "record_id": "2026-11-16-5cb89c7f",
+ "question": "What will be the maximum intraday value of the VIX over these biweekly periods in Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46245,
+ "url": "https://www.metaculus.com/questions/46015/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-16T17:02:49+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.6935,
+ "asknews": false,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 16.599999999999998,
+    "25": 18.53333333333333,
+    "50": 20.966666666666665,
+    "75": 24.2,
+    "90": 29.266666666666666
+   },
+   "p_above_upper": 0.013333333333333334
+  },
+  "phase1": {
+   "10": 16.599999999999998,
+   "25": 18.53333333333333,
+   "50": 20.966666666666665,
+   "75": 24.2,
+   "90": 29.266666666666666
+  },
+  "phase2": null,
+  "spread_phase1": 1.5,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 16.6,
+   "25": 18.5,
+   "50": 21.0,
+   "75": 24.3,
+   "90": 29.0
+  },
+  "p_above_upper": 0.015
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.4699,
+   "seconds": 122.4,
+   "usage": {
+    "num_turns": 15,
+    "input": 20,
+    "cache_read": 275849,
+    "cache_write": 24677,
+    "cache_write_1h": 24677,
+    "output": 4851,
+    "thinking": 995,
+    "web_search": 4,
+    "cost_usd_envelope": 0.6188508000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 134927
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 16.2,
+     "25": 17.9,
+     "50": 20.0,
+     "75": 23.0,
+     "90": 27.8
+    },
+    "p_above_upper": 0.015
+   },
+   "reasoning": "VIX spiked to 28.36 intraday Nov 5 after the midterm results hit AI stocks, eased to 19.30 on Nov 13, and was trading ~21.1 on Nov 16 ahead of Nvidia earnings (Nov 17) and the Anthropic IPO (Nov 19); both land before the window. The window has 9 trading days (Thanksgiving closed, Nov 27 half day) plus the Dec 4 jobs report. Mean reversion and quiet holiday weeks pull the level down; max-of-window, the 5.15% 10-year yield, Middle East tension, Nvidia CEO turmoil and a possible Dec 12 shutdown fatten the right tail. No human market found (Polymarket/Manifold none per harness; Kalshi none found).",
+   "sources": [
+    "https://247wallst.com/investing/2026/11/06/wall-streets-fear-gauge-just-had-its-third-biggest-jump-since-1990/",
+    "https://businessquant.com/economic-data/usvix/",
+    "https://finance.yahoo.com/markets/stocks/articles/stock-market-news-nov-16-132700717.html",
+    "https://finance.yahoo.com/markets/live/stock-market-today-monday-november-16-dow-sp-500-nasdaq-nvidia-oil-091631084.html",
+    "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv"
+   ],
+   "dossier": "- Nov 5 2026: VIX rose from ~16.7 to an intraday high of 28.36 (close 28.18), its third-biggest one-day % jump since 1990. Trigger: Democratic midterm wins raised fears of curbs on AI data centers (247wallst, Nov 6).\n- Early Oct to Nov 4 2026: VIX ranged 14.84-21.15 (247wallst).\n- 52-week VIX range is about 13.38-35.30 (search summary).\n- Closes: Nov 12 18.70, Nov 13 19.30; Nov 13 it traded intraday above 20 (businessquant; Yahoo).\n- Nov 16 intraday: VIX ~21.1 (+9%), S&P -1.2%, Nasdaq -1.65%. Nvidia slide after CEO Jensen Huang resigned; talk of reinstating him (Yahoo live, Nov 16).\n- Nvidia earnings Tue Nov 17 after the close; Anthropic IPO Thu Nov 19 at ~$1.4T target. Both fall BEFORE the window.\n- Macro: 10-year Treasury at 5.15%; Iranian attacks on US facilities; Bitcoin -17% month-to-date (Yahoo, Nov 16). Kalshi priced a 44% chance of a US government shutdown on Dec 12, which is after the window (cryptobriefing).\n- S&P posted weekly gains for the week of Nov 9-13, snapping a four-week losing streak.\n- Calendar: Thanksgiving Nov 26 market closed, Nov 27 half day; jobs report expected Fri Dec 4, inside the window. No FOMC meeting inside the window found (Dec meeting is typically mid-month).\n- Resolves off the Cboe VIX_History.csv HIGH column, not closes.\n- Event window: Mon Nov 23 open -> Fri Dec 4 close (9 trading days). As of Nov 16, 0% has elapsed; the window starts in 5 trading days.\n- Generic pattern: VIX tends to revert after spikes, and Thanksgiving weeks are usually low-volume; the max intraday high over 9 days typically runs a few points above the average close.\n- Searched, absent: full recent Cboe/FRED daily data (fetches were truncated); any Kalshi/Polymarket VIX contract for this window; VIX futures term structure.",
+   "reference_class": "Max intraday VIX over a 9-trading-day window starting ~1 week ahead, when spot VIX is ~19-21 a week or two after a spike"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.851,
+   "seconds": 80.0,
+   "usage": {
+    "num_turns": 10,
+    "input": 14,
+    "cache_read": 176705,
+    "cache_write": 21271,
+    "cache_write_1h": 21271,
+    "output": 3984,
+    "thinking": 809,
+    "web_search": 3,
+    "cost_usd_envelope": 0.432881,
+    "web_fetch": 0,
+    "duration_api_ms": 85067
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 17.0,
+     "25": 18.9,
+     "50": 21.4,
+     "75": 24.6,
+     "90": 29.5
+    },
+    "p_above_upper": 0.015
+   },
+   "reasoning": "VIX closed 21.04 on Nov 16 (high 21.79) after a Nov 5 spike to 28.36 on a tech selloff; the last three biweekly windows had maximums of ~22-28. The window Nov 23-Dec 4 has 9 trading days including the quiet Thanksgiving week, and the Nov jobs report would normally fall on Fri Dec 4 (date not checked); Nvidia earnings and Anthropic's IPO land before the window. Reference class: the 2-week max high usually lands a few percent above the level a week earlier, with mean reversion toward ~18. That reversion and the holiday quiet roughly offset the elevated regime (10y yield 5.13%, AI-valuation jitters). Median ~21.4, right-skewed tail. Market check: no Kalshi/Polymarket/Manifold/bookmaker contract on this found.",
+   "sources": [
+    "https://www.investing.com/indices/volatility-s-p-500-historical-data",
+    "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+    "https://gokhshtein.com/news/2026-11-16-cboe-volatility-index-up-18-points-at-211",
+    "https://finance.yahoo.com/markets/stocks/articles/stock-market-news-nov-16-132700717.html",
+    "https://cryptobriefing.com/kalshi-us-government-shutdown-odds-december/"
+   ],
+   "dossier": "- Investing.com VIX daily (accessed 2026-11-16): Nov16 O20.00 H21.79 L19.84 C21.04; Nov13 H20.92 C19.30; Nov12 H19.34 C18.70; Nov11 H18.96 C17.49; Nov10 H21.61 C19.46; Nov9 H25.08 C19.92; Nov6 H27.76 C25.64; Nov5 H28.36 C28.18 (tech selloff, Nasdaq -5% per Gurufocus headline); Nov4 C16.61; Nov3 H21.91; Nov2 H21.77; Oct30 H23.93; Oct16 H22.31; late-Oct lows ~16.2.\n- Recent biweekly-window maxima: Oct 5-16 >=22.31; Oct 19-30 23.93; Nov 2-13 28.36. 52-week range ~13.4-35.3 (search snippet).\n- Context Nov 16 2026 (Yahoo/Bloomberg/news snippets): AI/tech selloff, Nvidia down ahead of high-stakes earnings (expected the week of Nov 16, before window), Anthropic IPO expected in coming days; 10y UST ~5.13% (5.15% on Nov 13).\n- Kalshi prices ~44% chance of US government shutdown on Dec 12, 2026 (after window; debate could add stress late in window).\n- Window: Mon Nov 23 -> Fri Dec 4, 2026; Thanksgiving Nov 26 closed, Nov 27 half day -> 9 trading days. Nov jobs report likely Fri Dec 4. FOMC likely Dec 8-9 (after window).\n- Status quo: VIX ~21 now; long-run median ~18; VIX mean-reverts after spikes; Thanksgiving week historically low-volatility.\n- Base-rate note: the 2-week max intraday high typically sits a few % to ~10% above the starting spot level; log-SD of that max relative to a level 1 week earlier ~0.2-0.25 in ~20 VIX regimes.\n- Resolves off the Cboe VIX_History.csv HIGH column (max over window days), not closes.\n- Event window: Nov 23 -> Dec 4 2026 per criteria; as of Nov 16, 0% elapsed.\n- Upside escape >50 requires crisis-level shock (happened Aug 2024 intraday 65, Apr 2025 ~60).\n- Searched, absent: any prediction market on VIX for this window (Kalshi/Polymarket/Manifold); latest Cboe CSV rows (fetch truncated).",
+   "reference_class": "Biweekly (9-10 trading day) maximum intraday VIX highs starting ~1 week ahead, in regimes where spot VIX is ~19-22 after a recent spike"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4182,
+   "seconds": 70.9,
+   "usage": {
+    "num_turns": 10,
+    "input": 14,
+    "cache_read": 174815,
+    "cache_write": 20496,
+    "cache_write_1h": 20496,
+    "output": 3841,
+    "thinking": 631,
+    "web_search": 3,
+    "cost_usd_envelope": 0.41816700000000007,
+    "web_fetch": 0,
+    "duration_api_ms": 73616
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 16.6,
+     "25": 18.8,
+     "50": 21.5,
+     "75": 25.0,
+     "90": 30.5
+    },
+    "p_above_upper": 0.01
+   },
+   "reasoning": "VIX closed 21.04 on Nov 16 amid AI/Nvidia selloff; recent regime choppy with spikes to 22.3 (Oct 16), 23.9 (Oct 30), 28.4 (Nov 5). Window Nov 23-Dec 4 is 9 trading days incl. Thanksgiving week (seasonally calm) and the Dec 4 jobs report. Reference class: max intraday VIX over 2-week windows is typically ~10-20% above the start level; with the start level expected ~19-20 after mean reversion, median ~21.5. Right-skewed for continued AI-valuation stress. No human market found (Kalshi/Polymarket/Manifold).",
+   "sources": [
+    "https://www.investing.com/indices/volatility-s-p-500-historical-data",
+    "https://www.gurufocus.com/news/9175483/vix-surges-70-spy-drops-amid-market-volatility-on-november-5-2026 (search snippet)",
+    "https://gokhshtein.com/news/2026-11-16-cboe-volatility-index-up-18-points-at-211 (search snippet)",
+    "https://eurasiabusinessnews.com/2026/11/16/u-s-stock-market-today-november-16-2026-nvidia-earnings-loom-as-oil-slips-and-gold-struggles/ (search snippet)",
+    "https://cdn-api.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv (truncated fetch)"
+   ],
+   "dossier": "- VIX daily (Investing.com, fetched 2026-11-16): Nov16 O20.00 H21.79 L19.84 C21.04; Nov13 H20.92 C19.30; Nov12 H19.34 C18.70; Nov11 H18.96 C17.49; Nov10 H21.61 C19.46; Nov9 H25.08 C19.92; Nov6 H27.76 C25.64; Nov5 H28.36 C28.18 (tech selloff, S&P -3.5%, Nasdaq -5.2%; 7-month high); Nov4 H19.22 C16.61; Nov3 H21.91; Nov2 H21.77; Oct30 H23.93 C19.42; Oct27-29 highs 17.4-18.6; Oct22-23 highs 20.3-20.7; Oct16 H22.31 C19.99.\n- 52-week VIX range cited ~13.38-35.30 (search snippet, Nov 2026).\n- Drivers as of Nov 16 (news snippets): AI-share selloff, Nvidia leadership uncertainty and chip-access scrutiny, rate uncertainty; Nvidia earnings and an Anthropic IPO expected the week of Nov 16 (before the window).\n- Calendar: Thanksgiving Thu Nov 26 market closed; Fri Nov 27 half day; Nov jobs report likely Fri Dec 4; December FOMC likely Dec 8-9 (after window) - not verified.\n- Event window: market open Mon Nov 23 -> close Fri Dec 4 2026 (9 trading days); as of Nov 16, 0% elapsed (starts in 1 week).\n- Resolves off the max HIGH column in the Cboe VIX_History.csv, not closes.\n- Base-rate heuristics (not computed from data): 2-week-window max intraday VIX typically runs ~10-20% above the window's starting level; Thanksgiving weeks historically skew toward low VIX; 1-week-ahead VIX start level uncertain by roughly +/-20% (log) at VIX ~20.\n- Two-way: upside = recurring AI-valuation shocks (3 spikes >22 in past month), post-Nvidia-earnings fallout; downside = fast mean reversion seen after Nov 5 (fell from 28 to 17.5 in 4 sessions), holiday seasonality.\n- Searched, absent: Kalshi/Polymarket/Manifold VIX-max contracts for this window; full recent Cboe CSV (fetch truncated).",
+   "reference_class": "2-week-window maximum intraday VIX relative to prevailing level, in elevated-but-non-crisis regimes (VIX 17-22)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.2647,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1736,
+   "seconds": 20.8,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 16742,
+    "cache_write_1h": 16742,
+    "output": 1865,
+    "thinking": 249,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1736058,
+    "web_fetch": 0,
+    "duration_api_ms": 20169
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 16.6,
+     "25": 18.5,
+     "50": 21.0,
+     "75": 24.3,
+     "90": 29.0
+    },
+    "p_above_upper": 0.015
+   },
+   "reasoning": "VIX at ~21 on Nov 16 after a Nov 5 spike to 28.36; Oct-Nov biweekly maxima were 22.3, 23.9, 28.4. Window Nov 23-Dec 4 has 9 trading days including the quiet Thanksgiving week and the Dec 4 jobs report; Nvidia earnings and the Anthropic IPO come before it. Expected fall-back to ~19-20 before the window starts, offset by the max-of-window effect and the elevated regime, gives a median ~21 with a fat right tail. No human market found.",
+   "sources": [],
+   "reconciliation": "All three dossiers agree on the facts (Investing.com daily highs/closes, 9-day window, calendar events before and after it); no factual dispute needed settling and no web access this run. The only difference is judgment on how far VIX falls back before the window and how much weight the spike-prone regime gets (medians 20.0-21.5). I take ~21: the 19-20 expected start level plus the typical lift of a 9-day max over the start level, with a right tail for AI-valuation shocks. Dispersion carried roughly from runs 2/3. Market check: runs found none; I could not search again.",
+   "disagreements": [
+    {
+     "claim": "Median max VIX ~20 (Run 1) vs ~21.5 (Runs 2-3)",
+     "kind": "judgment",
+     "verdict": "Took ~21: fall-back plus Thanksgiving calm offset by the max-of-window effect and the spike-prone regime"
+    },
+    {
+     "claim": "Width of right tail (90th pct 27.8-30.5)",
+     "kind": "judgment",
+     "verdict": "Took 29.0; three >22 spikes in the past month support a fat tail, holiday window tempers it"
+    },
+    {
+     "claim": "Jobs report on Dec 4 and FOMC after window",
+     "kind": "factual",
+     "verdict": "All runs agree; not independently verified, low impact"
+    }
+   ],
+   "reference_class": "Max intraday VIX over 2-week (9-10 trading day) windows starting about one week ahead, in VIX ~18-22 regimes"
+  }
+ ]
+}
