@@ -1,0 +1,256 @@
+{
+ "record_id": "2026-11-16-e724f7c6",
+ "question": "What will the Nasdaq Composite (^IXIC) close at on Friday, November 27, 2026?",
+ "question_id": 46836,
+ "url": "https://www.metaculus.com/questions/46576/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-16T07:11:45+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.2912,
+ "asknews": true,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 23400.0,
+    "25": 24213.333333333332,
+    "50": 24956.666666666668,
+    "75": 25680.0,
+    "90": 26383.333333333332
+   },
+   "p_below_lower": 0.005
+  },
+  "phase1": {
+   "10": 23400.0,
+   "25": 24213.333333333332,
+   "50": 24956.666666666668,
+   "75": 25680.0,
+   "90": 26383.333333333332
+  },
+  "phase2": null,
+  "spread_phase1": 20.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 23400.0,
+   "25": 24200.0,
+   "50": 24950.0,
+   "75": 25680.0,
+   "90": 26400.0
+  },
+  "p_below_lower": 0.004
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3405,
+   "seconds": 46.6,
+   "usage": {
+    "num_turns": 6,
+    "input": 8,
+    "cache_read": 99470,
+    "cache_write": 20819,
+    "cache_write_1h": 20819,
+    "output": 3758,
+    "thinking": 731,
+    "web_search": 2,
+    "cost_usd_envelope": 0.340515,
+    "web_fetch": 0,
+    "duration_api_ms": 52456
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 23300.0,
+     "25": 24180.0,
+     "50": 24950.0,
+     "75": 25700.0,
+     "90": 26450.0
+    }
+   },
+   "reasoning": "Nov 13 Yahoo close is 25,136.27 (the question background's 24,922 figure is wrong). Nasdaq-100 futures were down ~1.1% early Nov 16, pointing to an open near 24,900. There are 9 sessions to the Nov 27 half-day. Nvidia earnings (Nov 17), the Anthropic IPO (Nov 19) and PCE (Nov 25) add event risk; the backdrop is a hawkish Fed and 10-year yields above 5%. Recent realized vol is very high (-5.5% on Nov 5). Median is set near the futures-implied level with slight Thanksgiving-week drift, and the spread uses an SD of ~5% with fat tails.",
+   "sources": [
+    "https://finance.yahoo.com/quote/%5EIXIC/history/",
+    "https://eurasiabusinessnews.com/2026/11/14/stock-market-today-november-13-2026-tech-stocks-fall-as-nvidia-earnings-and-anthropic-ipo-loom/",
+    "https://www.thenationalnews.com/business/markets/2026/11/16/nvidia-earnings-anthropic-ipo/",
+    "https://www.cnbc.com/2026/11/13/stock-market-next-week-outlook-for-nov-16-20-2026.html",
+    "https://www.aol.com/articles/asian-shares-mixed-investors-assess-053708000.html"
+   ],
+   "dossier": "- Yahoo ^IXIC history (fetched 2026-11-16): closes Nov 2 25,164.31; Nov 3 25,372.01; Nov 4 25,736.51; Nov 5 24,315.00 (-5.5%); Nov 6 24,579.43; Nov 9 25,253.14; Nov 10 25,065.87; Nov 11 25,466.19; Nov 12 25,366.09; Nov 13 25,136.27 (-0.91%; intraday range 24,872-25,423). The question background's 24,922.08 / -1.75% for Nov 13 conflicts with Yahoo, AP/AOL and other reports, which all give 25,136.27.\n- Futures as of 1:45am EST Nov 16 (thenationalnews / week-ahead pieces): Nasdaq-100 -1.08%, S&P 500 -0.52%, Dow -0.23%.\n- Nvidia reports FQ3 Tue Nov 17 after the close (consensus EPS $2.47, revenue $108.8B; Q4 revenue guide expected ~$125B). It is the first report since CEO Jensen Huang resigned Nov 12; NVDA fell 12.75% the week of Nov 9-13 (eurasiabusinessnews 11/14).\n- Anthropic IPO prices Wed Nov 18 at $70-78 and trades Thu Nov 19 on Nasdaq as ANT, valued at about $1.3-1.45T (thenationalnews 11/16, CNBC 11/13). The order book is reportedly about $64B (cmsinvestments headline).\n- Macro: 2-year Treasury at 4.87%, 10-year about 5.1-5.15%. A Fed hike at the Dec 9 meeting is fully priced. Wholesale inflation is 6.5% y/y, with energy costs tied to the US-Iran war (AP 11/13). Fed minutes are due the week of Nov 16; PCE and Q3 GDP on Nov 25.\n- VIX: 17.49 on Nov 11 after an eight-month high near 28 the week before; 2026 average about 18 (per the question background).\n- Week of Nov 9-13: Nasdaq +2.27%, S&P 500 +2.5%. Nov 13 was a rotation day away from tech (AMD -8.8%, AVGO -4.8%).\n- Calendar: market closed Thu Nov 26; Fri Nov 27 is a half-day closing at 1pm ET. That leaves 9 sessions after the Nov 13 close.\n- Status quo: no change from 25,136 (about 24,870-24,900 if the futures move holds at the open).\n- Dispersion: implied daily vol is about 1.5-1.7% (VXN-equivalent); recent realized vol is about 2%/day including the -5.5% day. Over 9 sessions that gives an SD of about 4.5-6%.\n- Resolves off the Yahoo ^IXIC Close for Nov 27, 2026, with the Nasdaq indexes page as fallback.\n- Event window: Nov 13 close -> Nov 27 close; as of Nov 16 07:10 UTC, 0 of 9 sessions are complete.\n- Searched for a prediction market on the Nov 27 level: none found. Manifold has only drawdown-threshold markets that don't match.\n- Searched, not found: the exact VXN level; Monday cash open.",
+   "reference_class": "Nasdaq Composite 9-trading-day log returns in elevated-volatility regimes (VIX 17-28)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.0485,
+   "seconds": 52.2,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 131442,
+    "cache_write": 21527,
+    "cache_write_1h": 21527,
+    "output": 4015,
+    "thinking": 767,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3581164,
+    "web_fetch": 0,
+    "duration_api_ms": 57382
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 23350.0,
+     "25": 24200.0,
+     "50": 24950.0,
+     "75": 25700.0,
+     "90": 26400.0
+    },
+    "p_below_lower": 0.005
+   },
+   "reasoning": "Verified Nov 13 close is 25,136.27 (-0.91%) per Nasdaq index page and AP; question background's 24,922 figure appears erroneous. Monday Nov 16 Nasdaq-100 futures indicated -0.9% to -1.3% amid Asian chip rout, putting effective start near ~24,850. Random-walk reference class with ~8.5 trading days remaining, daily SD ~1.65% given event density (Nvidia earnings Tue Nov 17, Anthropic IPO trading Thu Nov 19, PCE/GDP Nov 25, Fed hike priced for Dec, 10y ~5.1%). Median set slightly above futures-implied start for modest positive drift/Thanksgiving-week seasonality; fat tails retained. No matching prediction market found (Manifold candidates concern drawdowns by Dec 2026/Apr 2027, not this close).",
+   "sources": [
+    "https://indexes.nasdaq.com/Index/History/COMP",
+    "https://eurasiabusinessnews.com/2026/11/14/stock-market-today-november-13-2026-tech-stocks-fall-as-nvidia-earnings-and-anthropic-ipo-loom/",
+    "https://www.bloomberg.com/news/articles/2026-11-15/stock-market-today-dow-s-p-live-updates (search snippet; page 403)",
+    "https://mlq.ai/news/nasdaq-futures-fall-nearly-1-as-taiwans-chip-rout-deepens-before-nvidia-results-while-european-futures-edge-up/ (search snippet)",
+    "https://www.aol.com/articles/asian-shares-mixed-investors-assess-053708000.html (AskNews)"
+   ],
+   "dossier": "- Nasdaq index page (indexes.nasdaq.com, data as of 11/13/2026): COMP close 25,136.27, -229.82 (-0.91%). AP/AOL 11/13 confirms 25,136.27; S&P 500 7,561.67 (-0.4%), Dow 52,347.55. NOTE: question background's 24,922.08 (-1.75%) conflicts with both primary sources; the 11/12 close implied is ~25,366.\n- Nasdaq posted its first weekly gain in five weeks during week ending 11/13 (AP, 11/13).\n- Bloomberg/mlq.ai search snippets (11/15-16): Nasdaq 100 futures -0.9% to -1.3% in Asian trading Monday 11/16, S&P futures -0.6%; Asian tech subgauge -6%+ as US chip selloff spread.\n- Eurasia Business News (11/14): Nvidia reports earnings Tuesday 11/17, its first since CEO Huang resigned 11/12; NVDA -12.75% on the week, AMD +18.9% on the week. Anthropic IPO trading expected Thu 11/19 at ~$1.33T+ valuation. 10y yield ~5.15%.\n- AP 11/13: 2y yield 4.87%; Fed expected to hike in December; inflation partly from energy costs tied to US-Iran war; strategists cite mega-cap concentration risk.\n- Calendar per question: Thanksgiving 11/26 closed; 11/27 half day ending 1pm ET; PCE + Q3 GDP 2nd est on 11/25; FOMC 12/9.\n- Remaining trading sessions from 11/16 through 11/27: 9 (11/16,17,18,19,20,23,24,25,27 half day).\n- VIX ~17.5 on 11/11 after touching ~28 the prior week; recent COMP daily moves of ±1-1.75%.\n- Reference: 9-day Nasdaq return SD in VIX 15-25 regimes is roughly 4-5.5% (~1,000-1,400 pts at this level).\n- Resolves off the Yahoo Finance ^IXIC history 'Close' for 11/27/2026 (fallback Nasdaq COMP history), not futures or after-hours.\n- Event window: single close on 2026-11-27; as of 2026-11-16 07:10Z, 0 of the 9 remaining sessions have traded.\n- Searched for a Kalshi/Polymarket contract on this exact close: none found. The Manifold markets listed concern 15% drawdowns by 12/31/26 or 4/2/27, not this close.\n- Two-sided drivers: downside = chip rout continuing, Nvidia leadership/earnings disappointment, hawkish Fed and 5%+ yields, IPO supply absorbing capital; upside = Nvidia beat/relief rally, strong Anthropic debut lifting the AI trade, oversold bounce, positive Thanksgiving-week seasonality.",
+   "reference_class": "Nasdaq Composite ~9-trading-day log returns in elevated-but-normal volatility regimes (VIX 15-25)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6904,
+   "seconds": 48.8,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 131708,
+    "cache_write": 21837,
+    "cache_write_1h": 21837,
+    "output": 3390,
+    "thinking": 592,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3499146,
+    "web_fetch": 0,
+    "duration_api_ms": 53669
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 23550.0,
+     "25": 24260.0,
+     "50": 24970.0,
+     "75": 25640.0,
+     "90": 26300.0
+    },
+    "p_below_lower": 0.005
+   },
+   "reasoning": "Nov 13 official close 25,136.27 (Nasdaq indexes page; the question background's 24,922 figure is contradicted by Nasdaq and AP). Futures on Nov 16 premarket point ~1% lower, so effective start ~24,900. Nine sessions remain, including Nvidia earnings (Nov 17, first since CEO resignation) and the Anthropic IPO (~Nov 19-20), plus hawkish rates (Dec hike priced, 10y ~5.1%). Random-walk prior centred near the start with a slight positive drift (Thanksgiving-week seasonality) against hawkish macro; tails slightly fattened for the event risk. No human market prices this contract.",
+   "sources": [
+    "https://indexes.nasdaq.com/Index/History/COMP",
+    "https://eurasiabusinessnews.com/2026/11/14/stock-market-today-november-13-2026-tech-stocks-fall-as-nvidia-earnings-and-anthropic-ipo-loom/",
+    "https://www.bloomberg.com/news/articles/2026-11-15/stock-market-today-dow-s-p-live-updates",
+    "https://mlq.ai/news/nasdaq-futures-fall-nearly-1-as-taiwans-chip-rout-deepens-before-nvidia-results-while-european-futures-edge-up/",
+    "https://www.aol.com/articles/asian-shares-mixed-investors-assess-053708000.html"
+   ],
+   "dossier": "- Official Nasdaq COMP close Nov 13 2026: 25,136.27, -229.82 (-0.91%); high 25,423.09, low 24,872.41 (indexes.nasdaq.com, data as of 11/13/2026). AP/AOL Nov 13 matches 25,136.27. The question background's 24,922.08 / -1.75% figure conflicts with both.\n- Nasdaq posted its first weekly gain in five weeks in the week to Nov 13; the S&P 500 rose 2.5% that week. NVDA fell ~12.75% that week (eurasiabusinessnews, Nov 14).\n- Nov 16 premarket (Bloomberg/mlq.ai): Nasdaq 100 futures down ~0.9-1.3% (~27,780) after the Asian tech subgauge fell >6% on a chip rout.\n- Nvidia earnings Tue Nov 17, the first since Jensen Huang resigned on Nov 12; interim CEO Colette Kress. Investors are focused on customer commitments and ecosystem financing.\n- Anthropic IPO: background says pricing Nov 18 and trading Nov 19 (ticker ANT); a Nov 14 article says trading Nov 20. Target valuation ~$1.33-1.45T.\n- Macro: Oct CPI +0.4% m/m (hot); wholesale inflation 6.5% y/y; 10y yield ~5.1-5.15%; 2y 4.87%; December Fed hike fully priced, some officials floating 50bp; energy inflation tied to the US-Iran war.\n- Remaining calendar: Oct PCE and Q3 GDP 2nd estimate on Nov 25; market closed Nov 26; Nov 27 half-day closing 1pm ET.\n- VIX 17.49 on Nov 11 after ~28 the prior week; recent daily Nasdaq moves ±1-1.7%.\n- Status quo: index level unchanged from the start (~24,900 after futures, 25,136 at last close).\n- Base rate: the 9-session SD of Nasdaq returns at ~1.3-1.6% daily vol is ~4-4.8% (~1,000-1,200 pts). Historical post-Thanksgiving-week drift is mildly positive on average.\n- Resolves off the Yahoo Finance ^IXIC Close for Nov 27 2026 (Nasdaq COMP history as fallback), not futures or NDX.\n- Event window: Nov 16 open -> Nov 27 1pm ET close; as of Nov 16 07:10 UTC, 0 of 9 sessions elapsed.\n- Searched for but not found: any Polymarket/Kalshi/Manifold contract on the Nov 27 Nasdaq close; options-implied Nasdaq vol for that date.",
+   "reference_class": "Nasdaq Composite 9-trading-day log returns in elevated-but-normal volatility regimes (VIX 17-25)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0136,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1921,
+   "seconds": 20.1,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 18863,
+    "cache_write_1h": 18863,
+    "output": 1943,
+    "thinking": 272,
+    "web_search": 0,
+    "cost_usd_envelope": 0.19213380000000002,
+    "web_fetch": 0,
+    "duration_api_ms": 19477
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 23400.0,
+     "25": 24200.0,
+     "50": 24950.0,
+     "75": 25680.0,
+     "90": 26400.0
+    },
+    "p_below_lower": 0.004
+   },
+   "reasoning": "Verified Nov 13 close 25,136.27 (background's 24,922 is erroneous per all runs' primary sources). Monday futures ~-1.1% put the effective start near 24,880. Random-walk prior over 9 sessions with slight positive Thanksgiving drift offset by hawkish macro gives a median ~24,950. Event risk (Nvidia earnings Nov 17, Anthropic IPO Nov 19/20, PCE/GDP Nov 25) supports ~1.6% daily vol and modestly fat tails. No matching human market exists.",
+   "sources": [],
+   "reconciliation": "Factual: all three runs independently verified the Nov 13 close at 25,136.27 against the background's 24,922.08; I accepted 25,136.27. The Anthropic trading date (Nov 19 vs 20) is unresolved but immaterial since both fall in the window. Judgment: the runs agree on a median near 24,950 (futures-implied start plus slight drift), which I adopt as the evidence supports it. On width (2,750-3,200), the vol reasoning (implied 1.5-1.7%/day, realized ~2% inflated by the Nov 5 outlier) gives ~3,070; I used 3,000, carrying Run 2's dispersion basis forward. Lower escape priced at 0.4% (a -16% move in 9 sessions). No market found.",
+   "disagreements": [
+    {
+     "claim": "Nov 13 close is 25,136.27 vs background 24,922.08",
+     "kind": "factual",
+     "verdict": "All runs cite Nasdaq/Yahoo/AP at 25,136.27; accepted"
+    },
+    {
+     "claim": "Anthropic begins trading Nov 19 vs Nov 20",
+     "kind": "factual",
+     "verdict": "Unresolved without web access; immaterial, both inside the window"
+    },
+    {
+     "claim": "10-90 width 2,750 vs 3,000 vs 3,200",
+     "kind": "judgment",
+     "verdict": "Vol analysis gives ~3,070; used 3,000"
+    },
+    {
+     "claim": "Lower-tail escape mass 0 vs 0.5%",
+     "kind": "judgment",
+     "verdict": "Small but nonzero given the recent -5.5% day; 0.4%"
+    }
+   ],
+   "reference_class": "9-trading-day Nasdaq Composite returns in VIX 15-25 regimes (random walk from the futures-implied start)"
+  }
+ ]
+}
