@@ -1,0 +1,190 @@
+{
+ "record_id": "2026-11-16-ff11c714",
+ "question": "How many total 2026 measles-associated deaths will CDC's measles data page report as of November 26, 2026?",
+ "question_id": 46842,
+ "url": "https://www.metaculus.com/questions/46582/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-11-16T09:43:15+00:00",
+ "effort": "medium (floor; triage low)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "quantile_mean(angles=P,P)",
+ "cost_usd": 0.8366,
+ "asknews": true,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 5.800000000000001,
+    "25": 6.199999999999999,
+    "50": 6.949999999999999,
+    "75": 7.9,
+    "90": 9.0
+   },
+   "p_below_lower": 0.015,
+   "p_above_upper": 0.0125
+  },
+  "phase1": {
+   "10": 5.800000000000001,
+   "25": 6.199999999999999,
+   "50": 6.949999999999999,
+   "75": 7.9,
+   "90": 9.0
+  },
+  "phase2": null,
+  "spread_phase1": 0.3,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 5.800000000000001,
+   "25": 6.199999999999999,
+   "50": 6.949999999999999,
+   "75": 7.9,
+   "90": 9.0
+  },
+  "p_below_lower": 0.015,
+  "p_above_upper": 0.0125
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": false,
+   "model": "",
+   "cost_usd": 0.7989,
+   "seconds": 75.7,
+   "validation_errors_first_attempt": [
+    "agent failed (1): You've hit your session limit · resets 10:20am (UTC) | {\"duration_api_ms\":20101,\"stop_reason\":\"stop_sequence\",\"session_id\":\"816b09a2-239c-48df-b2ea-884582e3ebd5\",\"total_cost_usd\":0.208179,\"usage\":{\"input_tokens\":6,\"cache_creation_input_tokens\":17521,\"cache_read_input_tokens\":66590,"
+   ],
+   "errors": [
+    "agent failed (1): You've hit your session limit · resets 10:20am (UTC) | {\"duration_api_ms\":0,\"stop_reason\":\"stop_sequence\",\"session_id\":\"e7ead15e-f9e4-47c6-812c-e7196827b43d\",\"total_cost_usd\":0,\"usage\":{\"output_tokens_details\":{\"thinking_tokens\":0},\"input_tokens\":0,\"cache_creation_input_tokens\":0,\""
+   ]
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3458,
+   "seconds": 55.0,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 128022,
+    "cache_write": 20873,
+    "cache_write_1h": 20873,
+    "output": 3336,
+    "thinking": 674,
+    "web_search": 3,
+    "cost_usd_envelope": 0.34584539999999997,
+    "web_fetch": 0,
+    "duration_api_ms": 61579
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 5.9,
+     "25": 6.3,
+     "50": 7.1,
+     "75": 8.1,
+     "90": 9.3
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "CDC page shows 6 deaths as of Nov 12 (updated Nov 13). State counts total ~10 (PA 7, WI 2, NY 1), with 2 announced Nov 13-14 after CDC's data cutoff. CDC now requires NCHS verification of measles as the underlying cause, and Kennedy has pushed to exclude disputed deaths. That slows additions, but the CDC count still rose 3->4->6 over the last two weeks. Probably one refresh remains (data ~Nov 19), maybe a second before Thanksgiving. Status quo 6 is plausible; the modal outcome is +1 or +2. No market on deaths found; Kalshi lists case-count markets only.",
+   "sources": [
+    "https://www.cdc.gov/measles/data-research/index.html",
+    "https://www.aljazeera.com/news/2026/11/14/measles-associated-deaths-reach-10-in-us-after-two-more-deaths-reported",
+    "https://theconversation.com/measles-is-spreading-across-the-us-and-officials-cant-agree-on-the-death-toll-293234",
+    "https://www.usnews.com/news/top-news/articles/2026-11-12/us-cdc-confirms-six-measles-related-deaths-in-2026",
+    "https://predictionnews.com/story/polymarket-and-kalshi-now-host-bets-on-measles-and-other-us-health-crises"
+   ],
+   "dossier": "- CDC Measles page (fetched 2026-11-16): 2026 Total Deaths = 6; page updated Nov 13, 2026, data as of Nov 12. Footnote: number subject to change; CDC working with CSTE on a standardized measles-death case definition.\n- CDC tally history (question background): 1 (Sep 24 version), 3 (Oct 30, data Oct 29), 4 (Nov 6, data Nov 5), 6 (data Nov 12). Weekly increments recently 1 and 2.\n- State tallies: Pennsylvania 7 deaths (7th announced Nov 13, Montour County, unvaccinated); Wisconsin 2 (2nd pediatric death announced Nov 13-14); New York 1. Sum ~10 (DW, Al Jazeera, Nov 14). One Al Jazeera summary cites 'states report 13', unreconciled.\n- Method (The Conversation; Reuters via US News, Nov 2026): CDC switched to NCHS mortality data and adds a death only once NCHS verifies measles as the underlying cause; states use 'measles-associated' (death within 30 days of onset).\n- Politics: HHS Secretary Kennedy asked CDC director not to count certain (PA) deaths. CDC had earlier included and then removed two PA deaths. Shapiro-Kennedy dispute ongoing. So downward revision has precedent.\n- Cadence: page refreshed weekly, data as of Thursday noon, published ~Friday. Remaining before Nov 26 23:59 UTC: likely the Nov 19/20 refresh; Thanksgiving week refresh (Nov 26) may be moved earlier, skipped, or delayed. Searched, schedule not found.\n- Cases: 5,412 confirmed as of Nov 12; PAHO revoked US elimination status ~Nov 17.\n- Markets: Kalshi has 2026 case-count contracts (none on deaths); no Polymarket/Manifold deaths market found.\n- Event window: resolves off the CDC page value as displayed at 23:59 UTC Nov 26, 2026 (not state or media counts). As of Nov 16, about 2 of the ~10 remaining days have elapsed since the last data cut; 1-2 refreshes remain.\n- Searched but not found: an explicit CDC Thanksgiving-week schedule; which specific state deaths make up CDC's 6; NCHS review status of the newest PA/WI deaths.",
+   "reference_class": "Week-over-week changes in CDC's 2026 measles death tally (Sep-Nov 2026: increments of 0-2 per weekly refresh) given a pending state-reported backlog"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7989,
+   "seconds": 74.2,
+   "usage": {
+    "num_turns": 11,
+    "input": 14,
+    "cache_read": 195334,
+    "cache_write": 24175,
+    "cache_write_1h": 24175,
+    "output": 4489,
+    "thinking": 1047,
+    "web_search": 4,
+    "cost_usd_envelope": 0.4530708,
+    "web_fetch": 0,
+    "duration_api_ms": 86829
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 5.7,
+     "25": 6.1,
+     "50": 6.8,
+     "75": 7.7,
+     "90": 8.7
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.005
+   },
+   "reasoning": "The CDC page shows 6 deaths (data as of Nov 12, 2026); state health departments report 10 for 2026 (PA 7, WI 2, NY 1). The CDC count rose 1→2→3→4→6 over Sept-Nov because it now relies on lagging National Center for Health Statistics underlying-cause data, and HHS has resisted counting deaths the states attribute to measles. One refresh (Nov 19 data) almost certainly falls inside the window; the Thanksgiving-week refresh may be delayed past Nov 26. Status quo 6 is the mode, with a right skew toward 7-8 as the gap to the state count closes. No prediction market found (searched Kalshi; the harness found none on Polymarket or Manifold).",
+   "sources": [
+    "https://www.cdc.gov/measles/data-research/index.html",
+    "https://www.cidrap.umn.edu/measles/cdc-s-new-tracking-method-measles-deaths-puzzles-experts",
+    "https://www.nbcnews.com/health/health-news/us-measles-deaths-rise-10-new-reports-pennsylvania-wisconsin-rcna609245",
+    "https://www.aljazeera.com/news/2026/11/14/measles-associated-deaths-reach-10-in-us-after-two-more-deaths-reported",
+    "https://www.contagionlive.com/view/measles-update-november-13-2026"
+   ],
+   "dossier": "- CDC measles page (fetched 2026-11-16): 2026 Total Deaths = 6; data as of Nov 12, 2026; page updated Nov 13, 2026. Footnote: number subject to change; CDC is working with the Council of State and Territorial Epidemiologists (CSTE) on a standardized measles death case definition.\n- CDC 2026 death series on the page: 1 (Sept 24 version), 2 (October, per WNCT/Reuters), 3 (around Oct 20-29, per Al Jazeera), 4 (data as of Nov 5), 6 (data as of Nov 12). It rose in 3 of the last ~4 weekly refreshes; most earlier weeks showed no change.\n- CIDRAP (2026): the CDC switched from state reports via the National Notifiable Diseases Surveillance System to National Center for Health Statistics (NCHS) underlying-cause-of-death data. HHS says CDC reports deaths 'if and when NCHS reports measles as the underlying cause.' Experts say NCHS data lag.\n- Al Jazeera (Nov 14, 2026): Kennedy asked CDC director Erica Schwartz not to count some deaths in the official tally. States report 13 measles-associated deaths (the scope of 13 is unclear, and it may include 2025). CDC is 4+ below the state count.\n- NBC/ABC/DW (Nov 14-15, 2026): states report 10 deaths for 2026: PA 7 (7th announced Nov 13-14), WI 2 (2nd announced Nov 13-14), NY 1 (early Nov). These newest deaths are not yet in the CDC count.\n- Pennsylvania counts a death as measles-associated if a confirmed case dies within 30 days of symptom onset; CDC/NCHS uses underlying cause. Structural gap.\n- Cadence: data as of Thursday noon, page published around Friday. Thanksgiving is Thu Nov 26. The Nov 19 data refresh (published ~Nov 20) falls in the window. The Thanksgiving-week refresh may be shifted earlier (Wed Nov 25), delayed past the deadline, or skipped: searched for a schedule, none found.\n- Event window: page state at 23:59 UTC Nov 26, 2026. As of Nov 16, about 1-2 weekly refreshes remain.\n- Downward revision is possible in principle (reclassification); the 2026 CDC series has not decreased so far.\n- 2025 CDC total is 3 deaths (contrast with state-reported figures).\n- Markets: none found on Kalshi; the harness found none on Polymarket or Manifold.\n- Searched for: any CDC statement on pending death reviews, or a Thanksgiving update schedule; not found.",
+   "reference_class": "Week-over-week changes in the CDC 2026 measles death count over the past ~8 weekly refreshes (Sept-Nov 2026)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1765,
+   "threshold": 0.75,
+   "ok": false,
+   "model": "",
+   "cost_usd": 0.0,
+   "seconds": 2.1,
+   "validation_errors_first_attempt": [
+    "agent failed (1): You've hit your session limit · resets 10:20am (UTC) | {\"duration_api_ms\":0,\"stop_reason\":\"stop_sequence\",\"session_id\":\"51737ef7-a830-4d56-bee5-6ea0cee606ce\",\"total_cost_usd\":0,\"usage\":{\"output_tokens_details\":{\"thinking_tokens\":0},\"input_tokens\":0,\"cache_creation_input_tokens\":0,\""
+   ],
+   "errors": [
+    "agent failed (1): You've hit your session limit · resets 10:20am (UTC) | {\"duration_api_ms\":0,\"stop_reason\":\"stop_sequence\",\"session_id\":\"11e03628-b9ac-4623-8fe8-27724067a255\",\"total_cost_usd\":0,\"usage\":{\"output_tokens_details\":{\"thinking_tokens\":0},\"input_tokens\":0,\"cache_creation_input_tokens\":0,\""
+   ]
+  }
+ ]
+}
