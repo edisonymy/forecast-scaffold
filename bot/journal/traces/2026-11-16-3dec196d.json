@@ -1,0 +1,251 @@
+{
+ "record_id": "2026-11-16-3dec196d",
+ "question": "What will be the ending value of the ICE BofA US High Yield Option-Adjusted Spread for these biweekly periods of Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46215,
+ "url": "https://www.metaculus.com/questions/46010/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-11-16T16:02:16+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.1712,
+ "asknews": true,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 2.8866666666666667,
+    "25": 3.043333333333333,
+    "50": 3.2100000000000004,
+    "75": 3.3866666666666667,
+    "90": 3.5933333333333337
+   },
+   "p_above_upper": 0.056666666666666664
+  },
+  "phase1": {
+   "10": 2.8866666666666667,
+   "25": 3.043333333333333,
+   "50": 3.2100000000000004,
+   "75": 3.3866666666666667,
+   "90": 3.5933333333333337
+  },
+  "phase2": null,
+  "spread_phase1": 0.03,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 2.88,
+   "25": 3.04,
+   "50": 3.21,
+   "75": 3.38,
+   "90": 3.58
+  },
+  "p_above_upper": 0.05
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2927,
+   "seconds": 61.6,
+   "usage": {
+    "num_turns": 6,
+    "input": 12,
+    "cache_read": 154010,
+    "cache_write": 20126,
+    "cache_write_1h": 20126,
+    "output": 3072,
+    "thinking": 531,
+    "web_search": 1,
+    "cost_usd_envelope": 0.29272400000000004,
+    "web_fetch": 0,
+    "duration_api_ms": 59454
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 2.92,
+     "25": 3.06,
+     "50": 3.22,
+     "75": 3.39,
+     "90": 3.62
+    },
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Latest FRED value 3.23 (Nov 13), down from 3.48 peak (Nov 5) after a Sep-Oct widening from ~2.7. Horizon ~14 trading days to Dec 4. Random-walk-with-mild-mean-reversion: median ~3.22, slight right skew given rising Treasury yields (10y 5.15%), tech selloff, Nvidia leadership change/earnings, stressed CCC tier. Escape above 3.745 requires a renewed shock comparable to the Mar 2026 3.77 high; ~5%. No downside escape mechanism. No human market found (Polymarket/Manifold none per harness; no Kalshi contract identified).",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2&cosd=2026-05-01",
+    "https://www.macroradar.io/high-yield-spread",
+    "https://govspending.org/series/BAMLH0A0HYM2/",
+    "https://www.fxstreet.com/analysis/the-tech-selloff-faces-a-credit-test-202611160728"
+   ],
+   "dossier": "- FRED BAMLH0A0HYM2 recent values: Nov 2 3.43, Nov 3 3.40, Nov 4 3.32, Nov 5 3.48, Nov 6 3.42, Nov 9 3.34, Nov 10 3.30, Nov 11 3.30, Nov 12 3.20, Nov 13 3.23 (FRED csv fetched 2026-11-16).\n- Path: ~2.60-2.80 May-Sep 2026 (low 2.60 Aug 28); widening began Sep 24 (2.80) -> 3.24 Oct 1 -> 3.40 Oct 22 -> 3.44 Oct 30 -> 3.48 Nov 5.\n- 52-week high ~3.77 (Mar 30, 2026) per govspending.org search snippet; 2026 average ~3.08.\n- Daily change magnitude: Oct-Nov 2026 typical +/-0.05-0.18 per day; May-Sep 2026 typical +/-0.02-0.05.\n- CCC-and-lower OAS 13.17% on Nov 6 2026, ~99th pct since Oct 2023 (search snippet).\n- FXStreet 2026-11-16: 10y Treasury 5.15% (from 4.86%), 2y 4.86%; Nasdaq -0.9%, SOX -3.4% on Nov 13; Nvidia earnings Nov 17, Jensen Huang departure with CFO Kress interim CEO; FOMC minutes Nov 18.\n- BofA Hartnett (ADVFN 2026-11-14): defensive stance, expects global tightening into 2027; record-size equity fund inflows week to Nov 11.\n- MacroRadar: 3.20 on Nov 12, regime assessed neutral.\n- Status quo: spread ~3.2 as of Nov 13.\n- Resolution: FRED's initial published value for Dec 4 2026 (Friday), not revisions; if missing, latest earlier value in period.\n- Event window: value on Dec 4, 2026; as of Nov 16 ~14 trading days remain from last print (Nov 13).\n- Searched for Kalshi/Polymarket/Manifold contracts on HY OAS: none found.",
+   "reference_class": "Random-walk changes in ICE BofA US HY OAS over ~3-week horizons in 2025-2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9499,
+   "seconds": 83.0,
+   "usage": {
+    "num_turns": 7,
+    "input": 14,
+    "cache_read": 184255,
+    "cache_write": 21262,
+    "cache_write_1h": 21262,
+    "output": 3436,
+    "thinking": 563,
+    "web_search": 3,
+    "cost_usd_envelope": 0.35282899999999995,
+    "web_fetch": 0,
+    "duration_api_ms": 81038
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 2.89,
+     "25": 3.05,
+     "50": 3.22,
+     "75": 3.4,
+     "90": 3.6
+    },
+    "p_above_upper": 0.06
+   },
+   "reasoning": "Status quo: last FRED print 3.23 (Nov 13), down from 3.48 peak Nov 5 after a regime shift up from ~2.65-2.75 in Aug-Sep. Random-walk anchor at current level with ~29bp horizon SD over 15 trading days. Slight upside skew for a hawkish Fed (Dec hike priced ~91%), 10y at 5.15%, Nvidia earnings/CEO turmoil Nov 17; downside from strong equity inflows and recent tightening momentum. No human market found (Polymarket/Manifold via harness, Kalshi search: none). Escape above 3.745 requires a risk-off episode beyond the Oct-Nov peak, priced ~6%; no mechanism for <1.745.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2&cosd=2026-08-01",
+    "https://govspending.org/series/BAMLH0A0HYM2/",
+    "https://www.macroradar.io/high-yield-spread",
+    "https://www.fxstreet.com/analysis/the-tech-selloff-faces-a-credit-test-202611160728",
+    "https://eurasiabusinessnews.com/2026/11/16/u-s-stock-market-today-november-16-2026-nvidia-earnings-loom-as-oil-slips-and-gold-struggles/",
+    "https://thoughtsfortheday.substack.com/p/thoughts-for-the-day-news-9e6"
+   ],
+   "dossier": "- FRED BAMLH0A0HYM2 (fetched 2026-11-16): Aug 2026 range 2.60-2.78; Sep 1-23 2.65-2.76; jump Sep 24-Oct 1 from 2.73 to 3.24; Oct 3.03-3.44; Nov 2 3.43, Nov 5 3.48 (peak), Nov 6 3.42, Nov 9 3.34, Nov 10 3.30, Nov 11 3.30, Nov 12 3.20, Nov 13 3.23 (latest print).\n- Realized daily changes Sep 24-Nov 13: typical 5-10bp, frequent 12-18bp moves (e.g., Oct 29->30 +18bp, Nov 4->5 +16bp, Nov 11->12 -10bp).\n- Per govspending/macroradar (Nov 2026): 52-week range 2.70-3.77; 2026 YTD average ~3.08; year-ago ~3.15. Nov 12 by rating: BB 183bp, B 339bp, CCC 1314bp.\n- FXStreet 2026-11-16: HY spread narrowed from 342bp on Nov 6 to 320bp on Nov 12 while the 2y Treasury yield rose from 4.51% to 4.86%; 10y at 5.15% on Nov 13.\n- Nvidia: Jensen Huang has left as CEO, CFO Kress is interim CEO; stock fell ~12% last week and ~4% premarket Nov 16; earnings due Nov 17; Fed minutes due Nov 18.\n- Kalshi priced a 25bp December Fed hike at ~91.5% after PPI (substack, Nov 2026); BofA (Hartnett, Nov 14) expects global tightening into 2027 and stays defensive; global equity funds took in $98.3B in the week to Nov 11.\n- Commentary on Nov 16: Friday's selloff repriced the discount rate rather than widening credit spreads.\n- Status quo: the last value (3.23) carried forward.\n- Resolves off the first-published FRED value for Fri Dec 4, 2026 (or the latest earlier day in the period if no print), not later revisions or other vendors.\n- Event window: single print at end of Nov 23 -> Dec 4 period; as of Nov 16, the target date is ~15 trading days ahead (incl. Thanksgiving Nov 26 holiday, Nov 27 half day).\n- Searched but did not find: any Polymarket/Manifold/Kalshi market on HY OAS; HY OAS prints after Nov 13.",
+   "reference_class": "15-trading-day changes in ICE BofA US HY OAS during elevated-volatility regimes (e.g., 2026 Sep-Nov, 2025 spring)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5971,
+   "seconds": 74.7,
+   "usage": {
+    "num_turns": 6,
+    "input": 12,
+    "cache_read": 152543,
+    "cache_write": 19635,
+    "cache_write_1h": 19635,
+    "output": 3178,
+    "thinking": 561,
+    "web_search": 2,
+    "cost_usd_envelope": 0.3043716,
+    "web_fetch": 0,
+    "duration_api_ms": 73214
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 2.85,
+     "25": 3.02,
+     "50": 3.19,
+     "75": 3.37,
+     "90": 3.56
+    },
+    "p_above_upper": 0.06
+   },
+   "reasoning": "Last FRED print 3.23 (Nov 13), retracing from 3.48 peak (Nov 5) after a widening from ~2.65 in late Sep. ~14 trading days to Dec 4. Random-walk anchor at current level with slight mean-reversion lower (spread retracing, strong equity inflows, BB spreads contained) offset by upside tail risk (10y at 5.15%, tech selloff, Nvidia CEO exit and earnings Nov 17, CCC stress ~13%). Right-skewed; ~6% chance of exceeding 3.745 (52-week high 3.77 in Mar 2026). No prediction market found on Polymarket, Manifold or Kalshi.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2&cosd=2026-08-01",
+    "https://govspending.org/series/BAMLH0A0HYM2/",
+    "https://corporate.vanguard.com/content/corporatesite/us/en/corp/articles/beyond-ccc-high-yield-appears-resilient.html",
+    "https://www.fxstreet.com/analysis/the-tech-selloff-faces-a-credit-test-202611160728"
+   ],
+   "dossier": "- FRED BAMLH0A0HYM2 (fetched 2026-11-16): Aug-mid Sep 2026 range 2.60-2.78; widening began Sep 24 (2.80) -> 3.24 Oct 1 -> 3.40 Oct 22 -> 3.14 Oct 28 -> 3.44 Oct 30 -> 3.48 Nov 5 (peak) -> 3.42 Nov 6, 3.34 Nov 9, 3.30 Nov 10-11, 3.20 Nov 12, 3.23 Nov 13 (latest).\n- Daily changes since late Sep are often 5-15bp, sometimes 18bp (Oct 30 +18, Nov 5 +16, Oct 27 -12). Realized daily SD ~7-8bp.\n- govspending.org (Nov 2026): 52-week range 2.70 (Sep 21 2026) to 3.77 (Mar 30 2026); 2026 average 3.08; 2025 average 3.15.\n- Vanguard/news (Nov 2026): CCC spreads ~1000bp+ (13.14% on Nov 12), up 500bp+ from the year's lows; BB ~1.93% (Nov 11). The stress is concentrated in the lowest-rated bonds.\n- FXStreet (Nov 16 2026): 10y UST rose to 5.15% from 4.86% the prior week; Philadelphia Semiconductor Index -3.4% Nov 13; S&P +2.5% on the week; Nvidia earnings Nov 17; Jensen Huang departure announced, CFO Kress named interim CEO; FOMC minutes Nov 18.\n- BofA/ADVFN (Nov 14 2026): record-size global equity inflows ($98.3bn) in the week to Nov 11; BofA expects global monetary tightening into 2027; strategists defensive.\n- Status quo: the spread stays near its latest print, 3.23.\n- Resolution: resolves off the FRED BAMLH0A0HYM2 initial print for Fri Dec 4 2026 (or the latest earlier value in the period), not ICE's direct site or revised values.\n- Event window: one value observed on Dec 4 2026 (period Nov 23 -> Dec 4); as of Nov 16, ~14 trading days remain to the target date; the Nov 27 Thanksgiving-week session may be shortened.\n- Searched without result: any prediction market on HY OAS (none on Polymarket, Manifold or Kalshi); FRED value for Nov 16 not yet published.",
+   "reference_class": "15-trading-day changes in ICE BofA US HY OAS during elevated-volatility regimes (2025-2026)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0874,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.171,
+   "seconds": 18.3,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 16652,
+    "cache_write_1h": 16652,
+    "output": 1772,
+    "thinking": 216,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1710258,
+    "web_fetch": 0,
+    "duration_api_ms": 17703
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 2.88,
+     "25": 3.04,
+     "50": 3.21,
+     "75": 3.38,
+     "90": 3.58
+    },
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Last FRED print 3.23 (Nov 13), retracing from 3.48 peak (Nov 5) after Sep-Oct widening from ~2.7. Random walk anchored at the current level over ~14 trading days to Dec 4, ~28bp horizon SD. Mild right skew: 10y at 5.15%, Dec Fed hike priced ~91%, Nvidia CEO exit/earnings, CCC stress; offset by recent narrowing momentum and strong equity inflows. ~5% escape above 3.745 (needs a shock beyond the 2026 high of 3.77). No human prediction market found on HY OAS (Polymarket/Manifold/Kalshi none per runs).",
+   "sources": [],
+   "reconciliation": "All three runs agree on facts: last print 3.23 on Nov 13, peak 3.48 Nov 5, realized daily SD ~7-8bp, ~14 trading days to Dec 4, 52w high 3.77, no prediction market. Disputes are judgment only: median (3.19-3.22) and width (0.66-0.74). No factual dispute required settling; I took a median near the last print with slight mean-reversion offset by right skew, and width from the sqrt-time vol computation (carrying forward Run 2/3's dispersion basis).",
+   "disagreements": [
+    {
+     "claim": "Median slightly below last print (mean reversion) vs at last print",
+     "kind": "judgment",
+     "verdict": "No evidence breaks the tie; median 3.21, just below 3.23, reflecting recent narrowing momentum balanced by upside skew"
+    },
+    {
+     "claim": "10-90 width 0.66 vs 0.72-0.74",
+     "kind": "judgment",
+     "verdict": "sqrt-time scaling of ~7.5bp daily SD gives ~0.72; used 0.70 conditional on in-range"
+    },
+    {
+     "claim": "Upper escape probability 5% vs 6%",
+     "kind": "judgment",
+     "verdict": "+52bp is ~1.8 horizon SD with fat right tail; 5%"
+    }
+   ],
+   "reference_class": "3-week changes in ICE BofA US HY OAS during elevated-volatility regimes (late Sep-Nov 2026 realized daily vol)"
+  }
+ ]
+}
