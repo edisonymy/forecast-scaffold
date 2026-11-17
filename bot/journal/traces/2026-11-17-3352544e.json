@@ -1,0 +1,265 @@
+{
+ "record_id": "2026-11-17-3352544e",
+ "question": "What will be NVIDIA's forward guidance in its Q3 FY2027 earnings release? (Operating expenses (GAAP))",
+ "question_id": 46250,
+ "url": "https://www.metaculus.com/questions/46016/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-11-17T00:26:32+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.8266,
+ "asknews": false,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 9.716666666666667,
+    "25": 9.916666666666666,
+    "50": 10.1,
+    "75": 10.299999999999999,
+    "90": 10.566666666666666
+   },
+   "p_below_lower": 0.03,
+   "p_above_upper": 0.02
+  },
+  "phase1": {
+   "10": 9.716666666666667,
+   "25": 9.916666666666666,
+   "50": 10.1,
+   "75": 10.299999999999999,
+   "90": 10.566666666666666
+  },
+  "phase2": null,
+  "spread_phase1": 0.4,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 9.7,
+   "25": 9.9,
+   "50": 10.1,
+   "75": 10.35,
+   "90": 10.6
+  },
+  "p_above_upper": 0.02
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7556,
+   "seconds": 80.3,
+   "usage": {
+    "num_turns": 10,
+    "input": 14,
+    "cache_read": 200907,
+    "cache_write": 16963,
+    "cache_write_1h": 16963,
+    "output": 5458,
+    "thinking": 2095,
+    "web_search": 6,
+    "cost_usd_envelope": 0.44127740000000004,
+    "web_fetch": 0,
+    "duration_api_ms": 88067
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 9.85,
+     "25": 10.1,
+     "50": 10.35,
+     "75": 10.6,
+     "90": 10.85
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "GAAP opex guides stepped 7.7 -> 8.5 -> 9.2B across FY27 (+0.7-0.8B/qtr; actuals land ~0.1B under guide). Plain continuation implies ~9.9-10.0B for Q4. But FY27 is a 53-week year with a 14-week Q4 (per 10-Q), and opex is mostly weekly-accruing payroll, so +4-7% on top -> ~10.3-10.6B. CEO transition (Huang resigned Nov 12; Kress interim) adds two-sided uncertainty: conservative guiding vs. retention/transition costs. No human market on opex guidance found (Polymarket has EPS-beat; Kalshi has mention markets only).",
+   "sources": [
+    "https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000073/q2fy27pr.htm",
+    "https://mlq.ai/news/nvidia-third-quarter-earnings-preview-what-to-watch-on-nov-17-in-its-first-report-without-jensen-huang/",
+    "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-first-quarter-fiscal-2027",
+    "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/nvda-20260726.htm",
+    "https://polymarket.com/event/nvda-quarterly-earnings-nongaap-eps-11-17-2026-2pt53",
+    "https://kalshi.com/company-reports/nvda"
+   ],
+   "dossier": "- Q3 FY27 outlook (Q2 FY27 PR, Aug 26 2026, SEC 8-K): GAAP opex ~$9.2B, non-GAAP ~$9.0B; revenue $108B ±2%; GM 74.0%.\n- GAAP opex actuals (Q2 FY27 PR): Q2 FY26 $5.413B; Q1 FY27 $7.621B; Q2 FY27 $8.408B. Non-GAAP: $5.361B / $7.449B / $8.232B. GAAP-nonGAAP gap ~$0.17-0.18B (acquisition-related, mostly R&D). SBC is included in non-GAAP starting FY27.\n- Prior GAAP opex guides: Q1 FY27 ~$7.7B (incl. $1.9B SBC), Q2 FY27 ~$8.5B, Q3 FY27 ~$9.2B. Guide-to-guide steps +0.8, +0.7. Actuals landed ~0.08-0.09B below guide in Q1 and Q2.\n- FY2027 is a 53-week year; Q4 FY27 is a 14-week quarter (NVIDIA 10-Q, Jul 26 2026). The extra week adds payroll and other time-based costs (13->14 weeks = +7.7% if fully proportional).\n- CEO change: Jensen Huang resigned Nov 12 2026; CFO Colette Kress is interim CEO; Harvey Jones is board chair (mlq.ai preview). Possible transition/retention costs, or a more conservative guide.\n- Supply commitments rose to $279B from $119B (memory procurement); no direct opex implication stated.\n- Status quo: continued sequential opex growth; NVIDIA guides opex as 'approximately $X billion' (a single figure, so that figure resolves).\n- Resolves off the GAAP opex figure in the 'Outlook' section of the Q3 FY27 press release (Nov 17 2026), rounded to $0.1B, not off later actuals or non-GAAP.\n- Event window: the release on Nov 17 2026 (after market close, ~21:00 UTC); as of Nov 17 00:24 UTC the release is not yet out.\n- Searched for but did not find: analyst estimates of Q4 FY27 opex; management commentary on how much the extra week adds; a human prediction market on opex guidance (only Polymarket EPS-beat and Kalshi mention markets exist).",
+   "reference_class": "NVIDIA quarterly GAAP opex guidance, sequential guide-to-guide changes FY25-FY27, adjusted for 14-week quarter precedent"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.4372,
+   "seconds": 99.4,
+   "usage": {
+    "num_turns": 15,
+    "input": 22,
+    "cache_read": 345036,
+    "cache_write": 19586,
+    "cache_write_1h": 19586,
+    "output": 6897,
+    "thinking": 2327,
+    "web_search": 7,
+    "cost_usd_envelope": 0.6815942000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 110284
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 9.6,
+     "25": 9.8,
+     "50": 9.95,
+     "75": 10.15,
+     "90": 10.4
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.01
+   },
+   "reasoning": "GAAP opex guides: Q1 FY27 7.7, Q2 8.5, Q3 9.2; actuals Q4 FY26 6.79, Q1 7.62, Q2 8.41 — each guide ~0.8-0.9B above prior actual. Expected Q3 actual ~9.1 => Q4 guide ~9.9-10.1. Cross-check: CFO said FY27 opex growth 'low 50s'; FY26 GAAP opex ~23.07B, FY27 Q1-Q3 ~25.2B => Q4 ~9.4-10.3 (52% => ~9.8). CEO Jensen Huang resigned (interim CEO Kress) — possible retention grants/transition costs add upside tail. No human market on this metric (Kalshi only has CEO succession and earnings-mention markets). Median ~9.95.",
+   "sources": [
+    "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027",
+    "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000019/q4fy26pr.htm",
+    "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-first-quarter-fiscal-2027",
+    "https://finance.yahoo.com/markets/stocks/articles/nvidia-corp-nvda-q2-2027-050152280.html",
+    "https://fortune.com/2026/11/12/betting-markets-longtime-nvidia-insider-favorite-jensen-huang-interim-ceo-colette-kress-second/",
+    "https://fourweekmba.com/ai-nvidias-q3-guide-is-108b-12-above-q2-what-17-nov-tests/"
+   ],
+   "dossier": "- NVIDIA GAAP opex guidance history (press-release Outlook): Q1 FY27 guide ~$7.7B (Q4FY26 release, Feb 2026); Q2 FY27 guide ~$8.5B (Q1 release, May 2026); Q3 FY27 guide ~$9.2B GAAP / $9.0B non-GAAP (Q2 release, Aug 26 2026).\n- GAAP opex actuals: Q3 FY26 $5,839M; Q4 FY26 $6,794M; Q1 FY27 $7,621M; Q2 FY27 $8,408M (SEC 8-K / NVIDIA press releases). Non-GAAP Q1 FY27 $7,449M, Q2 $8,232M.\n- Guide minus prior-quarter actual: Q1 +0.91B, Q2 +0.88B, Q3 +0.79B. Actuals have come in ~0.08-0.09B under guide (Q1, Q2).\n- FY26 Q4 guide was ~6.7B GAAP vs Q3 FY26 actual 5.84B (+0.86B).\n- Since Q1 FY27, non-GAAP no longer excludes stock-based comp (SBC $2,027M in Q2 FY27); GAAP-nonGAAP gap ~0.2B.\n- CFO Kress, Q2 FY27 call (Aug 26 2026): full-year FY27 opex expected to grow in the 'low 50s' percent, driven by product portfolio broadening and AI tool usage (Yahoo call highlights). Basis (GAAP vs non-GAAP) not confirmed. FY26 GAAP opex total ~23.07B (Q1 ~5.03, Q2 5.41, Q3 5.84, Q4 6.79); FY27 Q1-Q3 GAAP ~25.2B using Q3 guide => 50%/52%/54% growth implies Q4 ~9.4/9.8/10.3B.\n- Jensen Huang resigned as CEO amid personal scandal (Nov 2026); Colette Kress interim CEO; Q3 report Nov 17 2026 is first without Huang (Fortune Nov 12 2026, Yahoo live). Possible retention grants / transition costs not yet disclosed.\n- Q3 revenue guide $108B ±2%; street Q4 revenue consensus ~$125B.\n- Status quo: Q4 guide continues sequential step pattern.\n- Resolves off GAAP opex figure in Outlook section of Q3 FY27 press release, rounded to nearest $0.1B; not non-GAAP, not CFO commentary.\n- Event window: single release Nov 17 2026; as of Nov 17 00:24 UTC release not yet published (0% resolved).\n- Searched but not found: Q3 FY27 actual opex (not yet released); explicit analyst Q4 opex estimates; any prediction market on opex guidance (none on Polymarket/Manifold/Kalshi).",
+   "reference_class": "NVIDIA's sequential GAAP opex guidance step-ups FY26-FY27 (guide minus prior-quarter actual)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3143,
+   "seconds": 55.9,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 131415,
+    "cache_write": 12479,
+    "cache_write_1h": 12479,
+    "output": 4394,
+    "thinking": 1652,
+    "web_search": 3,
+    "cost_usd_envelope": 0.31433200000000006,
+    "web_fetch": 0,
+    "duration_api_ms": 63588
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 9.7,
+     "25": 9.85,
+     "50": 10.0,
+     "75": 10.15,
+     "90": 10.45
+    }
+   },
+   "reasoning": "GAAP opex guidance has stepped 7.7 -> 8.5 -> 9.2B through FY27 (+0.8, +0.7), and actual opex has come in slightly under each guide (Q1 7.62B, Q2 8.41B). Continuing +7-10% QoQ gives ~9.85-10.1B. Last year's Q4 step was large (+0.8B, +14% on the guide; actual Q4 opex +16% QoQ), skewing slightly upward. The CEO-scandal / interim-CEO situation could add small GAAP-only costs. No Kalshi or Polymarket contract on the guidance figures was found; only CEO-succession markets exist. Median ~10.0B.",
+   "sources": [
+    "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027",
+    "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000019/q4fy26pr.htm",
+    "https://usdongsan.com/nvidia-earnings-preview-q3-fiscal-2027/",
+    "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-first-quarter-fiscal-2027",
+    "https://fortune.com/2026/11/12/betting-markets-longtime-nvidia-insider-favorite-jensen-huang-interim-ceo-colette-kress-second/"
+   ],
+   "dossier": "- Q3 FY27 outlook (Q2 FY27 PR, 2026-08-26): GAAP opex ~$9.2B, non-GAAP ~$9.0B; revenue $108B ±2%.\n- Q2 FY27 outlook (Q1 FY27 PR, May 2026): GAAP opex ~$8.5B, non-GAAP ~$8.3B.\n- Q1 FY27 outlook (Q4 FY26 PR, Feb 2026): GAAP opex ~$7.7B, non-GAAP ~$7.5B, 'inclusive of $1.9B SBC' — the non-GAAP definition now includes SBC, so the GAAP vs non-GAAP gap is only ~$0.2B.\n- Actual GAAP opex: Q3 FY26 $5.839B; Q4 FY26 $6.794B (+16% QoQ); Q1 FY27 $7.621B; Q2 FY27 $8.408B (Q2 FY27 PR / SEC 8-K).\n- Recall: last year the Q3 FY26 GAAP opex guide was ~$5.9B and the Q4 FY26 guide was ~$6.7B (step ~+0.8B into Q4).\n- Guide-to-guide GAAP steps in FY27: +0.8B (7.7->8.5), +0.7B (8.5->9.2). Actuals land about 0.1B under the guide.\n- Context (Fortune, Nov 2026): Jensen Huang scandal; Colette Kress is interim CEO; prediction markets exist only on CEO succession. Possible small transition/legal costs.\n- Q3 consensus revenue ~$108.8B as of Nov 11, 2026 (preview article).\n- Resolves off the 'Outlook' section of the Q3 FY27 press release, GAAP opex midpoint rounded to $0.1B; not the non-GAAP figure.\n- Event window: release on 2026-11-17 after market close; as of 2026-11-17T00:24Z the release is not yet out.\n- Searched for and did not find: any Kalshi, Polymarket or Manifold contract on the opex guide; any analyst Q4 opex guide estimate.",
+   "reference_class": "NVIDIA sequential GAAP opex guidance steps, FY26-FY27 (last ~6 quarterly guides)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "research",
+   "run_index": 1,
+   "spread": 1.0435,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3512,
+   "seconds": 50.5,
+   "usage": {
+    "num_turns": 5,
+    "input": 8,
+    "cache_read": 103231,
+    "cache_write": 22780,
+    "cache_write_1h": 22780,
+    "output": 4115,
+    "thinking": 1629,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3512012,
+    "web_fetch": 0,
+    "duration_api_ms": 53796
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 9.7,
+     "25": 9.9,
+     "50": 10.1,
+     "75": 10.35,
+     "90": 10.6
+    },
+    "p_above_upper": 0.02
+   },
+   "reasoning": "GAAP opex guides stepped 7.7 -> 8.5 -> 9.2B in FY27; plain continuation gives ~9.9-10.0B. The 10-Q confirms Q4 FY27 is a 14-week quarter, but the CFO's August full-year outlook (opex growth in the 'low 50s', raised from upper 40s) should already include it. On GAAP FY26 opex of ~23.08B and Q1-Q3 FY27 of ~25.1B, that implies a Q4 of ~9.7-10.2B. Guides sit ~0.1B above actuals, and the habit of raising the full-year outlook plus possible CEO-transition costs (Huang resigned; Kress is interim CEO) skew it up a little. Median 10.1B. No human market on this metric.",
+   "sources": [
+    "https://www.alphaspread.com/security/nasdaq/nvda/investor-relations/earnings-call/q2-2027",
+    "https://ca.investing.com/news/company-news/nvidia-corp-nvda-q2-2027-earnings-call-highlights-record-revenue-of-96-billion-fiscal--4818633",
+    "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000075/nvda-20260726.htm",
+    "https://mlq.ai/news/nvidia-third-quarter-earnings-preview-what-to-watch-on-nov-17-in-its-first-report-without-jensen-huang/"
+   ],
+   "reconciliation": "Factual disputes: (1) whether Q4 FY27 is a 14-week quarter: confirmed via the 10-Q search; (2) whether the CFO's full-year 'low 50s' opex growth is real and current: confirmed, from the Q2 FY27 call (raised from upper forties). Because the full-year outlook already includes the 53rd week, Run 1's extra +4-7% for the 14th week double-counts it; the full-year remainder puts Q4 at ~9.7-10.2B, close to Runs 2 and 3. I lean slightly above them (10.1 vs 9.95-10.0) because guides run above actuals, management raised the full-year number last quarter, and transition costs add upside. Searching for the Q3 release itself found nothing beyond preview articles; it is not out yet.",
+   "disagreements": [
+    {
+     "claim": "Q4 FY27 is a 14-week quarter that adds ~4-7% to opex",
+     "kind": "factual",
+     "verdict": "14-week confirmed (10-Q); but the full-year low-50s outlook already includes it, so a separate add-on is mostly double counting"
+    },
+    {
+     "claim": "CFO guided full-year FY27 opex growth in the low 50s",
+     "kind": "factual",
+     "verdict": "Confirmed (Q2 FY27 call; raised from upper forties); implies a Q4 GAAP of ~9.7-10.2B"
+    },
+    {
+     "claim": "CEO transition raises or lowers the opex guide",
+     "kind": "judgment",
+     "verdict": "Small two-sided effect, slight upside skew from possible retention grants"
+    },
+    {
+     "claim": "The Q4 step should mirror last year's large Q4 step",
+     "kind": "judgment",
+     "verdict": "Partially weighted; supports a median a little above 10.0"
+    }
+   ],
+   "reference_class": "NVIDIA quarterly GAAP opex guidance steps (FY26-FY27) cross-checked against the implied remainder of the CFO's full-year opex growth outlook"
+  }
+ ]
+}
