@@ -1,0 +1,254 @@
+{
+ "record_id": "2026-11-17-86c52ea4",
+ "question": "How many confirmed measles cases will Wisconsin DHS report for 2026 as of November 27, 2026?",
+ "question_id": 46876,
+ "url": "https://www.metaculus.com/questions/46616/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-17T18:42:17+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.4537,
+ "asknews": false,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 790.0,
+    "25": 866.6666666666666,
+    "50": 953.3333333333334,
+    "75": 1055.0,
+    "90": 1196.6666666666667
+   },
+   "p_above_upper": 0.03
+  },
+  "phase1": {
+   "10": 790.0,
+   "25": 866.6666666666666,
+   "50": 953.3333333333334,
+   "75": 1055.0,
+   "90": 1196.6666666666667
+  },
+  "phase2": null,
+  "spread_phase1": 70.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 790.0,
+   "25": 865.0,
+   "50": 950.0,
+   "75": 1050.0,
+   "90": 1190.0
+  },
+  "p_above_upper": 0.03
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7985,
+   "seconds": 65.0,
+   "usage": {
+    "num_turns": 9,
+    "input": 12,
+    "cache_read": 156693,
+    "cache_write": 22164,
+    "cache_write_1h": 22164,
+    "output": 4137,
+    "thinking": 1138,
+    "web_search": 4,
+    "cost_usd_envelope": 0.40421959999999996,
+    "web_fetch": 0,
+    "duration_api_ms": 74441
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 790.0,
+     "25": 870.0,
+     "50": 960.0,
+     "75": 1065.0,
+     "90": 1220.0
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "651 confirmed as of Nov 13 (DHS page). Weekly additions doubled from ~85 to 174 in the week to Nov 13; Grant County went from 153 to 222 in 3 days. Resolution uses either the Nov 24 or the Nov 27 (post-Thanksgiving, possibly delayed) update. Holding 174/wk steady gives ~925-1000; continued acceleration gives 1100-1300; burnout/vaccination slowing gives ~820-860. The Nov 13 jump may include a reporting backlog. Market check: no Wisconsin-specific market on Polymarket, Kalshi or Manifold; only national CDC-count contracts, which don't match.",
+   "sources": [
+    "https://www.dhs.wisconsin.gov/outbreaks/index.htm",
+    "https://outbreaknewstoday.substack.com/p/wisconsin-measles-2026-as-of-november",
+    "https://www.wbay.com/2026/11/13/wisconsin-dhs-reports-second-death-linked-measles-outbreak/",
+    "https://fox11online.com/news/state/second-child-dies-from-measles-in-wisconsin-as-cases-reach-649-statewide-grant-county-health-vaccine-virus-pediatric",
+    "https://predictionnews.com/story/polymarket-and-kalshi-now-host-bets-on-measles-and-other-us-health-crises",
+    "https://www.dhs.wisconsin.gov/immunization/measles.htm"
+   ],
+   "dossier": "- DHS outbreaks page (fetched 2026-11-17): headline 'As of November 13, 2026 ... 651 cases of measles in Wisconsin, 14 hospitalizations, and two deaths in 2026'; 20 counties (some media say 22); Grant 222, Lafayette 116, Iowa 97. No Nov 17 update seen at fetch time (~18:40 UTC).\n- Headline series: 159 (Sep 8), 214 (Sep 29), 267 (Oct 13), 392 (Oct 30), 431 (Nov 3), 477 (Nov 6), 551 (Nov 10), 651 (Nov 13).\n- Increments: +46 (Nov 3-6, 3d), +74 (Nov 6-10, 4d), +100 (Nov 10-13, 3d). Weekly: ~85 (Oct 30-Nov 6), 174 (Nov 6-13; media: most of any state that week).\n- Grant County went from ~153 (Nov 10) to 222 (Nov 13); Lafayette flat at ~116-122; Iowa flat at 97, so growth is concentrated in Grant plus new counties.\n- Wastewater detections in Iowa, Grant, Lafayette and Green counties (DHS page). 99.4% of cases unvaccinated. About 2,000 MMR doses delivered since Aug 1; early infant MMR authorized.\n- A Nov 13 jump could partly be a reporting backlog (unverified).\n- Updates are Tue/Fri. Remaining scheduled updates before resolution: Nov 17, Nov 20, Nov 24, Nov 27 (day after Thanksgiving; posting could be delayed past 23:59 UTC, in which case the Nov 24 figure stands).\n- Resolves off the DHS outbreaks-page headline N, not county figures, not CDC.\n- Event window: value is a snapshot at 2026-11-27 23:59 UTC; as of Nov 17 the latest data is 14 days before the latest possible data date (Nov 27) or 11 days before Nov 24.\n- Scenario anchors (arithmetic, not forecasts): 174/wk constant gives ~925 on Nov 24 and ~1000 on Nov 27; 100/wk gives ~810/~850; 260-390/wk gives ~1080/~1300.\n- Markets: none Wisconsin-specific; Polymarket/Kalshi have only national CDC-count thresholds.\n- Searched but not found: Nov 17 DHS update, epi curve by rash-onset week, DHS statement on Thanksgiving posting schedule.",
+   "reference_class": "Linear/exponential extrapolation of US close-knit-community measles outbreaks (e.g. West Texas 2025) in their growth phase, 2-week horizon"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3943,
+   "seconds": 64.7,
+   "usage": {
+    "num_turns": 9,
+    "input": 12,
+    "cache_read": 157003,
+    "cache_write": 21696,
+    "cache_write_1h": 21696,
+    "output": 4278,
+    "thinking": 1141,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3942606,
+    "web_fetch": 0,
+    "duration_api_ms": 72529
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 810.0,
+     "25": 890.0,
+     "50": 985.0,
+     "75": 1090.0,
+     "90": 1230.0
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Headline stood at 651 as of Nov 13. Increments per update have been rising: about 10, 15, 18 and then 33 cases/day between Oct 30 and Nov 13, so weekly additions roughly doubled. The deciding figure will most likely be the Nov 24 update (11 days after Nov 13), or the Nov 27 update if it posts before the deadline. The reference class is large measles outbreaks in close-knit undervaccinated communities (TX 2025, SC 2025-26). These tend to rise for weeks, hit a peak, and then slow once reactive vaccination takes hold. Holding the recent ~25-33/day gives about 930-1110. Slowing to ~15/day gives about 820-860, and continued acceleration gives 1150-1300. Holiday reporting delays push the number down. No human prediction market was found on Polymarket, Kalshi or Manifold.",
+   "sources": [
+    "https://www.dhs.wisconsin.gov/outbreaks/index.htm",
+    "https://www.dhs.wisconsin.gov/immunization/measles.htm",
+    "https://outbreaknewstoday.substack.com/p/wisconsin-measles-2026-as-of-november",
+    "https://www.wxpr.org/health/2026-11-13/wisconsin-health-officials-reports-another-death-connected-to-measles-outbreak",
+    "https://www.wdio.com/top-stories/wisconsin-reports-2nd-measles-death-as-outbreak-reaches-649-cases/"
+   ],
+   "dossier": "- DHS outbreaks page (fetched 2026-11-17): headline 'As of November 13, ... DHS has confirmed 651 cases of measles in Wisconsin, 14 hospitalizations, and two deaths in 2026.' Grant 222, Lafayette 116 confirmed + 6 probable, Iowa 97, Chippewa 45, Jackson 45, Green Lake 14, others single digits. 20-22 counties.\n- Headline history: 392 (Oct 30), 431 (Nov 3), 477 (Nov 6), 551 (Nov 10), 651 (Nov 13). Increments: +39/4d, +46/3d, +74/4d, +100/3d. Weekly additions: Oct30->Nov6 +85, Nov6->Nov13 +174.\n- Some media quoted 649 for Nov 13 (WDIO, WXPR); the DHS page shows 651.\n- Of 651 cases, 647 (99.4%) were unvaccinated. Cases extend north to Barron, Taylor and Marathon counties. The second death (Grant County) was reported Nov 13.\n- About 2,000 MMR doses were delivered to affected communities and 45,600+ doses administered statewide since Aug 1 (DHS via WXPR, Nov 13).\n- Update cadence: Tuesdays and Fridays. Next updates are Nov 17, Nov 20, Nov 24, and possibly Nov 27. Thanksgiving is Thu Nov 26. Postings have sometimes lagged the data date by about 3 days.\n- Status quo: the figure only rises. The current 651 is the floor.\n- Resolution: resolves off the DHS outbreaks page headline at 23:59 UTC Nov 27, not news reports, county figures or the SW outbreak sub-total. The fallback is the measles dashboard (immunization/measles.htm, text not machine-readable).\n- Event window: whatever headline is displayed at 2026-11-27 23:59 UTC. As of Nov 17 the latest data date is Nov 13, and the relevant data date will likely be Nov 24 (11 days later) or Nov 27 (14 days later).\n- Rate scenarios: 15/d gives about 816-861. 25/d gives about 926-1001. 33/d gives about 1014-1113. 45/d gives about 1146-1281. Reaching 1500 needs about 60+/d.\n- Searched and absent: a Nov 17 update (not yet posted at fetch time), DHS trajectory projections, backlog explanation for the +100 jump, and any Polymarket, Kalshi or Manifold market on this (none found).",
+   "reference_class": "Large US measles outbreaks in undervaccinated close-knit communities (West Texas 2025, South Carolina 2025-26, Wisconsin 2026 own trajectory): case growth over the 2 weeks following a period of accelerating weekly increments"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.2115,
+   "seconds": 69.3,
+   "usage": {
+    "num_turns": 9,
+    "input": 12,
+    "cache_read": 156888,
+    "cache_write": 22066,
+    "cache_write_1h": 22066,
+    "output": 4615,
+    "thinking": 937,
+    "web_search": 4,
+    "cost_usd_envelope": 0.4130535999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 77427
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 770.0,
+     "25": 840.0,
+     "50": 915.0,
+     "75": 1010.0,
+     "90": 1140.0
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Latest DHS headline is 651 as of Nov 13 (up from 431 Nov 3, 477 Nov 6, 551 Nov 10), so the increments are accelerating (~15, ~18, ~33/day). Resolution most likely reflects the Nov 24 update (11 days after Nov 13), or the Nov 27 update if it is posted before 23:59 UTC after Thanksgiving. Close-knit unvaccinated-community outbreaks tend to saturate and response vaccination is underway, which argues for a slowdown from 33/day. New clusters (Columbia 47, Jackson 45) argue for continued spread. Median assumes ~23/day over ~11.5 effective days. No Wisconsin-specific market was found; Polymarket and Kalshi only list national CDC-count contracts, which don't match this question.",
+   "sources": [
+    "https://www.dhs.wisconsin.gov/outbreaks/index.htm",
+    "https://outbreaknewstoday.substack.com/p/wisconsin-measles-2026-as-of-november",
+    "https://www.dhs.wisconsin.gov/immunization/measles.htm",
+    "https://www.wdio.com/top-stories/wisconsin-reports-2nd-measles-death-as-outbreak-reaches-649-cases/",
+    "https://www.wmtv15news.com/2026/11/04/columbia-county-public-health-confirms-3-cases-measles/",
+    "https://predictionnews.com/story/polymarket-and-kalshi-now-host-bets-on-measles-and-other-us-health-crises"
+   ],
+   "dossier": "- DHS outbreaks page (fetched 2026-11-17): headline 'As of November 13, 2026 ... confirmed 651 cases of measles in Wisconsin, 14 hospitalizations, and two deaths in 2026'; 20 counties; Grant 222, Lafayette 116 confirmed + 6 probable, Iowa 97, Columbia 47; outbreak window Aug 1 onward.\n- Headline series: 159 (Sep 8), 214 (Sep 29), 267 (Oct 13), 392 (Oct 30), 431 (Nov 3), 477 (Nov 6), 551 (Nov 10; Outbreak News Today: +74 since prior Friday), 651 (Nov 13). Daily increments: ~7/day mid-Oct, ~10 (Oct30-Nov3), ~15 (Nov3-6), ~18.5 (Nov6-10), ~33 (Nov10-13).\n- Other clusters as of ~Nov 13 (news): Chippewa 45, Jackson 45, Vernon 14, Clark 4, Buffalo/Barron/Dunn/Monroe 1 each. Columbia County: 3 cases ~Nov 4, 33 later, 47 by Nov 13, linked to private gatherings.\n- 99.4% of cases unvaccinated (647/651). Nearly 2,000 MMR doses delivered to affected communities since Aug 1; early infant MMR authorized.\n- Second pediatric death reported Nov 13 (WBAY, Fox9, WDIO 'reaches 649 cases').\n- DHS dashboard is updated twice weekly (Tue/Fri); no Nov 17 update was visible at ~12:40 CT on Nov 17.\n- Resolution instrument: resolves off the headline N on the DHS outbreaks page at 23:59 UTC Nov 27 (about 5:59 pm CT), not the county or SW-outbreak subtotals. Thanksgiving is Thu Nov 26; whether a Fri Nov 27 update posts before the cutoff is uncertain (past posting lags of up to ~3 days, e.g. Nov 6 data posted ~Nov 9). Otherwise the Nov 24 update stands.\n- Event window: the snapshot at 2026-11-27 23:59 UTC; the remaining reporting horizon from the Nov 13 data is 11 days (Nov 24) or 14 days (Nov 27). As of Nov 17, 4 of the 14 days after Nov 13 have passed.\n- Remaining-horizon arithmetic from 651: at 15/day about 816 (Nov 24) or 861 (Nov 27); at 25/day about 926 or 1,001; at 40/day about 1,091 or 1,211.\n- Arguments for slowing: saturation in close-knit communities, reactive vaccination, possible batch/backlog effect in the Nov 13 jump, holiday testing and reporting dips. Arguments for faster growth: new county clusters (Columbia, Jackson), more counties each update, gatherings over Thanksgiving.\n- Markets: no Wisconsin-specific market found; Polymarket and Kalshi only list national CDC-count contracts.\n- Searched but not found: a Nov 17 DHS update, DHS posting-time-of-day pattern, an official epi curve by rash-onset date.",
+   "reference_class": "Recent US measles outbreaks in close-knit undervaccinated communities (e.g. West Texas 2025, South Carolina 2025-26): over 2-week windows during the growth phase, counts typically rose 30-60%"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.3717,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1907,
+   "seconds": 22.9,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 18172,
+    "cache_write_1h": 18172,
+    "output": 2146,
+    "thinking": 467,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1906658,
+    "web_fetch": 0,
+    "duration_api_ms": 22301
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 790.0,
+     "25": 865.0,
+     "50": 950.0,
+     "75": 1050.0,
+     "90": 1190.0
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Floor of 651 (Nov 13 DHS headline). Recent pace is about 25/day on a weekly basis and 33/day over the last 3 days, which may include a backlog. The resolving data date is most likely Nov 24 (11 days on) or Nov 27 (14 days on, if it posts before the cutoff). The reference class of large outbreaks in close-knit undervaccinated communities suggests slowing after the peak as reactive vaccination takes hold, but new county clusters argue for continued spread. Taking ~25/day over ~12 effective days gives a median near 950, with Thanksgiving posting and reporting delays skewing slightly low and continued acceleration giving a right tail into the 1100-1300 range. No matching human market was found.",
+   "sources": [],
+   "reconciliation": "All three dossiers agree on the facts: 651 as of Nov 13, the headline series, the Tue/Fri cadence, and that resolution most likely comes from the Nov 24 or Nov 27 update. No factual disputes needed settling. The runs differ only in judgment about the growth rate (23/day for Run 3 versus 25-33/day for Runs 1-2) and in how much weight to give holiday delays. I take a ~25/day path, judging that the slowing forces (saturation, vaccination, a possible backlog in the Nov 13 figure) roughly offset the spread to new counties. That gives a median of 950. I keep the runs' dispersion of about 400, which I agree with. No market was found by the harness or the runs; I retrieved nothing myself.",
+   "disagreements": [
+    {
+     "claim": "Pace of new cases over the next 11-14 days (slowing to ~23/day versus holding 25-33/day)",
+     "kind": "judgment",
+     "verdict": "No new data available to break the tie; I took ~25/day"
+    },
+    {
+     "claim": "Whether the Nov 13 +100 jump was a reporting backlog",
+     "kind": "factual",
+     "verdict": "Can't be settled from the dossiers; I treat it as partly backlog, which widens the low side"
+    },
+    {
+     "claim": "Whether the Nov 27 update posts before 23:59 UTC",
+     "kind": "factual",
+     "verdict": "Unknowable now; I weight it at about 50%"
+    }
+   ],
+   "reference_class": "Large measles outbreaks in close-knit undervaccinated US communities (TX 2025, SC 2025-26) in their growth phase, projected over a ~2-week horizon"
+  }
+ ]
+}
