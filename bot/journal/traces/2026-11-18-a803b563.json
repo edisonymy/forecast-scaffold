@@ -1,0 +1,250 @@
+{
+ "record_id": "2026-11-18-a803b563",
+ "question": "What 2026 cumulative dengue case count will Colombia's INS report in the latest weekly epidemiological bulletin published on or before 27 November 2026?",
+ "question_id": 46877,
+ "url": "https://www.metaculus.com/questions/46617/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-18T01:32:22+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.6116,
+ "asknews": false,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 105666.66666666667,
+    "25": 107233.33333333333,
+    "50": 108766.66666666667,
+    "75": 109933.33333333333,
+    "90": 110633.33333333333
+   },
+   "p_above_upper": 0.32
+  },
+  "phase1": {
+   "10": 105666.66666666667,
+   "25": 107233.33333333333,
+   "50": 108766.66666666667,
+   "75": 109933.33333333333,
+   "90": 110633.33333333333
+  },
+  "phase2": null,
+  "spread_phase1": 300.0,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 105900.0,
+   "25": 106900.0,
+   "50": 109100.0,
+   "75": 110150.0,
+   "90": 110700.0
+  },
+  "p_above_upper": 0.28
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.9072,
+   "seconds": 73.3,
+   "usage": {
+    "num_turns": 13,
+    "input": 18,
+    "cache_read": 252368,
+    "cache_write": 24507,
+    "cache_write_1h": 24507,
+    "output": 5202,
+    "thinking": 1357,
+    "web_search": 5,
+    "cost_usd_envelope": 0.4665336000000001,
+    "web_fetch": 0,
+    "duration_api_ms": 77050
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 105800.0,
+     "25": 106900.0,
+     "50": 108600.0,
+     "75": 109900.0,
+     "90": 110650.0
+    },
+    "p_above_upper": 0.38
+   },
+   "reasoning": "Press reports citing INS give 102,164 cumulative dengue cases at EW44 (Nov 1-7), +4,270 vs EW43's 97,894; increments are accelerating (~2,800/wk EW38-42, 3,276 EW43, 4,270 EW44) amid El Niño and an outbreak in 25 entities. The resolving issue is most likely EW46 (expected ~Nov 26-27, cutting it close to the deadline); about 25% chance it slips and EW45 resolves instead (~105.5-108k). EW46 scenario centers near 111k (108.5k-114k), so about 38% of mass sits above the 111,000 upper bound; no mechanism for falling below 97k since 102,164 is already reported. No Polymarket/Kalshi/Manifold/bookmaker market found.",
+   "sources": [
+    "http://diariodelsur.com.co/noticias/ins-reporta-102-164-casos-de-dengue-en-colombia-hasta-noviembre",
+    "https://www.portafolio.co/economia/regiones/dengue-en-colombia-casi-98-000-casos-y-65-muertes-confirmadas-505902",
+    "https://www.eltiempo.com/salud/colombia-supera-los-97-000-casos-de-dengue-en-2026-23-entidades-territoriales-estan-en-situacion-de-brote-y-los-contagios-aumentaron-33-3599995",
+    "https://www.prensa-latina.cu/2026/11/10/colombia-reporta-mas-de-98-mil-casos-de-dengue-en-2026/",
+    "http://diariodelsur.com.co/noticias/colombia-enciende-las-alarmas-dengue-supera-los-102-000-casos-y-preocupa-el-aumento"
+   ],
+   "dossier": "- EW44 (1-7 Nov 2026) BES cumulative dengue reported by press citing INS: 102,164 cases, 1,023 severe; event in outbreak status; notifications EW40-43 up 40.6% vs EW36-39 (diariodelsur.com.co, ~13-14 Nov 2026). INS PDF itself not retrieved.\n- EW43 (25-31 Oct): 97,894 cumulative, 3,821 notifications in the issue (2,646 in-week, 1,175 late), 65 deaths confirmed; published 6 Nov (question background; Portafolio/El Tiempo).\n- Cumulative path: EW31 68,370; EW32 70,350; EW38 83,556; EW42 94,618; EW43 97,894; EW44 102,164. Increments: EW38->42 avg ~2,765/wk; EW43 +3,276; EW44 +4,270.\n- MinSalud 10 Nov: 98,096 cases, 73 deaths (Prensa Latina 10 Nov 2026).\n- El Niño declared by IDEAM 8 Oct 2026; 2025 ended ~123,800 cases.\n- Colombian public holidays Mon 2 Nov (in EW44, which still had +4,270) and Mon 16 Nov (in EW46) may slightly dampen notification.\n- Publication cadence: issues posted Thu/Fri, ~5-6 days after week end (EW43 on 6 Nov). EW45 expected ~19-20 Nov, EW46 ~26-27 Nov — at the deadline edge.\n- Resolves off the dengue-section cumulative in the latest BES posted on INS by 27 Nov 2026 23:59 COT (EW46, else EW45), not the Tabla de mando or MinSalud press figures.\n- Event window: snapshot at 27 Nov 2026 per the criteria; as of 18 Nov, EW45 and EW46 issues not yet published.\n- Searched but not found: EW45 issue figures; EW44 in-week vs late breakdown; any prediction market (none on Polymarket/Kalshi/Manifold).",
+   "reference_class": "Recent week-on-week increments of the 2026 BES cumulative dengue count (EW38-EW44) projected 1-2 weeks forward"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4406,
+   "seconds": 62.1,
+   "usage": {
+    "num_turns": 12,
+    "input": 14,
+    "cache_read": 192821,
+    "cache_write": 23964,
+    "cache_write_1h": 23964,
+    "output": 4360,
+    "thinking": 1152,
+    "web_search": 5,
+    "cost_usd_envelope": 0.44064620000000004,
+    "web_fetch": 0,
+    "duration_api_ms": 72884
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 105300.0,
+     "25": 107300.0,
+     "50": 108800.0,
+     "75": 109900.0,
+     "90": 110600.0
+    },
+    "p_above_upper": 0.25
+   },
+   "reasoning": "EW44 bulletin (1-7 Nov) reports 102,164 cumulative cases, up 4,270 from EW43's 97,894. Increments are accelerating: ~2.8k/wk over EW38-42, 3.3k at EW43, 4.3k at EW44, and notifications in EW40-43 ran 40.6% above EW36-39. The resolving EW46 issue (~26-27 Nov) adds two more increments, giving roughly 109-112k. About 12% chance that EW46 slips and EW45 (~106k) resolves instead. Upper escape above 111k is priced at ~25% because of continued acceleration or late-notification batches. Market check: no Polymarket, Kalshi, Manifold or bookmaker market found.",
+   "sources": [
+    "https://www.noticiasrcn.com/salud-y-bienestar/dengue-colombia-casos-muertes-recomendaciones-1079432",
+    "http://diariodelsur.com.co/noticias/ins-reporta-102-164-casos-de-dengue-en-colombia-hasta-noviembre",
+    "http://diariodelsur.com.co/noticias/colombia-enciende-las-alarmas-dengue-supera-los-102-000-casos-y-preocupa-el-aumento",
+    "https://www.infobae.com/colombia/2026/11/11/alerta-por-dengue-en-colombia-73-muertes-y-mas-de-98000-contagios-llevan-a-reforzar-medidas-ante-riesgo-por-el-nino/"
+   ],
+   "dossier": "- INS BES EW44 (1-7 Nov 2026), per diariodelsur.com.co (search snippet, mid-Nov 2026): cumulative 2026 dengue = 102,164, of which 1,023 severe; national situation = outbreak; notifications EW40-43 +40.6% vs EW36-39.\n- EW43 issue (published 6 Nov 2026, noticiasrcn): 97,894 cumulative (59,472 without warning signs, 37,443 with warning signs, 979 severe); 65 confirmed deaths, 45 under study; Meta 14,131, Bolívar 9,704, Santander 7,488.\n- From the question background: EW31 68,370; EW32 70,350; EW38 83,556; EW42 94,618; EW43 97,894. Increments: EW38->42 avg ~2,766/wk; EW42->43 +3,276; EW43->44 +4,270.\n- Minsalud on 10 Nov (infobae, 11 Nov): 98,096 cases, 73 deaths; El Niño declared 8 Oct; vector control intensified.\n- Status quo: cumulative keeps rising by weekly increments; the resolving issue is normally EW46 (posted ~26-27 Nov), with EW45 (~19-20 Nov) as the fallback if EW46 is late.\n- Base rate over EW38-44 increments: ~2.8k-4.3k/wk, with the latest two rising.\n- Resolves off the BES dengue-section cumulative, not the Minsalud press figures or the Tabla de mando.\n- Event window: whichever BES issue is latest as of 27 Nov 2026 23:59 COT; as of 18 Nov, EW44 is out and EW45/EW46 are pending.\n- Searched but not found: EW45 figure; EW44 breakdown of current-week vs late notifications; any prediction market (none found).",
+   "reference_class": "Week-on-week increments in Colombia INS BES cumulative dengue counts during the late-2026 outbreak phase (EW38-EW44)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.3673,
+   "seconds": 76.1,
+   "usage": {
+    "num_turns": 12,
+    "input": 16,
+    "cache_read": 228062,
+    "cache_write": 24305,
+    "cache_write_1h": 24305,
+    "output": 4886,
+    "thinking": 1429,
+    "web_search": 5,
+    "cost_usd_envelope": 0.46013339999999997,
+    "web_fetch": 0,
+    "duration_api_ms": 82020
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 105900.0,
+     "25": 107500.0,
+     "50": 108900.0,
+     "75": 110000.0,
+     "90": 110650.0
+    },
+    "p_above_upper": 0.33
+   },
+   "reasoning": "EW44 BES (Nov 1-7) reports 102,164 cumulative; per-issue increments are accelerating (≈2,200/wk EW32-38, ≈2,770/wk EW38-42, +3,276 EW43, +4,270 EW44). Resolving issue is most likely EW46 (~Nov 26-27; ~85%), two more increments of ~4,000-4,700 → ~110-111k; if EW46 slips, EW45 (~106k) resolves. Downside risks: Nov 16 holiday in EW46, EW44 jump possibly a late-notification batch. Substantial mass (~33%) above 111,000 if acceleration continues. No prediction market found (Polymarket/Kalshi/Manifold searched).",
+   "sources": [
+    "http://diariodelsur.com.co/noticias/ins-reporta-102-164-casos-de-dengue-en-colombia-hasta-noviembre",
+    "https://www.noticiasrcn.com/salud-y-bienestar/dengue-colombia-casos-muertes-recomendaciones-1079432",
+    "https://www.prensa-latina.cu/2026/11/10/colombia-reporta-mas-de-98-mil-casos-de-dengue-en-2026/",
+    "https://www.eltiempo.com/salud/colombia-supera-los-97-000-casos-de-dengue-en-2026-23-entidades-territoriales-estan-en-situacion-de-brote-y-los-contagios-aumentaron-33-3599995"
+   ],
+   "dossier": "- INS BES EW44 (1-7 Nov 2026), via Diario del Sur (~13-14 Nov 2026): 102,164 accumulated dengue cases, 1,023 severe; national outbreak situation; notifications EW40-43 were 40.6% above EW36-39.\n- INS BES EW43 (published 6 Nov 2026; Noticias RCN/El Tiempo): 97,894 cumulative (59,472 without warning signs, 37,443 with warning signs, 979 severe); 65 confirmed deaths, 45 under investigation; EW39-42 33.8% above EW35-38.\n- MinSalud 10 Nov 2026 (Prensa Latina): 98,096 cases, 73 confirmed deaths; 2026 total 10.9% below the same period of 2025 (109,912).\n- Cumulative trajectory (question background plus EW44): EW31 68,370; EW32 70,350; EW38 83,556; EW42 94,618; EW43 97,894; EW44 102,164. Per-issue increments: about 2,200/wk over EW32-38, about 2,770/wk over EW38-42, +3,276 at EW43, +4,270 at EW44.\n- Publication cadence: issues are posted Thu/Fri, 5-6 days after the week ends. EW45 (8-14 Nov) expected ~19-20 Nov; EW46 (15-21 Nov) expected ~26-27 Nov. 16 Nov 2026 (Monday) is a Colombian public holiday that falls inside EW46.\n- 2025 comparison: 2025 ended at ~123.8k, i.e. about 14k added after the same-period mark of ~109.9k, which works out to roughly 2,000-2,500/wk late in the year.\n- IDEAM declared El Niño conditions on 8 Oct 2026; MinSalud has intensified vector control.\n- Resolves off the dengue-section cumulative in the latest BES posted by 27 Nov (EW46, or EW45 if EW46 is late), not off MinSalud press figures.\n- Event window: the issue posted on or before 27 Nov 2026; as of 18 Nov, the EW45 and EW46 issues are not yet published.\n- Searched and not found: the EW45 bulletin; the INS EW44 PDF (fetch failed); the EW44 split between current-week and late-notified cases; any prediction market on this question.",
+   "reference_class": "Week-on-week increments in INS BES cumulative dengue totals during the 2026 outbreak phase (EW31-EW44), projected 1-2 issues ahead"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1111,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.194,
+   "seconds": 26.1,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 17766,
+    "cache_write_1h": 17766,
+    "output": 2476,
+    "thinking": 859,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1940178,
+    "web_fetch": 0,
+    "duration_api_ms": 25584
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 105900.0,
+     "25": 106900.0,
+     "50": 109100.0,
+     "75": 110150.0,
+     "90": 110700.0
+    },
+    "p_above_upper": 0.28
+   },
+   "reasoning": "Week 44 BES reports 102,164 cumulative dengue cases; recent per-issue increments are accelerating (~2.8k/wk, then 3.3k, then 4.3k). The resolving week-46 issue (~80% posted by 27 Nov) adds two increments (~8.3k, so ~110.5k with SD ~1.2k), giving ~35% above 111k in that scenario. If week 46 slips, week 45 (~106.3k) resolves. Downside: 16 Nov holiday, possible one-off late-notification batch in week 44. No human market found.",
+   "sources": [],
+   "reconciliation": "The runs agree on every fact (week 44 = 102,164; increments 3,276 and 4,270; publication cadence). Two judgment calls remain: whether week 46 is posted by 27 Nov (runs gave 75-88%) and the size of the next two increments. The ~6-day posting lag puts week 46 exactly on Fri 27 Nov, so I took ~80%. For increments I took ~4.15k/wk, balancing acceleration against the 16 Nov holiday and a possible batch effect in week 44. The upper-escape mass of 0.28 sits within the runs' range (0.25-0.38) because the evidence puts it there, not by averaging. No web retrieval on this run.",
+   "disagreements": [
+    {
+     "claim": "Probability week-46 issue is posted by 27 Nov (75-88%)",
+     "kind": "judgment",
+     "verdict": "~80%: the 6-day lag lands exactly on the deadline Friday, and the holiday adds slip risk"
+    },
+    {
+     "claim": "Size of week-45/46 increments (continued acceleration vs plateau)",
+     "kind": "judgment",
+     "verdict": "~4.15k/wk central: week 44 is the latest signal, discounted for the holiday and possible batch effect"
+    },
+    {
+     "claim": "Mass above 111k (25-38%)",
+     "kind": "judgment",
+     "verdict": "0.28, from 0.8 x ~35% in the week-46 scenario"
+    }
+   ],
+   "reference_class": "Recent INS BES weekly cumulative dengue increments in the 2026 outbreak (weeks 38-44)"
+  }
+ ]
+}
