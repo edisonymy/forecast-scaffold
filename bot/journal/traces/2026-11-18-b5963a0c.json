@@ -1,0 +1,257 @@
+{
+ "record_id": "2026-11-18-b5963a0c",
+ "question": "What will be the highest observed water level (ft above MLLW) at NOAA's La Jolla, CA tide gauge (station 9410230) on November 26-27, 2026?",
+ "question_id": 46879,
+ "url": "https://www.metaculus.com/questions/46619/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-18T12:42:44+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.8236,
+ "asknews": true,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 7.739999999999999,
+    "25": 7.933333333333334,
+    "50": 8.106666666666667,
+    "75": 8.28,
+    "90": 8.473333333333334
+   },
+   "p_below_lower": 0.005,
+   "p_above_upper": 0.03
+  },
+  "phase1": {
+   "10": 7.739999999999999,
+   "25": 7.933333333333334,
+   "50": 8.106666666666667,
+   "75": 8.28,
+   "90": 8.473333333333334
+  },
+  "phase2": null,
+  "spread_phase1": 0.16,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 7.77,
+   "25": 7.93,
+   "50": 8.07,
+   "75": 8.22,
+   "90": 8.41
+  },
+  "p_above_upper": 0.02
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.0254,
+   "seconds": 83.7,
+   "usage": {
+    "num_turns": 12,
+    "input": 16,
+    "cache_read": 229263,
+    "cache_write": 24444,
+    "cache_write_1h": 24444,
+    "output": 6155,
+    "thinking": 1867,
+    "web_search": 1,
+    "cost_usd_envelope": 0.5026676,
+    "web_fetch": 0,
+    "duration_api_ms": 88619
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 7.7,
+     "25": 7.88,
+     "50": 8.06,
+     "75": 8.24,
+     "90": 8.43
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Value = predicted astronomical high (6.84 ft at 09:15 PST Nov 26, the higher of the two window highs) + non-tidal residual + small 6-min noise. NOAA API data show residual at highs of ~+1.4-1.56 ft on Nov 10-14, easing to ~+1.0-1.3 ft on Nov 15-18; calcoasttides cites +15.1 in (24h mean) as of Nov 17. The persistent El Nino/Kelvin-wave component makes ~1.2 ft the central residual -> ~8.05 ft. Upside: forecast storm systems (surge, wave setup), a new Kelvin pulse. Downside: further residual decay toward ~0.8 ft. The Polymarket La Jolla peak contracts close 2027-04-01 and are likely season-max contracts; terms could not be loaded (header overflow) and the prices are internally inconsistent, so they are treated as weak evidence, not an anchor.",
+   "sources": [
+    "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter (water_level 9410230, Nov 10-18 2026)",
+    "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter (predictions hilo 9410230, Nov 13-28 2026)",
+    "https://www.calcoasttides.com/blog/kelvin-wave-california-2026",
+    "https://thetidewindow.com/beaches/ca/la-jolla-ca/",
+    "https://polymarket.com/market/peak-water-level-at-la-jolla-at-least-8-10-ft-mllw"
+   ],
+   "dossier": "- NOAA CO-OPS predictions 9410230 (MLLW, LST), fetched 2026-11-18: highs Nov 24 07:48 6.853; Nov 25 08:29 6.955; Nov 26 09:15 6.838; Nov 26 23:32 3.585; Nov 27 10:05 6.498; Nov 28 00:37 3.594 (outside the window). The window's peak is almost surely the Nov 26 morning high.\n- NOAA observed daily max 6-min water level (MLLW) vs that day's predicted higher high: Nov10 7.376 vs 5.973 (+1.40); Nov11 7.189 vs 5.791 (+1.40); Nov12 7.045 vs 5.539 (+1.51); Nov13 6.792 vs 5.227 (+1.56); Nov14 6.306 vs 4.864 (+1.44); Nov15 5.726 vs 4.467 (+1.26).\n- Nov 17: observed ~5.06 at the 04:35 high (pred 3.80, +1.26); ~4.83 at 15:00 near the 14:29 high (pred 3.81, ~+1.02); ~1.97 at the 21:47 low (pred 0.87, +1.1). Nov 18 04:30 obs 5.31 vs 04:55 pred high 4.16 (~+1.15).\n- calcoasttides.com (Kelvin-wave blog, accessed 2026-11-18): La Jolla +15.1 in above prediction (24h mean) as of Nov 17; ran 14-17 in above prediction through mid-Nov; elevated since late Sept; no forecast of decay; a researcher expected a further Kelvin wave around late Oct/early Nov.\n- October record (NOAA Ocean Service): 2.65 ft above MHHW, about 7.97 ft MLLW; HAT 7.20 ft MLLW.\n- News (Latin Times, 2026-11-16): very large surf on Nov 14; two more storm systems expected with waves up to 18 ft. Storm timing relative to Nov 26 is unknown.\n- NOAA (India Today, 2026-11-17): strong El Nino likely to persist through JFM 2027.\n- Status quo: residual holds at ~1.0-1.3 ft. Implied range ~7.85-8.15 ft on the Nov 26 high, plus ~0.05 ft 6-min noise.\n- Resolves off the preliminary NOAA 6-min water_level at 9410230 (MLLW), 2026-11-26 08:00 UTC to 2026-11-28 07:59 UTC; later verification does not change it. Annulled if data are missing within 1 h of either predicted high.\n- Event window: 2026-11-26 00:00 PST -> 2026-11-27 23:59 PST; as of 2026-11-18 12:40Z, 0% elapsed.\n- Searched but not found: an official NWS total-water-level forecast for Nov 26; any residual forecast; terms of the Polymarket La Jolla contracts (page failed to load; they close 2027-04-01, so possibly a season max).",
+   "reference_class": "Observed La Jolla highest-high-tide water levels in Nov 2026 = NOAA predicted high + persistent residual (Nov 10-18 residuals 1.0-1.56 ft)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5228,
+   "seconds": 64.1,
+   "usage": {
+    "num_turns": 10,
+    "input": 12,
+    "cache_read": 161301,
+    "cache_write": 22414,
+    "cache_write_1h": 22414,
+    "output": 4853,
+    "thinking": 931,
+    "web_search": 0,
+    "cost_usd_envelope": 0.5227722,
+    "web_fetch": 0,
+    "duration_api_ms": 75466
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 7.92,
+     "25": 8.07,
+     "50": 8.21,
+     "75": 8.35,
+     "90": 8.52
+    },
+    "p_below_lower": 0.005,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Observed daily peak minus predicted high tide at 9410230 ran +1.2 to +1.55 ft (mean ~1.4) across Nov 1-13 2026 per CO-OPS API; calcoasttides reports +14.6-17.9 in for Nov 10-16. Nov 26 predicted high 6.84 ft gives ~8.24 ft central estimate; Nov 27 (6.50) gives ~7.9. Uncertainty is residual drift over 8 days (Kelvin wave decay vs. storm surge/wave setup; storms forecast). Polymarket peak-level threshold markets (8.10 ft at 0.69, 8.30 ft at 0.67, 7.90 ft at 0.98; ~$3-5k volume, close 2027-04-01, window unclear and likely different) are thin and not internally consistent; treated as evidence only. No Kalshi/Manifold market found.",
+   "sources": [
+    "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter (station 9410230 water_level and predictions, Nov 1-28 2026)",
+    "https://oceanservice.noaa.gov/news/nov26/california-record-water-levels.html",
+    "https://www.calcoasttides.com/blog/kelvin-wave-california-2026",
+    "https://polymarket.com/market/peak-water-level-at-la-jolla-at-least-8-10-ft-mllw"
+   ],
+   "dossier": "- NOAA CO-OPS predictions 9410230 (MLLW): highs Nov 24 6.853@07:48, Nov 25 6.955@08:29, Nov 26 6.838@09:15, Nov 27 6.498@10:05, Nov 28 5.959@11:01 PST. Window = Nov 26 00:00 to Nov 27 23:59 PST.\n- Observed daily max (CO-OPS API, preliminary) vs predicted high, Nov 2026: Nov1 6.31 vs 4.92 (+1.39); Nov4 6.53 vs 5.06 (+1.47); Nov5 6.89 vs 5.45 (+1.44); Nov6 6.99 vs 5.76 (+1.22); Nov7 7.32 vs 5.97 (+1.35); Nov8 7.28 vs 6.08 (+1.20); Nov9 7.42 vs 6.07 (+1.35); Nov10 ~7.32-7.38 vs 5.97 (+1.35-1.40); Nov11 7.19 vs 5.79 (+1.40); Nov12 7.04 vs 5.54 (+1.50); Nov13 6.77 vs 5.23 (+1.54).\n- Nov 14-18 daily max 4.8-5.6 ft, during weak neap highs (predicted 3.8-4.9).\n- calcoasttides blog (Nov 2026): La Jolla residual +14.6 to +17.9 in for Nov 10-16; 24h mean +15.1 in through Nov 17; late Oct +15-16 in; Oct 10 tropical storm peak +18.3 in.\n- NOAA NOS (Nov 2026): La Jolla record 2.65 ft above MHHW (~7.97 ft MLLW) Oct 24-30; king tides Nov 22-27 (perigean spring).\n- News Nov 14-16: very large surf along CA coast, more storms coming with waves up to 18 ft; NOAA puts strong-to-very-strong El Nino through JFM 2027 at >79%.\n- Status quo: residual stays ~+1.2-1.55 ft, so the window max comes on the Nov 26 morning high.\n- Resolves off the max 6-minute preliminary observed value at 9410230, not hourly or verified data, and not other stations.\n- Event window: Nov 26 08:00Z to Nov 28 07:59Z; as of Nov 18 12:40Z, 0% elapsed.\n- Searched for but not found: official surge forecast for Nov 26; Polymarket contract window for its La Jolla peak markets (closes 2027-04-01, possibly a season-long peak).",
+   "reference_class": "Persistent-residual regime: daily max observed minus predicted high tide at La Jolla, Nov 1-13 2026"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.5643,
+   "seconds": 96.6,
+   "usage": {
+    "num_turns": 13,
+    "input": 18,
+    "cache_read": 267845,
+    "cache_write": 28531,
+    "cache_write_1h": 28531,
+    "output": 5907,
+    "thinking": 1317,
+    "web_search": 2,
+    "cost_usd_envelope": 0.53884,
+    "web_fetch": 0,
+    "duration_api_ms": 108366
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 7.6,
+     "25": 7.85,
+     "50": 8.05,
+     "75": 8.25,
+     "90": 8.47
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Peak astronomical prediction in window is 6.84 ft MLLW (Nov 26 09:15 PST). Gauge residuals Nov 14-18 computed from NOAA API obs vs predictions run a persistent +1.0 to +1.4 ft (e.g., Nov 18 04:24 obs 5.31 vs pred ~4.1; Nov 17 22:00 obs 1.97 vs pred 0.88). Adding a ~1.1-1.2 ft residual plus ~0.1 ft 6-min wave noise gives a median of ~8.05, near October's ~8.0 record. Uncertainty comes from the residual decaying or growing over 8 days (surf returns from Nov 19, NWS says less intense). Polymarket candidates (close 2027-04-01, likely season-peak, inconsistent prices, ~$4k volume) do not match this contract and are not used as an anchor.",
+   "sources": [
+    "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=water_level&station=9410230 (Nov 14-18 2026 obs)",
+    "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&station=9410230 (Nov 12-27 hilo & hourly)",
+    "https://www.kpbs.org/news/environment/2026/11/17/big-waves-back-in-san-diegos-forecast-after-weekend-flooding",
+    "https://lajolla.ca/news/weather/highest-ever-sea-levels-observed-in-la-jolla-in-october/"
+   ],
+   "dossier": "- NOAA predictions for 9410230, hi/lo, ft MLLW (fetched from the API 2026-11-18): Nov 24 07:48 6.85; Nov 25 08:29 6.96 (outside window); Nov 26 09:15 6.84; Nov 26 23:32 3.59; Nov 27 10:05 6.50. The highest prediction inside the window is 6.84 on Nov 26.\n- Observed daily maxima, ft MLLW (NOAA API, 6-min): Nov 14 6.31 (pred high 4.86); Nov 15 5.73 (pred 4.47); Nov 16 5.34 (pred 4.08); Nov 17 5.16 at 04:48 (pred 3.78); Nov 18 5.31 at 04:24 (pred 4.16). Residual at the highs is about +1.15 to +1.45 ft.\n- Nov 17 hourly comparison: 15:00 obs 4.83 vs pred 3.78 (+1.05); 22:00 obs 1.97 vs pred 0.88 (+1.09). Residual is about +1.0-1.3 at lows as well as highs, which points to a sustained sea-level anomaly rather than only wave setup.\n- 6-min readings fluctuate about ±0.1 ft around the smooth curve (Nov 17 data), so the window max sits slightly above the smooth peak.\n- October record (NOAA, Oct 24-30): La Jolla 2.65 ft above MHHW, about 8.0 ft MLLW; MHHW-MLLW separation 5.32; highest astronomical tide 7.20 MLLW. Gauges ran 12-17 in above prediction.\n- Background text: Nov 13 gauge read ~5.9 at 07:36 vs predicted high 5.23 (~+1 ft); NWS quoted ~1.3-1.4 ft above normal for the Nov 8-11 highs.\n- KPBS 2026-11-17: high surf to return Thursday Nov 19, NWS says not as intense as the Nov 14 event; NWS concerned in case high surf coincides with Thanksgiving-week king tides. Nov 14 had very large surf (residual ~1.45).\n- NOAA (via India Today, 2026-11-17): strong to very strong El Nino likely through Jan-Mar 2027 (>79%).\n- Newport Beach city release: warns levels could rise 12+ in above October's 8.4 ft (that is a Newport figure, not the La Jolla gauge).\n- Resolves off the max of preliminary 6-min observed water_level at 9410230, MLLW, English, 2026-11-26 08:00 UTC to 2026-11-28 07:59 UTC. Not verified data, not hourly, not other stations. Annulled if data are missing within 1 h of either predicted high.\n- Event window: 2026-11-26 08:00Z -> 2026-11-28 07:59Z per the criteria; as of 2026-11-18T12:40Z, 0% has elapsed.\n- Status quo: residual persists at ~+1.1-1.3 ft on top of the 6.84 ft prediction.\n- Downside candidates: Kelvin-wave anomaly decays, offshore winds or high pressure. Upside candidates: new swell or storm coinciding with the Nov 26 morning high, low pressure.\n- Markets: Polymarket La Jolla peak-level contracts exist but close 2027-04-01 (likely a season peak), prices inconsistent, low volume; resolution terms not verifiable (page fetch failed).\n- Searched for but not found: an NWS total-water-level forecast for Nov 26 at La Jolla; the CO-OPS high tide flooding outlook numeric for the date.",
+   "reference_class": "Sum of NOAA predicted high tide plus the recent persistent non-tidal residual at La Jolla during the 2026 El Nino/Kelvin-wave episode (Oct 24-30 and Nov 8-18 high tides)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.4615,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2093,
+   "seconds": 26.1,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 19239,
+    "cache_write_1h": 19239,
+    "output": 2649,
+    "thinking": 601,
+    "web_search": 0,
+    "cost_usd_envelope": 0.2092618,
+    "web_fetch": 0,
+    "duration_api_ms": 25426
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 7.77,
+     "25": 7.93,
+     "50": 8.07,
+     "75": 8.22,
+     "90": 8.41
+    },
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Window max = Nov 26 09:15 PST high (pred 6.84 ft MLLW) + daily-max residual. Recent daily-max residuals Nov 14-18 are +1.44, +1.26, +1.26, ~+1.3, +1.15 (these already include 6-min noise), easing from +1.5 on Nov 12-13. Persistent El Nino/Kelvin-wave anomaly argues against fast decay; forecast storms and surf give upside skew. Median ~6.84+1.23 = 8.07, about the October record of ~7.97. Polymarket La Jolla peak contracts are thin, likely season-max (close 2027-04-01) and inconsistent, so they are not used as an anchor.",
+   "sources": [],
+   "reconciliation": "Main dispute was the residual to add: Run 2 used the Nov 1-13 mean (~1.4 ft), Runs 1 and 3 used recent values (1.0-1.3). The dossiers agree on Nov 14-18 daily-max residuals (1.44, 1.26, 1.26, ~1.3, 1.15), so the current level is ~1.25 and Run 2 is out of date. Runs 1 and 3 added 6-min noise on top of partly smooth or low-tide residuals, double-counting where they used daily-max numbers; the low-tide baseline of ~1.1 ft plus ~0.15 ft peak excess agrees with ~1.25. Decay versus storm upside is pure judgment: took a slight decay with upside skew. No web access this run; market terms unverifiable.",
+   "disagreements": [
+    {
+     "claim": "Central residual ~1.4 ft (Run 2) vs ~1.1-1.2 ft (Runs 1, 3)",
+     "kind": "factual",
+     "verdict": "Nov 14-18 daily-max residuals in the dossiers average ~1.28; recent data supersede the Nov 1-13 mean"
+    },
+    {
+     "claim": "Whether to add 6-min noise on top of the residual",
+     "kind": "factual",
+     "verdict": "Daily-max residuals already include noise; low-tide baseline ~1.1 plus ~0.15 peak excess gives the same ~1.25"
+    },
+    {
+     "claim": "Residual decay versus storm/Kelvin upside by Nov 26",
+     "kind": "judgment",
+     "verdict": "Slight decay at the median, upside skew in the tails"
+    },
+    {
+     "claim": "Polymarket contracts as an anchor",
+     "kind": "factual",
+     "verdict": "Terms unverifiable, likely season-max, inconsistent prices; evidence only"
+    }
+   ],
+   "reference_class": "Nov 2026 La Jolla daily max minus predicted higher high (persistent Kelvin-wave regime)"
+  }
+ ]
+}
