@@ -1,0 +1,252 @@
+{
+ "record_id": "2026-11-18-6052910d",
+ "question": "What will be the ending value of the ICE BofA US High Yield Option-Adjusted Spread for these biweekly periods of Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46215,
+ "url": "https://www.metaculus.com/questions/46010/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-11-18T16:12:04+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.3547,
+ "asknews": false,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 3.03,
+    "25": 3.1966666666666668,
+    "50": 3.3666666666666667,
+    "75": 3.516666666666667,
+    "90": 3.643333333333333
+   },
+   "p_above_upper": 0.1366666666666667
+  },
+  "phase1": {
+   "10": 3.03,
+   "25": 3.1966666666666668,
+   "50": 3.3666666666666667,
+   "75": 3.516666666666667,
+   "90": 3.643333333333333
+  },
+  "phase2": null,
+  "spread_phase1": 0.03,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 3.02,
+   "25": 3.18,
+   "50": 3.35,
+   "75": 3.5,
+   "90": 3.62
+  },
+  "p_above_upper": 0.12
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3796,
+   "seconds": 63.1,
+   "usage": {
+    "num_turns": 9,
+    "input": 14,
+    "cache_read": 178568,
+    "cache_write": 21535,
+    "cache_write_1h": 21535,
+    "output": 3642,
+    "thinking": 610,
+    "web_search": 4,
+    "cost_usd_envelope": 0.3795706,
+    "web_fetch": 0,
+    "duration_api_ms": 67262
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 3.05,
+     "25": 3.21,
+     "50": 3.37,
+     "75": 3.5,
+     "90": 3.64
+    },
+    "p_above_upper": 0.11
+   },
+   "reasoning": "Latest FRED value is 3.43 (Nov 17); spreads have been between 3.14 and 3.48 since early October, after widening from ~2.65 in September. The CCC tier has blown out while BB/B are contained. With 13 trading days to Dec 4, I start from the current level, shift the median slightly lower (~3.37) because the series has been mean-reverting around 3.3-3.4 and futures were up Nov 18, and skew the tails upward since spreads widen faster than they tighten. About 11% is put on closing above 3.745 (+32bp, comparable to the late-Sept move). No Polymarket, Kalshi or Manifold market was found.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2",
+    "https://awells1000.substack.com/p/credit-moved-first",
+    "https://govspending.org/series/BAMLH0A0HYM2/",
+    "https://pro.thestreet.com/stock-market-today/2026-11-18",
+    "https://www.cnbc.com/2026/10/09/junk-bonds-are-flashing-yellow-watch-these-warning-signs.html"
+   ],
+   "dossier": "- FRED BAMLH0A0HYM2 daily (fetched 2026-11-18): Aug 2026 ~2.60-2.78; Sep 1-23 2.65-2.76; then Sep 24 2.80, Sep 25 2.93, Sep 30 3.12, Oct 1 3.24, Oct 2-13 3.03-3.16, Oct 16 3.31, Oct 22 3.40 (peak then), Oct 27-28 3.18/3.14, Oct 30 3.44, Nov 2 3.43, Nov 4 3.32, Nov 5 3.48 (high), Nov 6 3.42, Nov 9-11 3.34/3.30/3.30, Nov 12 3.20, Nov 13 3.23, Nov 16 3.34, Nov 17 3.43 (latest).\n- Realized daily changes in the Oct-Nov regime are typically 3-15bp, SD ~7-9bp; the biggest daily moves are +18bp (Oct 30) and +16bp (Nov 5, Nov 17 +9).\n- Substack 'Credit Moved First' (Nov 2026): since Aug 28, IG out 11bp, BB out 46bp, B out 85bp, CCC out 284bp; CCC hit 1,356bp Oct 23, the widest in FRED's 3-year window. Stress is concentrated in lower quality.\n- Bloomberg headline Nov 17 2026: Treasuries rallied as stocks sold off after an NSA network outage and tech-sector losses; HYG/JNK -0.13% that day.\n- TheStreet Nov 18 2026: S&P futures +0.46%, Nasdaq futures +0.94% premarket; claims of a hawkish Fed and a December hike priced (treat with caution).\n- CNBC Oct 9 2026: junk bonds 'flashing yellow'.\n- Status quo: the level has stayed in a 3.14-3.48 band for about 7 weeks; last close 3.43.\n- Range bounds 1.745-3.745; the upper bound is +32bp from the last close; the Oct 1 / Nov 5 highs were 3.24/3.48.\n- Resolves off FRED's initially published value for Fri 2026-12-04 (else the last earlier value in the period), not on revisions.\n- Event window: one value, the Dec 4 2026 close; as of Nov 18, 13 trading days remain (Thanksgiving Nov 26 closed, Nov 27 half day).\n- Searched for Kalshi, Polymarket and Manifold markets on the HY OAS: none found. Could not access the Bloomberg full text.",
+   "reference_class": "13-trading-day changes in the ICE BofA HY OAS during elevated-volatility regimes (e.g. Oct-Nov 2026, spring 2025)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7566,
+   "seconds": 67.1,
+   "usage": {
+    "num_turns": 8,
+    "input": 14,
+    "cache_read": 178028,
+    "cache_write": 20522,
+    "cache_write_1h": 20522,
+    "output": 3884,
+    "thinking": 987,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3770726,
+    "web_fetch": 0,
+    "duration_api_ms": 69260
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 3.04,
+     "25": 3.21,
+     "50": 3.38,
+     "75": 3.53,
+     "90": 3.65
+    },
+    "p_above_upper": 0.13
+   },
+   "reasoning": "Last FRED print 3.43 (Nov 17) after widening from ~2.65 in Sept to a 3.20-3.48 range since late Oct, CCC-led. About 12 trading days remain to Dec 4. Random walk centered near the current level, with daily vol ~7-8bp in this regime. Upside risks: priced Fed hike in December, CCC/AI-related credit stress, momentum. Downside: BB/B resilient, December seasonal tightening, recent pullback to 3.20 shows two-way risk. No prediction market found on Kalshi, Polymarket or Manifold. Upper escape above 3.745 priced at ~13%.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2",
+    "https://leprivatebanker.com/2026/11/18/credit-chiefs-warn-of-a-fear-factor-as-coreweave-bonds-yield-above-15-and-over-90-in-survey-see-defaults-rising-in-2027/",
+    "https://govspending.org/series/BAMLH0A0HYM2/",
+    "https://www.macroradar.io/high-yield-spread",
+    "https://tradersunion.com/news/financial-news/show/3234846-us-junk-debt-spreads-treasury-selloff/"
+   ],
+   "dossier": "- FRED BAMLH0A0HYM2 daily (fetched 2026-11-18): Aug-mid-Sep 2026 range 2.60-2.78; widening began Sep 24 (2.80) and reached 3.24 on Oct 1; 3.31 Oct 16; 3.40 Oct 22; 3.14 Oct 28; 3.44 Oct 30; 3.48 Nov 5 (high); 3.30 Nov 10-11; 3.20 Nov 12; 3.23 Nov 13; 3.34 Nov 16; 3.43 Nov 17 (latest).\n- Daily changes in Oct-Nov 2026 are often 5-16bp (e.g., +18 Oct 30, +16 Nov 5, -10 Nov 12, +11 Nov 16, +9 Nov 17); realized daily SD about 7-8bp.\n- Web reports, Nov 2026: CCC spreads near 1,000-1,050bp, up 500bp+ from the 2026 lows; BB and B spreads relatively contained; BBB OAS rose from ~95bp in Sep to 116bp.\n- Le Private Banker, 2026-11-18: credit chiefs describe a 'fear factor'; CoreWeave bonds yield >15%; >90% of those surveyed expect higher low-rated defaults in 2027; JPM sees leveraged-loan defaults at 4.5% in 2027; bond markets price at least 25bp of Fed hikes next month (ECB similar).\n- TradersUnion/other reports: 10y UST hit ~4.82%; Treasury selloff hitting the weakest borrowers; private credit default rate reportedly above 6%.\n- Status quo: the level holds near 3.4 (last print 3.43).\n- Seasonal note: December has historically leaned toward HY spread tightening (thin liquidity, year-end), but this is not guaranteed in a stress regime. The FOMC December meeting is likely after Dec 4 (searched, exact date not confirmed).\n- Resolves off FRED BAMLH0A0HYM2 first-published value for Fri 2026-12-04 (or the latest earlier day in the period if missing), not intraday or ICE direct.\n- Event window: value on 2026-12-04 close; as of 2026-11-18 about 12 US trading days remain (Thanksgiving Nov 26 closed, Nov 27 half day).\n- Searched for Kalshi/Polymarket/Manifold markets on HY OAS: none found.\n- Not found: dealer forecasts specific to the year-end 2026 HY OAS; Nov 18 print.",
+   "reference_class": "Changes in HY OAS over 12-trading-day windows during moderate-stress regimes (e.g., 2022, Oct-Nov 2026)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.1262,
+   "seconds": 68.0,
+   "usage": {
+    "num_turns": 8,
+    "input": 14,
+    "cache_read": 177803,
+    "cache_write": 20278,
+    "cache_write_1h": 20278,
+    "output": 4180,
+    "thinking": 1068,
+    "web_search": 3,
+    "cost_usd_envelope": 0.36958159999999995,
+    "web_fetch": 0,
+    "duration_api_ms": 71976
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 3.0,
+     "25": 3.17,
+     "50": 3.35,
+     "75": 3.52,
+     "90": 3.64
+    },
+    "p_above_upper": 0.17
+   },
+   "reasoning": "Latest FRED print 3.43 (Nov 17) after a regime shift up from ~2.65 in Sept to a 3.14-3.48 range since early Oct. Horizon to Dec 4 is ~13 trading days; recent daily volatility ~0.07-0.08 implies ~0.29 SD by then. Median set near the current level with no drift assumption: mean reversion after widening is balanced against an ongoing risk-off equity/AI selloff (S&P five-month low Nov 17) and CCC stress. Right tail fatter due to stress dynamics; ~17% chance it ends above 3.745. No human prediction market found (Kalshi/Polymarket/Manifold searched: none).",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2&cosd=2026-08-01",
+    "https://leprivatebanker.com/2026/11/18/credit-chiefs-warn-of-a-fear-factor-as-coreweave-bonds-yield-above-15-and-over-90-in-survey-see-defaults-rising-in-2027/",
+    "https://awells1000.substack.com/p/credit-moved-first",
+    "https://coingape.com/1-3-trillion-erased-from-us-stocks-as-cboe-volatility-index-climbs/",
+    "https://finance.yahoo.com/news/us-credit-spreads-continue-widen-141105156.html"
+   ],
+   "dossier": "- FRED BAMLH0A0HYM2 (fetched 2026-11-18): Aug 2026 range 2.60-2.78; Sept 1-23 2.65-2.76; jump Sept 24-Oct 1 from 2.80 to 3.24; Oct range 3.03-3.44 (Oct 30 3.44); Nov: 11/02 3.43, 11/03 3.40, 11/04 3.32, 11/05 3.48 (high), 11/06 3.42, 11/09 3.34, 11/10 3.30, 11/11 3.30, 11/12 3.20, 11/13 3.23, 11/16 3.34, 11/17 3.43 (latest).\n- Recent daily absolute changes typically 0.03-0.12, some 0.15-0.18 days (10/30 +0.18, 11/05 +0.16); implied daily SD ~0.07-0.08.\n- Nov 17 2026 (coingape/substack): S&P 500 -1.03% to a five-month low, Dow -1.64%, ~$1.3T erased intraday, VIX rising; selling centered on software/AI (CRM -9.4%, NOW -6.6%).\n- Andrew Wells substack 'Credit Moved First': since Aug 28, IG +11bp, BB +46, B +85, CCC +284 to 1,356bp on Oct 23 (3-yr widest); credit led the equity selloff.\n- Le Private Banker 2026-11-18: CoreWeave junk bonds yield >15%, CDS imply >50% 5-yr default probability; >90% of surveyed credit chiefs expect defaults to rise in 2027; 'fear factor' warning.\n- Stress concentrated in CCCs; BB/B relatively contained (Vanguard/govspending summaries).\n- Historical analog: Apr 2025 tariff shock took HY OAS to ~4.61 within days (Yahoo, 2025-04-07), then reverted over weeks; this shows a fast upside escape is possible.\n- Status quo: spread stays near current 3.2-3.5 range.\n- Resolves off FRED BAMLH0A0HYM2 initial print for Fri Dec 4 2026 (or latest prior day in period), not ICE's own site or revisions.\n- Event window: single value on 2026-12-04; as of 2026-11-18, ~13 trading days remain (Thanksgiving Nov 26 closed, Nov 27 half day).\n- Bounds 1.745-3.745 both open; current level is ~0.32 below the upper bound.\n- Searched for Kalshi/Polymarket/Manifold markets on HY OAS: none found. Did not find scheduled catalysts beyond typical late-Nov data and Nvidia-type earnings; Fed Dec meeting falls after the window.",
+   "reference_class": "13-trading-day changes in ICE BofA HY OAS during elevated-volatility regimes (e.g. Oct-Nov 2026, Apr 2025)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.0937,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1782,
+   "seconds": 21.8,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 11809,
+    "cache_write": 16818,
+    "cache_write_1h": 16818,
+    "output": 2063,
+    "thinking": 515,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1781738,
+    "web_fetch": 0,
+    "duration_api_ms": 21243
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 3.02,
+     "25": 3.18,
+     "50": 3.35,
+     "75": 3.5,
+     "90": 3.62
+    },
+    "p_above_upper": 0.12
+   },
+   "reasoning": "Last FRED print 3.43 (Nov 17) after a CCC-led regime shift from ~2.65 to a 3.14-3.48 band since early Oct. ~13 trading days to Dec 4; regime daily vol ~7-8bp gives ~0.27 horizon SD. Median ~3.35-3.38: mild mean reversion and December seasonal tightening offset by ongoing equity/AI selloff and CCC stress; right tail fatter. ~12% priced on ending above 3.745 (+32bp, ~1.2 SD with skew). Percentiles are conditional on staying in range. No human market found (runs searched Kalshi/Polymarket/Manifold).",
+   "sources": [],
+   "reconciliation": "All three runs agree on the facts: FRED path, last value 3.43, daily SD ~7-8bp, 12-13 trading days left, no market. None was in dispute. The only differences are judgment calls: median drift (3.35-3.38) and upper-escape mass (11-17%). Sqrt-time vol scaling gives ~12% for >3.745 with a mild right skew. Run 3's 17% overweights the April 2025 tariff analog. I re-truncated the percentiles so they are conditional on landing in range, as the contract requires. Dispersion carried forward from the runs (~0.6), consistent with the truncated width.",
+   "disagreements": [
+    {
+     "claim": "Probability of ending above 3.745 (11% vs 13% vs 17%)",
+     "kind": "judgment",
+     "verdict": "Vol scaling (+32bp ~1.2 horizon SD) with modest skew supports ~12%; took that."
+    },
+    {
+     "claim": "Median drift: slight tightening (3.35-3.37) vs near-current (3.38)",
+     "kind": "judgment",
+     "verdict": "Unconditional median ~3.38; conditional-in-range median ~3.35."
+    },
+    {
+     "claim": "Remaining trading days 12 vs 13",
+     "kind": "factual",
+     "verdict": "Nov 18 (counted) through Dec 4 gives 13 sessions including the Nov 27 half day; the difference is immaterial."
+    }
+   ],
+   "reference_class": "Two-to-three-week changes in HY OAS during moderate credit-stress regimes (e.g., late 2022, spring 2025), random walk from current level"
+  }
+ ]
+}
