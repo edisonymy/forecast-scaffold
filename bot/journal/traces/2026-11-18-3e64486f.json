@@ -1,0 +1,256 @@
+{
+ "record_id": "2026-11-18-3e64486f",
+ "question": "How much will Nasdaq-100 Futures total price returns exceed S&P 500 Futures in these biweekly periods of Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46221,
+ "url": "https://www.metaculus.com/questions/46011/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-18T17:19:03+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 1.0292,
+ "asknews": false,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -2.466666666666667,
+    "25": -1.1166666666666667,
+    "50": 0.08333333333333333,
+    "75": 1.2666666666666666,
+    "90": 2.6
+   },
+   "p_below_lower": 0.02666666666666667,
+   "p_above_upper": 0.02
+  },
+  "phase1": {
+   "10": -2.466666666666667,
+   "25": -1.1166666666666667,
+   "50": 0.08333333333333333,
+   "75": 1.2666666666666666,
+   "90": 2.6
+  },
+  "phase2": null,
+  "spread_phase1": 0.05,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -2.6,
+   "25": -1.15,
+   "50": 0.1,
+   "75": 1.3,
+   "90": 2.7
+  },
+  "p_below_lower": 0.03,
+  "p_above_upper": 0.02
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5949,
+   "seconds": 63.8,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 132355,
+    "cache_write": 12623,
+    "cache_write_1h": 12623,
+    "output": 4552,
+    "thinking": 1550,
+    "web_search": 2,
+    "cost_usd_envelope": 0.28647900000000004,
+    "web_fetch": 0,
+    "duration_api_ms": 68311
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -2.5,
+     "25": -1.1,
+     "50": 0.1,
+     "75": 1.3,
+     "90": 2.7
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Reference class: 32 biweekly NQ-ES spread outcomes Jul 2025-Nov 2026 from the question's spreadsheet; mean ~+0.07pp, SD ~1.74pp. Recent regime much more volatile (+3.3, -3.9, -3.6 in Sep-Nov 2026) amid AI/tech scrutiny; Nvidia beat but faded, S&P at lowest close since July (Nov 17). Direction ambiguous (tech rebound vs continued AI derating), so median near zero with a slight NQ drift; widened spread vs full history. Dec contracts don't roll until ~Dec 11, so no roll artifact. No human market found on Polymarket/Manifold/Kalshi/bookmakers for this spread; Kalshi year-end index-level brackets don't match the contract.",
+   "sources": [
+    "https://docs.google.com/spreadsheets/d/1CpeSvX9gTKngoYc-2lGmGpBrhVQysmJ7_poKo4OcriI",
+    "https://www.cnbc.com/2026/11/17/stock-market-today-live-updates.html",
+    "https://finance.yahoo.com/markets/live/stock-market-today-tuesday-november-17-dow-sp-500-nasdaq-nvidia-earnings-retail-sales-143848454.html",
+    "https://kalshi.com/category/financials/indices"
+   ],
+   "dossier": "- Resolves off Yahoo Finance NQ=F and ES=F daily Close: P0 = close Fri Nov 20 2026, P1 = close Fri Dec 4 2026; value = NQ% - ES% in pp. Not off cash indices.\n- Event window: Nov 20 close -> Dec 4 close per the criteria; as of Nov 18 0% elapsed (window not started). Includes Thanksgiving (Nov 26 closed, Nov 27 half-day).\n- Dec (Z) contracts expire Dec 18; roll ~Dec 11, after window, so no front-month roll artifact expected.\n- Spreadsheet (question-linked), 32 biweekly spreads Jul 2025-Nov 2026: mean ~+0.07pp, SD ~1.74pp; max +3.32 (Sep 18-Oct 2 2026), min -3.86 (Oct 9-23 2026). No period exceeded |4|pp.\n- Recent sequence: Jul 12-24 2026 -3.56; Jul24-Aug7 +1.03; Aug7-21 -0.36; Aug21-Sep4 +0.20; Sep4-18 +1.00; Sep18-Oct2 +3.32; Oct9-23 -3.86; Oct23-Nov6 -3.62. Last ~4 months SD ~2.5pp.\n- Same calendar window 2025 (Nov 21-Dec 5 2025): +1.97 (post-selloff tech rebound); prior period Nov 7-21 2025: -1.44.\n- Apr-May 2026: four consecutive periods of +1.8 to +2.6 (tech rally regime).\n- Nov 17 2026 (Yahoo/CNBC): S&P -1.03% to 7,340.53, lowest close since late July; Nasdaq Comp -0.7%; staples favored, AI growth expectations under scrutiny.\n- Nov 18 2026 (CNBC): Nvidia beat and raised guidance, stock reversed from +4% premarket to >2% lower; Nasdaq ~flat while S&P -0.5% and Dow -1.2% (Nasdaq relatively outperforming that day). Reported Anthropic IPO expected Nov 19.\n- Status quo: spread distribution centered near zero; recent regime has large swings in both directions.\n- Markets: no Polymarket/Manifold/Kalshi market on this spread found; Kalshi has only year-end index-level brackets (not matching).\n- Searched but not found: implied vol of NDX/SPX for the window, Nov 6-20 2026 spread value.",
+   "reference_class": "Biweekly NQ=F minus ES=F percent-return spreads, Jul 2025 - Nov 2026 (32 periods, Metaculus series spreadsheet)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3084,
+   "seconds": 59.2,
+   "usage": {
+    "num_turns": 8,
+    "input": 10,
+    "cache_read": 132003,
+    "cache_write": 13389,
+    "cache_write_1h": 13389,
+    "output": 4089,
+    "thinking": 571,
+    "web_search": 3,
+    "cost_usd_envelope": 0.3084466,
+    "web_fetch": 0,
+    "duration_api_ms": 71439
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -2.5,
+     "25": -1.15,
+     "50": 0.1,
+     "75": 1.3,
+     "90": 2.6
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Window Nov 23-Dec 4 (P0 = Nov 20 close) hasn't started. Base rate from 32 biweekly periods in the question's spreadsheet: median gap ~+0.1pp, SD ~1.8pp; the last four periods were much wider (-3.6, -3.9, +3.3, +1.0). November 2026 is a high-volatility, tech-led selloff (NDX -4.2% month-to-date, semis down after NVIDIA's CEO exit and export restrictions, VIX ~23, 10y yield 5.13%). NVIDIA's Nov 17 beat lifted Nasdaq futures 0.6% vs S&P futures 0.2% on Nov 18, but that is before P0. No directional edge, so median near zero/slightly positive with widened tails. No human market found on Polymarket, Manifold, Kalshi or bookmakers.",
+   "sources": [
+    "https://docs.google.com/spreadsheets/d/1CpeSvX9gTKngoYc-2lGmGpBrhVQysmJ7_poKo4OcriI",
+    "https://247wallst.com/investing/2026/11/17/the-nasdaq-100-is-headed-for-its-worst-november-since-2008/",
+    "https://www.tipranks.com/news/stock-market-today-nov-18-nvidias-strong-results-lift-market-sentiment",
+    "https://www.cnbc.com/2026/11/17/stock-market-today-live-updates.html"
+   ],
+   "dossier": "- Resolves off Yahoo Finance NQ=F and ES=F daily closes: P0 = close Fri Nov 20 2026, P1 = close Fri Dec 4 2026; value = NQ% - ES%. Not the cash indices.\n- Event window: Nov 23 -> Dec 4 2026 per the criteria. As of Nov 18, 0% has elapsed (window starts after the Nov 20 close). Includes the Thanksgiving holiday and the Nov 27 half-day.\n- Spreadsheet (Metaculus series), biweekly gaps NQ-ES, most recent first: Oct23-Nov6 2026 -3.62; Oct9-23 -3.86; Sep18-Oct2 +3.32; Sep4-18 +1.00; Aug21-Sep4 +0.20; Aug7-21 -0.36; Jul24-Aug7 +1.03; Jul12-24 -3.56; Jun12-26 -0.54; May29-Jun12 -0.33; May15-29 +1.81; May1-15 +2.61; Apr17-May1 +2.42; Apr2-17 +2.65; Mar13-27 -1.09; Feb27-Mar13 +1.23; Feb13-27 +0.25; Jan30-Feb13 -1.72; Jan16-30 +0.08; Jan2-16 +0.09; Dec19-Jan2 -0.53; Dec5-19 2025 -1.14; Nov21-Dec5 2025 +1.97; Nov7-21 2025 -1.44; Oct24-Nov7 -0.27; Oct10-24 +1.05; Sep26-Oct10 +0.18; Sep12-26 +0.90; Aug29-Sep12 +0.99; Aug15-29 -1.46; Aug1-15 +0.72; Jul18-Aug1 -0.36. Over all 32 periods: median ~+0.1, SD ~1.8. Over the last 4: SD ~3. NQ beta to ES is high: the gap tends to share the sign of the market move.\n- 24/7 Wall St, Nov 17 2026: NDX -4.18% MTD, tracking its worst November since 2008; average daily move 1.92% (highest since Apr 2025); SOX -5.28% on Nov 16; NVIDIA CEO Jensen Huang resigned; new chip export restrictions; VIX 22.91; Treasury yield 5.13%; NDX +7.7% YTD after October -6.65%; Democratic midterm wins raised concerns about AI data-center restrictions.\n- Nov 17 2026 close: S&P 500 -1.03% to 7,340.53 (five-month low); NDX -0.72% to 27,001.79; software (CRM, INTU, NOW) led losses.\n- Nov 18 2026 premarket (TipRanks/CNBC): NVIDIA Q3 revenue $115.8B vs $108.97B est., Q4 guide $130B vs $124.9B; NQ futures +0.6%, ES +0.2%. This is before P0.\n- Directional arguments: long-run NDX outperformance (~+0.2pp per 2 weeks) and a possible tech oversold rebound vs ongoing semi/AI regulatory pressure and high yields.\n- No market found on Polymarket, Manifold, Kalshi or bookmakers.\n- Searched for but not found: the late-Nov 2026 macro/earnings calendar (Fed meeting, CPI dates) inside the window.",
+   "reference_class": "Biweekly NQ-minus-ES return gaps, Jul 2025 - Nov 2026 (Metaculus series spreadsheet)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.864,
+   "seconds": 64.6,
+   "usage": {
+    "num_turns": 7,
+    "input": 10,
+    "cache_read": 131752,
+    "cache_write": 11358,
+    "cache_write_1h": 11358,
+    "output": 4076,
+    "thinking": 827,
+    "web_search": 2,
+    "cost_usd_envelope": 0.26907939999999997,
+    "web_fetch": 0,
+    "duration_api_ms": 69176
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -2.4,
+     "25": -1.1,
+     "50": 0.05,
+     "75": 1.2,
+     "90": 2.5
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "NQ-minus-ES biweekly spread ≈ beta-driven, near-zero median; calm-regime SD ~1.5pp. Current regime is high-vol: NQ -4% in Nov, 12.9% off Oct 6 high, VIX ~23, Nvidia CEO turmoil and export curbs, 10y at 5.13%, Anthropic IPO this week; daily spread moves of 0.5-1pp. Widen dispersion to ~1.9-2.0pp SD, keep median ~0 (rebound vs continued AI stress roughly offset). Small tail mass beyond ±5pp for an AI/semis shock. No human market found on Polymarket/Manifold/Kalshi/bookmakers.",
+   "sources": [
+    "https://247wallst.com/investing/2026/11/17/the-nasdaq-100-is-headed-for-its-worst-november-since-2008/",
+    "https://www.cnbc.com/2026/11/15/stock-market-today-live-updates.html",
+    "https://www.bloomberg.com/news/articles/2026-11-18/us-stock-futures-rally-as-nvidia-results-ease-ai-trade-worries",
+    "https://finance.yahoo.com/markets/live/stock-market-today-wednesday-november-18-dow-sp-500-nasdaq-nvidia-anthropic-ipo-090613569.html",
+    "https://theglassdesk.substack.com/p/weekly-market-review-nov-13-2026"
+   ],
+   "dossier": "- Resolution: NQ=F % return minus ES=F % return, Yahoo Finance closes; P0 = close Fri Nov 20 2026, P1 = close Fri Dec 4 2026. Resolves off Yahoo futures closes, not cash index levels.\n- Event window: Nov 20 close -> Dec 4 close per the criteria; as of Now (Nov 18) 0% elapsed. ~9.5 sessions: Thanksgiving Nov 26 closed, Nov 27 early close 1pm ET (247wallst, Nov 17).\n- Week ending Nov 13: S&P 500 +2.51% to 7,561.67, Nasdaq-100 +3.53% to 27,943.74, snapping a four-week losing streak (Glass Desk / search summary).\n- Mon Nov 16: Nasdaq-100 -2.67%, S&P -1.92% to 7,416.59, Nasdaq Comp -2.49%; semis index -5.28%; Micron and Intel -7%, AMD -5%, NVDA -4.12% (CNBC, 247wallst).\n- NDX down 4.18% MTD in November as of Nov 16, 12.9% below Oct 6 record; Oct+Nov combined decline 10.56% (247wallst Nov 17).\n- VIX 22.91 on Nov 16 (+18.7%); 10y Treasury 5.13% (247wallst).\n- Drivers: Jensen Huang resigned as Nvidia CEO, board rejected reinstating him; Commerce closed a loophole on Chinese access to Nvidia compute; Treasury Sec. Bessent called for a 'dramatic shakeup' (CNBC Nov 16).\n- Nvidia FQ3 (Nov 17 AMC): revenue $115.8B vs ~$109B est., Q4 guide ~$130B vs ~$125B. NQ futures +1.4% and ES +0.8% overnight; NVDA then fell ~2% Wednesday; choppy session with AI infrastructure names (CoreWeave, Nebius) down (Bloomberg, Yahoo, CNBC Nov 18).\n- Anthropic IPO pricing this week at a ~$1.4T valuation target; possible flows effect on tech.\n- Structural: NQ beta to ES ~1.15-1.25, so the spread sign mostly tracks market direction. Calm-regime biweekly spread SD ~1.4-1.8pp; elevated-vol regime implies ~2pp (computed from NQ ~28%, ES ~20%, corr ~0.95).\n- Base rates: calm-regime biweekly spread median near 0 to slightly positive (+0.1pp) over 2023-2026 windows; conditional on a VIX>20 regime, dispersion is wider and fat-tailed. Moves beyond ±5pp in 2 weeks are rare (~1-3% per tail, e.g. 2022 / DeepSeek-type shocks).\n- Regime-break candidates: further AI/semis capitulation (negative tail); post-selloff tech rebound or reassurance from Nvidia's new leadership (positive tail).\n- Searched, absent: no Polymarket/Manifold/Kalshi market on this spread; the Metaculus past-period spreadsheet was not consulted; no current VXN reading found.",
+   "reference_class": "Historical 2-week (≈10 trading day) NQ-ES futures return differences, 2023-2026, conditioned on elevated-vol regimes"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.021,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.125,
+   "seconds": 21.3,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20099,
+    "cache_write": 9749,
+    "cache_write_1h": 9749,
+    "output": 2151,
+    "thinking": 184,
+    "web_search": 0,
+    "cost_usd_envelope": 0.1250398,
+    "web_fetch": 0,
+    "duration_api_ms": 20769
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -2.6,
+     "25": -1.15,
+     "50": 0.1,
+     "75": 1.3,
+     "90": 2.7
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Spread of NQ minus ES over Nov 20 to Dec 4 closes. Base rate from 32 biweekly periods: mean about +0.07pp, SD about 1.75pp. The current regime has high volatility (NDX -4% in November, VIX ~23, Nvidia CEO exit, export curbs, 10y yield 5.13%), and the last four spreads were +1.0, +3.3, -3.9 and -3.6, so dispersion is widened. Direction is unclear, tech rebound vs. continued AI derating, and the spread sign mostly follows market direction because NQ moves more than ES. Median +0.1 reflects NQ's small long-run edge. Small tail mass beyond ±5pp for an AI/semis shock. No human market found by the runs.",
+   "sources": [],
+   "reconciliation": "The runs agreed on the factual points: Nov 20 to Dec 4 Yahoo futures closes, no roll inside the window, spreadsheet stats of mean ~+0.07-0.1 and SD ~1.75-1.8, recent four periods with ~3pp spread, Nvidia reaction before P0, and no matching market. Run 3's calm-regime SD of 1.4-1.8 was consistent with the spreadsheet. The only disagreement was judgment on width (4.8 vs 5.1) and direction. I weighted the recent regime somewhat more, since three of the last four periods exceeded |3|pp, and set the width to 5.3. With no directional evidence, the median stays at +0.1. No retrieval this run.",
+   "disagreements": [
+    {
+     "claim": "Effective SD for this window: ~1.9 (Run 3) vs ~2.0 (Runs 1-2)",
+     "kind": "judgment",
+     "verdict": "Took ~2.05 because the recent four-period SD of ~3 and VIX ~23 justify extra width over the full-sample 1.75"
+    },
+    {
+     "claim": "Direction: tech oversold rebound vs. continued AI/semis derating",
+     "kind": "judgment",
+     "verdict": "No tie-breaker; median kept at +0.1 for NQ's structural drift"
+    },
+    {
+     "claim": "Calm-regime biweekly SD ~1.4-1.8 (Run 3) vs spreadsheet 1.74-1.8",
+     "kind": "factual",
+     "verdict": "Consistent; the spreadsheet figure of ~1.75 is used"
+    }
+   ],
+   "reference_class": "Biweekly NQ=F minus ES=F return spreads, Jul 2025-Nov 2026 (question spreadsheet), weighted toward the recent high-volatility regime"
+  }
+ ]
+}

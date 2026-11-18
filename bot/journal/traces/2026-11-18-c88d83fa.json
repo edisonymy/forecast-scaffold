@@ -1,0 +1,245 @@
+{
+ "record_id": "2026-11-18-c88d83fa",
+ "question": "What will be the ending value of the UST 10Y Yield for these biweekly periods of Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46239,
+ "url": "https://www.metaculus.com/questions/46014/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-11-18T17:14:20+00:00",
+ "effort": "medium (auto)",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "share_evidence": false,
+ "supervisor_enabled": true,
+ "aggregation": "supervisor(angles=P,P,P)",
+ "cost_usd": 0.9888,
+ "asknews": false,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 4.8133333333333335,
+    "25": 4.956666666666667,
+    "50": 5.083333333333333,
+    "75": 5.21,
+    "90": 5.353333333333333
+   }
+  },
+  "phase1": {
+   "10": 4.8133333333333335,
+   "25": 4.956666666666667,
+   "50": 5.083333333333333,
+   "75": 5.21,
+   "90": 5.353333333333333
+  },
+  "phase2": null,
+  "spread_phase1": 0.03,
+  "spread_phase2": null
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 4.82,
+   "25": 4.96,
+   "50": 5.09,
+   "75": 5.22,
+   "90": 5.37
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5533,
+   "seconds": 56.7,
+   "usage": {
+    "num_turns": 9,
+    "input": 14,
+    "cache_read": 189093,
+    "cache_write": 12077,
+    "cache_write_1h": 12077,
+    "output": 3593,
+    "thinking": 567,
+    "web_search": 3,
+    "cost_usd_envelope": 0.29747560000000006,
+    "web_fetch": 0,
+    "duration_api_ms": 62390
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.8,
+     "25": 4.95,
+     "50": 5.08,
+     "75": 5.21,
+     "90": 5.36
+    }
+   },
+   "reasoning": "Status quo/random walk anchor: DGS10 5.12 on Nov 16, ~5.07 intraday Nov 18 per Trading Economics after an oil-driven dip. Regime is a Fed hiking cycle (Dec 9 hike fully priced, ~14% odds of 50bp) with elevated vol: 10Y +29bp in week of Nov 13, daily moves of 5-17bp. Horizon 12 trading days, including PCE and the Nov jobs report on Dec 4 itself. Median ~5.08 (no strong drift; hawkish Fed vs. falling oil and a slowing economy roughly offset). Market check: Kalshi has a year-end (Dec 31) 10Y market but the page was rate-limited and the search summary looks stale; different settlement date, so not used. No Polymarket/Manifold market. Bounds 4.255/6.255 are about 4 SD away, so no escape mass.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-08-01",
+    "https://tradingeconomics.com/united-states/government-bond-yield",
+    "https://www.cnbc.com/2026/11/13/treasury-yields-fed-rates.html",
+    "https://seekingalpha.com/article/4968491-fomc-meeting-december-9-bond-market-annual-returns-fallout-from-nvidia-midterm-elections",
+    "https://kalshi.com/markets/kxnote10y/10y-ust/kxnote10y-26dec31"
+   ],
+   "dossier": "- FRED DGS10 recent values: Nov 2 4.91, Nov 6 4.86, Nov 9 4.88, Nov 10 4.98, Nov 12 5.10, Nov 13 5.15, Nov 16 5.12 (FRED csv, fetched 2026-11-18).\n- Earlier path: ~4.65-4.75 in Aug 2026; rose to a 5.31 peak on Oct 5; fell to ~4.84 by Nov 5; rebounded to 5.15 on Nov 13 (FRED).\n- Trading Economics, Nov 18 2026: 10Y ~5.07 intraday, down ~5bp on falling oil prices that eased inflation worries.\n- Fed: Governor Waller would consider a 50bp hike in December if core inflation stays >=0.3%; St. Louis Fed's Musalem said up to 4 hikes may be needed by spring 2027 (Trading Economics / Seeking Alpha, mid-Nov 2026).\n- Markets price a Dec 9 FOMC hike at ~100% (~89% for 25bp, ~14% for 50bp), plus another hike in Jan (Seeking Alpha, ~Nov 14 2026).\n- Week ending Nov 13: 2Y +37bp, 10Y +29bp after hot CPI/PPI (Seeking Alpha; CNBC Nov 13 showed 10Y at 5.17 intraday).\n- Counter-direction: some traders (e.g. Kevin Muir) are buying Treasuries on the view that the Fed is tightening into a slowing economy; lower oil reduces inflation pressure.\n- Volatility: recent DGS10 daily changes typically 3-7bp, several moves of 10-17bp (Sep 10 +12, Sep 23 +15, Oct 22 -17, Nov 10 +10, Nov 12 +12).\n- Calendar: Thanksgiving Nov 26 (market closed), early bond close Nov 27; Nov jobs report likely Fri Dec 4 (the resolution date); FOMC Dec 9 (after the window).\n- Resolves off the FRED DGS10 value for 2026-12-04 (first published value), not intraday or CNBC/Tradeweb quotes.\n- Event window: value on Dec 4 2026; as of Nov 18, 12 trading days remain.\n- Status quo: ~5.07-5.12.\n- Searched: Kalshi has a year-end 10Y market (KXNOTE10Y-26DEC31), but the page was rate-limited and the search summary looked stale; no Polymarket/Manifold market found.",
+   "reference_class": "12-trading-day changes in DGS10 during high-volatility Fed tightening regimes (2022-23, and Sep-Nov 2026)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.8474,
+   "seconds": 57.4,
+   "usage": {
+    "num_turns": 8,
+    "input": 12,
+    "cache_read": 157342,
+    "cache_write": 11939,
+    "cache_write_1h": 11939,
+    "output": 3819,
+    "thinking": 758,
+    "web_search": 3,
+    "cost_usd_envelope": 0.29411640000000006,
+    "web_fetch": 0,
+    "duration_api_ms": 63917
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.85,
+     "25": 4.98,
+     "50": 5.1,
+     "75": 5.22,
+     "90": 5.35
+    }
+   },
+   "reasoning": "DGS10 at 5.12 (Nov 16), intraday Nov 18 ~5.07-5.12 (TE vs CNBC). ~12 trading days to Dec 4. Random-walk anchor at ~5.10; Dec hike ~95% priced so drift ~0. High-vol regime (daily moves of 10-17bp common recently) and the Nov jobs report likely on Dec 4 widen tails. Upside: 50bp hike talk (Waller), hot data; downside: oil falling, weak data. Kalshi only has a year-end (Dec 31) 10Y contract with odds that look stale/inconsistent vs spot; not used as anchor. No Polymarket/Manifold market.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-08-01",
+    "https://tradingeconomics.com/united-states/government-bond-yield",
+    "https://www.cnbc.com/2026/11/18/treasury-yields-bonds-fed.html",
+    "https://247wallst.com/investing/2026/11/18/traders-now-see-a-95-chance-the-fed-hikes-rates-in-december/",
+    "https://kalshi.com/markets/kxnote10y/10y-ust/kxnote10y-26dec31"
+   ],
+   "dossier": "- FRED DGS10 (fetched 2026-11-18): Aug 2026 range 4.63-4.75; climbed to 5.29 (Sep 30), peak 5.31 (Oct 5); fell to 4.84 (Nov 5); then 4.88 (Nov 9), 4.98 (Nov 10), 5.10 (Nov 12), 5.15 (Nov 13), 5.12 (Nov 16, latest published). Nov 17 not yet seen.\n- Large single-day moves in this regime: +15bp Sep 23, -17bp Oct 22, +10bp Nov 10, +12bp Nov 12. Typical daily absolute change ~3-6bp.\n- Trading Economics, Nov 18 2026: 10Y ~5.07%, down nearly 5bp on falling oil prices despite hawkish Fed talk; markets price a 25bp hike in Dec, another in Jan, at least one more by end-2027.\n- CNBC, Nov 18 2026: Waller says a 50bp hike may be needed at the Dec 8-9 FOMC; 2Y up 4bp to 4.83%, 10Y ~5.121%, 30Y 5.461%.\n- 24/7 Wall St / CME FedWatch, Nov 17 close: ~95% odds of 25bp Dec hike, remainder 50bp. Musalem: up to four hikes by spring 2027.\n- Year-over-year: 10Y ~0.93-0.98pt higher than Nov 2025 (~4.14%).\n- Upcoming catalysts in window: Nov jobs report likely Fri Dec 4 (the resolution date itself); Thanksgiving Nov 26 (market closed), early close Nov 27; FOMC Dec 8-9 falls AFTER the window.\n- Status quo: random walk from ~5.07-5.12 spot.\n- Dispersion: 12-trading-day horizon (Nov 18 -> Dec 4); recent daily SD ~5.5-6bp implies 12-day SD ~0.19-0.21pt, 10-90 width ~0.5pt.\n- Resolution: resolves off the initially published FRED DGS10 value for 2026-12-04 (not intraday quotes from CNBC/TE, which can differ by several bp from the constant-maturity close).\n- Event window: single-date close 2026-12-04 per the criteria; as of Nov 18 ~2.5 of ~12 remaining weeks' worth... the biweekly period Nov 23-Dec 4 has not started (0% elapsed); ~12 trading days from now to the resolution date.\n- Markets: Kalshi lists only a year-end (Dec 31) 10Y contract, and its reported odds look stale vs spot; no Polymarket/Manifold contract for Dec 4.\n- Searched but not found: Nov 17 FRED print; consensus forecasts for Nov payrolls/CPI timing.",
+   "reference_class": "12-trading-day changes in DGS10 during the 2026 Sep-Nov high-volatility regime (random walk from spot)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2558,
+   "seconds": 53.0,
+   "usage": {
+    "num_turns": 8,
+    "input": 12,
+    "cache_read": 158990,
+    "cache_write": 10610,
+    "cache_write_1h": 10610,
+    "output": 3587,
+    "thinking": 523,
+    "web_search": 2,
+    "cost_usd_envelope": 0.25581,
+    "web_fetch": 0,
+    "duration_api_ms": 56181
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.79,
+     "25": 4.94,
+     "50": 5.07,
+     "75": 5.2,
+     "90": 5.35
+    }
+   },
+   "reasoning": "Status quo: 10Y ~5.07% intraday Nov 18 (FRED last 5.12 on Nov 16). Hiking regime: Fed expected to hike in Dec, Waller floated 50bp; oil decline easing inflation fears. Recent realized vol high (daily moves up to 17bp; 3-month range 4.77-5.31). Horizon ~12 trading days to Dec 4, which is also the November jobs report day. Random-walk centered at current level, SD ~22bp. Escape below 4.255 or above 6.255 requires 80-120bp move in two weeks; no mechanism priced. Market check: Kalshi has a Dec 31 year-end 10Y market (different date and Treasury source, page returned 429, search summary inconsistent); Polymarket/Manifold none found.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-09-01",
+    "https://tradingeconomics.com/united-states/government-bond-yield",
+    "https://govspending.org/series/DGS10/",
+    "https://kalshi.com/markets/kxnote10y/10y-ust/kxnote10y-26dec31"
+   ],
+   "dossier": "- FRED DGS10 (fetched 2026-11-18): Sep 1 4.79; Sep 30 5.29; Oct 5 5.31 (3-month high); Oct 22 4.96; Oct 30 4.94; Nov 5 4.84; Nov 6 4.86; Nov 9 4.88; Nov 10 4.98; Nov 12 5.10; Nov 13 5.15; Nov 16 5.12 (latest published). No values on Sep 7, Oct 12, Nov 11 (holidays).\n- Trading Economics, Nov 18 2026: 10Y at 5.07% intraday, down 5bp on the day; one-month change -7bp; year-over-year +92bp. Driver cited: falling oil prices easing inflation concerns.\n- Trading Economics, Nov 2026: Fed is in a hiking cycle. Gov. Waller suggested a 50bp hike could be warranted in December; St. Louis Fed's Musalem said up to four hikes may be needed by spring 2027. Markets price a 25bp hike in December plus one in January.\n- Trading Economics model forecast: Q4 2026 end 5.11%; 12 months ahead 4.88%.\n- Another search result gave Nov 18 as 5.10%. The 52-week range was 3.97% (Feb 27 2026) to 5.31% (Oct 5 2026).\n- Realized volatility: Sep-Nov 2026 daily changes are typically 2-7bp, with jumps of 12-17bp (Sep 23 +15, Oct 22 -17, Nov 12 +12). Rough daily SD ~6bp, so ~21bp SD over 12 trading days.\n- Spread of past 12-trading-day changes in this window: roughly -35bp to +35bp (e.g., Sep 9 4.83 -> Sep 25 5.17 = +34bp; Oct 13 5.21 -> Oct 29 4.98 = -23bp; Oct 23 5.00 -> Nov 10 4.98 ≈ 0).\n- Calendar: Dec 4 2026 (resolution date) is the first Friday, i.e. the scheduled November jobs report day. PCE data due late November. Thanksgiving Nov 26 (market closed) with an early bond close Nov 27. December FOMC falls after the window.\n- Resolution instrument: resolves off FRED DGS10, initially published value for Dec 4 2026, not the Treasury.gov site or intraday quotes. If Dec 4 has no value, the latest earlier value in the period is used.\n- Event window: Nov 23 -> Dec 4 2026 close per the criteria; as of Nov 18 the window has not started. About 12 trading days from the last FRED print to resolution.\n- Markets: Kalshi has a year-end (Dec 31) 10Y market resolving off Treasury data, a different date and source; the page returned 429 and the search-summary odds were internally inconsistent. Polymarket/Manifold: none found.\n- Searched but not found: a direct market contract for the Dec 4 FRED value; consensus dealer forecasts for early December.",
+   "reference_class": "Two-to-three-week changes in DGS10 during the high-volatility 2026 Fed-hiking regime (Sep-Nov 2026 daily data)"
+  },
+  {
+   "phase": 3,
+   "stage": "supervisor",
+   "mode": "reasoning",
+   "run_index": 1,
+   "spread": 0.1184,
+   "threshold": 0.75,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.1036,
+   "seconds": 15.2,
+   "usage": {
+    "num_turns": 1,
+    "input": 2,
+    "cache_read": 20099,
+    "cache_write": 8844,
+    "cache_write_1h": 8844,
+    "output": 1441,
+    "thinking": 128,
+    "web_search": 0,
+    "cost_usd_envelope": 0.10359979999999999,
+    "web_fetch": 0,
+    "duration_api_ms": 14352
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.82,
+     "25": 4.96,
+     "50": 5.09,
+     "75": 5.22,
+     "90": 5.37
+    }
+   },
+   "reasoning": "Random walk from spot ~5.07-5.12 (FRED 5.12 Nov 16; intraday Nov 18 5.07 TE / 5.12 CNBC). Dec hike fully priced and the FOMC is after the window, so drift ~0; hawkish Fed talk (Waller 50bp, Musalem) vs falling oil/slowing growth offset. High-vol regime plus the Nov jobs report on Dec 4 itself widen the distribution; slight upside skew for 50bp-hike risk. No matching market (Kalshi has only a year-end contract on a different date and source). Bounds are 4+ SD away, so no escape mass.",
+   "sources": [],
+   "reconciliation": "The runs agree on the data, the regime, the horizon and the calendar. The one factual discrepancy is the Nov 18 intraday spot (TE 5.07 vs CNBC 5.12); it cannot be settled without web access and is likely a timing difference, so I centred at 5.09. Dispersion: I carry forward the runs' ~6bp daily SD analysis, giving a width of ~0.52, inside their 0.49-0.56 range. No escape mass, as in all runs.",
+   "disagreements": [
+    {
+     "claim": "Nov 18 spot level: 5.07 (TE) vs 5.12 (CNBC)",
+     "kind": "factual",
+     "verdict": "Unresolved without web access; likely intraday timing; centre at 5.09 carries that uncertainty"
+    },
+    {
+     "claim": "Median 5.07 vs 5.10",
+     "kind": "judgment",
+     "verdict": "No drift evidence either way; 5.09"
+    },
+    {
+     "claim": "10-90 width 0.49-0.56",
+     "kind": "judgment",
+     "verdict": "0.52-0.55 from realized vol, with slight upside fattening"
+    }
+   ],
+   "reference_class": "12-trading-day changes in DGS10 during the Sep-Nov 2026 hiking-cycle, high-volatility regime"
+  }
+ ]
+}
