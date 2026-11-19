@@ -1453,6 +1453,17 @@ class TestParallelResearchRuns:
         angles = [c.get("angle") for c in trace["calls"] if c.get("phase") == 1]
         assert angles == ["F", "D", "A"]
 
+    def test_each_run_books_only_its_own_cost_when_runs_overlap(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        # The ledger is shared between overlapping runs; a delta on it once booked the
+        # sibling runs' calls to whichever run finished last ($1.88 for a $0.78 run).
+        _, record = self._run(monkeypatch, tmp_path, parallel_runs=3)
+        trace = json.loads((Path(tmp_path) / record["trace_path"]).read_text(
+            encoding="utf-8"))
+        assert [c["cost_usd"] for c in trace["calls"]] == [0.05, 0.05, 0.05]
+        assert record["cost_usd"] == pytest.approx(0.15)
+
 
 def test_billed_spend_waits_for_the_counter_to_settle(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path

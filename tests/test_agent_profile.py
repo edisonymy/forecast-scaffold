@@ -44,7 +44,7 @@ def test_with_research_tools_writes_a_config_the_agent_cannot_loosen(tmp_path: P
     assert args[args.index("--log") + 1] == str(log)
 
 
-def test_take_tool_calls_counts_successes_and_clears(tmp_path: Path):
+def test_take_tool_calls_counts_by_outcome_and_clears(tmp_path: Path):
     log = tmp_path / "calls.jsonl"
     assert run_bot.take_tool_calls(log) == {} and run_bot.take_tool_calls(None) == {}
     log.write_text("\n".join([
@@ -54,8 +54,9 @@ def test_take_tool_calls_counts_successes_and_clears(tmp_path: Path):
         "not json",
         json.dumps({"tool": "fetch_raw", "ok": True, "chars": 7, "host": "c.org"}),
     ]) + "\n", encoding="utf-8")
-    assert run_bot.take_tool_calls(log) == {"fetch_raw": 2, "news_search": 1}
-    assert run_bot.take_tool_calls(log) == {}  # a repair retry starts from zero
+    assert run_bot.take_tool_calls(log) == {
+        "fetch_raw": 2, "fetch_raw_failed": 1, "news_search": 1}
+    assert run_bot.take_tool_calls(log) == {}  # the next take starts from zero
 
 
 def test_blind_runs_carry_the_forecasting_sites_into_the_tool_deny_list():

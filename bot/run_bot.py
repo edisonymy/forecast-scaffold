@@ -628,16 +628,16 @@ def with_research_tools(agent_cmd: str, deny_domains: str, log: Path) -> str:
 
 
 def take_tool_calls(log: Path | None) -> dict[str, int]:
-    """Successful research-tool calls logged since the last take, by tool; clears the log
-    so a repair retry is counted as its own call."""
+    """Research-tool calls logged since the last take: successes under the tool's name,
+    failures under ``<tool>_failed``. Clears the log, so a later take starts from zero."""
     counts: dict[str, int] = {}
     if log is None or not log.exists():
         return counts
     for line in log.read_text(encoding="utf-8").splitlines():
         with contextlib.suppress(ValueError, AttributeError):
             entry = json.loads(line)
-            if entry.get("ok"):
-                counts[str(entry.get("tool"))] = counts.get(str(entry.get("tool")), 0) + 1
+            key = str(entry.get("tool")) + ("" if entry.get("ok") else "_failed")
+            counts[key] = counts.get(key, 0) + 1
     log.write_text("", encoding="utf-8")
     return counts
 
@@ -1788,7 +1788,9 @@ def research_run(
     candidate: dict[str, Any] | None = None
     model = ""
     started = time.monotonic()
-    cost_before = state.cost
+    # This run's own spend: state.cost is shared, and with --parallel-runs a delta on it
+    # would book the sibling runs' calls to this one.
+    own_cost = [0.0]
     # Attempt 0's rejection reasons, kept for the trace: "this run needed a repair and
     # here is what was wrong with its first answer" is a review signal the journal has
     # nowhere to put, and it is how a systematically sloppy contract surfaces.
@@ -1804,7 +1806,7 @@ def research_run(
             # The model this run actually used: the CLI envelope's, else the one its
             # command named (a failed call has no envelope).
             "model": model or _model_from_cmd(cmd),
-            "cost_usd": round(state.cost - cost_before, 4),
+            "cost_usd": round(own_cost[0], 4),
             "seconds": round(time.monotonic() - started, 1),
         }
         if usage_now := last_call_usage():
@@ -1888,6 +1890,7 @@ def research_run(
             if attempt_cost == UNKNOWN_METERED_COST:
                 fail_closed_metered(state)
             else:
+                own_cost[0] += attempt_cost
                 with state.lock:
                     state.cost += attempt_cost
             state.agent_responded = True
