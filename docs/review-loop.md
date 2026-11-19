@@ -35,8 +35,9 @@ credential, telemetry that lies, a default that changed under us.
    model's default: set it so a run does at least as much work as before.
 2. Switch. When unsure, give the newcomer one of the three research runs first
    (`run_models`), so it forecasts the same live questions before it carries all of them.
-3. At the next review, read its row against the others. Switch back if it is plainly
-   behind.
+3. At the next review, read its row against the others, and `python bench/canary.py` if
+   it ran as a candidate (its runs against the incumbent's on the same questions). Switch
+   back if it is plainly behind.
 
 Accuracy is judged on live questions, not on a backtest: a newer model's training data can
 contain the answer to a resolved question.
