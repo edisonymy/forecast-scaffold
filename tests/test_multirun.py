@@ -133,7 +133,7 @@ def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
         with_verify: bool = False, blind: bool = False, dry_run: bool = True,
         client: Any = None, deadline: float | None = None,
         comment: bool = False, provider: str = "subscription",
-        spent_usd: float = 0.0, parallel_runs: int = 1, min_effort: str = "low",
+        spent_usd: float = 0.0, parallel_runs: int = 1,
         ) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
     agent = ScriptedAgent(outputs)
     monkeypatch.setattr(run_bot, "run_agent", agent)
@@ -144,7 +144,7 @@ def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
         dry_run=dry_run, comment=comment, budget=budget,
         agent_cmd=("claude -p --model claude-sonnet-5 --output-format json "
                    "--allowed-tools Read,Glob,Grep,WebSearch,WebFetch"),
-        parallel_runs=parallel_runs, min_effort=min_effort,
+        parallel_runs=parallel_runs,
     )
     config = config or config_with_tiers(
         {"medium": {"draws": 5, "searches": 5, "runs": 3}}
@@ -473,15 +473,14 @@ class TestFailureRecovery:
     def test_openrouter_cap_decreases_across_every_agent_stage(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        # Start with $0.20 already spent. Triage, an invalid research attempt, its repair,
-        # dossier verification, and a reasoning run each report $0.05. Every new process
-        # must get only the then-current invocation remainder.
+        # Start with $0.20 already spent. An invalid research attempt, its repair, dossier
+        # verification, and a reasoning run each report $0.05. Every new process must get
+        # only the then-current invocation remainder.
         invalid = dict(RESEARCH, probability=7.3)
         agent, record, ok = run(
             monkeypatch,
             tmp_path,
             [
-                fenced({"tier": "medium"}),
                 fenced(invalid),
                 fenced(RESEARCH),
                 fenced({"verification": []}),
@@ -490,20 +489,20 @@ class TestFailureRecovery:
             config=config_with_tiers(
                 {"medium": {"draws": 5, "searches": 5, "runs": 2}}
             ),
-            effort="auto",
+            effort="medium",
             budget=1.0,
             with_verify=True,
             provider="openrouter",
             spent_usd=0.20,
         )
         assert ok and record is not None
-        assert len(agent.calls) == 5
+        assert len(agent.calls) == 4
         caps = []
         for call in agent.calls:
             tokens = shlex.split(call["cmd"])
             assert tokens.count("--max-budget-usd") == 1
             caps.append(float(tokens[tokens.index("--max-budget-usd") + 1]))
-        assert caps == pytest.approx([0.80, 0.75, 0.70, 0.65, 0.60])
+        assert caps == pytest.approx([0.80, 0.75, 0.70, 0.65])
 
     def test_subscription_never_gets_metered_cli_cap(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
@@ -1585,48 +1584,38 @@ def test_billed_spend_waits_for_the_counter_to_settle(
     assert rows[-1]["billed_usd"] == pytest.approx(0.84)
 
 
-class TestMinEffortFloor:
-    """--min-effort (2026-09-26, Fall season): no question is forecast below the floor,
-    whether the tier came from triage or from --effort."""
+class TestEffortLabel:
+    """The journal's effort label is just the --effort tier name."""
 
     TIERS = {"low": {"draws": 1, "searches": 1, "runs": 1},
              "medium": {"draws": 5, "searches": 5, "runs": 3}}
 
-    def test_floor_tier_only_raises(self) -> None:
-        assert run_bot.floor_tier("low", "medium") == "medium"
-        assert run_bot.floor_tier("high", "medium") == "high"
-        assert run_bot.floor_tier("medium", "low") == "medium"
-
-    def test_triaged_low_runs_at_medium(self, monkeypatch: pytest.MonkeyPatch,
-                                        tmp_path: Path) -> None:
-        agent, record, ok = run(monkeypatch, tmp_path, [
-            fenced({"tier": "low"}),
-            fenced(RESEARCH),
-            fenced(reasoning_payload(0.20)),
-            fenced(reasoning_payload(0.40)),
-        ], config=config_with_tiers(self.TIERS), effort="auto", min_effort="medium")
-        assert ok and record is not None
-        assert len(agent.calls) == 4  # triage + the medium tier's three runs
-        assert record["effort"] == "medium (floor; triage low)"
-
-    def test_given_low_runs_at_medium(self, monkeypatch: pytest.MonkeyPatch,
-                                      tmp_path: Path) -> None:
-        agent, record, ok = run(monkeypatch, tmp_path, [
-            fenced(RESEARCH),
-            fenced(reasoning_payload(0.20)),
-            fenced(reasoning_payload(0.40)),
-        ], config=config_with_tiers(self.TIERS), effort="low", min_effort="medium")
-        assert ok and record is not None
-        assert len(agent.calls) == 3
-        assert record["effort"] == "medium (floor; given low)"
-
-    def test_no_floor_keeps_low(self, monkeypatch: pytest.MonkeyPatch,
-                                tmp_path: Path) -> None:
+    def test_given_low_keeps_low(self, monkeypatch: pytest.MonkeyPatch,
+                                 tmp_path: Path) -> None:
         agent, record, ok = run(monkeypatch, tmp_path, [fenced(RESEARCH)],
                                 config=config_with_tiers(self.TIERS), effort="low")
         assert ok and record is not None
         assert len(agent.calls) == 1
         assert record["effort"] == "low"
+
+    def test_effort_flag_takes_only_the_three_tiers_and_defaults_to_medium(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        for bad in (["--effort", "auto"], ["--min-effort", "medium"]):
+            with pytest.raises(SystemExit) as exc:
+                run_bot.main(["--tournament", "t", "--dry-run", *bad])
+            assert exc.value.code == 2
+        parsed: list[argparse.Namespace] = []
+        real_parse = argparse.ArgumentParser.parse_args
+
+        def capture(self: argparse.ArgumentParser, *a: Any, **k: Any) -> argparse.Namespace:
+            parsed.append(real_parse(self, *a, **k))
+            raise SystemExit(0)
+
+        monkeypatch.setattr(argparse.ArgumentParser, "parse_args", capture)
+        with pytest.raises(SystemExit):
+            run_bot.main(["--tournament", "t", "--dry-run"])
+        assert parsed[0].effort == "medium"
 
 
 class TestMidTickArrivals:

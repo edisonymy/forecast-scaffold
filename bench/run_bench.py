@@ -53,7 +53,6 @@ from run_bot import (
     load_angle_sections,
     openrouter_model_cmd,
     run_agent,
-    triage,
     with_credit_cap,
 )
 
@@ -72,6 +71,46 @@ BENCH_DISALLOWED = BLIND_DISALLOWED + (
     ",WebFetch(domain:www.randforecastinginitiative.org)"
 )
 TIERS = ("low", "medium", "high", "auto", "zero", "plain", "angles")
+
+# The "auto" arm's router: one cheap classify call that picks low|medium|high. It lived in
+# bot/run_bot.py while the tournament bot triaged its own effort; the bot now takes the tier
+# from --effort, so the router lives here with the only arm that still measures it.
+TRIAGE_PROMPT = (
+    "You are triaging a forecasting question for effort allocation, using the forecast skill's "
+    "Step 0 rubric (stakes are uniform in a tournament, so only the other signals apply): "
+    "start at medium; multiple-choice, numeric, or conditional shape -> at least medium; "
+    "genuinely contested with no decent anchor -> bump one tier up; near-certain status quo, or "
+    "a liquid community prediction already answers it -> drop one tier down. Reply with ONLY a "
+    'fenced json block like ```json {"tier": "medium"} ``` '
+    "where tier is one of low|medium|high.\n\nQuestion:\n"
+)
+
+
+def triage(
+    agent_cmd: str, brief: str, timeout: int, provider: str = "subscription",
+    fail_closed: bool = False, strict_metering: bool = False,
+) -> tuple[str, float]:
+    cost = 0.0
+    try:
+        if strict_metering:
+            output, cost, _ = run_agent(
+                agent_cmd, TRIAGE_PROMPT + brief[:2000], None, timeout, provider,
+                strict_metering=True,
+            )
+        else:
+            output, cost, _ = run_agent(
+                agent_cmd, TRIAGE_PROMPT + brief[:2000], None, timeout, provider
+            )
+        tier = extract_json(output).get("tier", "medium")
+        return (tier if tier in ("low", "medium", "high") else "medium"), cost
+    except (RuntimeError, subprocess.TimeoutExpired):
+        if fail_closed:
+            raise
+        return "medium", 0.0
+    except ValueError:
+        # The subprocess completed and its cost is known; invalid triage JSON can safely
+        # fall back to medium without forgetting that metered spend.
+        return "medium", cost
 
 # Leak-free pastcast modes. Live web on a resolved question finds outcomes; the repo's
 # own Read/Glob/Grep reach bench/sets/*.jsonl where the RESOLUTION FIELD sits in

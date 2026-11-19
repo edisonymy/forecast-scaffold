@@ -1,9 +1,8 @@
 """Tournament bot: drives the SAME forecast skill the plugin ships, headlessly.
 
-For each open question in a tournament: triage the effort tier (auto = one cheap agent
-call), run the forecast skill via a headless agent (``claude -p`` by default) under a
-fenced-JSON output contract, validate (one repair retry), record to the bot's public
-journal, and submit — unless ``--dry-run``.
+For each open question in a tournament: run the forecast skill at the --effort tier via a
+headless agent (``claude -p`` by default) under a fenced-JSON output contract, validate (one
+repair retry), record to the bot's public journal, and submit — unless ``--dry-run``.
 
 The bot is a *consumer* of the skills: no forecasting logic lives here, only plumbing.
 
@@ -169,16 +168,6 @@ ALWAYS_DISALLOWED = ("Read(//proc/**),Read(~/.claude/**),Read(~/.claude.json),"
                      "Read(**/bot/journal/**)," + _REPO_DENY)
 # A runaway research dossier is re-embedded into EVERY reasoning run's prompt; cap it.
 MAX_DOSSIER_CHARS = 8000
-
-TRIAGE_PROMPT = (
-    "You are triaging a forecasting question for effort allocation, using the forecast skill's "
-    "Step 0 rubric (stakes are uniform in a tournament, so only the other signals apply): "
-    "start at medium; multiple-choice, numeric, or conditional shape -> at least medium; "
-    "genuinely contested with no decent anchor -> bump one tier up; near-certain status quo, or "
-    "a liquid community prediction already answers it -> drop one tier down. Reply with ONLY a "
-    'fenced json block like ```json {"tier": "medium"} ``` '
-    "where tier is one of low|medium|high.\n\nQuestion:\n"
-)
 
 CONTRACT = """
 ## Output contract (bot mode — mandatory)
@@ -1011,43 +1000,6 @@ def extract_json(text: str) -> dict[str, Any]:
     return parsed
 
 
-TIER_ORDER = ("low", "medium", "high")
-
-
-def floor_tier(tier: str, minimum: str) -> str:
-    """Raise ``tier`` to at least ``minimum`` (--min-effort); never lowers it."""
-    if minimum in TIER_ORDER and tier in TIER_ORDER:
-        return max(tier, minimum, key=TIER_ORDER.index)
-    return tier
-
-
-def triage(
-    agent_cmd: str, brief: str, timeout: int, provider: str = "subscription",
-    fail_closed: bool = False, strict_metering: bool = False,
-) -> tuple[str, float]:
-    cost = 0.0
-    try:
-        if strict_metering:
-            output, cost, _ = run_agent(
-                agent_cmd, TRIAGE_PROMPT + brief[:2000], None, timeout, provider,
-                strict_metering=True,
-            )
-        else:
-            output, cost, _ = run_agent(
-                agent_cmd, TRIAGE_PROMPT + brief[:2000], None, timeout, provider
-            )
-        tier = extract_json(output).get("tier", "medium")
-        return (tier if tier in ("low", "medium", "high") else "medium"), cost
-    except (RuntimeError, subprocess.TimeoutExpired):
-        if fail_closed:
-            raise
-        return "medium", 0.0
-    except ValueError:
-        # The subprocess completed and its cost is known; invalid triage JSON can safely
-        # fall back to medium without forgetting that metered spend.
-        return "medium", cost
-
-
 def mc_within_api_bounds(probs: dict[str, float]) -> dict[str, float]:
     """Normalize option probabilities and clamp into Metaculus's accepted band.
 
@@ -1770,35 +1722,7 @@ def forecast_question(
         openrouter_model_cmd(args.agent_cmd)
         if args.provider == "openrouter" else args.agent_cmd
     )
-    if args.effort != "auto":
-        tier = args.effort
-    else:
-        # Triage is one cheap call — never let it hold the full research timeout.
-        triage_cmd = metered_cmd(base_cmd)
-        if triage_cmd is None:
-            print("  budget exhausted before triage")
-            return False
-        try:
-            tier, triage_cost = triage(
-                triage_cmd, brief, min(args.timeout, 300), args.provider,
-                fail_closed=hard_cap_openrouter,
-                strict_metering=hard_cap_openrouter,
-            )
-        except (RuntimeError, subprocess.TimeoutExpired) as exc:
-            # Triage only picks a tier: a failed call must not cost the question.
-            fail_closed_metered()
-            tier, triage_cost = "medium", 0.0
-            print(f"  metered triage failed ({str(exc)[:160]}); cap reserved, tier medium")
-        if triage_cost == UNKNOWN_METERED_COST:
-            fail_closed_metered()
-            triage_cost = 0.0
-            print("  metered triage returned unknown usage; per-call cap reserved")
-        run_cost += triage_cost
-    effort_label = f"{tier} (auto)" if args.effort == "auto" else tier
-    if (floored := floor_tier(tier, getattr(args, "min_effort", "low"))) != tier:
-        print(f"  effort {tier} raised to the --min-effort floor: {floored}")
-        effort_label = f"{floored} (floor; {'triage' if args.effort == 'auto' else 'given'} {tier})"
-        tier = floored
+    tier = args.effort
 
     # Tier shape must be known before the system prompt is built: in multi-run mode the
     # in-context-draw instruction is replaced (a reasoning-only run being told both
@@ -2640,7 +2564,7 @@ def forecast_question(
         cost_usd=round(run_cost, 4) if run_cost else None,
         raw_draws=[f for d in payload.get("raw_draws") or []
                    if (f := _as_float(d)) is not None] or None,
-        effort=effort_label,
+        effort=tier,
         aggregation=aggregation_note,
         model=model_used or _model_from_cmd(base_cmd) or base_cmd,
         provider=args.provider,
@@ -2787,11 +2711,7 @@ def main(argv: list[str] | None = None) -> int:
                         help="comma-separated post OR question ids never to forecast "
                              "(default: $SKIP_POSTS). For a question that is not worth its "
                              "cost — e.g. the Fall practice question, $13.55 on one tick.")
-    parser.add_argument("--effort", default="auto", choices=["auto", "low", "medium", "high"])
-    parser.add_argument("--min-effort", default="low", choices=list(TIER_ORDER),
-                        help="floor for the effort tier, whether triaged or given by "
-                             "--effort (default: low = no floor). Triage still runs, so "
-                             "a question can go above the floor")
+    parser.add_argument("--effort", default="medium", choices=["low", "medium", "high"])
     parser.add_argument("--parallel-runs", type=int, default=1,
                         help="run this many of a question's independent research runs at "
                              "once (1 = sequential, the historical behaviour). They share "
