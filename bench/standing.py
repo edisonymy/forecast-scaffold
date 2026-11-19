@@ -16,8 +16,8 @@ Needs ``METACULUS_TOKEN`` and egress to metaculus.com, so it runs in CI
 (list-forecasts.yml), not in an authoring session.
 
 Usage:
-    python bench/standing.py                      # recent bot tournaments
-    python bench/standing.py --slugs fall-futureeval-2026,minibench-2026-11-02
+    python bench/standing.py                      # recent bot tournaments in the public list
+    python bench/standing.py --slugs minibench-2026-11-02,minibench-2026-10-19
 """
 
 from __future__ import annotations
@@ -114,7 +114,10 @@ def own_split(questions: list[dict[str, Any]], overlay: dict[int, dict[str, Any]
     for question in questions:
         ours = overlay.get(int(question["id"]))
         if ours is None:
-            missed += not (question.get("my_forecasts") or {}).get("latest")
+            # A group's later windows are listed long before they open: only a question
+            # that has already closed without a forecast of ours is a miss.
+            missed += (question.get("status") in ("closed", "resolved")
+                       and not (question.get("my_forecasts") or {}).get("latest"))
         elif ours.get("spot_peer_score") is not None:
             by_type[str(question.get("type"))].append(ours["spot_peer_score"])
     return {"questions": len(questions), "missed": missed,
@@ -146,7 +149,8 @@ def report(slug: str, name: str, board: dict[str, Any] | None, split: dict[str, 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("--slugs", default="", help="comma-separated slugs (default: discover)")
+    parser.add_argument("--slugs", default="",
+                        help="comma-separated slugs to add to the discovered ones")
     parser.add_argument("--since-days", type=int, default=75)
     parser.add_argument("--overlay", type=Path, default=OVERLAY)
     args = parser.parse_args(argv)
@@ -157,9 +161,13 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     username = (client._request("GET", "/users/me/") or {}).get("username", "")
     projects = client.tournaments()
-    wanted = {s.strip() for s in args.slugs.split(",") if s.strip()}
-    chosen = ([p for p in projects if p.get("slug") in wanted] if wanted
-              else recent_bot_tournaments(projects, datetime.now(UTC), args.since_days))
+    chosen = recent_bot_tournaments(projects, datetime.now(UTC), args.since_days)
+    for slug in (s.strip() for s in args.slugs.split(",")):
+        if slug and slug not in {p.get("slug") for p in chosen}:
+            try:  # not every project is in the public list (MiniBench waves are not)
+                chosen.append(client._request("GET", f"/projects/tournaments/{slug}/"))
+            except MetaculusError as exc:
+                print(f"slug {slug!r} not found: {exc}")
     print(f"account {username!r}; {len(chosen)} tournament(s): "
           + ", ".join(str(p.get("slug")) for p in chosen))
     overlay = load_overlay(args.overlay)

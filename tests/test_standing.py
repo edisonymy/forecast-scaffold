@@ -45,14 +45,16 @@ def test_recent_bot_tournaments_filters_by_name_and_window():
 
 def test_own_split_counts_missed_and_groups_by_type():
     questions = [
-        {"id": 1, "type": "binary"},
-        {"id": 2, "type": "binary"},
-        {"id": 3, "type": "numeric"},
-        {"id": 4, "type": "numeric", "my_forecasts": {"latest": {"start_time": 1}}},
-        {"id": 5, "type": "numeric"},
+        {"id": 1, "type": "binary", "status": "resolved"},
+        {"id": 2, "type": "binary", "status": "resolved"},
+        {"id": 3, "type": "numeric", "status": "closed"},
+        {"id": 4, "type": "numeric", "status": "closed",
+         "my_forecasts": {"latest": {"start_time": 1}}},
+        {"id": 5, "type": "numeric", "status": "closed"},
+        {"id": 6, "type": "numeric", "status": "upcoming"},  # window not open yet
     ]
     overlay = {1: {"spot_peer_score": 10.0}, 2: {"spot_peer_score": -4.0},
                3: {"spot_peer_score": None}}
     split = own_split(questions, overlay)
-    assert split["questions"] == 5 and split["missed"] == 1  # q5; q4 is ours, just unsynced
+    assert split["questions"] == 6 and split["missed"] == 1  # q5; q4 is ours, just unsynced
     assert split["by_type"] == {"binary": {"n": 2, "mean": 3.0, "sum": 6.0}}

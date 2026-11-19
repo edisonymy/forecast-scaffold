@@ -9,6 +9,9 @@ on:
       tournaments:
         description: "Extra tournament slugs to sweep (comma-separated), unioned with the forecaster_id sweep"
         default: "bot-testing-area"
+      standing_slugs:
+        description: "Extra tournament slugs for the standing report (MiniBench waves are not in the public list)"
+        default: ""
 
 permissions:
   contents: read
@@ -30,4 +33,5 @@ jobs:
       - name: Standing
         env:
           METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
-        run: python bench/standing.py | tee -a "$GITHUB_STEP_SUMMARY"
+          STANDING_SLUGS: ${{ inputs.standing_slugs }}
+        run: python bench/standing.py --slugs "$STANDING_SLUGS" | tee -a "$GITHUB_STEP_SUMMARY"
