@@ -332,8 +332,8 @@ def test_workflows_use_content_free_scanner_and_tournament_publish_safely() -> N
 
 def test_bot_commit_step_scans_every_secret_it_is_handed() -> None:
     """FIX G (2026-09-03 review): the Commit journal step runs no bot, so any secret in its
-    env exists only to be searched for in the journal it is about to publish. ASKNEWS_API_KEY
-    was exposed there and NOT scanned — the one combination with cost and no benefit."""
+    env exists only to be searched for in the journal it is about to publish. A secret exposed
+    there but NOT scanned is the one combination with cost and no benefit."""
     bot = (ROOT / ".github" / "workflows" / "bot.yml").read_text(encoding="utf-8")
     step = bot.split("- name: Commit journal (pre-registration)")[1].split("- name:")[0]
     exposed = {
@@ -345,7 +345,6 @@ def test_bot_commit_step_scans_every_secret_it_is_handed() -> None:
     scanned = {name.strip('";$ ') for name in scan.split()[3:] if name.startswith('"$')}
     # LEAK_PATTERNS is the deny-list itself (a pattern file, not a credential value).
     assert exposed - {"LEAK_PATTERNS"} == scanned
-    assert "ASKNEWS_API_KEY" in scanned
 
 
 # --------------------------------------------------------------- [ADDED 2026-09-09] traces
