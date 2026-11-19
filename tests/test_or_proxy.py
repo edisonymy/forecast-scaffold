@@ -126,3 +126,47 @@ def test_search_without_tool_use_is_counted(monkeypatch: pytest.MonkeyPatch) -> 
     finally:
         upstream.shutdown()
         upstream.server_close()
+
+
+class _Refusing(BaseHTTPRequestHandler):
+    """An upstream that 404s everything, as OpenRouter does to the CLI's /api/hello probe."""
+
+    def log_message(self, *args: object) -> None:
+        return
+
+    def _refuse(self) -> None:
+        if length := int(self.headers.get("Content-Length") or 0):
+            self.rfile.read(length)
+        self.send_response(404)
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
+    do_HEAD = do_POST = _refuse  # noqa: N815 - http.server API
+
+
+def test_only_a_refused_model_request_counts_as_an_upstream_error(
+        monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    """The CLI probes HEAD /api/hello on every start and OpenRouter answers 404: that is not
+    a refused model request, and counting it raised a "tool parity may be degraded" alert on
+    every fallback run."""
+    upstream = ThreadingHTTPServer(("127.0.0.1", 0), _Refusing)
+    threading.Thread(target=upstream.serve_forever, daemon=True).start()
+    try:
+        http_client = or_proxy.http.client
+        monkeypatch.setattr(http_client, "HTTPSConnection", http_client.HTTPConnection)
+        monkeypatch.setattr(or_proxy._Handler, "upstream", or_proxy.urllib.parse.urlsplit(
+            f"http://127.0.0.1:{upstream.server_address[1]}/api"))
+        before = or_proxy.stats()["upstream_errors"]
+        probe = urllib.request.Request(or_proxy.base_url() + "/api/hello", method="HEAD")
+        with pytest.raises(urllib.error.HTTPError):
+            urllib.request.urlopen(probe, timeout=10)
+        assert or_proxy.stats()["upstream_errors"] == before
+        body = json.dumps({"model": "anthropic/no-such-model", "messages": []}).encode()
+        call = urllib.request.Request(or_proxy.base_url() + "/v1/messages", data=body)
+        with pytest.raises(urllib.error.HTTPError):
+            urllib.request.urlopen(call, timeout=10)
+        assert or_proxy.stats()["upstream_errors"] == before + 1
+        assert "HTTP 404 POST /v1/messages model=anthropic/no-such-model" in capsys.readouterr().out
+    finally:
+        upstream.shutdown()
+        upstream.server_close()
