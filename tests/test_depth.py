@@ -7,7 +7,7 @@ from bench.depth import drift, main, medians, research_calls
 
 def _trace(path, at, *, seconds, sources, model="m", ok=True):
     call = {"mode": "research", "ok": ok, "model": model, "seconds": seconds,
-            "sources": [f"s{i}" for i in range(sources)], "dossier": "x" * 100}
+            "sources": [f"s{i}" for i in range(sources)]}
     path.write_text(json.dumps({"forecast_at": at, "calls": [
         call, {"mode": "reasoning", "ok": True, "seconds": 1.0}]}), encoding="utf-8")
 

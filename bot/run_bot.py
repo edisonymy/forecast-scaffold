@@ -169,6 +169,24 @@ ALWAYS_DISALLOWED = ("Read(//proc/**),Read(~/.claude/**),Read(~/.claude.json),"
                      "Read(**/.git/**),Grep(**/.git/**),Glob(**/.git/**),"
                      "Read(**/bot/journal/**)," + _REPO_DENY)
 
+#: The forecasting model and its effort level, in one place. The effort level is always
+#: written out, never left to the model's default: Opus 5 defaulted to high and Opus 5.5 to
+#: medium, so the 2026-09-22 model switch cut every research run to about a third of the
+#: work (296 s -> 80 s, 9.7 sources -> 5.6) with no line of this repository changing.
+AGENT_MODEL = "claude-opus-5-5"
+AGENT_EFFORT = "high"
+#: The research-tools MCP server (bot/research_tools.py): raw page text and dated headlines.
+RESEARCH_TOOLS = "mcp__research__fetch_raw,mcp__research__news_search"
+
+
+def agent_command(model: str = AGENT_MODEL, effort: str = AGENT_EFFORT) -> str:
+    """The headless agent command every workflow runs. No JSON envelope would mean cost
+    and model record as nothing; no --allowed-tools would mean the agent researches with
+    whatever the local CLI permits."""
+    return (f"claude -p --model {model} --effort {effort} --output-format json "
+            "--allowed-tools Read,Glob,Grep,WebSearch,WebFetch")
+
+
 CONTRACT = """
 ## Output contract (bot mode — mandatory)
 
@@ -186,8 +204,7 @@ For binary:
 Every payload (all question types) must include "sources": the URLs or named datasets you
 ACTUALLY consulted this run — not background knowledge. Listing sources you did not open
 is never acceptable; an empty list is honest only where a run genuinely retrieved nothing
-new (reasoning runs working from a dossier) — a research run has a tier minimum stated in
-its prompt and enforced by the harness.
+new — a research run has a tier minimum stated in its prompt and enforced by the harness.
 On a research run, derive your prior from a NAMED "reference_class" (the class of past cases
 it is computed over) BEFORE adjusting on news, and state the rough "base_rate" it implies — a
 dict over the SAME exact option labels for multiple_choice, or a number in the question's units
@@ -576,6 +593,55 @@ def with_model(agent_cmd: str, model: str) -> str:
     return shlex.join([*tokens, "--model", model])
 
 
+def with_candidate(agent_cmd: str, spec: str) -> str:
+    """agent_cmd running a ``run_models`` entry: ``model`` or ``model@effort``.
+
+    A candidate model may need a different effort level to do the same work per run, so
+    the entry can carry its own; without one it runs at the command's effort."""
+    model, _, effort = spec.partition("@")
+    tokens = shlex.split(with_model(agent_cmd, model.strip()))
+    if effort.strip():
+        if "--effort" in tokens[:-1]:
+            tokens[tokens.index("--effort") + 1] = effort.strip()
+        else:
+            tokens += ["--effort", effort.strip()]
+    return shlex.join(tokens)
+
+
+def with_research_tools(agent_cmd: str, deny_domains: str, log: Path) -> str:
+    """agent_cmd plus the research-tools MCP server, and nothing else over MCP.
+
+    The deny-list and the call log are LAUNCH arguments of the server, written into a
+    one-off config file: the agent can call the tools but cannot loosen either."""
+    server = {"command": sys.executable,
+              "args": [str(ROOT / "bot" / "research_tools.py"),
+                       "--deny-domains", deny_domains, "--log", str(log)]}
+    config = log.with_suffix(".mcp.json")
+    config.write_text(json.dumps({"mcpServers": {"research": server}}), encoding="utf-8")
+    tokens = shlex.split(agent_cmd)
+    if "--allowed-tools" in tokens[:-1]:
+        at = tokens.index("--allowed-tools") + 1
+        tokens[at] = f"{tokens[at]},{RESEARCH_TOOLS}"
+    else:
+        tokens += ["--allowed-tools", RESEARCH_TOOLS]
+    return shlex.join([*tokens, "--mcp-config", str(config), "--strict-mcp-config"])
+
+
+def take_tool_calls(log: Path | None) -> dict[str, int]:
+    """Successful research-tool calls logged since the last take, by tool; clears the log
+    so a repair retry is counted as its own call."""
+    counts: dict[str, int] = {}
+    if log is None or not log.exists():
+        return counts
+    for line in log.read_text(encoding="utf-8").splitlines():
+        with contextlib.suppress(ValueError, AttributeError):
+            entry = json.loads(line)
+            if entry.get("ok"):
+                counts[str(entry.get("tool"))] = counts.get(str(entry.get("tool")), 0) + 1
+    log.write_text("", encoding="utf-8")
+    return counts
+
+
 def openrouter_model_slug(model: str) -> str:
     """Anthropic's model id -> OpenRouter's slug for the same model.
 
@@ -728,7 +794,6 @@ def _usage_summary(envelope: dict[str, Any]) -> dict[str, Any]:
         "thinking": (usage.get("output_tokens_details") or {}).get("thinking_tokens"),
         "web_search": searches or tools.get("web_search_requests"),
         "cost_usd_envelope": envelope.get("total_cost_usd"),
-        "web_fetch": tools.get("web_fetch_requests"),
         "duration_api_ms": envelope.get("duration_api_ms"),
     }
 
@@ -1416,8 +1481,7 @@ def forecast_question(
         "whether Polymarket, Kalshi, Manifold, or a bookmaker prices this event, "
         "and say in your reasoning what you found — including 'no market found'. "
         "Record the price, venue, liquidity/volume, and when it last meaningfully "
-        "moved; keep the price in your reasoning, not the dossier body (a "
-        "prominently-placed number there anchors the whole ensemble). "
+        "moved. "
         "Blending is YOUR judgment call, never arithmetic: a market is a valid "
         "anchor only if its contract matches this question's resolution criteria "
         "on the terms that matter (threshold, deadline, resolution source, fine "
@@ -1496,9 +1560,13 @@ def forecast_question(
         run_disallowed = ALWAYS_DISALLOWED + ("," + BLIND_DISALLOWED if run_blind else "")
         run_cmd = f"{base_cmd} --disallowed-tools {shlex.quote(run_disallowed)}"
         if run_models and slot_index > 1:
-            run_cmd = with_model(run_cmd, run_models[(slot_index - 2) % len(run_models)])
+            run_cmd = with_candidate(run_cmd, run_models[(slot_index - 2) % len(run_models)])
             if args.provider == "openrouter":
                 run_cmd = openrouter_model_cmd(run_cmd)
+        # The same sites a blind run may not WebFetch, it may not fetch raw either.
+        tools_log = Path(tempfile.mkdtemp(prefix="research-tools-")) / "calls.jsonl"
+        run_cmd = with_research_tools(
+            run_cmd, ",".join(re.findall(r"domain:([^)]+)", run_disallowed)), tools_log)
         # The sighted brief carries the market-scan mandate AND the harness's own market
         # candidates. Angle F is market-blind, so it gets neither; in --blind mode
         # market_facts is "" for every angle.
@@ -1519,7 +1587,7 @@ def forecast_question(
         specs.append({
             "slot_index": slot_index, "letter": letter, "run_blind": run_blind,
             "cmd": run_cmd, "prompt": run_brief + prior_facts,
-            "system": run_system,
+            "system": run_system, "tools_log": tools_log,
         })
 
     specs, results, errors = launch_runs(state, specs, min_sources)
@@ -1708,6 +1776,7 @@ def prior_facts_brief(
 def research_run(
     state: QuestionRun, cmd: str, run_prompt: str, run_system: str, timeout: int,
     min_sources: int = 0, trace_meta: dict[str, Any] | None = None,
+    tools_log: Path | None = None,
 ) -> tuple[dict[str, Any] | None, str, list[str]]:
     """One agent call (plus at most one repair retry) against this question's contract.
 
@@ -1739,7 +1808,8 @@ def research_run(
             "seconds": round(time.monotonic() - started, 1),
         }
         if usage_now := last_call_usage():
-            entry["usage"] = usage_now
+            # Plus this call's research-tool calls by name (fetch_raw = pages read raw).
+            entry["usage"] = usage_now | take_tool_calls(tools_log)
             if ok and "research" in str(trace_meta.get("stage", "")):
                 check_search_parity(args.provider, usage_now)
         if attempt0_errors:
@@ -1941,6 +2011,7 @@ def launch_runs(
             trace_meta={"phase": 1, "stage": "angle_research", "mode": "research",
                         "run_index": spec["slot_index"], "angle": spec["letter"],
                         "blind": spec["run_blind"]},
+            tools_log=spec["tools_log"],
         )
 
     results: list[tuple[dict[str, Any] | None, str, list[str]]] = []
@@ -2480,17 +2551,14 @@ def main(argv: list[str] | None = None) -> int:
                         help="run this many of a question's independent research runs at "
                              "once (1 = sequential, the historical behaviour). They share "
                              "no state; concurrency only changes wall clock")
-    parser.add_argument(
-        "--agent-cmd",
-        # The bare "claude -p" default was a measured footgun (e2e, 2026-07-06): no JSON
-        # envelope means cost/model silently record as nothing, and no --allowed-tools
-        # means the agent researches with whatever the local CLI permits — one bare run did
-        # ZERO searches where the hardened command did seven, and moved the answer from
-        # 0.34 to 0.66. Local default now matches the workflows exactly.
-        default=("claude -p --model claude-opus-5-5 --output-format json "
-                 "--allowed-tools Read,Glob,Grep,WebSearch,WebFetch"),
-        help="headless agent command (default mirrors bot.yml's hardened production shape)",
-    )
+    parser.add_argument("--model", default=AGENT_MODEL,
+                        help="forecasting model (default: the production model)")
+    parser.add_argument("--model-effort", default=AGENT_EFFORT,
+                        choices=["low", "medium", "high", "xhigh", "max"],
+                        help="the model's effort level; always passed explicitly")
+    parser.add_argument("--agent-cmd", default=None,
+                        help="whole headless agent command, replacing the one built from "
+                             "--model and --model-effort (see agent_command)")
     parser.add_argument("--provider", default="subscription", choices=PROVIDERS,
                         help="subscription = Claude Code's own OAuth (default); openrouter = "
                              "route the same CLI through OpenRouter's Anthropic-compatible "
@@ -2546,6 +2614,7 @@ def main(argv: list[str] | None = None) -> int:
              "off — a tournament-shaped move that a preregistered paired test must justify)"
     )
     args = parser.parse_args(argv)
+    args.agent_cmd = args.agent_cmd or agent_command(args.model, args.model_effort)
     if not math.isfinite(args.budget) or args.budget < 0:
         parser.error("--budget must be finite and non-negative")
     if args.provider == "openrouter" and args.budget <= 0:

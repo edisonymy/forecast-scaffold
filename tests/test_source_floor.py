@@ -370,7 +370,7 @@ class TestResearchChecklist:
             self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
         # The bot checklist must stay blind-safe: no market instruction in the constant
         # (it reaches blind runs and angle F). Sighted runs get the recording detail via
-        # crowd_signals in the BRIEF instead, with the dossier-anchor warning attached.
+        # crowd_signals in the BRIEF instead.
         from bot.run_bot import RESEARCH_CHECKLIST_SECTION
         assert "market" not in RESEARCH_CHECKLIST_SECTION.lower()
         research = {"probability": 0.30, "dossier": "- fact A (src, 2026)",
@@ -381,7 +381,7 @@ class TestResearchChecklist:
         assert ok
         brief = self.flat(agent.calls[0]["prompt"])
         assert "Record the price, venue, liquidity/volume" in brief
-        assert "not the dossier body" in brief
+        assert "dossier" not in brief  # independent runs write no dossier
 
     def test_no_probability_direction_on_either_surface(self) -> None:
         """Record-only means record-only: nothing here may tell the forecaster which way to
@@ -412,7 +412,7 @@ class TestDefaults:
         # independent judgment a question gets, never how carefully one run reads the world.
         for tier in ("low", "medium", "high"):
             assert DEFAULTS["tiers"][tier]["min_sources"] == 3
-            assert DEFAULTS["tiers"][tier]["searches"] == 5
+            assert DEFAULTS["tiers"][tier]["searches"] == 10
 
     def test_floor_never_exceeds_the_search_budget(self) -> None:
         for tier, params in DEFAULTS["tiers"].items():

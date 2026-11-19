@@ -461,7 +461,7 @@ class TestNoPhaseMachinery:
         """Operator decision 2026-09-03: a tier sets how much independent JUDGMENT a
         question gets, not how carefully one run reads the world."""
         for tier in ("low", "medium", "high"):
-            assert DEFAULTS["tiers"][tier]["searches"] == 5
+            assert DEFAULTS["tiers"][tier]["searches"] == 10
             assert DEFAULTS["tiers"][tier]["min_sources"] == 3
         assert [DEFAULTS["tiers"][t]["runs"] for t in ("low", "medium", "high")] == [1, 3, 4]
 

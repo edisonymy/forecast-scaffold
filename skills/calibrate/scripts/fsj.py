@@ -82,19 +82,20 @@ DEFAULTS: dict[str, Any] = {
         #              one, medium three, high four. An empty list is a startup error.
         #              All question types pool (binary: geo_mean_odds; continuous: per-
         #              percentile mean; MC: per-option geometric mean, renormalized).
-        # RESEARCH DEPTH IS NOW UNIFORM ACROSS TIERS (operator, 2026-09-03): searches=5 and
-        # min_sources=3 everywhere. A tier is a statement about how much INDEPENDENT
+        # RESEARCH DEPTH IS UNIFORM ACROSS TIERS (operator, 2026-09-03): the same searches
+        # and min_sources everywhere (searches 5 -> 10 on 2026-11-19: the model runs the
+        # number it is given, and published agents that read full pages take 10-20 steps). A tier is a statement about how much INDEPENDENT
         # judgment a question gets — the run count and what synthesizes it — not about how
         # carefully any one run reads the world. The old ladder (1/5/12 searches, 1/3/5
         # sources) made a low-tier run research badly on purpose, which is the one economy
         # the survey evidence contradicts outright: "research sources used" is the single
         # strongest measured correlate of bot performance (r=+0.42, p=.006, Fall 2025
         # FutureEval survey), while aggregation counts were not significant.
-        "low": {"draws": 1, "searches": 5, "runs": 1, "run_models": [], "min_sources": 3,
+        "low": {"draws": 1, "searches": 10, "runs": 1, "run_models": [], "min_sources": 3,
                 "run_angles": ["P"]},
-        "medium": {"draws": 5, "searches": 5, "runs": 3, "run_models": [], "min_sources": 3,
+        "medium": {"draws": 5, "searches": 10, "runs": 3, "run_models": [], "min_sources": 3,
                    "run_angles": ["P", "P", "P"]},
-        "high": {"draws": 12, "searches": 5, "runs": 4, "run_models": [], "min_sources": 3,
+        "high": {"draws": 12, "searches": 10, "runs": 4, "run_models": [], "min_sources": 3,
                  "run_angles": ["P", "P", "P", "P"]},
     },
     # 0.8 = Halawi et al.'s validated optimum ("4x weight for the crowd", NeurIPS 2024)

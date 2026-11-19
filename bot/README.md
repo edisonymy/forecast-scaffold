@@ -114,7 +114,7 @@ which (`supervisor(angles=P,P,P)` vs `geo_mean_odds(angles=P,P,P)`). Both phases
 same budget and deadline stops as a run slot: an exhausted budget skips the phase, prints
 why, and falls back one level.
 
-Research depth does **not** vary by tier (operator, 2026-09-03): `searches = 5` and
+Research depth does **not** vary by tier (operator, 2026-09-03): `searches = 10` and
 `min_sources = 3` at low, medium and high. A tier says how much independent *judgment* a
 question gets — how many runs, and what synthesizes them — never how carefully one run reads
 the world. The old ladder made a low-tier run research badly on purpose, and "research

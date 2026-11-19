@@ -6,6 +6,9 @@ without any line of this repository changing: on 2026-09-22 a model switch moved
 default effort down a level and every research run shrank to about a third (296 s -> 80 s,
 9.7 sources -> 5.6) for two months, unnoticed, because nothing measured it.
 
+A measure a call never recorded is skipped, so an old trace and a new one compare on what
+both carry.
+
 This reads the per-call telemetry already in ``bot/journal/traces/`` and compares the
 research runs of the last ``--days`` days with those of the ``--baseline-days`` before
 them. It prints the median of each measure per window and per model, and exits 1 when any
@@ -34,7 +37,8 @@ TRACES = Path(__file__).resolve().parents[1] / "bot" / "journal" / "traces"
 MEASURES: dict[str, Callable[[dict[str, Any]], float | None]] = {
     "seconds": lambda c: c.get("seconds"),
     "sources": lambda c: len(c.get("sources") or []),
-    "dossier chars": lambda c: len(c.get("dossier") or ""),
+    "searches": lambda c: (c.get("usage") or {}).get("web_search"),
+    "pages read raw": lambda c: (c.get("usage") or {}).get("fetch_raw"),
     "turns": lambda c: (c.get("usage") or {}).get("num_turns"),
     "output tokens": lambda c: (c.get("usage") or {}).get("output"),
     "cost usd": lambda c: c.get("cost_usd"),
