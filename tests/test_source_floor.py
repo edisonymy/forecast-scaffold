@@ -1,11 +1,10 @@
-"""The research-source floor (v0.4.5): the research (full) run must return at least
+"""The research-source floor (v0.4.5): every research run must return at least
 ``tiers.*.min_sources`` distinct actually-consulted sources, announced in its system
 prompt and enforced in the validate/repair loop BEFORE any forecast is accepted.
 
 Provenance: the first live tournament batch put its most crowd-divergent calls on its
 thinnest research — the MC/numeric single-run paths had no dossier contract, and q44381
-recorded a confident forecast with zero sources. Reasoning runs stay exempt: they work
-from a shared dossier and ``[]`` is an honest answer there.
+recorded a confident forecast with zero sources.
 """
 
 from __future__ import annotations
@@ -73,7 +72,7 @@ def tiers(min_sources: int, runs: int = 1) -> dict[str, Any]:
     merged = json.loads(json.dumps(DEFAULTS))
     merged["tiers"] = {"medium": {
         "draws": 5, "searches": 5, "runs": runs, "run_models": [],
-        "min_sources": min_sources,
+        "min_sources": min_sources, "run_angles": ["P"] * runs,
     }}
     return merged
 
@@ -83,7 +82,6 @@ def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
         ) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
     agent = ScriptedAgent(outputs)
     monkeypatch.setattr(run_bot, "run_agent", agent)
-    monkeypatch.setattr(run_bot, "verify_dossier", lambda *a, **k: ("", 0.0))
     args = argparse.Namespace(
         blind=False, effort="medium", provider="subscription", timeout=60,
         dry_run=True, comment=False, budget=0.0,
@@ -210,24 +208,6 @@ class TestRepairedOnRetryMarker:
         assert ok and record is not None and len(agent.calls) == 1
         out = capsys.readouterr().out
         assert "repaired on retry" not in out
-
-
-class TestReasoningRunsExempt:
-    def test_multirun_reasoning_sources_may_be_empty(
-            self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-        research = {"probability": 0.30, "dossier": "- fact A (src, 2026)",
-                    "reasoning": "researched", "reference_class": "R", "base_rate": 0.2,
-                    "sources": ["https://s/1", "https://s/2", "https://s/3"]}
-        reasoning = {"probability": 0.35, "reasoning": "x", "sources": [],
-                     "named_scenarios": []}
-        agent, record, ok = run(monkeypatch, tmp_path,
-                                [fenced(research), fenced(reasoning), fenced(reasoning)],
-                                tiers(min_sources=3, runs=3), BINARY_Q)
-        assert ok and record is not None
-        assert len(agent.calls) == 3  # no floor retries on the [] reasoning runs
-        # the floor announcement is the research run's alone
-        assert "Research floor" in agent.calls[0]["system"]
-        assert "Research floor" not in agent.calls[1]["system"]
 
 
 class TestReferenceClassFloor:
@@ -361,21 +341,20 @@ class TestResearchChecklist:
         for item in self.ITEMS:
             assert item in system, item
 
-    def test_reasoning_runs_do_not_carry_it(
+    def test_every_research_run_carries_it(
             self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-        # Prompt real estate is a measured risk: research guidance goes to the run that
-        # researches, not to the reasoning runs working from its dossier.
-        research = {"probability": 0.30, "dossier": "- fact A (src, 2026)",
-                    "reasoning": "researched", "reference_class": "R", "base_rate": 0.2,
+        # Every run is an independent research run, so each gets the research guidance
+        # and the floor announcement.
+        research = {"probability": 0.30, "reasoning": "researched", "reference_class": "R",
+                    "base_rate": 0.2,
                     "sources": ["https://s/1", "https://s/2", "https://s/3"]}
-        reasoning = {"probability": 0.35, "reasoning": "x", "sources": [],
-                     "named_scenarios": []}
-        agent, _, ok = run(monkeypatch, tmp_path,
-                           [fenced(research), fenced(reasoning), fenced(reasoning)],
+        agent, _, ok = run(monkeypatch, tmp_path, [fenced(research)] * 3,
                            tiers(min_sources=3, runs=3), BINARY_Q)
         assert ok
-        assert "Research checklist" in agent.calls[0]["system"]
-        assert "Research checklist" not in agent.calls[1]["system"]
+        assert len(agent.calls) == 3
+        for call in agent.calls:
+            assert "Research checklist" in call["system"]
+            assert "Research floor" in call["system"]
 
     def test_skill_reference_carries_the_same_items(self) -> None:
         text = self.flat(

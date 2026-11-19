@@ -1,4 +1,4 @@
-"""Same-template prior facts reach the RESEARCH run's prompt only, and never block a run."""
+"""Same-template prior facts reach every research run's prompt, and never block a run."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from tests.test_multirun import RESEARCH, fenced, reasoning_payload, run, run_bot
+from tests.test_multirun import RESEARCH, fenced, run, run_bot, run_payload
 
 HEADER = "## Prior resolved questions of the same template"
 
@@ -33,28 +33,28 @@ class TestPriorFactsWiring:
         assert run_bot.PRIOR_FACTS_DEFAULT is False
         agent, record, ok = run(monkeypatch, tmp_path, [
             fenced(RESEARCH),
-            fenced(reasoning_payload(0.20, reasoning="lens1")),
-            fenced(reasoning_payload(0.40, reasoning="lens2")),
+            fenced(run_payload(0.20, reasoning="lens1")),
+            fenced(run_payload(0.40, reasoning="lens2")),
         ])
         assert ok and record is not None
         assert all(HEADER not in call["prompt"] for call in agent.calls)
 
-    def test_research_run_sees_prior_facts_reasoning_runs_do_not(
+    def test_every_research_run_sees_prior_facts(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
         _seed(tmp_path)
         monkeypatch.setattr(run_bot, "PRIOR_FACTS_DEFAULT", True)
         agent, record, ok = run(monkeypatch, tmp_path, [
             fenced(RESEARCH),
-            fenced(reasoning_payload(0.20, reasoning="lens1")),
-            fenced(reasoning_payload(0.40, reasoning="lens2")),
+            fenced(run_payload(0.20, reasoning="lens1")),
+            fenced(run_payload(0.40, reasoning="lens2")),
         ])
         assert ok and record is not None
         assert HEADER in agent.calls[0]["prompt"]
         assert "-> resolved yes." in agent.calls[0]["prompt"]
         assert "submitted" not in agent.calls[0]["prompt"].split(HEADER)[1]
-        assert HEADER not in agent.calls[1]["prompt"]
-        assert HEADER not in agent.calls[2]["prompt"]
+        # every run is an independent research run, so each gets the same record-only data
+        assert all(HEADER in call["prompt"] for call in agent.calls)
 
     def test_no_overlay_means_no_section_and_no_failure(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
@@ -62,8 +62,8 @@ class TestPriorFactsWiring:
         monkeypatch.setattr(run_bot, "PRIOR_FACTS_DEFAULT", True)
         agent, record, ok = run(monkeypatch, tmp_path, [
             fenced(RESEARCH),
-            fenced(reasoning_payload(0.20, reasoning="lens1")),
-            fenced(reasoning_payload(0.40, reasoning="lens2")),
+            fenced(run_payload(0.20, reasoning="lens1")),
+            fenced(run_payload(0.40, reasoning="lens2")),
         ])
         assert ok and record is not None
         assert HEADER not in agent.calls[0]["prompt"]
@@ -89,8 +89,8 @@ class TestPriorFactsWiring:
             }) + "\n")
         agent, _, ok = run(monkeypatch, tmp_path, [
             fenced(RESEARCH),
-            fenced(reasoning_payload(0.20, reasoning="lens1")),
-            fenced(reasoning_payload(0.40, reasoning="lens2")),
+            fenced(run_payload(0.20, reasoning="lens1")),
+            fenced(run_payload(0.40, reasoning="lens2")),
         ])
         assert ok
         section = agent.calls[0]["prompt"].split(HEADER)[1]
