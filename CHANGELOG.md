@@ -4,6 +4,50 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/)
 and mirror `.claude-plugin/plugin.json`.
 
+## [0.6.0] - 2026-11-19
+
+**The tournament bot is one loop again: N independent research runs, pooled.** A review of
+the Fall season found the bot flat at about +10 points per question while the field doubled
+and the leaders moved to +20, and one silent regression: the 2026-09-22 model switch lowered
+the default effort level, so every research run did about a third of the work (296 s -> 80 s,
+9.7 sources -> 5.6) for two months.
+
+### Changed
+- **Effort is pinned.** `run_bot.agent_command()` builds the agent command from
+  `AGENT_MODEL` and `AGENT_EFFORT` (`high`); the workflows no longer carry a literal command.
+  `--model` / `--model-effort` override them for a dry run.
+- **`searches` 5 -> 10** at every tier.
+- `--effort` is the tier (`low` 1 run, `medium` 3, `high` 4), default `medium`; `auto` and
+  `--min-effort` are gone with triage.
+- A tier's `run_models` is now a candidate slot on the production path: runs after the
+  first cycle through it (`model` or `model@effort`).
+
+### Added
+- `bot/research_tools.py`: a stdlib MCP server giving each research run `fetch_raw` (page
+  text unsummarised, tables kept) and `news_search` (dated headlines). Public addresses
+  only, every redirect re-checked, deny-list as a launch argument; calls are counted in the
+  trace.
+- `bench/standing.py`: rank, coverage, leaders and the `metac-*` baseline bots per
+  tournament. `bench/depth.py`: work per research run, and whether it just moved.
+- `docs/review-loop.md`: the fortnightly review — patch what is broken, adopt new models
+  and practices.
+
+### Removed
+- The reconciler ("supervisor"): no measurable gain over the pool it consumed on 136 binary
+  (-0.006 nats, CI90 [-0.019, +0.005]) and 187 continuous questions (+0.2 points, CI90
+  [-1.0, +1.5]); the preregistered rule in `bench/analysis/phase_pools.py` said drop.
+- Triage: 229 of 232 scored questions since September landed on `medium` anyway. The
+  function moved to `bench/run_bench.py`, where the bench's `auto` arm still uses it.
+- The shared-evidence second round (never run in production) and the older shared-dossier
+  path with its lenses and premise verification.
+- The AskNews integration: dark from September to 7 November, then on about half the
+  questions.
+- The `web_fetch` usage counter, which read 0 on every call (it counts a server-side tool
+  the CLI does not use).
+
+`bot/run_bot.py` went from 3,665 lines to about 2,900 and `forecast_question` from about
+1,500 lines to about 200; a medium question is three agent calls instead of five.
+
 ## [0.5.0] - 2026-09-14
 
 **License change: MIT -> PolyForm Noncommercial 1.0.0.** Commercial use now requires a separate

@@ -59,11 +59,11 @@ Only `question` is required. Serialization drops `null` fields; absent = null.
 | `run_escapes_phase1` | list? | v0.4.28, continuous: parallel to `run_percentiles_phase1` |
 | `run_probabilities_phase1` | list? | v0.4.28, multiple_choice: same, for the per-run `{option: p}` dicts |
 | `pool_phase1` | float\|obj? | v0.4.28: the phase-1 pool in the question type's own shape (binary: float; continuous: the five percentiles; MC: `{option: p}`). Written whenever angle mode ran with `share_evidence` or `supervisor` enabled — i.e. whenever some later phase could have replaced it |
-| `pool_phase2` | float\|obj? | v0.4.28: the phase-2 (shared-evidence) pool, same shape. Present only where that phase ran and produced ≥2 estimates |
+| `pool_phase2` | float\|obj? | v0.4.28 to v0.5.0 only (the phase was removed in v0.6.0): the phase-2 (shared-evidence) pool, same shape. Present only where that phase ran and produced ≥2 estimates |
 | `spread_phase1` | float? | v0.4.28: that phase's disagreement — binary: max−min probability; continuous: max−min of the run medians, in question units; MC: max−min of the pooled leader's probability. The herding check needs the spreads, not only the scores |
-| `spread_phase2` | float? | v0.4.28: the same measure over the second round |
-| `supervisor` | obj? | v0.4.28: `{estimate, reconciliation, sources, mode, spread, cost_usd}` — the reconciler's own output, journaled whether or not its number was submitted (it is when `aggregation` starts `supervisor(`). `estimate` is in the type's shape, continuous carrying `{percentiles, p_below_lower, p_above_upper}`; `mode` is `research` \| `reasoning` (whether the spread bought it web tools); `spread` is the number compared with the tier threshold — for continuous, medians spread ÷ pooled IQR |
-| `effort` | str? | `low`/`medium`/`high`, with `(auto)` when auto-triaged |
+| `spread_phase2` | float? | v0.4.28 to v0.5.0 only: the same measure over the second round |
+| `supervisor` | obj? | v0.4.28 to v0.5.0 only (the reconciler was removed in v0.6.0): `{estimate, reconciliation, sources, mode, spread, cost_usd}` — the reconciler's own output, journaled whether or not its number was submitted (it is when `aggregation` starts `supervisor(`). `estimate` is in the type's shape, continuous carrying `{percentiles, p_below_lower, p_above_upper}`; `mode` is `research` \| `reasoning` (whether the spread bought it web tools); `spread` is the number compared with the tier threshold — for continuous, medians spread ÷ pooled IQR |
+| `effort` | str? | the tier: `low`/`medium`/`high` (rows before v0.6.0 add `(auto)` when a triage call chose it) |
 | `model` | str | free string naming the model(s) used |
 | `provider` | str? | billing/routing path that produced it, e.g. `subscription` / `openrouter` |
 | `crowd` | obj? | `{value, source, at}` — the crowd/market number **at forecast time** |
