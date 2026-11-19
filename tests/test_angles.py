@@ -1,6 +1,6 @@
-"""Angle-mode tests (v0.4.x): a tier with a non-empty run_angles list flips the bot from
-one-dossier + reasoning-only runs to N INDEPENDENT full-research runs under assigned angles,
-pooled by geo_mean_odds. Angle F stays market-blind by design even in sighted mode.
+"""Angle-mode tests (v0.4.x): every tier's run_angles list launches N INDEPENDENT
+full-research runs under assigned angles, pooled by geo_mean_odds. Angle F stays market-blind
+by design even in sighted mode.
 
 Stub agents follow tests/test_multirun.py's ScriptedAgent pattern: run_agent is mocked with
 scripted fenced-JSON outputs and every call is recorded, so we can assert per-run prompts,
@@ -58,17 +58,6 @@ def research_payload(p: float, **extra: Any) -> dict[str, Any]:
     }
 
 
-def reasoning_payload(p: float, **extra: Any) -> dict[str, Any]:
-    """A dossier-mode reasoning payload (named_scenarios is contract-required there)."""
-    return {"probability": p, "reasoning": "x", "sources": [], "named_scenarios": [], **extra}
-
-
-# A dossier-mode research payload, mirroring test_multirun.RESEARCH for the regression test.
-RESEARCH = {"probability": 0.30, "dossier": "- fact A (src, 2026)\n- fact B (src, 2026)",
-            "reasoning": "researched", "sources": ["https://example.com/a"],
-            "reference_class": "class R", "base_rate": 0.2}
-
-
 class ScriptedAgent:
     """Replaces run_bot.run_agent; returns scripted outputs and records every call."""
 
@@ -117,7 +106,6 @@ def run(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, outputs: list[str],
         timeout: int = 60) -> tuple[ScriptedAgent, dict[str, Any] | None, bool]:
     agent = ScriptedAgent(outputs)
     monkeypatch.setattr(run_bot, "run_agent", agent)
-    monkeypatch.setattr(run_bot, "verify_dossier", lambda *a, **k: ("", 0.0))
     args = argparse.Namespace(
         blind=blind, effort=effort, provider="subscription", timeout=timeout,
         dry_run=True, comment=False, budget=budget,
@@ -285,44 +273,44 @@ class TestAngleMode:
         assert record["raw_draws"] == [0.30, 0.50, 0.40]
 
 
-class TestEmptyRunAnglesPreservesDossierFlow:
-    """The regression guard: run_angles=[] must leave the dossier path byte-for-byte
-    unchanged. Expectations mirror test_multirun.TestHappyPath.test_three_runs_pool_and_record."""
+class TestEveryTierRunsAngles:
+    """The shared-dossier fallback is gone: an empty run_angles is a configuration error,
+    caught at startup before any question loop or agent spend."""
 
-    def test_empty_run_angles_is_the_old_dossier_path(
+    def test_empty_run_angles_is_a_startup_config_error(self) -> None:
+        with pytest.raises(ValueError, match="empty run_angles"):
+            run_bot.validate_run_angles(config_with_angles([]))
+
+    def test_main_refuses_an_empty_run_angles_before_touching_the_network(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        merged = json.loads(json.dumps(DEFAULTS))
-        merged["tiers"] = {"medium": {"draws": 5, "searches": 5, "runs": 3,
-                                      "run_models": [], "min_sources": 1, "run_angles": []}}
-        agent, record, ok = run(monkeypatch, tmp_path, [
-            fenced(RESEARCH),
-            fenced(reasoning_payload(0.20, reasoning="lens1")),
-            fenced(reasoning_payload(0.40, reasoning="lens2")),
-        ], config=merged, effort="medium")
-        assert ok and record is not None
-        # identical numbers/aggregation/note to the pre-angle dossier path
-        assert record["raw_draws"] == [0.30, 0.20, 0.40]
-        assert record["probability"] == pytest.approx(geo_mean_odds([0.3, 0.2, 0.4]))
-        assert record["aggregation"] == "geo_mean_odds(runs=3)"
-        assert record["reasoning"].startswith("[pooled 3 independent runs")
-        assert "researched" in record["reasoning"]
-        # dossier machinery present; angle machinery absent
-        assert "Dossier (multi-run mode" in (agent.calls[0]["system"] or "")
-        assert "Reasoning run (shared dossier)" in (agent.calls[1]["system"] or "")
-        for call in agent.calls:
-            assert "Assigned research angle" not in (call["system"] or "")
+        monkeypatch.setattr(run_bot, "load_config", lambda *a, **k: config_with_angles([]))
+
+        def boom() -> None:  # pragma: no cover - must never be reached
+            raise AssertionError("MetaculusClient constructed despite an empty run_angles")
+
+        monkeypatch.setattr(run_bot, "MetaculusClient", boom)
+        with pytest.raises(ValueError, match="empty run_angles"):
+            run_bot.main(["--tournament", "t", "--dry-run",
+                          "--journal", str(tmp_path / "j.jsonl")])
+
+    def test_a_direct_call_with_an_empty_run_angles_makes_no_agent_call(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        agent = ScriptedAgent([fenced(research_payload(0.30))])
+        monkeypatch.setattr(run_bot, "run_agent", agent)
+        with pytest.raises(ValueError, match="empty run_angles"):
+            run(monkeypatch, tmp_path, [fenced(research_payload(0.30))],
+                config=config_with_angles([]))
+        assert agent.calls == []
 
     def test_defaults_ship_parallel_research(self) -> None:
-        """Operator decision 2026-09-03: research is parallelized — medium/high launch
-        independent plain research runs (Angle P) and pool them; low stays single-run."""
-        assert DEFAULTS["tiers"]["low"]["run_angles"] == []
+        """Operator decision 2026-09-03: research is parallelized — every tier launches
+        independent plain research runs (Angle P) and pools them; low runs one."""
+        assert DEFAULTS["tiers"]["low"]["run_angles"] == ["P"]
         assert DEFAULTS["tiers"]["medium"]["run_angles"] == ["P", "P", "P"]
         assert DEFAULTS["tiers"]["high"]["run_angles"] == ["P", "P", "P", "P"]
-
-    def _retired_test_defaults_ship_run_angles_dark(self) -> None:
-        for tier in ("low", "medium", "high"):
-            assert DEFAULTS["tiers"][tier]["run_angles"] == []
+        run_bot.validate_run_angles(DEFAULTS)  # the shipped tiers pass the startup guard
 
 
 # ------------------------------------------------- parallel research runs (plain angle mode)
@@ -549,31 +537,10 @@ class TestTraces:
         assert "estimate" not in trace["calls"][1]
         assert trace["calls"][2]["ok"] is True
 
-    def test_dossier_path_is_traced_too(self, monkeypatch: pytest.MonkeyPatch,
-                                        tmp_path: Path) -> None:
-        merged = json.loads(json.dumps(DEFAULTS))
-        merged["tiers"] = {"medium": {"draws": 5, "searches": 5, "runs": 3,
-                                      "run_models": [], "min_sources": 1, "run_angles": []}}
-        _, record, ok = run(monkeypatch, tmp_path, [
-            fenced(RESEARCH),
-            fenced(reasoning_payload(0.20)),
-            fenced(reasoning_payload(0.40)),
-        ], config=merged, effort="medium")
-        assert ok and record is not None
-        trace = self.trace_of(tmp_path, record)
-        assert trace["architecture"] == "dossier"
-        assert [c["stage"] for c in trace["calls"]] == (
-            ["dossier_research", "dossier_reasoning", "dossier_reasoning"])
-        assert trace["calls"][0]["dossier"] == RESEARCH["dossier"]
-        assert "dossier" not in trace["calls"][1]  # reasoning runs write none
-        assert trace["calls"][1]["lens"] == run_bot.LENSES[0].split(":")[0]
-        assert trace["submitted"]["probability"] == pytest.approx(
-            geo_mean_odds([0.30, 0.20, 0.40]))
-
     def test_long_text_is_capped_and_the_file_stays_small(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        # A runaway dossier/narrative is committed on every hourly run, so both the per-field
+        # A runaway narrative is committed on every hourly run, so both the per-field
         # cap and the whole-file cap have to bite.
         huge = "x" * 40_000
         _, record, ok = run(monkeypatch, tmp_path, [
@@ -671,16 +638,16 @@ class TestMarketFactsReachEveryRun:
             assert self.HEADER not in call["prompt"]
             assert "FIXED-CANDIDATE" not in call["prompt"]
 
-    def test_the_dossier_path_brief_is_unchanged(
+    def test_a_single_run_brief_ends_with_the_market_section(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
         # Byte-identical placement: mandate, then the market section, at the end of the brief.
         stub_market_facts(monkeypatch)
         merged = json.loads(json.dumps(DEFAULTS))
-        merged["tiers"] = {"medium": {"draws": 8, "searches": 5, "runs": 1, "run_models": [],
-                                      "min_sources": 1, "run_angles": []}}
+        merged["tiers"] = {"low": {"draws": 1, "searches": 5, "runs": 1, "run_models": [],
+                                   "min_sources": 1, "run_angles": ["P"]}}
         agent, record, ok = run(monkeypatch, tmp_path, [fenced(research_payload(0.30))],
-                                config=merged, effort="medium")
+                                config=merged, effort="low")
         assert ok and record is not None
         prompt = agent.calls[0]["prompt"]
         assert prompt.endswith("\n" + FIXED_MARKET_SECTION)

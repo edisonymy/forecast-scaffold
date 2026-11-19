@@ -17,36 +17,34 @@ max = 0.98
 # runs       = independent runs a harness (bot/bench/subagents) launches and pools with
 #              geo_mean_odds. The deterministic effort lever; unavailable in a plain chat,
 #              where the skill falls back to in-context draws and says so.
-# run_models = optional model ids the harness cycles through for runs after the first —
-#              cross-model diversity is the strongest documented ensemble lever (tournament
-#              winners average ~1.8 model families; same-model trios underperform diverse
-#              ones). Empty = every run uses the command's model. Binary questions only for
-#              now: MC/numeric stay single-run until a pooling rule is preregistered.
-# Run counts are lean (v0.4.0): research + 2 (medium) / 3 (high) reasoning runs. This is
-# a cost/quality judgment call, not a measured result: the old BTF-2 null
+# run_models = optional model ids: a canary slot for a candidate model. The bot's first
+#              research run always uses the command's own model; runs after it cycle
+#              through this list, so the candidate forecasts the same live questions and is
+#              part of the pool (cross-model diversity is also the strongest documented
+#              ensemble lever: tournament winners average ~1.8 model families). Empty =
+#              every run uses the command's model. Every question type.
+# Run counts are lean (v0.4.0): 3 (medium) / 4 (high) runs. This is a cost/quality
+# judgment call, not a measured result: the old BTF-2 null
 # (+0.0002 +/- 0.0148, n=85, v0.1.0) tested in-context draws, not this independent-runs
 # architecture, and its BTF-2 corpus was later found partially contaminated (2026-07
 # probe: 8/55 questions flagged) — so it neither supports nor refutes these sizes. A
-# leak-free re-measurement is pending. geo_mean_odds pools untrimmed; the suggested-angle
-# rotation leads with the counter-biasing opposite pair so any k >= 2 stays directionally
-# neutral.
-# min_sources = floor on DISTINCT actually-consulted sources the research (full) run must
+# leak-free re-measurement is pending. geo_mean_odds pools untrimmed.
+# min_sources = floor on DISTINCT actually-consulted sources every research run must
 #               return; announced in its prompt and enforced by the bot's validate/repair
-#               loop BEFORE any forecast is accepted (reasoning runs are exempt — [] stays
-#               honest there). Added 0.4.5: the first live batch put its most
+#               loop BEFORE any forecast is accepted. Added 0.4.5: the first live batch put its most
 #               crowd-divergent calls on its thinnest research (q44381 MC: 0 sources;
 #               q44382/q44511: 2) — exactly the single-run paths the dossier contract
 #               never covered.
-# run_angles  = engineered evidence diversity. Non-empty FLIPS the bot flow: instead of one
-#               shared-dossier research run + reasoning-only runs, it launches one INDEPENDENT
+# run_angles  = engineered evidence diversity. The bot launches one INDEPENDENT
 #               full-research run per angle letter (operator briefs in
 #               skills/forecast/references/research-angles.md), then pools them. Measured why:
 #               runs that share one dossier correlate ~0.97 (members disagree ~0.03), so the
 #               pool equals the member average at N times the cost — evidence diversity is the
 #               pooling prerequisite. DEFAULT since 2026-09-03 (operator decision): PARALLEL
-#               RESEARCH — "P" is a plain replicate (full research, no lens); medium runs three,
-#               high four. [] = the dossier fallback. All question types pool (binary: geo-mean
-#               odds; continuous: per-percentile mean; MC: per-option geometric mean).
+#               RESEARCH — "P" is a plain replicate (full research, no lens); low runs one,
+#               medium three, high four. Every tier needs at least one: an empty list is a
+#               startup error. All question types pool (binary: geo-mean odds; continuous:
+#               per-percentile mean; MC: per-option geometric mean).
 #
 # RESEARCH DEPTH IS UNIFORM ACROSS TIERS (operator, 2026-09-03): searches = 5 and
 # min_sources = 3 at every tier. A tier says how much INDEPENDENT JUDGMENT a question gets —
@@ -62,7 +60,7 @@ searches = 5
 runs = 1
 run_models = []
 min_sources = 3
-run_angles = []
+run_angles = ["P"]
 
 [tiers.medium]
 draws = 5

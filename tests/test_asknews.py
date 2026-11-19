@@ -320,7 +320,8 @@ class TestNewsSection:
 
 def _config(runs: int) -> dict[str, Any]:
     merged = json.loads(json.dumps(DEFAULTS))
-    merged["tiers"] = {"medium": {"draws": 5, "searches": 5, "runs": runs}}
+    merged["tiers"] = {"medium": {"draws": 5, "searches": 5, "runs": runs,
+                                  "run_angles": ["P"] * runs}}
     return merged
 
 
@@ -350,16 +351,14 @@ _POST = {"id": 1, "title": "Will X happen?"}
 _QUESTION = {"id": 1, "type": "binary", "title": "Will X happen?",
              "resolution_criteria": "Resolves YES per source S.",
              "scheduled_resolve_time": "2026-12-15T00:00:00Z"}
-_RESEARCH = {"probability": 0.30, "dossier": "compiled facts", "reasoning": "researched",
-             "sources": []}
-_REASONING = {"probability": 0.20, "reasoning": "x", "sources": [], "named_scenarios": []}
+_RESEARCH = {"probability": 0.30, "reasoning": "researched", "sources": []}
+_REASONING = {"probability": 0.20, "reasoning": "x", "sources": []}
 
 
 def _run_forecast(monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
                   outputs: list[str]) -> _Agent:
     agent = _Agent(outputs)
     monkeypatch.setattr(run_bot, "run_agent", agent)
-    monkeypatch.setattr(run_bot, "verify_dossier", lambda *a, **k: ("", 0.0))
     args = argparse.Namespace(
         blind=False, effort="medium", provider="subscription", timeout=60,
         dry_run=True, comment=False, budget=0.0,
@@ -373,7 +372,7 @@ def _run_forecast(monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
 
 
 class TestRunBotWiring:
-    def test_research_brief_gains_section_reasoning_runs_do_not(
+    def test_every_research_brief_gains_section(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
         _enable(monkeypatch, {
@@ -382,12 +381,11 @@ class TestRunBotWiring:
         })
         agent = _run_forecast(monkeypatch, tmp_path,
                               [_fenced(_RESEARCH), _fenced(_REASONING)])
-        research_prompt = agent.calls[0]["prompt"]
-        assert asknews.NEWS_HEADER in research_prompt
-        assert "**Headline number 1**" in research_prompt
-        # reasoning runs work from the dossier — they must NOT carry the news section
-        for call in agent.calls[1:]:
-            assert asknews.NEWS_HEADER not in call["prompt"]
+        # fetched once, appended to every independent research run's brief
+        assert len(agent.calls) == 2
+        for call in agent.calls:
+            assert asknews.NEWS_HEADER in call["prompt"]
+            assert "**Headline number 1**" in call["prompt"]
 
     def test_research_brief_unchanged_when_disabled(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path

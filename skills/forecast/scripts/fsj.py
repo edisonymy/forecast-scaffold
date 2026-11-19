@@ -53,34 +53,33 @@ DEFAULTS: dict[str, Any] = {
         # runs       = genuinely independent runs a harness launches and pools with
         #              geo_mean_odds (subagents/processes; the reliable differentiation lever —
         #              in-context draw instructions are demonstrably under-executed headlessly).
-        # run_models = optional model ids the harness cycles through for runs after the first
-        #              (cross-model diversity is the strongest documented ensemble lever:
-        #              tournament winners average ~1.8 model families). Empty = one model.
-        # runs sized lean (v0.4.0): research + 2 (medium) / 3 (high) reasoning runs. This
-        # is a cost/quality judgment call, not a measured result: the old BTF-2 null
+        # run_models = optional model ids: a canary slot for a candidate model. The bot's
+        #              first research run uses the command's own model; runs after it cycle
+        #              through this list, so the candidate forecasts the same live questions
+        #              and is part of the pool. Empty = one model.
+        # runs sized lean (v0.4.0): 3 (medium) / 4 (high). This is a cost/quality
+        # judgment call, not a measured result: the old BTF-2 null
         # (harness - zero-shot = +0.0002 +/- 0.0148, n=85, v0.1.0) tested in-context draws,
         # not this independent-runs architecture, and its BTF-2 corpus was later found
         # partially contaminated (2026-07 probe: 8/55 questions flagged) — so it neither
         # supports nor refutes these sizes. A leak-free re-measurement is pending.
-        # geo_mean_odds pools untrimmed, and the suggested-angle rotation leads with the
-        # counter-biasing opposite pair so any k >= 2 stays directionally neutral.
-        # min_sources = floor on DISTINCT actually-consulted sources the research (full)
-        #              run must return; announced in its prompt and enforced mechanically
+        # geo_mean_odds pools untrimmed.
+        # min_sources = floor on DISTINCT actually-consulted sources every research run
+        #              must return; announced in its prompt and enforced mechanically
         #              by the bot's validate/repair loop BEFORE any forecast is accepted.
-        #              Reasoning runs are exempt ([] stays honest there). Added 0.4.5:
+        #              Added 0.4.5:
         #              the first live batch put its most crowd-divergent calls on its
         #              thinnest research (q44381 MC: 0 sources; q44382/q44511: 2) —
         #              exactly the paths the dossier contract never covered.
-        # run_angles = engineered evidence diversity. Non-empty FLIPS the bot flow: instead of
-        #              one shared-dossier research run + reasoning-only runs, it launches one
+        # run_angles = engineered evidence diversity. The bot launches one
         #              INDEPENDENT full-research run per angle letter (operator briefs in
         #              skills/forecast/references/research-angles.md), then pools them.
         #              Measured why: runs that share one dossier correlate ~0.97 (members
         #              disagree ~0.03), so the pool equals the member average at N times the
         #              cost — evidence diversity is the pooling prerequisite.
         #              DEFAULT since 2026-09-03 (operator decision): PARALLEL RESEARCH —
-        #              "P" = plain replicate, a full research run with no lens; medium runs
-        #              three, high four, matching `runs`. [] = the dossier fallback.
+        #              "P" = plain replicate, a full research run with no lens; low runs
+        #              one, medium three, high four. An empty list is a startup error.
         #              All question types pool (binary: geo_mean_odds; continuous: per-
         #              percentile mean; MC: per-option geometric mean, renormalized).
         # RESEARCH DEPTH IS NOW UNIFORM ACROSS TIERS (operator, 2026-09-03): searches=5 and
@@ -92,7 +91,7 @@ DEFAULTS: dict[str, Any] = {
         # strongest measured correlate of bot performance (r=+0.42, p=.006, Fall 2025
         # FutureEval survey), while aggregation counts were not significant.
         "low": {"draws": 1, "searches": 5, "runs": 1, "run_models": [], "min_sources": 3,
-                "run_angles": []},
+                "run_angles": ["P"]},
         "medium": {"draws": 5, "searches": 5, "runs": 3, "run_models": [], "min_sources": 3,
                    "run_angles": ["P", "P", "P"]},
         "high": {"draws": 12, "searches": 5, "runs": 4, "run_models": [], "min_sources": 3,
