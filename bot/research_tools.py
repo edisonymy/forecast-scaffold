@@ -35,6 +35,7 @@ from urllib.parse import quote, urlencode, urljoin, urlsplit
 
 DEFAULT_UA = "Mozilla/5.0 (compatible; research-fetch/1.0)"
 TIMEOUT, MAX_BYTES, MAX_REDIRECTS, HARD_CAP = 15.0, 3 * 1024 * 1024, 5, 60_000
+TOTAL_TIMEOUT = 40.0  # whole response: TIMEOUT alone lets a host drip one byte at a time
 WINDOW, MAX_MATCHES = 400, 8
 GDELT_URL = "https://api.gdeltproject.org/api/v2/doc/doc"
 GDELT_SPACING, GDELT_BUDGET = 5.5, 25.0  # GDELT allows one request per 5 s per IP
@@ -79,10 +80,16 @@ def _send(scheme: str, ip: str, port: int, host: str, target: str,
           headers: dict[str, str]) -> tuple[int, dict[str, str], bytes]:
     conn = (_PinnedHTTPS(ip, port, host) if scheme == "https"
             else http.client.HTTPConnection(ip, port, timeout=TIMEOUT))
+    deadline = time.monotonic() + TOTAL_TIMEOUT
     try:
         conn.request("GET", target, headers=headers)
         resp = conn.getresponse()
-        return resp.status, {k.lower(): v for k, v in resp.getheaders()}, resp.read(MAX_BYTES + 1)
+        body = bytearray()
+        while len(body) <= MAX_BYTES and (chunk := resp.read1(65536)):
+            body += chunk
+            if time.monotonic() > deadline:
+                raise TimeoutError("response took too long")
+        return resp.status, {k.lower(): v for k, v in resp.getheaders()}, bytes(body)
     finally:
         conn.close()
 
@@ -493,7 +500,9 @@ def handle_message(msg: dict[str, Any], server: Server) -> dict[str, Any] | None
         return {"jsonrpc": "2.0", "id": msg_id, "error": {"code": code, "message": message}}
 
     if method == "initialize":
-        proto = str((msg.get("params") or {}).get("protocolVersion") or PROTOCOL_FALLBACK)
+        params = msg.get("params")
+        proto = str((params.get("protocolVersion") if isinstance(params, dict) else None)
+                    or PROTOCOL_FALLBACK)
         return ok({"protocolVersion": proto, "capabilities": {"tools": {}},
                    "serverInfo": {"name": "research-tools", "version": "1.0.0"}})
     if method == "ping":
@@ -554,7 +563,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.selftest:
         return selftest(server)
     if hasattr(sys.stdin, "reconfigure"):
-        sys.stdin.reconfigure(encoding="utf-8")
+        sys.stdin.reconfigure(encoding="utf-8", errors="replace")
         sys.stdout.reconfigure(encoding="utf-8", newline="\n")  # type: ignore[union-attr]
     for line in sys.stdin:
         if not line.strip():

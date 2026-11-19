@@ -54,7 +54,8 @@ def research_calls(traces: Path) -> Iterable[tuple[datetime, dict[str, Any]]]:
         except (ValueError, KeyError, OSError):
             continue  # a truncated trace must not break the check
         for call in trace.get("calls") or []:
-            if call.get("mode") == "research" and call.get("ok"):
+            # stage, not mode: before v0.6.0 the reconciler's call also said mode=research
+            if call.get("stage") in ("angle_research", "dossier_research") and call.get("ok"):
                 yield at, call
 
 

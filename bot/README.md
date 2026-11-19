@@ -67,9 +67,9 @@ and every research run shrank to about a third of the work, unnoticed for two mo
 `bench/depth.py` now measures work per research run and flags a move in either direction.
 
 `--model` and `--model-effort` override the two constants for a dry run. A tier's
-`run_models` is the candidate slot: when non-empty, runs after the first cycle through it
-(`model` or `model@effort`), so a new model forecasts the same live questions as the
-incumbent and carries part of the pool before it carries all of it.
+`run_models` is the candidate slot: each entry (`model` or `model@effort`) takes one run,
+counted from the last, so a new model forecasts the same live questions as the incumbent and
+carries one run in three before it carries all of them. `bench/canary.py` scores it.
 
 ## Research tools
 

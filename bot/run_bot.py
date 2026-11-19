@@ -183,8 +183,8 @@ def agent_command(model: str = AGENT_MODEL, effort: str = AGENT_EFFORT) -> str:
     """The headless agent command every workflow runs. No JSON envelope would mean cost
     and model record as nothing; no --allowed-tools would mean the agent researches with
     whatever the local CLI permits."""
-    return (f"claude -p --model {model} --effort {effort} --output-format json "
-            "--allowed-tools Read,Glob,Grep,WebSearch,WebFetch")
+    return (f"claude -p --model {shlex.quote(model)} --effort {shlex.quote(effort)} "
+            "--output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch")
 
 
 CONTRACT = """
@@ -628,10 +628,13 @@ def with_research_tools(agent_cmd: str, deny_domains: str, log: Path) -> str:
 
 
 def take_tool_calls(log: Path | None) -> dict[str, int]:
-    """Research-tool calls logged since the last take: successes under the tool's name,
-    failures under ``<tool>_failed``. Clears the log, so a later take starts from zero."""
-    counts: dict[str, int] = {}
-    if log is None or not log.exists():
+    """Research-tool calls of one run (its repair retry included): successes under the
+    tool's short name, failures under ``<tool>_failed``. A tool the run never called reads
+    0, not absent — "stopped using it" has to be visible. Clears the log."""
+    if log is None:
+        return {}
+    counts = {name.rsplit("__", 1)[-1]: 0 for name in RESEARCH_TOOLS.split(",")}
+    if not log.exists():
         return counts
     for line in log.read_text(encoding="utf-8").splitlines():
         with contextlib.suppress(ValueError, AttributeError):
@@ -1533,9 +1536,9 @@ def forecast_question(
     # geometric mean, renormalized (v0.4.28, core.pool_percentiles / pool_escape_mass /
     # pool_mc).
     #
-    # run_models is a canary slot for a candidate model: when non-empty, runs after the
-    # first cycle through it (the first always uses the command's own model), so the
-    # candidate forecasts the same live questions and is part of the pool.
+    # run_models is the candidate slot: each entry takes ONE run, counted from the last
+    # (never the first, which always uses the command's own model), so a candidate
+    # forecasts the same live questions and carries one run's share of the pool.
     run_models = [str(m) for m in (tier_params.get("run_models") or [])]
     # Slow questions starve the calibration loop; ask the research run for 1-2 fast-proxy
     # sub-questions (journal-only) that resolve in weeks and carry evidence on the parent.
@@ -1559,8 +1562,9 @@ def forecast_question(
         # always-on deny list and the blind-mode domains must travel together.
         run_disallowed = ALWAYS_DISALLOWED + ("," + BLIND_DISALLOWED if run_blind else "")
         run_cmd = f"{base_cmd} --disallowed-tools {shlex.quote(run_disallowed)}"
-        if run_models and slot_index > 1:
-            run_cmd = with_candidate(run_cmd, run_models[(slot_index - 2) % len(run_models)])
+        candidate_slot = slot_index - (n_runs - len(run_models)) - 1
+        if slot_index > 1 and candidate_slot >= 0:
+            run_cmd = with_candidate(run_cmd, run_models[candidate_slot])
             if args.provider == "openrouter":
                 run_cmd = openrouter_model_cmd(run_cmd)
         # The same sites a blind run may not WebFetch, it may not fetch raw either.
@@ -1573,7 +1577,7 @@ def forecast_question(
         run_brief = (base_brief if run_blind
                      else base_brief + crowd_signals + market_facts)
         run_system = (
-            build_system(tier, run_blind, config, multi_run=True, qtype=qtype)
+            build_system(tier, run_blind, config, multi_run=n_runs > 1, qtype=qtype)
             + (SOURCE_FLOOR_SECTION.format(floor=min_sources) if min_sources else "")
             # An angle run IS a research run, so the MC/continuous reference-class and
             # dispersion floors gate it — announced here so attempt 0 already knows the
@@ -1592,6 +1596,8 @@ def forecast_question(
 
     specs, results, errors = launch_runs(state, specs, min_sources)
     payload, model_used, errors = collect_runs(state, specs, results, errors)
+    for spec in specs:  # the per-run tool config and call log: counted, no longer needed
+        shutil.rmtree(spec["tools_log"].parent, ignore_errors=True)
     settle_question_spend(state)
     if payload is None:
         skip_question(state, journal, errors)

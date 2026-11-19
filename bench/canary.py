@@ -20,6 +20,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import math
 import statistics
@@ -40,13 +41,14 @@ OVERLAY = ROOT / "bot" / "journal" / "resolutions.jsonl"
 FLOOR = 0.001  # the platform's own floor on a probability
 
 
-def run_models(trace: dict[str, Any]) -> list[str]:
-    """The model of each successful research run, in run order (a repaired run counts once)."""
+def run_models(trace: dict[str, Any]) -> list[str] | None:
+    """The model of each successful research run, in run order; None unless run 1 is among
+    them (run 1 is the incumbent: without it there is nothing to compare against)."""
     by_run: dict[int, str] = {}
     for call in trace.get("calls") or []:
-        if call.get("mode") == "research" and call.get("ok") and call.get("run_index"):
+        if call.get("stage") == "angle_research" and call.get("ok") and call.get("run_index"):
             by_run[int(call["run_index"])] = str(call.get("model") or "?")
-    return [by_run[index] for index in sorted(by_run)]
+    return [by_run[index] for index in sorted(by_run)] if 1 in by_run else None
 
 
 def run_scores(row: dict[str, Any], outcome: Any) -> list[float] | None:
@@ -72,16 +74,20 @@ def run_scores(row: dict[str, Any], outcome: Any) -> list[float] | None:
 
 def paired_deltas(journal: Path, outcomes: dict[int, Any]) -> dict[str, list[float]]:
     """candidate model -> its per-question score minus the incumbent's (run 1's model)."""
-    deltas: dict[str, list[float]] = defaultdict(list)
+    latest: dict[int, dict[str, Any]] = {}  # a refreshed question counts once: its last row
     for line in journal.read_text(encoding="utf-8").splitlines():
-        try:
+        with contextlib.suppress(ValueError, KeyError, TypeError):
             row = json.loads(line)
-            qid = int(row["source"]["question_id"])
+            if not row.get("dry_run"):
+                latest[int(row["source"]["question_id"])] = row
+    deltas: dict[str, list[float]] = defaultdict(list)
+    for qid, row in latest.items():
+        try:
             trace = json.loads((journal.parent / row["trace_path"]).read_text(encoding="utf-8"))
         except (ValueError, KeyError, TypeError, OSError):
             continue
         models = run_models(trace)
-        if qid not in outcomes or len(set(models)) < 2:
+        if qid not in outcomes or not models or len(set(models)) < 2:
             continue
         scores = run_scores(row, outcomes[qid])
         if not scores or len(scores) != len(models):

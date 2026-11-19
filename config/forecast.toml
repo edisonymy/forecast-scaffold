@@ -17,12 +17,12 @@ max = 0.98
 # runs       = independent runs a harness (bot/bench/subagents) launches and pools with
 #              geo_mean_odds. The deterministic effort lever; unavailable in a plain chat,
 #              where the skill falls back to in-context draws and says so.
-# run_models = optional model ids: a canary slot for a candidate model. The bot's first
-#              research run always uses the command's own model; runs after it cycle
-#              through this list, so the candidate forecasts the same live questions and is
-#              part of the pool (cross-model diversity is also the strongest documented
-#              ensemble lever: tournament winners average ~1.8 model families). Empty =
-#              every run uses the command's model. Every question type.
+# run_models = the candidate slot: optional entries, each `model` or `model@effort`. Each
+#              takes ONE of the bot's research runs, counted from the last; the first run
+#              always uses the command's own model. So `["new-model"]` at medium gives a
+#              candidate one run in three: it forecasts the same live questions and is
+#              part of the pool (bench/canary.py scores it against the incumbent).
+#              Empty = every run uses the command's model. Every question type.
 # Run counts are lean (v0.4.0): 3 (medium) / 4 (high) runs. This is a cost/quality
 # judgment call, not a measured result: the old BTF-2 null
 # (+0.0002 +/- 0.0148, n=85, v0.1.0) tested in-context draws, not this independent-runs

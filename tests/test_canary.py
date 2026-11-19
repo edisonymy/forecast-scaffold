@@ -23,6 +23,11 @@ def test_run_models_takes_the_final_successful_call_of_each_run():
     trace = {"calls": [_call(1, "old"), _call(2, "new", ok=False), _call(2, "new"),
                        _call(3, "old"), {"mode": "other", "ok": True, "run_index": 4}]}
     assert run_models(trace) == ["old", "new", "old"]
+    # run 1 failed: no incumbent to compare with, whatever the other runs were
+    assert run_models({"calls": [_call(1, "old", ok=False), _call(2, "a"), _call(3, "b")]}) is None
+    # a pre-0.6 reconciler call also said mode=research, run_index=1: not a research run
+    assert run_models({"calls": [{"mode": "research", "stage": "supervisor", "ok": True,
+                                  "run_index": 1, "model": "x"}]}) is None
 
 
 def test_run_scores_binary_and_multiple_choice_are_log_scores_in_points():
@@ -49,11 +54,18 @@ def test_paired_deltas_compare_the_candidate_with_run_one_and_skip_misaligned(tm
         # unresolved
         _row(tmp_path, 4, [_call(1, "old"), _call(2, "new")],
              question_type="binary", raw_draws=[0.5, 0.9]),
+        # an earlier forecast of question 1, later refreshed: only the last row counts
+        _row(tmp_path, 1, [_call(1, "old"), _call(2, "new"), _call(3, "old")],
+             question_type="binary", raw_draws=[0.5, 0.1, 0.5]),
+        # a dry run is not a forecast
+        _row(tmp_path, 5, [_call(1, "old"), _call(2, "new")],
+             question_type="binary", raw_draws=[0.5, 0.9], dry_run=True),
     ]
+    rows.append(rows.pop(0))  # question 1's real row is the LAST one written
     journal = tmp_path / "forecasts.jsonl"
     journal.write_text("\n".join(json.dumps(r) for r in rows) + "\nnot json\n",
                        encoding="utf-8")
-    deltas = paired_deltas(journal, {1: True, 2: True, 3: True})
+    deltas = paired_deltas(journal, {1: True, 2: True, 3: True, 5: True})
     assert list(deltas) == ["new"]
     assert deltas["new"] == [100 * math.log(0.8) - 100 * math.log(0.5)]
 

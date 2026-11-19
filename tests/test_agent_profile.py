@@ -15,6 +15,8 @@ def test_agent_command_always_names_model_and_effort():
     custom = shlex.split(run_bot.agent_command("some-model", "max"))
     assert custom[custom.index("--model") + 1] == "some-model"
     assert custom[custom.index("--effort") + 1] == "max"
+    injected = shlex.split(run_bot.agent_command("m --dangerous-flag", "high"))
+    assert injected[injected.index("--model") + 1] == "m --dangerous-flag"  # one token
 
 
 def test_with_candidate_swaps_the_model_and_optionally_the_effort():
@@ -46,7 +48,8 @@ def test_with_research_tools_writes_a_config_the_agent_cannot_loosen(tmp_path: P
 
 def test_take_tool_calls_counts_by_outcome_and_clears(tmp_path: Path):
     log = tmp_path / "calls.jsonl"
-    assert run_bot.take_tool_calls(log) == {} and run_bot.take_tool_calls(None) == {}
+    assert run_bot.take_tool_calls(None) == {}  # no tools attached: nothing to say
+    assert run_bot.take_tool_calls(log) == {"fetch_raw": 0, "news_search": 0}
     log.write_text("\n".join([
         json.dumps({"tool": "fetch_raw", "ok": True, "chars": 10, "host": "a.org"}),
         json.dumps({"tool": "fetch_raw", "ok": False, "chars": 0, "host": "b.org"}),
@@ -56,7 +59,7 @@ def test_take_tool_calls_counts_by_outcome_and_clears(tmp_path: Path):
     ]) + "\n", encoding="utf-8")
     assert run_bot.take_tool_calls(log) == {
         "fetch_raw": 2, "fetch_raw_failed": 1, "news_search": 1}
-    assert run_bot.take_tool_calls(log) == {}  # the next take starts from zero
+    assert run_bot.take_tool_calls(log) == {"fetch_raw": 0, "news_search": 0}  # cleared
 
 
 def test_blind_runs_carry_the_forecasting_sites_into_the_tool_deny_list():

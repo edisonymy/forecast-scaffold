@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import contextlib
 import json
 import subprocess
 import sys
 import threading
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
@@ -408,3 +410,42 @@ def test_default_sender_speaks_http_to_the_given_ip() -> None:
         httpd.shutdown()
     assert (status, headers["content-type"], body) == (200, "text/plain", b"x" * 100)
     assert seen["Host"] == "e.org" and "Cookie" not in seen
+
+
+def test_default_sender_gives_up_on_a_response_that_drips(
+        monkeypatch: pytest.MonkeyPatch) -> None:
+    """Each socket read is quick, so the per-read timeout never fires: the whole response
+    has its own limit, or one tarpit page would hold the server until the run is killed."""
+    monkeypatch.setattr(rt, "TOTAL_TIMEOUT", 0.2)
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self) -> None:  # noqa: N802 - http.server API
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain")
+            self.end_headers()
+            with contextlib.suppress(OSError):
+                for _ in range(200):
+                    self.wfile.write(b"x")
+                    self.wfile.flush()
+                    time.sleep(0.02)
+
+        def log_message(self, *args: object) -> None:
+            return
+
+    httpd = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
+    try:
+        started = time.monotonic()
+        with pytest.raises(TimeoutError):
+            rt._send("http", "127.0.0.1", httpd.server_address[1], "e.org", "/",
+                     {"Host": "e.org"})
+        assert time.monotonic() - started < 2.0
+    finally:
+        httpd.shutdown()
+
+
+def test_initialize_with_malformed_params_still_answers() -> None:
+    srv = rt.Server((), None, rt.DEFAULT_NET)
+    reply = rt.handle_message({"jsonrpc": "2.0", "id": 1, "method": "initialize",
+                               "params": ["not", "an", "object"]}, srv)
+    assert reply is not None and reply["result"]["protocolVersion"] == rt.PROTOCOL_FALLBACK

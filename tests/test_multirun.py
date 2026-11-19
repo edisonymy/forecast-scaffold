@@ -528,12 +528,12 @@ class TestShapes:
         assert proxy["parent_id"] == journal_lines[0]["id"]
         assert proxy["probability"] == 0.7
 
-    def test_run_models_cycle_across_runs_after_the_first(
+    def test_run_models_take_the_last_runs_one_each(
         self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
     ) -> None:
-        # run_models is a canary slot: the first run keeps the command's own model; runs
-        # after it cycle through the list (wrapping), and each trace entry names the model
-        # that run actually used.
+        # run_models is the candidate slot: each entry takes ONE run, counted from the last,
+        # so one candidate carries one run of the pool, never most of it. The first run
+        # always keeps the command's own model; each trace entry names the model used.
         config = config_with_tiers({"medium": {
             "draws": 5, "searches": 5, "runs": 4,
             "run_models": ["claude-opus-4-8", "claude-haiku-4-5"],
@@ -556,8 +556,8 @@ class TestShapes:
         assert run_bot.forecast_question(StubClient(), POST, QUESTION, args, config, journal,
                                          {"usd": 0.0}, None)
         models = [run_bot._model_from_cmd(call["cmd"]) for call in agent.calls]
-        assert models == ["claude-sonnet-5", "claude-opus-4-8", "claude-haiku-4-5",
-                          "claude-opus-4-8"]
+        assert models == ["claude-sonnet-5", "claude-sonnet-5", "claude-opus-4-8",
+                          "claude-haiku-4-5"]
         # the per-run command keeps its deny list after the model swap
         for call in agent.calls:
             assert run_bot.ALWAYS_DISALLOWED in call["cmd"]

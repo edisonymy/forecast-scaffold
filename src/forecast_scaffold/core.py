@@ -53,10 +53,10 @@ DEFAULTS: dict[str, Any] = {
         # runs       = genuinely independent runs a harness launches and pools with
         #              geo_mean_odds (subagents/processes; the reliable differentiation lever —
         #              in-context draw instructions are demonstrably under-executed headlessly).
-        # run_models = optional model ids: a canary slot for a candidate model. The bot's
-        #              first research run uses the command's own model; runs after it cycle
-        #              through this list, so the candidate forecasts the same live questions
-        #              and is part of the pool. Empty = one model.
+        # run_models = the candidate slot: entries are `model` or `model@effort`; each takes
+        #              ONE of the bot's research runs, counted from the last (never the
+        #              first), so a candidate forecasts the same live questions and carries
+        #              one run's share of the pool. Empty = one model.
         # runs sized lean (v0.4.0): 3 (medium) / 4 (high). This is a cost/quality
         # judgment call, not a measured result: the old BTF-2 null
         # (harness - zero-shot = +0.0002 +/- 0.0148, n=85, v0.1.0) tested in-context draws,

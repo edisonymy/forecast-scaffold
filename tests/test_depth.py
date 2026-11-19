@@ -6,10 +6,12 @@ from bench.depth import drift, main, medians, research_calls
 
 
 def _trace(path, at, *, seconds, sources, model="m", ok=True):
-    call = {"mode": "research", "ok": ok, "model": model, "seconds": seconds,
+    call = {"mode": "research", "stage": "angle_research", "ok": ok, "model": model,
+            "seconds": seconds,
             "sources": [f"s{i}" for i in range(sources)]}
     path.write_text(json.dumps({"forecast_at": at, "calls": [
-        call, {"mode": "reasoning", "ok": True, "seconds": 1.0}]}), encoding="utf-8")
+        call, {"mode": "research", "stage": "supervisor", "ok": True, "seconds": 1.0}]}),
+        encoding="utf-8")
 
 
 def test_medians_skip_measures_a_call_never_recorded():

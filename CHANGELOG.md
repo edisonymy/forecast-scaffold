@@ -14,13 +14,16 @@ the default effort level, so every research run did about a third of the work (2
 
 ### Changed
 - **Effort is pinned.** `run_bot.agent_command()` builds the agent command from
-  `AGENT_MODEL` and `AGENT_EFFORT` (`high`); the workflows no longer carry a literal command.
-  `--model` / `--model-effort` override them for a dry run.
+  `AGENT_MODEL` and `AGENT_EFFORT` (`high`); the tournament and bench workflows no longer
+  carry a literal command. `--model` / `--model-effort` override them for a dry run. (The
+  Manifold workflow still names its own model and leaves the effort to that model's default.)
+- **Per-call timeout 600 s -> 900 s** in `bot.yml`: a run now does more work, and a timeout
+  counts as a provider failure.
 - **`searches` 5 -> 10** at every tier.
 - `--effort` is the tier (`low` 1 run, `medium` 3, `high` 4), default `medium`; `auto` and
   `--min-effort` are gone with triage.
-- A tier's `run_models` is now a candidate slot on the production path: runs after the
-  first cycle through it (`model` or `model@effort`).
+- A tier's `run_models` is now the candidate slot on the production path: each entry
+  (`model` or `model@effort`) takes one research run, counted from the last.
 
 ### Added
 - `bot/research_tools.py`: a stdlib MCP server giving each research run `fetch_raw` (page
@@ -29,6 +32,7 @@ the default effort level, so every research run did about a third of the work (2
   trace.
 - `bench/standing.py`: rank, coverage, leaders and the `metac-*` baseline bots per
   tournament. `bench/depth.py`: work per research run, and whether it just moved.
+  `bench/canary.py`: a candidate model's runs against the incumbent's on the same questions.
 - `docs/review-loop.md`: the fortnightly review — patch what is broken, adopt new models
   and practices.
 
@@ -44,6 +48,10 @@ the default effort level, so every research run did about a third of the work (2
   questions.
 - The `web_fetch` usage counter, which read 0 on every call (it counts a server-side tool
   the CLI does not use).
+
+### Fixed
+- A trace's per-run `cost_usd` under `--parallel-runs` was a delta on the ledger the
+  overlapping runs share, so the run that finished last was booked with its siblings' spend.
 
 `bot/run_bot.py` went from 3,665 lines to about 2,900 and `forecast_question` from about
 1,500 lines to about 200; a medium question is three agent calls instead of five.
