@@ -12,6 +12,11 @@ concurrency:
 
 jobs:
   manifold:
+    # SHUT DOWN 2026-11-19 (operator decision). This job never runs, whatever dispatches
+    # the workflow: no secrets are read, nothing is spent, no bet is placed. The Cloud
+    # Scheduler kicker has been paused since the 2026-09-14 migration. To bring the bot
+    # back, delete the next line. bot/run_manifold.py stays: the exchange bot imports it.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
     permissions:

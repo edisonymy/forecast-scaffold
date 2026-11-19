@@ -47,6 +47,8 @@ the default effort level, so every research run did about a third of the work (2
   questions.
 - The `web_fetch` usage counter, which read 0 on every call (it counts a server-side tool
   the CLI does not use).
+- The Manifold bot is shut down: its workflow's job is skipped whatever dispatches it.
+  `bot/run_manifold.py` stays, because the exchange bot imports it.
 
 ### Fixed
 - A trace's per-run `cost_usd` under `--parallel-runs` was a delta on the ledger the
