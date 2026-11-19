@@ -147,12 +147,14 @@ class _Handler(BaseHTTPRequestHandler):
         length = int(self.headers.get("Content-Length") or 0)
         data = self.rfile.read(length) if length else b""
         is_search = False
+        model = ""
         if self.command == "POST" and self.path.split("?", 1)[0].endswith("/messages") and data:
             try:
                 body = json.loads(data)
             except ValueError:
                 body = None
             if isinstance(body, dict):
+                model = str(body.get("model") or "")
                 body, changed = rewrite_messages_body(body)
                 if changed:
                     data = json.dumps(body).encode("utf-8")
@@ -171,8 +173,13 @@ class _Handler(BaseHTTPRequestHandler):
             conn.request(self.command, self.upstream.path + self.path, body=data or None,
                          headers=headers)
             resp = conn.getresponse()
-            if resp.status >= 400:
-                _count("upstream_errors")  # e.g. an unknown model slug: alerted per run
+            # A refused model request, e.g. an unknown model slug: alerted per run. The CLI's
+            # own connectivity probe (HEAD /api/hello, a 404 on OpenRouter) is not one.
+            if resp.status >= 400 and self.command == "POST":
+                _count("upstream_errors")
+                # Which request, so the alert can be acted on: never a body or a header.
+                print(f"  openrouter refused: HTTP {resp.status} {self.command} "
+                      f"{self.path.split('?', 1)[0]} model={model or '-'}", flush=True)
             # send_response_only: no second Server/Date beside the upstream's own
             self.send_response_only(resp.status, resp.reason)
             started = True
@@ -194,10 +201,12 @@ class _Handler(BaseHTTPRequestHandler):
                     return
                 self.wfile.write(b"%x\r\n%s\r\n" % (len(chunk), chunk))
                 self.wfile.flush()
-            self.wfile.write(b"0\r\n\r\n")
-            self.wfile.flush()
+            # Counted BEFORE the terminating chunk: once the client has the whole response it
+            # may read the counters, and a count made after that is a race.
             if is_search and resp.status == 200 and not saw_tool_use:
                 _count("search_without_tool_use")
+            self.wfile.write(b"0\r\n\r\n")
+            self.wfile.flush()
         except (OSError, http.client.HTTPException) as exc:
             # Before headers went out, a 502 tells the CLI to retry; after, just drop the
             # connection (the CLI treats a truncated stream as a retryable failure).

@@ -244,10 +244,8 @@ def test_record_carries_provider() -> None:
 
 
 class TestPooledRunHelpers:
-    """Shared-dossier pooling: research once, reason k times in separate contexts.
-
-    Reasoning runs keep web access for bounded gap-filling (v0.3.0 — dossier-first,
-    ≤2 targeted searches by instruction) and cycle models for cross-model diversity."""
+    """Helpers for pooled independent runs: runs after the first can cycle models
+    (tiers.*.run_models) for cross-model diversity."""
 
     def test_with_model_replaces_existing_flag(self) -> None:
         cmd = run_bot.with_model(
@@ -260,19 +258,6 @@ class TestPooledRunHelpers:
     def test_with_model_appends_when_absent(self) -> None:
         cmd = run_bot.with_model("claude -p", "claude-opus-4-8")
         assert cmd.endswith("--model claude-opus-4-8")
-
-    def test_lenses_estimate_unconditional_probability(self) -> None:
-        # Lenses vary where reasoning starts; none may condition on an assumed outcome —
-        # pooling P(X|scenario) as if it were P(X) is the category error v0.2.0 shipped.
-        assert len(run_bot.LENSES) >= 4
-        for lens in run_bot.LENSES:
-            assert "assume" not in lens.lower() or "estimate" in lens.lower()
-
-    def test_dossier_section_bans_anchoring(self) -> None:
-        # Sharing evidence is nearly free; sharing the ESTIMATE is the correlation that
-        # kills an ensemble (Davis-Stober 2014). The ban must stay in the instruction.
-        text = run_bot.DOSSIER_SECTION.lower()
-        assert "do not include your probability" in text
 
     def test_provider_field_defaults_absent(self) -> None:
         # additive schema field: old records without it must stay loadable

@@ -1029,6 +1029,14 @@ def test_run_generic_429_still_fails_closed(
     assert run_manifold.run(make_args(tmp_path, budget=5.0)) == 1
 
 
+def test_manifold_workflow_is_shut_down() -> None:
+    """Operator decision 2026-11-19: the job is skipped whatever dispatches the workflow."""
+    workflow = (ROOT / ".github" / "workflows" / "manifold.yml").read_text(encoding="utf-8")
+    job = workflow.split("\njobs:\n  manifold:\n", 1)[1]
+    first_key = next(line for line in job.splitlines() if not line.lstrip().startswith("#"))
+    assert first_key == "    if: ${{ false }}"
+
+
 def test_cloud_workflow_is_hourly_subscription_only_and_hard_capped() -> None:
     workflow = (ROOT / ".github" / "workflows" / "manifold.yml").read_text(
         encoding="utf-8"

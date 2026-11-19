@@ -35,7 +35,7 @@ SCHEMA_VERSION = 1
 # schema versions the *format*, scaffold versions the *methodology*. Calibration analysis
 # (e.g. a recalibration temperature) should be pinned to the major scaffold version, so
 # every record must carry the version that made it. A test asserts this matches plugin.json.
-SCAFFOLD_VERSION = "0.5.0"
+SCAFFOLD_VERSION = "0.6.0"
 
 QUESTION_TYPES = ("binary", "multiple_choice", "numeric", "discrete", "date")
 STATUSES = ("draft", "open", "resolved", "annulled")
@@ -53,83 +53,51 @@ DEFAULTS: dict[str, Any] = {
         # runs       = genuinely independent runs a harness launches and pools with
         #              geo_mean_odds (subagents/processes; the reliable differentiation lever —
         #              in-context draw instructions are demonstrably under-executed headlessly).
-        # run_models = optional model ids the harness cycles through for runs after the first
-        #              (cross-model diversity is the strongest documented ensemble lever:
-        #              tournament winners average ~1.8 model families). Empty = one model.
-        # runs sized lean (v0.4.0): research + 2 (medium) / 3 (high) reasoning runs. This
-        # is a cost/quality judgment call, not a measured result: the old BTF-2 null
+        # run_models = the candidate slot: entries are `model` or `model@effort`; each takes
+        #              ONE of the bot's research runs, counted from the last (never the
+        #              first), so a candidate forecasts the same live questions and carries
+        #              one run's share of the pool. Empty = one model.
+        # runs sized lean (v0.4.0): 3 (medium) / 4 (high). This is a cost/quality
+        # judgment call, not a measured result: the old BTF-2 null
         # (harness - zero-shot = +0.0002 +/- 0.0148, n=85, v0.1.0) tested in-context draws,
         # not this independent-runs architecture, and its BTF-2 corpus was later found
         # partially contaminated (2026-07 probe: 8/55 questions flagged) — so it neither
         # supports nor refutes these sizes. A leak-free re-measurement is pending.
-        # geo_mean_odds pools untrimmed, and the suggested-angle rotation leads with the
-        # counter-biasing opposite pair so any k >= 2 stays directionally neutral.
-        # min_sources = floor on DISTINCT actually-consulted sources the research (full)
-        #              run must return; announced in its prompt and enforced mechanically
+        # geo_mean_odds pools untrimmed.
+        # min_sources = floor on DISTINCT actually-consulted sources every research run
+        #              must return; announced in its prompt and enforced mechanically
         #              by the bot's validate/repair loop BEFORE any forecast is accepted.
-        #              Reasoning runs are exempt ([] stays honest there). Added 0.4.5:
+        #              Added 0.4.5:
         #              the first live batch put its most crowd-divergent calls on its
         #              thinnest research (q44381 MC: 0 sources; q44382/q44511: 2) —
         #              exactly the paths the dossier contract never covered.
-        # run_angles = engineered evidence diversity. Non-empty FLIPS the bot flow: instead of
-        #              one shared-dossier research run + reasoning-only runs, it launches one
+        # run_angles = engineered evidence diversity. The bot launches one
         #              INDEPENDENT full-research run per angle letter (operator briefs in
         #              skills/forecast/references/research-angles.md), then pools them.
         #              Measured why: runs that share one dossier correlate ~0.97 (members
         #              disagree ~0.03), so the pool equals the member average at N times the
         #              cost — evidence diversity is the pooling prerequisite.
         #              DEFAULT since 2026-09-03 (operator decision): PARALLEL RESEARCH —
-        #              "P" = plain replicate, a full research run with no lens; medium runs
-        #              three, high four, matching `runs`. [] = the dossier fallback.
+        #              "P" = plain replicate, a full research run with no lens; low runs
+        #              one, medium three, high four. An empty list is a startup error.
         #              All question types pool (binary: geo_mean_odds; continuous: per-
         #              percentile mean; MC: per-option geometric mean, renormalized).
-        # share_evidence = angle mode only, PHASE 2. Every angle run also writes the
-        #              estimate-free dossier; after they all finish, each run gets one
-        #              reasoning-only call carrying its own dossier plus the OTHER runs'
-        #              dossiers (evidence, never numbers or reasoning), and those second
-        #              estimates are pooled instead. The blackboard design from
-        #              docs/research-notes-multiagent-forecasting-2026-09-03 §4: shared
-        #              evidence, independent judgment. OFF at every tier by operator
-        #              decision (2026-09-03) — it is an experiment switch, not production:
-        #              it adds ~$1.3/question at medium and the herding risk (Lorenz 2011:
-        #              circulating others' views collapses variance without improving
-        #              accuracy) is exactly what bench/analysis/phase_pools.py measures.
-        # supervisor = angle mode only, PHASE 3. One reconciler call sees every dossier and
-        #              every run's estimate WITH its reasoning, classifies the disagreements
-        #              FACTUAL vs JUDGMENT, settles the factual ones, and issues the final
-        #              number — the only interactive design with forecasting-specific
-        #              quantitative evidence (AIA Forecaster 0.1182 -> 0.1125; Cassi). It
-        #              never averages: the pools are already the averaging arm, and both
-        #              are journaled so the reconciler is scored against them.
-        # supervisor_search_spread / supervisor_search_spread_iqr = the disagreement
-        #              thresholds that decide whether the reconciler gets web tools. Runs
-        #              that already agree have no factual dispute to settle, so a cheap
-        #              REASONING-ONLY reconciliation is enough; only genuine disagreement
-        #              buys the research-capable call (~$1.0-1.5 more). The first threshold
-        #              is on a probability scale (binary: max-min probability; MC: max-min
-        #              of the top option); the second is for continuous questions and is
-        #              measured in IQR units (max-min of the run medians divided by the
-        #              pooled p75-p25, so 1.0 means "the medians differ by a full IQR").
-        #              Unused where supervisor is false.
-        # RESEARCH DEPTH IS NOW UNIFORM ACROSS TIERS (operator, 2026-09-03): searches=5 and
-        # min_sources=3 everywhere. A tier is a statement about how much INDEPENDENT
+        # RESEARCH DEPTH IS UNIFORM ACROSS TIERS (operator, 2026-09-03): the same searches
+        # and min_sources everywhere (searches 5 -> 10 on 2026-11-19: the model runs the
+        # number it is given, and published agents that read full pages take 10-20 steps).
+        # A tier is a statement about how much INDEPENDENT
         # judgment a question gets — the run count and what synthesizes it — not about how
         # carefully any one run reads the world. The old ladder (1/5/12 searches, 1/3/5
         # sources) made a low-tier run research badly on purpose, which is the one economy
         # the survey evidence contradicts outright: "research sources used" is the single
         # strongest measured correlate of bot performance (r=+0.42, p=.006, Fall 2025
         # FutureEval survey), while aggregation counts were not significant.
-        "low": {"draws": 1, "searches": 5, "runs": 1, "run_models": [], "min_sources": 3,
-                "run_angles": [], "share_evidence": False, "supervisor": False,
-                "supervisor_search_spread": 0.10, "supervisor_search_spread_iqr": 0.75},
-        "medium": {"draws": 5, "searches": 5, "runs": 3, "run_models": [], "min_sources": 3,
-                   "run_angles": ["P", "P", "P"], "share_evidence": False,
-                   "supervisor": True, "supervisor_search_spread": 0.10,
-                   "supervisor_search_spread_iqr": 0.75},
-        "high": {"draws": 12, "searches": 5, "runs": 4, "run_models": [], "min_sources": 3,
-                 "run_angles": ["P", "P", "P", "P"], "share_evidence": False,
-                 "supervisor": True, "supervisor_search_spread": 0.08,
-                 "supervisor_search_spread_iqr": 0.5},
+        "low": {"draws": 1, "searches": 10, "runs": 1, "run_models": [], "min_sources": 3,
+                "run_angles": ["P"]},
+        "medium": {"draws": 5, "searches": 10, "runs": 3, "run_models": [], "min_sources": 3,
+                   "run_angles": ["P", "P", "P"]},
+        "high": {"draws": 12, "searches": 10, "runs": 4, "run_models": [], "min_sources": 3,
+                 "run_angles": ["P", "P", "P", "P"]},
     },
     # 0.8 = Halawi et al.'s validated optimum ("4x weight for the crowd", NeurIPS 2024)
     # for blending with the SAME question's human crowd/market — the chat/CLI use where a

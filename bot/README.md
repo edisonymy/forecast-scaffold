@@ -10,9 +10,9 @@ tamper-evident track record).
 
 1. **Metaculus**: create a bot account and get a token at metaculus.com/futureeval (participate
    page). Set `METACULUS_TOKEN`.
-2. **Agent**: any headless agent CLI works via `--agent-cmd`; the default mirrors the
-   production command in `bot.yml` (`claude -p` with a pinned model, the JSON envelope
-   for cost/model capture, and `--allowed-tools` hardening).
+2. **Agent**: the default is the production command, `run_bot.agent_command()` (`claude -p`
+   with a pinned model and effort level, the JSON envelope for cost/model capture, and
+   `--allowed-tools` hardening); any headless agent CLI works via `--agent-cmd`.
    Auth options, pick one: a local subscription login (nothing to configure), a
    `CLAUDE_CODE_OAUTH_TOKEN` from `claude setup-token` (subscription Agent SDK credit — the
    right choice for CI), or an `ANTHROPIC_API_KEY` (pay-per-token). Metaculus also sponsors
@@ -45,112 +45,82 @@ tamper-evident track record).
 ## How a question flows
 
 fetch open questions (skip ones already forecast, unsupported, closed, unbounded, or backed
-off after repeated failures — see `journal/failures.jsonl`) → **auto-effort triage** (one
-cheap agent call → low/medium/high; override with `--effort`) → run the `forecast` skill with
-the question brief (resolution criteria verbatim, options/bounds — never the fetchable
-"crowd": a bot token only ever sees other bots' aggregates, which are journaled as a
-benchmark and withheld from the agent) under a fenced-JSON output contract → validate the
-payload (`core` validators; one repair retry with the errors quoted) → record to `journal/`
-(the record carries exactly the numbers submitted) → submit (binary probability /
+off after repeated failures — see `journal/failures.jsonl`) → launch the tier's
+**independent research runs** in parallel, each running the `forecast` skill on the question
+brief (resolution criteria verbatim, options/bounds — never the fetchable "crowd": a bot
+token only ever sees other bots' aggregates, which are journaled as a benchmark and withheld
+from the agent) under a fenced-JSON output contract → validate each payload (`core`
+validators; one repair retry with the errors quoted) → **pool** the runs → record to
+`journal/` (the record carries exactly the numbers submitted) → submit (binary probability /
 renormalized MC / percentiles built into a platform-valid CDF by `percentiles_to_cdf`) →
 optional private comment with the reasoning (`--comment`).
 
-## Pooling independent runs (every question type)
+That is the whole pipeline: three agent calls per question at the production tier, and no
+stage that reads another run's work.
 
-The tier's `runs` count is how many genuinely independent agent processes forecast one
-question, and since v0.4.28 it applies to **all** types, not just binaries. Binaries pool
-with `geo_mean_odds`; numeric/discrete/date quantile-average their five percentiles (in log
-space when the question has a `zero_point`), averaging the declared escape masses over the
-runs that declared one; multiple choice takes a per-option geometric mean, renormalized.
-Quantile averaging is shape-preserving — it recentres on the runs' consensus and averages
-their widths — so it is the ensemble lever, not by itself a fix for the measured
-under-dispersion. Because that is a live question, every pooled record journals the
-**single-run counterfactual**: `percentiles_run1` / `probabilities_run1` (the research
-run's own answer, which is exactly what a one-run harness would have submitted) alongside
-the per-run values in `run_percentiles` / `run_escapes` / `run_probabilities`. Nothing is
-A/B split and no question is spent on a control arm;
-`bench/analysis/pooled_vs_single.py` rebuilds both arms at resolution, scores them with the
-platform's own continuous formula, and carries the preregistered decision rule (KEEP
-pooling only if the paired CI90 excludes zero on the positive side at n >= 60).
+## The agent, in one place
 
-## The three phases of a medium/high question (v0.4.28)
+`run_bot.agent_command()` builds the command every workflow runs, from two constants:
+`AGENT_MODEL` and `AGENT_EFFORT`. The effort level is always passed explicitly. A model's
+default is not ours to inherit: on 2026-09-22 a model switch moved the default down a level
+and every research run shrank to about a third of the work, unnoticed for two months.
+`bench/depth.py` now measures work per research run and flags a move in either direction.
 
-Angle mode runs `run_angles` **independent full-research runs** — production is Angle P, a
-plain replicate, three at medium and four at high. Two further phases sit on top of it, each
-behind a tier flag, and every phase's pool is journaled beside the number actually
-submitted, so which architecture wins is a measurement rather than an argument.
+`--model` and `--model-effort` override the two constants for a dry run. A tier's
+`run_models` is the candidate slot: each entry (`model` or `model@effort`) takes one run,
+counted from the last, so a new model forecasts the same live questions as the incumbent and
+carries one run in three before it carries all of them. `bench/canary.py` scores it.
 
-| Phase | Flag | What it is | Default | What it adds per question (opus-5, medium) |
-|---|---|---|---|---|
-| 1 — parallel research | `run_angles` | k independent research runs, pooled | **on** (3 / 4 runs) | ≈ **$4.0** total |
-| 2 — shared evidence | `share_evidence` | every run also writes the estimate-free dossier; each is then re-asked once with the OTHER runs' dossiers — evidence, never their numbers or reasoning — and the second round is pooled instead | **off, every tier** | ≈ **+$1.3** |
-| 3 — supervisor | `supervisor` | one reconciler sees every dossier and every estimate **with** its reasoning, lists the disagreements, classifies each FACTUAL or JUDGMENT, settles the factual ones, and issues the final number | **on** at medium/high | ≈ **+$0.4** reasoning-only (**$4.4** all-in), **+$1.0–1.5** on the questions that disagree |
+## Research tools
 
-**Phase 2 is off by design** (operator decision, 2026-09-03): it is an experiment switch,
-not production. Circulating other forecasters' material is the documented way to collapse a
-group's variance *without* improving its mean accuracy (Lorenz et al. 2011, PNAS — N=144,
-"remarkably little" social influence needed), which is why the harness journals
-`spread_phase1` / `spread_phase2` and the scorer refuses to keep the phase on a variance
-collapse with no accuracy gain.
+Each research run has the CLI's WebSearch and WebFetch, plus `fetch_raw` from
+`bot/research_tools.py` (a stdio MCP server, stdlib only). It returns a page's text
+unsummarised — JSON and CSV verbatim, HTML as visible text with tables kept — because
+WebFetch hands every page to a helper model and returns a summary, so exact figures and
+tables never reached the forecaster.
 
-**The supervisor's research budget is conditional on disagreement.** Runs that already agree
-have no factual dispute worth searching, so the harness measures the spread of the phase the
-reconciler consumes and compares it with the tier's threshold:
-`supervisor_search_spread` on a probability scale (binary: max−min probability; MC: max−min
-of the pooled leader) and `supervisor_search_spread_iqr` in IQR units for continuous
-questions (max−min of the run medians ÷ the pooled p75−p25, so 1.0 = "a full interquartile
-range apart"). Below it, the reconciler runs **reasoning-only** — web tools denied at the CLI,
-not merely discouraged in the prompt — and reconciles on the evidence in front of it. At or
-above it, it runs **research-capable** with up to the tier's `searches` targeted checks. The
-spread decides once, before the call; a factual conflict the reconciler notices afterwards
-cannot re-arm the tools, which keeps a question's cost predictable. `supervisor.mode` and
-`supervisor.spread` journal which path was taken and the number that chose it.
+The server refuses anything that is not a public http(s) address, re-checks every redirect,
+and takes its domain deny-list as a launch argument: the sites a blind run may not WebFetch
+it may not fetch raw either. Each call is counted in the trace (`usage.fetch_raw`).
 
-The reconciler is explicitly told **not to average**: the pool is already computed and
-journaled beside it, so a number that merely re-derives it adds nothing, and a compromise
-between two claims about the world is not itself a claim about the world. Its own number is
-submitted only when it validates; otherwise the pool it consumed is, and `aggregation` says
-which (`supervisor(angles=P,P,P)` vs `geo_mean_odds(angles=P,P,P)`). Both phases obey the
-same budget and deadline stops as a run slot: an exhausted budget skips the phase, prints
-why, and falls back one level.
+## Tiers and pooling
 
-Research depth does **not** vary by tier (operator, 2026-09-03): `searches = 5` and
-`min_sources = 3` at low, medium and high. A tier says how much independent *judgment* a
-question gets — how many runs, and what synthesizes them — never how carefully one run reads
-the world. The old ladder made a low-tier run research badly on purpose, and "research
-sources used" is the strongest measured correlate of bot performance in the Fall 2025
-FutureEval survey (r = +0.42, p = .006), while aggregation counts were not significant.
+A tier says how many independent runs a question gets: `low` one, `medium` three (production),
+`high` four — `--effort` picks it. Research depth does **not** vary by tier: `searches = 10`
+and `min_sources = 3` everywhere.
+
+Binaries pool with `geo_mean_odds`; numeric/discrete/date quantile-average their five
+percentiles (in log space when the question has a `zero_point`), averaging the declared
+escape masses over the runs that declared one; multiple choice takes a per-option geometric
+mean, renormalized. Every pooled record also journals the per-run values (`raw_draws`,
+`run_percentiles` / `run_escapes`, `run_probabilities`) and the single-run counterfactual
+(`percentiles_run1` / `probabilities_run1`), so pooling stays a measurement:
+`bench/analysis/pooled_vs_single.py` rebuilds both arms at resolution.
+
+Removed in v0.6.0, with the evidence: the reconciler that read every run and issued its own
+number (no measurable gain over the pool on 136 binary and 187 continuous questions —
+`bench/analysis/phase_pools.py`, which still scores the historical rows), the triage call
+(229 of 232 scored questions landed on `medium` anyway), the shared-evidence second round
+(never run in production) and the older shared-dossier path.
 
 ## Traces: what each run actually thought
 
-The journal records what the bot forecast; the **trace** records what each run thought. Once
-a question is three-to-seven agent calls deep, the submitted number is the one thing that
-cannot be reverse-engineered back into its reasoning, and "the pool moved because run 2
-found X" is exactly the review question. Every record therefore names a
-`trace_path` — `traces/<record_id>.json`, relative to the journal directory — holding one
-object per agent call:
+The journal records what the bot forecast; the **trace** records what each run thought.
+Every record names a `trace_path` — `traces/<record_id>.json`, relative to the journal
+directory — holding one object per agent call:
 
 ```
-phase / stage / run_index / angle / mode / model / cost_usd / seconds / ok
-estimate (the run's OWN number, type-shaped) / reasoning / sources / dossier
-reconciliation + disagreements (supervisor) / searches_used (when reported)
+stage / run_index / angle / model / cost_usd / seconds / ok
+usage (turns, tokens, web_search, fetch_raw)
+estimate (the run's OWN number, type-shaped) / reasoning / sources
 validation_errors_first_attempt (only when a repair retry happened)
 ```
 
-plus each phase's pool, the spreads, and what was finally submitted. The dossier (non-angle)
-path is traced the same way, so old-design runs stay readable. Text fields are capped at
-6 KB and the whole file at ~60 KB — these are committed on every hourly run, so an unbounded
-dossier would bloat the repo forever. Writing happens **after** the journal append and is
-fail-open: a trace that cannot be written prints a warning and never costs a forecast. Since
-`bot.yml` stages `bot/journal/` wholesale, traces are committed with the journal and pass
-through the same leak guard (which is fail-closed on any line, trace lines included).
-
-`bench/analysis/phase_pools.py` scores all three arms paired at resolution — log score for
-binaries, the platform's continuous formula for numerics, bootstrap CI90 on each delta —
-plus the herding check. **Preregistered rules:** phase 2 is kept only if its paired delta vs
-phase 1 is ≥ 0 *and* the spread ratio is not below 0.5 alongside a non-positive delta; the
-supervisor is kept only if its paired delta vs the phase it consumed has a CI90 excluding
-zero on the positive side after two MiniBench waves (n ≥ 40 binaries, or 60 mixed).
+plus the pool, its spread, and what was finally submitted. Text fields are capped at 6 KB
+and the whole file at ~60 KB — these are committed on every run. Writing happens **after**
+the journal append and is fail-open: a trace that cannot be written prints a warning and
+never costs a forecast. Since `bot.yml` stages `bot/journal/` wholesale, traces are
+committed with the journal and pass through the same leak guard.
 
 ## Workflows
 

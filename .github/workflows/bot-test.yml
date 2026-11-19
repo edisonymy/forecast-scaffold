@@ -21,12 +21,7 @@ on:
         type: boolean
         default: false
       effort:
-        description: "Effort tier (force medium/high to exercise the multi-run dossier path)"
-        type: choice
-        options: [auto, low, medium, high]
-        default: auto
-      min_effort:
-        description: "Effort floor (production runs with medium)"
+        description: "Tier: how many independent research runs (low 1, medium 3, high 4)"
         type: choice
         options: [low, medium, high]
         default: medium
@@ -35,8 +30,13 @@ on:
         type: boolean
         default: false
       model:
-        description: "Model for the agent (cheap models for diagnostics)"
+        description: "Model for the agent (a candidate model, or a cheap one for diagnostics)"
         default: "claude-opus-5-5"
+      model_effort:
+        description: "The model's effort level"
+        type: choice
+        options: [low, medium, high, xhigh, max]
+        default: high
       parallel_runs:
         description: "Research runs per question to run concurrently (1 = sequential)"
         default: "1"
@@ -68,30 +68,14 @@ jobs:
           pip install -e .
           npm install -g @anthropic-ai/claude-code@2.1.280
 
-      - name: AskNews smoke
-        # Positive proof the CI secret works: bot/asknews.py fails CLOSED (returns [] on any
-        # error), so a bad key in the real run would just silently drop the news section.
-        # [AMENDED 2026-09-09] continue-on-error: the step still goes RED when the key is
-        # dead — which is the whole signal, and it fired correctly when the Summer key
-        # lapsed — but it no longer skips the forecast step behind it. Production
-        # (bot.yml) has always failed open on AskNews, so a dead news key must not be the
-        # thing that stops us testing the forecaster itself.
+      - name: Research tools smoke test
+        # Live calls to third-party sites: red is a signal, never a gate on the run below.
         continue-on-error: true
-        env:
-          ASKNEWS_API_KEY: ${{ secrets.ASKNEWS_API_KEY }}
-        run: |
-          python - <<'EOF'
-          import sys
-          from bot.asknews import search_news
-          arts = search_news("global economy")
-          print(f"asknews smoke: {len(arts)} articles")
-          sys.exit(0 if arts else 1)
-          EOF
+        run: python bot/research_tools.py --selftest
 
       - name: Run
         env:
           METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
-          ASKNEWS_API_KEY: ${{ secrets.ASKNEWS_API_KEY }}
           # Subscription OAuth by default. Do NOT add ANTHROPIC_API_KEY: it takes precedence
           # and silently switches to per-token API billing. With provider=openrouter the bot
           # maps OPENROUTER_API_KEY into the CLI's env itself.
@@ -103,8 +87,8 @@ jobs:
           INPUT_LIMIT: ${{ inputs.limit }}
           INPUT_PROVIDER: ${{ inputs.provider }}
           INPUT_EFFORT: ${{ inputs.effort }}
-          INPUT_MIN_EFFORT: ${{ inputs.min_effort }}
           INPUT_MODEL: ${{ inputs.model }}
+          INPUT_MODEL_EFFORT: ${{ inputs.model_effort }}
           INPUT_PARALLEL_RUNS: ${{ inputs.parallel_runs }}
         run: |
           # Single-post backtest (--post, forces dry-run) or a tournament sweep — the target
@@ -122,14 +106,14 @@ jobs:
           fi
           python bot/run_bot.py "${target[@]}" \
             --provider "${INPUT_PROVIDER:-subscription}" \
-            --effort "${INPUT_EFFORT:-auto}" \
-            --min-effort "${INPUT_MIN_EFFORT:-medium}" \
-            --budget 8 \
+            --effort "${INPUT_EFFORT:-medium}" \
+            --model "${INPUT_MODEL:-claude-opus-5-5}" \
+            --model-effort "${INPUT_MODEL_EFFORT:-high}" \
+            --budget 12 \
             --parallel-runs "${INPUT_PARALLEL_RUNS:-1}" \
             ${{ inputs.dry_run && '--dry-run' || '' }} \
             ${{ inputs.blind && '--blind' || '' }} \
-            ${{ inputs.include_forecasted && '--include-forecasted' || '' }} \
-            --agent-cmd "claude -p --model ${INPUT_MODEL:-claude-opus-5-5} --output-format json --allowed-tools Read,Glob,Grep,WebSearch,WebFetch"
+            ${{ inputs.include_forecasted && '--include-forecasted' || '' }}
 
       - name: Show journal
         if: ${{ always() }}

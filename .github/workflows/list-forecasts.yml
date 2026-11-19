@@ -1,13 +1,17 @@
 name: List bot forecasts
 
-# Read-only track-record dump: queries the Metaculus API for every forecast this
-# account holds and prints it to the log. Never submits. Manual trigger only.
+# Read-only track record: every forecast this account holds, then the leaderboard
+# standing per recent bot tournament (bench/standing.py; last, so it ends the log). Never submits. Manual
+# trigger only.
 on:
   workflow_dispatch:
     inputs:
       tournaments:
         description: "Extra tournament slugs to sweep (comma-separated), unioned with the forecaster_id sweep"
         default: "bot-testing-area"
+      standing_slugs:
+        description: "Extra tournament slugs for the standing report (MiniBench waves are not in the public list)"
+        default: ""
 
 permissions:
   contents: read
@@ -26,3 +30,8 @@ jobs:
           METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
           TOURNAMENTS: ${{ inputs.tournaments }}
         run: python bot/list_forecasts.py
+      - name: Standing
+        env:
+          METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
+          STANDING_SLUGS: ${{ inputs.standing_slugs }}
+        run: python bench/standing.py --slugs "$STANDING_SLUGS" | tee -a "$GITHUB_STEP_SUMMARY"

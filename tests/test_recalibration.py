@@ -246,7 +246,6 @@ class _StubClient:
 
 RESEARCH = {
     "probability": 0.30,
-    "dossier": "- fact A (src, 2026)\n- fact B (src, 2026)",
     "reasoning": "researched",
     "sources": ["https://example.com/a"],
     "reference_class": "class R",
@@ -255,7 +254,7 @@ RESEARCH = {
 
 
 def _reasoning(p: float) -> dict[str, Any]:
-    return {"probability": p, "reasoning": "x", "sources": [], "named_scenarios": []}
+    return {"probability": p, "reasoning": "x", "sources": []}
 
 
 def _run_bot_once(
@@ -266,7 +265,6 @@ def _run_bot_once(
         "run_agent",
         _ScriptedAgent([_fenced(RESEARCH), _fenced(_reasoning(0.20)), _fenced(_reasoning(0.40))]),
     )
-    monkeypatch.setattr(run_bot, "verify_dossier", lambda *a, **k: ("", 0.0))
     monkeypatch.setattr(run_bot, "RECAL_PARAMS_PATH", params_path)
     args = argparse.Namespace(
         blind=False, effort="medium", provider="subscription", timeout=60,
@@ -274,7 +272,8 @@ def _run_bot_once(
         agent_cmd="claude -p --model claude-sonnet-5 --output-format json",
     )
     config = json.loads(json.dumps(DEFAULTS))
-    config["tiers"] = {"medium": {"draws": 5, "searches": 5, "runs": 3}}
+    config["tiers"] = {"medium": {"draws": 5, "searches": 5, "runs": 3,
+                                  "run_angles": ["P", "P", "P"]}}
     journal_path = tmp_path / "j.jsonl"
     ok = run_bot.forecast_question(
         _StubClient(), POST, QUESTION, args, config, Journal(str(journal_path)), {"usd": 0.0},
