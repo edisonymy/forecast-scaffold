@@ -73,18 +73,15 @@ carries one run in three before it carries all of them. `bench/canary.py` scores
 
 ## Research tools
 
-Each research run has the CLI's WebSearch and WebFetch, plus two tools from
-`bot/research_tools.py` (a stdio MCP server, stdlib only):
-
-- `fetch_raw` returns a page's text unsummarised — JSON and CSV verbatim, HTML as visible
-  text with tables kept — because WebFetch hands every page to a helper model and returns a
-  summary, so exact figures and tables never reached the forecaster.
-- `news_search` lists recent dated headlines (GDELT) with direct article URLs.
+Each research run has the CLI's WebSearch and WebFetch, plus `fetch_raw` from
+`bot/research_tools.py` (a stdio MCP server, stdlib only). It returns a page's text
+unsummarised — JSON and CSV verbatim, HTML as visible text with tables kept — because
+WebFetch hands every page to a helper model and returns a summary, so exact figures and
+tables never reached the forecaster.
 
 The server refuses anything that is not a public http(s) address, re-checks every redirect,
 and takes its domain deny-list as a launch argument: the sites a blind run may not WebFetch
-it may not fetch raw either. Each call is counted in the trace (`usage.fetch_raw`,
-`usage.news_search`).
+it may not fetch raw either. Each call is counted in the trace (`usage.fetch_raw`).
 
 ## Tiers and pooling
 
@@ -114,7 +111,7 @@ directory — holding one object per agent call:
 
 ```
 stage / run_index / angle / model / cost_usd / seconds / ok
-usage (turns, tokens, web_search, fetch_raw, news_search)
+usage (turns, tokens, web_search, fetch_raw)
 estimate (the run's OWN number, type-shaped) / reasoning / sources
 validation_errors_first_attempt (only when a repair retry happened)
 ```

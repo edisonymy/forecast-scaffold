@@ -1,4 +1,4 @@
-"""bot/research_tools.py: raw fetch, GDELT headlines and the SSRF guards. No network."""
+"""bot/research_tools.py: raw fetch and the SSRF guards. No network."""
 
 from __future__ import annotations
 
@@ -22,15 +22,13 @@ Reply = tuple[int, dict[str, str], bytes]
 
 
 class FakeNet:
-    """Scripted resolver/sender plus a fake clock; records every request sent."""
+    """Scripted resolver/sender; records every request sent."""
 
     def __init__(self, routes: dict[str, Reply | list[Reply]],
                  dns: dict[str, list[str]] | None = None) -> None:
         self.routes = routes
         self.dns = dns or {}
         self.sent: list[tuple[str, str, int, str, str, dict[str, str]]] = []
-        self.now = 1_000_000.0
-        self.slept: list[float] = []
 
     def resolve(self, host: str, port: int) -> list[str]:
         return self.dns.get(host, [PUBLIC])
@@ -41,13 +39,8 @@ class FakeNet:
         reply = self.routes[f"{scheme}://{host}{target}".split("?")[0]]
         return reply.pop(0) if isinstance(reply, list) else reply
 
-    def sleep(self, seconds: float) -> None:
-        self.slept.append(seconds)
-        self.now += seconds
-
-    def net(self, lock: Path | None = None, **kw: Any) -> rt.Net:
-        return rt.Net(self.resolve, self.send, lambda: self.now, self.sleep,
-                      gdelt_lock=lock, **kw)
+    def net(self, **kw: Any) -> rt.Net:
+        return rt.Net(self.resolve, self.send, **kw)
 
 
 def ok(body: str | bytes, ctype: str = "text/html; charset=utf-8") -> Reply:
@@ -222,92 +215,6 @@ class TestAddressAndUrlChecks:
             rt.check_url("https://x.polymarket.com/markets", deny)
 
 
-GDELT_JSON = json.dumps({"articles": [
-    {"url": "https://news.example/a", "title": "Fed holds rates", "seendate": "20261117T101500Z",
-     "domain": "news.example"},
-    {"url": "https://wire.example/b", "title": "Fed HOLDS rates", "seendate": "20261116T090000Z",
-     "domain": "wire.example"},
-    {"url": "https://wire.example/c", "title": "Markets | rally\nagain",
-     "seendate": "20261118T000000Z"},
-    {"url": "https://polymarket.com/n", "title": "Odds shift", "seendate": "20261118T000000Z"},
-    {"url": "javascript:x", "title": "bad url"}, {"title": "no url"}, "junk",
-    {"url": "https://x.example/d", "title": "No date"},
-]})
-
-
-class TestGdeltParsing:
-    def test_parse_and_format(self) -> None:
-        items = rt.parse_gdelt(GDELT_JSON)
-        assert len(items) == 5
-        lines = rt.format_headlines(items, 10, ("polymarket.com",))
-        assert lines == [
-            "2026-11-18 | wire.example | Markets / rally again | https://wire.example/c",
-            "2026-11-17 | news.example | Fed holds rates | https://news.example/a",
-            "unknown | x.example | No date | https://x.example/d",
-        ]
-        assert len(rt.format_headlines(items, 1, ())) == 1
-
-    @pytest.mark.parametrize("raw", ['{"articles": {}}', "[1, 2]", '{"articles": "x"}'])
-    def test_unexpected_shapes(self, raw: str) -> None:
-        with pytest.raises(rt.ToolError, match="unexpected"):
-            rt.parse_gdelt(raw)
-
-    def test_empty_object_means_no_results(self) -> None:
-        assert rt.parse_gdelt("{}") == []
-
-    def test_plain_text_message_passed_through(self) -> None:
-        with pytest.raises(rt.ToolError, match="limit requests to one every 5 seconds"):
-            rt.parse_gdelt("Please limit requests to one every 5 seconds.")
-
-
-GDELT = "https://api.gdeltproject.org/api/v2/doc/doc"
-
-
-class TestNewsSearch:
-    def test_success_query_params_and_lang(self, tmp_path: Path) -> None:
-        fake = FakeNet({GDELT: ok(GDELT_JSON, "application/json")})
-        out = rt.news_search("fed rates", days=7, max_results=2, net=fake.net(tmp_path / "l"))
-        lines = out.splitlines()
-        assert lines[0].startswith("news_search via GDELT: 2 result(s)")
-        assert len(lines) == 3
-        target = fake.sent[0][4]
-        for part in ("query=fed%20rates%20sourcelang%3Aenglish", "mode=artlist",
-                     "format=json", "timespan=7d", "sort=datedesc", "maxrecords=4"):
-            assert part in target
-        rt.news_search("fed", lang="any", net=fake.net(tmp_path / "l"))
-        assert "sourcelang" not in fake.sent[1][4]
-
-    def test_cross_process_spacing(self, tmp_path: Path) -> None:
-        lock = tmp_path / "gdelt.lock"
-        fake = FakeNet({GDELT: ok("{}", "application/json")})
-        rt.news_search("a", net=fake.net(lock))
-        assert fake.slept == []
-        fake.now += 2.0
-        rt.news_search("b", net=fake.net(lock))
-        assert fake.slept == [pytest.approx(3.5)]
-        assert float(lock.read_text()) == pytest.approx(fake.now)
-
-    def test_429_waits_and_retries_once(self, tmp_path: Path) -> None:
-        busy: Reply = (429, {"content-type": "text/plain"}, b"Please limit requests")
-        fake = FakeNet({GDELT: [busy, ok(GDELT_JSON, "application/json")]})
-        out = rt.news_search("fed", net=fake.net(tmp_path / "l"))
-        assert "result(s)" in out and 6 in fake.slept
-
-        fake = FakeNet({GDELT: [busy, busy]})
-        with pytest.raises(rt.ToolError, match="use WebSearch instead"):
-            rt.news_search("fed", net=fake.net(tmp_path / "l2"))
-        assert len(fake.sent) == 2 and sum(fake.slept) < rt.GDELT_BUDGET
-
-    def test_200_with_text_body_is_error(self, tmp_path: Path) -> None:
-        fake = FakeNet({GDELT: ok("Invalid query: too short", "text/html")})
-        with pytest.raises(rt.ToolError, match="Invalid query.*use WebSearch"):
-            rt.news_search("x", net=fake.net(tmp_path / "l"))
-
-    def test_empty_query(self) -> None:
-        with pytest.raises(rt.ToolError, match="empty"):
-            rt.news_search("   ")
-
-
 class TestJsonRpc:
     def server(self, fake: FakeNet, log: Path | None = None) -> rt.Server:
         return rt.Server(("polymarket.com",), log, fake.net())
@@ -325,7 +232,7 @@ class TestJsonRpc:
                                  srv) == {"jsonrpc": "2.0", "id": 2, "result": {}}
         tools = rt.handle_message({"jsonrpc": "2.0", "id": 3, "method": "tools/list"}, srv)
         assert tools is not None
-        assert [t["name"] for t in tools["result"]["tools"]] == ["fetch_raw", "news_search"]
+        assert [t["name"] for t in tools["result"]["tools"]] == ["fetch_raw"]
         bad = rt.handle_message({"jsonrpc": "2.0", "id": 4, "method": "resources/list"}, srv)
         assert bad is not None and bad["error"]["code"] == -32601
 
@@ -357,19 +264,14 @@ class TestJsonRpc:
 
     def test_telemetry_allow_list(self, tmp_path: Path) -> None:
         log = tmp_path / "calls.jsonl"
-        fake = FakeNet({"https://e.org/p": ok("SECRET BODY", "text/plain"),
-                        GDELT: ok(GDELT_JSON, "application/json")})
-        srv = rt.Server((), log, rt.Net(fake.resolve, fake.send, lambda: fake.now,
-                                        fake.sleep, gdelt_lock=None))
+        fake = FakeNet({"https://e.org/p": ok("SECRET BODY", "text/plain")})
+        srv = rt.Server((), log, fake.net())
         self.call(srv, "fetch_raw", {"url": "https://e.org/p?token=abc", "find": "SECRET"})
-        self.call(srv, "news_search", {"query": "fed rates"})
         self.call(srv, "fetch_raw", {"url": "file:///x"})
         events = [json.loads(line) for line in log.read_text().splitlines()]
-        assert [set(e) for e in events] == [{"tool", "ok", "chars", "host"},
-                                            {"tool", "ok", "chars", "query"},
-                                            {"tool", "ok", "chars", "host"}]
+        assert [set(e) for e in events] == [{"tool", "ok", "chars", "host"}] * 2
         assert events[0]["host"] == "e.org" and events[0]["ok"] is True
-        assert events[1]["query"] == "fed rates" and events[2]["ok"] is False
+        assert events[1]["ok"] is False
         assert "SECRET" not in log.read_text() and "token" not in log.read_text()
 
 

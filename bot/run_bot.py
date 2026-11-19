@@ -175,8 +175,8 @@ ALWAYS_DISALLOWED = ("Read(//proc/**),Read(~/.claude/**),Read(~/.claude.json),"
 #: work (296 s -> 80 s, 9.7 sources -> 5.6) with no line of this repository changing.
 AGENT_MODEL = "claude-opus-5-5"
 AGENT_EFFORT = "high"
-#: The research-tools MCP server (bot/research_tools.py): raw page text and dated headlines.
-RESEARCH_TOOLS = "mcp__research__fetch_raw,mcp__research__news_search"
+#: The research-tools MCP server (bot/research_tools.py): raw, unsummarised page text.
+RESEARCH_TOOLS = "mcp__research__fetch_raw"
 
 
 def agent_command(model: str = AGENT_MODEL, effort: str = AGENT_EFFORT) -> str:

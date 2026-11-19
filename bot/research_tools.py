@@ -1,8 +1,8 @@
-"""Stdio MCP server: raw page reads and dated news headlines for the research agent.
+"""Stdio MCP server: raw page reads for the research agent.
 
 The CLI's WebFetch hands every page to a helper model and returns a summary, so exact
 figures, tables and data files never reach the forecaster. ``fetch_raw`` returns the text
-itself; ``news_search`` lists recent dated headlines (GDELT DOC 2.0).
+itself.
 
 Safety (the agent reads untrusted pages and may be prompt-injected): http(s) only, no URL
 credentials, no cookies; every resolved address must be public and the connection goes to
@@ -20,29 +20,21 @@ import contextlib
 import http.client
 import ipaddress
 import json
-import os
 import re
 import socket
 import ssl
 import sys
-import tempfile
 import time
 from collections.abc import Callable
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, NamedTuple
-from urllib.parse import quote, urlencode, urljoin, urlsplit
+from urllib.parse import quote, urljoin, urlsplit
 
 DEFAULT_UA = "Mozilla/5.0 (compatible; research-fetch/1.0)"
 TIMEOUT, MAX_BYTES, MAX_REDIRECTS, HARD_CAP = 15.0, 3 * 1024 * 1024, 5, 60_000
 TOTAL_TIMEOUT = 40.0  # whole response: TIMEOUT alone lets a host drip one byte at a time
 WINDOW, MAX_MATCHES = 400, 8
-GDELT_URL = "https://api.gdeltproject.org/api/v2/doc/doc"
-GDELT_SPACING, GDELT_BUDGET = 5.5, 25.0  # GDELT allows one request per 5 s per IP
-GDELT_LANGS = {"en": "english", "es": "spanish", "fr": "french", "de": "german",
-               "it": "italian", "pt": "portuguese", "ru": "russian", "zh": "chinese",
-               "ja": "japanese", "ar": "arabic"}
-GDELT_LOCK = Path(tempfile.gettempdir()) / "research_tools_gdelt.lock"
 PROTOCOL_FALLBACK = "2024-11-05"
 TEXT_TYPES = {"application/json", "application/xml", "application/javascript",
               "application/x-javascript", "application/csv", "application/x-ndjson"}
@@ -99,10 +91,7 @@ class Net(NamedTuple):
 
     resolve: Resolver = _resolve
     send: Sender = _send
-    clock: Callable[[], float] = time.time
-    sleep: Callable[[float], None] = time.sleep
     user_agent: str = DEFAULT_UA
-    gdelt_lock: Path | None = GDELT_LOCK
 
 
 DEFAULT_NET = Net()
@@ -306,117 +295,7 @@ def fetch_raw(url: str, find: str = "", max_chars: int = 20000, *,
     return f"{header}\n{body}"
 
 
-class Headline(NamedTuple):
-    date: str
-    source: str
-    title: str
-    url: str
-
-
-def _clean(value: object) -> str:
-    return " ".join(str(value).replace("|", "/").split())
-
-
-def parse_gdelt(raw: str) -> list[Headline]:
-    """GDELT artlist JSON -> headlines. Raises ToolError carrying any non-JSON message."""
-    try:
-        data = json.loads(raw, strict=False)
-    except ValueError as exc:
-        raise ToolError(f"GDELT said: {_clean(raw)[:200] or 'empty response'}") from exc
-    articles = data.get("articles", []) if isinstance(data, dict) else None
-    if not isinstance(articles, list):
-        raise ToolError("GDELT returned an unexpected JSON shape")
-    out = []
-    for art in articles:
-        if not isinstance(art, dict):
-            continue
-        url, title = art.get("url"), art.get("title")
-        if not (isinstance(url, str) and url.startswith(("http://", "https://"))
-                and isinstance(title, str) and title.strip()):
-            continue
-        m = re.match(r"(\d{4})(\d{2})(\d{2})", str(art.get("seendate", "")))
-        source = art.get("domain") or urlsplit(url).hostname or "unknown"
-        out.append(Headline("-".join(m.groups()) if m else "unknown", _clean(source),
-                            _clean(title), url.strip()))
-    return out
-
-
-def format_headlines(items: list[Headline], limit: int, deny: tuple[str, ...]) -> list[str]:
-    """Newest first, deduped by title, denied domains dropped."""
-    seen: set[str] = set()
-    lines: list[str] = []
-    for h in sorted(items, key=lambda h: (h.date != "unknown", h.date), reverse=True):
-        key = h.title.casefold()
-        if key in seen or host_denied(urlsplit(h.url).hostname or "", deny):
-            continue
-        seen.add(key)
-        lines.append(f"{h.date} | {h.source} | {h.title} | {h.url}")
-        if len(lines) >= limit:
-            break
-    return lines
-
-
-def _gdelt_slot(net: Net, deadline: float) -> None:
-    """Cross-process spacing: the bot runs several copies of this server at once."""
-    if net.gdelt_lock is None or os.name != "posix":
-        return
-    import fcntl
-    with open(net.gdelt_lock, "a+", encoding="utf-8") as fh:
-        fcntl.flock(fh, fcntl.LOCK_EX)
-        try:
-            fh.seek(0)
-            try:
-                last = float(fh.read().strip() or 0)
-            except ValueError:
-                last = 0.0
-            wait = last + GDELT_SPACING - net.clock()
-            if net.clock() + max(wait, 0) > deadline:
-                raise ToolError("GDELT is rate-limited right now; use WebSearch instead")
-            if wait > 0:
-                net.sleep(wait)
-            fh.seek(0)
-            fh.truncate()
-            fh.write(repr(net.clock()))
-            fh.flush()
-        finally:
-            fcntl.flock(fh, fcntl.LOCK_UN)
-
-
-def gdelt_fetch(query: str, days: int, records: int, net: Net) -> list[Headline]:
-    params = {"query": query, "mode": "artlist", "format": "json",
-              "maxrecords": str(records), "timespan": f"{days}d", "sort": "datedesc"}
-    url = f"{GDELT_URL}?{urlencode(params, quote_via=quote)}"
-    deadline = net.clock() + GDELT_BUDGET
-    for attempt in range(2):
-        _gdelt_slot(net, deadline)
-        resp = safe_get(url, (), net)
-        if resp.status == 429 and attempt == 0 and net.clock() + 6 < deadline:
-            net.sleep(6)
-            continue
-        if resp.status != 200:
-            raise ToolError(f"GDELT returned HTTP {resp.status}")
-        return parse_gdelt(decode(resp.body, resp.charset))
-    raise ToolError("GDELT returned HTTP 429 twice")
-
-
-def news_search(query: str, days: int = 14, max_results: int = 20, lang: str = "en", *,
-                deny: tuple[str, ...] = (), net: Net = DEFAULT_NET) -> str:
-    query = " ".join(str(query).split())
-    if not query:
-        raise ToolError("empty query")
-    days, limit = max(1, min(int(days), 90)), max(1, min(int(max_results), 50))
-    language = GDELT_LANGS.get(str(lang).lower())
-    try:
-        items = gdelt_fetch(f"{query} sourcelang:{language}" if language else query,
-                            days, min(250, limit * 2), net)
-    except ToolError as exc:
-        raise ToolError(f"news_search unavailable ({exc}); use WebSearch instead") from exc
-    lines = format_headlines(items, limit, deny)
-    head = f"news_search via GDELT: {len(lines)} result(s) for {query!r}, last {days} days"
-    return "\n".join([head] + lines)
-
-
-TOOLS: dict[str, Callable[..., str]] = {"fetch_raw": fetch_raw, "news_search": news_search}
+TOOLS: dict[str, Callable[..., str]] = {"fetch_raw": fetch_raw}
 TOOL_DEFS: list[dict[str, Any]] = [
     {"name": "fetch_raw",
      "description": (
@@ -434,18 +313,6 @@ TOOL_DEFS: list[dict[str, Any]] = [
                   "description": "case-insensitive substring; return only ~800-char windows "
                                  "around up to 8 matches"},
          "max_chars": {"type": "integer", "description": "default 20000, max 60000"}}}},
-    {"name": "news_search",
-     "description": (
-         "Recent worldwide news headlines (GDELT), newest first, one per line: "
-         "`YYYY-MM-DD | source | title | url`, with direct article URLs to read via fetch_raw. "
-         "Use it to check what happened lately and when; dates are when GDELT saw the story. "
-         "Headlines only, no article text. Use short keyword queries; quote exact phrases."),
-     "inputSchema": {"type": "object", "required": ["query"], "properties": {
-         "query": {"type": "string"},
-         "days": {"type": "integer", "description": "look-back window, default 14, max 90"},
-         "max_results": {"type": "integer", "description": "default 20, max 50"},
-         "lang": {"type": "string", "description": "source language: en (default), es, fr, "
-                  "de, it, pt, ru, zh, ja, ar, or 'any'"}}}},
 ]
 ALLOWED_ARGS = {d["name"]: set(d["inputSchema"]["properties"]) for d in TOOL_DEFS}
 
@@ -460,13 +327,10 @@ def _log(server: Server, name: str, args: dict[str, Any], ok: bool, chars: int) 
     if server.log is None:
         return
     event: dict[str, Any] = {"tool": name, "ok": ok, "chars": chars}
-    if name == "fetch_raw":
-        try:
-            event["host"] = urlsplit(str(args.get("url", ""))).hostname or ""
-        except ValueError:
-            event["host"] = ""
-    else:
-        event["query"] = str(args.get("query", ""))[:300]
+    try:
+        event["host"] = urlsplit(str(args.get("url", ""))).hostname or ""
+    except ValueError:
+        event["host"] = ""
     with contextlib.suppress(OSError), server.log.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(event, ensure_ascii=False) + "\n")
 
@@ -524,15 +388,13 @@ def handle_message(msg: dict[str, Any], server: Server) -> dict[str, Any] | None
 
 
 def selftest(server: Server) -> int:
-    """One live call per backend and named endpoint; only the plain-page fetch is fatal."""
+    """One live call per named endpoint; only the plain-page fetch is fatal."""
     checks: list[tuple[str, Callable[[], str], str, bool]] = [
         ("fetch_raw plain page", lambda: fetch_raw("https://example.com/", net=server.net),
          "Example Domain", True),
         ("fetch_raw FRED CSV", lambda: fetch_raw(
             "https://fred.stlouisfed.org/graph/fredgraph.csv?id=UNRATE", max_chars=300,
             net=server.net), "UNRATE", False),
-        ("news_search GDELT", lambda: news_search("economy", days=3, max_results=3,
-                                                  net=server.net), " | ", False),
     ]
     fatal = False
     for label, run, expect, required in checks:

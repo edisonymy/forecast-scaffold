@@ -27,9 +27,8 @@ the default effort level, so every research run did about a third of the work (2
 
 ### Added
 - `bot/research_tools.py`: a stdlib MCP server giving each research run `fetch_raw` (page
-  text unsummarised, tables kept) and `news_search` (dated headlines). Public addresses
-  only, every redirect re-checked, deny-list as a launch argument; calls are counted in the
-  trace.
+  text unsummarised, tables kept). Public addresses only, every redirect re-checked,
+  deny-list as a launch argument; calls are counted in the trace.
 - `bench/standing.py`: rank, coverage, leaders and the `metac-*` baseline bots per
   tournament. `bench/depth.py`: work per research run, and whether it just moved.
   `bench/canary.py`: a candidate model's runs against the incumbent's on the same questions.

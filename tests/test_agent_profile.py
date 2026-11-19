@@ -37,7 +37,7 @@ def test_with_research_tools_writes_a_config_the_agent_cannot_loosen(tmp_path: P
     cmd = shlex.split(run_bot.with_research_tools(
         run_bot.agent_command(), "metaculus.com,polymarket.com", log))
     allowed = cmd[cmd.index("--allowed-tools") + 1].split(",")
-    assert {"WebSearch", "mcp__research__fetch_raw", "mcp__research__news_search"} <= set(allowed)
+    assert {"WebSearch", "mcp__research__fetch_raw"} <= set(allowed)
     assert "--strict-mcp-config" in cmd
     config = json.loads(Path(cmd[cmd.index("--mcp-config") + 1]).read_text(encoding="utf-8"))
     args = config["mcpServers"]["research"]["args"]
@@ -49,17 +49,16 @@ def test_with_research_tools_writes_a_config_the_agent_cannot_loosen(tmp_path: P
 def test_take_tool_calls_counts_by_outcome_and_clears(tmp_path: Path):
     log = tmp_path / "calls.jsonl"
     assert run_bot.take_tool_calls(None) == {}  # no tools attached: nothing to say
-    assert run_bot.take_tool_calls(log) == {"fetch_raw": 0, "news_search": 0}
+    assert run_bot.take_tool_calls(log) == {"fetch_raw": 0}
     log.write_text("\n".join([
         json.dumps({"tool": "fetch_raw", "ok": True, "chars": 10, "host": "a.org"}),
         json.dumps({"tool": "fetch_raw", "ok": False, "chars": 0, "host": "b.org"}),
-        json.dumps({"tool": "news_search", "ok": True, "chars": 5, "query": "q"}),
         "not json",
         json.dumps({"tool": "fetch_raw", "ok": True, "chars": 7, "host": "c.org"}),
     ]) + "\n", encoding="utf-8")
     assert run_bot.take_tool_calls(log) == {
-        "fetch_raw": 2, "fetch_raw_failed": 1, "news_search": 1}
-    assert run_bot.take_tool_calls(log) == {"fetch_raw": 0, "news_search": 0}  # cleared
+        "fetch_raw": 2, "fetch_raw_failed": 1}
+    assert run_bot.take_tool_calls(log) == {"fetch_raw": 0}  # cleared
 
 
 def test_blind_runs_carry_the_forecasting_sites_into_the_tool_deny_list():
