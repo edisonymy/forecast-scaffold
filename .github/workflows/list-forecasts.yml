@@ -1,7 +1,8 @@
 name: List bot forecasts
 
-# Read-only track-record dump: queries the Metaculus API for every forecast this
-# account holds and prints it to the log. Never submits. Manual trigger only.
+# Read-only track record: leaderboard standing per recent bot tournament
+# (bench/standing.py), then every forecast this account holds. Never submits. Manual
+# trigger only.
 on:
   workflow_dispatch:
     inputs:
@@ -21,6 +22,10 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -e .
+      - name: Standing
+        env:
+          METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
+        run: python bench/standing.py | tee -a "$GITHUB_STEP_SUMMARY"
       - name: List forecasts
         env:
           METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
