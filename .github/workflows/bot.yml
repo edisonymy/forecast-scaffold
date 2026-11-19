@@ -130,8 +130,6 @@ jobs:
         env:
           METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          # AskNews: competition-licensed research source; absent secret = section silently off
-          ASKNEWS_API_KEY: ${{ secrets.ASKNEWS_API_KEY }}
           # via env, never interpolated into the shell line (script-injection safe)
           TOURNAMENT_ID: ${{ vars.TOURNAMENT_ID }}
         # [FIXED 2026-09-21] The default `bash -e` has no pipefail, so `| tee` returned 0 and
@@ -164,8 +162,6 @@ jobs:
         env:
           METACULUS_TOKEN: ${{ secrets.METACULUS_TOKEN }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          # Parity with the subscription step: same research starting material.
-          ASKNEWS_API_KEY: ${{ secrets.ASKNEWS_API_KEY }}
           TOURNAMENT_ID: ${{ vars.TOURNAMENT_ID }}
         run: |
           set -o pipefail
@@ -211,9 +207,7 @@ jobs:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           PUSH_TOKEN: ${{ github.token }}
           # This step runs no bot: every secret here exists ONLY so the value scan below can
-          # look for it in the journal about to be published. AskNews was previously listed
-          # with the run steps' "section silently off" comment, exposed but unscanned.
-          ASKNEWS_API_KEY: ${{ secrets.ASKNEWS_API_KEY }}
+          # look for it in the journal about to be published.
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           # Leak-guard the machine-generated journal BEFORE publishing it. The bot ingests
@@ -249,7 +243,7 @@ jobs:
           # The pattern list cannot know credential VALUES — but a prompt-injected agent's
           # visible output (sources, reasoning) lands in exactly the files this step is
           # about to publish. Check for the values themselves, fail-closed.
-          for secret in "$METACULUS_TOKEN" "$CLAUDE_CODE_OAUTH_TOKEN" "$OPENROUTER_API_KEY" "$ASKNEWS_API_KEY"; do
+          for secret in "$METACULUS_TOKEN" "$CLAUDE_CODE_OAUTH_TOKEN" "$OPENROUTER_API_KEY"; do
             if [ -n "$secret" ] && grep -rqF -- "$secret" bot/journal/; then
               echo "::error::a credential value appears in the journal — not publishing"; exit 3
             fi

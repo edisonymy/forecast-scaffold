@@ -39,10 +39,9 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-sys.path.insert(0, str(ROOT / "bot"))  # so sibling bot modules (asknews) import when run direct
+sys.path.insert(0, str(ROOT / "bot"))  # so sibling bot modules import when run direct
 
 # ruff: noqa: E402  (imports follow the sys.path bootstrap above)
-import asknews  # optional AskNews research source (dark by default; no key -> no-op)
 import markets  # harness-side Polymarket/Manifold candidate lookup (record-only, sighted only)
 import or_proxy  # loopback shim restoring WebSearch on the OpenRouter path
 import priors  # same-template prior outcomes from the resolutions overlay (record-only)
@@ -129,7 +128,7 @@ MIDTICK_POLL_S = 300.0  # how often a running tick re-reads the open set for new
 # as ANTHROPIC_AUTH_TOKEN (the CLI's own credential), never as the raw variable.
 _SECRETS_TO_HIDE = frozenset(
     {"METACULUS_TOKEN", "METACULUS_CP_TOKEN", "LEAK_PATTERNS", "GITHUB_TOKEN",
-     "ASKNEWS_API_KEY", "MANIFOLD_API_KEY", "OPENROUTER_API_KEY",
+     "MANIFOLD_API_KEY", "OPENROUTER_API_KEY",
      # The exchange paper bot's venue login: the agent never needs it, and it is a real
      # betting-account password. Read(//proc/**) is denied too, but that is one belt.
      "BETFAIR_APP_KEY", "BETFAIR_USERNAME", "BETFAIR_PASSWORD", "BETFAIR_SESSION_TOKEN",
@@ -1824,20 +1823,6 @@ def forecast_question(
     # types is an option/CDF artifact and would journal a nonsense benchmark value.
     crowd = client.community_prediction(question) if qtype == "binary" else None
     base_brief = build_brief(post, question, None)
-    # Optional AskNews starting material, fetched ONCE for the RESEARCH run only (dark by
-    # default: no key/kill-switch -> ""). Appended to the research/angle briefs below, and to
-    # NOTHING else — triage is a cheap classify call and reasoning-only runs work from the
-    # dossier, so neither needs it. It is ADDITIONAL evidence to verify and search beyond,
-    # never a replacement, and carries no yes/no lean (see bot/asknews.py). Metaculus-only key
-    # terms are why this rides the tournament run and not run_manifold.
-    # Paced to last the billing period, new questions first (asknews.fetch_allowed). A
-    # question we already hold a forecast on is a refresh.
-    refresh = bool((question.get("my_forecasts") or {}).get("latest"))
-    news = ""
-    if asknews.fetch_allowed(Path(journal.path).parent / "traces", refresh=refresh):
-        news = asknews.news_section(question.get("title") or post.get("title") or "")
-        if news:
-            asknews.note_fetch()
     # The market-scan mandate (sighted only). Kept as a SEPARATE string so angle mode can
     # hand it to sighted angles and WITHHOLD it from the blind angle F, which must stay
     # market-blind by design even when the overall run is sighted.
@@ -2355,7 +2340,7 @@ def forecast_question(
             )
             specs.append({
                 "slot_index": slot_index, "letter": letter, "run_blind": run_blind,
-                "cmd": run_cmd, "prompt": run_brief + prior_facts + news,
+                "cmd": run_cmd, "prompt": run_brief + prior_facts,
                 "system": run_system,
             })
 
@@ -2464,7 +2449,7 @@ def forecast_question(
                 + (FAST_PROXY_SECTION if slow_question else "")
             )
             candidate, model, errors = one_run(
-                agent_cmd, brief + prior_facts + news, full_system, need_dossier, args.timeout,
+                agent_cmd, brief + prior_facts, full_system, need_dossier, args.timeout,
                 min_sources=min_sources,
                 trace_meta={"phase": 1, "stage": "dossier_research", "mode": "research",
                             "run_index": 1},
@@ -3219,7 +3204,6 @@ def forecast_question(
             "supervisor_enabled": use_supervisor,
             "aggregation": aggregation_note,
             "cost_usd": round(run_cost, 4),
-            "asknews": bool(news),  # counted by asknews.fetches_used for pacing
             "pools": {
                 "pooled_runs": pooled_estimate,
                 "phase1": pool_phase1,
