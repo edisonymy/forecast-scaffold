@@ -84,7 +84,8 @@ DEFAULTS: dict[str, Any] = {
         #              percentile mean; MC: per-option geometric mean, renormalized).
         # RESEARCH DEPTH IS UNIFORM ACROSS TIERS (operator, 2026-09-03): the same searches
         # and min_sources everywhere (searches 5 -> 10 on 2026-11-19: the model runs the
-        # number it is given, and published agents that read full pages take 10-20 steps). A tier is a statement about how much INDEPENDENT
+        # number it is given, and published agents that read full pages take 10-20 steps).
+        # A tier is a statement about how much INDEPENDENT
         # judgment a question gets — the run count and what synthesizes it — not about how
         # carefully any one run reads the world. The old ladder (1/5/12 searches, 1/3/5
         # sources) made a low-tier run research badly on purpose, which is the one economy
