@@ -83,34 +83,6 @@ DEFAULTS: dict[str, Any] = {
         #              three, high four, matching `runs`. [] = the dossier fallback.
         #              All question types pool (binary: geo_mean_odds; continuous: per-
         #              percentile mean; MC: per-option geometric mean, renormalized).
-        # share_evidence = angle mode only, PHASE 2. Every angle run also writes the
-        #              estimate-free dossier; after they all finish, each run gets one
-        #              reasoning-only call carrying its own dossier plus the OTHER runs'
-        #              dossiers (evidence, never numbers or reasoning), and those second
-        #              estimates are pooled instead. The blackboard design from
-        #              docs/research-notes-multiagent-forecasting-2026-09-03 §4: shared
-        #              evidence, independent judgment. OFF at every tier by operator
-        #              decision (2026-09-03) — it is an experiment switch, not production:
-        #              it adds ~$1.3/question at medium and the herding risk (Lorenz 2011:
-        #              circulating others' views collapses variance without improving
-        #              accuracy) is exactly what bench/analysis/phase_pools.py measures.
-        # supervisor = angle mode only, PHASE 3. One reconciler call sees every dossier and
-        #              every run's estimate WITH its reasoning, classifies the disagreements
-        #              FACTUAL vs JUDGMENT, settles the factual ones, and issues the final
-        #              number — the only interactive design with forecasting-specific
-        #              quantitative evidence (AIA Forecaster 0.1182 -> 0.1125; Cassi). It
-        #              never averages: the pools are already the averaging arm, and both
-        #              are journaled so the reconciler is scored against them.
-        # supervisor_search_spread / supervisor_search_spread_iqr = the disagreement
-        #              thresholds that decide whether the reconciler gets web tools. Runs
-        #              that already agree have no factual dispute to settle, so a cheap
-        #              REASONING-ONLY reconciliation is enough; only genuine disagreement
-        #              buys the research-capable call (~$1.0-1.5 more). The first threshold
-        #              is on a probability scale (binary: max-min probability; MC: max-min
-        #              of the top option); the second is for continuous questions and is
-        #              measured in IQR units (max-min of the run medians divided by the
-        #              pooled p75-p25, so 1.0 means "the medians differ by a full IQR").
-        #              Unused where supervisor is false.
         # RESEARCH DEPTH IS NOW UNIFORM ACROSS TIERS (operator, 2026-09-03): searches=5 and
         # min_sources=3 everywhere. A tier is a statement about how much INDEPENDENT
         # judgment a question gets — the run count and what synthesizes it — not about how
@@ -120,16 +92,11 @@ DEFAULTS: dict[str, Any] = {
         # strongest measured correlate of bot performance (r=+0.42, p=.006, Fall 2025
         # FutureEval survey), while aggregation counts were not significant.
         "low": {"draws": 1, "searches": 5, "runs": 1, "run_models": [], "min_sources": 3,
-                "run_angles": [], "share_evidence": False, "supervisor": False,
-                "supervisor_search_spread": 0.10, "supervisor_search_spread_iqr": 0.75},
+                "run_angles": []},
         "medium": {"draws": 5, "searches": 5, "runs": 3, "run_models": [], "min_sources": 3,
-                   "run_angles": ["P", "P", "P"], "share_evidence": False,
-                   "supervisor": True, "supervisor_search_spread": 0.10,
-                   "supervisor_search_spread_iqr": 0.75},
+                   "run_angles": ["P", "P", "P"]},
         "high": {"draws": 12, "searches": 5, "runs": 4, "run_models": [], "min_sources": 3,
-                 "run_angles": ["P", "P", "P", "P"], "share_evidence": False,
-                 "supervisor": True, "supervisor_search_spread": 0.08,
-                 "supervisor_search_spread_iqr": 0.5},
+                 "run_angles": ["P", "P", "P", "P"]},
     },
     # 0.8 = Halawi et al.'s validated optimum ("4x weight for the crowd", NeurIPS 2024)
     # for blending with the SAME question's human crowd/market — the chat/CLI use where a
