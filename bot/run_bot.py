@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import concurrent.futures
 import contextlib
+import dataclasses
 import json
 import math
 import os
@@ -1385,46 +1386,12 @@ def forecast_question(
     deadline: float | None = None,
 ) -> bool:
     budget = float(getattr(args, "budget", 0.0) or 0.0)
-    hard_cap_openrouter = (
-        args.provider == "openrouter" and math.isfinite(budget) and budget > 0
+    state = QuestionRun(
+        question=question, args=args, spent=spent, deadline=deadline, budget=budget,
+        hard_cap_openrouter=(
+            args.provider == "openrouter" and math.isfinite(budget) and budget > 0
+        ),
     )
-    run_cost = 0.0
-    # Budget-only reservations for calls whose real cost is unknown (failed/unpriced).
-    # They gate further spend but are NOT cost: booking them as cost_usd put a phantom
-    # $6.00 in the journal on 2026-09-22 (a $7.55 question was recorded as $13.55).
-    run_reserved = 0.0
-    # Per-THREAD cap of the call in flight: with --parallel-runs several research runs share
-    # this closure, and a single shared value would let one run reserve another's cap.
-    call_caps: dict[int, float] = {}
-    state_lock = threading.Lock()
-    # One entry per forecasting agent call, in the order they ran — see write_trace.
-    trace_calls: list[dict[str, Any]] = []
-
-    def fail_closed_metered() -> None:
-        """Charge a metered call of unknown cost its full per-call cap.
-
-        The CLI enforces --max-budget-usd on the process, so the call cannot have billed
-        more than the cap it was given — reserving exactly that keeps the invocation-wide
-        hard cap true. [CHANGED 2026-09-21] It used to reserve the ENTIRE remaining budget
-        and forbid all later calls, so one OpenRouter 502 or timeout on the first question
-        ended the fallback tick with nothing forecast."""
-        nonlocal run_reserved
-        with state_lock:
-            run_reserved += call_caps.get(threading.get_ident(), 0.0)
-
-    def metered_cmd(cmd: str) -> str | None:
-        """Cap this OpenRouter subprocess at min(per-call cap, unspent remainder)."""
-        if not hard_cap_openrouter:
-            return cmd
-        with state_lock:
-            remaining = (budget - (spent["usd"] if spent else 0.0)
-                         - (spent.get("reserved_usd", 0.0) if spent else 0.0)
-                         - run_cost - run_reserved)
-            if remaining <= 0:
-                return None
-            cap = min(remaining, OPENROUTER_PER_CALL_CAP_USD)
-            call_caps[threading.get_ident()] = cap
-        return with_credit_cap(cmd, cap)
 
     # The Metaculus API firewalls the HUMAN community prediction from bot accounts
     # everywhere: any value a bot token can read is an aggregate of other competing bots.
@@ -1474,53 +1441,8 @@ def forecast_question(
         "twin because one clause differed. State the contract differences you "
         "checked before you lean on any market number."
     )
-    # Harness-side market lookup [ADDED 2026-09-03, operator]: the crowd-signals mandate
-    # above is a prompt requirement a model can skip, and Manifold bets were found that a
-    # real read of Polymarket would have stopped. So the harness searches Polymarket and
-    # Manifold by title itself and hands the candidates (venue, title, price, volume, close,
-    # URL) to every sighted run as record-only data; contract equivalence stays the model's
-    # stated judgment. Blind runs never see it. Fail-open: a lookup failure costs only the
-    # section (which then says "none found — run your own check").
-    #
-    # Computed ONCE into a variable and appended to EVERY sighted brief [FIXED 2026-09-03]:
-    # it used to be appended to `brief` alone, so in angle mode — where each run rebuilds its
-    # own brief below — the research runs never saw the candidates, i.e. the harness lookup
-    # missed exactly the calls it exists to inform. Empty string
-    # in blind mode, and withheld from the market-blind angle F, which rebuilds from
-    # base_brief. The lookup is skipped outright near the deadline (see bot/markets.py).
-    market_facts = ""
-    if not args.blind:
-        section = markets.market_facts_section(
-            str(question.get("title") or post.get("title") or ""),
-            remaining_seconds=None if deadline is None else deadline - time.monotonic(),
-        )
-        if section:
-            market_facts = "\n" + section
-    # Same-template prior facts [ADDED 2026-09-03]: the platform outcomes of earlier
-    # questions with this template and our own submission on each, read from the
-    # resolutions overlay next to the journal (bench/sync_resolutions.py writes it). MiniBench
-    # regenerates templates every wave, so this is the cheapest reference class there is.
-    # Record-only data for the research runs; any failure to read it costs nothing but the
-    # section.
-    # OFF by default (operator, 2026-09-03): on MiniBench the same template recurs
-    # every wave, so a one-sample "lesson" from the last instance is exactly the kind of
-    # tournament-shaped overfitting a general-purpose skill must not carry. The section
-    # is data-only (prior outcomes, never our own earlier submission) and turns on with
-    # --prior-facts, which a preregistered paired test must justify first.
-    prior_facts = ""
-    if getattr(args, "prior_facts", PRIOR_FACTS_DEFAULT):
-        try:
-            prior_facts = priors.prior_facts_section(
-                str(question.get("title") or post.get("title") or ""), qtype,
-                overlay_path=Path(journal.path).parent / "resolutions.jsonl",
-                journal_path=Path(journal.path),
-                exclude_question_id=int(question.get("id") or 0) or None,
-            )
-        except Exception as exc:  # noqa: BLE001 — prior facts must never block a forecast
-            print(f"  prior facts unavailable ({exc})")
-            prior_facts = ""
-    if prior_facts:
-        print(f"  prior same-template facts: {prior_facts.count(chr(10) + '- ')} row(s)")
+    market_facts = market_facts_brief(post, question, args, deadline)
+    prior_facts = prior_facts_brief(post, question, args, journal)
     base_cmd = (
         openrouter_model_cmd(args.agent_cmd)
         if args.provider == "openrouter" else args.agent_cmd
@@ -1552,246 +1474,6 @@ def forecast_question(
     # in bench/analysis/pooled_vs_single.py.
     n_runs = len(run_angles)
 
-    def one_run(
-        cmd: str, run_prompt: str, run_system: str, timeout: int, min_sources: int = 0,
-        trace_meta: dict[str, Any] | None = None,
-    ) -> tuple[dict[str, Any] | None, str, list[str]]:
-        """One agent call (plus at most one repair retry) against this question's contract.
-
-        ``min_sources`` turns on the research floors TOGETHER: distinct sources, plus (on
-        MC/continuous) the reference-class and dispersion requirements."""
-        nonlocal run_cost, agent_responded, provider_error
-        errors: list[str] = []
-        first_error: str | None = None
-        candidate: dict[str, Any] | None = None
-        model = ""
-        started = time.monotonic()
-        cost_before = run_cost
-        # Attempt 0's rejection reasons, kept for the trace: "this run needed a repair and
-        # here is what was wrong with its first answer" is a review signal the journal has
-        # nowhere to put, and it is how a systematically sloppy contract surfaces.
-        attempt0_errors: list[str] = []
-
-        def add_trace(ok: bool, cand: dict[str, Any] | None,
-                      run_errors: list[str]) -> None:
-            if trace_meta is None:
-                return
-            entry: dict[str, Any] = {
-                **trace_meta,
-                "ok": ok,
-                # The model this run actually used: the CLI envelope's, else the one its
-                # command named (a failed call has no envelope).
-                "model": model or _model_from_cmd(cmd),
-                "cost_usd": round(run_cost - cost_before, 4),
-                "seconds": round(time.monotonic() - started, 1),
-            }
-            if usage_now := last_call_usage():
-                entry["usage"] = usage_now
-                if ok and "research" in str(trace_meta.get("stage", "")):
-                    check_search_parity(args.provider, usage_now)
-            if attempt0_errors:
-                entry["validation_errors_first_attempt"] = [
-                    str(e)[:300] for e in attempt0_errors
-                ]
-            if ok and cand is not None:
-                entry["estimate"] = payload_estimate(cand, qtype)
-                entry["reasoning"] = str(cand.get("reasoning") or "")[:MAX_TRACE_TEXT]
-                entry["sources"] = [str(s)[:300] for s in cand.get("sources") or []
-                                    if str(s).strip()]
-                if reference_class := str(cand.get("reference_class") or "").strip():
-                    entry["reference_class"] = reference_class[:300]
-                for key in ("searches_used", "n_searches"):
-                    if isinstance(cand.get(key), int | float):
-                        entry["searches_used"] = int(cand[key])
-                        break
-            else:
-                entry["errors"] = [str(e)[:300] for e in run_errors]
-            # Appended in FINISH order; parallel runs finish out of order, so the trace is
-            # sorted back into (phase, run_index) order before it is written.
-            trace_calls.append(entry)
-
-        # Attempt-0 percentiles kept ONLY when the dispersion-width guard was among the
-        # rejection reasons, journaled as percentiles_pre_guard so resolution can score
-        # the guard's effect PAIRED on exactly the questions it fired on (no A/B arm
-        # needed — the counterfactual is the run's own first answer).
-        pre_guard_percentiles: dict[str, Any] | None = None
-        for attempt in range(2):
-            if attempt and deadline is not None and time.monotonic() > deadline:
-                # The repair retry can add a whole agent-call to a run already past the
-                # wall clock; the CI job timeout is sized for at most one overrun call.
-                errors.append("deadline reached before the repair retry")
-                break
-            prompt = run_prompt if attempt == 0 else (
-                run_prompt + "\n\nYour previous output was invalid: "
-                + "; ".join(errors) + "\nEmit a corrected fenced json block."
-            )
-            if attempt:
-                # Attempt 0's errors are about to be overwritten by this attempt's
-                # validate_payload() call — capture the reason for the retry now, so a
-                # success below can say what was repaired instead of looking identical
-                # to a clean first attempt.
-                first_error = errors[0] if errors else None
-                attempt0_errors = list(errors)
-                if (isinstance(candidate, dict)
-                        and isinstance(candidate.get("percentiles"), dict)
-                        and any("dispersion_90_10" in e and "narrower" in e
-                                for e in errors)):
-                    pre_guard_percentiles = dict(candidate["percentiles"])
-            # Every call is bounded by the WALL CLOCK as well as by --timeout [ADDED
-            # 2026-09-03]: --timeout is per call, so with 3-7 calls per question a single
-            # hung subprocess could burn the whole 85-minute tick while the deadline checks
-            # (which only run BETWEEN calls) never got a turn. The 60 s floor keeps a
-            # just-past-deadline call from being killed instantly with nothing to show; the
-            # deadline gates above still refuse to START work once the clock is spent.
-            effective_timeout = timeout
-            if deadline is not None:
-                effective_timeout = int(min(
-                    timeout, max(60.0, deadline - time.monotonic())
-                ))
-            try:
-                call_cmd = metered_cmd(cmd)
-                if call_cmd is None:
-                    errors = ["budget exhausted before agent call"]
-                    break
-                if hard_cap_openrouter:
-                    output, attempt_cost, model = run_agent(
-                        call_cmd, prompt, run_system, effective_timeout, args.provider,
-                        strict_metering=True,
-                    )
-                else:
-                    output, attempt_cost, model = run_agent(
-                        call_cmd, prompt, run_system, effective_timeout, args.provider
-                    )
-                if attempt_cost == UNKNOWN_METERED_COST:
-                    fail_closed_metered()
-                else:
-                    with state_lock:
-                        run_cost += attempt_cost
-                agent_responded = True
-                provider_error = False
-                candidate = extract_json(output)
-            except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
-                errors = [str(exc)]
-                # The LATEST call's outcome decides infra-vs-question: quota running out
-                # mid-question (after an earlier reply) is still the provider's fault.
-                # A timeout counts too: a hanging provider must fall back, not burn every
-                # 85-minute tick on stalled calls (audit, 2026-09-22).
-                provider_error = isinstance(exc, subprocess.TimeoutExpired) or (
-                    isinstance(exc, RuntimeError) and str(exc).startswith("agent failed"))
-                if is_call_budget_stop(exc):
-                    # The call ran and spent its whole per-call cap: the QUESTION is too
-                    # expensive, not the provider down. Ledger it (backoff) instead of
-                    # re-spending the cap on the fallback every tick.
-                    provider_error = False
-                    agent_responded = True
-                if hard_cap_openrouter and isinstance(
-                    exc, (RuntimeError, subprocess.TimeoutExpired)
-                ):
-                    # A failed/timed-out CLI process may still have been billed, but gives
-                    # no usage envelope: charge it its whole per-call cap (the CLI enforces
-                    # it) and let the retry run under a fresh cap. ValueError is different:
-                    # run_agent returned, and its known cost was added before JSON parsing.
-                    fail_closed_metered()
-                continue
-            errors = validate_payload(candidate, question)
-            if min_sources > 0 and (found := distinct_source_count(candidate)) < min_sources:
-                # The research floor: reject BEFORE the forecast is accepted, so the
-                # repair retry re-researches rather than a gate catching it post-hoc.
-                errors.append(
-                    f'research run listed {found} distinct source(s); this tier requires '
-                    f'at least {min_sources} — run real searches and list in "sources" '
-                    f'only what you actually consulted'
-                )
-            # Reference-class floor: research runs on MC/continuous must name the class their
-            # prior is computed over (binary's contract example is its own guard, so it is
-            # left alone here). Same reject-before-accept point as the source
-            # floor — the live 32/31/34 even-spread failure was an MC run that never derived a
-            # prior from a reference class. See the block comment on REFERENCE_CLASS_SECTION.
-            if min_sources > 0 and qtype in ("multiple_choice", *CONTINUOUS):
-                if not str(candidate.get("reference_class") or "").strip():
-                    errors.append(
-                        'research run must name a "reference_class" (the class of past cases '
-                        'your prior is computed over) as a non-empty string — derive the prior '
-                        'from it before adjusting on news; an even spread you cannot trace to a '
-                        'reference class is the known failure mode'
-                    )
-                # Dispersion floor (v0.4.26), continuous only: the research run must state
-                # the width its own analysis implies BEFORE the percentiles are accepted,
-                # so the consistency check in validate_payload() has a number to hold the
-                # percentiles against. Same reject-before-accept point as the source floor;
-                # motivation on the check itself (Parana q45325).
-                if qtype in CONTINUOUS:
-                    if candidate.get("dispersion_90_10") is None:
-                        errors.append(
-                            'research run must state "dispersion_90_10" — the 10-90 width '
-                            "in question units your OWN dispersion analysis implies "
-                            "(reference-class SD x 2.56, realized vol scaled to the "
-                            "horizon, historical spread) — computed BEFORE tuning the "
-                            'percentiles, with the computation named in "dispersion_basis"'
-                        )
-                    elif not str(candidate.get("dispersion_basis") or "").strip():
-                        errors.append(
-                            '"dispersion_basis" must name the computation behind '
-                            'dispersion_90_10 (e.g. "SD of 11-day changes 0.5 x 2.56") '
-                            "as a non-empty string"
-                        )
-                base_rate = candidate.get("base_rate")
-                if qtype == "multiple_choice" and isinstance(base_rate, dict):
-                    options = [str(o) for o in question.get("options") or []]
-                    # Same invented-label hazard as the probabilities check: a base_rate keyed
-                    # on a label that is not an option is a prior over a case that cannot happen.
-                    extra = [k for k in base_rate if k not in options]
-                    if extra:
-                        errors.append(
-                            f'"base_rate" keys must be the exact option labels given (do not '
-                            f'invent labels): {extra}'
-                        )
-                    try:
-                        [float(v) for v in base_rate.values()]
-                    except (TypeError, ValueError):
-                        errors.append('every "base_rate" value must be a number')
-            if not errors:
-                if attempt:
-                    print(
-                        f"  repaired on retry: {question.get('id')} "
-                        f"({(first_error or '')[:200]})"
-                    )
-                    if pre_guard_percentiles is not None:
-                        candidate["percentiles_pre_guard"] = pre_guard_percentiles
-                add_trace(True, candidate, [])
-                return candidate, model, []
-        add_trace(False, None, errors)
-        return None, "", errors
-
-    def pooled_so_far() -> int:
-        """Runs that have produced a usable number, in this question type's own currency."""
-        if qtype == "binary":
-            return len(run_probs)
-        if qtype == "multiple_choice":
-            return len(run_probabilities)
-        return len(run_percentiles)
-
-    def collect_run(candidate: dict[str, Any]) -> None:
-        """Record one successful non-binary run's numbers for the pool (binaries append to
-        run_probs at the call site).
-
-        The payload already passed validate_payload, so the keys read here exist and are
-        numeric: MC carries every exact option label, continuous carries the five
-        percentiles."""
-        if qtype == "multiple_choice":
-            run_probabilities.append(
-                {str(o): float(candidate["probabilities"][str(o)])
-                 for o in question.get("options") or []}
-            )
-        elif qtype in CONTINUOUS:
-            run_percentiles.append(
-                {str(k): float(v) for k, v in candidate["percentiles"].items()}
-            )
-            run_escapes.append([
-                _as_float(candidate.get("p_below_lower")),
-                _as_float(candidate.get("p_above_upper")),
-            ])
-
     # Independent runs = separate agent processes with no shared context — the only draw
     # mechanism audits show actually decorrelates (in-context draws cluster within ~5 points
     # while separate runs on the same brief swing 2-3x wider). Every run researches for
@@ -1813,32 +1495,11 @@ def forecast_question(
     if qtype == "binary" and resolve_iso:
         with contextlib.suppress(ValueError):
             slow_question = (date.fromisoformat(resolve_iso) - date.today()).days > 180
-    payload: dict[str, Any] | None = None
-    model_used = ""
-    provider_error = False  # the latest agent call died on the provider (quota/auth/rate)
-    agent_responded = False  # any successful agent reply — separates question-content
-    # failures (ledger-worthy: hourly retries won't converge) from infra failures
-    # (auth outage, session limit: the QUESTION is fine, back off nothing).
-    errors: list[str] = []
-    run_probs: list[float] = []
-    # Non-binary per-run values, first run FIRST (v0.4.28). Kept parallel: run_escapes[i]
-    # is the [below, above] pair declared by the run that produced run_percentiles[i].
-    run_percentiles: list[dict[str, float]] = []
-    run_escapes: list[list[float | None]] = []
-    run_probabilities: list[dict[str, float]] = []
-    used_angles: list[str] = []  # angle letters that actually produced a pooled probability
     # len(run_angles) INDEPENDENT full-research runs, each with the source floor, the
     # contract, and its assigned angle section. The first successful run's payload becomes
     # the record's spokesperson (its sources/reference_class survive); the pool overwrites
     # probability + raw_draws.
     min_sources = max(0, int(tier_params.get("min_sources", 0) or 0))
-    # [ADDED 2026-09-22] Independent research runs can run CONCURRENTLY: they share no
-    # state by design (that is the point of the parallel-research architecture), so the
-    # only thing serialising them was this loop. At medium a question drops from ~4
-    # sequential calls (~20 min on opus) to ~1 call of wall clock.
-    # Cost is unchanged except that simultaneous starts each write the prompt prefix
-    # instead of sharing one run's cache write (a few cents).
-    parallel = max(1, int(getattr(args, "parallel_runs", 1) or 1))
     specs: list[dict[str, Any]] = []
     for slot_index, letter in enumerate(run_angles, start=1):
         # Angle F is market-blind BY DESIGN even in sighted mode — the blind denylist on
@@ -1863,7 +1524,7 @@ def forecast_question(
             + (SOURCE_FLOOR_SECTION.format(floor=min_sources) if min_sources else "")
             # An angle run IS a research run, so the MC/continuous reference-class and
             # dispersion floors gate it — announced here so attempt 0 already knows the
-            # contract one_run enforces (same min_sources>0 and non-binary condition).
+            # contract research_run enforces (same min_sources>0 and non-binary condition).
             + (REFERENCE_CLASS_SECTION
                if min_sources and qtype in ("multiple_choice", *CONTINUOUS) else "")
             + RESEARCH_CHECKLIST_SECTION
@@ -1876,9 +1537,421 @@ def forecast_question(
             "system": run_system,
         })
 
+    specs, results, errors = launch_runs(state, specs, min_sources)
+    payload, model_used, errors = collect_runs(state, specs, results, errors)
+    settle_question_spend(state)
+    if payload is None:
+        skip_question(state, journal, errors)
+        return False
+    pool_runs(state, payload, n_runs)
+    # What the RUNS concluded, before platform normalization — the trace's record of the
+    # pooled submission.
+    pooled_estimate = payload_estimate(payload, qtype)
+    raw_probability = normalize_for_platform(payload, question)
+    record = build_record(
+        state, post, payload, crowd, tier,
+        model_used or _model_from_cmd(base_cmd) or base_cmd, raw_probability,
+    )
+    for warning in validate_probability(record.probability, config) if record.probability else []:
+        print(f"  warning: {warning}")
+    # The trace lives next to the journal and is named by the record it belongs to, so the
+    # pointer can be written into the record before it is appended (the id exists as soon as
+    # the record is constructed) — a journal row always names its trace even if the write
+    # below then fails.
+    record.trace_path = f"traces/{record.id}.json"
+    journal.append(record)
+    print(f"  recorded {record.id} (tier {tier})")
+    write_question_trace(state, journal, record, pooled_estimate, news)
+    record_fast_proxies(journal, payload, record, args.provider)
+
+    if args.dry_run:
+        print("  dry-run: not submitting")
+        return True
+    submit_forecast(client, post, question, payload, record, args)
+    return True
+
+
+@dataclasses.dataclass
+class QuestionRun:
+    """Per-question state shared by the independent research runs of one question.
+
+    The spend ledger the runs charge (guarded by ``lock``: with --parallel-runs several
+    research runs share it), the trace entries they write, how the latest agent call ended,
+    the per-run values the pool is built from, and what the pool produced."""
+
+    question: dict[str, Any]
+    args: argparse.Namespace
+    spent: dict[str, float] | None
+    deadline: float | None
+    budget: float = 0.0
+    hard_cap_openrouter: bool = False
+    cost: float = 0.0
+    # Budget-only reservations for calls whose real cost is unknown (failed/unpriced).
+    # They gate further spend but are NOT cost: booking them as cost_usd put a phantom
+    # $6.00 in the journal on 2026-09-22 (a $7.55 question was recorded as $13.55).
+    reserved: float = 0.0
+    # Per-THREAD cap of the call in flight: with --parallel-runs several research runs share
+    # this state, and a single shared value would let one run reserve another's cap.
+    call_caps: dict[int, float] = dataclasses.field(default_factory=dict)
+    lock: threading.Lock = dataclasses.field(default_factory=threading.Lock)
+    # One entry per forecasting agent call, in the order they ran — see write_trace.
+    trace_calls: list[dict[str, Any]] = dataclasses.field(default_factory=list)
+    provider_error: bool = False  # the latest agent call died on the provider (quota/auth/rate)
+    agent_responded: bool = False  # any successful agent reply — separates question-content
+    # failures (ledger-worthy: hourly retries won't converge) from infra failures
+    # (auth outage, session limit: the QUESTION is fine, back off nothing).
+    run_probs: list[float] = dataclasses.field(default_factory=list)
+    # Non-binary per-run values, first run FIRST (v0.4.28). Kept parallel: run_escapes[i]
+    # is the [below, above] pair declared by the run that produced run_percentiles[i].
+    run_percentiles: list[dict[str, float]] = dataclasses.field(default_factory=list)
+    run_escapes: list[list[float | None]] = dataclasses.field(default_factory=list)
+    run_probabilities: list[dict[str, float]] = dataclasses.field(default_factory=list)
+    # Angle letters that actually produced a pooled number, in slot order.
+    used_angles: list[str] = dataclasses.field(default_factory=list)
+    # What pooling produced (see pool_runs): the aggregation tag, the pooled value in the
+    # question type's own shape with its spread, and the single-run counterfactuals.
+    aggregation_note: str | None = None
+    pool_phase1: float | dict[str, float] | None = None
+    spread_phase1: float | None = None
+    percentiles_run1: dict[str, float] | None = None
+    probabilities_run1: dict[str, float] | None = None
+
+    @property
+    def qtype(self) -> str:
+        return str(self.question.get("type", "binary"))
+
+    def pooled_so_far(self) -> int:
+        """Runs that have produced a usable number, in this question type's own currency."""
+        if self.qtype == "binary":
+            return len(self.run_probs)
+        if self.qtype == "multiple_choice":
+            return len(self.run_probabilities)
+        return len(self.run_percentiles)
+
+
+def fail_closed_metered(state: QuestionRun) -> None:
+    """Charge a metered call of unknown cost its full per-call cap.
+
+    The CLI enforces --max-budget-usd on the process, so the call cannot have billed
+    more than the cap it was given — reserving exactly that keeps the invocation-wide
+    hard cap true. [CHANGED 2026-09-21] It used to reserve the ENTIRE remaining budget
+    and forbid all later calls, so one OpenRouter 502 or timeout on the first question
+    ended the fallback tick with nothing forecast."""
+    with state.lock:
+        state.reserved += state.call_caps.get(threading.get_ident(), 0.0)
+
+
+def metered_cmd(state: QuestionRun, cmd: str) -> str | None:
+    """Cap this OpenRouter subprocess at min(per-call cap, unspent remainder)."""
+    if not state.hard_cap_openrouter:
+        return cmd
+    spent = state.spent
+    with state.lock:
+        remaining = (state.budget - (spent["usd"] if spent else 0.0)
+                     - (spent.get("reserved_usd", 0.0) if spent else 0.0)
+                     - state.cost - state.reserved)
+        if remaining <= 0:
+            return None
+        cap = min(remaining, OPENROUTER_PER_CALL_CAP_USD)
+        state.call_caps[threading.get_ident()] = cap
+    return with_credit_cap(cmd, cap)
+
+
+def market_facts_brief(
+    post: dict[str, Any], question: dict[str, Any], args: argparse.Namespace,
+    deadline: float | None,
+) -> str:
+    """The harness's own market candidates for a sighted brief ("" in blind mode).
+
+    Harness-side market lookup [ADDED 2026-09-03, operator]: the crowd-signals mandate is a
+    prompt requirement a model can skip, and Manifold bets were found that a real read of
+    Polymarket would have stopped. So the harness searches Polymarket and Manifold by title
+    itself and hands the candidates (venue, title, price, volume, close, URL) to every
+    sighted run as record-only data; contract equivalence stays the model's stated
+    judgment. Blind runs never see it. Fail-open: a lookup failure costs only the section
+    (which then says "none found — run your own check").
+
+    Computed ONCE per question and appended to EVERY sighted brief [FIXED 2026-09-03]: it
+    used to be appended to `brief` alone, so in angle mode — where each run rebuilds its
+    own brief — the research runs never saw the candidates, i.e. the harness lookup missed
+    exactly the calls it exists to inform. Withheld from the market-blind angle F, which
+    rebuilds from base_brief. The lookup is skipped outright near the deadline (see
+    bot/markets.py)."""
+    if args.blind:
+        return ""
+    section = markets.market_facts_section(
+        str(question.get("title") or post.get("title") or ""),
+        remaining_seconds=None if deadline is None else deadline - time.monotonic(),
+    )
+    return "\n" + section if section else ""
+
+
+def prior_facts_brief(
+    post: dict[str, Any], question: dict[str, Any], args: argparse.Namespace,
+    journal: Journal,
+) -> str:
+    """Same-template prior facts for the research runs' briefs ("" when off or absent).
+
+    [ADDED 2026-09-03]: the platform outcomes of earlier questions with this template and
+    our own submission on each, read from the resolutions overlay next to the journal
+    (bench/sync_resolutions.py writes it). MiniBench regenerates templates every wave, so
+    this is the cheapest reference class there is. Record-only data for the research runs;
+    any failure to read it costs nothing but the section.
+    OFF by default (operator, 2026-09-03): on MiniBench the same template recurs every
+    wave, so a one-sample "lesson" from the last instance is exactly the kind of
+    tournament-shaped overfitting a general-purpose skill must not carry. The section is
+    data-only (prior outcomes, never our own earlier submission) and turns on with
+    --prior-facts, which a preregistered paired test must justify first."""
+    prior_facts = ""
+    if getattr(args, "prior_facts", PRIOR_FACTS_DEFAULT):
+        try:
+            prior_facts = priors.prior_facts_section(
+                str(question.get("title") or post.get("title") or ""),
+                str(question.get("type", "binary")),
+                overlay_path=Path(journal.path).parent / "resolutions.jsonl",
+                journal_path=Path(journal.path),
+                exclude_question_id=int(question.get("id") or 0) or None,
+            )
+        except Exception as exc:  # noqa: BLE001 — prior facts must never block a forecast
+            print(f"  prior facts unavailable ({exc})")
+            prior_facts = ""
+    if prior_facts:
+        print(f"  prior same-template facts: {prior_facts.count(chr(10) + '- ')} row(s)")
+    return prior_facts
+
+
+def research_run(
+    state: QuestionRun, cmd: str, run_prompt: str, run_system: str, timeout: int,
+    min_sources: int = 0, trace_meta: dict[str, Any] | None = None,
+) -> tuple[dict[str, Any] | None, str, list[str]]:
+    """One agent call (plus at most one repair retry) against this question's contract.
+
+    ``min_sources`` turns on the research floors TOGETHER: distinct sources, plus (on
+    MC/continuous) the reference-class and dispersion requirements."""
+    question, args, deadline, qtype = state.question, state.args, state.deadline, state.qtype
+    errors: list[str] = []
+    first_error: str | None = None
+    candidate: dict[str, Any] | None = None
+    model = ""
+    started = time.monotonic()
+    cost_before = state.cost
+    # Attempt 0's rejection reasons, kept for the trace: "this run needed a repair and
+    # here is what was wrong with its first answer" is a review signal the journal has
+    # nowhere to put, and it is how a systematically sloppy contract surfaces.
+    attempt0_errors: list[str] = []
+
+    def add_trace(ok: bool, cand: dict[str, Any] | None,
+                  run_errors: list[str]) -> None:
+        if trace_meta is None:
+            return
+        entry: dict[str, Any] = {
+            **trace_meta,
+            "ok": ok,
+            # The model this run actually used: the CLI envelope's, else the one its
+            # command named (a failed call has no envelope).
+            "model": model or _model_from_cmd(cmd),
+            "cost_usd": round(state.cost - cost_before, 4),
+            "seconds": round(time.monotonic() - started, 1),
+        }
+        if usage_now := last_call_usage():
+            entry["usage"] = usage_now
+            if ok and "research" in str(trace_meta.get("stage", "")):
+                check_search_parity(args.provider, usage_now)
+        if attempt0_errors:
+            entry["validation_errors_first_attempt"] = [
+                str(e)[:300] for e in attempt0_errors
+            ]
+        if ok and cand is not None:
+            entry["estimate"] = payload_estimate(cand, qtype)
+            entry["reasoning"] = str(cand.get("reasoning") or "")[:MAX_TRACE_TEXT]
+            entry["sources"] = [str(s)[:300] for s in cand.get("sources") or []
+                                if str(s).strip()]
+            if reference_class := str(cand.get("reference_class") or "").strip():
+                entry["reference_class"] = reference_class[:300]
+            for key in ("searches_used", "n_searches"):
+                if isinstance(cand.get(key), int | float):
+                    entry["searches_used"] = int(cand[key])
+                    break
+        else:
+            entry["errors"] = [str(e)[:300] for e in run_errors]
+        # Appended in FINISH order; parallel runs finish out of order, so the trace is
+        # sorted back into (phase, run_index) order before it is written.
+        state.trace_calls.append(entry)
+
+    # Attempt-0 percentiles kept ONLY when the dispersion-width guard was among the
+    # rejection reasons, journaled as percentiles_pre_guard so resolution can score
+    # the guard's effect PAIRED on exactly the questions it fired on (no A/B arm
+    # needed — the counterfactual is the run's own first answer).
+    pre_guard_percentiles: dict[str, Any] | None = None
+    for attempt in range(2):
+        if attempt and deadline is not None and time.monotonic() > deadline:
+            # The repair retry can add a whole agent-call to a run already past the
+            # wall clock; the CI job timeout is sized for at most one overrun call.
+            errors.append("deadline reached before the repair retry")
+            break
+        prompt = run_prompt if attempt == 0 else (
+            run_prompt + "\n\nYour previous output was invalid: "
+            + "; ".join(errors) + "\nEmit a corrected fenced json block."
+        )
+        if attempt:
+            # Attempt 0's errors are about to be overwritten by this attempt's
+            # validate_payload() call — capture the reason for the retry now, so a
+            # success below can say what was repaired instead of looking identical
+            # to a clean first attempt.
+            first_error = errors[0] if errors else None
+            attempt0_errors = list(errors)
+            if (isinstance(candidate, dict)
+                    and isinstance(candidate.get("percentiles"), dict)
+                    and any("dispersion_90_10" in e and "narrower" in e
+                            for e in errors)):
+                pre_guard_percentiles = dict(candidate["percentiles"])
+        # Every call is bounded by the WALL CLOCK as well as by --timeout [ADDED
+        # 2026-09-03]: --timeout is per call, so with 3-7 calls per question a single
+        # hung subprocess could burn the whole 85-minute tick while the deadline checks
+        # (which only run BETWEEN calls) never got a turn. The 60 s floor keeps a
+        # just-past-deadline call from being killed instantly with nothing to show; the
+        # deadline gates above still refuse to START work once the clock is spent.
+        effective_timeout = timeout
+        if deadline is not None:
+            effective_timeout = int(min(
+                timeout, max(60.0, deadline - time.monotonic())
+            ))
+        try:
+            call_cmd = metered_cmd(state, cmd)
+            if call_cmd is None:
+                errors = ["budget exhausted before agent call"]
+                break
+            if state.hard_cap_openrouter:
+                output, attempt_cost, model = run_agent(
+                    call_cmd, prompt, run_system, effective_timeout, args.provider,
+                    strict_metering=True,
+                )
+            else:
+                output, attempt_cost, model = run_agent(
+                    call_cmd, prompt, run_system, effective_timeout, args.provider
+                )
+            if attempt_cost == UNKNOWN_METERED_COST:
+                fail_closed_metered(state)
+            else:
+                with state.lock:
+                    state.cost += attempt_cost
+            state.agent_responded = True
+            state.provider_error = False
+            candidate = extract_json(output)
+        except (RuntimeError, ValueError, subprocess.TimeoutExpired) as exc:
+            errors = [str(exc)]
+            # The LATEST call's outcome decides infra-vs-question: quota running out
+            # mid-question (after an earlier reply) is still the provider's fault.
+            # A timeout counts too: a hanging provider must fall back, not burn every
+            # 85-minute tick on stalled calls (audit, 2026-09-22).
+            state.provider_error = isinstance(exc, subprocess.TimeoutExpired) or (
+                isinstance(exc, RuntimeError) and str(exc).startswith("agent failed"))
+            if is_call_budget_stop(exc):
+                # The call ran and spent its whole per-call cap: the QUESTION is too
+                # expensive, not the provider down. Ledger it (backoff) instead of
+                # re-spending the cap on the fallback every tick.
+                state.provider_error = False
+                state.agent_responded = True
+            if state.hard_cap_openrouter and isinstance(
+                exc, (RuntimeError, subprocess.TimeoutExpired)
+            ):
+                # A failed/timed-out CLI process may still have been billed, but gives
+                # no usage envelope: charge it its whole per-call cap (the CLI enforces
+                # it) and let the retry run under a fresh cap. ValueError is different:
+                # run_agent returned, and its known cost was added before JSON parsing.
+                fail_closed_metered(state)
+            continue
+        errors = validate_payload(candidate, question)
+        if min_sources > 0 and (found := distinct_source_count(candidate)) < min_sources:
+            # The research floor: reject BEFORE the forecast is accepted, so the
+            # repair retry re-researches rather than a gate catching it post-hoc.
+            errors.append(
+                f'research run listed {found} distinct source(s); this tier requires '
+                f'at least {min_sources} — run real searches and list in "sources" '
+                f'only what you actually consulted'
+            )
+        # Reference-class floor: research runs on MC/continuous must name the class their
+        # prior is computed over (binary's contract example is its own guard, so it is
+        # left alone here). Same reject-before-accept point as the source
+        # floor — the live 32/31/34 even-spread failure was an MC run that never derived a
+        # prior from a reference class. See the block comment on REFERENCE_CLASS_SECTION.
+        if min_sources > 0 and qtype in ("multiple_choice", *CONTINUOUS):
+            if not str(candidate.get("reference_class") or "").strip():
+                errors.append(
+                    'research run must name a "reference_class" (the class of past cases '
+                    'your prior is computed over) as a non-empty string — derive the prior '
+                    'from it before adjusting on news; an even spread you cannot trace to a '
+                    'reference class is the known failure mode'
+                )
+            # Dispersion floor (v0.4.26), continuous only: the research run must state
+            # the width its own analysis implies BEFORE the percentiles are accepted,
+            # so the consistency check in validate_payload() has a number to hold the
+            # percentiles against. Same reject-before-accept point as the source floor;
+            # motivation on the check itself (Parana q45325).
+            if qtype in CONTINUOUS:
+                if candidate.get("dispersion_90_10") is None:
+                    errors.append(
+                        'research run must state "dispersion_90_10" — the 10-90 width '
+                        "in question units your OWN dispersion analysis implies "
+                        "(reference-class SD x 2.56, realized vol scaled to the "
+                        "horizon, historical spread) — computed BEFORE tuning the "
+                        'percentiles, with the computation named in "dispersion_basis"'
+                    )
+                elif not str(candidate.get("dispersion_basis") or "").strip():
+                    errors.append(
+                        '"dispersion_basis" must name the computation behind '
+                        'dispersion_90_10 (e.g. "SD of 11-day changes 0.5 x 2.56") '
+                        "as a non-empty string"
+                    )
+            base_rate = candidate.get("base_rate")
+            if qtype == "multiple_choice" and isinstance(base_rate, dict):
+                options = [str(o) for o in question.get("options") or []]
+                # Same invented-label hazard as the probabilities check: a base_rate keyed
+                # on a label that is not an option is a prior over a case that cannot happen.
+                extra = [k for k in base_rate if k not in options]
+                if extra:
+                    errors.append(
+                        f'"base_rate" keys must be the exact option labels given (do not '
+                        f'invent labels): {extra}'
+                    )
+                try:
+                    [float(v) for v in base_rate.values()]
+                except (TypeError, ValueError):
+                    errors.append('every "base_rate" value must be a number')
+        if not errors:
+            if attempt:
+                print(
+                    f"  repaired on retry: {question.get('id')} "
+                    f"({(first_error or '')[:200]})"
+                )
+                if pre_guard_percentiles is not None:
+                    candidate["percentiles_pre_guard"] = pre_guard_percentiles
+            add_trace(True, candidate, [])
+            return candidate, model, []
+    add_trace(False, None, errors)
+    return None, "", errors
+
+
+def launch_runs(
+    state: QuestionRun, specs: list[dict[str, Any]], min_sources: int,
+) -> tuple[list[dict[str, Any]], list[tuple[dict[str, Any] | None, str, list[str]]],
+           list[str]]:
+    """Run every spec's research run — concurrently under --parallel-runs, else in order —
+    behind the budget and deadline gates. Returns (the specs that ran, their results in
+    slot order, the gate's error when it stopped everything)."""
+    args, deadline, spent, budget = state.args, state.deadline, state.spent, state.budget
+    # [ADDED 2026-09-22] Independent research runs can run CONCURRENTLY: they share no
+    # state by design (that is the point of the parallel-research architecture), so the
+    # only thing serialising them was this loop. At medium a question drops from ~4
+    # sequential calls (~20 min on opus) to ~1 call of wall clock.
+    # Cost is unchanged except that simultaneous starts each write the prompt prefix
+    # instead of sharing one run's cache write (a few cents).
+    parallel = max(1, int(getattr(args, "parallel_runs", 1) or 1))
+    errors: list[str] = []
+
     def launch(spec: dict[str, Any]) -> tuple[dict[str, Any] | None, str, list[str]]:
-        return one_run(
-            spec["cmd"], spec["prompt"], spec["system"], args.timeout,
+        return research_run(
+            state, spec["cmd"], spec["prompt"], spec["system"], args.timeout,
             min_sources=min_sources,
             trace_meta={"phase": 1, "stage": "angle_research", "mode": "research",
                         "run_index": spec["slot_index"], "angle": spec["letter"],
@@ -1890,10 +1963,10 @@ def forecast_question(
         # Gate ONCE up front: the runs start together, so a per-slot budget/deadline
         # check between them has nothing left to stop.
         over_budget = (budget > 0 and (spent["usd"] if spent else 0.0)
-                       + run_cost + run_reserved >= budget)
+                       + state.cost + state.reserved >= budget)
         past_deadline = deadline is not None and time.monotonic() > deadline
         if over_budget or past_deadline:
-            errors = errors or [
+            errors = [
                 f"{'budget' if over_budget else 'deadline'} exhausted before the "
                 "angle runs"
             ]
@@ -1910,68 +1983,106 @@ def forecast_question(
             # A question's runs can outspend the whole invocation budget on their own —
             # stop starting new slots once it's exhausted; whatever pooled so far records.
             over_budget = (budget > 0 and (spent["usd"] if spent else 0.0)
-                           + run_cost + run_reserved >= budget)
+                           + state.cost + state.reserved >= budget)
             past_deadline = deadline is not None and time.monotonic() > deadline
             if over_budget or past_deadline:
                 what = "budget" if over_budget else "deadline"
-                if payload is not None:
-                    print(f"  {what}: stopping after {pooled_so_far()} angle run(s)")
-                else:
-                    errors = errors or [f"{what} exhausted before a valid angle run"]
+                errors = [f"{what} exhausted before a valid angle run"]
                 break
             results.append(launch(spec))
+    return specs, results, errors
 
-    # Post-processing stays in slot order, so pooling and traces are order-stable
-    # whether the runs were sequential or concurrent.
+
+def collect_runs(
+    state: QuestionRun, specs: list[dict[str, Any]],
+    results: list[tuple[dict[str, Any] | None, str, list[str]]], errors: list[str],
+) -> tuple[dict[str, Any] | None, str, list[str]]:
+    """Fold the runs' results into the pool's per-run values, in slot order, so pooling and
+    traces are order-stable whether the runs were sequential or concurrent. Returns (the
+    spokesperson payload — the first successful run's —, its model, the latest errors)."""
+    question, qtype = state.question, state.qtype
+    payload: dict[str, Any] | None = None
+    model_used = ""
     for spec, (candidate, model, run_errors) in zip(specs, results, strict=False):
         letter, run_blind = spec["letter"], spec["run_blind"]
         errors = run_errors
         if candidate is None:
             continue
-        used_angles.append(letter)
+        state.used_angles.append(letter)
         blind_tag = " (blind)" if run_blind else ""
         if qtype == "binary":
             p_run = float(candidate["probability"])
-            run_probs.append(p_run)
+            state.run_probs.append(p_run)
             print(f"  angle {letter}: {p_run:.2f}{blind_tag}")
         else:
-            collect_run(candidate)
-            shown = (f"median {run_percentiles[-1]['50']:.4g}" if qtype in CONTINUOUS
-                     else f"top {max(run_probabilities[-1].values()):.2f}")
+            # The payload already passed validate_payload, so the keys read here exist and
+            # are numeric: MC carries every exact option label, continuous carries the five
+            # percentiles.
+            if qtype == "multiple_choice":
+                state.run_probabilities.append(
+                    {str(o): float(candidate["probabilities"][str(o)])
+                     for o in question.get("options") or []}
+                )
+            elif qtype in CONTINUOUS:
+                state.run_percentiles.append(
+                    {str(k): float(v) for k, v in candidate["percentiles"].items()}
+                )
+                state.run_escapes.append([
+                    _as_float(candidate.get("p_below_lower")),
+                    _as_float(candidate.get("p_above_upper")),
+                ])
+            shown = (f"median {state.run_percentiles[-1]['50']:.4g}" if qtype in CONTINUOUS
+                     else f"top {max(state.run_probabilities[-1].values()):.2f}")
             print(f"  angle {letter}: {shown}{blind_tag}")
         if payload is None:
             payload, model_used = candidate, model
+    return payload, model_used, errors
 
+
+def settle_question_spend(state: QuestionRun) -> None:
+    """Fold this question's spend into the invocation ledger."""
+    spent = state.spent
     if spent is not None:  # budget accounting counts failed attempts too — they cost money
-        spent["usd"] += run_cost
-        if run_reserved:
-            spent["reserved_usd"] = spent.get("reserved_usd", 0.0) + run_reserved
-    if payload is None:
-        print(f"  SKIP (invalid after retry): {errors}")
-        if provider_error and spent is not None:
-            # The last call errored on the provider (quota, auth, rate limit), even if an
-            # earlier one answered: not the question's fault. main() exits
-            # EXIT_PROVIDER_FAILURE so bot.yml reruns the remainder on OpenRouter.
-            spent["infra_failures"] = spent.get("infra_failures", 0) + 1
-            if is_auth_rejection("; ".join(errors)):
-                alert_auth_rejected(args.provider)
-        elif agent_responded:
-            # The model answered and still couldn't produce a valid payload — that's a
-            # question-content failure the backoff ledger should count. Pure infra
-            # failures (every call errored) are not the question's fault.
-            record_failure(
-                failures_path(str(journal.path)), question.get("id"),
-                "invalid payload after retry: " + "; ".join(errors)[:200],
-            )
-        return False
-    aggregation_note: str | None = None
+        spent["usd"] += state.cost
+        if state.reserved:
+            spent["reserved_usd"] = spent.get("reserved_usd", 0.0) + state.reserved
+
+
+def skip_question(state: QuestionRun, journal: Journal, errors: list[str]) -> None:
+    """No run produced a valid payload: say so, and decide whose fault it was."""
+    spent = state.spent
+    print(f"  SKIP (invalid after retry): {errors}")
+    if state.provider_error and spent is not None:
+        # The last call errored on the provider (quota, auth, rate limit), even if an
+        # earlier one answered: not the question's fault. main() exits
+        # EXIT_PROVIDER_FAILURE so bot.yml reruns the remainder on OpenRouter.
+        spent["infra_failures"] = spent.get("infra_failures", 0) + 1
+        if is_auth_rejection("; ".join(errors)):
+            alert_auth_rejected(state.args.provider)
+    elif state.agent_responded:
+        # The model answered and still couldn't produce a valid payload — that's a
+        # question-content failure the backoff ledger should count. Pure infra
+        # failures (every call errored) are not the question's fault.
+        record_failure(
+            failures_path(str(journal.path)), state.question.get("id"),
+            "invalid payload after retry: " + "; ".join(errors)[:200],
+        )
+
+
+def pool_runs(state: QuestionRun, payload: dict[str, Any], n_runs: int) -> None:
+    """Pool the runs into ``payload`` (the spokesperson's) and record what was pooled on
+    ``state``: the aggregation tag, the pool with its spread, the single-run
+    counterfactuals. A lone run is submitted as-is."""
+    question, used_angles = state.question, state.used_angles
+    run_probs, run_percentiles = state.run_probs, state.run_percentiles
+    run_escapes, run_probabilities = state.run_escapes, state.run_probabilities
     # Runs that produced a usable number, in this question type's own currency.
-    n_pooled = pooled_so_far()
+    n_pooled = state.pooled_so_far()
     if n_runs > 1 and n_pooled == 1:
         # The intended ensemble collapsed to a lone run (failures/budget/deadline ate the
         # rest). Submitting one run's number is right — but the journal must say so, or
         # scoring would credit "the ensemble" with a forecast no ensemble made.
-        aggregation_note = f"single_run(of {n_runs} intended)"
+        state.aggregation_note = f"single_run(of {n_runs} intended)"
     # Name WHICH information diets were pooled (the value of the pool lives in the
     # disagreement between them). Every pool below — binary, continuous and MC — writes the
     # same three strings, so the journal, the log line and the posted comment cannot drift
@@ -1983,16 +2094,14 @@ def forecast_question(
     # percentiles; MC: {option: p}) and its disagreement (binary: max-min probability;
     # continuous: max-min of the run medians in question units; MC: max-min of the pooled
     # leader's probability), journaled on every pool.
-    pool_phase1: float | dict[str, float] | None = None
-    spread_phase1: float | None = None
     if len(run_probs) > 1:
         pooled = geo_mean_odds(run_probs)
         spread = max(run_probs) - min(run_probs)
-        pool_phase1, spread_phase1 = pooled, spread
+        state.pool_phase1, state.spread_phase1 = pooled, spread
         rounded = [round(p, 2) for p in run_probs]
         print(f"  pooled {len(run_probs)} {pool_source} {rounded} -> {pooled:.3f} "
               f"(spread {spread:.2f})")
-        aggregation_note = f"geo_mean_odds({pool_tag})"
+        state.aggregation_note = f"geo_mean_odds({pool_tag})"
         # v0.4.0: no arbiter override — the pool IS the aggregator. Disagreement stays
         # visible (raw_draws) instead of being handed back to a single context at the
         # highest-stakes moments.
@@ -2012,16 +2121,14 @@ def forecast_question(
     # per-run values are journaled in their own record fields rather than raw_draws (a
     # percentile set and an option vector are not draws), together with the first research
     # run's own answer as the single-run counterfactual resolution scores this change against.
-    percentiles_run1: dict[str, float] | None = None
-    probabilities_run1: dict[str, float] | None = None
     if len(run_percentiles) > 1:
-        percentiles_run1 = dict(run_percentiles[0])
+        state.percentiles_run1 = dict(run_percentiles[0])
         pooled_pcts = pool_percentiles(
             run_percentiles, zero_point=(question.get("scaling") or {}).get("zero_point")
         )
         run_medians = [float(run["50"]) for run in run_percentiles]
-        pool_phase1 = dict(pooled_pcts)
-        spread_phase1 = max(run_medians) - min(run_medians)
+        state.pool_phase1 = dict(pooled_pcts)
+        state.spread_phase1 = max(run_medians) - min(run_medians)
         below = pool_escape_mass([pair[0] for pair in run_escapes])
         above = pool_escape_mass([pair[1] for pair in run_escapes])
         # Each run's pair passed validate_escape_mass on its own, but two runs can each
@@ -2041,38 +2148,42 @@ def forecast_question(
         payload["percentiles"] = pooled_pcts
         payload["p_below_lower"] = below
         payload["p_above_upper"] = above
-        aggregation_note = f"quantile_mean({pool_tag})"
+        state.aggregation_note = f"quantile_mean({pool_tag})"
         payload["reasoning"] = (
             f"[pooled {len(run_percentiles)} {pool_source}: medians {medians} -> "
             f"{pooled_pcts['50']:.4g}; the narrative below is {pool_voice}]"
             + "\n" + str(payload.get("reasoning", ""))
         )
     elif len(run_probabilities) > 1:
-        probabilities_run1 = dict(run_probabilities[0])
+        state.probabilities_run1 = dict(run_probabilities[0])
         pooled_probs = pool_mc(run_probabilities)
         # Name the leading option in the note: an MC pool has no single number to disclose,
         # and the option the pool actually leans on is the one a reader needs to check.
         lead = max(pooled_probs, key=lambda option: pooled_probs[option])
         leads = [float(run[lead]) for run in run_probabilities]
-        pool_phase1 = dict(pooled_probs)
-        spread_phase1 = max(leads) - min(leads)
+        state.pool_phase1 = dict(pooled_probs)
+        state.spread_phase1 = max(leads) - min(leads)
         per_run = "/".join(f"{run[lead]:.2f}" for run in run_probabilities)
         print(f"  pooled {len(run_probabilities)} {pool_source}: {lead[:40]!r} "
               f"{per_run} -> {pooled_probs[lead]:.2f}")
         payload["probabilities"] = pooled_probs
-        aggregation_note = f"geo_mean_mc({pool_tag})"
+        state.aggregation_note = f"geo_mean_mc({pool_tag})"
         payload["reasoning"] = (
             f"[pooled {len(run_probabilities)} {pool_source}: {lead[:40]!r} {per_run} -> "
             f"{pooled_probs[lead]:.2f}; the narrative below is {pool_voice}]"
             + "\n" + str(payload.get("reasoning", ""))
         )
-    # What the RUNS concluded, before platform normalization — the trace's record of the
-    # pooled submission.
-    pooled_estimate = payload_estimate(payload, qtype)
-    # The journal is a preregistration record of the numbers SUBMITTED, so apply the
-    # platform normalization (binary band clamp; MC floor+renormalize over the exact
-    # option labels) BEFORE the record is written — not at the submit call after it,
-    # where the journal and the platform could silently diverge.
+
+
+def normalize_for_platform(payload: dict[str, Any], question: dict[str, Any]) -> float | None:
+    """Apply the platform normalization to ``payload`` in place; returns the raw pooled
+    probability when recalibration moved a binary number (else None).
+
+    The journal is a preregistration record of the numbers SUBMITTED, so the platform
+    normalization (binary band clamp; MC floor+renormalize over the exact option labels)
+    happens BEFORE the record is written — not at the submit call after it, where the
+    journal and the platform could silently diverge."""
+    qtype = question.get("type", "binary")
     raw_probability: float | None = None  # set only when recalibration moves the number
     if qtype == "binary":
         # v0.4.11 (operator decision): the harness NEVER blends. Cross-platform
@@ -2101,23 +2212,27 @@ def forecast_question(
             {str(o): float(payload["probabilities"][str(o)])
              for o in question.get("options") or []}
         )
-    title = question.get("title", post.get("title", "untitled"))
-    criterion = question_text(post, question, "resolution_criteria")[:2000]
-    if not criterion:
-        # Metaculus sometimes returns empty criteria; the title is the resolvable contract.
-        criterion = f"(no criteria published) Resolves per the question as stated: {title}"
-    # Build the continuous CDF NOW, against the question's scaling, so the preregistration
-    # record captures exactly what the platform receives — percentiles alone can't be rebuilt
-    # into the ~201-pt object. The submit path below sends this same CDF rather than rebuilding
-    # it, so the journal and the platform can never silently diverge (same rule as the binary
-    # clamp and MC floor above).
+    return raw_probability
+
+
+def build_submitted_cdf(
+    payload: dict[str, Any], question: dict[str, Any],
+) -> tuple[list[float] | None, dict[str, Any] | None, float | None, float | None]:
+    """(submitted CDF, its scaling, declared p_below_lower, declared p_above_upper) for a
+    continuous question; all None otherwise.
+
+    Built NOW, against the question's scaling, so the preregistration record captures
+    exactly what the platform receives — percentiles alone can't be rebuilt into the
+    ~201-pt object. The submit path sends this same CDF rather than rebuilding it, so the
+    journal and the platform can never silently diverge (same rule as the binary clamp
+    and MC floor in normalize_for_platform)."""
     submitted_cdf: list[float] | None = None
     cdf_scaling: dict[str, Any] | None = None
     # Declared out-of-bound mass (v0.4.23): None unless the run priced an escape, in which
     # case the CDF honors it at the endpoints and the record journals what was declared.
     p_below_lower: float | None = None
     p_above_upper: float | None = None
-    if qtype in CONTINUOUS:
+    if question.get("type", "binary") in CONTINUOUS:
         raw_scaling = question.get("scaling") or {}
         if raw_scaling.get("range_min") is None or raw_scaling.get("range_max") is None:
             raise ValueError(f"continuous question {question.get('id')} has no numeric bounds")
@@ -2152,7 +2267,24 @@ def forecast_question(
         if p_below_lower is not None or p_above_upper is not None:
             print(f"  declared escape mass: below {submitted_cdf[0]:.3f}, "
                   f"above {1.0 - submitted_cdf[-1]:.3f}")
-    record = ForecastRecord(
+    return submitted_cdf, cdf_scaling, p_below_lower, p_above_upper
+
+
+def build_record(
+    state: QuestionRun, post: dict[str, Any], payload: dict[str, Any],
+    crowd: float | None, tier: str, model: str, raw_probability: float | None,
+) -> ForecastRecord:
+    """The journal record of what is about to be submitted (see normalize_for_platform)."""
+    question, args, qtype = state.question, state.args, state.qtype
+    title = question.get("title", post.get("title", "untitled"))
+    criterion = question_text(post, question, "resolution_criteria")[:2000]
+    if not criterion:
+        # Metaculus sometimes returns empty criteria; the title is the resolvable contract.
+        criterion = f"(no criteria published) Resolves per the question as stated: {title}"
+    submitted_cdf, cdf_scaling, p_below_lower, p_above_upper = build_submitted_cdf(
+        payload, question
+    )
+    return ForecastRecord(
         question=title,
         question_type=qtype if qtype in ("binary", "multiple_choice", "date") else "numeric",
         resolution_criterion=criterion,
@@ -2191,24 +2323,26 @@ def forecast_question(
         # forecast journals byte-identically to before v0.4.28). run_*[0] is the research
         # run, so *_run1 is the answer the pre-v0.4.28 harness would have submitted — the
         # counterfactual bench/analysis/pooled_vs_single.py scores this change against.
-        run_percentiles=run_percentiles if percentiles_run1 is not None else None,
-        run_escapes=run_escapes if percentiles_run1 is not None else None,
-        percentiles_run1=percentiles_run1,
-        run_probabilities=run_probabilities if probabilities_run1 is not None else None,
-        probabilities_run1=probabilities_run1,
+        run_percentiles=(state.run_percentiles if state.percentiles_run1 is not None
+                         else None),
+        run_escapes=state.run_escapes if state.percentiles_run1 is not None else None,
+        percentiles_run1=state.percentiles_run1,
+        run_probabilities=(state.run_probabilities if state.probabilities_run1 is not None
+                           else None),
+        probabilities_run1=state.probabilities_run1,
         # The angle-mode pool in the type's own shape and its spread; None when no pool
         # happened.
-        pool_phase1=pool_phase1,
-        spread_phase1=None if spread_phase1 is None else round(spread_phase1, 6),
+        pool_phase1=state.pool_phase1,
+        spread_phase1=None if state.spread_phase1 is None else round(state.spread_phase1, 6),
         submitted_cdf=submitted_cdf,
         scaling=cdf_scaling,
         expected_value=_as_float(payload.get("expected_value")),
-        cost_usd=round(run_cost, 4) if run_cost else None,
+        cost_usd=round(state.cost, 4) if state.cost else None,
         raw_draws=[f for d in payload.get("raw_draws") or []
                    if (f := _as_float(d)) is not None] or None,
         effort=tier,
-        aggregation=aggregation_note,
-        model=model_used or _model_from_cmd(base_cmd) or base_cmd,
+        aggregation=state.aggregation_note,
+        model=model,
         provider=args.provider,
         # Explicit mode flag (0.4.3): crowd.shown_to_agent is pinned False below, so it
         # can no longer distinguish blind from sighted for `score --by blind`.
@@ -2232,25 +2366,24 @@ def forecast_question(
             else None
         ),
     )
-    for warning in validate_probability(record.probability, config) if record.probability else []:
-        print(f"  warning: {warning}")
-    # The trace lives next to the journal and is named by the record it belongs to, so the
-    # pointer can be written into the record before it is appended (the id exists as soon as
-    # the record is constructed) — a journal row always names its trace even if the write
-    # below then fails.
-    record.trace_path = f"traces/{record.id}.json"
-    journal.append(record)
-    print(f"  recorded {record.id} (tier {tier})")
+
+
+def write_question_trace(
+    state: QuestionRun, journal: Journal, record: ForecastRecord, pooled_estimate: Any,
+    news: str,
+) -> None:
+    """Write the record's per-run trace next to the journal (never fails a forecast)."""
+    question, args = state.question, state.args
     try:
-        write_trace(Path(journal.path).parent / record.trace_path, {
+        write_trace(Path(journal.path).parent / str(record.trace_path), {
             "record_id": record.id,
-            "question": title,
+            "question": record.question,
             "question_id": question.get("id"),
             "url": (record.source or {}).get("url"),
             # Trace documents are scanned whole by scripts/journal_leak_guard.py; the
             # platform is what qualifies them for its narrow public-text exceptions.
             "source": {"platform": (record.source or {}).get("platform") or "metaculus"},
-            "question_type": qtype,
+            "question_type": state.qtype,
             "forecast_at": record.forecast_at,
             "effort": record.effort,
             "model": record.model,
@@ -2258,15 +2391,15 @@ def forecast_question(
             "blind": bool(args.blind),
             "dry_run": bool(args.dry_run),
             "architecture": "angle",
-            "angles": used_angles or None,
-            "aggregation": aggregation_note,
-            "cost_usd": round(run_cost, 4),
+            "angles": state.used_angles or None,
+            "aggregation": state.aggregation_note,
+            "cost_usd": round(state.cost, 4),
             "asknews": bool(news),  # counted by asknews.fetches_used for pacing
             "pools": {
                 "pooled_runs": pooled_estimate,
-                "phase1": pool_phase1,
-                "spread_phase1": (None if spread_phase1 is None
-                                  else round(spread_phase1, 6)),
+                "phase1": state.pool_phase1,
+                "spread_phase1": (None if state.spread_phase1 is None
+                                  else round(state.spread_phase1, 6)),
             },
             "submitted": {
                 key: value for key, value in (
@@ -2279,11 +2412,17 @@ def forecast_question(
                     ("p_above_upper", record.p_above_upper),
                 ) if value is not None
             },
-            "calls": sorted(trace_calls,
+            "calls": sorted(state.trace_calls,
                             key=lambda c: (c.get("phase") or 0, c.get("run_index") or 0)),
         })
     except Exception as exc:  # noqa: BLE001 — a trace must never cost a forecast
         print(f"  warning: trace not written ({exc})")
+
+
+def record_fast_proxies(
+    journal: Journal, payload: dict[str, Any], record: ForecastRecord, provider: str,
+) -> None:
+    """Journal the run's fast-proxy sub-questions (slow questions only)."""
     for proxy in (payload.get("fast_proxies") or [])[:2]:
         # Journal-only calibration signals for slow questions — never submitted anywhere.
         if not isinstance(proxy, dict):
@@ -2307,15 +2446,18 @@ def forecast_question(
             fast_proxy=True,
             effort=record.effort,
             model=record.model,
-            provider=args.provider,
-            reasoning=f"fast proxy for: {title[:200]}",
+            provider=provider,
+            reasoning=f"fast proxy for: {record.question[:200]}",
         ))
         print(f"  fast proxy recorded: {proxy_q[:60]!r} @ {proxy_p:.2f}")
 
-    if args.dry_run:
-        print("  dry-run: not submitting")
-        return True
 
+def submit_forecast(
+    client: MetaculusClient, post: dict[str, Any], question: dict[str, Any],
+    payload: dict[str, Any], record: ForecastRecord, args: argparse.Namespace,
+) -> None:
+    """Send the recorded forecast to Metaculus (and the optional private comment)."""
+    qtype = question.get("type", "binary")
     question_id = int(question["id"])
     if qtype == "binary":
         # Already normalized above — the journal and the platform get the same number.
@@ -2336,7 +2478,6 @@ def forecast_question(
             client.comment(int(post["id"]), record.reasoning, private=True)
         except Exception as exc:  # noqa: BLE001 — deliberately non-fatal side effect
             print(f"  warning: comment failed (forecast already submitted): {exc}")
-    return True
 
 
 def main(argv: list[str] | None = None) -> int:
