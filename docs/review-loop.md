@@ -13,8 +13,8 @@ The reviewer may not edit this file. Only the operator changes the rules.
    finished MiniBench waves (`minibench-YYYY-MM-DD`; plain `minibench` is the wave in
    progress) and read the `Standing` step. CI holds the token.
 2. Our own scores: `python bench/sync_resolutions.py --no-sync --readout`.
-3. Health: `bot/journal/failures.jsonl`, open alert issues, and per-run telemetry in
-   `bot/journal/traces/` grouped by week (cost, turns, searches, sources per research run).
+3. Health: `bot/journal/failures.jsonl`, open alert issues, and `python bench/depth.py`
+   (work per research run, last 14 days against the 28 before; exit 1 means it moved).
 4. Every preregistered scorer in `bench/analysis/` whose sample-size gate is now met.
 
 ## 2. The control group
@@ -27,13 +27,37 @@ Metaculus enters plain template bots on the same questions, one per model
 - A different `metac-*` row above ours by a margin that holds in two consecutive
   reviews: propose that model.
 
-## 3. What a review may propose
+## 3. A new model
+
+Nothing in the prompts or skills is rewritten for a model. The only per-model setting is
+the effort level, and it is always written out, never left to the model's default.
+
+1. **Notice.** A `metac-<model>` row for a newer model from our provider appears in the
+   standing report. Metaculus adds one within days of a release, so the row is both the
+   signal and the first evidence.
+2. **Match the work.** Dry-run the candidate through `bot-test.yml` and compare its
+   per-call telemetry with the incumbent's baseline in `bench/depth.py`. Pick the lowest
+   effort level at which a research run does at least as much work. This is the part a
+   backtest can answer.
+3. **Canary.** Give the candidate one of the three research runs. It forecasts the same
+   live questions as the incumbent and carries a third of the pool. Accuracy is not
+   backtested: a newer model's training data can contain the outcome of a resolved
+   question, so a backtest flatters exactly the model under test.
+4. **Promote or remove.** After 100 scored questions, promote the candidate if its runs
+   score at least as well as the incumbent's on the same questions and its `metac-*` row
+   is not below the incumbent's. Otherwise remove it. Either way the canary slot empties.
+
+Steps 2 to 4 need three small changes that are not built yet: the model and its effort
+level in one place (the model id is repeated in five), `run_models` honoured by the
+parallel-research path, and a paired per-run scorer.
+
+## 4. What a review may propose
 
 | Class | Examples | Bar |
 |---|---|---|
 | Fix | failed submits, a crash, a default that changed under us, broken telemetry | reproduced from the journal or logs |
-| Setting | model id, effort level, run count, a research source on or off | section 2, or a paired comparison whose 90% interval excludes zero |
-| Structure | a stage, a prompt section, a rule in a skill | a preregistered paired test, already scored, and the budget in section 4 |
+| Setting | model id, effort level, run count, a research source on or off | sections 2 and 3, or a paired comparison whose 90% interval excludes zero |
+| Structure | a stage, a prompt section, a rule in a skill | a preregistered paired test, already scored, and the budget in section 5 |
 
 Not allowed, whatever the evidence looks like:
 
@@ -42,7 +66,7 @@ Not allowed, whatever the evidence looks like:
 - more than one pull request per review;
 - merging, changing repository variables or secrets, or re-litigating a preregistered rule.
 
-## 4. The budget only goes down
+## 5. The budget only goes down
 
 Three numbers, recorded in every report:
 
@@ -58,7 +82,7 @@ Every review also names one deletion candidate: the stage, section or rule with 
 weakest evidence for its own existence. When its scorer says drop, that deletion is the
 review's pull request and takes priority over anything else.
 
-## 5. Output
+## 6. Output
 
 One comment on the `Fortnightly review` issue, 40 lines at most: the standing table, the
 three budget numbers, what changed since the last review, the deletion candidate, and
