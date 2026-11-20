@@ -1,0 +1,198 @@
+{
+ "record_id": "2026-11-20-ed470158",
+ "question": "How much will Crude Oil Futures total price returns exceed S&P 500 Futures in these biweekly periods of Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46203,
+ "url": "https://www.metaculus.com/questions/46007/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-20T17:34:48+00:00",
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "aggregation": "quantile_mean(angles=P,P,P)",
+ "cost_usd": 2.0237,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -11.266666666666666,
+    "25": -5.3999999999999995,
+    "50": -0.4666666666666666,
+    "75": 4.6000000000000005,
+    "90": 10.4
+   },
+   "p_below_lower": 0.013333333333333334,
+   "p_above_upper": 0.018333333333333333
+  },
+  "phase1": {
+   "10": -11.266666666666666,
+   "25": -5.3999999999999995,
+   "50": -0.4666666666666666,
+   "75": 4.6000000000000005,
+   "90": 10.4
+  },
+  "spread_phase1": 0.3
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -11.266666666666666,
+   "25": -5.3999999999999995,
+   "50": -0.4666666666666666,
+   "75": 4.6000000000000005,
+   "90": 10.4
+  },
+  "p_below_lower": 0.013333333333333334,
+  "p_above_upper": 0.018333333333333333
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5579,
+   "seconds": 100.6,
+   "usage": {
+    "num_turns": 17,
+    "input": 20,
+    "cache_read": 349547,
+    "cache_write": 28255,
+    "cache_write_1h": 28255,
+    "output": 8500,
+    "thinking": 3691,
+    "web_search": 4,
+    "cost_usd_envelope": 0.5579154000000001,
+    "duration_api_ms": 106044,
+    "fetch_raw": 6
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -12.5,
+     "25": -6.0,
+     "50": -0.6,
+     "75": 4.8,
+     "90": 11.3
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "P0 = Nov 20 close (Yahoo CL=F already maps to the Jan-27 contract, so the roll effect is small); P1 = Dec 4 close, 10 trading days. Reference class: 10-trading-day CL-minus-ES return spreads in the current high-vol regime, roughly zero-mean, with SD set by oil vol (OVX ~52) and equity vol (VIX ~32). Oil is trending down on recovering Middle East exports, and ES is in a 10% correction after 6+ straight losses; possible oversold and Thanksgiving-week equity bounce leans the median slightly negative, but drift is weak next to the ~9-10pp SD. Fat tails: a renewed supply shock plus equity crash could push the spread above +25; an oil collapse plus equity rally could push it below -25. No human market prices this spread.",
+   "sources": [
+    "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?range=3mo&interval=1d",
+    "https://query1.finance.yahoo.com/v8/finance/chart/ES=F?range=3mo&interval=1d",
+    "https://query1.finance.yahoo.com/v8/finance/chart/CLF27.NYM?range=1mo&interval=1d",
+    "https://query1.finance.yahoo.com/v8/finance/chart/CLZ26.NYM?range=5d&interval=1d",
+    "https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX?range=5d&interval=1d",
+    "https://query1.finance.yahoo.com/v8/finance/chart/%5EOVX?range=5d&interval=1d",
+    "WebSearch: oil prices November 20 2026 (5paisa, EnergyNow headlines)",
+    "WebSearch: S&P 500 selloff November 2026 (Bloomberg, Motley Fool, CNBC snippets)",
+    "WebSearch: Kalshi WTI markets (kalshi.com WTI year-end market listing)"
+   ],
+   "reference_class": "10-trading-day CL minus ES percent-return differentials, 2025-2026 elevated oil-volatility regime"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7589,
+   "seconds": 130.7,
+   "usage": {
+    "num_turns": 14,
+    "input": 20,
+    "cache_read": 444716,
+    "cache_write": 43541,
+    "cache_write_1h": 43541,
+    "output": 11959,
+    "thinking": 4872,
+    "web_search": 3,
+    "cost_usd_envelope": 0.7588581999999999,
+    "duration_api_ms": 134401,
+    "fetch_raw": 3
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -10.5,
+     "25": -5.0,
+     "50": -0.5,
+     "75": 4.2,
+     "90": 9.5
+    },
+    "p_below_lower": 0.015,
+    "p_above_upper": 0.02
+   },
+   "reasoning": "Window Nov 23-Dec 4 = 9 trading days; P0 = Nov 20 close (CL Dec contract expires that day; Yahoo likely rolls to Jan, which traded ~$0.37 lower, a ~-0.4pp drag). 2026 has been an extreme oil-vol regime (CL 55->119->68->105->82); recent 15-session daily CL-ES diff SD ~4.2% with negative CL/ES correlation, while VIX is 28 amid a 10% S&P correction on the AI selloff. Oil is on a third weekly drop on recovering Middle East exports and glut views; equities could rebound or crash. Momentum is ignored, so the centre sits near zero minus the roll drag. Spread scaled down from realized for holiday-week calm and vol mean reversion; tails past +/-25 priced at ~2%/1.5% for an oil shock or collapse. No matching human market found.",
+   "sources": [
+    "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?range=1y&interval=1d",
+    "https://query1.finance.yahoo.com/v8/finance/chart/ES=F?range=1y&interval=1d",
+    "https://www.home.saxo/content/articles/options/stocks-fall-together-as-near-term-volatility-jumps---options-brief---20-november-2026-20112026",
+    "https://www.5paisa.com/blog/crude-oil-price-today-20-november-2026"
+   ],
+   "reference_class": "9-trading-day CL=F minus ES=F percent-return differences on Yahoo data, 2025-2026 (high oil-vol regime)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7069,
+   "seconds": 106.0,
+   "usage": {
+    "num_turns": 15,
+    "input": 20,
+    "cache_read": 446978,
+    "cache_write": 43930,
+    "cache_write_1h": 43930,
+    "output": 8600,
+    "thinking": 2964,
+    "web_search": 4,
+    "cost_usd_envelope": 0.7068846,
+    "duration_api_ms": 109220,
+    "fetch_raw": 4
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -10.8,
+     "25": -5.2,
+     "50": -0.3,
+     "75": 4.8,
+     "90": 10.4
+    },
+    "p_below_lower": 0.01,
+    "p_above_upper": 0.015
+   },
+   "reasoning": "Resolution = CL% - ES% from Nov 20 close to Dec 4 close (9 trading days; CL=F already on Jan27 contract so no in-window roll distortion). Reference class: 2-week CL-minus-ES return differences, which center near zero with SD that scales with regime vol. Current regime is high-vol: CL ~3%/day realized (Middle East supply swings, 3rd straight weekly decline to ~$81-82), ES in a ~10% correction with VIX >30 on an AI/tech selloff. Slightly negative median: oil downtrend with recovering exports vs oversold equities plus Thanksgiving seasonality, offset by tech-selloff momentum and OPEC+ Nov 29 2027-policy meeting risk (could support oil). Small escape mass for a geopolitical oil spike (+) or an oil crash with an equity rebound (-). No matching human prediction market found (Kalshi/Polymarket only list WTI level contracts).",
+   "sources": [
+    "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?range=1y&interval=1d",
+    "https://query1.finance.yahoo.com/v8/finance/chart/ES=F?range=1y&interval=1d",
+    "https://query1.finance.yahoo.com/v8/finance/chart/CLF27.NYM?range=1mo&interval=1d",
+    "https://www.schaeffersresearch.com/content/ezines/2026/11/20/stock-futures-slide-as-weekly-losses-mount",
+    "https://www.5paisa.com/blog/crude-oil-price-today-20-november-2026",
+    "https://www.cnbc.com/2026/10/31/opec-oil-output-targets-december.html",
+    "https://defirate.com/odds/oil-price/"
+   ],
+   "reference_class": "Historical 9-10 trading-day differences between CL=F and ES=F percent returns (2025-2026, Yahoo Finance), high-volatility regime"
+  }
+ ]
+}
