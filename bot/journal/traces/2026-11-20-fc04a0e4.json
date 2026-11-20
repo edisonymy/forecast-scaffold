@@ -1,0 +1,189 @@
+{
+ "record_id": "2026-11-20-fc04a0e4",
+ "question": "What will be the maximum intraday value of the VIX over these biweekly periods in Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46245,
+ "url": "https://www.metaculus.com/questions/46015/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-20T17:22:49+00:00",
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "aggregation": "quantile_mean(angles=P,P,P)",
+ "cost_usd": 2.2164,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 27.8,
+    "25": 29.833333333333332,
+    "50": 32.300000000000004,
+    "75": 35.93333333333333,
+    "90": 41.0
+   },
+   "p_above_upper": 0.04
+  },
+  "phase1": {
+   "10": 27.8,
+   "25": 29.833333333333332,
+   "50": 32.300000000000004,
+   "75": 35.93333333333333,
+   "90": 41.0
+  },
+  "spread_phase1": 1.3
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 27.8,
+   "25": 29.833333333333332,
+   "50": 32.300000000000004,
+   "75": 35.93333333333333,
+   "90": 41.0
+  },
+  "p_above_upper": 0.04
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6576,
+   "seconds": 117.7,
+   "usage": {
+    "num_turns": 18,
+    "input": 26,
+    "cache_read": 440554,
+    "cache_write": 35893,
+    "cache_write_1h": 35893,
+    "output": 7810,
+    "thinking": 3918,
+    "web_search": 4,
+    "cost_usd_envelope": 0.6575748000000001,
+    "duration_api_ms": 119590,
+    "fetch_raw": 6
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 28.6,
+     "25": 30.4,
+     "50": 32.6,
+     "75": 36.0,
+     "90": 40.5
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "VIX closed 28.44 on Nov 19 (Cboe CSV) and is about 31.4 midday Nov 20 (high 31.75), its first move above 30 since March, amid an AI/chip selloff after Anthropic's IPO and six straight S&P down days. Window is Nov 23-Dec 4 (9 trading days, Thanksgiving closed). In past spike-regime Fridays chosen from memory (not a systematic scan), the next-2-week max high ran 1.0x to 1.35x the Friday close, median about 1.10x; Aug 2024 was an outlier at 2.8x. Dec/Jan futures were about 4 points below spot (backwardation) and Thanksgiving week usually quiets things, which argues for mean reversion and trims the median; the floor is Monday's high, likely in the high 20s. No human prediction market found (Polymarket, Manifold, Kalshi searched).",
+   "sources": [
+    "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+    "https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX?interval=1d&range=5d",
+    "https://www.home.saxo/en-sg/content/articles/options/stocks-fall-together-as-near-term-volatility-jumps---options-brief---20-november-2026-20112026",
+    "https://www.investing.com/news/stock-market-news/anthropic-ipo-triggers-ai-selloff--washout-or-deeper-unwind-93CH-5041498",
+    "WebSearch: Kalshi VIX market November 2026 (no matching market found)"
+   ],
+   "reference_class": "Past Fridays with VIX in a sharp-spike regime (close about 23-45, e.g. Feb 2018, Dec 2018, Sep 2020, Jan/Jun/Sep/Oct 2022, Mar 2023, Aug 2024, Dec 2024, Apr 2025, Oct/Nov 2025, Mar 2026): max intraday VIX over the following ~9 trading days relative to that close"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.8663,
+   "seconds": 132.3,
+   "usage": {
+    "num_turns": 26,
+    "input": 38,
+    "cache_read": 799191,
+    "cache_write": 54028,
+    "cache_write_1h": 54028,
+    "output": 8949,
+    "thinking": 3764,
+    "web_search": 4,
+    "cost_usd_envelope": 0.8663342,
+    "duration_api_ms": 125587,
+    "fetch_raw": 15,
+    "fetch_raw_failed": 2
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 28.3,
+     "25": 30.3,
+     "50": 32.8,
+     "75": 36.3,
+     "90": 41.5
+    },
+    "p_above_upper": 0.05
+   },
+   "reasoning": "VIX closed 28.44 on Nov 19 (high 29.13, Cboe CSV) and broke 30 on Fri Nov 20 (last seen 30.99) with the S&P 500 down ~2%, a 7th straight loss, in correction amid an AI selloff after Anthropic's IPO. Short-dated vols (VIX1D 32, VIX9D 29.3) were above VIX; front-month futures 24.4 imply mean reversion. Reference class (VIX ~28-32 after a run-up): max high over next 9 sessions is ~1.08x the starting close at the median, 0.96-1.38x for p10-p90, with rare crash tails (Aug 2024, Apr 2025) at 2x or more. 2026 spikes faded fast (Nov 5 and Mar 30 episodes) and Thanksgiving week is usually quiet, against selloff momentum and credit stress. The floor comes from Monday's high being near Friday's close. Most older analogues are recalled from memory, not checked in the data. No human market found on Kalshi, Polymarket or Manifold.",
+   "sources": [
+    "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+    "https://www.home.saxo/en-mena/content/articles/options/stocks-fall-together-as-near-term-volatility-jumps---options-brief---20-november-2026-20112026",
+    "https://mlq.ai/news/nasdaq-falls-1-as-anthropic-slides-on-day-two-while-the-dow-rises-more-than-400-points-with-stocks-on-pace-for-their-worst-week-since-april-2025/",
+    "https://leprivatebanker.com/2026/11/20/sp-500-slides-about-10-from-its-record-to-hit-correction-territory-as-vix-tops-30-and-the-ai-selloff-rolls-on/",
+    "https://journalarta.com/en/2026/11/20/stock-market-today-dow-slides-1-34-and-vix-jumps-15-at-midday/"
+   ],
+   "reference_class": "Episodes where VIX closed ~28-32 after a multi-day run-up (2020, 2022, Mar 2025, Mar 2026): max intraday high over the next 9 trading days"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6925,
+   "seconds": 119.1,
+   "usage": {
+    "num_turns": 23,
+    "input": 34,
+    "cache_read": 631807,
+    "cache_write": 40469,
+    "cache_write_1h": 40469,
+    "output": 7537,
+    "thinking": 3157,
+    "web_search": 3,
+    "cost_usd_envelope": 0.6924904000000001,
+    "duration_api_ms": 116532,
+    "fetch_raw": 11,
+    "fetch_raw_failed": 1
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 26.5,
+     "25": 28.8,
+     "50": 31.5,
+     "75": 35.5,
+     "90": 41.0
+    },
+    "p_above_upper": 0.04
+   },
+   "reasoning": "VIX spot is 31.44 midday Nov 20, 2026 (day high 31.75) after a stepwise climb (highs 24.5, 27.7, 26.3, 29.1, 31.75) driven by an AI-stock selloff after Anthropic's IPO and Nvidia's CEO ouster; S&P/Dow are in correction. The window (Nov 23-Dec 4, 9 trading days) includes Monday's open, so the floor is near Friday's close. Reference class of VIX spikes to ~30: mostly fade (Dec futures ~24, the Nov 2025 and Nov 5, 2026 spikes faded fast, quiet Thanksgiving week, opex rolled off), but in correction regimes they persist or rise (2018, 2022, spring 2025), and the Dec 4 jobs report falls in the window. Median ~31.5, right-skewed tail, ~4% on >50. No Kalshi/Polymarket/Manifold market found.",
+   "sources": [
+    "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+    "https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX?interval=1d&range=5d",
+    "https://www.home.saxo/content/articles/options/stocks-fall-together-as-near-term-volatility-jumps---options-brief---20-november-2026-20112026",
+    "https://247wallst.com/investing/2026/11/20/stock-market-today-anthropics-mega-ipo-sends-stocks-lower-for-a-second-day/"
+   ],
+   "reference_class": "VIX spike episodes with spot ~28-33 during equity corrections; max intraday HIGH over the following ~9 trading days starting one session later"
+  }
+ ]
+}

@@ -1,0 +1,185 @@
+{
+ "record_id": "2026-11-20-c320c80b",
+ "question": "What will be the ending value of the UST 10Y Yield for these biweekly periods of Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46239,
+ "url": "https://www.metaculus.com/questions/46014/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-11-20T17:24:45+00:00",
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "aggregation": "quantile_mean(angles=P,P,P)",
+ "cost_usd": 1.1369,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 4.68,
+    "25": 4.819999999999999,
+    "50": 4.95,
+    "75": 5.08,
+    "90": 5.22
+   }
+  },
+  "phase1": {
+   "10": 4.68,
+   "25": 4.819999999999999,
+   "50": 4.95,
+   "75": 5.08,
+   "90": 5.22
+  },
+  "spread_phase1": 0.02
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 4.68,
+   "25": 4.819999999999999,
+   "50": 4.95,
+   "75": 5.08,
+   "90": 5.22
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5274,
+   "seconds": 114.7,
+   "usage": {
+    "num_turns": 5,
+    "input": 8,
+    "cache_read": 98526,
+    "cache_write": 8544,
+    "cache_write_1h": 8544,
+    "output": 2407,
+    "thinking": 796,
+    "web_search": 1,
+    "cost_usd_envelope": 0.16580219999999998,
+    "duration_api_ms": 36225,
+    "fetch_raw": 1,
+    "fetch_raw_failed": 1
+   },
+   "validation_errors_first_attempt": [
+    "your declared 10-90 interval (p90-p10 = 0.55) is narrower than 0.75x your own stated dispersion_90_10 (54) — the percentiles contradict your dispersion analysis. Either widen the percentiles to match it, or restate dispersion_90_10 with a \"dispersion_basis\" that actually implies the tighter width"
+   ],
+   "estimate": {
+    "percentiles": {
+     "10": 4.66,
+     "25": 4.81,
+     "50": 4.96,
+     "75": 5.11,
+     "90": 5.27
+    }
+   },
+   "reasoning": "Anchor: random walk from the current 10Y level ~4.95% (Nov 20 intraday after a 10bp risk-off drop; FRED last 5.07 on Nov 18). Elevated volatility regime (daily moves of 5-17bp) with a near-certain December Fed hike and hawkish Fed talk pushing up, and an equity rout and flight to safety pushing down. The Dec 4 jobs report adds tail risk. Median kept near spot with a slight allowance for partial reversal of today's safe-haven bid. Range bounds 4.255/6.255 are 70+bp away, so no escape mass is declared. No human market found (harness found none on Polymarket/Manifold; Kalshi not checked).",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-09-01",
+    "https://www.cnbc.com/amp/2026/11/20/treasury-yields-bonds-inflation.html",
+    "https://www.fxstreet.com/news/us-10-year-treasury-yield-slips-below-5-as-global-equity-rout-deepens-202611201233",
+    "https://tradingeconomics.com/united-states/government-bond-yield"
+   ],
+   "reference_class": "10-trading-day changes in DGS10 during high-volatility Fed hiking regimes (e.g., 2022-2023, Oct-Nov 2026)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2651,
+   "seconds": 51.6,
+   "usage": {
+    "num_turns": 9,
+    "input": 12,
+    "cache_read": 160753,
+    "cache_write": 14162,
+    "cache_write_1h": 14162,
+    "output": 3474,
+    "thinking": 1025,
+    "web_search": 2,
+    "cost_usd_envelope": 0.2650706,
+    "duration_api_ms": 51404,
+    "fetch_raw": 2
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.67,
+     "25": 4.81,
+     "50": 4.94,
+     "75": 5.07,
+     "90": 5.2
+    }
+   },
+   "reasoning": "Nov 20 close ~4.94-4.95% (TradingEconomics/CNBC) after 5 straight declines on equity-rout safe-haven flows and lower oil; FRED last print 5.07 (Nov 18). Opposing forces: markets price a 25bp Dec 8-9 hike (Waller floated 50bp), which is hawkish, versus continued risk-off. No strong drift, so median ≈ spot. Horizon ~9 trading days incl. Thanksgiving and likely the Dec 4 jobs report, in an elevated-vol regime, gives SD ~20bp. Tails beyond 4.255/6.255 need >3.5 SD moves, so I priced no escape. No Polymarket/Kalshi/Manifold contract found.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2026-08-01",
+    "https://tradingeconomics.com/united-states/government-bond-yield",
+    "https://www.cnbc.com/amp/2026/11/20/treasury-yields-bonds-inflation.html",
+    "https://leprivatebanker.com/2026/11/19/treasury-10-year-yield-holds-near-5-09-as-futures-price-a-december-fed-hike-and-policymakers-flag-more-to-come/"
+   ],
+   "reference_class": "Random-walk 9-10 trading-day changes in DGS10 during the Aug-Nov 2026 high-volatility regime"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3444,
+   "seconds": 56.4,
+   "usage": {
+    "num_turns": 10,
+    "input": 14,
+    "cache_read": 198501,
+    "cache_write": 16302,
+    "cache_write_1h": 16302,
+    "output": 3942,
+    "thinking": 1263,
+    "web_search": 4,
+    "cost_usd_envelope": 0.3444202,
+    "duration_api_ms": 65440,
+    "fetch_raw": 1
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.71,
+     "25": 4.84,
+     "50": 4.95,
+     "75": 5.06,
+     "90": 5.19
+    }
+   },
+   "reasoning": "DGS10 was 5.07 on Nov 18 (FRED); news puts the Nov 20 close at about 4.94-4.99 after a ~10bp safe-haven rally during a global stock selloff tied to AI doubts. A December Fed hike is ~95-98% priced, which pulls the other way. 9 trading days remain, and the Nov jobs report lands on Dec 4. The median stays at the current level (random walk, no drift). The spread uses recent elevated volatility: 9-day SD ~18bp. The lower bound is ~70bp (~4 SD) below, so no mass is placed outside the range. No matching human market: Kalshi has weekly and year-end 10Y yield contracts, but none settling on FRED DGS10 for Dec 4, and no live price was seen.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=2025-11-01",
+    "https://www.cnbc.com/amp/2026/11/20/treasury-yields-bonds-inflation.html",
+    "https://www.fxstreet.com/news/us-10-year-treasury-yield-slips-below-5-as-global-equity-rout-deepens-202611201233",
+    "https://247wallst.com/investing/2026/11/18/traders-now-see-a-95-chance-the-fed-hikes-rates-in-december/",
+    "https://kalshi.com/markets/kxnote10y/10y-ust/kxnote10y-26dec31"
+   ],
+   "reference_class": "9-trading-day changes in DGS10, Nov 2024 - Nov 2026, weighted toward the high-volatility Sep-Nov 2026 regime"
+  }
+ ]
+}
