@@ -154,6 +154,25 @@ class TestOpenrouterCreditCap:
         with pytest.raises(RuntimeError, match=r"^agent failed \(0\): Credit balance"):
             run_bot.run_agent("claude -p", "prompt", None, 30)
 
+    @pytest.mark.parametrize("exc", [
+        OSError(8, "Exec format error", "claude"),  # 2026-11-17: half-installed CLI
+        FileNotFoundError(2, "No such file or directory", "claude"),
+    ])
+    def test_agent_that_cannot_launch_is_a_provider_failure(
+        self, monkeypatch: pytest.MonkeyPatch, exc: OSError
+    ) -> None:
+        # A broken/missing CLI binary is infra, not the question's fault: it must surface
+        # as "agent failed" (provider_error -> exit 75 -> fallback) and never reach the
+        # generic handler that writes the question into the backoff ledger.
+        monkeypatch.setattr(run_bot, "agent_environment", lambda provider: {})
+
+        def boom(*args: object, **kwargs: object) -> None:
+            raise exc
+
+        monkeypatch.setattr(run_bot.subprocess, "run", boom)
+        with pytest.raises(RuntimeError, match=r"^agent failed \(launch\): "):
+            run_bot.run_agent("claude -p", "prompt", None, 30)
+
     def test_failed_call_detail_leads_with_the_envelope_message(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
