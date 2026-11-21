@@ -86,7 +86,14 @@ jobs:
         # then watch one run.
         run: |
           pip install -e .
+          # Verify the CLI actually runs: on 2026-11-17 a slow (6 min) npm install left a
+          # `claude` that failed with ENOEXEC and the whole tick was lost. Retry once.
           npm install -g @anthropic-ai/claude-code@2.1.280
+          if ! claude --version; then
+            echo "::warning::claude CLI not runnable after install; reinstalling"
+            npm install -g --force @anthropic-ai/claude-code@2.1.280
+            claude --version
+          fi
           echo "JOB_START=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: OpenRouter key credit

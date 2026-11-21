@@ -844,10 +844,16 @@ def run_agent(
     # after the agent returns — the agent never needs METACULUS_TOKEN or the leak-guard list.
     _set_call_usage(None)  # a failed call must not inherit the previous call's usage
     agent_env = agent_environment(provider)
-    result = subprocess.run(
-        cmd, input=prompt, capture_output=True, text=True, encoding="utf-8",
-        errors="replace", timeout=timeout, cwd=agent_workdir(), env=agent_env,
-    )
+    try:
+        result = subprocess.run(
+            cmd, input=prompt, capture_output=True, text=True, encoding="utf-8",
+            errors="replace", timeout=timeout, cwd=agent_workdir(), env=agent_env,
+        )
+    except OSError as exc:
+        # The CLI could not even start (2026-11-17: a 6-minute npm install left a
+        # non-executable `claude`, ENOEXEC). That is infra, not the question: report it
+        # as a provider failure so the caller falls back instead of ledgering a bench.
+        raise RuntimeError(f"agent failed (launch): {exc}") from exc
     if result.returncode != 0:
         # `--output-format json` reports errors (e.g. auth 401s) in the stdout envelope
         # with an empty stderr — include both so failures are diagnosable from logs.
