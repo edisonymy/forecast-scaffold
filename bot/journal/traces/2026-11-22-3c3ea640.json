@@ -1,0 +1,194 @@
+{
+ "record_id": "2026-11-22-3c3ea640",
+ "question": "What will be the ending value of the ICE BofA US High Yield Option-Adjusted Spread for these biweekly periods of Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46215,
+ "url": "https://www.metaculus.com/questions/46010/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-11-22T16:33:07+00:00",
+ "effort": "medium",
+ "model": "anthropic/claude-opus-5.5",
+ "provider": "openrouter",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "aggregation": "quantile_mean(angles=P,P,P)",
+ "cost_usd": 4.496,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 3.16,
+    "25": 3.3366666666666664,
+    "50": 3.4966666666666666,
+    "75": 3.6199999999999997,
+    "90": 3.69
+   },
+   "p_above_upper": 0.40166666666666667
+  },
+  "phase1": {
+   "10": 3.16,
+   "25": 3.3366666666666664,
+   "50": 3.4966666666666666,
+   "75": 3.6199999999999997,
+   "90": 3.69
+  },
+  "spread_phase1": 0.03
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 3.16,
+   "25": 3.3366666666666664,
+   "50": 3.4966666666666666,
+   "75": 3.6199999999999997,
+   "90": 3.69
+  },
+  "p_above_upper": 0.40166666666666667
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.7734,
+   "seconds": 152.5,
+   "usage": {
+    "num_turns": 18,
+    "input": 24,
+    "cache_read": 593104,
+    "cache_write": 64908,
+    "cache_write_1h": 0,
+    "output": 9973,
+    "thinking": 3983,
+    "web_search": 7,
+    "cost_usd_envelope": 1.7733870000000003,
+    "duration_api_ms": 185958,
+    "fetch_raw": 3,
+    "fetch_raw_failed": 1
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 3.18,
+     "25": 3.36,
+     "50": 3.51,
+     "75": 3.62,
+     "90": 3.685
+    },
+    "p_above_upper": 0.435
+   },
+   "reasoning": "FRED last print 3.52 (Nov 19), after widening from 3.23 on Nov 13. On Nov 20 the S&P fell 3.7% into a correction (VIX 35.9), with an Nvidia SEC probe and AI-credit/CCC stress. HYG NAV fell 0.39% despite a ~12bp Treasury rally, implying ~+20-28bp, so Nov 20 is likely ~3.70-3.78. Reference class: 10-day spread moves after VIX>30 spikes; these often mean-revert (Aug 2024, Apr 2025, Mar 2026), but a Fed hike priced for Dec 9, 10y near 5% and a developing AI credit unwind give fat right-tail risk (Dec 2018 analog). Unconditional median ~3.68, 10-90 ~3.30-4.25, so ~43.5% mass above 3.745 declared as an upper escape; percentiles are conditional on landing in range. No Polymarket/Kalshi/Manifold market found.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2&cosd=2024-11-01",
+    "https://fred.stlouisfed.org/series/BAMLH0A0HYM2",
+    "https://stockinvest.us/digest/digest-us-market-close-2026-11-20",
+    "https://www.thetrading.tools/credit-spreads",
+    "https://ceoeconomy.com/article/junk-bond-stress-ccc-spreads-coreweave-ecb",
+    "https://www.tipranks.com/news/the-week-that-was-the-week-ahead-macro-and-markets-november-22",
+    "https://www.cnbc.com/2026/11/06/coreweave-bond-yield-tops-16percent-as-ai-credit-stress-rises.html"
+   ],
+   "reference_class": "ICE BofA HY OAS 10-trading-day changes following equity-stress weeks with VIX>30 and spreads having widened >25bp in the prior week (2018-2026 episodes, e.g. Feb/Dec 2018, Aug 2024, Apr 2025, Mar 2026, Oct 2026)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.4302,
+   "seconds": 117.3,
+   "usage": {
+    "num_turns": 12,
+    "input": 16,
+    "cache_read": 330796,
+    "cache_write": 65005,
+    "cache_write_1h": 0,
+    "output": 6826,
+    "thinking": 3645,
+    "web_search": 6,
+    "cost_usd_envelope": 1.4301842499999997,
+    "duration_api_ms": 128625,
+    "fetch_raw": 3,
+    "fetch_raw_failed": 1
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 3.1,
+     "25": 3.3,
+     "50": 3.48,
+     "75": 3.61,
+     "90": 3.69
+    },
+    "p_above_upper": 0.32
+   },
+   "reasoning": "FRED's last print is 3.52 (Nov 19). On Fri Nov 20 the S&P 500 fell 3.7% and the VIX closed at 35.89. Bloomberg's HY spread widened 23bp to 367 (+51bp on the week); with ICE running ~7-8bp above Bloomberg, ICE on Nov 20 is likely ~3.72-3.78, right at the 3.745 upper bound. Reference class: recent spikes in this series (Aug 2024, Apr 2025, Oct 2025, Mar 2026) gave back 50-100% of the spike within two weeks, and December seasonality favors tightening, so the median drifts to ~3.6. Against that: a two-month persistent trend, a hawkish Fed, CCC distress, the ongoing AI unwind, PCE on Nov 25 and thin holiday liquidity keep continuation risk high. I put ~32% on the Dec 4 value being above 3.745. Percentiles describe the distribution conditional on landing in range. No prediction market found.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2&cosd=2024-11-01",
+    "https://www.theclosingprint.net/2026/11/post-market-and-weekly-summary-2026-11-20/",
+    "https://blog.annexwealth.com/2026/11/20/macro-market-musings-11-20-26/",
+    "https://creditbubblebulletin.blogspot.com/ (via search snippet: Bloomberg HY spread 367bp Nov 20)",
+    "https://anthonyries23.substack.com/p/headwinds-history-havoc (via search snippet)"
+   ],
+   "reference_class": "ICE BofA HY OAS 10-trading-day changes following VIX spikes above 30 (Aug 2024, Apr 2025, Mar 2026), plus 2024-2026 11-day change distribution"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "anthropic/claude-opus-5.5",
+   "cost_usd": 1.2925,
+   "seconds": 133.4,
+   "usage": {
+    "num_turns": 15,
+    "input": 18,
+    "cache_read": 448448,
+    "cache_write": 33789,
+    "cache_write_1h": 0,
+    "output": 6572,
+    "thinking": 3650,
+    "web_search": 6,
+    "cost_usd_envelope": 1.29246525,
+    "duration_api_ms": 149612,
+    "fetch_raw": 4,
+    "fetch_raw_failed": 3
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 3.2,
+     "25": 3.35,
+     "50": 3.5,
+     "75": 3.63,
+     "90": 3.695
+    },
+    "p_above_upper": 0.45
+   },
+   "reasoning": "FRED last print 3.52 (Nov 19), up from 2.68 in late Sep. Nov 20 was a severe risk-off day (S&P -3.7%, -8.6% week, VIX ~36, Nvidia -14% on reported SEC probe); HYG NAV -0.39% despite falling Treasury yields implies ~+20-25bp, so Nov 20 OAS is likely ~3.70-3.78, at the range's upper edge. The reference class (post-VIX-spike episodes Aug 2024, Apr 2025, Mar 2026) shows 40-60bp tightening within two weeks, but the Fed is hiking into the selloff (December hike ~89-96% priced), like Q4 2018 when spreads kept widening, and CCC spreads are at records. I set the median ~3.70 with right skew; P(>3.745) ~45%. No Kalshi/Polymarket/Manifold market found.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=BAMLH0A0HYM2",
+    "https://www.stocktitan.net/articles/stock-market-today-live-november-20-2026",
+    "https://www.thetrading.tools/credit-spreads",
+    "https://govspending.org/series/BAMLH0A0HYM2/",
+    "https://www.ishares.com/us/products/239565/ishares-iboxx-high-yield-corporate-bond-etf",
+    "https://ceoeconomy.com/article/junk-bond-stress-ccc-spreads-coreweave-ecb"
+   ],
+   "reference_class": "Two-week changes in ICE BofA HY OAS following equity selloffs with VIX >30 (Aug 2024, Apr 2025, Mar 2026, Q4 2018), starting from the spike level"
+  }
+ ]
+}
