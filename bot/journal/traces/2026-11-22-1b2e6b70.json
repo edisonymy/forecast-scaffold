@@ -1,0 +1,197 @@
+{
+ "record_id": "2026-11-22-1b2e6b70",
+ "question": "How much will Gold Futures total price returns exceed S&P 500 Futures in these biweekly periods of Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46209,
+ "url": "https://www.metaculus.com/questions/46008/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-22T17:42:51+00:00",
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "aggregation": "quantile_mean(angles=P,P,P)",
+ "cost_usd": 1.6237,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -6.2,
+    "25": -2.9,
+    "50": 0.0,
+    "75": 2.966666666666667,
+    "90": 6.266666666666667
+   },
+   "p_below_lower": 0.03166666666666667,
+   "p_above_upper": 0.03333333333333333
+  },
+  "phase1": {
+   "10": -6.2,
+   "25": -2.9,
+   "50": 0.0,
+   "75": 2.966666666666667,
+   "90": 6.266666666666667
+  },
+  "spread_phase1": 0.0
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -6.2,
+   "25": -2.9,
+   "50": 0.0,
+   "75": 2.966666666666667,
+   "90": 6.266666666666667
+  },
+  "p_below_lower": 0.03166666666666667,
+  "p_above_upper": 0.03333333333333333
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5782,
+   "seconds": 94.5,
+   "usage": {
+    "num_turns": 15,
+    "input": 24,
+    "cache_read": 377595,
+    "cache_write": 35097,
+    "cache_write_1h": 35097,
+    "output": 8179,
+    "thinking": 2510,
+    "web_search": 2,
+    "cost_usd_envelope": 0.578158,
+    "duration_api_ms": 97789,
+    "fetch_raw": 5
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -6.2,
+     "25": -3.0,
+     "50": 0.0,
+     "75": 3.1,
+     "90": 6.4
+    },
+    "p_below_lower": 0.035,
+    "p_above_upper": 0.04
+   },
+   "reasoning": "Reference class: 9-trading-day GC minus ES return spreads; mean ~0 and SD ~4-5pp over the past 6 months. The current regime is extremely volatile: last week gold fell 9.5% and ES fell 8.5% (spread -1pp), with the Fed about 97% priced for a December hike, a strong dollar, margin-call gold liquidation and an AI-stock rout. Implied vols (GVZ 28.7, VIX ~28-32) point to an SD of about 6pp; I discount that toward realized vol to get an SD of about 5pp with fat tails. No reliable directional edge: a gold rebound after the crash competes with continued cash-raising sales. No human market found on Polymarket/Manifold/Kalshi.",
+   "sources": [
+    "https://query1.finance.yahoo.com/v8/finance/chart/GC=F?range=6mo&interval=1d",
+    "https://query1.finance.yahoo.com/v8/finance/chart/ES=F?range=6mo&interval=1d",
+    "https://goldsilver.com/industry-news/goldsilver-news/gold-falling-with-stocks-two-forces/",
+    "https://www.cnbc.com/2026/11/20/gold-federal-reserve-price-dollar-metals.html",
+    "https://hdfcsky.com/news/gold-crashes-9percent-to-3525-silver-plunges-17percent-as-fed-hike-odds-hit-95percent"
+   ],
+   "reference_class": "Biweekly (9-trading-day) GC minus ES percent return spreads, 2026 Yahoo Finance daily closes"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4593,
+   "seconds": 82.0,
+   "usage": {
+    "num_turns": 15,
+    "input": 22,
+    "cache_read": 314428,
+    "cache_write": 26372,
+    "cache_write_1h": 26372,
+    "output": 5635,
+    "thinking": 2180,
+    "web_search": 3,
+    "cost_usd_envelope": 0.45925760000000004,
+    "duration_api_ms": 80185,
+    "fetch_raw": 7
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -6.2,
+     "25": -2.9,
+     "50": 0.0,
+     "75": 3.0,
+     "90": 6.4
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "P0 is the Nov 20 close (GC 3515.4, ES 6935) after a joint crash: gold -9% on the week, ES -3.6% Friday, driven by Fed hike odds (~96% for Dec 9) and forced selling during an AI-stock rout. The volatility regime is high (GVZ ~30, VIX ~25-28), so the 2-week spread SD is ~5pp versus ~3.5-4pp normally. No directional edge: bearish gold momentum and analyst consensus are offset by an oversold-rebound case. PCE and the Dec 4 jobs report fall inside the window. Median 0, fat tails, ~3% mass beyond each ±10 bound. No human market found (Polymarket/Manifold none per harness; Kalshi/bookmakers do not list a GC-ES spread).",
+   "sources": [
+    "https://query1.finance.yahoo.com/v8/finance/chart/GC=F?range=1mo&interval=1d",
+    "https://query1.finance.yahoo.com/v8/finance/chart/ES=F?range=1mo&interval=1d",
+    "https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX?range=1mo&interval=1d",
+    "https://query1.finance.yahoo.com/v8/finance/chart/%5EGVZ?range=1mo&interval=1d",
+    "https://query1.finance.yahoo.com/v8/finance/chart/GC=F?range=6mo&interval=1wk",
+    "https://query1.finance.yahoo.com/v8/finance/chart/ES=F?range=6mo&interval=1wk",
+    "https://www.cnbc.com/2026/11/20/gold-federal-reserve-price-dollar-metals.html",
+    "https://www.kitco.com/news/article/2026-11-20/wall-street-stays-bearish-after-golds-slide-3500-main-street-pessimism"
+   ],
+   "reference_class": "Biweekly GC minus ES return differences in high-volatility regimes (2025-2026), scaled by current realized/implied vol"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5863,
+   "seconds": 106.3,
+   "usage": {
+    "num_turns": 14,
+    "input": 20,
+    "cache_read": 309924,
+    "cache_write": 34755,
+    "cache_write_1h": 34755,
+    "output": 8505,
+    "thinking": 3720,
+    "web_search": 3,
+    "cost_usd_envelope": 0.5863077999999999,
+    "duration_api_ms": 108687,
+    "fetch_raw": 5
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -6.2,
+     "25": -2.8,
+     "50": 0.0,
+     "75": 2.8,
+     "90": 6.0
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "P0 = Nov 20 closes (GC 3515.4, ES 6935.0) after a panic week: gold -8% (forced liquidation, ~96% Dec Fed hike odds), S&P -8.6%, VIX ~36. Two-week GC-ES gaps over the last 3 months were mostly negative (-5.4,-0.3,-5.9,-2.8,-0.65,+3.4,-6.1) because gold is in a downtrend; offsetting that are a likely post-capitulation stock rebound (pushes the gap down) and a possible gold rebound (pushes it up), plus a possible +0.3-0.6pp lift from the Yahoo GC=F Dec->Feb contract switch (timing unconfirmed). Median ~0 with wide fat tails; no matching prediction market found (Kalshi only has stale-looking year-end gold/S&P price markets).",
+   "sources": [
+    "https://query1.finance.yahoo.com/v8/finance/chart/GC=F?range=3mo&interval=1d",
+    "https://query1.finance.yahoo.com/v8/finance/chart/ES=F?range=3mo&interval=1d",
+    "https://www.cnbc.com/2026/11/20/gold-federal-reserve-price-dollar-metals.html",
+    "https://www.usagold.com/daily-precious-metals-market-report-november-20-2026/",
+    "https://fortune.com/2026/11/20/sp-500-correction-panic-selling-ai-selloff-nasdaq-2026-gains-bnp-paribas/",
+    "https://kalshi.com/financials/stock-market-predictions"
+   ],
+   "reference_class": "Biweekly (9-10 session) GC minus ES return differences on Yahoo data, last 3 months, scaled to the current high-volatility regime"
+  }
+ ]
+}
