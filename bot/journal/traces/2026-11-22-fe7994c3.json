@@ -1,0 +1,192 @@
+{
+ "record_id": "2026-11-22-fe7994c3",
+ "question": "What will be the maximum intraday value of the VIX over these biweekly periods in Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46245,
+ "url": "https://www.metaculus.com/questions/46015/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-22T17:32:53+00:00",
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "aggregation": "quantile_mean(angles=P,P,P)",
+ "cost_usd": 1.9844,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 30.866666666666664,
+    "25": 33.166666666666664,
+    "50": 35.86666666666667,
+    "75": 40.03333333333333,
+    "90": 45.6
+   },
+   "p_above_upper": 0.06333333333333334
+  },
+  "phase1": {
+   "10": 30.866666666666664,
+   "25": 33.166666666666664,
+   "50": 35.86666666666667,
+   "75": 40.03333333333333,
+   "90": 45.6
+  },
+  "spread_phase1": 1.0
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 30.866666666666664,
+   "25": 33.166666666666664,
+   "50": 35.86666666666667,
+   "75": 40.03333333333333,
+   "90": 45.6
+  },
+  "p_above_upper": 0.06333333333333334
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6655,
+   "seconds": 128.3,
+   "usage": {
+    "num_turns": 22,
+    "input": 32,
+    "cache_read": 528904,
+    "cache_write": 35612,
+    "cache_write_1h": 35612,
+    "output": 8150,
+    "thinking": 3476,
+    "web_search": 4,
+    "cost_usd_envelope": 0.6654588000000001,
+    "duration_api_ms": 129892,
+    "fetch_raw": 11
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 30.8,
+     "25": 33.0,
+     "50": 35.3,
+     "75": 39.0,
+     "90": 45.3
+    },
+    "p_above_upper": 0.05
+   },
+   "reasoning": "Cboe CSV: VIX closed Nov 20, 2026 at 35.89 after an intraday high of 40.03 on an AI/tech selloff (Nasdaq -5.3%, S&P in correction, fears of a December Fed hike). It is the third escalating spike in a month (Oct 30 high 23.9, Nov 5 high 28.4). Past spike-close cases (Aug 2015, Dec 2018, Aug 2024, Apr 2025) put the next-9-day max at 0.90-1.00x the close; the regime-break cases (Feb 2018, Feb 2020) reached 1.35-1.6x. December VIX futures at 28.87 (backwardation) and the roughly +1.4% weekend Nasdaq proxy point to mean reversion, so the Monday high is likely 32-35. The window has 9 trading days (Thanksgiving off), and the jobs report on Dec 4 is the last catalyst inside it. Odds of beating Friday's 40.03 are about 25-30%; tail above 50 about 5%. No human prediction market found on Kalshi, Polymarket, Manifold or bookmakers.",
+   "sources": [
+    "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+    "https://www.home.saxo/content/articles/options/stocks-fall-together-as-near-term-volatility-jumps---options-brief---20-november-2026-20112026",
+    "https://ceoeconomy.com/article/vix-closes-at-2026-high-35-89-wall-street-fear-gauge-nov-2026",
+    "https://x.com/CoreyCicero/status/2124523961035682106",
+    "https://www.cnbc.com/2026/11/19/stock-market-today-live-updates.html",
+    "https://www.thetrading.tools/vix-term-structure"
+   ],
+   "reference_class": "Max intraday VIX over the 9 trading days after a VIX spike close of about 36-41 (Aug 2015, Feb 2018, Dec 2018, Feb 2020, Aug 2024, Apr 2025)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6755,
+   "seconds": 125.4,
+   "usage": {
+    "num_turns": 20,
+    "input": 30,
+    "cache_read": 517323,
+    "cache_write": 36809,
+    "cache_write_1h": 36809,
+    "output": 7705,
+    "thinking": 3434,
+    "web_search": 5,
+    "cost_usd_envelope": 0.6755316000000001,
+    "duration_api_ms": 126461,
+    "fetch_raw": 7
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 31.0,
+     "25": 33.3,
+     "50": 36.0,
+     "75": 40.5,
+     "90": 45.5
+    },
+    "p_above_upper": 0.07
+   },
+   "reasoning": "VIX closed 35.89 on Fri Nov 20 2026 (intraday high 40.03) after an 8.6% weekly S&P drop driven by AI repricing, a Gulf liquidity shock and a priced Dec Fed hike. Reference class of VIX spike closes ~35+ shows the max high over the next ~9 sessions clustering near 1.0x the spike close, with a fat right tail when selloffs persist (2018, 2020, 2025). Weekend tech +1.44% and Dec VIX futures at 28.46 (backwardated) point to mean reversion, but Monday opening prints likely ~31-34 set a floor near 30. Build-up over a full week plus liquidity stress argues for meaningful odds of a retest of 40+. No matching prediction market found on Polymarket/Manifold/Kalshi.",
+   "sources": [
+    "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+    "https://www.ad-hoc-news.de/boerse/news/marktberichte/vix-jumps-26-20-prozent-to-35-89-as-tech-selloff-intensifies-bloomberg-reports-late-session-touch/70541190",
+    "https://x.com/CoreyCicero/status/2124523961035682106",
+    "https://www.home.saxo/en-ch/content/articles/options/stocks-fall-together-as-near-term-volatility-jumps---options-brief---20-november-2026-20112026",
+    "https://billcaradotcom.substack.com/p/the-november-2026-market-rout-liquidity",
+    "https://247wallst.com/investing/2026/11/21/this-stock-market-selloff-could-block-the-feds-rate-hikes/",
+    "https://basispilot.com/insights/us-stocks/nasdaq-november-20-2026-ai-selloff-vix-correction"
+   ],
+   "reference_class": "Episodes of VIX closing >=35 after a sharp spike (Feb 2018, Aug 2015, Dec 2018, Feb 2020, Mar 2020, Jan 2021, Aug 2024, Apr 2025, Aug 2011): max intraday high over the following ~9 trading days"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6435,
+   "seconds": 125.2,
+   "usage": {
+    "num_turns": 17,
+    "input": 26,
+    "cache_read": 451662,
+    "cache_write": 36628,
+    "cache_write_1h": 36628,
+    "output": 8019,
+    "thinking": 4018,
+    "web_search": 4,
+    "cost_usd_envelope": 0.6434534000000001,
+    "duration_api_ms": 120981,
+    "fetch_raw": 5
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 30.8,
+     "25": 33.2,
+     "50": 36.3,
+     "75": 40.6,
+     "90": 46.0
+    },
+    "p_above_upper": 0.07
+   },
+   "reasoning": "Cboe CSV: VIX closed 35.89 on Fri Nov 20 2026 (high 40.03), up 26% on an AI/semiconductor crash (Nasdaq -5.3%, NVDA -14% on CEO resignation + SEC probe report). Reference class of VIX closes 30-45 after >=12% jumps: the max HIGH over the next 9 trading days is roughly 0.85-1.5x the close, median ~1.05x. Weekend IG Nasdaq +1.44%, Monday weekend-decay and the Thanksgiving holiday week pull the number down; continuing NVDA/AI stress, fragile liquidity, PCE and the Dec 4 jobs report keep a fat right tail (escalations like Feb 2018, Aug 2011, Mar 2020, Apr 2025). The Monday high likely sets a floor near 31-34. No prediction market found for this window (Polymarket, Manifold, Kalshi searched).",
+   "sources": [
+    "https://cdn.cboe.com/api/global/us_indices/daily_prices/VIX_History.csv",
+    "https://www.ad-hoc-news.de/boerse/news/marktberichte/vix-jumps-26-20-prozent-to-35-89-as-tech-selloff-intensifies-bloomberg-reports-late-session-touch/70541190",
+    "https://x.com/CoreyCicero/status/2124523961035682106",
+    "https://uk.investing.com/news/stock-market-news/nvidia-shares-fall-115-as-report-of-sec-accounting-probe-adds-to-pressure-4996570",
+    "https://wisevoter.com/world/us/2026/11/21/ai-fears-drive-market-selloff-vix-spike",
+    "https://www.fool.com/investing/2026/11/22/nvidia-just-delivered-incredible-results-buy-this-artificial-intelligence-ai-stock-instead-if-you-re-still-worried-about-the-semiconductor-giant-s-future/"
+   ],
+   "reference_class": "Post-2004 days when the VIX closed 30-45 after a one-day jump of >=12%; outcome = max intraday HIGH over the next 9 trading days"
+  }
+ ]
+}

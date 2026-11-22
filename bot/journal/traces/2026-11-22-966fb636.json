@@ -1,0 +1,198 @@
+{
+ "record_id": "2026-11-22-966fb636",
+ "question": "How much will Nvidia's stock price returns exceed Apple's in these biweekly periods of Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46227,
+ "url": "https://www.metaculus.com/questions/46012/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-22T17:38:45+00:00",
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "aggregation": "quantile_mean(angles=P,P,P)",
+ "cost_usd": 1.3456,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -10.366666666666667,
+    "25": -5.233333333333333,
+    "50": 0.8333333333333334,
+    "75": 6.6000000000000005,
+    "90": 10.933333333333332
+   },
+   "p_below_lower": 0.09333333333333334,
+   "p_above_upper": 0.11333333333333333
+  },
+  "phase1": {
+   "10": -10.366666666666667,
+   "25": -5.233333333333333,
+   "50": 0.8333333333333334,
+   "75": 6.6000000000000005,
+   "90": 10.933333333333332
+  },
+  "spread_phase1": 1.6
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -10.366666666666667,
+   "25": -5.233333333333333,
+   "50": 0.8333333333333334,
+   "75": 6.6000000000000005,
+   "90": 10.933333333333332
+  },
+  "p_below_lower": 0.09333333333333334,
+  "p_above_upper": 0.11333333333333333
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4308,
+   "seconds": 89.8,
+   "usage": {
+    "num_turns": 12,
+    "input": 16,
+    "cache_read": 235977,
+    "cache_write": 19167,
+    "cache_write_1h": 19167,
+    "output": 6600,
+    "thinking": 2820,
+    "web_search": 3,
+    "cost_usd_envelope": 0.43076639999999994,
+    "duration_api_ms": 93709,
+    "fetch_raw": 3
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -10.2,
+     "25": -4.1,
+     "50": 1.9,
+     "75": 7.3,
+     "90": 11.2
+    },
+    "p_below_lower": 0.09,
+    "p_above_upper": 0.15
+   },
+   "reasoning": "P0 is the Nov 20 close: NVDA 125.53 after a 14% one-day drop (7-session slide from ~222; SEC accounting probe, Huang resignation, CA AG subpoena, delayed 10-Q, Bessent 10-day deadline) and AAPL 342.56. NVDA bounced +5.3% after hours to 132.18, so the median sits modestly positive and allows for some of that bounce fading. Normal-regime biweekly spread SD is ~5-6pp (from memory, not computed), but the current crisis regime implies ~12pp with fat tails: bad news (restatement, charges, delisting notice) pushes the low tail; a relief rally or capitulation rebound pushes the high tail, which is weighted slightly more given the after-hours gain and a forward P/E of ~8. No human market prices this contract.",
+   "sources": [
+    "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?range=1mo&interval=1d",
+    "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?range=1mo&interval=1d",
+    "https://finance.yahoo.com/markets/article/nvidia-stock-extends-25-trillion-rout-as-sec-probe-reportedly-investigates-its-accounting-194945274.html",
+    "https://www.fool.com/investing/2026/11/21/after-its-worst-week-in-18-years-nvidia-now-faces-an-sec-investigation-what-it-means-for-investors/",
+    "WebSearch results: Nvidia after-hours rebound to 132.18 (Nov 20 session)",
+    "WebSearch results: SEC probe / Bessent 10-day demand (techcrunch, investinglive, benzinga)"
+   ],
+   "reference_class": "Fortnightly NVDA-minus-AAPL return spreads, adjusted for mega-cap stocks in the 2 weeks after a scandal or regulatory-probe crash (realized vol 3-4x normal)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4602,
+   "seconds": 78.5,
+   "usage": {
+    "num_turns": 12,
+    "input": 14,
+    "cache_read": 197387,
+    "cache_write": 17572,
+    "cache_write_1h": 17572,
+    "output": 4948,
+    "thinking": 1735,
+    "web_search": 5,
+    "cost_usd_envelope": 0.46018139999999996,
+    "duration_api_ms": 95197,
+    "fetch_raw": 0
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -10.6,
+     "25": -5.9,
+     "50": 0.3,
+     "75": 6.4,
+     "90": 11.0
+    },
+    "p_below_lower": 0.11,
+    "p_above_upper": 0.1
+   },
+   "reasoning": "NVDA is in an extreme volatility regime: Jensen Huang resigned Nov 12, the SEC accounting probe news hit Nov 20 (-14% day, worst week since 2008), and the stock is down from $228 to $125.53 in ~6 weeks. NVDA's 9-day SD is ~14% and AAPL's ~4.7%; with correlation ~0.4 the spread SD is ~12-13pp. The median is near zero: oversold bounce potential (forward P/E ~8, talk of a Huang return, a strong $130B guide) is offset by momentum and the risk of more probe or restatement news. Both open bounds carry about 10% escape mass each. No matching human market was found.",
+   "sources": [
+    "https://www.fool.com/coverage/stock-market-today/2026/11/20/stock-market-today-nov-20-nvidia-s-usd2-5-trillion-rout-deepens-as-sec-accounting-probe-adds-to-wall-street-s-ai-sell-off/",
+    "https://finance.yahoo.com/quote/NVDA/history/",
+    "https://finance.yahoo.com/quote/AAPL/history/",
+    "https://www.fool.com/investing/2026/11/21/after-its-worst-week-in-18-years-nvidia-now-faces-an-sec-investigation-what-it-means-for-investors/",
+    "https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000088/q3fy27pr.htm",
+    "https://www.investing.com/news/economy-news/exclusiveus-secs-nvidia-probe-is-examining-potential-accounting-issues-sources-say-5042460",
+    "https://optioncharts.io/options/NVDA/volatility-skew",
+    "https://polymarketanalytics.com/event/what-price-will-nvda-hit-in-november-2026"
+   ],
+   "reference_class": "2-week NVDA-minus-AAPL return spreads during high-volatility NVDA regimes (e.g., the DeepSeek Jan 2025 selloff and the 2022 drawdown), scaled to the current implied and realized vol"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4546,
+   "seconds": 83.0,
+   "usage": {
+    "num_turns": 12,
+    "input": 14,
+    "cache_read": 198973,
+    "cache_write": 16415,
+    "cache_write_1h": 16415,
+    "output": 5350,
+    "thinking": 2085,
+    "web_search": 5,
+    "cost_usd_envelope": 0.45461359999999995,
+    "duration_api_ms": 98465,
+    "fetch_raw": 0
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -10.3,
+     "25": -5.7,
+     "50": 0.3,
+     "75": 6.1,
+     "90": 10.6
+    },
+    "p_below_lower": 0.08,
+    "p_above_upper": 0.09
+   },
+   "reasoning": "Window: 9 sessions (Nov 23-Dec 4, incl. the Nov 27 half-day), P0 = Nov 20 closes (NVDA $125.53 after -14% that day and -23% that week; AAPL $342.56). NVDA is in an extreme volatility regime after the CEO's exit, a reported SEC accounting probe and an AI-chip rout; its 30d implied vol is ~77-79%, versus ~29% in early October. Normally the biweekly NVDA-AAPL spread has an SD of ~5-6pp; now it is ~11pp. The center is ~0 because a rebound after capitulation and further collapse on probe news are about equally plausible. Both tails can leave the +/-15 range, so I priced escape mass on each side. No matching human market was found; the Manifold candidate (big tech vs Bitcoin through 2030) is unrelated.",
+   "sources": [
+    "https://www.fool.com/coverage/stock-market-today/2026/11/20/stock-market-today-nov-20-nvidia-s-usd2-5-trillion-rout-deepens-as-sec-accounting-probe-adds-to-wall-street-s-ai-sell-off/",
+    "https://www.stocktitan.net/articles/stock-market-today-live-november-20-2026",
+    "https://finance.yahoo.com/technology/live/nvidia-earnings-live-nvidia-posts-q3-beat-board-says-it-will-not-reinstate-jensen-huang-as-ceo-221428433.html",
+    "https://www.fool.com/investing/2026/11/21/after-its-worst-week-in-18-years-nvidia-now-faces-an-sec-investigation-what-it-means-for-investors/",
+    "https://www.heygotrade.com/en/us-stock/aapl/",
+    "https://www.home.saxo/content/articles/options/nvidia-slips-as-one-day-volatility-cools---options-brief---19-november-2026-19112026"
+   ],
+   "reference_class": "Biweekly NVDA-minus-AAPL return spreads, scaled to the current implied-vol regime (high-vol periods such as 2022 and Apr 2025)"
+  }
+ ]
+}

@@ -1,0 +1,194 @@
+{
+ "record_id": "2026-11-22-6dc956fe",
+ "question": "How much will Nasdaq-100 Futures total price returns exceed S&P 500 Futures in these biweekly periods of Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46221,
+ "url": "https://www.metaculus.com/questions/46011/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-22T17:40:31+00:00",
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "aggregation": "quantile_mean(angles=P,P,P)",
+ "cost_usd": 1.3305,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": -2.733333333333333,
+    "25": -1.2333333333333332,
+    "50": 0.15,
+    "75": 1.5166666666666666,
+    "90": 2.9333333333333336
+   },
+   "p_below_lower": 0.03666666666666667,
+   "p_above_upper": 0.03166666666666667
+  },
+  "phase1": {
+   "10": -2.733333333333333,
+   "25": -1.2333333333333332,
+   "50": 0.15,
+   "75": 1.5166666666666666,
+   "90": 2.9333333333333336
+  },
+  "spread_phase1": 0.2
+ },
+ "submitted": {
+  "percentiles": {
+   "10": -2.733333333333333,
+   "25": -1.2333333333333332,
+   "50": 0.15,
+   "75": 1.5166666666666666,
+   "90": 2.9333333333333336
+  },
+  "p_below_lower": 0.03666666666666667,
+  "p_above_upper": 0.03166666666666667
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3641,
+   "seconds": 69.9,
+   "usage": {
+    "num_turns": 11,
+    "input": 14,
+    "cache_read": 194063,
+    "cache_write": 15243,
+    "cache_write_1h": 15243,
+    "output": 4561,
+    "thinking": 1558,
+    "web_search": 4,
+    "cost_usd_envelope": 0.3641156,
+    "duration_api_ms": 81089,
+    "fetch_raw": 0
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -2.2,
+     "25": -0.9,
+     "50": 0.25,
+     "75": 1.4,
+     "90": 2.7
+    },
+    "p_below_lower": 0.02,
+    "p_above_upper": 0.03
+   },
+   "reasoning": "Base P0 = Nov 20 closes after a crash week (SPX -8.6%, NDX -10.4%; Friday NDX -5.6% vs SPX -3.7%; VIX 35.9) driven by an AI/semis selloff and SEC scrutiny of Nvidia. NQ-ES spread over 9 sessions is roughly (beta-1)*market return plus semis-driven idiosyncratic noise, so it is mostly a bet on market direction. Prior: centered near +0.1 (long-run small NQ drift). Adjustments: slight post-crash rebound tendency plus IG weekend US Tech 100 +1.44% tilt the median up modestly to +0.25; the weekend quote is discounted as noisy. Dispersion is sized to the stressed regime (SD ~2pp), with small tail mass beyond ±5pp for a renewed chip collapse or a violent short-covering rally. No human market prices this spread (none on Polymarket/Manifold/Kalshi).",
+   "sources": [
+    "https://stockinvest.us/digest/digest-us-market-close-2026-11-20",
+    "https://wisevoter.com/world/us/2026/11/22/dow-sp-500-nasdaq-enter-correction-worst-week",
+    "https://ceoeconomy.com/article/vix-closes-at-2026-high-35-89-wall-street-fear-gauge-nov-2026",
+    "https://x.com/CoreyCicero/status/2124523961035682106",
+    "https://www.tokenpost.com/news/investing/62379",
+    "https://kalshi.com/financials/stock-market-predictions"
+   ],
+   "reference_class": "Biweekly NQ minus ES percent-return spreads, conditioned on high-volatility regimes (VIX 30-45, e.g., Mar-Apr 2020, 2022, Apr 2025)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4482,
+   "seconds": 102.9,
+   "usage": {
+    "num_turns": 14,
+    "input": 20,
+    "cache_read": 294131,
+    "cache_write": 20204,
+    "cache_write_1h": 20204,
+    "output": 8083,
+    "thinking": 4706,
+    "web_search": 2,
+    "cost_usd_envelope": 0.44817320000000005,
+    "duration_api_ms": 101532,
+    "fetch_raw": 6
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -2.9,
+     "25": -1.4,
+     "50": 0.05,
+     "75": 1.45,
+     "90": 3.0
+    },
+    "p_below_lower": 0.03,
+    "p_above_upper": 0.025
+   },
+   "reasoning": "P0 = Nov 20 close (NQ=F 25126.5, ES=F 6935) after a crash week: NQ -10.4% vs ES -8.6%, VIX ~29-32 (AI/chip rout). In 2026 NQ has moved about 1.3-2.5x as much as ES, and the daily NQ-ES spread SD over the last month is ~0.95pp, so a 9.5-trading-day window (Thanksgiving closure plus a half day) implies a spread SD of about 2.3-2.9pp. Six-month biweekly spreads ranged about -3.9 to +3.4. Median near zero: NQ's higher beta plus a post-crash rebound bias the spread positive, while AI-selloff momentum (NQ has trailed ES by ~3.8pp over the past month) biases it negative. Fat tails in this high-vol regime give ~5-6% combined odds of landing outside +/-5. No matching human market found (Kalshi only lists year-end index level brackets).",
+   "sources": [
+    "https://query1.finance.yahoo.com/v8/finance/chart/NQ=F (1mo daily, 6mo weekly)",
+    "https://query1.finance.yahoo.com/v8/finance/chart/ES=F (1mo daily, 6mo weekly)",
+    "https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX",
+    "https://www.cnbc.com/2026/11/19/stock-market-today-live-updates.html",
+    "https://www.cnbc.com/2026/11/20/sp-500-8000-kalshi-odds-ai-selloff.html"
+   ],
+   "reference_class": "Non-overlapping 2-week NQ=F minus ES=F return spreads, May-Nov 2026 (Yahoo weekly data), scaled by the current daily spread volatility"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5182,
+   "seconds": 104.2,
+   "usage": {
+    "num_turns": 11,
+    "input": 18,
+    "cache_read": 287877,
+    "cache_write": 27433,
+    "cache_write_1h": 27433,
+    "output": 9672,
+    "thinking": 3362,
+    "web_search": 2,
+    "cost_usd_envelope": 0.5182443999999999,
+    "duration_api_ms": 102878,
+    "fetch_raw": 3
+   },
+   "estimate": {
+    "percentiles": {
+     "10": -3.1,
+     "25": -1.4,
+     "50": 0.15,
+     "75": 1.7,
+     "90": 3.1
+    },
+    "p_below_lower": 0.06,
+    "p_above_upper": 0.04
+   },
+   "reasoning": "Ref class: 9-10 trading-day NQ-ES return spreads; normally SD ~1-1.5pp, but current regime is extreme: last week NQ -10% vs ES -8.6%, Friday NQ -5.54% vs ES -3.64%, Nvidia -14% with SEC accounting review, VIX spiked ~+30. The last 9-day window's spread was about -5.3pp, outside the range. Spread scales with market moves (NQ beta ~1.3-1.5 to ES), so a post-crash rebound favors NQ and continued AI unwinding favors ES. Median set slightly positive (+0.15) for oversold mean reversion, offset by downside momentum and Nvidia idiosyncratic risk. Fat tails priced at ~6% below -5 and ~4% above +5. No human market found (Polymarket/Manifold none; Kalshi/bookmakers not checked).",
+   "sources": [
+    "https://query1.finance.yahoo.com/v8/finance/chart/NQ=F?range=6mo&interval=1d",
+    "https://query1.finance.yahoo.com/v8/finance/chart/ES=F?range=6mo&interval=1d",
+    "https://finance.yahoo.com/markets/stocks/articles/stock-market-today-futures-plunge-131303598.html",
+    "https://www.tipranks.com/news/the-week-that-was-the-week-ahead-macro-and-markets-november-22",
+    "https://journalarta.com/en/2026/11/22/stocks-to-watch-this-week-nvidia-workday-deere-and-thanksgiving-pce-data/"
+   ],
+   "reference_class": "Biweekly (9-10 trading day) NQ=F minus ES=F percent return spreads during high-volatility tech-led selloffs (2022 bear market, April 2025, Nov 2026)"
+  }
+ ]
+}

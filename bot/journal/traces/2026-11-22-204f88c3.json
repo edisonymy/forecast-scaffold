@@ -1,0 +1,187 @@
+{
+ "record_id": "2026-11-22-204f88c3",
+ "question": "What will be the ending value of the UST 10Y Yield for these biweekly periods of Q4 2026? (Nov 23 - Dec 4)",
+ "question_id": 46239,
+ "url": "https://www.metaculus.com/questions/46014/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-11-22T17:34:33+00:00",
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "aggregation": "quantile_mean(angles=P,P,P)",
+ "cost_usd": 1.014,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 4.663333333333333,
+    "25": 4.796666666666667,
+    "50": 4.923333333333333,
+    "75": 5.046666666666667,
+    "90": 5.163333333333333
+   },
+   "p_below_lower": 0.01
+  },
+  "phase1": {
+   "10": 4.663333333333333,
+   "25": 4.796666666666667,
+   "50": 4.923333333333333,
+   "75": 5.046666666666667,
+   "90": 5.163333333333333
+  },
+  "spread_phase1": 0.01
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 4.663333333333333,
+   "25": 4.796666666666667,
+   "50": 4.923333333333333,
+   "75": 5.046666666666667,
+   "90": 5.163333333333333
+  },
+  "p_below_lower": 0.01
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4005,
+   "seconds": 72.8,
+   "usage": {
+    "num_turns": 13,
+    "input": 18,
+    "cache_read": 271888,
+    "cache_write": 18276,
+    "cache_write_1h": 18276,
+    "output": 4581,
+    "thinking": 1509,
+    "web_search": 4,
+    "cost_usd_envelope": 0.40053760000000005,
+    "duration_api_ms": 78876,
+    "fetch_raw": 2
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.62,
+     "25": 4.78,
+     "50": 4.92,
+     "75": 5.05,
+     "90": 5.17
+    },
+    "p_below_lower": 0.015
+   },
+   "reasoning": "Random-walk anchor at the Nov 20 close (~4.93%, per CNBC/MortgageDaily; FRED's last value is 5.04 on Nov 19). The move was driven by a safe-haven bid during an equity correction, while the Fed is hawkish (~92% odds of a Dec 9 hike; Waller floated 50bp). Catalysts are PCE on Nov 25, the 2Y/7Y auctions, and NFP on Dec 4 (resolution day), so volatility is elevated. Slight left skew in case the equity selloff deepens, offset by upside risk from hot PCE or a stock rebound. Kalshi year-end market (different date) reportedly favors 4.75-5.15, consistent with this.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+    "https://www.federalreserve.gov/releases/h15/",
+    "https://www.cnbc.com/amp/2026/11/20/treasury-yields-bonds-inflation.html",
+    "https://www.mortgagedaily.com/rates/mortgage-rates-week-ahead-2026-11-22/",
+    "https://en.bloomingbit.io/feed/news/119015"
+   ],
+   "reference_class": "10-trading-day changes in DGS10 during the high-volatility Sep-Nov 2026 regime, centered on the latest close"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.2732,
+   "seconds": 66.0,
+   "usage": {
+    "num_turns": 9,
+    "input": 14,
+    "cache_read": 195060,
+    "cache_write": 14391,
+    "cache_write_1h": 14391,
+    "output": 3512,
+    "thinking": 1044,
+    "web_search": 2,
+    "cost_usd_envelope": 0.273221,
+    "duration_api_ms": 50612,
+    "fetch_raw": 1,
+    "fetch_raw_failed": 1
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.67,
+     "25": 4.8,
+     "50": 4.92,
+     "75": 5.04,
+     "90": 5.16
+    },
+    "p_below_lower": 0.005
+   },
+   "reasoning": "Last close 4.92-4.93 on Nov 20 (Treasury par 4.92; FRED through Nov 19 at 5.04) after a 12bp safe-haven drop on an AI-equity selloff. Fed hike ~92% priced for December pushes up while risk-off pushes down, so roughly no drift and the median stays at the last close. About 9.5 trading days to Dec 4 including the Thanksgiving half-day, and the November jobs report likely lands on Dec 4. The current regime is high-vol (frequent 10-15bp days), so the 10-day SD is ~19bp. Kalshi year-end contract (different date, Dec 31) implies a median ~4.97 and P(>=4.75) ~80%, consistent. The 4.255 lower bound is ~3.4 SD away; tiny escape priced for a crash or flight to safety.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+    "https://www.cnbc.com/amp/2026/11/20/treasury-yields-bonds-inflation.html",
+    "https://kalshi.com/markets/kxnote10y/10y-ust/kxnote10y-26dec31",
+    "https://makrognosis.robomacro.com/data/united-states/10-year-treasury-yield"
+   ],
+   "reference_class": "10-trading-day changes in DGS10 during the Sep-Nov 2026 high-volatility regime, centered on the last observed close"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.3402,
+   "seconds": 81.2,
+   "usage": {
+    "num_turns": 12,
+    "input": 18,
+    "cache_read": 263881,
+    "cache_write": 16080,
+    "cache_write_1h": 16080,
+    "output": 4244,
+    "thinking": 977,
+    "web_search": 3,
+    "cost_usd_envelope": 0.34022620000000003,
+    "duration_api_ms": 65954,
+    "fetch_raw": 1,
+    "fetch_raw_failed": 1
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4.7,
+     "25": 4.81,
+     "50": 4.93,
+     "75": 5.05,
+     "90": 5.16
+    }
+   },
+   "reasoning": "FRED DGS10 last printed 5.04 (Nov 19); Nov 20 closed ~4.93 (CNBC 4.932) after a 12bp flight-to-safety drop during an equity correction. The resolution value is the Dec 4 close, 9 trading days out, with PCE on Nov 25, the Thanksgiving holiday, and the November jobs report on Dec 4 itself. Fed hike odds near 92% for Dec 9 push yields up; the equity sell-off pulls them down, so the median is centred on the current level. Realized volatility since September is high: 9-day moves of 20-30bp are common. No escape mass: the 4.255 floor is more than 3.5 SD away.",
+   "sources": [
+    "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+    "https://www.cnbc.com/amp/2026/11/20/treasury-yields-bonds-inflation.html",
+    "https://tradingeconomics.com/united-states/government-bond-yield",
+    "https://fxnx.com/en/blog/december-2026-economic-calendar-jobs-4-dec-fomc-9-dec-cpi-10"
+   ],
+   "reference_class": "9-trading-day changes in DGS10 over the past year, weighted toward the high-volatility Sep-Nov 2026 regime"
+  }
+ ]
+}
