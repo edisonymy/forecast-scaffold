@@ -1,0 +1,190 @@
+{
+ "record_id": "2026-11-23-8645db10",
+ "question": "What will be the total TSA checkpoint passenger volumes during December 2026?",
+ "question_id": 46888,
+ "url": "https://www.metaculus.com/questions/46628/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-23T00:03:47+00:00",
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "aggregation": "quantile_mean(angles=P,P,P)",
+ "cost_usd": 2.6495,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 73866666.66666667,
+    "25": 75066666.66666667,
+    "50": 76066666.66666667,
+    "75": 76966666.66666667,
+    "90": 77850000.0
+   }
+  },
+  "phase1": {
+   "10": 73866666.66666667,
+   "25": 75066666.66666667,
+   "50": 76066666.66666667,
+   "75": 76966666.66666667,
+   "90": 77850000.0
+  },
+  "spread_phase1": 600000.0
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 73866666.66666667,
+   "25": 75066666.66666667,
+   "50": 76066666.66666667,
+   "75": 76966666.66666667,
+   "90": 77850000.0
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.8627,
+   "seconds": 162.9,
+   "usage": {
+    "num_turns": 19,
+    "input": 30,
+    "cache_read": 544211,
+    "cache_write": 45035,
+    "cache_write_1h": 45035,
+    "output": 14968,
+    "thinking": 11037,
+    "web_search": 4,
+    "cost_usd_envelope": 0.8627022,
+    "duration_api_ms": 165496,
+    "fetch_raw": 11
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 74100000.0,
+     "25": 75300000.0,
+     "50": 76300000.0,
+     "75": 77200000.0,
+     "90": 78100000.0
+    }
+   },
+   "reasoning": "Dec 2024 = 77.38M and Dec 2025 = 77.42M (summed TSA daily data); the two years were flat in mid-December. Calendar shift (Thanksgiving Nov 26, so the post-Thanksgiving Monday falls in November) gives a 2025-level baseline of ~76.97M (weekday-aligned Dec 1-18 = 42.71M + date-based Dec 19-31 estimate ~34.3M). 2026 YoY: Sep -3.4%, Oct -2 to -2.5% vs 2025; November runs about -1% to +3% vs 2024 (the 2025 comparison is distorted by the shutdown and FAA cuts), with the week before Thanksgiving strong. ~3% domestic seat cuts for Thanksgiving through December because of record jet fuel, fares +17%, and TSA's Thanksgiving forecast (roughly flat) imply about -1%. Left tail from a possible shutdown starting Dec 12 (CR expires Dec 11) and winter storms. No monthly market exists (Kalshi has weekly TSA markets only; none found on Polymarket or Manifold).",
+   "sources": [
+    "https://www.tsa.gov/travel/passenger-volumes",
+    "https://www.tsa.gov/travel/passenger-volumes/2025",
+    "https://www.tsa.gov/travel/passenger-volumes/2024",
+    "https://governmentshutdowntracker.com/",
+    "https://que.com/thanksgiving-2026-travel-81-5-million-on-the-move-fares-up-17-and-a-tsa-record-on-the-line/",
+    "https://jetsetterguide.com/news/airline-news/united-cuts-december-flights-fuel-costs-rise",
+    "https://x.com/PredictionNews_/status/1871720557575889360"
+   ],
+   "reference_class": "Prior December TSA monthly totals (2024, 2025) adjusted for calendar alignment and recent YoY weekday-aligned growth"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6954,
+   "seconds": 136.9,
+   "usage": {
+    "num_turns": 16,
+    "input": 22,
+    "cache_read": 324835,
+    "cache_write": 31722,
+    "cache_write_1h": 31722,
+    "output": 11305,
+    "thinking": 6079,
+    "web_search": 4,
+    "cost_usd_envelope": 0.695431,
+    "duration_api_ms": 151867,
+    "fetch_raw": 0
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 73900000.0,
+     "25": 75200000.0,
+     "50": 76200000.0,
+     "75": 77100000.0,
+     "90": 77950000.0
+    }
+   },
+   "reasoning": "Dec 2025 TSA total = 77.42M (summed daily). Calendar-aligning (Dec 1 2026 Tue ~ Dec 2 2025 Tue post-Thanksgiving; Christmas Fri, NYE Thu) gives ~77.4M at flat YoY. 2026 trend modestly negative: summer -2.7%, Oct -1.3% weekday-aligned, Nov 1-19 +1% against a shutdown-depressed 2025 base, TSA Thanksgiving forecast 17.6M (~-1%). Record jet fuel, United/American December capacity cuts and Christmas fares up 20%+ argue for about -1.5% YoY => median ~76.2M. Left tail: possible federal shutdown from Dec 12 (Kalshi 25-44%) and winter storms. Market check: no market on the December monthly total; Kalshi only has weekly TSA check-in markets (KXTSAW), a different contract, so not used as an anchor.",
+   "sources": [
+    "https://www.tsa.gov/travel/passenger-volumes",
+    "https://www.tsa.gov/travel/passenger-volumes/2025",
+    "https://www.ksmu.org/2026-10-23/jet-fuel-prices-hit-a-record-and-holiday-airfares-soar-higher",
+    "https://cryptobriefing.com/kalshi-us-government-shutdown-odds-december/",
+    "WebSearch: airline December 2026 capacity cuts (jetsetterguide, bizpacreview results)",
+    "WebSearch: TSA summer 2026 down 2.7% (deeparrival/johnnyjet results)",
+    "WebSearch: TSA Thanksgiving 2026 17.6M forecast (tsa.gov press release results)"
+   ],
+   "reference_class": "December TSA monthly totals, prior-year December adjusted for weekday/holiday alignment and the recent YoY trend"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 1.0914,
+   "seconds": 192.3,
+   "usage": {
+    "num_turns": 22,
+    "input": 30,
+    "cache_read": 619526,
+    "cache_write": 54047,
+    "cache_write_1h": 54047,
+    "output": 16764,
+    "thinking": 12438,
+    "web_search": 6,
+    "cost_usd_envelope": 1.0913772000000002,
+    "duration_api_ms": 205316,
+    "fetch_raw": 8
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 73600000.0,
+     "25": 74700000.0,
+     "50": 75700000.0,
+     "75": 76600000.0,
+     "90": 77500000.0
+    }
+   },
+   "reasoning": "Dec 2025 TSA total = 77.42M (Dec 2024 = 77.38M). Adjusting for calendar (Dec 2026 loses the post-Thanksgiving Monday; Christmas Fri vs Thu; weekday mix) gives a flat-YoY baseline of ~77.0M. Recent 2026 weeks run ~1-3% below 2025 (Oct -1 to -2%, early Nov -3%), and TSA projects ~17.6M for Thanksgiving week vs 18.1M aligned 2025. Fares are up 20-30% on record jet fuel. Applied ratio ~0.985, plus a small downward skew for a ~25-34% chance of a shutdown on Dec 12 (Kalshi/Polymarket) and a minor risk that Dec 31 data is not yet posted at resolution. No market on the December total was found; Kalshi runs only weekly TSA markets.",
+   "sources": [
+    "https://www.tsa.gov/travel/passenger-volumes",
+    "https://www.tsa.gov/travel/passenger-volumes/2025",
+    "https://www.tsa.gov/travel/passenger-volumes/2024",
+    "https://www.ksmu.org/2026-10-23/jet-fuel-prices-hit-a-record-and-holiday-airfares-soar-higher",
+    "https://que.com/thanksgiving-2026-travel-81-5-million-on-the-move-as-fares-jump-17-and-the-record-streak-ends/",
+    "https://en.wikipedia.org/wiki/2026_United_States_federal_government_shutdowns",
+    "https://kalshi.com/politics/government-shutdown-odds",
+    "https://predictionmarketspicks.com/tools/shutdown-tracker"
+   ],
+   "reference_class": "Past December TSA checkpoint totals (2024, 2025), calendar-adjusted and scaled by the current 2026/2025 YoY ratio"
+  }
+ ]
+}
