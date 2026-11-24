@@ -1,0 +1,192 @@
+{
+ "record_id": "2026-11-24-bca45e84",
+ "question": "What will be the water level of the Great Salt Lake on December 31, 2026?",
+ "question_id": 46894,
+ "url": "https://www.metaculus.com/questions/46634/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "discrete",
+ "forecast_at": "2026-11-24T18:03:40+00:00",
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "aggregation": "quantile_mean(angles=P,P,P)",
+ "cost_usd": 1.9485,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 4190.31,
+    "25": 4190.43,
+    "50": 4190.55,
+    "75": 4190.666666666667,
+    "90": 4190.843333333333
+   },
+   "p_above_upper": 0.043333333333333335
+  },
+  "phase1": {
+   "10": 4190.31,
+   "25": 4190.43,
+   "50": 4190.55,
+   "75": 4190.666666666667,
+   "90": 4190.843333333333
+  },
+  "spread_phase1": 0.1
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 4190.31,
+   "25": 4190.43,
+   "50": 4190.55,
+   "75": 4190.666666666667,
+   "90": 4190.843333333333
+  },
+  "p_above_upper": 0.043333333333333335
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6534,
+   "seconds": 178.4,
+   "usage": {
+    "num_turns": 15,
+    "input": 24,
+    "cache_read": 511259,
+    "cache_write": 47696,
+    "cache_write_1h": 47696,
+    "output": 6283,
+    "thinking": 2277,
+    "web_search": 2,
+    "cost_usd_envelope": 0.6534308,
+    "duration_api_ms": 79926,
+    "fetch_raw": 9,
+    "fetch_raw_failed": 1
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4190.3,
+     "25": 4190.42,
+     "50": 4190.55,
+     "75": 4190.68,
+     "90": 4190.85
+    },
+    "p_above_upper": 0.03
+   },
+   "reasoning": "USGS 10010000 is at 4190.3 ft (daily mean Nov 21-23 2026, 15-min readings 4190.2-4190.3 on Nov 24), up ~0.6 ft from the early-Oct low of ~4189.7. Nov23->Dec31 daily-mean changes 2021-2025 were +0.1, +0.4, +0.2, +0.3, +0.2 (median +0.2); 2022, the most similar low-lake year, gained +0.4. This autumn's rise has been brisk, so I take a median of +0.25 ft, giving ~4190.55. Resolution is a single 15-min reading, so wind setup adds roughly ±0.2-0.4 ft of noise, skewed upward. Above 4191.05 needs a +0.75 ft rise (~3%). No market prices the Dec 31 level; Polymarket's lowest-2026 market (4189.3-4189.4 at 97%) is a different contract but matches this gauge's 2026 lowest daily mean of 4189.4.",
+   "sources": [
+    "https://waterservices.usgs.gov/nwis/dv/?format=rdb&sites=10010000&parameterCd=62614&startDT=2025-09-01&endDT=2026-11-24",
+    "https://waterservices.usgs.gov/nwis/iv/?format=rdb&sites=10010000&parameterCd=62614&period=P2D",
+    "https://waterservices.usgs.gov/nwis/dv/?format=rdb&sites=10010000&parameterCd=62614&startDT=2021-12-20&endDT=2024-12-31",
+    "https://waterservices.usgs.gov/nwis/dv/?format=rdb&sites=10010000&parameterCd=62614&startDT=2022-11-23&endDT=2022-12-31",
+    "https://greatsaltlake.hydromap.com/",
+    "Polymarket lowest-2026 Great Salt Lake elevation markets (harness-provided candidate list)"
+   ],
+   "reference_class": "Nov 23 -> Dec 31 change in the USGS 10010000 daily-mean level, 2021-2025"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5867,
+   "seconds": 130.3,
+   "usage": {
+    "num_turns": 10,
+    "input": 14,
+    "cache_read": 255342,
+    "cache_write": 53871,
+    "cache_write_1h": 53871,
+    "output": 4101,
+    "thinking": 1395,
+    "web_search": 1,
+    "cost_usd_envelope": 0.5867074,
+    "duration_api_ms": 51547,
+    "fetch_raw": 6,
+    "fetch_raw_failed": 1
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4190.3,
+     "25": 4190.4,
+     "50": 4190.5,
+     "75": 4190.6,
+     "90": 4190.8
+    },
+    "p_above_upper": 0.06
+   },
+   "reasoning": "Current USGS 10010000 IV readings 4190.2-4190.3 ft (Nov 24). Reference class: Nov24->Dec31 change in 8 prior years (2018-2025) was always positive: +0.3,+0.5,+0.1,+0.2,+0.4,+0.2,+0.3,+0.2 (median +0.25). Implies Dec 31 ~4190.5-4190.6. Resolution uses a single 15-min instantaneous reading (~4:45pm MST), and wind seiche spikes of +/-1 ft were seen this month, so tail mass above 4191.05 (~6%). No matching human market: Polymarket markets are on the 2026 minimum (priced 97% on 4189.3-4189.4, consistent with the Oct 10 daily low of 4189.4); Manifold markets are about 2030.",
+   "sources": [
+    "https://waterservices.usgs.gov/nwis/iv/?format=rdb&sites=10010000&parameterCd=62614&period=P7D",
+    "https://waterservices.usgs.gov/nwis/dv/?format=rdb&sites=10010000&parameterCd=62614&startDT=2026-07-01&endDT=2026-11-24",
+    "https://waterservices.usgs.gov/nwis/dv/?format=rdb&sites=10010000&parameterCd=62614&startDT=2018-11-20&endDT=2025-01-02",
+    "https://waterservices.usgs.gov/nwis/dv/?format=rdb&sites=10010000&parameterCd=62614&startDT=2025-11-15&endDT=2026-01-05",
+    "https://greatsaltlake.hydromap.com/"
+   ],
+   "reference_class": "Great Salt Lake (Saltair gauge) late-Nov to Dec-31 level change, 2018-2025"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7083,
+   "seconds": 104.6,
+   "usage": {
+    "num_turns": 18,
+    "input": 22,
+    "cache_read": 430325,
+    "cache_write": 53913,
+    "cache_write_1h": 53913,
+    "output": 6816,
+    "thinking": 2294,
+    "web_search": 2,
+    "cost_usd_envelope": 0.7083389999999999,
+    "duration_api_ms": 87050,
+    "fetch_raw": 11,
+    "fetch_raw_failed": 1
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 4190.33,
+     "25": 4190.47,
+     "50": 4190.6,
+     "75": 4190.72,
+     "90": 4190.88
+    },
+    "p_above_upper": 0.04
+   },
+   "reasoning": "USGS 10010000 reads ~4190.3 ft (daily 4190.3 Nov 21-23; 15-min values 4190.2-4190.3 on Nov 24). Reference class: Nov 23 -> Dec 31 change in 2018-2025, always positive, +0.1 to +0.5 ft (mean +0.28). This fall is unusually wet (record October rain, saturated soils, Nov storms, Oct Pineview release) and the lake rose ~0.5 ft since Oct 31, so I center on +0.3-0.35 ft, giving a median of ~4190.6. The resolving value is likely a single instantaneous reading, which adds ~0.1 ft noise plus a small chance of a wind spike (Nov 19-20 saw readings up to 4191.7), priced as ~4% above 4191.05. No human market matches this contract: the Polymarket contracts are on the lowest 2026 elevation and the Manifold ones are about 2030.",
+   "sources": [
+    "https://api.waterdata.usgs.gov/ogcapi/v0/collections/daily/items (USGS-10010000 daily, 2018-2026)",
+    "https://api.waterdata.usgs.gov/ogcapi/v0/collections/continuous/items (USGS-10010000 15-min, Nov 19-24 2026)",
+    "https://townlift.com/2026/11/great-salt-lake-levels-inch-upward-but-restoration-challenges-remain/",
+    "https://greatsaltlake.hydromap.com/",
+    "https://www.kuer.org/science-environment/2026-11-13/utah-historic-october-rain-november-whats-next"
+   ],
+   "reference_class": "Great Salt Lake (USGS 10010000) elevation change from Nov 23 to Dec 31, years 2018-2025"
+  }
+ ]
+}
