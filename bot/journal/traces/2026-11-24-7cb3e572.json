@@ -1,0 +1,189 @@
+{
+ "record_id": "2026-11-24-7cb3e572",
+ "question": "What will be the average US 30-year Fixed-Rate Mortgage on December 31, 2026?",
+ "question_id": 46895,
+ "url": "https://www.metaculus.com/questions/46635/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "numeric",
+ "forecast_at": "2026-11-24T21:01:57+00:00",
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "aggregation": "quantile_mean(angles=P,P,P)",
+ "cost_usd": 1.4772,
+ "pools": {
+  "pooled_runs": {
+   "percentiles": {
+    "10": 6.933333333333334,
+    "25": 7.080000000000001,
+    "50": 7.226666666666667,
+    "75": 7.373333333333332,
+    "90": 7.526666666666666
+   }
+  },
+  "phase1": {
+   "10": 6.933333333333334,
+   "25": 7.080000000000001,
+   "50": 7.226666666666667,
+   "75": 7.373333333333332,
+   "90": 7.526666666666666
+  },
+  "spread_phase1": 0.04
+ },
+ "submitted": {
+  "percentiles": {
+   "10": 6.933333333333334,
+   "25": 7.080000000000001,
+   "50": 7.226666666666667,
+   "75": 7.373333333333332,
+   "90": 7.526666666666666
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4212,
+   "seconds": 79.7,
+   "usage": {
+    "num_turns": 15,
+    "input": 18,
+    "cache_read": 259671,
+    "cache_write": 11749,
+    "cache_write_1h": 11749,
+    "output": 4648,
+    "thinking": 1300,
+    "web_search": 6,
+    "cost_usd_envelope": 0.42117819999999995,
+    "duration_api_ms": 93388,
+    "fetch_raw": 0
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 6.98,
+     "25": 7.11,
+     "50": 7.25,
+     "75": 7.38,
+     "90": 7.51
+    }
+   },
+   "reasoning": "Freddie PMMS 30y was 7.28% on Nov 19, 2026 (7.11 prior week); Oct-Nov range 7.11-7.40. MND daily 7.32% on Nov 24 (2-week low), 10y ~4.90% after falling back below 5%. A Dec 8-9 25bp Fed hike is ~96% priced, so limited incremental impact; tech-stock turmoil is supporting bonds while hawkish Fed/Fannie upward revisions push the other way. Kalshi weekly market (search snippet, unverified) ~51% above 7.27% for this week's print, implying a start near 7.25-7.27. No market found on Polymarket/Manifold/bookmakers; I could not load Kalshi's pages, and the Kalshi contracts are weekly prints or the annual peak, not a contract for the Dec 31 reading itself. Random-walk from ~7.26 with ~20bp 5-week SD; out-of-range moves (>75bp) deemed negligible.",
+   "sources": [
+    "https://www.freddiemac.com/pmms",
+    "https://www.mortgagenewsdaily.com/mortgage-rates",
+    "https://www.mortgagenewsdaily.com/markets/mortgage-rates-11232026",
+    "https://www.mortgagenewsdaily.com/newsletter/n/20261124",
+    "https://news.kalshi.com/p/mortgage-rates-expected-to-rise-whisper",
+    "Web search results: Freddie Mac PMMS Oct-Nov 2026 weekly prints (globenewswire/freddiemac.gcs-web)",
+    "Web search results: CME FedWatch December 2026 hike odds (247wallst, aroundprague)",
+    "Web search results: Kalshi KXMORTGAGERATE market snippets"
+   ],
+   "reference_class": "Freddie Mac PMMS 30y FRM changes over 5-6 week horizons in 2025-2026 elevated-rate regime (status quo persistence)"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.538,
+   "seconds": 76.9,
+   "usage": {
+    "num_turns": 15,
+    "input": 18,
+    "cache_read": 250359,
+    "cache_write": 25524,
+    "cache_write_1h": 25524,
+    "output": 4250,
+    "thinking": 1213,
+    "web_search": 7,
+    "cost_usd_envelope": 0.5379978,
+    "duration_api_ms": 89556,
+    "fetch_raw": 0
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 6.95,
+     "25": 7.08,
+     "50": 7.21,
+     "75": 7.35,
+     "90": 7.5
+    }
+   },
+   "reasoning": "Random-walk anchor on the latest PMMS of 7.28% (Nov 19), adjusted for the MND daily index easing from ~7.46% to 7.32% and the 10-year falling back from ~5.15% to 4.89%, which implies the next PMMS print is ~7.15-7.22%. The Dec 9 Fed hike is ~95-100% priced, so it is not new news; risks are two-sided, with hot data or 50bp-hike talk pushing toward 7.4-7.5% and further bond relief toward 7.0%. Fannie Mae and MBA forecast ~7.2%. Market check: Polymarket and Manifold had nothing; a Kalshi snippet showed '69% above 7.4%' and '14% above 7.5%' for an unverified contract (page returned 429), so it was treated as weak evidence, not an anchor. No escape below 6.5 or above 8.5 is priced.",
+   "sources": [
+    "https://www.freddiemac.com/pmms",
+    "https://www.mortgagenewsdaily.com/mortgage-rates/30-year-fixed",
+    "https://themortgagereports.com/mortgage-rates-now/mortgage-rates-today-november-24-2026",
+    "https://www.thetruthaboutmortgage.com/despite-headwinds-odds-of-a-7-30-year-fixed-in-2026-are-super-low/",
+    "https://wtop.com/national/2026/10/freddie-mac-average-rate-on-a-30-year-mortgage-rose-for-7th-straight-week-to-7-40-its-highest-level-in-nearly-3-years",
+    "https://kalshi.com/markets/kxfeddecision/fed-meeting/kxfeddecision-26dec"
+   ],
+   "reference_class": "Freddie Mac PMMS 30-year FRM changes over ~5-6 week horizons, 2022-2026 elevated-volatility regime"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.518,
+   "seconds": 86.9,
+   "usage": {
+    "num_turns": 16,
+    "input": 18,
+    "cache_read": 247354,
+    "cache_write": 24467,
+    "cache_write_1h": 24467,
+    "output": 4929,
+    "thinking": 1812,
+    "web_search": 5,
+    "cost_usd_envelope": 0.5180308000000001,
+    "duration_api_ms": 102225,
+    "fetch_raw": 0
+   },
+   "estimate": {
+    "percentiles": {
+     "10": 6.87,
+     "25": 7.05,
+     "50": 7.22,
+     "75": 7.39,
+     "90": 7.57
+    }
+   },
+   "reasoning": "Latest PMMS (Nov 19) 7.28%; MND daily index fell from ~7.45% to 7.32% this week as the 10y dropped below 5% to ~4.9%, implying a Nov 25 PMMS near 7.20-7.25%. The Dec 9 Fed hike is ~95% priced, so it adds little drift; sticky inflation (PCE 3.6%) limits downside. Fannie Mae and MBA expect ~7.2-7.3% into 2027. Five weeks of random-walk-like movement in an elevated-volatility regime gives a ~0.27 SD. No matching human market found: Kalshi has only a stale ladder on the 2026 maximum, nothing on Polymarket or Manifold.",
+   "sources": [
+    "https://www.freddiemac.com/pmms",
+    "https://www.mortgagenewsdaily.com/mortgage-rates",
+    "https://www.mortgagenewsdaily.com/mortgage-rates/freddie-mac",
+    "https://www.mortgagenewsdaily.com/markets/mortgage-rates-11202026",
+    "https://themortgagereports.com/mortgage-rates-now/mortgage-rates-today-november-24-2026",
+    "https://www.mortgagedaily.com/mortgage-rates/freddie-mac-pmms/",
+    "https://predictiongenius.io/markets/mortgage-30yr-2027"
+   ],
+   "reference_class": "Freddie Mac PMMS 30y FRM level 5-6 weeks ahead, centered on the latest reading, high-volatility 2026 regime"
+  }
+ ]
+}
