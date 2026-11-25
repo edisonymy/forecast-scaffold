@@ -1,0 +1,185 @@
+{
+ "record_id": "2026-11-25-f837c59b",
+ "question": "Which epidemiological week will be the onset week for the flu in HHS Region 8 in 2026-27?",
+ "question_id": 46897,
+ "url": "https://www.metaculus.com/questions/46637/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "multiple_choice",
+ "forecast_at": "2026-11-25T03:02:35+00:00",
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "aggregation": "geo_mean_mc(angles=P,P,P)",
+ "cost_usd": 1.7501,
+ "pools": {
+  "pooled_runs": {
+   "45": 0.8376599950641206,
+   "46": 0.08287523505096743,
+   "47": 0.03306216232351363,
+   "48": 0.01819480911389784,
+   "49": 0.010012989333602595,
+   "≥50": 0.01819480911389784
+  },
+  "phase1": {
+   "45": 0.8376599950641206,
+   "46": 0.08287523505096743,
+   "47": 0.03306216232351363,
+   "48": 0.01819480911389784,
+   "49": 0.010012989333602595,
+   "≥50": 0.01819480911389784
+  },
+  "spread_phase1": 0.03
+ },
+ "submitted": {
+  "probabilities": {
+   "45": 0.8376599950641207,
+   "46": 0.08287523505096744,
+   "47": 0.03306216232351364,
+   "48": 0.018194809113897842,
+   "49": 0.010012989333602597,
+   "≥50": 0.018194809113897842
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.547,
+   "seconds": 81.0,
+   "usage": {
+    "num_turns": 15,
+    "input": 18,
+    "cache_read": 286599,
+    "cache_write": 33846,
+    "cache_write_1h": 33846,
+    "output": 5322,
+    "thinking": 2638,
+    "web_search": 5,
+    "cost_usd_envelope": 0.5470377999999999,
+    "duration_api_ms": 82112,
+    "fetch_raw": 8
+   },
+   "estimate": {
+    "45": 0.85,
+    "46": 0.07,
+    "47": 0.03,
+    "48": 0.02,
+    "49": 0.01,
+    "≥50": 0.02
+   },
+   "reasoning": "Region 8 wILI rose from 2.07% in week 44 to 2.53% in week 45, and CDC's FluView reports list Region 8 below baseline in week 44 and above it in week 45. So the 2026-27 baseline is between 2.07% and 2.53%, and week 45 is the first week at or above it. Onset is week 45 if weeks 46 and 47 stay at or above baseline. That is very likely given the steep H1N1-driven rise, surging Colorado hospitalizations, rising ILI in every region except Region 1 and the usual bump in Thanksgiving week. Risks: a dip in week 46 or 47, a downward revision if the baseline is near 2.5%, and stable flu test positivity in Region 8 in week 45. No prediction market found on Kalshi, Polymarket, Manifold or bookmakers.",
+   "sources": [
+    "https://api.delphi.cmu.edu/epidata/fluview/?regions=hhs8&epiweeks=202635-202650",
+    "https://www.cdc.gov/fluview/surveillance/2026-week-45.html",
+    "https://www.cdc.gov/fluview/surveillance/2026-week-44.html",
+    "https://www.cdc.gov/fluview/surveillance/2026-week-42.html",
+    "https://www.cdc.gov/fluview/overview/index.html",
+    "https://www.medicaldaily.com/colorado-flu-hospitalizations-157-week-november-2026-481441"
+   ],
+   "reference_class": "HHS regions in past ILINet seasons where weighted ILI first crossed the regional baseline during a steep early-season rise (about 0.4-0.5 points a week) driven by flu; in nearly all such cases ILI stayed above baseline for the next two or more weeks"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.4775,
+   "seconds": 74.6,
+   "usage": {
+    "num_turns": 13,
+    "input": 16,
+    "cache_read": 228459,
+    "cache_write": 27698,
+    "cache_write_1h": 27698,
+    "output": 4928,
+    "thinking": 2263,
+    "web_search": 5,
+    "cost_usd_envelope": 0.47748280000000004,
+    "duration_api_ms": 77907,
+    "fetch_raw": 6
+   },
+   "estimate": {
+    "45": 0.84,
+    "46": 0.09,
+    "47": 0.03,
+    "48": 0.015,
+    "49": 0.01,
+    "≥50": 0.015
+   },
+   "reasoning": "Region 8 wILI rose 1.89 (wk43) -> 2.07 (wk44, below baseline per CDC) -> 2.53 (wk45, above baseline per CDC), so the 2026-27 baseline lies in (2.07, 2.53]. An early H1N1 epidemic is growing about 20%/week across CO/UT, and the Thanksgiving week (wk47) usually spikes ILI%, so weeks 46 and 47 staying above the baseline is very likely and onset = 45. Residual risks: week 45 sits near the baseline and a downward revision could move onset to 46; week 44 could be revised above (an off-option outcome); or the epidemic stalls. No prediction market found on Polymarket, Kalshi, Manifold or bookmakers.",
+   "sources": [
+    "https://api.delphi.cmu.edu/epidata/fluview/?regions=hhs8&epiweeks=202635-202648",
+    "https://www.cdc.gov/fluview/surveillance/2026-week-45.html",
+    "https://www.cdc.gov/fluview/surveillance/2026-week-44.html",
+    "https://www.cdc.gov/fluview/overview/index.html",
+    "https://www.cpr.org/2026/11/18/colorado-bad-flu-season-low-vaccination-rate/",
+    "https://arxiv.org/html/2605.11220v1"
+   ],
+   "reference_class": "HHS-region ILINet onset timing once a region has crossed its baseline during a clearly rising, virologically confirmed epidemic: past seasons where the first above-baseline week in a rising phase was sustained for 3 weeks"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7256,
+   "seconds": 104.3,
+   "usage": {
+    "num_turns": 21,
+    "input": 24,
+    "cache_read": 402809,
+    "cache_write": 43642,
+    "cache_write_1h": 43642,
+    "output": 6651,
+    "thinking": 3358,
+    "web_search": 7,
+    "cost_usd_envelope": 0.7255887999999998,
+    "duration_api_ms": 111271,
+    "fetch_raw": 10
+   },
+   "estimate": {
+    "45": 0.82,
+    "46": 0.09,
+    "47": 0.04,
+    "48": 0.02,
+    "49": 0.01,
+    "≥50": 0.02
+   },
+   "reasoning": "Region 8's weighted ILI went 2.07% in week 44 (CDC: below baseline) to 2.53% in week 45 (CDC: above baseline), so the unpublished 2026-27 baseline sits between about 2.07% and 2.53%. Onset at week 45 needs weeks 46 and 47 to stay at or above baseline. Momentum is strong: an early H1N1 season, flu ER visits rising in Region 8 and Colorado ILI at 4.0%. Week 47 is Thanksgiving week, which historically pushes ILI up (Region 8 went from 2.29% to 2.91% in Thanksgiving week 2025). The main risks are a thin margin over baseline (if it is near 2.4-2.5%), flat Region 8 lab positivity, a Colorado hospitalization plateau, and possible revisions that drop week 45 below baseline. Those would push onset to week 46 or later. I found no human prediction market (Polymarket, Kalshi or Manifold) for this question.",
+   "sources": [
+    "https://api.delphi.cmu.edu/epidata/fluview/?regions=hhs8&epiweeks=202635-202647",
+    "https://www.cdc.gov/fluview/surveillance/2026-week-45.html",
+    "https://www.cdc.gov/fluview/surveillance/2026-week-44.html",
+    "https://www.cdc.gov/fluview/overview/index.html",
+    "https://kiowacountypress.net/content/colorado-flu-hospitalizations-level-covid-19-admissions-jump",
+    "https://localhealthsignal.com/flu/utah/",
+    "https://api.delphi.cmu.edu/epidata/fluview/?regions=hhs8&epiweeks=202540-202620"
+   ],
+   "reference_class": "HHS-region ILINet seasons where the region first crossed baseline in week W while ILI was rising steeply: how often the next two weeks also stayed at or above baseline (onset = W) versus a dip that delayed onset"
+  }
+ ]
+}
