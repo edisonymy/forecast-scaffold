@@ -1,0 +1,186 @@
+{
+ "record_id": "2026-11-25-59c049ae",
+ "question": "Which epidemiological week will be the onset week for the flu in HHS Region 7 in 2026-27?",
+ "question_id": 46898,
+ "url": "https://www.metaculus.com/questions/46638/",
+ "source": {
+  "platform": "metaculus"
+ },
+ "question_type": "multiple_choice",
+ "forecast_at": "2026-11-25T06:02:46+00:00",
+ "effort": "medium",
+ "model": "claude-opus-5-5",
+ "provider": "subscription",
+ "blind": false,
+ "dry_run": false,
+ "architecture": "angle",
+ "angles": [
+  "P",
+  "P",
+  "P"
+ ],
+ "aggregation": "geo_mean_mc(angles=P,P,P)",
+ "cost_usd": 1.961,
+ "pools": {
+  "pooled_runs": {
+   "45": 0.010089450358904264,
+   "46": 0.12307213020656879,
+   "47": 0.44794705541433866,
+   "48": 0.24479769261244788,
+   "49": 0.09609602468103329,
+   "≥50": 0.07799764672670707
+  },
+  "phase1": {
+   "45": 0.010089450358904264,
+   "46": 0.12307213020656879,
+   "47": 0.44794705541433866,
+   "48": 0.24479769261244788,
+   "49": 0.09609602468103329,
+   "≥50": 0.07799764672670707
+  },
+  "spread_phase1": 0.11
+ },
+ "submitted": {
+  "probabilities": {
+   "45": 0.010089450358904264,
+   "46": 0.12307213020656879,
+   "47": 0.44794705541433866,
+   "48": 0.24479769261244788,
+   "49": 0.09609602468103329,
+   "≥50": 0.07799764672670707
+  }
+ },
+ "calls": [
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 1,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.5372,
+   "seconds": 106.2,
+   "usage": {
+    "num_turns": 18,
+    "input": 24,
+    "cache_read": 426052,
+    "cache_write": 25694,
+    "cache_write_1h": 25694,
+    "output": 7256,
+    "thinking": 3971,
+    "web_search": 4,
+    "cost_usd_envelope": 0.5372474,
+    "duration_api_ms": 106886,
+    "fetch_raw": 10
+   },
+   "estimate": {
+    "45": 0.01,
+    "46": 0.15,
+    "47": 0.47,
+    "48": 0.23,
+    "49": 0.08,
+    "≥50": 0.06
+   },
+   "reasoning": "Region 7 weighted ILI (Delphi mirror of ILINet, issue 202645) was 1.10, 1.22, 1.48 for wks 43-45 vs a 2.0% regional baseline; growth is speeding up (10%->21%/wk), lab positivity in Region 7 is rising (CDC wk45), and all four states are trending up. The H1N1 subclade E wave is moving east from the West Coast. Week 46 needs ~35% growth to reach 2.0 (about 15%). Thanksgiving falls in week 47 and adds a holiday bump on top of real growth, so week 47 is the modal onset. The risk is a post-holiday dip in week 48 if week 47 only just crosses, which would push onset to 48-49. In 2024-25 and 2025-26 the region crossed in week 50 with slower growth. No prediction market found.",
+   "sources": [
+    "https://api.delphi.cmu.edu/epidata/fluview/?regions=hhs7&epiweeks=202635-202652",
+    "https://api.delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=202635-202652",
+    "https://www.cdc.gov/fluview/surveillance/2026-week-45.html",
+    "https://www.cdc.gov/fluview/overview/index.html",
+    "https://localhealthsignal.com/flu/",
+    "https://www.kmbc.com/article/kansas-city-flu-cases-rising-thanksgiving-travel-holiday-gatherings/74514446"
+   ],
+   "reference_class": "Recent HHS Region 7 ILINet seasons (2022-23, 2024-25, 2025-26): weeks from ~1.5% wILI to sustained >=2.0% crossing, adjusted for the Thanksgiving-week holiday bump"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 2,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.6679,
+   "seconds": 112.0,
+   "usage": {
+    "num_turns": 17,
+    "input": 20,
+    "cache_read": 328425,
+    "cache_write": 42095,
+    "cache_write_1h": 42095,
+    "output": 8729,
+    "thinking": 5226,
+    "web_search": 4,
+    "cost_usd_envelope": 0.667851,
+    "duration_api_ms": 113554,
+    "fetch_raw": 10,
+    "fetch_raw_failed": 1
+   },
+   "estimate": {
+    "45": 0.01,
+    "46": 0.11,
+    "47": 0.49,
+    "48": 0.23,
+    "49": 0.09,
+    "≥50": 0.07
+   },
+   "reasoning": "Region 7 wILI weeks 40-45: 1.08,1.04,1.11,1.10,1.22,1.48 vs baseline 2.0%; week 45 rose ~21% WoW amid a national H1N1 wave (national 3.8%, 7 of 10 regions above baseline) with Region 7 positivity rising. Closest analog 2023-24 (1.64 at wk45 -> 1.92, 2.21 on Thanksgiving week 47, 2.26, 2.39) implies onset wk47. Thanksgiving falls in week 47 in 2026 and historically adds ~15-20% to ILI%, and levels held afterward in 2023-25. Week 46 onset needs a ~35% jump (the max seen in other regions this season), so it is unlikely. Slower growth (neighbor Region 5 ~12%/wk) or a post-holiday dip would push onset to wk48-49. No human market found (Polymarket/Kalshi only list national hospitalization contracts).",
+   "sources": [
+    "https://api.delphi.cmu.edu/epidata/fluview/?regions=hhs7&epiweeks=202635-202652",
+    "https://api.delphi.cmu.edu/epidata/fluview/?regions=hhs7&epiweeks=202240-202252,202340-202352,202440-202452,201340-201352,201840-201852",
+    "https://api.delphi.cmu.edu/epidata/fluview/?regions=hhs7&epiweeks=202540-202610",
+    "https://www.cdc.gov/fluview/surveillance/2026-week-45.html",
+    "https://www.cdc.gov/fluview/overview/index.html",
+    "https://www.fultonsun.com/news/2026/nov/24/early-spread-of-flu-occuring-around-us/"
+   ],
+   "reference_class": "Region 7 ILINet seasons with wILI ~1.3-1.7% at week 45 and a rising trend (2023-24, 2024-25, 2025-26, 2018-19), plus Thanksgiving-week ILI behavior"
+  },
+  {
+   "phase": 1,
+   "stage": "angle_research",
+   "mode": "research",
+   "run_index": 3,
+   "angle": "P",
+   "blind": false,
+   "ok": true,
+   "model": "claude-opus-5-5",
+   "cost_usd": 0.7559,
+   "seconds": 123.2,
+   "usage": {
+    "num_turns": 21,
+    "input": 24,
+    "cache_read": 451708,
+    "cache_write": 46812,
+    "cache_write_1h": 46812,
+    "output": 8920,
+    "thinking": 4943,
+    "web_search": 5,
+    "cost_usd_envelope": 0.7558536000000001,
+    "duration_api_ms": 121008,
+    "fetch_raw": 14
+   },
+   "estimate": {
+    "45": 0.01,
+    "46": 0.11,
+    "47": 0.38,
+    "48": 0.27,
+    "49": 0.12,
+    "≥50": 0.11
+   },
+   "reasoning": "Reference class: Region 7 typically reaches its ~2.0% ILI baseline in December (2025-26 onset was wk50), so ≥50 is the unconditional favorite. But 2026-27 is an early H1N1 season: 7 of 10 regions incl. neighbors 6 and 8 are above baseline, national ILI 3.8%, and Region 7 weighted ILI rose 1.10→1.22→1.48 (wk43-45) with all four states' flu ED share increasing. At 10-30%/wk growth wk46 ~1.6-1.9 (crossing unlikely); Thanksgiving falls in wk47, which typically inflates ILI%, so wk47 likely ~2.1-2.3 and the modal onset. Risks: a post-holiday dip in wk48 breaking the 3-week rule, or growth stalling as in wk40-44, push mass to 48-49+. No human market found (Polymarket/Manifold/Kalshi).",
+   "sources": [
+    "https://api.delphi.cmu.edu/epidata/fluview/?regions=hhs7&epiweeks=202635-202652",
+    "https://www.cdc.gov/fluview/surveillance/2026-week-45.html",
+    "https://www.cdc.gov/fluview/overview/index.html",
+    "https://flutrackers.com/threads/us-fluview-weekly-surveillance-flu-report-2026-2027-season-for-trend-analysis.1041091/",
+    "https://www.newstribune.com/news/2026/nov/24/early-spread-of-flu-occuring-around-us/",
+    "https://hhs.iowa.gov/health-prevention/providers-professionals/iowa-influenza-surveillance",
+    "https://api.delphi.cmu.edu/epidata/fluview/?regions=hhs7&epiweeks=202540-202552"
+   ],
+   "reference_class": "HHS Region 7 ILINet onset weeks (3 consecutive weeks >= regional baseline ~2.0%) in recent seasons, conditioned on wILI ~1.5% at week 45 in early-season years"
+  }
+ ]
+}
